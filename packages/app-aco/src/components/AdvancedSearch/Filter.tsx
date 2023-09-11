@@ -5,11 +5,10 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { validation } from "@webiny/validation";
 import { IconButton } from "@webiny/ui/Button";
-import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 import { InputField } from "./InputField";
 
-import { CellInner, FilterWrapper, GridOuter, PossibleHiddenField } from "./styled";
+import { CellInner, FilterWrapper } from "./styled";
 
 import { Field, IFilter } from "./types";
 import { observer } from "mobx-react-lite";
@@ -191,76 +190,44 @@ export const Filter: React.VFC<FilterProps> = observer(
                     name={`groups.${groupIndex}.filters.${filterIndex}.id`}
                     defaultValue={filter.id}
                 ></Bind>
-                <PossibleHiddenField hidden={filterIndex === 0}>
-                    <Grid>
-                        <Cell span={12} align={"middle"}>
-                            <CellInner align={"center"}>
-                                <Bind
-                                    name={`groups.${groupIndex}.filters.${filterIndex}.operation`}
-                                    defaultValue={"AND"}
-                                >
-                                    <RadioGroup>
-                                        {({ onChange, getValue }) => (
-                                            <>
-                                                {["AND", "OR"].map(option => (
-                                                    <Radio
-                                                        key={option}
-                                                        label={option}
-                                                        value={getValue(option)}
-                                                        onChange={onChange(option)}
-                                                    />
-                                                ))}
-                                            </>
-                                        )}
-                                    </RadioGroup>
-                                </Bind>
-                            </CellInner>
-                        </Cell>
-                    </Grid>
-                </PossibleHiddenField>
-                <GridOuter>
-                    <Grid>
-                        <Cell span={4}>
+                <Grid>
+                    <Cell span={4}>
+                        <Bind
+                            name={`groups.${groupIndex}.filters.${filterIndex}.field`}
+                            validators={[validation.create("required")]}
+                        >
+                            <Select label={"Field"} options={getFieldOptions()} />
+                        </Bind>
+                    </Cell>
+                    <Cell span={3}>
+                        {filter.field && (
                             <Bind
-                                name={`groups.${groupIndex}.filters.${filterIndex}.field`}
+                                name={`groups.${groupIndex}.filters.${filterIndex}.condition`}
                                 validators={[validation.create("required")]}
                             >
-                                <Select label={"Field"} options={getFieldOptions()} />
+                                <Select
+                                    label={"Condition"}
+                                    options={getConditionOptions(
+                                        fields.find(field => field.id === filter.field)
+                                    )}
+                                />
                             </Bind>
-                        </Cell>
-                        <Cell span={3}>
-                            {filter.field && (
-                                <Bind
-                                    name={`groups.${groupIndex}.filters.${filterIndex}.condition`}
-                                    validators={[validation.create("required")]}
-                                >
-                                    <Select
-                                        label={"Condition"}
-                                        options={getConditionOptions(
-                                            fields.find(field => field.id === filter.field)
-                                        )}
-                                    />
-                                </Bind>
-                            )}
-                        </Cell>
-                        <Cell span={4} align={"middle"}>
-                            {filter.condition && (
-                                <InputField
-                                    name={`groups.${groupIndex}.filters.${filterIndex}.value`}
-                                    field={fields.find(field => field.id === filter.field)}
-                                />
-                            )}
-                        </Cell>
-                        <Cell span={1} align={"middle"}>
-                            <CellInner align={"center"}>
-                                <IconButton
-                                    icon={<DeleteIcon />}
-                                    onClick={() => onRemove(filter.id)}
-                                />
-                            </CellInner>
-                        </Cell>
-                    </Grid>
-                </GridOuter>
+                        )}
+                    </Cell>
+                    <Cell span={4} align={"middle"}>
+                        {filter.condition && (
+                            <InputField
+                                name={`groups.${groupIndex}.filters.${filterIndex}.value`}
+                                field={fields.find(field => field.id === filter.field)}
+                            />
+                        )}
+                    </Cell>
+                    <Cell span={1} align={"middle"}>
+                        <CellInner align={"center"}>
+                            <IconButton icon={<DeleteIcon />} onClick={() => onRemove(filter.id)} />
+                        </CellInner>
+                    </Cell>
+                </Grid>
             </FilterWrapper>
         );
     }

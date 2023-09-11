@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_circle_outline.svg";
-import { Form } from "@webiny/form";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/delete.svg";
+import { Bind, Form } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -10,19 +11,22 @@ import { observer } from "mobx-react-lite";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 
-import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Filter } from "./Filter";
 
-import { CellInner, Content, DrawerContainer } from "./styled";
+import { CellInner, Content, DrawerContainer, GroupContainer } from "./styled";
 
-import { Field, IFilter } from "./types";
-import { SearchConfigurationPresenter } from "~/components/AdvancedSearch/SearchConfigurationPresenter";
-import { SearchConfiguration } from "~/components/AdvancedSearch/SearchConfiguration";
+import { Field, FilterOperation } from "./types";
+
+import { Group, SearchConfiguration } from "./SearchConfiguration";
+import { SearchConfigurationController } from "./SearchConfigurationController";
+import { SearchConfigurationPresenter } from "./SearchConfigurationPresenter";
+import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 interface DrawerProps {
     presenter: SearchConfigurationPresenter;
+    controller: SearchConfigurationController;
     open: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
@@ -30,88 +34,158 @@ interface DrawerProps {
 }
 
 interface FormProps {
-    filters: IFilter[];
+    operation: FilterOperation;
+    groups: Group[];
 }
 
-const Drawer: React.VFC<DrawerProps> = ({ presenter, open, onClose, fields, onSubmit }) => {
-    const { addGroup, groups } = presenter.viewModel;
-    console.log("configuration", groups);
+export const Drawer: React.VFC<DrawerProps> = observer(
+    ({ presenter, controller, open, onClose, fields, onSubmit }) => {
+        const { groups, operation, operations, toGraphql } = presenter.viewModel;
 
-    const onChange = (data: SearchConfiguration) => {
-        console.log("SearchConfiguration", data);
+        const onChange = (data: SearchConfiguration) => {
+            console.log("SearchConfiguration", data);
 
-        // for (const filter of filters) {
-        //     advancedSearchPresenter.updateFilter(filter);
-        // }
-    };
+            for (const group of data.groups) {
+                controller.updateGroup(group);
+            }
+        };
 
-    useHotkeys({
-        zIndex: 55,
-        disabled: !open,
-        keys: {
-            esc: onClose
-        }
-    });
+        useHotkeys({
+            zIndex: 55,
+            disabled: !open,
+            keys: {
+                esc: onClose
+            }
+        });
 
-    const onFormSubmit = () => {
-        // const filters = advancedSearchPresenter.listFilters();
-        // console.log("filters", JSON.stringify(filters));
-        //
-        // const filtersOutput = advancedSearchPresenter.getFiltersOutput();
-        // console.log("filtersOutput", JSON.stringify(filtersOutput));
-        //
-        // onSubmit(filtersOutput);
-    };
+        const onFormSubmit = () => {
+            const output = toGraphql();
+            console.log("output", output);
+            onSubmit(output);
+        };
 
-    return (
-        <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
-            <DrawerContent dir="ltr">
-                <Form<any>
-                    data={{ groups }}
-                    onChange={data => onChange(data)}
-                    onSubmit={onFormSubmit}
-                >
-                    {({ data }) => (
-                        <DrawerContent dir="ltr">
-                            <div className={"container"}>
+        return (
+            <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
+                <DrawerContent dir="ltr">
+                    <Form<FormProps>
+                        data={{ groups, operation }}
+                        onChange={data => onChange(data)}
+                        onSubmit={onFormSubmit}
+                    >
+                        {({ data }) => (
+                            <DrawerContent dir="ltr">
                                 <Header onClose={onClose} />
-                                {data.groups.map((group, groupIndex) => (
-                                    <div key={`group-${groupIndex}`}>
-                                        {"Group"}
-                                        {group.filters.map((filter, filterIndex) => (
-                                            <Content key={filter.id}>
-                                                <Content.Panel>
+                                <Content>
+                                    <Content.Panel>
+                                        <Grid>
+                                            <Cell span={12} align={"middle"}>
+                                                <CellInner align={"center"}>
+                                                    <Bind name={`operation`}>
+                                                        <RadioGroup label={"Operation"}>
+                                                            {({ onChange, getValue }) => (
+                                                                <>
+                                                                    {operations.map(option => (
+                                                                        <Radio
+                                                                            key={option}
+                                                                            label={option}
+                                                                            value={getValue(option)}
+                                                                            onChange={() => {
+                                                                                onChange(option);
+                                                                                controller.setOperation(
+                                                                                    option as FilterOperation
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    ))}
+                                                                </>
+                                                            )}
+                                                        </RadioGroup>
+                                                    </Bind>
+                                                </CellInner>
+                                            </Cell>
+                                        </Grid>
+                                        {data.groups.map((group, groupIndex) => (
+                                            <GroupContainer key={`group-${groupIndex}`}>
+                                                <Grid>
+                                                    <Cell span={11} align={"middle"}>
+                                                        <CellInner align={"left"}>
+                                                            <Bind
+                                                                name={`groups.${groupIndex}.operation`}
+                                                            >
+                                                                <RadioGroup label={"Operation"}>
+                                                                    {({ onChange, getValue }) => (
+                                                                        <>
+                                                                            {operations.map(
+                                                                                option => (
+                                                                                    <Radio
+                                                                                        key={option}
+                                                                                        label={
+                                                                                            option
+                                                                                        }
+                                                                                        value={getValue(
+                                                                                            option
+                                                                                        )}
+                                                                                        onChange={() => {
+                                                                                            onChange(
+                                                                                                option
+                                                                                            );
+                                                                                            group.setOperation(
+                                                                                                option as FilterOperation
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                )
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </RadioGroup>
+                                                            </Bind>
+                                                        </CellInner>
+                                                    </Cell>
+                                                    <Cell span={1} align={"middle"}>
+                                                        <CellInner align={"center"}>
+                                                            <IconButton
+                                                                label={"Delete group"}
+                                                                icon={<DeleteIcon />}
+                                                                onClick={() =>
+                                                                    controller.deleteGroup(group)
+                                                                }
+                                                            />
+                                                        </CellInner>
+                                                    </Cell>
+                                                </Grid>
+
+                                                {group.filters.map((filter, filterIndex) => (
                                                     <Filter
+                                                        key={filter.id}
                                                         groupIndex={groupIndex}
                                                         filterIndex={filterIndex}
                                                         filter={filter}
                                                         fields={fields}
                                                         onRemove={() => {
-                                                            console.log("Remove", filter);
+                                                            group.deleteFilter(filter);
                                                         }}
                                                     />
-
-                                                    <Grid>
-                                                        <Cell span={12}>
-                                                            <CellInner align={"center"}>
-                                                                <Tooltip
-                                                                    content={"Add field"}
-                                                                    placement={"bottom"}
-                                                                >
-                                                                    <IconButton
-                                                                        label={"Add field"}
-                                                                        icon={<AddIcon />}
-                                                                        onClick={() => {
-                                                                            group.addFilter();
-                                                                        }}
-                                                                    />{" "}
-                                                                    Add Filter
-                                                                </Tooltip>
-                                                            </CellInner>
-                                                        </Cell>
-                                                    </Grid>
-                                                </Content.Panel>
-                                            </Content>
+                                                ))}
+                                                <Grid>
+                                                    <Cell span={12}>
+                                                        <CellInner align={"center"}>
+                                                            <Tooltip
+                                                                content={"Add field"}
+                                                                placement={"bottom"}
+                                                            >
+                                                                <IconButton
+                                                                    label={"Add field"}
+                                                                    icon={<AddIcon />}
+                                                                    onClick={() => {
+                                                                        group.addFilter();
+                                                                    }}
+                                                                />
+                                                            </Tooltip>
+                                                        </CellInner>
+                                                    </Cell>
+                                                </Grid>
+                                            </GroupContainer>
                                         ))}
 
                                         <Grid>
@@ -125,25 +199,21 @@ const Drawer: React.VFC<DrawerProps> = ({ presenter, open, onClose, fields, onSu
                                                             label={"Add group"}
                                                             icon={<AddIcon />}
                                                             onClick={() => {
-                                                                addGroup();
+                                                                controller.addGroup();
                                                             }}
-                                                        />{" "}
-                                                        Add Group
+                                                        />
                                                     </Tooltip>
                                                 </CellInner>
                                             </Cell>
                                         </Grid>
-                                    </div>
-                                ))}
-
+                                    </Content.Panel>
+                                </Content>
                                 <Footer onClose={onClose} />
-                            </div>
-                        </DrawerContent>
-                    )}
-                </Form>
-            </DrawerContent>
-        </DrawerContainer>
-    );
-};
-
-export default observer(Drawer);
+                            </DrawerContent>
+                        )}
+                    </Form>
+                </DrawerContent>
+            </DrawerContainer>
+        );
+    }
+);

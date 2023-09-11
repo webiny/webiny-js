@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-import { Button } from "~/components/AdvancedSearch/Button";
-import Drawer from "~/components/AdvancedSearch/Drawer";
+import { currentSearchConfigurationRepository } from "./SearchConfiguration";
+import { SearchConfigurationController } from "./SearchConfigurationController";
+import { SearchConfigurationPresenter } from "./SearchConfigurationPresenter";
+
+import { Button } from "./Button";
+import { Drawer } from "./Drawer";
 
 import { Field } from "./types";
-import {
-    currentSearchConfigurationRepository,
-    SearchConfigurationPresenter
-} from "~/components/AdvancedSearch/SearchConfigurationPresenter";
 
 interface AdvancedSearchProps {
     fields: Field[];
@@ -15,6 +15,7 @@ interface AdvancedSearchProps {
 }
 
 const presenter = new SearchConfigurationPresenter(currentSearchConfigurationRepository);
+const controller = new SearchConfigurationController(currentSearchConfigurationRepository);
 
 export const AdvancedSearch: React.VFC<AdvancedSearchProps> = ({ fields, onSubmit }) => {
     const [open, setOpen] = useState(false);
@@ -24,6 +25,7 @@ export const AdvancedSearch: React.VFC<AdvancedSearchProps> = ({ fields, onSubmi
             <Button onClick={() => setOpen(true)} />
             <Drawer
                 presenter={presenter}
+                controller={controller}
                 open={open}
                 onClose={() => setOpen(false)}
                 fields={fields}

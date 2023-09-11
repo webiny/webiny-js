@@ -48,6 +48,11 @@ export const FilterWrapper = styled("div")`
     }
 `;
 
+export const GroupContainer = styled("div")`
+    margin: 24px 24px 0;
+    border: 4px dashed var(--mdc-theme-background);
+`;
+
 interface PossibleHiddenFieldProps {
     hidden: boolean;
 }
@@ -62,11 +67,6 @@ interface CellInnerProps {
 
 export const CellInner = styled(`div`)<CellInnerProps>`
     text-align: ${props => props.align || "left"};
-`;
-
-export const GridOuter = styled("div")`
-    margin: 0 24px;
-    border: 4px dashed var(--mdc-theme-background);
 `;
 
 const Horizontal = styled.div`
