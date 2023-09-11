@@ -6,6 +6,7 @@
     { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-headless-cms/tsconfig.build.json" },
+    { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
