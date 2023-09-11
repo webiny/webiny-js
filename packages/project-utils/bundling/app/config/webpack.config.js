@@ -394,7 +394,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                             // its runtime that would otherwise be processed through "file" loader.
                             // Also exclude `html` and `json` extensions so they get processed
                             // by webpacks internal loaders.
-                            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /^$/],
+                            exclude: [/\.(js|cjs|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /^$/],
                             options: {
                                 name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
                             }
