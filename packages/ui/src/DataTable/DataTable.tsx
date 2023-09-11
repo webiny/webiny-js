@@ -259,8 +259,9 @@ interface TableRowProps<T> {
 }
 
 const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
+    const testId = `ui-data-table-row-index-${row.index}`;
     return (
-        <DataTableRow selected={selected}>
+        <DataTableRow selected={selected} data-testid={testId}>
             {row.getVisibleCells().map(cell => (
                 <MemoTableCell<T> key={cell.id} cell={cell} />
             ))}
@@ -347,7 +348,6 @@ export const DataTable = <T extends Object & DefaultData>({
                             key={row.original.id || row.id}
                             row={row}
                             selected={row.getIsSelected()}
-                            data-testid="datatable-row"
                         />
                     ))}
                 </DataTableBody>
