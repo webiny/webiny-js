@@ -1,16 +1,14 @@
-import { GraphQLClient } from "graphql-request";
 import { UPDATE_PAGE } from "./graphql";
+import { gqlClient } from "../utils";
 
 Cypress.Commands.add("pbUpdatePage", variables => {
     cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
-        return client
-            .request(UPDATE_PAGE, variables)
+        return gqlClient
+            .request({
+                query: UPDATE_PAGE,
+                variables,
+                authToken: user.idToken.jwtToken
+            })
             .then(response => response.pageBuilder.updatePage.data);
     });
 });
