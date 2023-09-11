@@ -20,7 +20,7 @@ import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants";
 import { PbPageDataItem } from "~/types";
-import { actionsColumnStyles, menuStyles } from "./styled";
+import { menuStyles } from "./styled";
 
 export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -130,7 +130,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return <FolderName name={entry.title} id={entry.id} />;
                 },
-                enableSorting: true
+                enableSorting: true,
+                size: 400
             },
             savedOn: {
                 header: "Last modified",
@@ -154,7 +155,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
-                className: actionsColumnStyles,
+                size: 60,
+                enableResizing: false,
                 cell: (entry: Entry) => {
                     if (isPageEntry(entry)) {
                         return (
