@@ -89,7 +89,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                     }
                     return <FolderName record={record} />;
                 },
-                enableSorting: true
+                enableSorting: true,
+                size: 400
             },
             savedOn: {
                 header: "Last modified",
@@ -117,6 +118,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
+                size: 60,
+                enableResizing: false,
                 cell: (record: Entry) => {
                     if (isRecordEntry(record)) {
                         return (
