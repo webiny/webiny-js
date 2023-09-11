@@ -96,13 +96,16 @@ export interface InvalidCmsGroupResult {
     error: CmsImportError;
 }
 
+export interface ValidatedCmsModel extends Omit<CmsModel, "group"> {
+    group: string;
+}
 export interface ValidCmsModelResult {
-    model: Partial<Pick<CmsModel, "modelId" | "name">>;
+    model: ValidatedCmsModel;
     error?: never;
 }
 
 export interface InvalidCmsModelResult {
-    model: Partial<Pick<CmsModel, "modelId" | "name">>;
+    model: ValidatedCmsModel;
     error: CmsImportError;
 }
 

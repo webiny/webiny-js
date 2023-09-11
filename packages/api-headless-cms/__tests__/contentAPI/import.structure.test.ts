@@ -3,7 +3,7 @@ import { createCmsGroup } from "~/plugins";
 import { exportedGroupsAndModels } from "~tests/contentAPI/mocks/exportedGroupsAndModels";
 
 describe("import cms structure", () => {
-    const { validateCmsStructureMutation } = useGraphQLHandler({
+    const { validateCmsStructureMutation, importCmsStructureMutation } = useGraphQLHandler({
         path: "manage/en-US"
     });
     it("should return error as there are no groups to validate", async () => {
@@ -470,6 +470,42 @@ describe("import cms structure", () => {
                             };
                         }),
                         message: "Validation done."
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should import valid groups and models - exported data", async () => {
+        const [result] = await importCmsStructureMutation({
+            data: exportedGroupsAndModels,
+            models: exportedGroupsAndModels.models.map(model => model.modelId)
+        });
+
+        expect(result).toEqual({
+            data: {
+                importStructure: {
+                    data: {
+                        groups: exportedGroupsAndModels.groups.map(group => {
+                            return {
+                                group: {
+                                    id: group.id,
+                                    name: group.name
+                                },
+                                error: null
+                            };
+                        }),
+                        models: exportedGroupsAndModels.models.map(model => {
+                            return {
+                                model: {
+                                    modelId: model.modelId,
+                                    name: model.name
+                                },
+                                error: null
+                            };
+                        }),
+                        message: "Import done."
                     },
                     error: null
                 }

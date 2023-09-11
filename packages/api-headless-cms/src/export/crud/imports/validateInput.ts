@@ -8,8 +8,8 @@ import { validateGroups } from "~/export/crud/imports/validateGroups";
 import { validateModels } from "~/export/crud/imports/validateModels";
 
 interface Params {
-    groups: Pick<CmsGroup, "id" | "slug">[];
-    models: Pick<CmsModel, "modelId" | "singularApiName" | "pluralApiName">[];
+    groups: CmsGroup[];
+    models: CmsModel[];
     data: CmsImportStructureParamsData;
 }
 

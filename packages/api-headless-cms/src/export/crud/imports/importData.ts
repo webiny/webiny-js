@@ -5,6 +5,8 @@ import {
     ValidCmsModelResult
 } from "~/export/types";
 import { CmsContext } from "~/types";
+import { importGroups } from "./importGroups";
+import { importModels } from "./importModels";
 
 interface Params {
     context: CmsContext;
@@ -21,44 +23,30 @@ interface Response {
 export const importData = async (params: Params): Promise<Response> => {
     const { context } = params;
 
-    const groups: CmsGroupImportResult[] = [];
-    const models: CmsModelImportResult[] = [];
+    const groups = await importGroups(params);
 
-    for (const group of params.groups) {
-        try {
-            const result = await context.cms.createGroup(group.group);
-            groups.push({
-                group: {
-                    ...result
-                },
-                imported: true
-            });
-        } catch (ex) {
-            groups.push({
-                group: group.group,
-                imported: false,
-                error: {
-                    message: ex.message,
-                    code: ex.code || "CREATE_GROUP_ERROR",
-                    data: {
-                        ...ex.data,
-                        group
-                    }
-                }
-            });
-        }
-    }
     const importedGroups = groups.filter(g => g.imported).map(g => g.group);
+
     if (importedGroups.length === 0) {
         return {
             groups,
-            models,
+            models: params.models.map(model => {
+                return {
+                    ...model,
+                    imported: false
+                };
+            }),
             error: "No groups were imported. Aborting."
         };
     }
 
+    const importModelResults = await importModels({
+        context,
+        models: params.models
+    });
+
     return {
         groups,
-        models
+        models: importModelResults
     };
 };

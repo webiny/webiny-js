@@ -1,5 +1,9 @@
 import { createModelImportValidation } from "~/crud/contentModel/validation";
-import { HeadlessCmsImportStructureParamsDataModel, ValidatedCmsModelResult } from "~/export/types";
+import {
+    HeadlessCmsImportStructureParamsDataModel,
+    ValidatedCmsModel,
+    ValidatedCmsModelResult
+} from "~/export/types";
 import { CmsGroup, CmsModel } from "~/types";
 import { createZodError } from "@webiny/utils";
 
@@ -7,7 +11,7 @@ const modelFieldsToCheck = ["modelId", "singularApiName", "pluralApiName"];
 
 interface Params {
     groups: Pick<CmsGroup, "id">[];
-    models: Pick<CmsModel, "modelId" | "singularApiName" | "pluralApiName">[];
+    models: CmsModel[];
     input: HeadlessCmsImportStructureParamsDataModel[];
 }
 
@@ -22,7 +26,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
             if (!result.success) {
                 const error = createZodError(result.error);
                 return {
-                    model,
+                    model: model as ValidatedCmsModel,
                     error: {
                         message: error.message,
                         code: error.code,
@@ -30,7 +34,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                     }
                 };
             }
-            const data = result.data;
+            const data = result.data as unknown as ValidatedCmsModel;
             const group = groups.find(g => g.id === data.group);
             if (!group) {
                 return {
@@ -55,9 +59,11 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 ).toLowerCase();
 
                 const existing = models.find(m => {
-                    const value = (m[field as keyof typeof m] || "").toLowerCase();
-
-                    return value === fieldValue;
+                    const value = m[field as keyof typeof m] || "";
+                    if (typeof value !== "string") {
+                        return false;
+                    }
+                    return value.toLowerCase() === fieldValue;
                 });
                 if (!existing) {
                     continue;
