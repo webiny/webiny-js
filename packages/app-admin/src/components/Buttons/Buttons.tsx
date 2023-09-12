@@ -36,13 +36,15 @@ export const Buttons: React.VFC<ButtonsProps> = props => {
     return (
         <>
             {props.actions.map(action => (
-                <ButtonContainer key={action.name} className={"button-container"}>
+                <ButtonContainer key={action.name}>
                     <ButtonsProvider>{action.element}</ButtonsProvider>
                 </ButtonContainer>
             ))}
         </>
     );
 };
+
+export { ButtonContainer };
 
 export const ButtonDefault: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
     return <BaseButtonDefault {...other} onClick={onAction} />;

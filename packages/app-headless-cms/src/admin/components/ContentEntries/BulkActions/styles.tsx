@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { ButtonContainer } from "@webiny/app-admin";
 
 export const BulkActionsContainer = styled.div`
     width: 100%;
@@ -23,7 +24,7 @@ export const ButtonsContainer = styled.div`
     display: flex;
     align-items: center;
 
-    .button-container {
+    ${ButtonContainer} {
         margin: 0;
     }
 `;
