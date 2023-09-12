@@ -1,6 +1,6 @@
-import { Logger } from "pino";
+import { Logger } from "@webiny/logger";
 
-export { Logger };
+export type { Logger };
 
 export interface MigrationItem {
     id: string;

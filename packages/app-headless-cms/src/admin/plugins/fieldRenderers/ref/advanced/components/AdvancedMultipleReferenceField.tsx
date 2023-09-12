@@ -16,9 +16,9 @@ import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { AbsoluteLoader as Loader } from "./Loader";
-import { NewReferencedEntryDialog } from "../components/NewReferencedEntryDialog";
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries";
+import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
 
 const FieldLabel = styled("h3")({
     fontSize: 24,

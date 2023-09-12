@@ -25,11 +25,16 @@ export * from "./shared";
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
+    graphQLTypePrefix: string;
 }
 
 interface Position {
     row: number;
     index: number;
+}
+
+interface Location {
+    folderId: string;
 }
 
 export interface DragSource extends DragObjectWithType {
@@ -207,7 +212,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
              * }
              * ```
              */
-            queryField?: string | ((params: QueryFieldParams) => string);
+            queryField?: string | ((params: QueryFieldParams) => string | null);
         };
         render?(params: any): React.ReactElement;
         tags?: string[];
@@ -341,6 +346,7 @@ export interface CmsContentEntry {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
@@ -358,6 +364,7 @@ export interface CmsContentEntryRevision {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         publishedOn: string;
