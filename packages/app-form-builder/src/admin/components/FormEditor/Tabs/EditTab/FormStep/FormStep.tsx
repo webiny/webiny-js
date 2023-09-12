@@ -85,7 +85,7 @@ export const FormStep = ({
     // TODO @ts-refactor figure out source type
     const handleDropField = useCallback(
         (source: any, position: FieldLayoutPositionType): void => {
-            const { pos, name, ui } = source;
+            const { pos, name, ui, formStep: sourceStep } = source;
 
             if (name === "custom") {
                 /**
@@ -101,7 +101,7 @@ export const FormStep = ({
                 // Reorder logic is different depending on the source and target position.
                 // pos.formStep is a source step from which we move row.
                 // formStep is a target step in which we move row.
-                moveRow(pos.row, position.row, formStep.id, pos.formStep);
+                moveRow(pos.row, position.row, formStep.id, sourceStep);
                 return;
             }
 
@@ -113,12 +113,12 @@ export const FormStep = ({
                     return;
                 }
                 // Here we are getting field from the source step ("source step" is a step from which we take a field)
-                const fieldId = pos.formStep.layout[pos.row][pos.index];
+                const fieldId = sourceStep.layout[pos.row][pos.index];
                 moveField({
                     field: fieldId,
                     position,
                     targetStepId: formStep.id,
-                    sourceStepId: pos.formStep.id
+                    sourceStepId: sourceStep.id
                 });
                 return;
             }
@@ -174,7 +174,7 @@ export const FormStep = ({
                     )}
                     {fields.map((row, index) => (
                         <Draggable
-                            beginDrag={{ ui: "row", pos: { row: index, formStep } }}
+                            beginDrag={{ ui: "row", pos: { row: index }, formStep }}
                             key={`row-${index}`}
                         >
                             {(
@@ -207,9 +207,9 @@ export const FormStep = ({
                                                     name: field.name,
                                                     pos: {
                                                         row: index,
-                                                        index: fieldIndex,
-                                                        formStep
-                                                    }
+                                                        index: fieldIndex
+                                                    },
+                                                    formStep
                                                 }}
                                             >
                                                 {({ drag }) => (

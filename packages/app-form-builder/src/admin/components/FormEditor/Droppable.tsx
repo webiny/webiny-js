@@ -29,8 +29,13 @@ export interface IsVisibleCallableParams {
 export interface IsVisibleCallable {
     (params: IsVisibleCallableParams): boolean;
 }
+export interface DragObjectWithFieldInfo extends DragObjectWithType {
+    ui: string;
+    name: string;
+    pos?: Partial<FieldLayoutPositionType>;
+}
 export interface OnDropCallable {
-    (item: DragObjectWithType & { ui: string }): DroppableDropResult | undefined;
+    (item: DragObjectWithFieldInfo): DroppableDropResult | undefined;
 }
 export interface DroppableProps {
     type?: string;

@@ -8,9 +8,7 @@ import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
-import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
-import { DefaultButton } from "./DefaultFormLayout/DefaultButton";
-
+import { Button } from "./DefaultFormLayout/buttons/Button";
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
@@ -49,6 +47,9 @@ const DefaultFormLayout: FormLayoutComponent = ({
     submit,
     goToNextStep,
     goToPreviousStep,
+    resetFormAfterSubmit,
+    isLastStep,
+    isFirstStep,
     isMultiStepForm,
     currentStepIndex,
     currentStep,
@@ -70,7 +71,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Once the data is successfully submitted, we show a success message.
      */
     const submitForm = async (data: Record<string, any>): Promise<void> => {
-        if (isMultiStepForm && currentStepIndex !== formData.steps.length - 1) {
+        if (!isLastStep) {
             goToNextStep();
         } else {
             setLoading(true);
@@ -78,6 +79,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
             setLoading(false);
             if (result.error === null) {
                 setFormSuccess(true);
+                if (resetFormAfterSubmit) {
+                    // This function will reset Success Message screen in 3 seconds after showing it,
+                    // it will also reset view to the first step.
+                    resetFormAfterSubmit(() => setFormSuccess(false));
+                }
             }
         }
     };
@@ -110,32 +116,45 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     */}
                     {isMultiStepForm && (
                         <ButtonsWrapper>
-                            <DefaultButton
+                            <Button
+                                type="default"
+                                fullWidth={false}
                                 onClick={goToPreviousStep}
-                                disabled={currentStepIndex === 0}
+                                disabled={isFirstStep}
                             >
                                 Previous Step
-                            </DefaultButton>
+                            </Button>
                             {currentStepIndex === formData.steps.length - 1 ? (
-                                <SubmitButton onClick={submit} loading={loading} fullWidth={false}>
+                                <Button
+                                    type="primary"
+                                    onClick={submit}
+                                    disabled={loading}
+                                    fullWidth={false}
+                                >
                                     {formData.settings.submitButtonLabel || "Submit"}
-                                </SubmitButton>
+                                </Button>
                             ) : (
-                                <SubmitButton onClick={submit} loading={loading} fullWidth={false}>
+                                <Button
+                                    type="primary"
+                                    onClick={submit}
+                                    disabled={loading}
+                                    fullWidth={false}
+                                >
                                     Next Step
-                                </SubmitButton>
+                                </Button>
                             )}
                         </ButtonsWrapper>
                     )}
                     {/* If form is single step then we just render submit button */}
                     {!isMultiStepForm && (
-                        <SubmitButton
+                        <Button
+                            type="primary"
                             onClick={submit}
-                            loading={loading}
+                            disabled={loading}
                             fullWidth={formData.settings.fullWidthSubmitButton}
                         >
                             {formData.settings.submitButtonLabel || "Submit"}
-                        </SubmitButton>
+                        </Button>
                     )}
                 </Wrapper>
             )}

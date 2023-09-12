@@ -87,6 +87,8 @@ export type FormLayoutComponentProps<T = any> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
+    isLastStep: boolean;
+    isFirstStep: boolean;
     isMultiStepForm: boolean;
     currentStepIndex: number;
     currentStep: FormDataStep;

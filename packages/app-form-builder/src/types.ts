@@ -95,13 +95,13 @@ export interface FieldLayoutPositionType {
     row: number;
     index: number | null;
 }
-
 export interface StepLayoutPositionType {
     row: {
         title: string;
         id: string;
         layout: string[][];
     };
+    formStep: FbFormStep;
     index: number | null;
 }
 
@@ -299,6 +299,9 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
+    resetFormAfterSubmit?: (callback: () => void) => void;
+    isLastStep: boolean;
+    isFirstStep: boolean;
     isMultiStepForm: boolean;
     currentStepIndex: number;
     currentStep: FbFormStep;

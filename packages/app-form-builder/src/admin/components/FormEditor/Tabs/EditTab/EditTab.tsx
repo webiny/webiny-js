@@ -102,7 +102,7 @@ export const EditTab: React.FC = () => {
     const [stepTitle, setStepTitle] = useState<string>("");
 
     const handleStepMove = (source: any, step: FbFormStep): void => {
-        const { pos } = source;
+        const { pos, formStep } = source;
 
         if (pos) {
             if (pos.index === null) {
@@ -112,7 +112,7 @@ export const EditTab: React.FC = () => {
 
         moveStep({
             step,
-            position: pos
+            formStep
         });
     };
 
@@ -143,7 +143,7 @@ export const EditTab: React.FC = () => {
             <FieldErrors errors={errors} />
             {data.steps.map((formStep: FbFormStep, index: number) => (
                 <Draggable
-                    beginDrag={{ ui: "step", name: "step", pos: { row: formStep, index } }}
+                    beginDrag={{ ui: "step", name: "step", pos: { row: index, index }, formStep }}
                     key={`step-${index}`}
                 >
                     {({ drag, isDragging }) => (
@@ -183,6 +183,7 @@ export const EditTab: React.FC = () => {
                                 </div>
                                 <Horizontal
                                     onDrop={item => {
+                                        console.log("item", item);
                                         handleStepMove(item, formStep);
                                         return undefined;
                                     }}

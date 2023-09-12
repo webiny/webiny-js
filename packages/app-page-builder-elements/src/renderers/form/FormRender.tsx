@@ -49,6 +49,9 @@ const FormRender: React.FC<FormRenderProps> = props => {
         setCurrentStepIndex(prevStep => (prevStep -= 1));
     };
 
+    const isFirstStep = isMultiStepForm && currentStepIndex === 0;
+    const isLastStep = isMultiStepForm && currentStepIndex === formData.steps.length - 1;
+
     const currentStep =
         formData.steps[currentStepIndex] === undefined
             ? formData.steps[formData.steps.length - 1]
@@ -218,6 +221,8 @@ const FormRender: React.FC<FormRenderProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        isFirstStep,
+        isLastStep,
         isMultiStepForm,
         currentStepIndex,
         currentStep,

@@ -30,7 +30,6 @@ import {
     FbUpdateFormInput,
     FbErrorResponse,
     FbFormStep,
-    StepLayoutPositionType,
     MoveFieldParams
 } from "~/types";
 import { ApolloClient } from "apollo-client";
@@ -49,7 +48,7 @@ interface SetDataCallable {
 
 interface MoveStepParams {
     step: FbFormStep;
-    position: StepLayoutPositionType;
+    formStep: FbFormStep;
 }
 
 type State = FormEditorProviderContextState;
@@ -453,11 +452,11 @@ export const useFormEditorFactory = (
                     });
                 }
             },
-            moveStep: ({ step, position }) => {
+            moveStep: ({ step, formStep }) => {
                 self.setData(data => {
                     moveStep({
                         step,
-                        position,
+                        formStep,
                         data: data.steps
                     });
 

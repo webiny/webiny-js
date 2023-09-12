@@ -78,11 +78,22 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         setCurrentStepIndex(prevStep => (prevStep -= 1));
     };
 
+    // This function will reset form to the first step after it was successfully submited.
+    const resetFormAfterSubmit = (callback: () => void): void => {
+        setTimeout(() => {
+            callback();
+            setCurrentStepIndex(0);
+        }, 3000);
+    };
+
     const formData: FbFormModel = cloneDeep(data);
     const { fields, settings, steps } = formData;
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
+
+    const isFirstStep = isMultiStepForm && currentStepIndex === 0;
+    const isLastStep = isMultiStepForm && currentStepIndex === steps.length - 1;
 
     // We need this check in case we deleted last step and at the same time we were previewing it.
     const currentStep =
@@ -235,6 +246,9 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        resetFormAfterSubmit,
+        isLastStep,
+        isFirstStep,
         currentStepIndex,
         currentStep,
         isMultiStepForm,
