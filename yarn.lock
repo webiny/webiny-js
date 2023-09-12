@@ -14604,6 +14604,7 @@ __metadata:
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -24800,12 +24801,6 @@ __metadata:
   checksum: 58f1aba8915560535604bdfe4bf96dd86cdf5507cb8cec69345b0fba4afccf2af513336ffff0be5492f087c45fc492f4cde422857f98b9e88b2f64e25bb9316c
   languageName: node
   linkType: hard
-
-"eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A."
-  languageName: node
-  linkType: soft
 
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
@@ -39303,7 +39298,6 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.27.1
     eslint-plugin-standard: ^5.0.0
-    eslint-plugin-webiny-i18n: "link:./eslint/webiny-i18n"
     execa: ^1.0.0
     flatten: ^1.0.2
     folder-hash: ^4.0.0
