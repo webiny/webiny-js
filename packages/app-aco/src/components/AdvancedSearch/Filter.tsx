@@ -186,10 +186,6 @@ export const Filter: React.VFC<FilterProps> = observer(
 
         return (
             <FilterWrapper>
-                <Bind
-                    name={`groups.${groupIndex}.filters.${filterIndex}.id`}
-                    defaultValue={filter.id}
-                ></Bind>
                 <Grid>
                     <Cell span={4}>
                         <Bind
@@ -224,7 +220,7 @@ export const Filter: React.VFC<FilterProps> = observer(
                     </Cell>
                     <Cell span={1} align={"middle"}>
                         <CellInner align={"center"}>
-                            <IconButton icon={<DeleteIcon />} onClick={() => onRemove(filter.id)} />
+                            <IconButton icon={<DeleteIcon />} onClick={() => onRemove(filter)} />
                         </CellInner>
                     </Cell>
                 </Grid>

@@ -1,5 +1,5 @@
+// @ts-nocheck
 import React from "react";
-
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_circle_outline.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/delete.svg";
 import { Bind, Form } from "@webiny/form";
@@ -13,13 +13,13 @@ import { useHotkeys } from "react-hotkeyz";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { Filter } from "./Filter";
+import { Filter as FilterComponent } from "./Filter";
 
 import { CellInner, Content, DrawerContainer, GroupContainer } from "./styled";
 
 import { Field, FilterOperation } from "./types";
 
-import { Group, SearchConfiguration } from "./SearchConfiguration";
+import { Group, Filter, SearchConfiguration } from "./SearchConfiguration";
 import { SearchConfigurationController } from "./SearchConfigurationController";
 import { SearchConfigurationPresenter } from "./SearchConfigurationPresenter";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
@@ -40,14 +40,11 @@ interface FormProps {
 
 export const Drawer: React.VFC<DrawerProps> = observer(
     ({ presenter, controller, open, onClose, fields, onSubmit }) => {
-        const { groups, operation, operations, toGraphql } = presenter.viewModel;
+        const { configuration, operations, toObject } = presenter.viewModel;
 
         const onChange = (data: SearchConfiguration) => {
             console.log("SearchConfiguration", data);
-
-            for (const group of data.groups) {
-                controller.updateGroup(group);
-            }
+            controller.updateConfiguration(data);
         };
 
         useHotkeys({
@@ -59,16 +56,55 @@ export const Drawer: React.VFC<DrawerProps> = observer(
         });
 
         const onFormSubmit = () => {
-            const output = toGraphql();
+            const output = toObject();
             console.log("output", output);
-            onSubmit(output);
+            // onSubmit(output);
+        };
+
+        const addGroup = () => {
+            controller.updateConfiguration({
+                ...configuration,
+                groups: [
+                    ...configuration.groups,
+                    {
+                        operation: FilterOperation.AND,
+                        filters: [{ field: "", value: "", condition: "" }]
+                    }
+                ]
+            });
+        };
+
+        const addFilter = (group: Group) => {
+            const index = configuration.groups.findIndex(g => g.id === group.id);
+            if (index <= -1) {
+                return;
+            }
+
+            configuration.groups[index].filters.push({ field: "", value: "", condition: "" });
+
+            controller.updateConfiguration(configuration);
+        };
+
+        const deleteGroup = (groupToDelete: Group) => {
+            controller.updateConfiguration({
+                ...configuration,
+                groups: configuration.groups.filter(group => groupToDelete.id !== group.id)
+            });
+        };
+
+        const deleteFilter = (group: Group, filter: Filter) => {
+            const groupIndex = configuration.groups.findIndex(g => g.id === group.id);
+            const newFilters = configuration.groups[groupIndex].filters.filter(f => f.id !== filter.id);
+            configuration.groups[groupIndex].filters = newFilters;
+
+            controller.updateConfiguration(configuration);
         };
 
         return (
             <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
                 <DrawerContent dir="ltr">
                     <Form<FormProps>
-                        data={{ groups, operation }}
+                        data={configuration}
                         onChange={data => onChange(data)}
                         onSubmit={onFormSubmit}
                     >
@@ -89,12 +125,9 @@ export const Drawer: React.VFC<DrawerProps> = observer(
                                                                             key={option}
                                                                             label={option}
                                                                             value={getValue(option)}
-                                                                            onChange={() => {
-                                                                                onChange(option);
-                                                                                controller.setOperation(
-                                                                                    option as FilterOperation
-                                                                                );
-                                                                            }}
+                                                                            onChange={onChange(
+                                                                                option
+                                                                            )}
                                                                         />
                                                                     ))}
                                                                 </>
@@ -125,14 +158,9 @@ export const Drawer: React.VFC<DrawerProps> = observer(
                                                                                         value={getValue(
                                                                                             option
                                                                                         )}
-                                                                                        onChange={() => {
-                                                                                            onChange(
-                                                                                                option
-                                                                                            );
-                                                                                            group.setOperation(
-                                                                                                option as FilterOperation
-                                                                                            );
-                                                                                        }}
+                                                                                        onChange={onChange(
+                                                                                            option
+                                                                                        )}
                                                                                     />
                                                                                 )
                                                                             )}
@@ -147,23 +175,28 @@ export const Drawer: React.VFC<DrawerProps> = observer(
                                                             <IconButton
                                                                 label={"Delete group"}
                                                                 icon={<DeleteIcon />}
-                                                                onClick={() =>
-                                                                    controller.deleteGroup(group)
-                                                                }
+                                                                onClick={() => {
+                                                                    console.log(
+                                                                        "Delete group",
+                                                                        group
+                                                                    );
+                                                                    deleteGroup(group);
+                                                                }}
                                                             />
                                                         </CellInner>
                                                     </Cell>
                                                 </Grid>
 
                                                 {group.filters.map((filter, filterIndex) => (
-                                                    <Filter
-                                                        key={filter.id}
+                                                    <FilterComponent
+                                                        key={filterIndex}
                                                         groupIndex={groupIndex}
                                                         filterIndex={filterIndex}
                                                         filter={filter}
                                                         fields={fields}
                                                         onRemove={() => {
-                                                            group.deleteFilter(filter);
+                                                            console.log("Delete filter", filter);
+                                                            deleteFilter(group, filter);
                                                         }}
                                                     />
                                                 ))}
@@ -178,7 +211,8 @@ export const Drawer: React.VFC<DrawerProps> = observer(
                                                                     label={"Add field"}
                                                                     icon={<AddIcon />}
                                                                     onClick={() => {
-                                                                        group.addFilter();
+                                                                        console.log("Add filter");
+                                                                        addFilter(group);
                                                                     }}
                                                                 />
                                                             </Tooltip>
@@ -199,7 +233,8 @@ export const Drawer: React.VFC<DrawerProps> = observer(
                                                             label={"Add group"}
                                                             icon={<AddIcon />}
                                                             onClick={() => {
-                                                                controller.addGroup();
+                                                                console.log("Add group");
+                                                                addGroup();
                                                             }}
                                                         />
                                                     </Tooltip>
