@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import omit from "lodash/omit";
@@ -27,6 +27,8 @@ import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 import { useFileDetails } from "~/hooks/useFileDetails";
 import { FileProvider } from "~/contexts/FileProvider";
+import { prepareFormData } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/prepareFormData";
+import { CmsModelField } from "@webiny/app-headless-cms/types";
 
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
@@ -51,6 +53,17 @@ interface FileDetailsInnerProps {
     onClose: () => void;
 }
 
+const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => {
+    const output = omit(data, ["createdBy", "createdOn", "src"]);
+    if (fields.length === 0) {
+        return output;
+    }
+    return {
+        ...output,
+        extensions: prepareFormData(output.extensions, fields)
+    };
+};
+
 const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
@@ -58,13 +71,18 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
 
-    const hasExtensions = useMemo(() => {
-        return fileModel.fields.find(field => field.fieldId === "extensions");
+    const extensionFields = useMemo(() => {
+        const fields = fileModel.fields.find(field => field.fieldId === "extensions");
+        if (!fields?.settings?.fields) {
+            return [];
+        }
+        return fields?.settings?.fields || [];
     }, [fileModel]);
 
     const onSubmit: FormOnSubmit<FileItem> = async ({ id, ...data }) => {
         setLoading(true);
-        await updateFile(id, omit(data, ["createdBy", "createdOn", "src"]));
+        const fileData = prepareFileData(data, extensionFields);
+        await updateFile(id, fileData);
         setLoading(false);
         showSnackbar("File updated successfully!");
         close();
@@ -100,7 +118,7 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
                                             </Cell>
                                         </Grid>
                                     </Tab>
-                                    {hasExtensions ? (
+                                    {extensionFields.length > 0 ? (
                                         <Tab label={"Advanced Details"}>
                                             <Extensions model={fileModel} />
                                         </Tab>
