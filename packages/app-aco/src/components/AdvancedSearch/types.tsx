@@ -26,10 +26,6 @@ export type FilterValue = string | number | boolean | undefined;
  */
 export interface IFilter {
     /**
-     * Unique identifier for the filter.
-     */
-    id: string;
-    /**
      * Field to which the filter applies.
      */
     field?: string;
