@@ -1,8 +1,12 @@
-// @ts-nocheck
-export const BuilderCompositionRoot = (props) => {
-    const [repository] = useState(() => new BuilderRepository());
-    const [controller] = useState(() => new BuilderController(repository));
-    const [presenter] = useState(() => new BuilderPresenter(repository));
+import React from "react";
+import { BuilderController } from "./BuilderController";
+import { BuilderPresenter } from "./BuilderPresenter";
+import { builderRepository } from "./BuilderRepository";
+import { Builder, BuilderProps } from "./Builder";
 
-    return <Builder {...props} controller={controller} presenter={presenter}/>
-}
+const controller = new BuilderController(builderRepository);
+const presenter = new BuilderPresenter(builderRepository);
+
+export const BuilderCompositionRoot = (props: Omit<BuilderProps, "presenter" | "controller">) => {
+    return <Builder {...props} controller={controller} presenter={presenter} />;
+};
