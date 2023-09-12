@@ -127,6 +127,8 @@ export const insertTestFolders = async (params: Params): Promise<Response> => {
 
                 esItems.push({
                     ...folderItem,
+                    PK: partitionKey,
+                    SK: "L",
                     latest: true,
                     TYPE: "cms.entry.l",
                     __type: "cms.entry.l"

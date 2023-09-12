@@ -77,10 +77,10 @@ const getPackageNameFromPath = value => {
     return path.dirname(packageJson).split("/").pop();
 };
 
-const jestExecutable = process.argv.findIndex(arg => arg.endsWith("jest.js"));
 const jestConfig = process.argv.findIndex(arg => arg.endsWith("jest.config.js"));
 // This parameter is used by Webstorm, when running a particular test file.
 const runByPath = process.argv.findIndex(arg => arg === "--runTestsByPath");
+const isIntellij = process.argv.some(param => param.endsWith("jest-intellij-reporter.js"));
 
 let packageName = "";
 if (jestConfig > -1) {
@@ -88,13 +88,9 @@ if (jestConfig > -1) {
 } else if (runByPath > -1) {
     // Find the package this test file belongs to.
     packageName = getPackageNameFromPath(process.argv[runByPath + 1]);
-} else if (jestExecutable > -1) {
-    const target = process.argv[jestExecutable + 1];
-    if (target.includes("/")) {
-        packageName = getPackageNameFromPath(target);
-    } else {
-        packageName = target;
-    }
+} else if (isIntellij) {
+    const target = process.argv.find(param => param.includes("/packages/"));
+    packageName = getPackageNameFromPath(target);
 }
 
 if (packageName.includes("packages")) {

@@ -257,11 +257,13 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             <ExportButton
+                                data-testid={"pb-blocks-list-block-export-btn"}
                                 icon={<ExportIcon />}
                                 onClick={() => handleExportClick(pageBlock.id)}
                             />
                             {canEdit(pageBlock) && (
                                 <EditButton
+                                    data-testid={"pb-blocks-list-block-edit-btn"}
                                     onClick={() =>
                                         history.push(`/page-builder/block-editor/${pageBlock.id}`)
                                     }
@@ -269,12 +271,16 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                             )}
                             {canCreate && (
                                 <DuplicateButton
+                                    data-testid={"pb-blocks-list-block-duplicate-btn"}
                                     icon={<DuplicateIcon />}
                                     onClick={() => duplicateItem(pageBlock)}
                                 />
                             )}
                             {canDelete(pageBlock) && (
-                                <DeleteButton onClick={() => deleteItem(pageBlock)} />
+                                <DeleteButton
+                                    data-testid={"pb-blocks-list-block-delete-btn"}
+                                    onClick={() => deleteItem(pageBlock)}
+                                />
                             )}
                         </Controls>
                     </ListItem>

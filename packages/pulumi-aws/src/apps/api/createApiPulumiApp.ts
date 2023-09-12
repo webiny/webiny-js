@@ -62,6 +62,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.elasticSearch) {
+                const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+                if (typeof elasticSearch === "object") {
+                    if (elasticSearch.domainName) {
+                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+                    }
+
+                    if (elasticSearch.indexPrefix) {
+                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+                    }
+                }
+            }
+
             const pulumiResourceNamePrefix = app.getParam(
                 projectAppParams.pulumiResourceNamePrefix
             );
@@ -242,19 +255,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             };
         }
     });
-
-    if (projectAppParams.elasticSearch) {
-        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
-        if (typeof elasticSearch === "object") {
-            if (elasticSearch.domainName) {
-                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
-            }
-
-            if (elasticSearch.indexPrefix) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
-            }
-        }
-    }
 
     return withCommonLambdaEnvVariables(app);
 };
