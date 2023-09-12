@@ -91,17 +91,24 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return <FolderName record={record} />;
                 },
-                enableSorting: true
+                enableSorting: true,
+                size: 400
             },
-            savedOn: {
-                header: "Last modified",
-                className: "cms-aco-list-savedOn",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            createdOn: {
+                header: "Created",
+                className: "cms-aco-list-createdOn",
+                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author",
                 className: "cms-aco-list-createdBy"
+            },
+            savedOn: {
+                header: "Modified",
+                className: "cms-aco-list-savedOn",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
             },
             status: {
                 header: "Status",
@@ -119,6 +126,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
+                size: 60,
+                enableResizing: false,
                 cell: (record: Entry) => {
                     if (isRecordEntry(record)) {
                         return (
@@ -159,18 +168,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         };
     }, []);
 
-    const tableSorting = useMemo(() => {
-        if (!Array.isArray(sorting) || sorting.length === 0) {
-            return [
-                {
-                    id: "savedOn",
-                    desc: true
-                }
-            ];
-        }
-        return sorting;
-    }, [sorting]);
-
     return (
         <div ref={ref}>
             <DataTable<Entry>
@@ -178,11 +175,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 data={data}
                 isRowSelectable={row => row.original.$selectable}
                 loadingInitial={loading}
+                stickyRows={1}
+                sorting={sorting}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
                 onSelectRow={onSelectRow}
                 onSortingChange={onSortingChange}
                 selectedRows={data.filter(record => selectedRows.find(row => row.id === record.id))}
-                sorting={tableSorting}
-                stickyRows={1}
             />
             {selectedFolder && (
                 <>

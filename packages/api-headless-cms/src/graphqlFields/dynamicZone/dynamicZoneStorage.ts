@@ -33,34 +33,25 @@ const convertFromStorage = (
     value: TemplateValueFromStorage,
     templates: CmsDynamicZoneTemplate[]
 ) => {
-    const template = templates.find(tpl => value._templateId === tpl.id);
+    if (value._templateId) {
+        const template = templates.find(tpl => value._templateId === tpl.id);
+        if (template) {
+            // We keep the `_templateId` property, to simplify further processing.
+            return { [template.gqlTypeName]: value };
+        }
 
+        return undefined;
+    }
+
+    // Let's also check if `value` is already in the desired shape.
+    const template = templates.find(tpl => tpl.gqlTypeName in value);
     if (template) {
-        // We keep the `_templateId` property, to simplify further processing.
-        return { [template.gqlTypeName]: value };
+        return {
+            [template.gqlTypeName]: { ...value[template.gqlTypeName], _templateId: template.id }
+        };
     }
-    /**
-     * There is a possibility that the template was not found because value is in the original format.
-     * We are going to check:
-     * 1. value is an object
-     * 2. it contains a key - only one
-     * 3. the key is a valid template gqlTypeName
-     */
-    /**
-     * Value must be an object
-     */
-    if (!value || typeof value !== "object") {
-        return undefined;
-    }
-    const keys = Object.keys(value);
-    if (keys.length !== 1) {
-        return undefined;
-    }
-    if (!keys[0]) {
-        return undefined;
-    }
-    const tpl = templates.find(tpl => tpl.gqlTypeName === keys[0]);
-    return tpl ? value : undefined;
+
+    return undefined;
 };
 
 export const createDynamicZoneStorageTransform = () => {
