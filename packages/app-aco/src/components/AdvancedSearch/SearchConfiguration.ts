@@ -2,62 +2,59 @@ import { FilterOperation } from "~/components/AdvancedSearch/types";
 import { generateId } from "@webiny/utils";
 import { makeAutoObservable } from "mobx";
 
+interface FilterInput {
+    field: string;
+    condition: string;
+    value: string;
+}
+
+interface GroupInput {
+    operation: FilterOperation;
+    filters: FilterInput[];
+}
+
+export interface SearchConfigurationDTO {
+    operation: FilterOperation;
+    groups: GroupInput[];
+}
+
 export class SearchConfiguration {
     public readonly operations = FilterOperation;
     private id = generateId();
     private name = "Untitled";
-    private _operation = FilterOperation.AND;
-    private _groups = [new Group()];
+    public readonly operation: FilterOperation;
+    public readonly groups: Group[];
 
-    constructor() {
-        makeAutoObservable(this);
+    static createFrom(rawData: SearchConfigurationDTO) {
+        return new SearchConfiguration(
+            rawData.operation,
+            rawData.groups.map(groupDTO => {
+                return new Group(
+                    groupDTO.operation,
+                    groupDTO.filters.map(filterDTO => {
+                        return new Filter(
+                            filterDTO.field,
+                            filterDTO.condition,
+                            filterDTO.value
+                        );
+                    })
+                );
+            })
+        );
     }
 
-    // static createFrom(rawData) {
-    //     const configuration = new SearchConfiguration();
-    //
-    //     configuration.setOperation(rawData.operation);
-    //
-    //     return configuration;
-    // }
-
-    validate() {
-        for (const group of this.groups) {
-            group.validate();
-        }
+    static createEmpty() {
+        return new SearchConfiguration(FilterOperation.AND, [
+            new Group(FilterOperation.AND, [new Filter()])
+        ]);
     }
 
-    get operation() {
-        return this._operation;
+    private constructor(operation: FilterOperation, groups: Group[]) {
+        this.operation = operation;
+        this.groups = groups;
     }
 
-    setOperation(operation: FilterOperation) {
-        this._operation = operation;
-    }
-
-    get groups() {
-        return this._groups;
-    }
-
-    addGroup() {
-        this._groups = [...this.groups, new Group()];
-    }
-
-    updateGroup(group: Group) {
-        const index = this.groups.findIndex(item => item.id === group.id);
-
-        if (index === -1) {
-            return;
-        }
-
-        this._groups = [...this.groups.slice(0, index), group, ...this.groups.slice(index + 1)];
-    }
-
-    deleteGroup(group: Group) {
-        this._groups = this.groups.filter(item => item.id !== group.id);
-    }
-
-    toGraphql() {
+    toObject() {
         return {
             [this.operation]: this.groups.map(group => {
                 return {
@@ -75,122 +72,47 @@ export class SearchConfiguration {
 
 export class Group {
     public readonly id = generateId();
-    private _operation = FilterOperation.AND;
-    private _filters = [new Filter()];
+    public readonly operation: FilterOperation;
+    public readonly filters: Filter[];
 
-    constructor() {
-        makeAutoObservable(this);
-    }
-
-    validate() {
-        //TODO: handle the last filter deletion
-        for (const filter of this._filters) {
-            filter.validate();
-        }
-    }
-
-    get filters() {
-        return this._filters;
-    }
-
-    addFilter() {
-        this._filters = [...this.filters, new Filter()];
-    }
-
-    deleteFilter(filter: Filter) {
-        this._filters = this.filters.filter(item => item.id !== filter.id);
-    }
-
-    updateFilter(filter: Filter) {
-        const index = this.filters.findIndex(item => item.id === filter.id);
-
-        if (index === -1) {
-            return;
-        }
-
-        this._filters = [...this.filters.slice(0, index), filter, ...this.filters.slice(index + 1)];
-    }
-
-    get operation() {
-        return this._operation;
-    }
-
-    setOperation(operation: FilterOperation) {
-        this._operation = operation;
+    constructor(operation: FilterOperation, filters: Filter[]) {
+        this.operation = operation;
+        this.filters = filters;
     }
 }
 
 export class Filter {
     public readonly id = generateId();
-    public field?: string = undefined;
-    public condition?: string = undefined;
-    public value?: string = undefined;
+    public readonly field?: string;
+    public readonly condition?: string;
+    public readonly value?: string;
 
-    constructor() {
-        makeAutoObservable(this);
-    }
-
-    validate() {
-        if (!this.field || !this.condition || !this.value) {
-            throw Error(`Field ${this.id} is not valid`);
-        }
+    constructor(field?: string, condition?: string, value?: string) {
+        this.field = field;
+        this.condition = condition;
+        this.value = value;
     }
 }
 
 export interface ISearchConfigurationRepository {
-    getOperations(): string[];
-    getOperation(): string;
-    setOperation(operation: FilterOperation): void;
-    addGroup(): void;
-    getGroups(): Group[];
-    updateGroup(group: Group): void;
-    deleteGroup(group: Group): void;
-    toGraphql(): any;
-    validate(): void;
+    getSearchConfiguration(): SearchConfiguration;
+    setSearchConfiguration(configuration: SearchConfiguration): void;
 }
 
 class CurrentSearchConfigurationRepository {
-    private readonly searchConfiguration: SearchConfiguration;
+    private searchConfiguration: SearchConfiguration;
 
     constructor() {
-        this.searchConfiguration = new SearchConfiguration();
+        this.searchConfiguration = SearchConfiguration.createEmpty();
         makeAutoObservable(this);
     }
 
-    getOperations() {
-        return Object.values(this.searchConfiguration.operations);
+    getSearchConfiguration() {
+        return this.searchConfiguration;
     }
 
-    getOperation() {
-        return this.searchConfiguration.operation;
-    }
-
-    setOperation(operation: FilterOperation) {
-        return this.searchConfiguration.setOperation(operation);
-    }
-
-    addGroup() {
-        this.searchConfiguration.addGroup();
-    }
-
-    getGroups() {
-        return this.searchConfiguration.groups;
-    }
-
-    updateGroup(group: Group) {
-        this.searchConfiguration.updateGroup(group);
-    }
-
-    deleteGroup(group: Group) {
-        this.searchConfiguration.deleteGroup(group);
-    }
-
-    toGraphql() {
-        return this.searchConfiguration.toGraphql();
-    }
-
-    validate() {
-        this.searchConfiguration.validate();
+    setSearchConfiguration(configuration: SearchConfiguration) {
+        this.searchConfiguration = configuration;
     }
 }
 export const currentSearchConfigurationRepository = new CurrentSearchConfigurationRepository();

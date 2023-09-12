@@ -1,35 +1,34 @@
 import { makeAutoObservable } from "mobx";
 
-import { Filter, ISearchConfigurationRepository } from "./SearchConfiguration";
-import { FilterOperation } from "~/components/AdvancedSearch/types";
+import { ISearchConfigurationRepository } from "./SearchConfiguration";
 
 export class SearchConfigurationPresenter {
-    private readonly searchConfiguration: ISearchConfigurationRepository;
+    private readonly repository: ISearchConfigurationRepository;
 
     constructor(repository: ISearchConfigurationRepository) {
-        this.searchConfiguration = repository;
+        this.repository = repository;
         makeAutoObservable(this);
     }
 
     get viewModel() {
+        const configuration = this.repository.getSearchConfiguration();
+
         return {
-            operations: this.searchConfiguration.getOperations(),
-            operation: this.searchConfiguration.getOperation(),
-            toGraphql: () => this.searchConfiguration.toGraphql(),
-            groups: this.searchConfiguration.getGroups().map(group => ({
-                id: group.id,
-                operation: group.operation,
-                setOperation: (operation: FilterOperation) => group.setOperation(operation),
-                addFilter: () => group.addFilter(),
-                deleteFilter: (filter: Filter) => group.deleteFilter(filter),
-                updateFilter: (filter: Filter) => group.updateFilter(filter),
-                filters: group.filters.map(filter => ({
-                    id: filter.id,
-                    field: filter.field,
-                    value: filter.value,
-                    condition: filter.condition
+            toObject: () => configuration.toObject(),
+            operations: Object.values(configuration.operations),
+            configuration: {
+                operation: configuration.operation,
+                groups: configuration.groups.map(group => ({
+                    id: group.id,
+                    operation: group.operation,
+                    filters: group.filters.map(filter => ({
+                        id: filter.id,
+                        field: filter.field,
+                        value: filter.value,
+                        condition: filter.condition
+                    }))
                 }))
-            }))
+            }
         };
     }
 }

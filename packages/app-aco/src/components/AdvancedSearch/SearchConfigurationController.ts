@@ -1,7 +1,9 @@
 import { makeAutoObservable } from "mobx";
-
-import { Group, ISearchConfigurationRepository } from "./SearchConfiguration";
-import { FilterOperation } from "~/components/AdvancedSearch/types";
+import {
+    ISearchConfigurationRepository,
+    SearchConfiguration,
+    SearchConfigurationDTO
+} from "./SearchConfiguration";
 
 export class SearchConfigurationController {
     private readonly repository: ISearchConfigurationRepository;
@@ -11,19 +13,9 @@ export class SearchConfigurationController {
         makeAutoObservable(this);
     }
 
-    setOperation(operation: FilterOperation) {
-        this.repository.setOperation(operation);
-    }
+    updateConfiguration(configuration: SearchConfigurationDTO) {
+        const config = SearchConfiguration.createFrom(configuration);
 
-    addGroup() {
-        this.repository.addGroup();
-    }
-
-    updateGroup(group: Group) {
-        this.repository.updateGroup(group);
-    }
-
-    deleteGroup(group: Group) {
-        this.repository.deleteGroup(group);
+        this.repository.setSearchConfiguration(config);
     }
 }
