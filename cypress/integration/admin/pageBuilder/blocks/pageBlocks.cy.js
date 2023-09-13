@@ -49,8 +49,8 @@ context("Blocks Page", () => {
         cy.findAllByTestId("pb-blocks-list-block-delete-btn").eq(1).click();
         cy.findByTestId("confirmationdialog-confirm-action").click();
         cy.contains("New Block").should("exist");
-		
-	cy.pbDeleteBlocks();
-	cy.pbDeleteBlockCategories();
-    });    
+
+        cy.pbDeleteBlocks();
+        cy.pbDeleteBlockCategories();
+    });
 });

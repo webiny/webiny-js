@@ -11,44 +11,51 @@ function makeid(length) {
 
 context("Blocks Page", () => {
     let tokenStorage;
-    var blockCategoryName = makeid(10);
-    var blockCategorySlug = makeid(10);
-    var blockCategoryDesc = makeid(10);
 
-    var blockName = makeid(10);
-    var blockContent = makeid(10);
-    var blockPreview = makeid(10);
     beforeEach(() => cy.login());
+    beforeEach(() => cy.pbDeleteBlocks());
+    beforeEach(() => cy.pbDeleteBlockCategories());
 
-    const blockCategoryData = {
-        name: blockCategoryName,
-        slug: blockCategorySlug,
-        icon: "icon-name",
-        description: blockCategoryDesc
-    };
-
-    const pageBlockData = {
-        name: blockName,
-        content: blockContent,
-        preview: blockPreview
-    };
+    const numBlocks = 3; // Change this to the desired number of blocks
 
     it("Test the exportation of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
-        cy.pbCreateCategory1(blockCategoryData).then(category => {
-            cy.pbCreateBlock(pageBlockData, category.slug).then(blockResponse => {
-                cy.findByPlaceholderText("Search blocks").should("exist");
-                cy.findByTestId("pb-blocks-list-options-menu").click();
-                cy.findByText("Export all blocks").click();
-                cy.findByText("Your export is now ready!").should("exist");
-                cy.get("span.link-text.mdc-typography--body2")
-                    .invoke("text")
-                    .then(importUrl => {
-                        tokenStorage = importUrl;
-                        Cypress.env("importUrl", tokenStorage);
-                    });
+
+        const blockCategoryData1 = {
+            name: makeid(10),
+            slug: makeid(10),
+            icon: "icon-name",
+            description: makeid(10)
+        };
+
+        const blockCategoryData2 = {
+            name: makeid(10),
+            slug: makeid(10),
+            icon: "icon-name",
+            description: makeid(10)
+        };
+
+        const blockCategoryData3 = {
+            name: makeid(10),
+            slug: makeid(10),
+            icon: "icon-name",
+            description: makeid(10)
+        };
+
+        cy.pbCreateCategoryAndBlocks(blockCategoryData1, 1);
+        cy.pbCreateCategoryAndBlocks(blockCategoryData2, 2);
+        cy.pbCreateCategoryAndBlocks(blockCategoryData3, 3);
+
+        cy.findByPlaceholderText("Search blocks").should("exist");
+        cy.findByTestId("pb-blocks-list-options-menu").click();
+        cy.findByText("Export all blocks").click();
+        cy.findByText("Your export is now ready!").should("exist");
+        cy.get("span.link-text.mdc-typography--body2")
+            .invoke("text")
+            .then(importUrl => {
+                tokenStorage = importUrl;
+                Cypress.env("importUrl", tokenStorage);
             });
-        });
     });
 
     it("Test the functionality of the import block button", () => {
@@ -60,7 +67,5 @@ context("Blocks Page", () => {
         cy.contains("Continue").click();
         cy.findByText("All blocks have been imported").should("exist");
         cy.contains("Continue").click();
-        cy.pbDeleteBlocks();
-        cy.pbDeleteBlockCategories();
     });
 });

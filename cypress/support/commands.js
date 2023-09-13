@@ -5,11 +5,18 @@ import "./dropFile";
 import "./reloadUntil";
 import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
+import "./pageBuilder/pbCreateBlock";
+import "./pageBuilder/pbCreateCategory";
+import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
+import "./pageBuilder/pbListPageBlocks";
+import "./pageBuilder/pbDeleteBlocks";
+import "./pageBuilder/pbDeleteBlockCategories";
+import "./pageBuilder/pbListBlockCategories";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
 import "./headlessCms/cmsCreateContentModel";
@@ -33,6 +40,8 @@ import "./fileManager/fmDeleteFile";
 import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
+import "@testing-library/cypress/add-commands";
+import "./aco/acoNavigateToFolder";
 
 import "./aco/acoNavigateToFolder";
 
