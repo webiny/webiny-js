@@ -67,7 +67,8 @@ export const ContentReviewDataList: React.FC = () => {
         setFilter,
         fetchMore,
         filter,
-        refetch
+        refetch,
+        initialDataLoaded
     } = useContentReviewsList({
         sorters: SORTERS
     });
@@ -82,10 +83,13 @@ export const ContentReviewDataList: React.FC = () => {
         [loading, fetchMore]
     );
 
-    useFetchInterval({
-        callback: refetch,
-        interval: CONTENT_REVIEW_LIST_REFRESH_INTERVAL
-    });
+    useFetchInterval(
+        {
+            callback: refetch,
+            interval: CONTENT_REVIEW_LIST_REFRESH_INTERVAL
+        },
+        initialDataLoaded
+    );
 
     return (
         <DataList

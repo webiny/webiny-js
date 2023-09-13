@@ -72,12 +72,15 @@ const Comment: React.FC<CommentProps> = props => {
 const COMMENTS_REFRESH_INTERVAL = 10000; // 10s
 
 export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
-    const { comments, refetch } = useCommentsList();
+    const { comments, refetch, initialDataLoaded } = useCommentsList();
 
-    useFetchInterval({
-        interval: COMMENTS_REFRESH_INTERVAL,
-        callback: refetch
-    });
+    useFetchInterval(
+        {
+            interval: COMMENTS_REFRESH_INTERVAL,
+            callback: refetch
+        },
+        initialDataLoaded
+    );
 
     return (
         <CommentsBox space={6} paddingX={6} paddingY={5}>

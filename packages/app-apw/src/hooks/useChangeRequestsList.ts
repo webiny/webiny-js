@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import {
@@ -8,6 +8,7 @@ import {
 } from "~/graphql/changeRequest.gql";
 import { ApwChangeRequest } from "~/types";
 import { useChangeRequestStep } from "./useChangeRequest";
+import { NetworkStatus } from "apollo-client";
 
 const serializeSorters = (data: any) => {
     if (!data) {
@@ -34,6 +35,7 @@ interface UseChangeRequestsListHook {
         serializeSorters: (data: Record<string, string>) => string;
         editContentReview: (id: string) => void;
         refetch: () => Promise<any>;
+        initialDataLoaded: boolean;
     };
 }
 
@@ -43,6 +45,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
     const navigate = useNavigate();
     const step = useChangeRequestStep();
+    const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
     const variables = {
         where: {
@@ -50,7 +53,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         }
     };
 
-    const { data, loading, refetch } = useQuery<
+    const { data, loading, refetch, networkStatus } = useQuery<
         ListChangeRequestsQueryResponse,
         ListChangeRequestsQueryVariables
     >(LIST_CHANGE_REQUESTS_QUERY, {
@@ -63,6 +66,15 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         navigate(`${BASE_URL}/${encodeURIComponent(id)}`);
     }, []);
 
+    useEffect(() => {
+        if (!loading) {
+            setInitialDataLoaded(() => true);
+        }
+        return () => {
+            setInitialDataLoaded(() => false);
+        };
+    }, [!initialDataLoaded && networkStatus === NetworkStatus.ready]);
+
     return {
         changeRequests,
         loading,
@@ -72,6 +84,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         setSort,
         serializeSorters,
         editContentReview,
-        refetch
+        refetch,
+        initialDataLoaded
     };
 };

@@ -70,15 +70,18 @@ const CHANGE_REQUESTS_REFRESH_INTERVAL = 10000; // 10s
 
 export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
-    const { changeRequests, loading, refetch } = useChangeRequestsList({
+    const { changeRequests, loading, refetch, initialDataLoaded } = useChangeRequestsList({
         sorters: []
     });
     const { currentStep, changeRequestsPending } = useCurrentStep();
 
-    useFetchInterval({
-        interval: CHANGE_REQUESTS_REFRESH_INTERVAL,
-        callback: refetch
-    });
+    useFetchInterval(
+        {
+            interval: CHANGE_REQUESTS_REFRESH_INTERVAL,
+            callback: refetch
+        },
+        initialDataLoaded
+    );
 
     if (loading) {
         return <Typography use={"caption"}>Loading Change requests...</Typography>;

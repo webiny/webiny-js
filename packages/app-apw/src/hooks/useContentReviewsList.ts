@@ -8,6 +8,7 @@ import {
     ListContentReviewsQueryVariables
 } from "~/graphql/contentReview.gql";
 import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
+import { NetworkStatus } from "apollo-client";
 
 const BASE_URL = "/apw/content-reviews";
 
@@ -38,6 +39,7 @@ interface UseContentReviewsListHook {
         status: ApwContentReviewStatus | "all";
         setStatus: (status: ApwContentReviewStatus | "all") => void;
         refetch: () => Promise<any>;
+        initialDataLoaded: boolean;
     };
 }
 
@@ -48,6 +50,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const [sort, setSort] = useState<string | null>(defaultSorter);
     const [status, setStatus] = useState<ApwContentReviewStatus | "all">("all");
     const navigate = useNavigate();
+    const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
     const [lastLoadedCursor, setLastLoadedCursor] = useState<string | null>(null);
     const [fetchMoreLoading, setFetchMoreLoading] = useState<boolean>(false);
@@ -71,7 +74,8 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         data,
         loading,
         fetchMore: queryMore,
-        refetch
+        refetch,
+        networkStatus
     } = useQuery<ListContentReviewsQueryResponse, ListContentReviewsQueryVariables>(
         LIST_CONTENT_REVIEWS_QUERY,
         {
@@ -86,6 +90,15 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
             fetchPolicy: "network-only"
         }
     );
+
+    useEffect(() => {
+        if (!loading) {
+            setInitialDataLoaded(() => true);
+        }
+        return () => {
+            setInitialDataLoaded(() => false);
+        };
+    }, [!initialDataLoaded && networkStatus === NetworkStatus.ready]);
 
     const contentReviews = data ? data.apw.listContentReviews.data : [];
 
@@ -153,6 +166,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         editContentReview,
         status,
         setStatus,
-        refetch
+        refetch,
+        initialDataLoaded
     };
 };
