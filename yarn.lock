@@ -14488,6 +14488,7 @@ __metadata:
     graphlib: ^2.1.7
     graphql: ^15.7.2
     lodash: ^4.17.11
+    mobx: ^6.9.0
     nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
@@ -14613,6 +14614,7 @@ __metadata:
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -14840,6 +14842,7 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.10
+    mobx-react-lite: ^3.4.3
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
     react: 17.0.2
@@ -24791,12 +24794,6 @@ __metadata:
   checksum: 58f1aba8915560535604bdfe4bf96dd86cdf5507cb8cec69345b0fba4afccf2af513336ffff0be5492f087c45fc492f4cde422857f98b9e88b2f64e25bb9316c
   languageName: node
   linkType: hard
-
-"eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A."
-  languageName: node
-  linkType: soft
 
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
@@ -39264,7 +39261,6 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.27.1
     eslint-plugin-standard: ^5.0.0
-    eslint-plugin-webiny-i18n: "link:./eslint/webiny-i18n"
     execa: ^1.0.0
     flatten: ^1.0.2
     folder-hash: ^4.0.0
