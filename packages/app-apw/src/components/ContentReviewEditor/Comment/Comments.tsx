@@ -5,11 +5,11 @@ import { ApwComment } from "~/types";
 import { Box, Columns, Stack } from "~/components/Layout";
 import { fromNow } from "~/utils";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
-import { useCommentsList } from "~/hooks/useCommentsList";
+import { useCommentsList, useListCommentsVariables } from "~/hooks/useCommentsList";
 import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
-import { useApolloClientRefetchInterval } from "~/hooks/useApolloClientRefetchInterval";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const HEADER_HEIGHT = "65px";
 const CR_DETAIL_HEIGHT = "179px";
@@ -72,13 +72,13 @@ const Comment: React.FC<CommentProps> = props => {
 const COMMENTS_REFRESH_INTERVAL = 10000; // 10s
 
 export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
-    const { comments, refetch, loading, networkStatus } = useCommentsList();
+    const { comments, refetch } = useCommentsList();
+    const variables = useListCommentsVariables();
 
-    useApolloClientRefetchInterval({
-        networkStatus,
-        loading,
+    useFetchInterval({
+        interval: COMMENTS_REFRESH_INTERVAL,
         callback: refetch,
-        interval: COMMENTS_REFRESH_INTERVAL
+        vars: variables
     });
 
     return (

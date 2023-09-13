@@ -17,7 +17,7 @@ import { Box } from "../Layout";
 import { PanelBox } from "./Styled";
 import { RightPanel } from "./RightPanel";
 import { PlaceholderBox } from "./PlaceholderBox";
-import { useInterval } from "react-interval-hook";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
 
@@ -70,12 +70,15 @@ const CHANGE_REQUESTS_REFRESH_INTERVAL = 10000; // 10s
 
 export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
-    const { changeRequests, loading, refetch } = useChangeRequestsList({ sorters: [] });
+    const { changeRequests, loading, refetch } = useChangeRequestsList({
+        sorters: []
+    });
     const { currentStep, changeRequestsPending } = useCurrentStep();
 
-    useInterval(() => {
-        refetch();
-    }, CHANGE_REQUESTS_REFRESH_INTERVAL);
+    useFetchInterval({
+        interval: CHANGE_REQUESTS_REFRESH_INTERVAL,
+        callback: refetch
+    });
 
     if (loading) {
         return <Typography use={"caption"}>Loading Change requests...</Typography>;

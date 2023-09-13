@@ -8,6 +8,7 @@ import {
 import { ApwComment } from "~/types";
 import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 import { NetworkStatus } from "apollo-client";
+import { useCallback, useEffect } from "react";
 
 interface UseCommentsListResult {
     loading: boolean;
@@ -30,6 +31,10 @@ export const ONE_THOUSAND = 1000;
 export const useListCommentsVariables = () => {
     const changeRequestId = useCurrentChangeRequestId();
 
+    useEffect(() => {
+        console.log("useListCommentsVariables", changeRequestId);
+    }, [changeRequestId]);
+
     return {
         sort: DEFAULT_SORT,
         limit: ONE_THOUSAND,
@@ -44,22 +49,23 @@ export const useListCommentsVariables = () => {
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
 
+    useEffect(() => {
+        console.log("useListCommentsVariables", variables.where.changeRequest.id);
+    }, [variables]);
+
     const { data, loading, refetch, networkStatus } = useQuery<
         ListCommentsQueryResponse,
         ListCommentsQueryVariables
     >(LIST_COMMENTS_QUERY, {
-        variables,
-        fetchPolicy: "cache-and-network"
+        variables
     });
 
     const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
-    const refetchList = (): Promise<Record<string, any>> | null => {
-        if (refetch) {
-            return refetch({ ...variables });
-        }
-        return null;
-    };
+    const refetchList = useCallback(() => {
+        console.log("comments vars", variables.where.changeRequest.id);
+        return refetch({ ...variables });
+    }, [variables]);
 
     return {
         comments,

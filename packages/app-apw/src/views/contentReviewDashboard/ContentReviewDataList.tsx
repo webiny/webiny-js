@@ -11,7 +11,7 @@ import { useContentReviewsList } from "~/hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Typography } from "@webiny/ui/Typography";
-import { useInterval } from "react-interval-hook";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -82,9 +82,10 @@ export const ContentReviewDataList: React.FC = () => {
         [loading, fetchMore]
     );
 
-    useInterval(() => {
-        refetch();
-    }, CONTENT_REVIEW_LIST_REFRESH_INTERVAL);
+    useFetchInterval({
+        callback: refetch,
+        interval: CONTENT_REVIEW_LIST_REFRESH_INTERVAL
+    });
 
     return (
         <DataList

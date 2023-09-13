@@ -57,15 +57,9 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         variables
     });
 
-    const refetchList = () => {
-        if (refetch) {
-            refetch({ ...variables }).catch(e => {
-                // Do nothing.
-                console.warn("Could not re-fetch the change requests lists:");
-                console.log(e);
-            });
-        }
-    };
+    const refetchList = useCallback(() => {
+        return refetch({ ...variables });
+    }, [variables]);
 
     const changeRequests = data ? data.apw.listChangeRequests.data : [];
 

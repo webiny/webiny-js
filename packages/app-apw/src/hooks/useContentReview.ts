@@ -7,6 +7,7 @@ import {
 } from "~/graphql/contentReview.gql";
 import { ApwContentReview } from "~/types";
 import { useContentReviewId } from "./useContentReviewId";
+import { useCallback } from "react";
 
 interface UseContentReviewParams {
     id: string;
@@ -29,15 +30,9 @@ export function useContentReview(params: UseContentReviewParams): UseContentRevi
         skip: !id
     });
 
-    const refetchList = () => {
-        if (refetch) {
-            refetch({ id }).catch(e => {
-                // Do nothing.
-                console.warn("Could not re-fetch a single content review:");
-                console.log(e);
-            });
-        }
-    };
+    const refetchList = useCallback(() => {
+        return refetch({ id });
+    }, [id]);
 
     return {
         contentReview: dotPropImmutable.get(data, "apw.getContentReview.data"),

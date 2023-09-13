@@ -95,18 +95,17 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         navigate(url);
     }, []);
 
-    const refetchList = () => {
-        if (refetch) {
-            refetch({
-                where,
-                sort: [sort as string]
-            }).catch(e => {
-                // Do nothing.
-                console.warn("Could not re-fetch the content reviews list:");
-                console.log(e);
-            });
+    const refetchList = useCallback(() => {
+        return refetch({
+            where,
+            sort: [sort as string]
+        });
+    }, [
+        {
+            where,
+            sort: [sort as string]
         }
-    };
+    ]);
 
     const fetchMore = useCallback(async () => {
         const meta = data?.apw.listContentReviews.meta;

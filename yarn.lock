@@ -14536,7 +14536,6 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-helmet: ^6.1.0
-    react-interval-hook: ^1.1.4
     react-spinner-material: 1.1.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -37825,15 +37824,6 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.0
   checksum: cc3309ddc87446ade742c7d0e88ef089dd8b6981f21506a2bb27daf01a8803ac697f64157c4ffc7e81dfcf3892b54a4072dbc3652fd9addcf6d22dd0b87ab723
-  languageName: node
-  linkType: hard
-
-"react-interval-hook@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "react-interval-hook@npm:1.1.4"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 51dd4b76ffa3b1e029c46651703e373a468bd405b028236e42137828e769efe70e688af1d6f2639b9998bfaba5b50d9bb03d0368b7e107c1346ffe6f019c20b4
   languageName: node
   linkType: hard
 
