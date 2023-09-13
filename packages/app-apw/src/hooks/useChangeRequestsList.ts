@@ -33,7 +33,7 @@ interface UseChangeRequestsListHook {
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
         editContentReview: (id: string) => void;
-        refetch: () => void;
+        refetch: () => Promise<any>;
     };
 }
 
@@ -57,10 +57,6 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         variables
     });
 
-    const refetchList = useCallback(() => {
-        return refetch({ ...variables });
-    }, [variables]);
-
     const changeRequests = data ? data.apw.listChangeRequests.data : [];
 
     const editContentReview = useCallback((id: string) => {
@@ -76,6 +72,6 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         setSort,
         serializeSorters,
         editContentReview,
-        refetch: refetchList
+        refetch
     };
 };

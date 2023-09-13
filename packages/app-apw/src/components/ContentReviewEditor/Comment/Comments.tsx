@@ -5,7 +5,7 @@ import { ApwComment } from "~/types";
 import { Box, Columns, Stack } from "~/components/Layout";
 import { fromNow } from "~/utils";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
-import { useCommentsList, useListCommentsVariables } from "~/hooks/useCommentsList";
+import { useCommentsList } from "~/hooks/useCommentsList";
 import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
@@ -73,12 +73,10 @@ const COMMENTS_REFRESH_INTERVAL = 10000; // 10s
 
 export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
     const { comments, refetch } = useCommentsList();
-    const variables = useListCommentsVariables();
 
     useFetchInterval({
         interval: COMMENTS_REFRESH_INTERVAL,
-        callback: refetch,
-        vars: variables
+        callback: refetch
     });
 
     return (

@@ -37,7 +37,7 @@ interface UseContentReviewsListHook {
         editContentReview: (item: ApwContentReviewListItem) => void;
         status: ApwContentReviewStatus | "all";
         setStatus: (status: ApwContentReviewStatus | "all") => void;
-        refetch: () => void;
+        refetch: () => Promise<any>;
     };
 }
 
@@ -94,18 +94,6 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         const url = item.activeStep ? `${base}/${item.activeStep.id}` : base;
         navigate(url);
     }, []);
-
-    const refetchList = useCallback(() => {
-        return refetch({
-            where,
-            sort: [sort as string]
-        });
-    }, [
-        {
-            where,
-            sort: [sort as string]
-        }
-    ]);
 
     const fetchMore = useCallback(async () => {
         const meta = data?.apw.listContentReviews.meta;
@@ -165,6 +153,6 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         editContentReview,
         status,
         setStatus,
-        refetch: refetchList
+        refetch
     };
 };

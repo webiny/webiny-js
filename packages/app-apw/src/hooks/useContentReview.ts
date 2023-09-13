@@ -7,7 +7,6 @@ import {
 } from "~/graphql/contentReview.gql";
 import { ApwContentReview } from "~/types";
 import { useContentReviewId } from "./useContentReviewId";
-import { useCallback } from "react";
 
 interface UseContentReviewParams {
     id: string;
@@ -16,7 +15,7 @@ interface UseContentReviewParams {
 interface UseContentReviewResult {
     contentReview: ApwContentReview;
     loading: boolean;
-    refetch: () => void;
+    refetch: () => Promise<any>;
 }
 
 export function useContentReview(params: UseContentReviewParams): UseContentReviewResult {
@@ -30,14 +29,10 @@ export function useContentReview(params: UseContentReviewParams): UseContentRevi
         skip: !id
     });
 
-    const refetchList = useCallback(() => {
-        return refetch({ id });
-    }, [id]);
-
     return {
         contentReview: dotPropImmutable.get(data, "apw.getContentReview.data"),
         loading,
-        refetch: refetchList
+        refetch
     };
 }
 
