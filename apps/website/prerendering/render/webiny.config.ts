@@ -1,7 +1,7 @@
 import { createBuildFunction, createWatchFunction } from "@webiny/project-utils";
 
 const webpack = config => {
-    (config.externals as any).push("chrome-aws-lambda");
+    (config.externals as any).push("@sparticuz/chromium");
     return config;
 };
 
