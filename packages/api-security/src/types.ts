@@ -4,6 +4,7 @@ import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
+import {TenancyContext} from "@webiny/api-tenancy/types";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -176,18 +177,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
         params: GetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
 
-    // Identity profiles.
-    createIdentityProfiles(params: CreateIdentityProfileParams[]): Promise<void>;
-
-    updateIdentityProfiles(params: UpdateIdentityProfileParams[]): Promise<void>;
-
-    deleteIdentityProfiles(params: DeleteIdentityProfileParams[]): Promise<void>;
-
-    listIdentityProfiles<TLink extends IdentityProfile = IdentityProfile>(
-        params: ListIdentityProfilesByTypeParams
-    ): Promise<TLink[]>;
-
-
     // System
     getVersion(): Promise<string | null>;
 
@@ -260,7 +249,7 @@ export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
 };
 
-export interface SecurityContext<TIdentity = SecurityIdentity> extends Context {
+export interface SecurityContext<TIdentity = SecurityIdentity> extends TenancyContext {
     security: Security<TIdentity>;
 }
 
@@ -432,6 +421,7 @@ export interface TenantLink<TData = any> {
 export type PermissionsTenantLink = TenantLink<{
     groups: Array<{ id: string; permissions: SecurityPermission[] }>;
     teams: Array<{ id: string; groups: Array<{ id: string; permissions: SecurityPermission[] }> }>;
+    profile: { id: string; displayName: string };
 }>;
 
 export interface ApiKey {

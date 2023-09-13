@@ -5,13 +5,14 @@ import group from "./group.gql";
 import team from "./team.gql";
 import install from "./install.gql";
 import identity from "./identity.gql";
+import identityProfiles from "./identityProfiles.gql";
 
 export interface CreateGraphQlPluginsParams {
     teams?: boolean;
 }
 
 export default ({ teams }: CreateGraphQlPluginsParams) => {
-    const plugins = [interfaces, base, apiKey, install, group, identity];
+    const plugins = [interfaces, base, apiKey, install, group, identity, identityProfiles];
     if (teams) {
         plugins.push(team);
     }
