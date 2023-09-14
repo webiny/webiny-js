@@ -136,7 +136,6 @@ export const Input: React.FC<InputProps> = props => {
         [rest.onKeyDown, onEnter]
     );
 
-    console.log(label, placeholder);
     return (
         <React.Fragment>
             <TextField
