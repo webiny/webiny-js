@@ -214,7 +214,11 @@ export interface PagesCrud {
         meta?: Record<string, any>
     ): Promise<TPage>;
     unlinkPageFromTemplate<TPage extends Page = Page>(id: string): Promise<TPage>;
-    updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(
+        id: string,
+        data: PbUpdatePageInput,
+        options?: Partial<PbUpdatePageOptions>
+    ): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -1059,4 +1063,9 @@ export interface PbUpdatePageInput {
     path?: string;
     settings?: PageSettings;
     content?: Record<string, any> | null;
+}
+
+export interface PbUpdatePageOptions {
+    force: boolean;
+    lifecycleEvents: boolean;
 }

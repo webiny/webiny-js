@@ -14,7 +14,8 @@ import {
     PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
-    PbContext
+    PbContext,
+    PbUpdatePageOptions
 } from "~/types";
 import normalizePath from "./pages/normalizePath";
 import {
@@ -141,6 +142,11 @@ declare const decompressed: unique symbol;
 
 type Decompressed<T> = T & {
     [decompressed]: "decompressed";
+};
+
+const defaultUpdateOptions: PbUpdatePageOptions = {
+    force: false,
+    lifecycleEvents: true
 };
 
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
@@ -580,8 +586,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             return this.updatePage(id, processedPage);
         },
 
-        async updatePage(id, input): Promise<any> {
+        async updatePage(id, input, options): Promise<any> {
             await pagesPermissions.ensure({ rwd: "w" });
+
+            const opts = { ...defaultUpdateOptions, ...options };
 
             const rawOriginal = await storageOperations.pages.get({
                 where: {
@@ -594,7 +602,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             if (!rawOriginal) {
                 throw new NotFoundError("Non-existing-page.");
             }
-            if (rawOriginal.locked) {
+
+            if (rawOriginal.locked && !opts.force) {
                 throw new WebinyError(`Cannot update page because it's locked.`);
             }
 
@@ -634,11 +643,13 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             try {
-                await onPageBeforeUpdate.publish({
-                    original,
-                    page,
-                    input
-                });
+                if (opts.lifecycleEvents) {
+                    await onPageBeforeUpdate.publish({
+                        original,
+                        page,
+                        input
+                    });
+                }
 
                 await storageOperations.pages.update({
                     input,
@@ -646,11 +657,13 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page: await compressPage(page)
                 });
 
-                await onPageAfterUpdate.publish({
-                    original,
-                    page,
-                    input
-                });
+                if (opts.lifecycleEvents) {
+                    await onPageAfterUpdate.publish({
+                        original,
+                        page,
+                        input
+                    });
+                }
 
                 /**
                  * Clear the dataLoader cache.
