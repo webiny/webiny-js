@@ -27,7 +27,7 @@ const specialCharacters = [
     "\\*",
     "\\?",
     "\\:",
-    "\\/",
+    `\/`,
     "\\#"
 ];
 
@@ -42,4 +42,27 @@ export const normalizeValue = (value: string) => {
     }
 
     return result || "";
+};
+
+export const normalizeValueWithAsterisk = (initial: string) => {
+    const value = normalizeValue(initial);
+    const results = value.split(" ");
+
+    let result = value;
+    /**
+     * If there is a / in the first word, do not put asterisk in front of it.
+     */
+    const firstWord = results[0];
+    if (firstWord && firstWord.includes("/") === false) {
+        result = `*${result}`;
+    }
+    /**
+     * If there is a / in the last word, do not put asterisk at the end of it.
+     */
+    const lastWord = results[results.length - 1];
+    if (lastWord && lastWord.includes("/") === false) {
+        result = `${result}*`;
+    }
+
+    return result;
 };

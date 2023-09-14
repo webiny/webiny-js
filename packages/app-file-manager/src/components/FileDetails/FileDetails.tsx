@@ -9,9 +9,6 @@ import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
-import { Aliases } from "./components/Aliases";
-import { Name } from "./components/Name";
-import { Tags } from "./components/Tags";
 import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
 import { PreviewMeta } from "./components/PreviewMeta";
@@ -70,6 +67,7 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const fileModel = useFileModel();
     const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
+    const { fileDetails } = useFileManagerViewConfig();
 
     const extensionFields = useMemo(() => {
         const fields = fileModel.fields.find(field => field.fieldId === "extensions");
@@ -107,15 +105,11 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
                                 <Tabs>
                                     <Tab label={"Basic Details"}>
                                         <Grid>
-                                            <Cell span={12}>
-                                                <Name />
-                                            </Cell>
-                                            <Cell span={12}>
-                                                <Tags />
-                                            </Cell>
-                                            <Cell span={12}>
-                                                <Aliases />
-                                            </Cell>
+                                            {fileDetails.fields.map(field => (
+                                                <Cell span={12} key={field.name}>
+                                                    {field.element}
+                                                </Cell>
+                                            ))}
                                         </Grid>
                                     </Tab>
                                     {extensionFields.length > 0 ? (
