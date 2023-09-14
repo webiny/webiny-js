@@ -1,25 +1,8 @@
 import { GraphQLClient } from "graphql-request";
+import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
-function makeid(length) {
-    var result = "";
-    var characters = "abcdefghijklmnopqrstuvwxyz";
-    var charactersLength = characters.length;
-
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-
-Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks) => {
-    cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
-        const createCategoryMutation = `
+const createCategoryMutation = `
       mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
         pageBuilder {
           blockCategory: createBlockCategory(data: $data) {
@@ -44,7 +27,7 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks)
       }
     `;
 
-        const createBlockMutation = `
+const createBlockMutation = `
       mutation CreatePageBlock($data: PbCreatePageBlockInput!) {
         pageBuilder {
           pageBlock: createPageBlock(data: $data) {
@@ -71,6 +54,15 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks)
       }
     `;
 
+Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks) => {
+    cy.login().then(user => {
+        const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+            headers: {
+                authorization: `Bearer ${user.idToken.jwtToken}`
+            }
+        });
+
         const createCategoryPromise = client
             .request(createCategoryMutation, { data: categoryVariables })
             .then(response => response.pageBuilder.blockCategory.data);
@@ -82,8 +74,7 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks)
 
             for (let i = 0; i < numBlocks; i++) {
                 const blockVariables = {
-                    // Define your block variables here
-                    name: makeid(8),
+                    name: nanoid(10).toLowerCase(),
                     content: {},
                     preview: {}
                 };

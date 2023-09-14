@@ -1,15 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 
-Cypress.Commands.add("pbDeleteBlocks", () => {
-    cy.pbListPageBlocks().then(ids => {
-        cy.login().then(user => {
-            const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-                headers: {
-                    authorization: `Bearer ${user.idToken.jwtToken}`
-                }
-            });
-
-            const mutation = `
+const mutation = `
                 mutation DeletePageBlock($id: ID!) {
                     pageBuilder {
                         deletePageBlock(id: $id) {
@@ -23,6 +14,15 @@ Cypress.Commands.add("pbDeleteBlocks", () => {
                     }
                 }
             `;
+
+Cypress.Commands.add("pbDeleteBlocks", () => {
+    cy.pbListPageBlocks().then(ids => {
+        cy.login().then(user => {
+            const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+                headers: {
+                    authorization: `Bearer ${user.idToken.jwtToken}`
+                }
+            });
 
             return Promise.all(
                 ids.map(id => {

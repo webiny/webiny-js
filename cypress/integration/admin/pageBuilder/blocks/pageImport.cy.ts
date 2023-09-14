@@ -1,45 +1,35 @@
-function makeid(length) {
-    var result = "";
-    var characters = "abcdefghijklmnopqrstuvwxyz";
-    var charactersLength = characters.length;
-
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
+import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
 context("Blocks Page", () => {
     let tokenStorage;
-
+    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     beforeEach(() => cy.login());
     beforeEach(() => cy.pbDeleteBlocks());
-    beforeEach(() => cy.pbDeleteBlockCategories());
-
-    const numBlocks = 3; // Change this to the desired number of blocks
+    beforeEach(() => cy.pbAllDeleteBlockCategories());
 
     it("Test the exportation of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
 
         const blockCategoryData1 = {
-            name: makeid(10),
-            slug: makeid(10),
+            name: nanoid(10).toLowerCase(),
+            slug: nanoid(10).toLowerCase(),
             icon: "icon-name",
-            description: makeid(10)
+            description: nanoid(10).toLowerCase()
         };
 
         const blockCategoryData2 = {
-            name: makeid(10),
-            slug: makeid(10),
+            name: nanoid(10).toLowerCase(),
+            slug: nanoid(10).toLowerCase(),
             icon: "icon-name",
-            description: makeid(10)
+            description: nanoid(10).toLowerCase()
         };
 
         const blockCategoryData3 = {
-            name: makeid(10),
-            slug: makeid(10),
+            name: nanoid(10).toLowerCase(),
+            slug: nanoid(10).toLowerCase(),
             icon: "icon-name",
-            description: makeid(10)
+            description: nanoid(10).toLowerCase()
         };
 
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, 1);

@@ -40,6 +40,8 @@ Cypress.Commands.add("pbCreateBlock", (blockVariables, categorySlug) => {
             blockCategory: categorySlug
         };
 
-        return client.request(createBlockMutation, { data: blockData });
+        return client
+            .request(CREATE_PAGE, variables)
+            .then(response => response.pageBuilder.createPage.data);
     });
 });

@@ -7,15 +7,15 @@ import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
 import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
-import "./pageBuilder/pbCreateCategoryAndBlocks";
+import "./pageBuilder/pbCreateCategoryAndBlocks.ts";
 import "./pageBuilder/pbUpdatePage";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
 import "./pageBuilder/pbListPageBlocks";
-import "./pageBuilder/pbDeleteBlocks";
-import "./pageBuilder/pbDeleteBlockCategories";
+import "./pageBuilder/pbDeleteBlocks.ts";
+import "./pageBuilder/pbAllDeleteBlockCategories.ts";
 import "./pageBuilder/pbListBlockCategories";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
@@ -40,9 +40,6 @@ import "./fileManager/fmDeleteFile";
 import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
-import "@testing-library/cypress/add-commands";
-import "./aco/acoNavigateToFolder";
-
 import "./aco/acoNavigateToFolder";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
