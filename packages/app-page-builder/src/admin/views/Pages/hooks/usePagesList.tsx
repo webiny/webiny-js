@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
 import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
@@ -6,24 +6,7 @@ import { createSort, useAcoList } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { TableProps } from "~/admin/components/Table/Table";
-
-interface UsePageList {
-    folders: FolderItem[];
-    isListLoading: boolean;
-    isListLoadingMore: boolean;
-    isSearch: boolean;
-    listMoreRecords: () => void;
-    listTitle?: string;
-    meta: ListMeta;
-    onSelectRow: TableProps["onSelectRow"];
-    records: SearchRecordItem<PbPageDataItem>[];
-    search: string;
-    selected: string[];
-    setSearch: (value: string) => void;
-    setSorting: OnSortingChange;
-    sorting: Sorting;
-}
+import { PageEntry, TableProps, isPageEntry } from "~/admin/components/Table/Table";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -34,7 +17,33 @@ interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-export const usePagesList = (): UsePageList => {
+interface PagesListProviderContext {
+    folders: FolderItem[];
+    isListLoading: boolean;
+    isListLoadingMore: boolean;
+    isSearch: boolean;
+    listMoreRecords: () => void;
+    listTitle?: string;
+    meta: ListMeta;
+    onSelectRow: TableProps["onSelectRow"];
+    records: SearchRecordItem<PbPageDataItem>[];
+    search: string;
+    selected: PbPageDataItem[];
+    setSearch: (value: string) => void;
+    setSelected: (data: PbPageDataItem[]) => void;
+    setSorting: OnSortingChange;
+    sorting: Sorting;
+}
+
+export const PagesListContext = React.createContext<PagesListProviderContext | undefined>(
+    undefined
+);
+
+interface PagesListProviderProps {
+    children: React.ReactNode;
+}
+
+export const PagesListProvider = ({ children }: PagesListProviderProps) => {
     const { history } = useRouter();
 
     const {
@@ -46,14 +55,14 @@ export const usePagesList = (): UsePageList => {
         listTitle,
         meta,
         records,
+        selected,
         setSearchQuery,
+        setSelected,
         setListSort
     } = useAcoList<PbPageDataItem>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
-    const [selected, setSelected] = useState<string[]>([]);
-
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
 
@@ -92,10 +101,11 @@ export const usePagesList = (): UsePageList => {
         updateSearch({ search, query });
     }, [search]);
 
-    // Handle rows selection, receiving the full row object and setting the `row.id`, internally mapped to `page.pid`.
+    // Handle rows selection.
     const onSelectRow: TableProps["onSelectRow"] = rows => {
-        const ids = rows.filter(row => row.$type === "RECORD").map(row => row.id);
-        setSelected(ids);
+        const recordEntries = rows.filter(isPageEntry) as PageEntry[];
+        const pageEntries = recordEntries.map(record => record.original);
+        setSelected(pageEntries);
     };
 
     useEffect(() => {
@@ -109,7 +119,7 @@ export const usePagesList = (): UsePageList => {
         setListSort(sort);
     }, [sorting]);
 
-    return {
+    const context: PagesListProviderContext = {
         folders,
         isListLoading,
         isListLoadingMore,
@@ -122,7 +132,20 @@ export const usePagesList = (): UsePageList => {
         search,
         selected,
         setSearch,
+        setSelected,
         setSorting,
         sorting
     };
+
+    return <PagesListContext.Provider value={context}>{children}</PagesListContext.Provider>;
+};
+
+export const usePagesList = (): PagesListProviderContext => {
+    const context = React.useContext(PagesListContext);
+
+    if (!context) {
+        throw new Error("usePagesList must be used within a PagesListContext");
+    }
+
+    return context;
 };

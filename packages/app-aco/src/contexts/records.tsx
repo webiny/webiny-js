@@ -248,18 +248,20 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Record `id` is mandatory");
                 }
 
+                const { id: recordId } = parseIdentifier(id);
+
                 const { data: response } = await apolloFetchingHandler<GetSearchRecordResponse>(
                     loadingHandler("GET", setLoading),
                     () =>
                         client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                             query: GET_RECORD,
-                            variables: { id },
+                            variables: { id: recordId },
                             fetchPolicy: "network-only"
                         })
                 );
 
                 if (!response) {
-                    throw new Error(`Could not fetch record "${id}" - no response.`);
+                    throw new Error(`Could not fetch record "${recordId}" - no response.`);
                 }
 
                 const { data, error } = getResponseData(response, mode);
@@ -271,12 +273,12 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 if (!data) {
                     // No record found - must be deleted by previous operation
                     setRecords(prev => {
-                        return prev.filter(record => record.id !== id);
+                        return prev.filter(record => record.id !== recordId);
                     });
                     return data;
                 }
                 setRecords(prev => {
-                    const index = prev.findIndex(record => record.id === id);
+                    const index = prev.findIndex(record => record.id === recordId);
 
                     // No record found in the list - must be added by previous operation
                     if (index === -1) {

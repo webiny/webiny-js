@@ -20,10 +20,10 @@ const ActionDelete = () => {
         return `${count} ${count === 1 ? "entry" : "entries"}`;
     }, [worker.items.length]);
 
-    const openPublishEntriesDialog = () =>
+    const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
             title: "Delete entries",
-            message: `You are about to publish ${entriesLabel}. Are you sure you want to continue?`,
+            message: `You are about to delete ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -69,7 +69,7 @@ const ActionDelete = () => {
     return (
         <IconButton
             icon={<DeleteIcon />}
-            onAction={openPublishEntriesDialog}
+            onAction={openDeleteEntriesDialog}
             label={`Delete ${entriesLabel}`}
             tooltipPlacement={"bottom"}
         />

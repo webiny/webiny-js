@@ -9,26 +9,31 @@ export const AdminPageBuilderContext = createContext<AdminPageBuilderContext | u
     undefined
 );
 
-interface Page {
+interface PageInput {
     id: string;
 }
 
-export interface PublishPageOptions {
+interface MutationPageOptions {
     mutationOptions?: MutationHookOptions;
     client: ApolloClient<object>;
 }
 
-export type DeletePageOptions = PublishPageOptions;
+export type PublishPageOptions = MutationPageOptions;
+export type UnpublishPageOptions = MutationPageOptions;
+export type DeletePageOptions = MutationPageOptions;
 
 export interface AdminPageBuilderContext extends PageBuilderContext {
-    publishPage: (page: Page, options: PublishPageOptions) => Promise<OnPagePublish>;
+    publishPage: (page: PageInput, options: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
-    deletePage: (page: Page, options: DeletePageOptions) => Promise<OnPageDelete>;
+    unpublishPage: (page: PageInput, options: UnpublishPageOptions) => Promise<OnPageUnpublish>;
+    onPageUnpublish: (fn: OnPageUnpublishSubscriber) => () => void;
+    deletePage: (page: PageInput, options: DeletePageOptions) => Promise<OnPageDelete>;
     onPageDelete: (fn: OnPageDeleteSubscriber) => () => void;
     client: ApolloClient<object>;
 }
 
 type OnPagePublishSubscriber = AsyncProcessor<OnPagePublish>;
+type OnPageUnpublishSubscriber = AsyncProcessor<OnPageUnpublish>;
 type OnPageDeleteSubscriber = AsyncProcessor<OnPageDelete>;
 
 interface PageError {
@@ -38,18 +43,20 @@ interface PageError {
 }
 
 interface OnPagePublish {
-    page: Page;
+    page: PageInput;
     options: PublishPageOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: PageError;
 }
 
+type OnPageUnpublish = OnPagePublish;
 type OnPageDelete = OnPagePublish;
 
 export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
     const client = useApolloClient();
     const onPagePublish = useRef<OnPagePublishSubscriber[]>([]);
+    const onPageUnpublish = useRef<OnPageUnpublishSubscriber[]>([]);
     const onPageDelete = useRef<OnPageDeleteSubscriber[]>([]);
 
     const context: AdminPageBuilderContext = useMemo(() => {
@@ -66,6 +73,20 @@ export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
                 return () => {
                     const index = onPagePublish.current.length;
                     onPagePublish.current.splice(index, 1);
+                };
+            },
+            async unpublishPage(page, options) {
+                return await composeAsync([...onPageUnpublish.current].reverse())({
+                    page,
+                    options
+                });
+            },
+            onPageUnpublish: fn => {
+                onPageUnpublish.current.push(fn);
+
+                return () => {
+                    const index = onPageUnpublish.current.length;
+                    onPageUnpublish.current.splice(index, 1);
                 };
             },
             async deletePage(page, options) {
