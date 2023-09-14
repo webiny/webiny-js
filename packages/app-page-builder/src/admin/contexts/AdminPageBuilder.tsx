@@ -9,7 +9,7 @@ export const AdminPageBuilderContext = createContext<AdminPageBuilderContext | u
     undefined
 );
 
-interface PageInput {
+interface Page {
     id: string;
 }
 
@@ -23,11 +23,11 @@ export type UnpublishPageOptions = MutationPageOptions;
 export type DeletePageOptions = MutationPageOptions;
 
 export interface AdminPageBuilderContext extends PageBuilderContext {
-    publishPage: (page: PageInput, options: PublishPageOptions) => Promise<OnPagePublish>;
+    publishPage: (page: Page, options: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
-    unpublishPage: (page: PageInput, options: UnpublishPageOptions) => Promise<OnPageUnpublish>;
+    unpublishPage: (page: Page, options: UnpublishPageOptions) => Promise<OnPageUnpublish>;
     onPageUnpublish: (fn: OnPageUnpublishSubscriber) => () => void;
-    deletePage: (page: PageInput, options: DeletePageOptions) => Promise<OnPageDelete>;
+    deletePage: (page: Page, options: DeletePageOptions) => Promise<OnPageDelete>;
     onPageDelete: (fn: OnPageDeleteSubscriber) => () => void;
     client: ApolloClient<object>;
 }
@@ -43,7 +43,7 @@ interface PageError {
 }
 
 interface OnPagePublish {
-    page: PageInput;
+    page: Page;
     options: PublishPageOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: PageError;
