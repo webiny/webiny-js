@@ -7,17 +7,11 @@ import {
 } from "~/graphql/comment.gql";
 import { ApwComment } from "~/types";
 import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
-import { useEffect, useState } from "react";
-import { NetworkStatus } from "apollo-client";
 
 interface UseCommentsListResult {
     loading: boolean;
     comments: Array<ApwComment>;
     refetch: () => Promise<any>;
-    /*
-     * Detects the initial data loading. Value is 'true' when the data is loaded from the first request.
-     * */
-    initialDataLoaded: boolean;
 }
 
 /**
@@ -47,30 +41,19 @@ export const useListCommentsVariables = () => {
 
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
-    const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
-    const { data, loading, refetch, networkStatus } = useQuery<
+    const { data, loading, refetch } = useQuery<
         ListCommentsQueryResponse,
         ListCommentsQueryVariables
     >(LIST_COMMENTS_QUERY, {
         variables
     });
 
-    useEffect(() => {
-        if (!loading) {
-            setInitialDataLoaded(() => true);
-        }
-        return () => {
-            setInitialDataLoaded(() => false);
-        };
-    }, [!initialDataLoaded && networkStatus === NetworkStatus.ready]);
-
     const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
     return {
         comments,
         loading,
-        refetch,
-        initialDataLoaded
+        refetch
     };
 };

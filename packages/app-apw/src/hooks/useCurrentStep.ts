@@ -20,17 +20,15 @@ export const useCurrentStep = (): UseCurrentStepResult => {
         };
     }
     const { id: stepId } = useCurrentStepId();
-    const { contentReview, refetch, initialDataLoaded } = useContentReview({
+    const { contentReview, refetch, loading } = useContentReview({
         id: contentReviewId.id
     });
 
-    useFetchInterval(
-        {
-            callback: refetch,
-            interval: CONTENT_REVIEW_REFRESH_INTERVAL
-        },
-        initialDataLoaded
-    );
+    useFetchInterval({
+        callback: refetch,
+        interval: CONTENT_REVIEW_REFRESH_INTERVAL,
+        loading
+    });
 
     const currentStep = useMemo(() => {
         let currentStep;

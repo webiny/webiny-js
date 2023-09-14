@@ -3,26 +3,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface UseFetchDataProps {
     callback: () => Promise<any>;
     interval: number;
+    loading: boolean;
 }
 
 interface UseFetchDataResult {
     error: Record<string, any> | null;
 }
 
-export const useFetchInterval = (
-    { callback, interval }: UseFetchDataProps,
-    startFetching?: boolean
-): UseFetchDataResult => {
+export const useFetchInterval = ({
+    callback,
+    interval,
+    loading
+}: UseFetchDataProps): UseFetchDataResult => {
     const [error, setError] = useState<Record<string, any> | null>(null);
-    let timer: string | number | NodeJS.Timeout | undefined;
-    const isInitializedRef = useRef(false);
+    const timer = useRef<string | number | NodeJS.Timeout | undefined>(undefined);
+
+    const [initiallyLoaded, setInitiallyLoaded] = useState<boolean | undefined>(undefined);
 
     // Recursive function which will not execute until api call is finished + the delay
     const getData = useCallback(async () => {
         try {
             await callback();
-            clearTimeout(timer);
-            timer = setTimeout(() => {
+            clearTimeout(timer.current);
+            timer.current = setTimeout(() => {
                 getData();
             }, interval);
         } catch (e) {
@@ -31,22 +34,42 @@ export const useFetchInterval = (
     }, []);
 
     useEffect(() => {
-        // prevent hook to be initialized multiple times
-        if (!isInitializedRef.current && startFetching) {
-            isInitializedRef.current = true;
-
-            getData().catch(e => {
-                setError(e);
-                // do nothing
-                console.warn("Could not fetch the data:");
-                console.log(e);
-            });
+        /**
+         * We do not want to do anything if initial load was already done.
+         */
+        if (initiallyLoaded === true) {
+            return;
         }
+        /**
+         *  When initiallyLoaded is false and loading is false, it means the initial loading was done so we can mark it.
+         */
+        //
+        else if (initiallyLoaded === false && loading === false) {
+            setInitiallyLoaded(true);
+        }
+        /**
+         * When initiallyLoaded is undefined and loading is true, it means that this is the initial load.
+         */
+        //
+        else if (initiallyLoaded === undefined && loading === true) {
+            setInitiallyLoaded(false);
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        if (initiallyLoaded !== true) {
+            return;
+        }
+        getData().catch(e => {
+            setError(e);
+            // do nothing
+            console.warn("Could not fetch the data:");
+            console.log(e);
+        });
         return () => {
-            clearTimeout(timer);
-            isInitializedRef.current = false;
+            clearTimeout(timer.current);
         };
-    }, [startFetching]);
+    }, [initiallyLoaded]);
 
     return {
         error
