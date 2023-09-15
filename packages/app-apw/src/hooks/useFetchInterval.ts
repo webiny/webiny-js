@@ -18,7 +18,7 @@ export const useFetchInterval = ({
     const [error, setError] = useState<Record<string, any> | null>(null);
     const timer = useRef<string | number | NodeJS.Timeout | undefined>(undefined);
 
-    const [initiallyLoaded, setInitiallyLoaded] = useState<boolean | undefined>(undefined);
+    const [initiallyLoaded, setInitiallyLoaded] = useState<boolean>(false);
 
     // Recursive function which will not execute until api call is finished + the delay
     const getData = useCallback(async () => {
@@ -48,10 +48,10 @@ export const useFetchInterval = ({
             setInitiallyLoaded(true);
         }
         /**
-         * When initiallyLoaded is undefined and loading is true, it means that this is the initial load.
+         * When initiallyLoaded is false and loading is true, it means that this is the initial load.
          */
         //
-        else if (initiallyLoaded === undefined && loading === true) {
+        else if (!initiallyLoaded && loading === true) {
             setInitiallyLoaded(false);
         }
     }, [loading]);
