@@ -24,18 +24,22 @@ import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
+import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
-interface Props {
-    records: RecordEntry[];
+export interface TableProps {
     folders: FolderEntry[];
     loading?: boolean;
-    sorting: Sorting;
+    onSelectRow: (rows: Entry[] | []) => void;
     onSortingChange: OnSortingChange;
+    records: RecordEntry[];
+    selectedRows: CmsContentEntry[];
+    sorting: Sorting;
 }
 
-export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
+export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { currentFolderId } = useNavigateFolder();
-    const { folders, records, loading, sorting, onSortingChange } = props;
+    const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
+        props;
     const { model } = useModel();
 
     const { history } = useRouter();
@@ -90,15 +94,21 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 enableSorting: true,
                 size: 400
             },
-            savedOn: {
-                header: "Last modified",
-                className: "cms-aco-list-savedOn",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            createdOn: {
+                header: "Created",
+                className: "cms-aco-list-createdOn",
+                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author",
                 className: "cms-aco-list-createdBy"
+            },
+            savedOn: {
+                header: "Modified",
+                className: "cms-aco-list-savedOn",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
             },
             status: {
                 header: "Status",
@@ -158,27 +168,24 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         };
     }, []);
 
-    const tableSorting = useMemo(() => {
-        if (!Array.isArray(sorting) || sorting.length === 0) {
-            return [
-                {
-                    id: "savedOn",
-                    desc: true
-                }
-            ];
-        }
-        return sorting;
-    }, [sorting]);
-
     return (
         <div ref={ref}>
             <DataTable<Entry>
                 columns={columns}
                 data={data}
+                isRowSelectable={row => row.original.$selectable}
                 loadingInitial={loading}
                 stickyRows={1}
-                sorting={tableSorting}
+                sorting={sorting}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
+                onSelectRow={onSelectRow}
                 onSortingChange={onSortingChange}
+                selectedRows={data.filter(record => selectedRows.find(row => row.id === record.id))}
             />
             {selectedFolder && (
                 <>

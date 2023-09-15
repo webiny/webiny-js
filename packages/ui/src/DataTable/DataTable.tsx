@@ -124,6 +124,10 @@ interface Props<T> {
      */
     sorting?: Sorting;
     /**
+     * Initial sorting state.
+     */
+    initialSorting?: Sorting;
+    /**
      * The number of columns to affix to the side of the table when scrolling.
      */
     stickyColumns?: number;
@@ -309,7 +313,8 @@ export const DataTable = <T extends Object & DefaultData>({
     onSortingChange,
     isRowSelectable,
     canSelectAllRows = true,
-    selectedRows = []
+    selectedRows = [],
+    initialSorting
 }: Props<T>) => {
     const rowSelection = useMemo(() => {
         return selectedRows.reduce<RowSelectionState>((acc, item) => {
@@ -326,6 +331,13 @@ export const DataTable = <T extends Object & DefaultData>({
         }
     };
 
+    const tableSorting = useMemo(() => {
+        if (!Array.isArray(sorting) || !sorting.length) {
+            return initialSorting;
+        }
+        return sorting;
+    }, [sorting]);
+
     const table = useReactTable({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, { canSelectAllRows, onSelectRow, loadingInitial }),
@@ -335,7 +347,7 @@ export const DataTable = <T extends Object & DefaultData>({
         getSortedRowModel: getSortedRowModel(),
         state: {
             rowSelection,
-            sorting
+            sorting: tableSorting
         },
         enableRowSelection: isRowSelectable,
         onRowSelectionChange,
