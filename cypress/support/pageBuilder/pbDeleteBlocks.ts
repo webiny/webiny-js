@@ -1,19 +1,19 @@
 import { GraphQLClient } from "graphql-request";
 
-const mutation = `
-                mutation DeletePageBlock($id: ID!) {
-                    pageBuilder {
-                        deletePageBlock(id: $id) {
-                            error {
-                                code
-                                message
-                                __typename
-                            }
-                            __typename
-                        }
-                    }
+const mutation = /* GraphQL */ `
+    mutation DeletePageBlock($id: ID!) {
+        pageBuilder {
+            deletePageBlock(id: $id) {
+                error {
+                    code
+                    message
+                    __typename
                 }
-            `;
+                __typename
+            }
+        }
+    }
+`;
 
 Cypress.Commands.add("pbDeleteBlocks", () => {
     cy.pbListPageBlocks().then(ids => {

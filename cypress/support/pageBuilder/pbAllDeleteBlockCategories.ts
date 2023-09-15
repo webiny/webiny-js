@@ -1,19 +1,19 @@
 import { GraphQLClient } from "graphql-request";
 
-const mutation = `
-                mutation DeleteBlockCategory($slug: String!) {
-                    pageBuilder {
-                        deleteBlockCategory(slug: $slug) {
-                            error {
-                                code
-                                message
-                                __typename
-                            }
-                            __typename
-                        }
-                    }
+const mutation = /* GraphQL */ `
+    mutation DeleteBlockCategory($slug: String!) {
+        pageBuilder {
+            deleteBlockCategory(slug: $slug) {
+                error {
+                    code
+                    message
+                    __typename
                 }
-            `;
+                __typename
+            }
+        }
+    }
+`;
 
 Cypress.Commands.add("pbAllDeleteBlockCategories", () => {
     cy.pbListBlockCategories().then(categories => {

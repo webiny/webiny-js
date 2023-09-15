@@ -3,7 +3,9 @@
     "strict": true,
     "target": "es5",
     "lib": ["es5", "dom"],
+    "allowJs": true,
     "types": ["cypress"]
   },
+  "include": ["**/*.*"],
   "include": ["**/*.ts"]
 }

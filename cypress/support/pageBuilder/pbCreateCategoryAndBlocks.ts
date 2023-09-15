@@ -2,57 +2,57 @@ import { GraphQLClient } from "graphql-request";
 import { nanoid } from "nanoid";
 import { customAlphabet } from "nanoid";
 
-const createCategoryMutation = `
-      mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
+const createCategoryMutation = /* GraphQL */ `
+    mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
         pageBuilder {
-          blockCategory: createBlockCategory(data: $data) {
-            data {
-              slug
-              name
-              icon
-              description
-              createdOn
-              createdBy {
-                id
-                displayName
-              }
+            blockCategory: createBlockCategory(data: $data) {
+                data {
+                    slug
+                    name
+                    icon
+                    description
+                    createdOn
+                    createdBy {
+                        id
+                        displayName
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
+                }
             }
-            error {
-              code
-              message
-              data
-            }
-          }
         }
-      }
-    `;
+    }
+`;
 
-const createBlockMutation = `
-      mutation CreatePageBlock($data: PbCreatePageBlockInput!) {
+const createBlockMutation = /* GraphQL */ `
+    mutation CreatePageBlock($data: PbCreatePageBlockInput!) {
         pageBuilder {
-          pageBlock: createPageBlock(data: $data) {
-            data {
-              id
-              blockCategory
-              preview
-              name
-              content
-              createdOn
-              createdBy {
-                id
-                displayName
-                type
-              }
+            pageBlock: createPageBlock(data: $data) {
+                data {
+                    id
+                    blockCategory
+                    preview
+                    name
+                    content
+                    createdOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
+                }
             }
-            error {
-              code
-              message
-              data
-            }
-          }
         }
-      }
-    `;
+    }
+`;
 
 Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks) => {
     cy.login().then(user => {

@@ -52,6 +52,6 @@ context("Blocks Page", () => {
         cy.contains("New Block").should("exist");
 
         cy.pbDeleteBlocks();
-        cy.pbDeleteBlockCategories();
+        cy.pbAllDeleteBlockCategories();
     });
 });
