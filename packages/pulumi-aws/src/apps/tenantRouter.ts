@@ -3,6 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp, PulumiAppResource } from "@webiny/pulumi";
 import { CoreOutput } from "./common";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface Params {
     region: string;
@@ -81,7 +82,8 @@ export function applyTenantRouter(
                     }
                 ]
             }
-        }
+        },
+        meta: { isLambdaFunctionRole: true }
     });
 
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
@@ -90,7 +92,7 @@ export function applyTenantRouter(
         name: `${PREFIX}-origin-request`,
         config: {
             publish: true,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "index.handler",
             role: role.output.arn,
             timeout: 5,

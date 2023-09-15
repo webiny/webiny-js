@@ -72,7 +72,6 @@
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-webiny-i18n": "link:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "folder-hash": "^4.0.0",
@@ -228,5 +227,5 @@
     "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
     "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.6.3"
 }

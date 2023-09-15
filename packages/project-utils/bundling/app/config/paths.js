@@ -35,6 +35,7 @@ function getServedPath(appPackageJson) {
 const moduleFileExtensions = [
     "web.mjs",
     "mjs",
+    "cjs",
     "web.js",
     "js",
     "web.ts",

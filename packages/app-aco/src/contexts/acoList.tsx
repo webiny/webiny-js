@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
 import {
     FolderItem,
     GenericSearchData,
@@ -26,9 +26,11 @@ export interface AcoListContextData<T> {
     listTitle?: string;
     meta: ListMeta;
     records: SearchRecordItem<T>[];
+    selected: T[];
     setFilters: (data: Record<string, any>) => void;
     setListSort: (state: ListSearchRecordsSort) => void;
     setSearchQuery: (query: string) => void;
+    setSelected: (selected: T[]) => void;
     showFilters: () => void;
     showingFilters: boolean;
 }
@@ -37,7 +39,7 @@ export const AcoListContext = React.createContext<
     AcoListContextData<GenericSearchData> | undefined
 >(undefined);
 
-export interface State {
+export interface State<T> {
     after?: string;
     filters?: Record<string, any>;
     folderId?: string;
@@ -45,10 +47,11 @@ export interface State {
     limit: number;
     listSort: ListSearchRecordsSort;
     searchQuery: string;
+    selected: T[];
     showingFilters: boolean;
 }
 
-const initializeAcoListState = (): State => {
+const initializeAcoListState = (): State<GenericSearchData> => {
     return {
         after: undefined,
         filters: undefined,
@@ -57,6 +60,7 @@ const initializeAcoListState = (): State => {
         limit: 50,
         listSort: [],
         searchQuery: "",
+        selected: [],
         showingFilters: false
     };
 };
@@ -114,7 +118,13 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [state, setState] = useState(initializeAcoListState());
+    const [state, setState] = useReducer(
+        (state: State<GenericSearchData>, newState: Partial<State<GenericSearchData>>) => ({
+            ...state,
+            ...newState
+        }),
+        initializeAcoListState()
+    );
 
     const {
         folders: originalFolders,
@@ -143,16 +153,14 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
             listFolders();
         }
 
-        setState(state => {
-            return {
-                ...state,
-                after: undefined,
-                filters: undefined,
-                folderId: currentFolderId,
-                isSearch: false,
-                searchQuery: "",
-                showingFilters: false
-            };
+        setState({
+            after: undefined,
+            filters: undefined,
+            folderId: currentFolderId,
+            isSearch: false,
+            searchQuery: "",
+            selected: [],
+            showingFilters: false
         });
     }, [currentFolderId]);
 
@@ -215,10 +223,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     const listMoreRecords = useCallback(() => {
         const { hasMoreItems, cursor } = meta;
         if (hasMoreItems && cursor) {
-            setState(state => ({
-                ...state,
-                after: cursor
-            }));
+            setState({ after: cursor });
         }
     }, [meta]);
 
@@ -264,17 +269,14 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
 
             await listRecords(params);
 
-            setState(state => ({
-                ...state,
-                isSearch
-            }));
+            setState({ isSearch });
         };
 
         listItems();
     }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
 
     const context: AcoListContextData<GenericSearchData> = {
-        ...pick(state, ["isSearch", "showingFilters"]),
+        ...pick(state, ["isSearch", "selected", "showingFilters"]),
         folders,
         records,
         listTitle,
@@ -284,35 +286,22 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
         isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
         meta,
         setSearchQuery(query) {
-            setState(state => ({
-                ...state,
-                searchQuery: query
-            }));
+            setState({ searchQuery: query, after: undefined });
         },
         setFilters(data) {
-            setState(state => ({
-                ...state,
-                filters: data
-            }));
+            setState({ filters: data, after: undefined });
         },
         setListSort(sort: ListSearchRecordsSort) {
-            setState(state => ({
-                ...state,
-                listSort: sort
-            }));
+            setState({ listSort: sort, after: undefined });
+        },
+        setSelected(selected) {
+            setState({ selected });
         },
         hideFilters() {
-            setState(state => ({
-                ...state,
-                filters: undefined,
-                showingFilters: false
-            }));
+            setState({ filters: undefined, showingFilters: false, after: undefined });
         },
         showFilters() {
-            setState(state => ({
-                ...state,
-                showingFilters: true
-            }));
+            setState({ showingFilters: true });
         },
         listMoreRecords
     };
