@@ -83,7 +83,6 @@ export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
             },
             onPageUnpublish: fn => {
                 onPageUnpublish.current.push(fn);
-
                 return () => {
                     const index = onPageUnpublish.current.length;
                     onPageUnpublish.current.splice(index, 1);

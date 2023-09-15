@@ -11,7 +11,7 @@ import { PageStatus, PbPageData } from "~/types";
 const getUpdateCache =
     (page: Pick<PbPageData, "id">): MutationUpdaterFn<any> =>
     (cache, { data }) => {
-        // Don't do anything if there was an error during publishing!
+        // Don't do anything if there was an error during unpublishing!
         if (data.pageBuilder.unpublishPage.error) {
             return;
         }
@@ -30,6 +30,8 @@ const getUpdateCache =
             return;
         }
 
+        console.log("pageFromCache", pageFromCache);
+
         const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
         revisions.forEach((r: any) => {
             // Update published/locked fields on the revision that was just published.
@@ -37,11 +39,6 @@ const getUpdateCache =
                 r.status = PageStatus.UNPUBLISHED;
                 r.locked = true;
                 return;
-            }
-
-            // Unpublish other published revisions
-            if (r.status === PageStatus.UNPUBLISHED) {
-                r.status = PageStatus.PUBLISHED;
             }
         });
 
