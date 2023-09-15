@@ -6,6 +6,13 @@ import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandle
 
 const singularPageApiName = pageModel.singularApiName;
 
+const withTemplateId = (data: Record<string, any>) => {
+    return {
+        ...data,
+        content: data.content.map((obj: any) => ({ ...obj, _templateId: expect.any(String) }))
+    };
+};
+
 const contentEntryQueryData = {
     content: [
         {
@@ -218,7 +225,7 @@ describe("dynamicZone field", () => {
                 createPage: {
                     data: {
                         id: expect.any(String),
-                        ...contentEntryQueryData
+                        ...withTemplateId(contentEntryQueryData)
                     },
                     error: null
                 }
@@ -234,7 +241,7 @@ describe("dynamicZone field", () => {
                     data: [
                         {
                             id: page.id,
-                            ...contentEntryQueryData
+                            ...withTemplateId(contentEntryQueryData)
                         }
                     ],
                     meta: {
@@ -257,7 +264,7 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...contentEntryQueryData
+                        ...withTemplateId(contentEntryQueryData)
                     },
                     error: null
                 }
