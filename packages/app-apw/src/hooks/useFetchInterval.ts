@@ -51,7 +51,7 @@ export const useFetchInterval = ({
          * When initiallyLoaded is false and loading is true, it means that this is the initial load.
          */
         //
-        else if (!initiallyLoaded && loading === true) {
+        else if (initiallyLoaded === false && loading === true) {
             setInitiallyLoaded(false);
         }
     }, [loading]);
