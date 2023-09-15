@@ -32,6 +32,10 @@ export const IconRenderer = ({ icon, size = 32 }: IconProps) => {
         );
     }
 
+    if (icon.type === "custom") {
+        return <img width={size} height={size} src={icon.value} alt={icon.name} />;
+    }
+
     return (
         <svg
             width={size}

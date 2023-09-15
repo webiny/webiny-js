@@ -12,6 +12,7 @@ export interface FileManagerOnChange<T> {
 export interface FileManagerFileItem {
     id: string;
     src: string;
+    name?: string;
     meta?: Array<FileManagerFileItemMetaItem>;
 }
 
@@ -98,6 +99,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
     children,
     render,
     onChange,
+    onClose,
     ...rest
 }) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
@@ -115,12 +117,20 @@ export const FileManager: React.FC<FileManagerProps> = ({
         setShow(true);
     }, []);
 
+    const handleClose = useCallback(() => {
+        if (onClose) {
+            onClose();
+        }
+
+        setShow(false);
+    }, [onClose]);
+
     return (
         <>
             {show &&
                 ReactDOM.createPortal(
                     <FileManagerRenderer
-                        onClose={() => setShow(false)}
+                        onClose={handleClose}
                         onChange={
                             /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
                             onChangeRef.current as any

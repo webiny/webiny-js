@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { Menu } from "@webiny/ui/Menu";
 
 import { Icon, IconRenderer } from "./IconRenderer";
-import { IconProps } from "./config/Icon";
+import { IconProps } from "./config/IconPackProvider";
 
 const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
 

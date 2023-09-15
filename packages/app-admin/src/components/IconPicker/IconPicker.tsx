@@ -1,117 +1,68 @@
 import React, { useCallback, useRef, useState, useMemo, useEffect } from "react";
-import { css } from "emotion";
-import styled from "@emotion/styled";
-// import groupBy from "lodash/groupBy";
-import { Grid } from "react-virtualized";
-import { GridCellProps } from "react-virtualized/dist/es/Grid";
+import groupBy from "lodash/groupBy";
+import { List } from "react-virtualized";
+import { useQuery } from "@apollo/react-hooks";
+import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 
 import { Menu } from "@webiny/ui/Menu";
+import { ButtonSecondary } from "@webiny/ui/Button";
 import { Tab, Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
-import { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Input } from "@webiny/ui/Input";
 import { ColorPicker } from "@webiny/ui/ColorPicker";
-import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { FormComponentProps } from "@webiny/ui/types";
 
+import { FileManager } from "~/components";
 import { IconRenderer, Icon } from "./IconRenderer";
 import { useIconPickerConfig, IconPickerWithConfig } from "./config";
 import { SkinToneSelect } from "./SkinToneSelect";
+import {
+    LIST_ICON_FILES,
+    ListIconFilesQueryResponse
+} from "~/components/IconPicker/config/graphql";
+import {
+    IconPickerWrapper,
+    iconPickerLabel,
+    IconPickerInput,
+    MenuHeader,
+    Row,
+    Cell,
+    CategoryLabel,
+    TabContentWrapper,
+    ListWrapper,
+    NoResultsWrapper,
+    InputsWrapper,
+    addButtonStyle
+} from "./IconPicker.styles";
 
 const COLUMN_COUNT = 8;
 
-const IconPickerWrapper = styled.div`
-    .mdc-menu-surface {
-        overflow: visible !important;
-    }
-`;
-
-const iconPickerLabel = css`
-    margin-bottom: 5px;
-    margin-left: 2px;
-`;
-
-const IconPickerInput = styled.div`
-    background-color: ${props => props.theme.styles.colors.color5};
-    border-bottom: 1px solid ${props => props.theme.styles.colors.color3};
-    padding: 8px;
-    height: 32px;
-    width: fit-content;
-    cursor: pointer;
-    :hover {
-        border-bottom: 1px solid ${props => props.theme.styles.colors.color3};
-    }
-`;
-
-const MenuHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    text-transform: uppercase;
-    padding: 12px;
-    border-bottom: 1px solid ${props => props.theme.styles.colors.color5};
-    color: ${props => props.theme.styles.colors.color4};
-
-    & > svg {
-        cursor: pointer;
-        fill: ${props => props.theme.styles.colors.color4};
-    }
-`;
-
-const Cell = styled.div<{ color: string; isActive: boolean }>`
-    cursor: pointer;
-    color: ${({ color }) => color};
-    background-color: ${({ isActive, theme }) =>
-        isActive ? theme.styles.colors.color5 : theme.styles.colors.color6};
-
-    & > * {
-        padding: 4px;
-    }
-`;
-
-const TabContentWrapper = styled.div`
-    width: 340px;
-    padding: 12px;
-`;
-
-const NoResultsWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 400px;
-`;
-
-const InputsWrapper = styled.div`
-    display: flex;
-    column-gap: 12px;
-    padding-bottom: 12px;
-    height: 40px;
-
-    [class$="color"] {
-        height: 24px;
-        width: 24px;
-        margin: 3px;
-        border-radius: 50%;
-    }
-
-    [class$="classNames"] {
-        display: none;
-    }
-
-    .webiny-ui-input {
-        height: 40px !important;
-    }
-`;
+type RenderRowProps = {
+    index: number;
+    key: string;
+    style: Record<string, any>;
+};
 
 type TabContentProps = {
     icons: Icon[];
     type: string;
     value: Icon;
     onChange: (value: Icon, closeMenu?: boolean) => void;
+    refetchCustomIcons?: () => void;
+    isLoading?: boolean;
 };
 
-const TabContent = ({ icons, type, value, onChange }: TabContentProps) => {
+const TabContent = ({
+    icons,
+    type,
+    value,
+    onChange,
+    refetchCustomIcons,
+    isLoading
+}: TabContentProps) => {
     const [filter, setFilter] = useState("");
     const [color, setColor] = useState(value.color || "#0000008a");
 
@@ -134,43 +85,77 @@ const TabContent = ({ icons, type, value, onChange }: TabContentProps) => {
     }, [color]);
 
     const filteredIcons = useMemo(() => {
-        return filter ? icons.filter(ic => ic.name.includes(filter)) : icons;
+        return icons.filter(icon => icon.name.includes(filter));
     }, [filter, icons]);
 
-    const renderCell = useCallback(() => {
-        return function renderCell({
-            columnIndex,
-            key,
-            rowIndex,
-            style
-        }: GridCellProps): React.ReactNode {
-            const item = filteredIcons[rowIndex * COLUMN_COUNT + columnIndex];
-            if (!item) {
-                return null;
+    const rows = useMemo(() => {
+        const groupedObjects = groupBy(filteredIcons, "category");
+        const rows = [];
+
+        for (const key in groupedObjects) {
+            if (key !== "undefined") {
+                const rowIcons = groupedObjects[key];
+
+                rows.push([{ categoryName: key }]);
+
+                while (rowIcons.length) {
+                    rows.push(rowIcons.splice(0, COLUMN_COUNT));
+                }
+            }
+        }
+
+        if (groupedObjects.undefined) {
+            const rowIcons = groupedObjects.undefined;
+
+            rows.push([{ categoryName: "Uncategorized" }]);
+
+            while (rowIcons.length) {
+                rows.push(rowIcons.splice(0, COLUMN_COUNT));
+            }
+        }
+
+        return rows;
+    }, [filteredIcons]);
+
+    const renderRow = useCallback(
+        ({ index, key, style }: RenderRowProps) => {
+            const currentRow = rows[index];
+            const categoryName = (currentRow[0] as { categoryName: string }).categoryName;
+
+            if (categoryName) {
+                return (
+                    <Row key={key} style={style}>
+                        <CategoryLabel>{categoryName}</CategoryLabel>
+                    </Row>
+                );
             }
 
             return (
-                <Cell
-                    key={key}
-                    style={style}
-                    onClick={() => {
-                        onChange({
-                            type: item.type,
-                            name: item.name,
-                            ...(item.type === "emoji" ? { skinTone: item.skinTone } : {}),
-                            ...(item.type === "icon" ? { color } : {}),
-                            ...(item.width ? { width: item.width } : {}),
-                            value: item.value
-                        });
-                    }}
-                    color={color}
-                    isActive={item.name === value.name}
-                >
-                    <IconRenderer icon={item} size={32} />
-                </Cell>
+                <Row key={key} style={style}>
+                    {(currentRow as Icon[]).map((item, itemKey) => (
+                        <Cell
+                            key={itemKey}
+                            color={color}
+                            isActive={item.name === value.name}
+                            onClick={() => {
+                                onChange({
+                                    type: item.type,
+                                    name: item.name,
+                                    ...(item.type === "emoji" ? { skinTone: item.skinTone } : {}),
+                                    ...(item.type === "icon" ? { color } : {}),
+                                    ...(item.width ? { width: item.width } : {}),
+                                    value: item.value
+                                });
+                            }}
+                        >
+                            <IconRenderer icon={item} size={32} />
+                        </Cell>
+                    ))}
+                </Row>
             );
-        };
-    }, [filteredIcons, color]);
+        },
+        [rows, color, value]
+    );
 
     return (
         <TabContentWrapper>
@@ -188,22 +173,59 @@ const TabContent = ({ icons, type, value, onChange }: TabContentProps) => {
                         {({ value, onChange }) => <ColorPicker value={value} onChange={onChange} />}
                     </DelayedOnChange>
                 )}
+                {type === "custom" && (
+                    <FileManager
+                        onUploadCompletion={([{ name, src }]) => {
+                            onChange({
+                                type: "custom",
+                                name: name || "",
+                                value: src
+                            });
+                        }}
+                        onChange={({ name, src }) =>
+                            onChange({
+                                type: "custom",
+                                name: name || "",
+                                value: src
+                            })
+                        }
+                        onClose={() => {
+                            if (refetchCustomIcons) {
+                                refetchCustomIcons();
+                            }
+                        }}
+                        scope="scope:iconPicker"
+                        accept={["image/svg+xml"]}
+                    >
+                        {({ showFileManager }) => (
+                            <ButtonSecondary
+                                className={addButtonStyle}
+                                onClick={() => {
+                                    showFileManager();
+                                }}
+                            >
+                                Browse
+                            </ButtonSecondary>
+                        )}
+                    </FileManager>
+                )}
             </InputsWrapper>
-            {filteredIcons.length === 0 ? (
-                <NoResultsWrapper>
-                    <Typography use="body1">No results found.</Typography>
-                </NoResultsWrapper>
-            ) : (
-                <Grid
-                    cellRenderer={renderCell()}
-                    columnCount={COLUMN_COUNT}
-                    columnWidth={40}
-                    height={400}
-                    rowCount={Math.ceil(filteredIcons.length / COLUMN_COUNT)}
-                    rowHeight={40}
-                    width={340}
-                />
-            )}
+            <ListWrapper>
+                {isLoading && <CircularProgress />}
+                {filteredIcons.length === 0 ? (
+                    <NoResultsWrapper>
+                        <Typography use="body1">No results found.</Typography>
+                    </NoResultsWrapper>
+                ) : (
+                    <List
+                        rowRenderer={renderRow}
+                        height={400}
+                        rowCount={rows.length}
+                        rowHeight={40}
+                        width={340}
+                    />
+                )}
+            </ListWrapper>
         </TabContentWrapper>
     );
 };
@@ -213,18 +235,30 @@ export interface IconPickerProps extends FormComponentProps {
     description?: string;
 }
 
-const IconPicker = ({ value, onChange, validation, label, description }: IconPickerProps) => {
+const IconPicker = ({ value = {}, onChange, validation, label, description }: IconPickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
     const tabsRef = useRef<TabsImperativeApi>();
-    const { icons } = useIconPickerConfig();
+    const { icons, initialize, isLoading } = useIconPickerConfig();
+    const { data, refetch: refetchCustomIcons } =
+        useQuery<ListIconFilesQueryResponse>(LIST_ICON_FILES);
+    const customIconsData = data?.fileManager.listFiles.data || [];
 
-    // const emojisByCategory = groupBy(
-    //     icons.filter(icon => icon.type === "emoji"),
-    //     "category"
-    // );
-    const emojis = icons.filter(icon => icon.type === "emoji");
-    const defaultIcons = icons.filter(icon => icon.type === "icon");
+    useEffect(() => {
+        initialize();
+    }, [initialize]);
+
+    const emojis = useMemo(() => {
+        return icons.filter(icon => icon.type === "emoji");
+    }, [icons]);
+
+    const defaultIcons = useMemo(() => {
+        return icons.filter(icon => icon.type === "icon");
+    }, [icons]);
+
+    const customIcons = useMemo(() => {
+        return customIconsData.map(icon => ({ type: "custom", name: icon.name, value: icon.src }));
+    }, [customIconsData]);
 
     const onIconChange = useCallback(
         (icon: Icon) => {
@@ -282,6 +316,7 @@ const IconPicker = ({ value, onChange, validation, label, description }: IconPic
                                     type="icon"
                                     value={value}
                                     onChange={onIconChange}
+                                    isLoading={isLoading}
                                 />
                             </Tab>
                             <Tab label={"Emojis"}>
@@ -290,14 +325,16 @@ const IconPicker = ({ value, onChange, validation, label, description }: IconPic
                                     type="emoji"
                                     value={value}
                                     onChange={onIconChange}
+                                    isLoading={isLoading}
                                 />
                             </Tab>
                             <Tab label={"Custom"}>
                                 <TabContent
-                                    icons={[]}
+                                    icons={customIcons}
                                     type="custom"
                                     value={value}
                                     onChange={onIconChange}
+                                    refetchCustomIcons={refetchCustomIcons}
                                 />
                             </Tab>
                         </Tabs>

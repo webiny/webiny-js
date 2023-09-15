@@ -14453,6 +14453,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
+    "@webiny/react-properties": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/telemetry": 0.0.0
     "@webiny/ui": 0.0.0
@@ -14476,6 +14477,7 @@ __metadata:
     react-dom: 17.0.2
     react-hotkeyz: ^1.0.4
     react-transition-group: ^4.3.0
+    react-virtualized: ^9.21.2
     rimraf: ^3.0.2
     store: ^2.0.12
     ttypescript: ^1.5.12
