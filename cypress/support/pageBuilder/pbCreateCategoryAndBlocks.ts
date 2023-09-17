@@ -1,5 +1,4 @@
 import { GraphQLClient } from "graphql-request";
-import { nanoid } from "nanoid";
 import { customAlphabet } from "nanoid";
 
 const createCategoryMutation = /* GraphQL */ `

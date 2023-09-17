@@ -1,41 +1,43 @@
-import { nanoid } from "nanoid";
 import { customAlphabet } from "nanoid";
 
-context("Blocks Page", () => {
+
+context("Page Builder - Blocks import", () => {
     let tokenStorage;
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     beforeEach(() => cy.login());
     beforeEach(() => cy.pbDeleteBlocks());
     beforeEach(() => cy.pbAllDeleteBlockCategories());
+    //Data used for creating multible block categories
+    const blockCategoryData1 = {    
+        name: nanoid(10).toLowerCase(),
+        slug: nanoid(10).toLowerCase(),
+        icon: "icon-name",
+        description: nanoid(10).toLowerCase()
+    };
+
+    const blockCategoryData2 = {
+        name: nanoid(10).toLowerCase(),
+        slug: nanoid(10).toLowerCase(),
+        icon: "icon-name",
+        description: nanoid(10).toLowerCase()
+    };
+
+    const blockCategoryData3 = {
+        name: nanoid(10).toLowerCase(),
+        slug: nanoid(10).toLowerCase(),
+        icon: "icon-name",
+        description: nanoid(10).toLowerCase()
+    };
 
     it("Test the exportation of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
 
-        const blockCategoryData1 = {
-            name: nanoid(10).toLowerCase(),
-            slug: nanoid(10).toLowerCase(),
-            icon: "icon-name",
-            description: nanoid(10).toLowerCase()
-        };
-
-        const blockCategoryData2 = {
-            name: nanoid(10).toLowerCase(),
-            slug: nanoid(10).toLowerCase(),
-            icon: "icon-name",
-            description: nanoid(10).toLowerCase()
-        };
-
-        const blockCategoryData3 = {
-            name: nanoid(10).toLowerCase(),
-            slug: nanoid(10).toLowerCase(),
-            icon: "icon-name",
-            description: nanoid(10).toLowerCase()
-        };
-
+        //Creation of categories and blocks
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, 1);
         cy.pbCreateCategoryAndBlocks(blockCategoryData2, 2);
         cy.pbCreateCategoryAndBlocks(blockCategoryData3, 3);
 
+        //Exports all created data and saves the exported string value
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.findByTestId("pb-blocks-list-options-menu").click();
         cy.findByText("Export all blocks").click();
@@ -57,5 +59,12 @@ context("Blocks Page", () => {
         cy.contains("Continue").click();
         cy.findByText("All blocks have been imported").should("exist");
         cy.contains("Continue").click();
+        //Validation of imported blocks and categories
+        cy.contains(blockCategoryData1.name).should("exist");
+        cy.contains(blockCategoryData2.name).should("exist");
+        cy.contains(blockCategoryData3.name).should("exist");
+        cy.pbListPageBlocks().then(ids => {
+            cy.wrap(ids).should('have.length', 3);
+          });
     });
 });

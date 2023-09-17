@@ -1,12 +1,14 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "noEmit": true,
-    "noUnusedParameters": false,
-    "noUnusedLocals": false,
-    "emitDeclarationOnly": false,
-    "composite": false
+    "strict": true,
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "allowJs": true,
+    "types": ["cypress", "@testing-library/cypress"]
   },
+  "include": ["**/*.*"],
+  "include": ["**/*.ts"],
   "ts-node": {
     "files": false,
     "typeCheck": false,

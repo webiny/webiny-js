@@ -1,4 +1,5 @@
 import "cypress-wait-until";
+import './commands'
 import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
 import "./login";
 import "./dropFile";
@@ -7,15 +8,15 @@ import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
 import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
-import "./pageBuilder/pbCreateCategoryAndBlocks.ts";
+import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
 import "./pageBuilder/pbListPageBlocks";
-import "./pageBuilder/pbDeleteBlocks.ts";
-import "./pageBuilder/pbAllDeleteBlockCategories.ts";
+import "./pageBuilder/pbDeleteBlocks";
+import "./pageBuilder/pbAllDeleteBlockCategories";
 import "./pageBuilder/pbListBlockCategories";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
