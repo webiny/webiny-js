@@ -1,5 +1,6 @@
 import { createModelImportValidation } from "~/crud/contentModel/validation";
 import {
+    CmsImportError,
     HeadlessCmsImportStructureParamsDataModel,
     ValidatedCmsModel,
     ValidatedCmsModelResult
@@ -7,7 +8,119 @@ import {
 import { CmsGroup, CmsModel } from "~/types";
 import { createZodError } from "@webiny/utils";
 
-const modelFieldsToCheck = ["modelId", "singularApiName", "pluralApiName"];
+interface CreateModelValidationParams {
+    model: ValidatedCmsModel;
+    models: CmsModel[];
+}
+
+const createModelValidation = (params: CreateModelValidationParams) => {
+    const { model, models } = params;
+    /**
+     * Let's check if model values that must be unique, already exist.
+     */
+    const existingModelId = models.find(
+        m => m.modelId.toLowerCase() === model.modelId.toLowerCase()
+    );
+    const existingSingularApiName = models.find(
+        m =>
+            m.singularApiName.toLowerCase() === model.singularApiName.toLowerCase() ||
+            m.singularApiName.toLowerCase() === model.pluralApiName.toString()
+    );
+    const existingPluralApiName = models.find(
+        m =>
+            m.pluralApiName.toLowerCase() === model.pluralApiName.toLowerCase() ||
+            m.pluralApiName.toLowerCase() === model.singularApiName.toString()
+    );
+    const errors: CmsImportError[] = [];
+    /**
+     * There are few cases that we must address:
+     */
+    const validate = (): "create" | "update" | false => {
+        /**
+         * 1. modelId, singular and plural names do not exist in any of the models
+         * - this is OK, we can create the model
+         */
+        if (!existingModelId && !existingSingularApiName && !existingPluralApiName) {
+            return "create";
+        }
+        /**
+         * 2. modelId, singular and plural names are a part of a single model
+         * - this is OK, we can update the model
+         */
+        if (
+            existingModelId &&
+            existingSingularApiName &&
+            existingPluralApiName &&
+            existingModelId.modelId === existingSingularApiName.modelId &&
+            existingModelId.modelId === existingPluralApiName.modelId
+        ) {
+            return "update";
+        }
+        /**
+         * 3. modelId already exists, but singular and plural names do not
+         *  - this is OK, we can update the model
+         */
+        if (existingModelId && !existingSingularApiName && !existingPluralApiName) {
+            return "update";
+        }
+        /**
+         * 4. modelId already exists, but only the singular name exists.
+         * - this is OK, we can update the model
+         */
+        if (
+            existingModelId &&
+            existingSingularApiName?.modelId === existingModelId.modelId &&
+            !existingPluralApiName
+        ) {
+            return "update";
+        }
+        /**
+         * 5. modelId already exists, but only the plural name exists.
+         * - this is OK, we can update the model
+         */
+        if (
+            existingModelId &&
+            existingPluralApiName?.modelId === existingModelId.modelId &&
+            !existingSingularApiName
+        ) {
+            return "update";
+        }
+        /**
+         * 6. modelId already exists, but singular and plural names are in different models.
+         */
+        if (
+            existingModelId &&
+            (existingSingularApiName?.modelId !== existingModelId.modelId ||
+                existingPluralApiName?.modelId !== existingModelId.modelId)
+        ) {
+            errors.push({
+                message: `The model with modelId "${model.modelId}" has singular or plural API names same as some other model.`,
+                code: "MODEL_API_NAMES_ERROR"
+            });
+            return false;
+        }
+        errors.push({
+            message: `The model with modelId "${model.modelId}" cannot be imported.`,
+            code: "MODEL_IMPORT_ERROR",
+            data: {
+                modelId: existingModelId?.modelId,
+                singularApiName: existingSingularApiName?.modelId,
+                pluralApiName: existingPluralApiName?.modelId
+            }
+        });
+        return false;
+    };
+
+    const result = validate();
+
+    return {
+        isValid: () => {
+            return result !== false;
+        },
+        action: typeof result === "string" ? result : "unknown",
+        errors
+    };
+};
 
 interface Params {
     groups: Pick<CmsGroup, "id">[];
@@ -53,32 +166,21 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                     }
                 };
             }
-            for (const field of modelFieldsToCheck) {
-                const fieldValue = (
-                    (data[field as keyof typeof data] as string) || ""
-                ).toLowerCase();
 
-                const existing = models.find(m => {
-                    const value = m[field as keyof typeof m] || "";
-                    if (typeof value !== "string") {
-                        return false;
-                    }
-                    return value.toLowerCase() === fieldValue;
-                });
-                if (!existing) {
-                    continue;
-                }
+            const modelValidation = createModelValidation({
+                model: data,
+                models
+            });
+
+            if (modelValidation.isValid()) {
                 return {
                     model: data,
-                    error: {
-                        message: `The model "${data.modelId}" with ${field} "${fieldValue}" exists.`,
-                        code: "MODEL_EXISTS"
-                    }
+                    action: modelValidation.action
                 };
             }
-
             return {
-                model: data
+                model: data,
+                error: modelValidation.errors[0]
             };
         })
     );

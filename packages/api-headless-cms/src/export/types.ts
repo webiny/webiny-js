@@ -101,11 +101,13 @@ export interface ValidatedCmsModel extends Omit<CmsModel, "group"> {
 }
 export interface ValidCmsModelResult {
     model: ValidatedCmsModel;
+    action: string;
     error?: never;
 }
 
 export interface InvalidCmsModelResult {
     model: ValidatedCmsModel;
+    action?: never;
     error: CmsImportError;
 }
 

@@ -3,9 +3,15 @@ import { createCmsGroup } from "~/plugins";
 import { exportedGroupsAndModels } from "~tests/contentAPI/mocks/exportedGroupsAndModels";
 
 describe("import cms structure", () => {
-    const { validateCmsStructureMutation, importCmsStructureMutation } = useGraphQLHandler({
+    const {
+        validateCmsStructureMutation,
+        importCmsStructureMutation,
+        listContentModelsQuery,
+        listContentModelGroupsQuery
+    } = useGraphQLHandler({
         path: "manage/en-US"
     });
+
     it("should return error as there are no groups to validate", async () => {
         const [result] = await validateCmsStructureMutation({
             data: {
@@ -511,5 +517,45 @@ describe("import cms structure", () => {
                 }
             }
         });
+
+        const expectedGroups = exportedGroupsAndModels.groups.map(group => {
+            return {
+                id: group.id,
+                slug: group.slug
+            };
+        });
+        const [listGroupsResponse] = await listContentModelGroupsQuery();
+        expect(listGroupsResponse).toMatchObject({
+            data: {
+                listContentModelGroups: {
+                    data: expectedGroups,
+                    error: null
+                }
+            }
+        });
+        const listedGroups = listGroupsResponse.data.listContentModelGroups.data;
+        expect(listedGroups).toHaveLength(expectedGroups.length);
+        expect(listedGroups).toMatchObject(expectedGroups);
+
+        const expectedModels = exportedGroupsAndModels.models.map(model => {
+            return {
+                modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName
+            };
+        });
+
+        const [listModelsResponse] = await listContentModelsQuery();
+        expect(listModelsResponse).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: expectedModels,
+                    error: null
+                }
+            }
+        });
+        const listedModels = listModelsResponse.data.listContentModels.data;
+        expect(listedModels).toHaveLength(expectedModels.length);
+        expect(listedModels).toMatchObject(expectedModels);
     });
 });
