@@ -47,7 +47,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
     submit,
     goToNextStep,
     goToPreviousStep,
-    resetFormAfterSubmit,
     isLastStep,
     isFirstStep,
     isMultiStepForm,
@@ -79,11 +78,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
             setLoading(false);
             if (result.error === null) {
                 setFormSuccess(true);
-                if (resetFormAfterSubmit) {
-                    // This function will reset Success Message screen in 3 seconds after showing it,
-                    // it will also reset view to the first step.
-                    resetFormAfterSubmit(() => setFormSuccess(false));
-                }
             }
         }
     };

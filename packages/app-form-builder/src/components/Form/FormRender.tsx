@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -45,6 +45,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const data = props.data || ({} as FbFormModel);
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
+    const [layoutRenderKey, setLayoutRenderKey] = useState<string>(new Date().getTime().toString());
+    const resetLayoutRenderKey = useCallback(() => {
+        setLayoutRenderKey(new Date().getTime().toString());
+    }, []);
+
     useEffect((): void => {
         if (!data.id) {
             return;
@@ -76,14 +81,6 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
 
     const goToPreviousStep = () => {
         setCurrentStepIndex(prevStep => (prevStep -= 1));
-    };
-
-    // This function will reset form to the first step after it was successfully submited.
-    const resetFormAfterSubmit = (callback: () => void): void => {
-        setTimeout(() => {
-            callback();
-            setCurrentStepIndex(0);
-        }, 3000);
     };
 
     const formData: FbFormModel = cloneDeep(data);
@@ -210,6 +207,14 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         });
 
         await handleFormTriggers({ props, data, formSubmission });
+
+        setTimeout(() => {
+            if (props.preview) {
+                setCurrentStepIndex(0);
+                resetLayoutRenderKey();
+            }
+        }, 3000);
+
         return formSubmission;
     };
 
@@ -246,7 +251,6 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
-        resetFormAfterSubmit,
         isLastStep,
         isFirstStep,
         currentStepIndex,
@@ -262,7 +266,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     return (
         <>
             <ps-tag data-key="fb-form" data-value={data.formId} />
-            <LayoutRenderComponent {...layoutProps} />
+            <LayoutRenderComponent {...layoutProps} key={layoutRenderKey} />
         </>
     );
 };

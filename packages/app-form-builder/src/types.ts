@@ -299,7 +299,6 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
-    resetFormAfterSubmit?: (callback: () => void) => void;
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;
