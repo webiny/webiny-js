@@ -101,7 +101,9 @@ const Header: React.FC<HeaderProps> = props => {
             <HeaderTitle>
                 <PageInfo>
                     <PageTitle>
-                        <Typography use="headline6">{page.title}</Typography>
+                        <Typography use="headline6" data-testid="page-details-page-title">
+                            {page.title}
+                        </Typography>
                     </PageTitle>
                     <PageLink onClick={handlePreviewClick}>
                         <Typography use="caption">{url}</Typography>

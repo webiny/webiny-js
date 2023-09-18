@@ -1,16 +1,14 @@
-import { GraphQLClient } from "graphql-request";
 import { PUBLISH_PAGE } from "./graphql";
+import { gqlClient } from "../utils";
 
 Cypress.Commands.add("pbPublishPage", variables => {
     cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
-        return client
-            .request(PUBLISH_PAGE, variables)
+        return gqlClient
+            .request({
+                query: PUBLISH_PAGE,
+                variables,
+                authToken: user.idToken.jwtToken
+            })
             .then(response => response.pageBuilder.publishPage.data);
     });
 });

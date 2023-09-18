@@ -26,7 +26,7 @@ export const RecordActionDelete = ({ record }: Props): ReactElement => {
     }
 
     return (
-        <MenuItem onClick={openDialogDeletePage}>
+        <MenuItem onClick={openDialogDeletePage} data-testid="record-action-delete">
             <ListItemGraphic>
                 <Icon icon={<Delete />} />
             </ListItemGraphic>

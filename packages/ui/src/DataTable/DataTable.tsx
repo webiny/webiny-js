@@ -289,8 +289,9 @@ interface TableRowProps<T> {
 }
 
 const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
+    const testId = `ui-data-table-row-index-${row.index}`;
     return (
-        <DataTableRow selected={selected}>
+        <DataTableRow selected={selected} data-testid={testId}>
             {row.getVisibleCells().map(cell => (
                 <MemoTableCell<T> key={cell.id} cell={cell} />
             ))}

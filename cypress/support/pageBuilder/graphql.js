@@ -31,9 +31,9 @@ export const LIST_PAGES = gql`
 `;
 
 export const CREATE_PAGE = gql`
-    mutation CreatePage($category: String!) {
+    mutation CreatePage($from: ID, $category: String, $meta: JSON) {
         pageBuilder {
-            createPage(category: $category) {
+            createPage(from: $from, category: $category, meta: $meta) {
                 data {
                     id
                 }

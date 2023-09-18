@@ -1,16 +1,19 @@
-import { GraphQLClient } from "graphql-request";
 import { LIST_PAGES } from "./graphql";
+import { login } from "../login";
+import { gqlClient } from "../utils";
 
-Cypress.Commands.add("pbListPages", variables => {
-    cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
+export const pbListPages = ({ user, variables = {} }) => {
+    return gqlClient
+        .request({
+            query: LIST_PAGES,
+            variables,
+            authToken: user.idToken.jwtToken
+        })
+        .then(response => response.pageBuilder.listPages.data);
+};
 
-        return client
-            .request(LIST_PAGES, variables)
-            .then(response => response.pageBuilder.listPages.data);
+Cypress.Commands.add("pbListPages", (variables = {}) => {
+    return login().then(user => {
+        return pbListPages({ user, variables });
     });
 });
