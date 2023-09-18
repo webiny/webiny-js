@@ -644,7 +644,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const createEntry: CmsEntryContext["createEntry"] = async (model, inputData) => {
+    const createEntry: CmsEntryContext["createEntry"] = async (model, inputData, options) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -654,12 +654,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Make sure we only work with fields that are defined in the model.
          */
         const initialInput = mapAndCleanCreateInputData(model, inputData);
-
-        await validateModelEntryData({
-            context,
-            model,
-            data: initialInput
-        });
+        /**
+         * Possibility to save draft without validation.
+         */
+        if (options?.validate !== false) {
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialInput
+            });
+        }
 
         const input = await referenceFieldsMapping({
             context,
@@ -743,7 +747,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
         model,
         sourceId,
-        inputData
+        inputData,
+        options
     ) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
@@ -786,12 +791,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...input
         };
 
-        await validateModelEntryData({
-            context,
-            model,
-            data: initialValues,
-            entry: originalEntry
-        });
+        /**
+         * Possibility to save draft without validation.
+         */
+        if (options?.validate !== false) {
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialValues,
+                entry: originalEntry
+            });
+        }
 
         const values = await referenceFieldsMapping({
             context,
@@ -871,7 +881,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const updateEntry: CmsEntryContext["updateEntry"] = async (model, id, inputData, metaInput) => {
+    const updateEntry: CmsEntryContext["updateEntry"] = async (
+        model,
+        id,
+        inputData,
+        options,
+        metaInput
+    ) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -902,12 +918,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await validateModelEntryData({
-            context,
-            model,
-            data: input,
-            entry: originalEntry
-        });
+        /**
+         * Possibility to save draft without validation.
+         */
+        if (options?.validate !== false) {
+            await validateModelEntryData({
+                context,
+                model,
+                data: input,
+                entry: originalEntry
+            });
+        }
 
         await entriesPermissions.ensure({ owns: originalEntry.createdBy });
 
@@ -1357,6 +1378,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         await entriesPermissions.ensure({ owns: originalStorageEntry.createdBy });
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+
+        await validateModelEntryData({
+            context,
+            model,
+            data: originalEntry.values,
+            entry: originalEntry
+        });
 
         const currentDate = new Date().toISOString();
         const entry: CmsEntry = {

@@ -2293,6 +2293,18 @@ export interface DeleteMultipleEntriesParams {
 
 export type DeleteMultipleEntriesResponse = { id: string }[];
 
+export interface CmsEntryCreateOptions {
+    validate?: boolean;
+}
+
+export interface CmsEntryUpdateOptions {
+    validate?: boolean;
+}
+
+export interface CmsEntryCreateFromOptions {
+    validate?: boolean;
+}
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2344,14 +2356,19 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (
+        model: CmsModel,
+        input: CreateCmsEntryInput,
+        options?: CmsEntryCreateOptions
+    ) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        input: CreateFromCmsEntryInput
+        input: CreateFromCmsEntryInput,
+        options?: CmsEntryCreateFromOptions
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
@@ -2360,7 +2377,8 @@ export interface CmsEntryContext {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput,
-        meta?: Record<string, any>
+        meta?: Record<string, any>,
+        options?: CmsEntryUpdateOptions
     ) => Promise<CmsEntry>;
     /**
      * Move entry, and all its revisions, to a new folder.
