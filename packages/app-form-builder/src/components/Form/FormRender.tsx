@@ -213,7 +213,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
                 setCurrentStepIndex(0);
                 resetLayoutRenderKey();
             }
-        }, 3000);
+        }, 2000);
 
         return formSubmission;
     };
