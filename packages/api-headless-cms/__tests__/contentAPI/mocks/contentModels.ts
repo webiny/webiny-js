@@ -294,7 +294,7 @@ const models: CmsModel[] = [
                 id: ids.field205,
                 multipleValues: false,
                 helpText: "",
-                label: "Price",
+                label: "Items In Stock",
                 storageId: "number@itemsInStockStorageId",
                 fieldId: "itemsInStock",
                 type: "number",

@@ -170,11 +170,11 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createReviewApiModel(data: ReviewApiModelInput!): ReviewApiModelResponse
+        createReviewApiModel(data: ReviewApiModelInput!, options: CmsEntryCreateOptions): ReviewApiModelResponse
 
-        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput): ReviewApiModelResponse
+        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput, options: CmsEntryCreateFromOptions): ReviewApiModelResponse
 
-        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
+        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!, options: CmsEntryUpdateOptions): ReviewApiModelResponse
         
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 

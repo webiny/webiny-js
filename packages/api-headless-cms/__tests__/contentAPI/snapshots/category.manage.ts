@@ -158,11 +158,11 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createCategoryApiNameWhichIsABitDifferentThanModelId(data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelId(data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!, options: CmsEntryCreateOptions): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput, options: CmsEntryCreateFromOptions): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!, options: CmsEntryUpdateOptions): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
     
         moveCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, folderId: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdMoveResponse
 

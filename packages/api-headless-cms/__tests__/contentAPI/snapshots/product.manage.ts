@@ -360,11 +360,11 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createProductApiSingular(data: ProductApiSingularInput!): ProductApiSingularResponse
+        createProductApiSingular(data: ProductApiSingularInput!, options: CmsEntryCreateOptions): ProductApiSingularResponse
 
-        createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput): ProductApiSingularResponse
+        createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput, options: CmsEntryCreateFromOptions): ProductApiSingularResponse
 
-        updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!): ProductApiSingularResponse
+        updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!, options: CmsEntryUpdateOptions): ProductApiSingularResponse
         
         moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
 

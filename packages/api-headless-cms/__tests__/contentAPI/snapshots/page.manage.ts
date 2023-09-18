@@ -437,16 +437,18 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createPageModelApiName(data: PageModelApiNameInput!): PageModelApiNameResponse
+        createPageModelApiName(data: PageModelApiNameInput!, options: CmsEntryCreateOptions): PageModelApiNameResponse
 
         createPageModelApiNameFrom(
             revision: ID!
             data: PageModelApiNameInput
+            options: CmsEntryCreateFromOptions
         ): PageModelApiNameResponse
 
         updatePageModelApiName(
             revision: ID!
             data: PageModelApiNameInput!
+            options: CmsEntryUpdateOptions
         ): PageModelApiNameResponse
 
         movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
