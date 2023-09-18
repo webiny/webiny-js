@@ -170,7 +170,6 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                                     );
                                     return;
                                 }
-
                                 showConfirmation(async () => {
                                     await deleteChangeRequest(id);
                                 });

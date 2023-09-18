@@ -92,7 +92,7 @@ export const createChangeRequestStorageOperations = (
              */
             if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
                 throw new WebinyError(
-                    "Could not update the change request. Only owner can update the change request"
+                    "Could not edit the change request. Only the creator can edit it."
                 );
             }
 
@@ -113,17 +113,16 @@ export const createChangeRequestStorageOperations = (
             const model = await getChangeRequestModel();
             if (security.getIdentity()) {
                 /**
-                 * We're fetching the existing entry here because we're not accepting "app" field as input,
-                 * but, we still need to retain its value after the "update" operation.
+                 * We're fetching the existing entry
                  */
                 const existingEntry = await getChangeRequest({ id: params.id });
 
                 /**
-                 * Only creator can update the change request
+                 * Only creator can delete the change request
                  */
-                if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
+                if (existingEntry.createdBy.id !== security.getIdentity().id) {
                     throw new WebinyError(
-                        "Could not update the change request. Only owner can update the change request"
+                        "Could not delete the change request. Only the creator can delete it."
                     );
                 }
 
