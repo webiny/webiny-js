@@ -444,6 +444,13 @@ Resources:
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeSecurityGroupReferences
 
+              # We need this to get logs from CloudWatch during data migrations.
+              - Effect: Allow
+                Resource: "*:"
+                Action:
+                  - logs:GetLogEvents
+                  - logs:Unmask
+
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition
     Properties:

@@ -219,11 +219,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 }
 
                 setRecords(prev => {
-                    // If no data received, return the previous state
-                    if (!data.length) {
-                        return prev;
-                    }
-
                     // If there's no cursor, it means we're receiving a new list of records from scratch.
                     if (!after) {
                         return data;
