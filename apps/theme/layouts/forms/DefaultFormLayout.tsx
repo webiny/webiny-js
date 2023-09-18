@@ -9,6 +9,7 @@ import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 import { Button } from "./DefaultFormLayout/buttons/Button";
+
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
@@ -70,15 +71,15 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Once the data is successfully submitted, we show a success message.
      */
     const submitForm = async (data: Record<string, any>): Promise<void> => {
-        if (!isLastStep) {
-            goToNextStep();
-        } else {
+        if (isLastStep) {
             setLoading(true);
             const result = await submit(data);
             setLoading(false);
             if (result.error === null) {
                 setFormSuccess(true);
             }
+        } else {
+            goToNextStep();
         }
     };
 
