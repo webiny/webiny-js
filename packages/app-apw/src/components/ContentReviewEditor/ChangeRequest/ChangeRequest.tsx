@@ -142,9 +142,12 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                         <DefaultButton
                             onClick={() => {
                                 if (!canEditChangeRequest()) {
-                                    showDialog("Change request can be edited by the owner.", {
-                                        title: "Edit change request"
-                                    });
+                                    showDialog(
+                                        "You cannot edit the change request. Only the creator can edit it.",
+                                        {
+                                            title: "Edit change request"
+                                        }
+                                    );
                                     return;
                                 }
                                 setOpen(true);
@@ -159,9 +162,12 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                         <DefaultButton
                             onClick={() => {
                                 if (!canEditChangeRequest()) {
-                                    showDialog("Change request can be deleted by the owner.", {
-                                        title: "Deleted change request"
-                                    });
+                                    showDialog(
+                                        "You cannot delete the change request. Only the creator can delete it.",
+                                        {
+                                            title: "Deleted change request"
+                                        }
+                                    );
                                     return;
                                 }
 
