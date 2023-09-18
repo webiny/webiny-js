@@ -127,6 +127,7 @@ Resources:
                 Action:
                   - cognito-idp:CreateUserPoolClient
                   - cognito-idp:DeleteUserPool
+                  - cognito-idp:UpdateUserPool
                   - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPool
                   - cognito-idp:DescribeUserPoolClient
