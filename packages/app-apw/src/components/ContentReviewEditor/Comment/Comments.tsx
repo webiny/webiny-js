@@ -6,7 +6,7 @@ import { Box, Columns, Stack } from "~/components/Layout";
 import { fromNow } from "~/utils";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
 import { useCommentsList } from "~/hooks/useCommentsList";
-import { TypographyBody, TypographySecondary, AuthorName, richTextWrapperStyles } from "../Styled";
+import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
 
@@ -46,6 +46,7 @@ const Comment: React.FC<CommentProps> = props => {
             <CommentBox paddingX={3.5} paddingY={5}>
                 <TypographyBody use={"caption"}>
                     <RichTextEditor
+                        elementId={comment.id}
                         readOnly={true}
                         className={richTextWrapperStyles}
                         value={comment.body}

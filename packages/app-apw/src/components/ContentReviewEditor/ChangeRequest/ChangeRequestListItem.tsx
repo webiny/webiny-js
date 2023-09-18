@@ -83,6 +83,7 @@ export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => 
                 <Box>
                     <TypographySecondary use={"caption"}>
                         <RichTextEditor
+                            elementId={id}
                             readOnly={true}
                             className={richTextWrapperStyles}
                             value={getTrimmedBody(body)}

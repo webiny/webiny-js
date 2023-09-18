@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import shortid from "shortid";
-import EditorJS from "@editorjs/editorjs";
-import {
+import EditorJS, {
     LogLevels,
     OutputBlockData,
     OutputData,
@@ -58,10 +57,11 @@ export interface RichTextEditorProps {
     disabled?: boolean;
     validation?: FormComponentProps["validation"];
     className?: string;
+    elementId?: string;
 }
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
-    const elementId = useRef("rte-" + shortid.generate());
+    const elementId = useRef("rte-" + (props?.elementId ? props.elementId : shortid.generate()));
     const editorRef = useRef<EditorJSType>();
 
     useEffect(() => {
