@@ -80,11 +80,21 @@ export const createChangeRequestStorageOperations = (
         },
         async updateChangeRequest(params) {
             const model = await getChangeRequestModel();
+
             /**
              * We're fetching the existing entry here because we're not accepting "app" field as input,
              * but, we still need to retain its value after the "update" operation.
              */
             const existingEntry = await getChangeRequest({ id: params.id });
+
+            /**
+             * Only owner can update the change request
+             */
+            if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
+                throw new WebinyError(
+                    "Could not update the change request. Only owner can update the change request"
+                );
+            }
 
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
@@ -102,9 +112,11 @@ export const createChangeRequestStorageOperations = (
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();
 
-            await security.withoutAuthorization(async () => {
-                return cms.deleteEntry(model, params.id);
-            });
+            if (security.getIdentity()) {
+                await security.withoutAuthorization(async () => {
+                    return cms.deleteEntry(model, params.id);
+                });
+            }
             return true;
         }
     };

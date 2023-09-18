@@ -157,7 +157,6 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </ButtonBox>
                     <ButtonBox paddingY={1} border={true}>
                         <DefaultButton
-                            disabled={identity?.id !== changeRequest.createdBy.id}
                             onClick={() => {
                                 if (!canEditChangeRequest()) {
                                     showDialog("Change request can be deleted by the owner.", {
