@@ -29,34 +29,45 @@ export class AcoApp implements IAcoApp {
     public get search(): AcoSearchRecordCrudBase {
         return {
             create: async <TData>(data: CreateSearchRecordParams<TData>) => {
-                return this.context.aco.search.create<TData>(this.model, data);
+                return this.context.aco.search.create<TData>(this.getModel(), data);
             },
             update: async <TData>(id: string, data: SearchRecord<TData>) => {
                 /**
                  * Required to have as any atm as TS is breaking on the return type.
                  */
-                return (await this.context.aco.search.update<TData>(this.model, id, data)) as any;
+                return (await this.context.aco.search.update<TData>(
+                    this.getModel(),
+                    id,
+                    data
+                )) as any;
             },
             move: async (id: string, folderId?: string) => {
-                return this.context.aco.search.move(this.model, id, folderId);
+                return this.context.aco.search.move(this.getModel(), id, folderId);
             },
             get: async <TData>(id: string) => {
-                return this.context.aco.search.get<TData>(this.model, id);
+                return this.context.aco.search.get<TData>(this.getModel(), id);
             },
             list: async <TData>(params: ListSearchRecordsParams) => {
-                return this.context.aco.search.list<TData>(this.model, params);
+                return this.context.aco.search.list<TData>(this.getModel(), params);
             },
             delete: async (id: string): Promise<Boolean> => {
-                return this.context.aco.search.delete(this.model, id);
+                return this.context.aco.search.delete(this.getModel(), id);
             },
             listTags: async (params: ListSearchRecordTagsParams) => {
-                return this.context.aco.search.listTags(this.model, params);
+                return this.context.aco.search.listTags(this.getModel(), params);
             }
         };
     }
 
     public get folder() {
         return this.context.aco.folder;
+    }
+
+    private getModel() {
+        const tenant = this.context.tenancy.getCurrentTenant().id;
+        const locale = this.context.i18n.getContentLocale()!.code;
+
+        return { ...this.model, tenant, locale };
     }
 
     private constructor(context: AcoContext, params: IAcoAppParams) {
