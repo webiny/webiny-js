@@ -9,7 +9,6 @@ import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 import { Button } from "./DefaultFormLayout/buttons/Button";
-
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
@@ -112,7 +111,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     {isMultiStepForm && (
                         <ButtonsWrapper>
                             <Button
-                                type="default"
                                 fullWidth={false}
                                 onClick={goToPreviousStep}
                                 disabled={isFirstStep}

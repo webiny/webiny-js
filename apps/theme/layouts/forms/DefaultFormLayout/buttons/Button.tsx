@@ -18,11 +18,17 @@ interface Props {
     fullWidth: boolean;
     disabled: boolean;
     children: React.ReactNode;
-    type: "primary" | "default";
+    type?: "primary" | "default";
     onClick: FormRenderPropParamsSubmit | (() => void);
 }
 
-export const Button: React.FC<Props> = ({ fullWidth, disabled, children, type, onClick }) => {
+export const Button: React.FC<Props> = ({
+    fullWidth,
+    disabled,
+    children,
+    type = "default",
+    onClick
+}) => {
     return (
         <Wrapper fullWidth={fullWidth} type={type}>
             <button className={"button-body"} onClick={onClick} disabled={disabled}>

@@ -99,7 +99,7 @@ export const EditTab: React.FC = () => {
         id: null
     });
 
-    const [stepTitle, setStepTitle] = useState<string>("");
+    const stepTitle = data.steps.find(step => step.id === isEditStep.id)?.title || "";
 
     const handleStepMove = (source: any, step: FbFormStep): void => {
         const { pos, formStep } = source;
@@ -118,24 +118,30 @@ export const EditTab: React.FC = () => {
 
     // This function will render drop zones on the top of the step,
     // if steps are locatted above "source" ("source" step is the step that we move).
-    const renderTopDropZone = (formStepId: string, stepId: string) => {
+    const renderTopDropZone = (sourceStepId: string | undefined, targetStepId: string) => {
+        if (!sourceStepId) {
+            return false;
+        }
         const stepsIds = data.steps.reduce(
             (prevVal, currVal) => [...prevVal, currVal.id],
             [] as string[]
         );
 
-        return stepsIds.slice(0, stepsIds.indexOf(formStepId)).includes(stepId);
+        return stepsIds.slice(0, stepsIds.indexOf(sourceStepId)).includes(targetStepId);
     };
 
     // This function will render drop zones on the top of the step,
     // if steps are locatted below "source" ("source" step is the step that we move).
-    const renderBottomDropZone = (formStepId: string, stepId: string) => {
+    const renderBottomDropZone = (sourceStepId: string | undefined, targetStepId: string) => {
+        if (!sourceStepId) {
+            return false;
+        }
         const stepsIds = data.steps.reduce(
             (prevVal, currVal) => [...prevVal, currVal.id],
             [] as string[]
         );
 
-        return stepsIds.slice(stepsIds.indexOf(formStepId)).includes(stepId);
+        return stepsIds.slice(stepsIds.indexOf(sourceStepId)).includes(targetStepId);
     };
 
     return (
@@ -168,7 +174,6 @@ export const EditTab: React.FC = () => {
                                                 isOpened: true,
                                                 id: formStep.id
                                             });
-                                            setStepTitle(formStep.title);
                                         }}
                                         deleteStepDisabled={data.steps.length <= 1}
                                         moveRow={moveRow}
@@ -183,14 +188,13 @@ export const EditTab: React.FC = () => {
                                 </div>
                                 <Horizontal
                                     onDrop={item => {
-                                        console.log("item", item);
                                         handleStepMove(item, formStep);
                                         return undefined;
                                     }}
                                     isVisible={item => {
                                         return (
                                             item.ui === "step" &&
-                                            renderTopDropZone(item.pos?.row?.id, formStep.id)
+                                            renderTopDropZone(item?.formStep?.id, formStep.id)
                                         );
                                     }}
                                 />
@@ -203,7 +207,7 @@ export const EditTab: React.FC = () => {
                                     isVisible={item => {
                                         return (
                                             item.ui === "step" &&
-                                            renderBottomDropZone(item.pos?.row?.id, formStep.id)
+                                            renderBottomDropZone(item?.formStep?.id, formStep.id)
                                         );
                                     }}
                                 />
@@ -223,7 +227,6 @@ export const EditTab: React.FC = () => {
                 setIsEditStep={setIsEditStep}
                 updateStep={updateStep}
                 stepTitle={stepTitle}
-                setStepTitle={setStepTitle}
             />
         </EditContainer>
     );

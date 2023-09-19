@@ -2,8 +2,10 @@ import React from "react";
 import styled from "@emotion/styled";
 
 import { Dialog as BaseDialog } from "@webiny/ui/Dialog";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import { validation } from "@webiny/validation";
 
 const EditStepDialog = styled(BaseDialog)`
     font-size: 1.4rem;
@@ -49,17 +51,21 @@ export interface DialogProps {
     };
     stepTitle: string;
     setIsEditStep: (params: { isOpened: boolean; id: string | null }) => void;
-    setStepTitle: (title: string) => void;
     updateStep: (title: string, id: string | null) => void;
 }
 
+type SubmitData = { title: string };
+
 export const EditFormStepDialog = ({
     isEditStep,
-    setIsEditStep,
     stepTitle,
-    setStepTitle,
+    setIsEditStep,
     updateStep
 }: DialogProps) => {
+    const onSubmit: FormOnSubmit<SubmitData> = (_, form) => {
+        updateStep(form.data.title, isEditStep.id);
+        setIsEditStep({ isOpened: false, id: null });
+    };
     return (
         <>
             <EditStepDialog
@@ -71,35 +77,28 @@ export const EditFormStepDialog = ({
                     })
                 }
             >
-                <DialogHeader>
-                    <span>Change Step Title</span>
-                </DialogHeader>
-                <DialogBody>
-                    <Input
-                        label="Change Step Title"
-                        value={stepTitle}
-                        onChange={setStepTitle}
-                        validation={{
-                            isValid: stepTitle.length >= 1,
-                            message: "Step title cannot be empty"
-                        }}
-                    />
-                </DialogBody>
-                <DialogActions>
-                    <ButtonSecondary onClick={() => setIsEditStep({ isOpened: false, id: null })}>
-                        Cancel
-                    </ButtonSecondary>
-                    <ButtonPrimary
-                        onClick={() => {
-                            updateStep(stepTitle, isEditStep.id);
-                            if (stepTitle.length >= 1) {
-                                setIsEditStep({ isOpened: false, id: null });
-                            }
-                        }}
-                    >
-                        Save
-                    </ButtonPrimary>
-                </DialogActions>
+                <Form onSubmit={onSubmit} data={{ title: stepTitle }}>
+                    {({ Bind, submit }) => (
+                        <>
+                            <DialogHeader>
+                                <span>Change Step Title</span>
+                            </DialogHeader>
+                            <DialogBody>
+                                <Bind name={"title"} validators={[validation.create("required")]}>
+                                    <Input label={"Change Step Title"} />
+                                </Bind>
+                            </DialogBody>
+                            <DialogActions>
+                                <ButtonSecondary
+                                    onClick={() => setIsEditStep({ isOpened: false, id: null })}
+                                >
+                                    Cancel
+                                </ButtonSecondary>
+                                <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                            </DialogActions>
+                        </>
+                    )}
+                </Form>
             </EditStepDialog>
         </>
     );
