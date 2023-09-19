@@ -4,29 +4,18 @@ import { useBind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { UTC_TIMEZONES } from "@webiny/utils";
-import { validation } from "@webiny/validation";
 
 interface DateWithTimezoneProps {
     name: string;
 }
 
-export const DateWithTimezone: React.VFC<DateWithTimezoneProps> = ({ name }) => {
+export const DateWithTimezone = ({ name }: DateWithTimezoneProps) => {
     const [dateTime, setDateTime] = useState("");
     const [timeZone, setTimeZone] = useState("+00:00");
 
-    const { onChange, validate } = useBind({
-        name,
-        validators: [validation.create("required")]
+    const { onChange } = useBind({
+        name
     });
-
-    const onBlur = (ev: React.SyntheticEvent) => {
-        if (validate) {
-            // Since we are accessing event in an async operation, we need to persist it.
-            // See https://reactjs.org/docs/events.html#event-pooling.
-            ev.persist();
-            validate();
-        }
-    };
 
     const handleDateTimeChange = (value: string) => {
         const date = new Date(value);
@@ -47,7 +36,6 @@ export const DateWithTimezone: React.VFC<DateWithTimezoneProps> = ({ name }) => 
                 type={"datetime-local"}
                 value={dateTime}
                 onChange={handleDateTimeChange}
-                onBlur={onBlur}
                 required={true}
             />
 

@@ -1,4 +1,6 @@
 import React, { useRef } from "react";
+
+import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
 import { observer } from "mobx-react-lite";
 // @ts-ignore
@@ -7,18 +9,17 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { DrawerContainer } from "./styled";
 
-import { Field } from "./types";
-import { BuilderCompositionRoot } from "~/components/AdvancedSearch/Builder/BuilerCompositionRoot";
-import { FormAPI } from "@webiny/form";
+import { QueryBuilder } from "~/components/AdvancedSearch/QueryBuilder/QueryBuilder";
+import { FieldRaw } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
 interface DrawerProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
-    fields: Field[];
+    fields: FieldRaw[];
 }
 
-export const Drawer: React.VFC<DrawerProps> = observer(({ open, onClose, fields, onSubmit }) => {
+export const Drawer = observer(({ open, onClose, fields, onSubmit }: DrawerProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -33,10 +34,10 @@ export const Drawer: React.VFC<DrawerProps> = observer(({ open, onClose, fields,
         <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">
                 <Header onClose={onClose} />
-                <BuilderCompositionRoot
+                <QueryBuilder
                     fields={fields}
-                    onChange={data => console.log(data)}
                     onForm={form => (ref.current = form)}
+                    onSubmit={onSubmit}
                 />
                 <Footer formRef={ref} onClose={onClose} />
             </DrawerContent>

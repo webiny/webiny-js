@@ -1,34 +1,22 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { Bind } from "@webiny/form";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
-import { validation } from "@webiny/validation";
 
-import { Field } from "~/components/AdvancedSearch/types";
+import { Predefined } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
 interface MultipleValuesProps {
-    field: Field;
+    predefined: Predefined[];
     name: string;
 }
 
-export const MultipleValues: React.VFC<MultipleValuesProps> = ({ field, name }) => {
-    const predefinedValues = useMemo(() => {
-        if (!field.predefinedValues?.values) {
-            return [];
-        }
-
-        return field.predefinedValues?.values.map(({ label, value }) => ({
-            label,
-            value
-        }));
-    }, [field]);
-
+export const MultipleValues = ({ predefined, name }: MultipleValuesProps) => {
     return (
-        <Bind name={name} validators={[validation.create("required")]}>
+        <Bind name={name}>
             <CheckboxGroup label="Values">
                 {({ onChange, getValue }) => (
                     <>
-                        {predefinedValues.map(({ label, value }) => (
+                        {predefined.map(({ label, value }) => (
                             <Checkbox
                                 key={value}
                                 label={label}

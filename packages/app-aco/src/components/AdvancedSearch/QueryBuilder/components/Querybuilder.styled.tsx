@@ -1,8 +1,7 @@
+import React from "react";
 import styled from "@emotion/styled";
-
 import { IconButton } from "@webiny/ui/Button";
 import { Drawer as RmwcDrawer } from "@webiny/ui/Drawer";
-import React from "react";
 
 export const CloseButton = styled(IconButton)`
     position: absolute;

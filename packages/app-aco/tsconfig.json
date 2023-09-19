@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api-headless-cms" },
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-headless-cms-common" },
@@ -20,6 +21,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
