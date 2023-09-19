@@ -163,7 +163,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }
                         setOptionsValue(newValue);
                         clearEditOption();
                     },
-                    [optionsValue, setOptionsValue]
+                    [optionsValue, editOption, setOptionsValue]
                 );
                 return (
                     <>
