@@ -885,8 +885,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         id,
         inputData,
-        options,
-        metaInput
+        metaInput,
+        options
     ) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
@@ -1776,9 +1776,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async updateEntry(model, id, input, meta) {
+        async updateEntry(model, id, input, meta, options) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
-                return updateEntry(model, id, input, meta);
+                return updateEntry(model, id, input, meta, options);
             });
         },
         async moveEntry(model, id, folderId) {

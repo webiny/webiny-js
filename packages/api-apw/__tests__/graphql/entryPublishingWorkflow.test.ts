@@ -72,6 +72,28 @@ describe("Cms Entry Publishing Workflow", () => {
             }
         });
         const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
+
+        const [getEntryResponse] = await getContentEntryQuery(model, {
+            revision: entry.id
+        });
+        expect(getEntryResponse).toMatchObject({
+            data: {
+                getProduct: {
+                    data: {
+                        id: entry.id,
+                        meta: {
+                            data: {
+                                apw: {
+                                    workflowId: workflow.id,
+                                    contentReviewId: createdContentReview.id
+                                }
+                            }
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
         /*
          *  We should be able to make updates to the entry.
          */
