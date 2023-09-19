@@ -144,9 +144,9 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                             onClick={() => {
                                 if (!canEditChangeRequest()) {
                                     showDialog(
-                                        "You cannot edit the change request. Only the creator can edit it.",
+                                        t`You cannot edit the change request. Only the creator can edit it.`,
                                         {
-                                            title: "Edit change request"
+                                            title: t`Edit change request`
                                         }
                                     );
                                     return;
@@ -164,9 +164,9 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                             onClick={() => {
                                 if (!canEditChangeRequest()) {
                                     showDialog(
-                                        "You cannot delete the change request. Only the creator can delete it.",
+                                        t`You cannot delete the change request. Only the creator can delete it.`,
                                         {
-                                            title: "Deleted change request"
+                                            title: t`Deleted change request`
                                         }
                                     );
                                     return;
