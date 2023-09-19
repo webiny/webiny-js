@@ -24,7 +24,7 @@ import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 import { useFileDetails } from "~/hooks/useFileDetails";
 import { FileProvider } from "~/contexts/FileProvider";
-import { prepareFormData } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/prepareFormData";
+import { prepareFormData } from "@webiny/app-headless-cms-common";
 import { CmsModelField } from "@webiny/app-headless-cms/types";
 
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
