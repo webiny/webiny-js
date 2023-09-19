@@ -9,10 +9,12 @@ const pageFields = `
     content {
         ...on ${singularPageApiName}_Content_Hero {
             title
+            _templateId
             __typename
         }
         ...on ${singularPageApiName}_Content_SimpleText {
             text
+            _templateId
             __typename
         }
         ...on ${singularPageApiName}_Content_Objecting {
@@ -32,6 +34,7 @@ const pageFields = `
                     }
                 }
             }
+            _templateId
             __typename
         }
         ...on ${singularPageApiName}_Content_Author {

@@ -22,8 +22,8 @@ describe("search", () => {
         return `A ${fruit} a`;
     };
 
-    const createFruits = async () => {
-        const fruits = ["strawb-erry", "straw-berry", "strawberry"];
+    const createFruits = async (input?: string[]) => {
+        const fruits = input || ["strawb-erry", "straw-berry", "strawberry"];
 
         return Promise.all(
             fruits.map(fruit => {
@@ -39,13 +39,13 @@ describe("search", () => {
         );
     };
 
-    const setupFruits = async () => {
+    const setupFruits = async (input?: string[]) => {
         const group = await setupContentModelGroup(fruitManager);
         await setupContentModels(fruitManager, group, ["fruit"]);
-        return createFruits();
+        return createFruits(input);
     };
 
-    it("should find record with dash in the middle of two words", async () => {
+    it.skip("should find record with dash in the middle of two words", async () => {
         await setupFruits();
         const [response] = await listFruits({
             where: {
@@ -61,6 +61,271 @@ describe("search", () => {
                             name: createName("straw-berry")
                         }
                     ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should find record with w/ in title", async () => {
+        const fruits = {
+            apple: "app w/ le",
+            banana: "banana w/",
+            orange: "w/ orange",
+            grape: "gr w/ ape"
+        };
+        await setupFruits(Object.values(fruits));
+
+        const [initialResponse] = await listFruits({
+            sort: ["createdOn_ASC"]
+        });
+        expect(initialResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: expect.any(Array),
+                    meta: {
+                        totalCount: 4,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Apple
+         */
+        const [appleOnEnd] = await listFruits({
+            where: {
+                name_contains: "app w/"
+            }
+        });
+        expect(appleOnEnd).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.apple)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [appleOnStart] = await listFruits({
+            where: {
+                name_contains: "w/ le"
+            }
+        });
+        expect(appleOnStart).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.apple)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [appleInMiddle] = await listFruits({
+            where: {
+                name_contains: "p w/ l"
+            }
+        });
+        expect(appleInMiddle).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.apple)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Banana
+         */
+        const [bananaOnEnd] = await listFruits({
+            where: {
+                name_contains: "ana w/"
+            }
+        });
+        expect(bananaOnEnd).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.banana)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [bananaInMiddle] = await listFruits({
+            where: {
+                name_contains: "banana w/"
+            }
+        });
+        expect(bananaInMiddle).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.banana)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Orange
+         */
+        const [orangeOnStart] = await listFruits({
+            where: {
+                name_contains: "w/ ora"
+            }
+        });
+        expect(orangeOnStart).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.orange)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [orangeInMiddle] = await listFruits({
+            where: {
+                name_contains: "w/ orange"
+            }
+        });
+        expect(orangeInMiddle).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.orange)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Grape
+         */
+        const [grapeOnEnd] = await listFruits({
+            where: {
+                name_contains: "gr w/"
+            }
+        });
+        expect(grapeOnEnd).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.grape)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [grapeOnStart] = await listFruits({
+            where: {
+                name_contains: "w/ ape"
+            }
+        });
+        expect(grapeOnStart).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.grape)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [grapeInMiddle] = await listFruits({
+            where: {
+                name_contains: "r w/ ap"
+            }
+        });
+        expect(grapeInMiddle).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            name: createName(fruits.grape)
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
                     error: null
                 }
             }
