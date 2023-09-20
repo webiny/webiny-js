@@ -38,28 +38,29 @@ export interface TableProps {
     canSelectAllRows: boolean;
 }
 
-type FileEntry = {
-    $type: "RECORD";
+interface BaseEntry {
     $selectable: boolean;
     id: string;
-    name: string;
     createdBy: string;
+    createdOn: string;
     savedOn: string;
+}
+
+interface FileEntry extends BaseEntry {
+    $type: "RECORD";
+    name: string;
     type: string;
     size: number;
     original: FileItem;
     location: Location;
-};
+}
 
-type FolderEntry = {
+interface FolderEntry extends BaseEntry {
     $type: "FOLDER";
     $selectable: boolean;
-    id: string;
     title: string;
-    createdBy: string;
-    savedOn: string;
     original: FolderItem;
-};
+}
 
 type Entry = FolderEntry | FileEntry;
 
@@ -71,6 +72,7 @@ const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] 
             id: data.id,
             name: data.name,
             createdBy: data.createdBy?.displayName || "-",
+            createdOn: data.createdOn,
             savedOn: data.savedOn,
             type: data.type,
             size: data.size,
@@ -87,6 +89,7 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
         id: item.id,
         title: item.title,
         createdBy: item.createdBy?.displayName || "-",
+        createdOn: item.createdOn,
         savedOn: item.savedOn,
         original: item
     }));
@@ -158,13 +161,18 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     return "-";
                 }
             },
-            savedOn: {
-                header: "Last modified",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            createdOn: {
+                header: "Created",
+                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author"
+            },
+            savedOn: {
+                header: "Modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
             },
             original: {
                 header: "",
@@ -227,6 +235,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onSelectRow={onSelectRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
                 onSortingChange={onSortingChange}
                 selectedRows={createRecordsData(selectedRecords, true)}
             />
