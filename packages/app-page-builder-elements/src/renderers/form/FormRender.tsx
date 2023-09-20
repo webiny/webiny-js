@@ -31,10 +31,11 @@ export interface FormRenderProps {
     createFormParams: CreateFormParams;
     formData: FormData;
     loading: boolean;
+    isLatestRevision?: boolean;
 }
 
 const FormRender: React.FC<FormRenderProps> = props => {
-    const { formData, createFormParams } = props;
+    const { formData, createFormParams, isLatestRevision } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
@@ -211,6 +212,10 @@ const FormRender: React.FC<FormRenderProps> = props => {
         <>
             <FormLayoutComponent {...layoutProps} />
             <ps-tag data-key="fb-form" data-value={formData.formId} />
+            <ps-tag
+                data-key="fb-form-revision"
+                data-value={`${formData.id}${isLatestRevision ? "#latest" : ""}`}
+            />
         </>
     );
 };

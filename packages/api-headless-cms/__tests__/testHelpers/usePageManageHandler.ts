@@ -46,7 +46,6 @@ const pageFields = `
                 id
                 modelId
             }
-            _templateId
             __typename
         }
     }

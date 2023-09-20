@@ -13339,6 +13339,7 @@ __metadata:
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-mailer": 0.0.0
+    "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/api-wcp": 0.0.0

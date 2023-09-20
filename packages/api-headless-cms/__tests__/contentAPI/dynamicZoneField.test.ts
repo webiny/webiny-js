@@ -309,7 +309,7 @@ describe("dynamicZone field", () => {
                 updatePage: {
                     data: {
                         id: expect.any(String),
-                        ...withTemplateId(contentEntryQueryData)
+                        ...contentEntryQueryData
                     },
                     error: null
                 }
