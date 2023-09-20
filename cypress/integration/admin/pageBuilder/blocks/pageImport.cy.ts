@@ -32,12 +32,12 @@ context("Page Builder - Blocks import", () => {
     it("Test the exportation of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
 
-        //Creation of categories and blocks
+        // Creation of categories and blocks.
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, 1);
         cy.pbCreateCategoryAndBlocks(blockCategoryData2, 2);
         cy.pbCreateCategoryAndBlocks(blockCategoryData3, 3);
 
-        //Exports all created data and saves the exported string value
+        // Exports all created data and saves the exported string value.
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.findByTestId("pb-blocks-list-options-menu").click();
         cy.findByText("Export all blocks").click();
@@ -59,7 +59,7 @@ context("Page Builder - Blocks import", () => {
         cy.contains("Continue").click();
         cy.findByText("All blocks have been imported").should("exist");
         cy.contains("Continue").click();
-        //Validation of imported blocks and categories
+        // Validation of imported blocks and categories.
         cy.contains(blockCategoryData1.name).should("exist");
         cy.contains(blockCategoryData2.name).should("exist");
         cy.contains(blockCategoryData3.name).should("exist");
