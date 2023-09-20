@@ -70,7 +70,8 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
                                 "center",
                                 DisplayMode.DESKTOP
                             ) as unknown as "flex-start" | "center" | "flex-end"
-                        }
+                        },
+                        action: { actionType: "link", href: "" }
                     },
                     ...options
                 };

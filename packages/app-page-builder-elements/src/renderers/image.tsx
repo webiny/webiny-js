@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { createRenderer, CreateRendererOptions } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { LinkComponent as LinkComponentType } from "~/types";
-import { DefaultLinkComponent } from "~/renderers/components";
+import { DefaultLinkComponent, EmptyElement } from "~/renderers/components";
 
 export interface ImageElementData {
     image?: {
@@ -80,7 +80,7 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
 
         content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
     } else {
-        content = renderEmpty || null;
+        content = renderEmpty || <EmptyElement message="Please select an image." />;
     }
 
     const linkProps = link || element.data?.link;

@@ -39,9 +39,14 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
 }) => {
     const updateElement = useUpdateElement();
 
-    const { actionType } = element.data?.action || { actionType: "link" };
+    const { actionType } = element.data?.action || {};
 
     const updateSettings: FormOnSubmit = data => {
+        // Skip update if nothing is changed.
+        if (data.actionType === actionType) {
+            return;
+        }
+
         const attrKey = `data.action`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);

@@ -177,12 +177,12 @@ export interface PbElementDataTypeSource {
 
 export type PbElementDataType = {
     action?: {
-        href: string;
-        newTab: boolean;
-        clickHandler: string;
+        href?: string;
+        newTab?: boolean;
+        clickHandler?: string;
         actionType: string;
-        variables: PbButtonElementClickHandlerVariable[];
-        scrollToElement: string;
+        variables?: PbButtonElementClickHandlerVariable[];
+        scrollToElement?: string;
         [key: string]: any;
     };
     settings?: PbElementDataSettingsType;
