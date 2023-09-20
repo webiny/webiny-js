@@ -5,13 +5,12 @@ import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 import { AdvancedSearch } from "@webiny/app-aco";
 import { useModel } from "~/admin/hooks";
 import { CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/QueryBuilder/domain";
 
-import { Field } from "@webiny/app-aco/types";
+const excludedFieldTypes = ["ref", "rich-text", "file", "object", "dynamicZone"];
 
-const excludedFieldTypes = ["rich-text", "file", "object", "dynamicZone"];
-
-const parseModelFields = (modelFields: CmsModelField[]): Field[] => {
-    const defaultFields: Field[] = [
+const parseModelFields = (modelFields: CmsModelField[]) => {
+    const defaultFields = [
         {
             id: "status",
             type: "text",
@@ -100,7 +99,7 @@ export const Filters = () => {
                 onChange={applyFilters}
             />
             <AdvancedSearch
-                fields={parseModelFields(model.fields)}
+                fields={parseModelFields(model.fields) as FieldRaw[]}
                 onSubmit={applyAdvancedSearch}
             />
         </>

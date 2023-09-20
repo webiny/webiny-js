@@ -87,24 +87,22 @@ export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps)
                         <Cell span={4} align={"middle"}>
                             {filter.condition && (
                                 <Bind name={`${name}.value`}>
-                                    {({ validation, value }) => {
-                                        return (
-                                            <>
-                                                <InputField
-                                                    name={`${name}.value`}
-                                                    value={value}
-                                                    field={fields.find(
-                                                        field => field.value === filter.field
-                                                    )}
-                                                />
-                                                {!validation.isValid ? (
-                                                    <ValidationMessage>
-                                                        {validation.message}
-                                                    </ValidationMessage>
-                                                ) : null}
-                                            </>
-                                        );
-                                    }}
+                                    {({ validation, value }) => (
+                                        <>
+                                            <InputField
+                                                name={`${name}.value`}
+                                                value={value}
+                                                field={fields.find(
+                                                    field => field.value === filter.field
+                                                )}
+                                            />
+                                            {!validation.isValid ? (
+                                                <ValidationMessage>
+                                                    {validation.message}
+                                                </ValidationMessage>
+                                            ) : null}
+                                        </>
+                                    )}
                                 </Bind>
                             )}
                         </Cell>
