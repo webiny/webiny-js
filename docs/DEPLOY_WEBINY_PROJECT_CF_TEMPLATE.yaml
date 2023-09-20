@@ -127,6 +127,7 @@ Resources:
                 Action:
                   - cognito-idp:CreateUserPoolClient
                   - cognito-idp:DeleteUserPool
+                  - cognito-idp:UpdateUserPool
                   - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPool
                   - cognito-idp:DescribeUserPoolClient
@@ -226,6 +227,15 @@ Resources:
                 Resource:
                   - arn:aws:iam::*:role/wby-*
                   - arn:aws:iam::*:policy/wby-*
+
+              # AWS Identity and Access Management (IAM) - Service-Linked Roles
+              # Only needed for the "Amazon DynamoDB + Amazon Elasticsearch" database setup.
+              # https://www.webiny.com/docs/architecture/introduction#different-database-setups
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
 
               # AWS Lambda
               - Effect: Allow
@@ -434,6 +444,13 @@ Resources:
                   - ec2:DescribeRouteTables
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeSecurityGroupReferences
+
+              # We need this to get logs from CloudWatch during data migrations.
+              - Effect: Allow
+                Resource: "*:"
+                Action:
+                  - logs:GetLogEvents
+                  - logs:Unmask
 
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition
