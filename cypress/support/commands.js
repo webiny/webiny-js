@@ -33,6 +33,7 @@ import "./fileManager/fmDeleteFile";
 import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
+import "@testing-library/cypress/add-commands";
 
 import "./aco/acoNavigateToFolder";
 
