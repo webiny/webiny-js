@@ -92,7 +92,7 @@ export const createChangeRequestStorageOperations = (
              */
             if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
                 throw new WebinyError(
-                    "Could not edit the change request. Only the creator can edit it."
+                    "Could not update the change request. Only the creator can update it."
                 );
             }
 

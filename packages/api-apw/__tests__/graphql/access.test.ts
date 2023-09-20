@@ -11,6 +11,19 @@ import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 const model = accessTestModel.contentModel as CmsModel;
 
 describe("access", () => {
+    const workflowIdentity = {
+        id: "90962378",
+        type: "admin",
+        displayName: "Workflow Name",
+        email: "worflow-mock@webiny.local"
+    };
+
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql",
+        plugins: [accessTestGroup, accessTestModel],
+        storageOperationPlugins: []
+    });
+
     const {
         securityIdentity,
         reviewer: reviewerGQL,
@@ -29,10 +42,7 @@ describe("access", () => {
         createChangeRequestMutation,
         updateChangeRequestMutation,
         deleteChangeRequestMutation
-    } = useGraphQlHandler({
-        path: "/graphql",
-        plugins: [accessTestGroup, accessTestModel]
-    });
+    } = gqlHandler;
 
     const {
         // content entry
@@ -232,6 +242,7 @@ describe("access", () => {
                 }
             }
         });
+
         const changeRequestId = createChangeRequestResponse.data.apw.createChangeRequest.data.id;
 
         const [updateChangeRequestResponse] = await updateChangeRequestMutation({
@@ -290,6 +301,110 @@ describe("access", () => {
                 }
             }
         });
+    });
+
+    it("user who did not create the change request, cannot update it", async () => {
+        const createContentReviewResponse = await setupContentReview();
+        const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
+        const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
+
+        const changeRequestData = {
+            data: {
+                step: changeRequestStepId,
+                title: `Requesting change on "${entryTitle}"`,
+                body: [
+                    {
+                        type: "h1",
+                        text: "Really important!"
+                    }
+                ],
+                resolved: false,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        };
+        const [createChangeRequestResponse] = await createChangeRequestMutation(changeRequestData);
+
+        /**
+         * Login another user, that is not creator of the change request.
+         */
+        const notChangeRequestCreatorHandler = useGraphQlHandler({
+            path: "/graphql",
+            identity: workflowIdentity
+        });
+        await notChangeRequestCreatorHandler.securityIdentity.login();
+
+        /**
+         * Try to update the same change request with other user
+         */
+        const changeRequestId = createChangeRequestResponse.data.apw.createChangeRequest.data.id;
+        const [updateChangeRequestResponse] =
+            await notChangeRequestCreatorHandler.updateChangeRequestMutation({
+                id: changeRequestId,
+                data: {
+                    title: `Requesting change on "${entryTitle}" - updated`,
+                    body: [
+                        {
+                            type: "h1",
+                            text: "Really important! - updated"
+                        }
+                    ],
+                    resolved: false,
+                    media: {
+                        src: "cloudfront.net/my-file-updated"
+                    }
+                }
+            });
+
+        expect(updateChangeRequestResponse.data?.apw?.updateChangeRequest?.error?.message).toEqual(
+            "Could not update the change request. Only the creator can update it."
+        );
+    });
+
+    it("user who did not create the change request, cannot delete it", async () => {
+        const createContentReviewResponse = await setupContentReview();
+        const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
+        const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
+
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: {
+                step: changeRequestStepId,
+                title: `Requesting change on "${entryTitle}"`,
+                body: [
+                    {
+                        type: "h1",
+                        text: "Really important!"
+                    }
+                ],
+                resolved: false,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
+            }
+        });
+
+        /**
+         * Login another user, that is not creator of the change request.
+         */
+        const notChangeRequestCreatorHandler = useGraphQlHandler({
+            path: "/graphql",
+            identity: workflowIdentity
+        });
+        await notChangeRequestCreatorHandler.securityIdentity.login();
+
+        /**
+         * Try to delete the same change request with other user
+         */
+        const changeRequestId = createChangeRequestResponse.data.apw.createChangeRequest.data.id;
+        const [deleteChangeRequestResponse] =
+            await notChangeRequestCreatorHandler.deleteChangeRequestMutation({
+                id: changeRequestId
+            });
+
+        expect(deleteChangeRequestResponse.data?.apw?.deleteChangeRequest?.error?.message).toEqual(
+            "Could not delete the change request. Only the creator can delete it."
+        );
     });
 
     it("should create comment, update it and delete it", async () => {
