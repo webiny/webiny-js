@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Button } from "./Button";
 import { Drawer } from "./Drawer";
@@ -13,6 +13,15 @@ interface AdvancedSearchProps {
 export const AdvancedSearch: React.VFC<AdvancedSearchProps> = ({ fields, onSubmit }) => {
     const [open, setOpen] = useState(false);
 
+    const onDrawerSubmit = useCallback(
+        data => {
+            // Close the drawer on submission
+            setOpen(false);
+            onSubmit && onSubmit(data);
+        },
+        [onSubmit]
+    );
+
     return (
         <>
             <Button onClick={() => setOpen(true)} />
@@ -20,7 +29,7 @@ export const AdvancedSearch: React.VFC<AdvancedSearchProps> = ({ fields, onSubmi
                 open={open}
                 onClose={() => setOpen(false)}
                 fields={fields}
-                onSubmit={onSubmit}
+                onSubmit={onDrawerSubmit}
             />
         </>
     );

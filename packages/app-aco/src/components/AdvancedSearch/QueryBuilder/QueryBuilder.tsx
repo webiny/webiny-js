@@ -18,7 +18,7 @@ export const QueryBuilder = ({ fields, onForm, onSubmit }: QueryBuilderProps) =>
         if (fields) {
             setPresenter(new QueryBuilderPresenter(fields));
         }
-    }, [fields]);
+    }, []);
 
     if (!presenter) {
         return null;

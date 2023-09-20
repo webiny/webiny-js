@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Observer, observer } from "mobx-react-lite";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
-import { QueryBuilderPresenter } from "../adapters/QueryBuilderPresenter";
 import { QueryObjectDTO } from "../domain";
 import { Filter } from "./Filter";
 import { CellInner, Content, GroupContainer } from "./Querybuilder.styled";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { OperationSelector } from "~/components/AdvancedSearch/QueryBuilder/components/OperationSelector";
 import { AddFilter, AddGroup, RemoveGroup } from "./controls";
+import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilder/adapters";
 
 export interface QueryBuilderProps {
     presenter: QueryBuilderPresenter;
@@ -15,7 +15,7 @@ export interface QueryBuilderProps {
     onSubmit: (data: any) => void;
 }
 
-export const QueryBuilder = observer(({ presenter, onForm }: QueryBuilderProps) => {
+export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuilderProps) => {
     const viewModel = presenter.getViewModel();
     const formRef = React.createRef<FormAPI>();
 
@@ -26,10 +26,6 @@ export const QueryBuilder = observer(({ presenter, onForm }: QueryBuilderProps) 
     }, []);
 
     const onChange = (data: QueryObjectDTO) => {
-        console.log("data", data);
-        /**
-         * With this, we're updating the Query Object with actual values from the form inputs.
-         */
         viewModel.setQueryObject(data);
     };
 
@@ -37,10 +33,7 @@ export const QueryBuilder = observer(({ presenter, onForm }: QueryBuilderProps) 
         viewModel.onSubmit(
             data,
             () => {
-                console.log("Success!");
-                console.log("data", data);
-
-                // Call Controller, or whatever...
+                onSubmit(presenter.getGraphQl());
             },
             () => {
                 console.log("Error!");
@@ -72,21 +65,19 @@ export const QueryBuilder = observer(({ presenter, onForm }: QueryBuilderProps) 
                                 {viewModel.queryObject.groups.map((group, groupIndex) => (
                                     <GroupContainer key={`group-${groupIndex}`}>
                                         <Grid>
-                                            <Cell span={12} align={"middle"}>
+                                            <Cell span={11} align={"middle"}>
+                                                <CellInner align={"left"}>
+                                                    <OperationSelector
+                                                        name={`groups.${groupIndex}.operation`}
+                                                    />
+                                                </CellInner>
+                                            </Cell>
+                                            <Cell span={1} align={"middle"}>
                                                 <CellInner align={"center"}>
                                                     <RemoveGroup
                                                         onClick={() =>
                                                             viewModel.deleteGroup(groupIndex)
                                                         }
-                                                    />
-                                                </CellInner>
-                                            </Cell>
-                                        </Grid>
-                                        <Grid>
-                                            <Cell span={12} align={"middle"}>
-                                                <CellInner align={"center"}>
-                                                    <OperationSelector
-                                                        name={`groups.${groupIndex}.operation`}
                                                     />
                                                 </CellInner>
                                             </Cell>

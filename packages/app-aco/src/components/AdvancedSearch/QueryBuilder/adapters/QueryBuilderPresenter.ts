@@ -16,4 +16,8 @@ export class QueryBuilderPresenter {
     getViewModel() {
         return this.viewModel;
     }
+
+    getGraphQl() {
+        return QueryObjectMapper.toGraphQL(this.viewModel.queryObject);
+    }
 }
