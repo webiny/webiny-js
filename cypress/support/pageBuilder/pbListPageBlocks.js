@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
 Cypress.Commands.add("pbListPageBlocks", () => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
             headers: {
                 authorization: `Bearer ${user.idToken.jwtToken}`
@@ -9,12 +9,11 @@ Cypress.Commands.add("pbListPageBlocks", () => {
         });
 
         const query = `
-            query ListBlockCategories {
+            query ListPageBlocks {
                 pageBuilder {
                     listPageBlocks {
                         data {
-                            id
-                        }
+                            id                        }
                         error {
                             code
                             message
@@ -28,8 +27,7 @@ Cypress.Commands.add("pbListPageBlocks", () => {
 
         return client.request(query).then(response => {
             const data = response.pageBuilder.listPageBlocks.data;
-            const ids = data.map(block => block.id);
-            return ids;
+            return data; 
         });
     });
 });

@@ -16,7 +16,8 @@ const mutation = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbDeleteBlocks", () => {
-    cy.pbListPageBlocks().then(ids => {
+    // Use pbListPageBlocks to get an array of page blocks
+    cy.pbListPageBlocks().then(pageBlocks => {
         cy.login().then(user => {
             const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
                 headers: {
@@ -24,10 +25,11 @@ Cypress.Commands.add("pbDeleteBlocks", () => {
                 }
             });
 
+            // Use Promise.all to map and execute the deletePageBlock mutation for each page block
             return Promise.all(
-                ids.map(id => {
+                pageBlocks.map(pageBlock => {
                     const variables = {
-                        id: id
+                        id: pageBlock.id // Assuming the page block object has an 'id' property
                     };
 
                     return client
