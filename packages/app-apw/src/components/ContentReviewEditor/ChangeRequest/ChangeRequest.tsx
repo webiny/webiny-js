@@ -166,7 +166,7 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                                     showDialog(
                                         t`You cannot delete the change request. Only the creator can delete it.`,
                                         {
-                                            title: t`Deleted change request`
+                                            title: t`Delete change request`
                                         }
                                     );
                                     return;
