@@ -5,7 +5,7 @@ export type FieldRaw = Pick<
     "id" | "type" | "label" | "multipleValues" | "predefinedValues" | "settings"
 >;
 
-export enum TypeEnum {
+export enum TypeDTO {
     TEXT = "text",
     NUMBER = "number",
     BOOLEAN = "boolean",
@@ -24,10 +24,6 @@ export interface ConditionDTO {
 export interface PredefinedDTO {
     label: string;
     value: string;
-}
-
-export interface TypeDTO {
-    value: TypeEnum;
 }
 
 export interface FieldDTO {
@@ -251,38 +247,38 @@ export class Predefined {
 }
 
 export class Type {
-    public readonly value: TypeEnum;
+    public readonly value: TypeDTO;
 
     static createFrom(rawData: FieldRaw) {
-        if (rawData.settings?.type === TypeEnum.DATETIME_WITH_TIMEZONE) {
-            return new Type(TypeEnum.DATETIME_WITH_TIMEZONE);
+        if (rawData.settings?.type === TypeDTO.DATETIME_WITH_TIMEZONE) {
+            return new Type(TypeDTO.DATETIME_WITH_TIMEZONE);
         }
 
-        if (rawData.settings?.type === TypeEnum.DATETIME_WITHOUT_TIMEZONE) {
-            return new Type(TypeEnum.DATETIME_WITHOUT_TIMEZONE);
+        if (rawData.settings?.type === TypeDTO.DATETIME_WITHOUT_TIMEZONE) {
+            return new Type(TypeDTO.DATETIME_WITHOUT_TIMEZONE);
         }
 
         if (rawData?.multipleValues && rawData.predefinedValues?.enabled) {
-            return new Type(TypeEnum.MULTIPLE_VALUES);
+            return new Type(TypeDTO.MULTIPLE_VALUES);
         }
 
         if (rawData.type === "datetime") {
-            const value = rawData.settings?.type === TypeEnum.TIME ? TypeEnum.TIME : TypeEnum.DATE;
+            const value = rawData.settings?.type === TypeDTO.TIME ? TypeDTO.TIME : TypeDTO.DATE;
             return new Type(value);
         }
 
-        if (rawData.type === TypeEnum.BOOLEAN) {
-            return new Type(TypeEnum.BOOLEAN);
+        if (rawData.type === TypeDTO.BOOLEAN) {
+            return new Type(TypeDTO.BOOLEAN);
         }
 
-        if (rawData.type === TypeEnum.NUMBER) {
-            return new Type(TypeEnum.NUMBER);
+        if (rawData.type === TypeDTO.NUMBER) {
+            return new Type(TypeDTO.NUMBER);
         }
 
-        return new Type(TypeEnum.TEXT);
+        return new Type(TypeDTO.TEXT);
     }
 
-    private constructor(value: TypeEnum) {
+    private constructor(value: TypeDTO) {
         this.value = value;
     }
 }

@@ -6,9 +6,15 @@ export class FieldMapper {
             return {
                 label: field.label,
                 value: field.value,
-                conditions: field.conditions,
-                predefined: field.predefined,
-                type: field.type
+                conditions: field.conditions.map(condition => ({
+                    value: condition.value || "",
+                    label: condition.label || ""
+                })),
+                predefined: field.predefined.map(predefined => ({
+                    value: predefined.value || "",
+                    label: predefined.label || ""
+                })),
+                type: field.type.value
             };
         });
     }
