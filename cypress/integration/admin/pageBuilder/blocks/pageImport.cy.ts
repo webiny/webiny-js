@@ -1,6 +1,5 @@
 import { customAlphabet } from "nanoid";
 
-
 context("Page Builder - Blocks import", () => {
     let tokenStorage;
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
@@ -8,7 +7,7 @@ context("Page Builder - Blocks import", () => {
     beforeEach(() => cy.pbDeleteBlocks());
     beforeEach(() => cy.pbAllDeleteBlockCategories());
     //Data used for creating multible block categories
-    const blockCategoryData1 = {    
+    const blockCategoryData1 = {
         name: nanoid(10).toLowerCase(),
         slug: nanoid(10).toLowerCase(),
         icon: "icon-name",
@@ -64,7 +63,7 @@ context("Page Builder - Blocks import", () => {
         cy.contains(blockCategoryData2.name).should("exist");
         cy.contains(blockCategoryData3.name).should("exist");
         cy.pbListPageBlocks().then(ids => {
-            cy.wrap(ids).should('have.length', 3);
-          });
+            cy.wrap(ids).should("have.length", 3);
+        });
     });
 });
