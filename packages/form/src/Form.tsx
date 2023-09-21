@@ -64,10 +64,6 @@ interface InputRecord {
     validators: Validator[];
     afterChange?: (value: unknown, form: FormAPI) => void;
 }
-// interface ValidationInputFormData {
-//     inputs: Record<string, InputRecord>;
-//     data: FormData;
-// }
 
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
@@ -81,6 +77,8 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     });
 
     const [prevData, setPrevData] = useState<Partial<T> | null>(null);
+    const [prevInvalidFields, setPrevInvalidFields] =
+        useState<FormProps["invalidFields"]>(undefined);
 
     // This simulates "getDerivedStateFromProps"
     if (props.data !== prevData) {
@@ -97,7 +95,12 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 validation: {}
             }));
         }
+    }
 
+    if (props.invalidFields !== prevInvalidFields) {
+        setPrevInvalidFields(() => {
+            return props.invalidFields || undefined;
+        });
         // Check for validation errors
         let validation = lodashCloneDeep(state.validation);
         if (

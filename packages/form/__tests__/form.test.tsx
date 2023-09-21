@@ -1,18 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import React from "react";
+import React, { useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Form, useBind } from "~/index";
+import { Form, useBind, FormProps as BaseFormProps } from "~/index";
 
-interface FormViewProps {
-    onSubmit(data: any): void;
-}
+type FormProps = Omit<BaseFormProps, "children">;
 
-const FormViewWithBind: React.FC<FormViewProps> = ({ onSubmit }) => {
+const FormViewWithBind: React.FC<FormProps> = ({ onSubmit }) => {
     return (
-        <Form data={{ name: "empty name" }} onSubmit={data => onSubmit(data)}>
+        <Form data={{ name: "empty name" }} onSubmit={onSubmit}>
             {({ Bind, form }) => (
                 <div>
                     <Bind name={"name"}>
@@ -35,18 +33,24 @@ const FormViewWithBind: React.FC<FormViewProps> = ({ onSubmit }) => {
 };
 
 const Input = () => {
-    const { value, onChange } = useBind({ name: "name" });
+    const { value, onChange, validation } = useBind({ name: "name" });
+
     return (
         <div>
             <label htmlFor={"name"}>Name</label>
             <input id={"name"} value={value || ""} onChange={e => onChange(e.target.value)} />
+            {validation.isValid === false ? (
+                <div data-testid={"validation"}>{validation.message}</div>
+            ) : null}
         </div>
     );
 };
 
-const FormViewWithHooks: React.FC<FormViewProps> = ({ onSubmit }) => {
+const FormViewWithHooks: React.FC<FormProps> = ({ onSubmit, invalidFields, data }) => {
+    const [formData] = useState(data || { name: "empty name" });
+
     return (
-        <Form data={{ name: "empty name" }} onSubmit={data => onSubmit(data)}>
+        <Form data={formData} onSubmit={onSubmit} invalidFields={invalidFields}>
             {({ form }) => (
                 <div>
                     <Input />
@@ -84,5 +88,20 @@ describe("Form", () => {
     test("should call `onSubmit` callback with correct field values using `useBind()`", async () => {
         const onSubmit = jest.fn();
         await assert(<FormViewWithHooks onSubmit={onSubmit} />, onSubmit);
+    });
+
+    test("should render validation error specified via the `invalidFields` prop", async () => {
+        const onSubmit = jest.fn();
+        const { rerender } = render(<FormViewWithHooks onSubmit={onSubmit} />);
+
+        // anchor
+        expect(screen.queryByTestId("validation")).toBeNull();
+
+        // pivot
+        rerender(
+            <FormViewWithHooks onSubmit={onSubmit} invalidFields={{ name: "Not a valid field!" }} />
+        );
+
+        expect(screen.queryByText("Not a valid field!")).toBeTruthy();
     });
 });
