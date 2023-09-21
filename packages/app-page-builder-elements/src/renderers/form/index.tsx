@@ -102,13 +102,6 @@ export const createForm = (params: CreateFormParams) => {
             return <>Form not found.</>;
         }
 
-        return (
-            <FormRender
-                createFormParams={params}
-                loading={loading}
-                formData={formData}
-                isLatestRevision={form?.revision === "latest"}
-            />
-        );
+        return <FormRender createFormParams={params} loading={loading} formData={formData} />;
     });
 };

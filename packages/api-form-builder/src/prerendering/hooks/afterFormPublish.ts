@@ -11,10 +11,7 @@ export default () => {
              */
             formBuilder.onFormAfterPublish.subscribe(async ({ form }) => {
                 await pageBuilder.prerendering.render({
-                    tags: [
-                        { tag: { key: "fb-form", value: form.formId } },
-                        { tag: { key: "fb-form-revision", value: `${form.id}#latest` } }
-                    ]
+                    tags: [{ tag: { key: "fb-form", value: form.formId } }]
                 });
             });
         }
