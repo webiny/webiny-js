@@ -308,7 +308,7 @@ describe("access", () => {
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
         const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
 
-        const changeRequestData = {
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: {
                 step: changeRequestStepId,
                 title: `Requesting change on "${entryTitle}"`,
@@ -323,8 +323,7 @@ describe("access", () => {
                     src: "cloudfront.net/my-file"
                 }
             }
-        };
-        const [createChangeRequestResponse] = await createChangeRequestMutation(changeRequestData);
+        });
 
         /**
          * Login another user, that is not creator of the change request.
@@ -357,9 +356,13 @@ describe("access", () => {
                 }
             });
 
-        expect(updateChangeRequestResponse.data?.apw?.updateChangeRequest?.error?.message).toEqual(
-            "Could not update the change request. Only the creator can update it."
-        );
+        expect(updateChangeRequestResponse.data?.apw?.updateChangeRequest).toMatchObject({
+            data: null,
+            error: {
+                message: "A change request can only be updated by its creator.",
+                code: "ONLY_CREATOR_CAN_UPDATE_CHANGE_REQUEST"
+            }
+        });
     });
 
     it("user who did not create the change request, cannot delete it", async () => {
@@ -402,9 +405,13 @@ describe("access", () => {
                 id: changeRequestId
             });
 
-        expect(deleteChangeRequestResponse.data?.apw?.deleteChangeRequest?.error?.message).toEqual(
-            "Could not delete the change request. Only the creator can delete it."
-        );
+        expect(deleteChangeRequestResponse.data?.apw?.deleteChangeRequest).toMatchObject({
+            data: null,
+            error: {
+                message: "A change request can only be deleted by its creator.",
+                code: "ONLY_CREATOR_CAN_DELETE_CHANGE_REQUEST"
+            }
+        });
     });
 
     it("should create comment, update it and delete it", async () => {

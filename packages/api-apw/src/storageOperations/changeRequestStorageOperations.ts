@@ -92,7 +92,8 @@ export const createChangeRequestStorageOperations = (
              */
             if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
                 throw new WebinyError(
-                    "Could not update the change request. Only the creator can update it."
+                    "A change request can only be updated by its creator.",
+                    "ONLY_CREATOR_CAN_UPDATE_CHANGE_REQUEST"
                 );
             }
 
@@ -122,7 +123,8 @@ export const createChangeRequestStorageOperations = (
                  */
                 if (existingEntry.createdBy.id !== security.getIdentity().id) {
                     throw new WebinyError(
-                        "Could not delete the change request. Only the creator can delete it."
+                        "A change request can only be deleted by its creator.",
+                        "ONLY_CREATOR_CAN_DELETE_CHANGE_REQUEST"
                     );
                 }
 
