@@ -368,6 +368,7 @@ export interface Settings {
 export interface SettingsCRUDGetParams {
     auth?: boolean;
     throwOnNotFound?: boolean;
+    locale?: string;
 }
 
 /**
