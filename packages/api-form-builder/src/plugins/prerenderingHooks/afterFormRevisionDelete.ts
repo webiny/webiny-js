@@ -6,12 +6,12 @@ export default () => {
     return new ContextPlugin<FormBuilderContext & PbContext>(
         async ({ formBuilder, pageBuilder }) => {
             /**
-             * If page contains a form that has been deleted,
-             * then this hook should trigger re-render for all pages that contain that form.
+             * If there are published pages that include the form revision
+             * that was deleted, we need to rerender them.
              */
-            formBuilder.onFormAfterDelete.subscribe(async ({ form }) => {
+            formBuilder.onFormRevisionAfterDelete.subscribe(async ({ form }) => {
                 await pageBuilder.prerendering.render({
-                    tags: [{ tag: { key: "fb-form", value: form.formId } }]
+                    tags: [{ tag: { key: "fb-form-revision", value: form.id } }]
                 });
             });
         }

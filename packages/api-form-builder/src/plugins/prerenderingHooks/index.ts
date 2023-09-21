@@ -1,5 +1,5 @@
 import hooks from "./hooks";
 
 export default () => {
-    return [...hooks()];
+    return hooks();
 };
