@@ -1,4 +1,13 @@
-import { Field, FieldDTO } from "./Field";
+import {
+    Condition,
+    ConditionDTO,
+    Field,
+    FieldDTO,
+    Predefined,
+    PredefinedDTO,
+    Type,
+    TypeDTO
+} from "./Field";
 
 export class FieldMapper {
     static toDTO(configuration: Field[]): FieldDTO[] {
@@ -6,16 +15,34 @@ export class FieldMapper {
             return {
                 label: field.label,
                 value: field.value,
-                conditions: field.conditions.map(condition => ({
-                    value: condition.value || "",
-                    label: condition.label || ""
-                })),
-                predefined: field.predefined.map(predefined => ({
-                    value: predefined.value || "",
-                    label: predefined.label || ""
-                })),
-                type: field.type.value
+                conditions: ConditionMapper.toDTO(field.conditions),
+                predefined: PredefinedMapper.toDTO(field.predefined),
+                type: TypeMapper.toTDO(field.type)
             };
         });
+    }
+}
+
+export class ConditionMapper {
+    static toDTO(conditions: Condition[]): ConditionDTO[] {
+        return conditions.map(condition => ({
+            value: condition.value || "",
+            label: condition.label || ""
+        }));
+    }
+}
+
+export class PredefinedMapper {
+    static toDTO(predefineds: Predefined[]): PredefinedDTO[] {
+        return predefineds.map(predefined => ({
+            value: predefined.value || "",
+            label: predefined.label || ""
+        }));
+    }
+}
+
+export class TypeMapper {
+    static toTDO(type: Type): TypeDTO {
+        return type.value;
     }
 }

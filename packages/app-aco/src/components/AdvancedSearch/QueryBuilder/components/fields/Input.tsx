@@ -3,10 +3,10 @@ import React from "react";
 import { Bind } from "@webiny/form";
 import { Input as BaseInput } from "@webiny/ui/Input";
 
-import { TypeEnum } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { TypeDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
 interface InputProps {
-    type: TypeEnum;
+    type: TypeDTO;
     name: string;
 }
 

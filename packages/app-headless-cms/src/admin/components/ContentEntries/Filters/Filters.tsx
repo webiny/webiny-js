@@ -2,10 +2,13 @@ import React from "react";
 import { Filters as BaseFilters, FiltersOnSubmit } from "@webiny/app-admin";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
-import { AdvancedSearch } from "@webiny/app-aco";
+import { AdvancedSearch, GraphQLInputMapper } from "@webiny/app-aco";
 import { useModel } from "~/admin/hooks";
 import { CmsModelField } from "@webiny/app-headless-cms-common/types";
-import { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/QueryBuilder/domain";
+import {
+    FieldRaw,
+    QueryObjectDTO
+} from "@webiny/app-aco/components/AdvancedSearch/QueryBuilder/domain";
 
 const excludedFieldTypes = ["ref", "rich-text", "file", "object", "dynamicZone"];
 
@@ -82,12 +85,12 @@ export const Filters = () => {
         list.setFilters(convertedFilters);
     };
 
-    const applyAdvancedSearch = (data: any) => {
+    const applyAdvancedSearch = (data: QueryObjectDTO) => {
         if (!Object.keys(data).length) {
             return;
         }
 
-        list.setFilters(data);
+        list.setFilters(GraphQLInputMapper.toGraphQL(data));
     };
 
     return (

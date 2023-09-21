@@ -16,14 +16,6 @@ interface FilterProps {
     onEmpty: () => void;
 }
 
-const ValidationMessage = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <div className={"invalid-feedback"} style={{ display: "block" }}>
-            {children}
-        </div>
-    );
-};
-
 export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps) => {
     return (
         <Observer>
@@ -33,28 +25,21 @@ export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps)
                         <Cell span={4}>
                             <Bind name={`${name}.field`}>
                                 {({ value, onChange, validation }) => (
-                                    <>
-                                        <Select
-                                            label={"Field"}
-                                            options={fields.map(field => ({
-                                                label: field.label,
-                                                value: field.value
-                                            }))}
-                                            value={value}
-                                            onChange={data => {
-                                                // We need to empty previously entered data into other fields
-                                                onEmpty();
-                                                // Setting the right data into `field`
-                                                onChange(data);
-                                            }}
-                                            validation={validation}
-                                        />
-                                        {!validation.isValid ? (
-                                            <ValidationMessage>
-                                                {validation.message}
-                                            </ValidationMessage>
-                                        ) : null}
-                                    </>
+                                    <Select
+                                        label={"Field"}
+                                        options={fields.map(field => ({
+                                            label: field.label,
+                                            value: field.value
+                                        }))}
+                                        value={value}
+                                        onChange={data => {
+                                            // We need to empty previously entered data into other fields
+                                            onEmpty();
+                                            // Setting the right data into `field`
+                                            onChange(data);
+                                        }}
+                                        validation={validation}
+                                    />
                                 )}
                             </Bind>
                         </Cell>
@@ -62,48 +47,26 @@ export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps)
                             {filter.field && (
                                 <Bind name={`${name}.condition`}>
                                     {({ value, onChange, validation }) => (
-                                        <>
-                                            <Select
-                                                label={"Condition"}
-                                                options={
-                                                    fields.find(
-                                                        field => field.value === filter.field
-                                                    )?.conditions || []
-                                                }
-                                                value={value}
-                                                onChange={onChange}
-                                                validation={validation}
-                                            />
-                                            {!validation.isValid ? (
-                                                <ValidationMessage>
-                                                    {validation.message}
-                                                </ValidationMessage>
-                                            ) : null}
-                                        </>
+                                        <Select
+                                            label={"Condition"}
+                                            options={
+                                                fields.find(field => field.value === filter.field)
+                                                    ?.conditions || []
+                                            }
+                                            value={value}
+                                            onChange={onChange}
+                                            validation={validation}
+                                        />
                                     )}
                                 </Bind>
                             )}
                         </Cell>
                         <Cell span={4} align={"middle"}>
                             {filter.condition && (
-                                <Bind name={`${name}.value`}>
-                                    {({ validation, value }) => (
-                                        <>
-                                            <InputField
-                                                name={`${name}.value`}
-                                                value={value}
-                                                field={fields.find(
-                                                    field => field.value === filter.field
-                                                )}
-                                            />
-                                            {!validation.isValid ? (
-                                                <ValidationMessage>
-                                                    {validation.message}
-                                                </ValidationMessage>
-                                            ) : null}
-                                        </>
-                                    )}
-                                </Bind>
+                                <InputField
+                                    name={`${name}.value`}
+                                    field={fields.find(field => field.value === filter.field)}
+                                />
                             )}
                         </Cell>
                         <Cell span={1} align={"middle"}>

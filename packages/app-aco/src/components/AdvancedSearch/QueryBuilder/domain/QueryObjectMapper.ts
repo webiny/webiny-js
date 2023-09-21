@@ -16,18 +16,4 @@ export class QueryObjectMapper {
             }))
         };
     }
-    static toGraphQL(configuration: QueryObject | QueryObjectDTO) {
-        return {
-            [configuration.operation]: configuration.groups.map(group => {
-                return {
-                    [group.operation]: group.filters.map(filter => {
-                        const { field, condition, value } = filter;
-                        const key = `${field}${condition}`.trim();
-
-                        return { [key]: value };
-                    })
-                };
-            })
-        };
-    }
 }

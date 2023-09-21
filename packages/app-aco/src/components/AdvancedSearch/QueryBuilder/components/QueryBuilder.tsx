@@ -26,20 +26,13 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
     }, []);
 
     const onChange = (data: QueryObjectDTO) => {
-        viewModel.setQueryObject(data);
+        presenter.setQueryObject(data);
     };
 
     const onFormSubmit: FormOnSubmit<QueryObjectDTO> = data => {
-        viewModel.onSubmit(
-            data,
-            () => {
-                onSubmit(presenter.getGraphQl());
-            },
-            () => {
-                console.log("Error!");
-                console.log(viewModel.invalidFields);
-            }
-        );
+        presenter.onSubmit(data, () => {
+            onSubmit(viewModel.queryObject);
+        });
     };
 
     return (
@@ -76,7 +69,7 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                                                 <CellInner align={"center"}>
                                                     <RemoveGroup
                                                         onClick={() =>
-                                                            viewModel.deleteGroup(groupIndex)
+                                                            presenter.deleteGroup(groupIndex)
                                                         }
                                                     />
                                                 </CellInner>
@@ -89,13 +82,13 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                                                 filter={filter}
                                                 fields={viewModel.fields}
                                                 onEmpty={() => {
-                                                    viewModel.emptyFilterIntoGroup(
+                                                    presenter.emptyFilterIntoGroup(
                                                         groupIndex,
                                                         filterIndex
                                                     );
                                                 }}
                                                 onDelete={() => {
-                                                    viewModel.deleteFilterFromGroup(
+                                                    presenter.deleteFilterFromGroup(
                                                         groupIndex,
                                                         filterIndex
                                                     );
@@ -107,7 +100,7 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                                                 <CellInner align={"center"}>
                                                     <AddFilter
                                                         onClick={() =>
-                                                            viewModel.addNewFilterToGroup(
+                                                            presenter.addNewFilterToGroup(
                                                                 groupIndex
                                                             )
                                                         }
@@ -120,7 +113,7 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                                 <Grid>
                                     <Cell span={12}>
                                         <CellInner align={"center"}>
-                                            <AddGroup onClick={() => viewModel.addGroup()} />
+                                            <AddGroup onClick={() => presenter.addGroup()} />
                                         </CellInner>
                                     </Cell>
                                 </Grid>

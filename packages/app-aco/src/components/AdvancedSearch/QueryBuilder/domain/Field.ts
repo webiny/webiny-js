@@ -41,17 +41,12 @@ export class Field {
     public readonly conditions: Condition[];
     public readonly predefined: Predefined[];
 
-    static createFromRaw(rawData: FieldRaw) {
-        const label = rawData.label;
-        const value = rawData.id;
-        const type = Type.createFrom(rawData);
-
-        const conditions = this.createConditionsFromRaw(rawData).map(dto =>
-            Condition.createFrom(dto)
-        );
-
-        const rawPredefined = rawData.predefinedValues?.values || [];
-        const predefined = rawPredefined.map(predefined => Predefined.createFrom(predefined));
+    static createFromRaw(fieldRaw: FieldRaw) {
+        const label = fieldRaw.label;
+        const value = fieldRaw.id;
+        const type = Type.createFromField(fieldRaw);
+        const conditions = Condition.createFromField(fieldRaw);
+        const predefined = Predefined.createFromField(fieldRaw);
 
         return new Field(label, value, type, conditions, predefined);
     }
@@ -69,153 +64,6 @@ export class Field {
         this.predefined = predefined;
         this.conditions = conditions;
     }
-
-    private static createConditionsFromRaw(field: FieldRaw): ConditionDTO[] {
-        switch (field.type) {
-            case "text": {
-                if (field.predefinedValues?.enabled) {
-                    return [
-                        {
-                            label: "contains",
-                            value: "_in"
-                        },
-                        {
-                            label: "doesn't contain",
-                            value: "_not_in"
-                        }
-                    ];
-                }
-
-                return [
-                    {
-                        label: "is equal to",
-                        value: " "
-                    },
-                    {
-                        label: "contains",
-                        value: "_contains"
-                    },
-                    {
-                        label: "starts with",
-                        value: "_startsWith"
-                    },
-                    {
-                        label: "is not equal to",
-                        value: "_not"
-                    },
-                    {
-                        label: "doesn't contain",
-                        value: "_not_contains"
-                    },
-                    {
-                        label: "doesn't start with",
-                        value: "_not_startsWith"
-                    }
-                ];
-            }
-
-            case "long-text": {
-                return [
-                    {
-                        label: "contains",
-                        value: "_contains"
-                    },
-                    {
-                        label: "doesn't contain",
-                        value: "_not_contains"
-                    }
-                ];
-            }
-
-            case "boolean": {
-                return [
-                    {
-                        label: "is",
-                        value: " "
-                    },
-                    {
-                        label: "is not",
-                        value: "_not"
-                    }
-                ];
-            }
-
-            case "number": {
-                return [
-                    {
-                        label: "is equal to",
-                        value: " "
-                    },
-                    {
-                        label: "is not equal to",
-                        value: "_not"
-                    },
-                    {
-                        label: "is less than",
-                        value: "_lt"
-                    },
-                    {
-                        label: "is less or equal to",
-                        value: "_lte"
-                    },
-                    {
-                        label: "is greater than",
-                        value: "_gt"
-                    },
-                    {
-                        label: "is greater or equal to",
-                        value: "_gte"
-                    }
-                ];
-            }
-
-            case "datetime": {
-                return [
-                    {
-                        label: "is equal to",
-                        value: " "
-                    },
-                    {
-                        label: "is not equal to",
-                        value: "_not"
-                    },
-                    {
-                        label: "is before",
-                        value: "_lt"
-                    },
-                    {
-                        label: "is before or equal to",
-                        value: "_lte"
-                    },
-                    {
-                        label: "is after",
-                        value: "_gt"
-                    },
-                    {
-                        label: "is after or equal to",
-                        value: "_gte"
-                    }
-                ];
-            }
-
-            case "ref": {
-                return [
-                    {
-                        label: "is equal to",
-                        value: " "
-                    },
-                    {
-                        label: "is not equal to",
-                        value: "_not"
-                    }
-                ];
-            }
-
-            default: {
-                return [];
-            }
-        }
-    }
 }
 
 export class Condition {
@@ -224,6 +72,66 @@ export class Condition {
 
     static createFrom(rawData: ConditionDTO) {
         return new Condition(rawData.label, rawData.value);
+    }
+
+    static createFromField(field: FieldRaw) {
+        const createConditions = (conditions: { label: string; value: string }[]) => {
+            return conditions.map(condition => this.createFrom(condition));
+        };
+
+        switch (field.type) {
+            case "text":
+                if (field.predefinedValues?.enabled) {
+                    return createConditions([
+                        { label: "contains", value: "_in" },
+                        { label: "doesn't contain", value: "_not_in" }
+                    ]);
+                }
+
+                return createConditions([
+                    { label: "is equal to", value: " " },
+                    { label: "contains", value: "_contains" },
+                    { label: "starts with", value: "_startsWith" },
+                    { label: "is not equal to", value: "_not" },
+                    { label: "doesn't contain", value: "_not_contains" },
+                    { label: "doesn't start with", value: "_not_startsWith" }
+                ]);
+
+            case "long-text":
+                return createConditions([
+                    { label: "contains", value: "_contains" },
+                    { label: "doesn't contain", value: "_not_contains" }
+                ]);
+
+            case "boolean":
+                return createConditions([
+                    { label: "is", value: " " },
+                    { label: "is not", value: "_not" }
+                ]);
+
+            case "number":
+                return createConditions([
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" },
+                    { label: "is less than", value: "_lt" },
+                    { label: "is less or equal to", value: "_lte" },
+                    { label: "is greater than", value: "_gt" },
+                    { label: "is greater or equal to", value: "_gte" }
+                ]);
+
+            case "datetime":
+                return createConditions([
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" },
+                    { label: "is before", value: "_lt" },
+                    { label: "is before or equal to", value: "_lte" },
+                    { label: "is after", value: "_gt" },
+                    { label: "is after or equal to", value: "_gte" }
+                ]);
+
+            default:
+                return [];
+        }
     }
 
     private constructor(label: string, value: string) {
@@ -240,6 +148,11 @@ export class Predefined {
         return new Predefined(rawData.label, rawData.value);
     }
 
+    static createFromField(field: FieldRaw) {
+        const rawPredefined = field.predefinedValues?.values || [];
+        return rawPredefined.map(predefined => this.createFrom(predefined));
+    }
+
     private constructor(label: string, value: string) {
         this.label = label;
         this.value = value;
@@ -249,7 +162,7 @@ export class Predefined {
 export class Type {
     public readonly value: TypeDTO;
 
-    static createFrom(rawData: FieldRaw) {
+    static createFromField(rawData: FieldRaw) {
         if (rawData.settings?.type === TypeDTO.DATETIME_WITH_TIMEZONE) {
             return new Type(TypeDTO.DATETIME_WITH_TIMEZONE);
         }
