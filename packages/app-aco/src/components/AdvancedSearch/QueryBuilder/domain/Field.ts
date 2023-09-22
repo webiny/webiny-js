@@ -1,4 +1,4 @@
-import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/app-headless-cms-common/types/model";
 
 export type FieldRaw = Pick<
     CmsModelField,

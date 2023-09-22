@@ -1,7 +1,8 @@
 import React from "react";
 import { Form, FormOnSubmit, FormProps, GenericFormData } from "@webiny/form";
 
-import { FilterContainer, FiltersContainer, FormContainer } from "./Filters.styles";
+import { CellInner, FilterContainer, FiltersContainer, FormContainer } from "./Filters.styles";
+import { Cell } from "@webiny/ui/Grid";
 
 type Filter = {
     name: string;
@@ -15,6 +16,7 @@ export type FiltersOnSubmit<T extends GenericFiltersData = GenericFiltersData> =
 export interface FiltersProps<T> extends Pick<FormProps<T>, "data" | "onChange"> {
     filters: Filter[];
     show: boolean;
+    children?: React.ReactNode;
     ["data-testid"]?: string;
 }
 
@@ -27,15 +29,22 @@ export const Filters = <T extends GenericFiltersData = GenericFiltersData>(
 
     return (
         <FiltersContainer data-testid={props["data-testid"] || "filters-container"}>
-            <Form data={props.data} onChange={props.onChange}>
-                {() => (
-                    <FormContainer>
-                        {props.filters.map(filter => (
-                            <FilterContainer key={filter.name}>{filter.element}</FilterContainer>
-                        ))}
-                    </FormContainer>
-                )}
-            </Form>
+            <Cell span={2}>
+                <Form data={props.data} onChange={props.onChange}>
+                    {() => (
+                        <FormContainer>
+                            {props.filters.map(filter => (
+                                <FilterContainer key={filter.name}>
+                                    {filter.element}
+                                </FilterContainer>
+                            ))}
+                        </FormContainer>
+                    )}
+                </Form>
+            </Cell>
+            <Cell span={10} align={"middle"}>
+                <CellInner align={"right"}>{props.children}</CellInner>
+            </Cell>
         </FiltersContainer>
     );
 };

@@ -49,7 +49,6 @@
     "@babel/preset-typescript": "^7.22.5",
     "@babel/runtime": "^7.22.6",
     "@types/react": "17.0.39",
-    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "apollo-client": "^2.6.10",

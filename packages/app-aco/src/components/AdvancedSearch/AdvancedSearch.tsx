@@ -10,7 +10,7 @@ interface AdvancedSearchProps {
     onSubmit: (data: any) => void;
 }
 
-export const AdvancedSearch: React.VFC<AdvancedSearchProps> = ({ fields, onSubmit }) => {
+export const AdvancedSearch = ({ fields, onSubmit }: AdvancedSearchProps) => {
     const [open, setOpen] = useState(false);
 
     const onDrawerSubmit = useCallback(

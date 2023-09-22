@@ -7,10 +7,11 @@ import { observer } from "mobx-react-lite";
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { DrawerContainer } from "./styled";
 
 import { QueryBuilder } from "~/components/AdvancedSearch/QueryBuilder/QueryBuilder";
 import { FieldRaw } from "~/components/AdvancedSearch/QueryBuilder/domain";
+
+import { DrawerContainer } from "./Drawer.styled";
 
 interface DrawerProps {
     open: boolean;

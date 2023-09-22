@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { SimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
-import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { FormAPI } from "@webiny/form";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+
+import { SimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
 
 const SimpleFormFooterStyled = styled(SimpleFormFooter)`
     justify-content: flex-end;
@@ -13,7 +14,7 @@ interface FooterProps {
     formRef: React.RefObject<FormAPI>;
 }
 
-export const Footer: React.VFC<FooterProps> = ({ formRef, onClose }) => {
+export const Footer = ({ formRef, onClose }: FooterProps) => {
     return (
         <SimpleFormFooterStyled>
             <ButtonDefault onClick={onClose}>Cancel</ButtonDefault>
