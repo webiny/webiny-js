@@ -30,8 +30,6 @@ const getUpdateCache =
             return;
         }
 
-        console.log("pageFromCache", pageFromCache);
-
         const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
         revisions.forEach((r: any) => {
             // Update published/locked fields on the revision that was just published.
