@@ -57,20 +57,6 @@ export class QueryObject {
     public operation: Operation;
     public groups: Group[];
 
-    static createFrom(rawData: QueryObjectDTO) {
-        return new QueryObject(
-            rawData.operation,
-            rawData.groups.map(groupDTO => {
-                return new Group(
-                    groupDTO.operation,
-                    groupDTO.filters.map(filterDTO => {
-                        return new Filter(filterDTO.field, filterDTO.condition, filterDTO.value);
-                    })
-                );
-            })
-        );
-    }
-
     static createEmpty() {
         return new QueryObject(Operation.AND, [new Group(Operation.AND, [new Filter()])]);
     }

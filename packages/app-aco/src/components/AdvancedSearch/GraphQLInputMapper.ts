@@ -1,6 +1,5 @@
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
-//TODO: add a unit test
 export class GraphQLInputMapper {
     static toGraphQL(configuration: QueryObjectDTO) {
         return {
