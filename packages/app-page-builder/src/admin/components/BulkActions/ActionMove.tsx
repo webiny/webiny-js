@@ -1,49 +1,49 @@
 import React, { useCallback, useMemo } from "react";
-import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
+import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { PageListConfig } from "~/admin/config/pages";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
-const ActionMove = () => {
+export const ActionMove = observer(() => {
     const { moveRecord } = useRecords();
     const { currentFolderId } = useNavigateFolder();
 
-    const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
+    const { useWorker, useButtons, useDialog } = PageListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
-    const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+    const pagesLabel = useMemo(() => {
+        return getPagesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openWorkerDialog = useCallback(
         (folder: FolderItem) => {
             showConfirmationDialog({
-                title: "Move entries",
-                message: `You are about to move ${entriesLabel} to ${folder.title}. Are you sure you want to continue?`,
-                loadingLabel: `Processing ${entriesLabel}`,
+                title: "Move pages",
+                message: `You are about to move ${pagesLabel} to ${folder.title}. Are you sure you want to continue?`,
+                loadingLabel: `Processing ${pagesLabel}`,
                 execute: async () => {
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
                             await moveRecord({
-                                id: item.id,
+                                id: item.pid,
                                 location: {
                                     folderId: folder.id
                                 }
                             });
 
                             report.success({
-                                title: `${item.meta.title}`,
-                                message: "Entry successfully moved."
+                                title: `${item.title}`,
+                                message: "Page successfully moved."
                             });
                         } catch (e) {
                             report.error({
-                                title: `${item.meta.title}`,
+                                title: `${item.title}`,
                                 message: e.message
                             });
                         }
@@ -53,20 +53,20 @@ const ActionMove = () => {
 
                     showResultsDialog({
                         results: worker.results,
-                        title: "Move entries",
+                        title: "Move pages",
                         message: "Operation completed, here below you find the complete report:"
                     });
                 }
             });
         },
-        [entriesLabel]
+        [pagesLabel]
     );
 
-    const openMoveEntriesDialog = () =>
+    const openMovePagesDialog = () =>
         showMoveDialog({
             title: "Select folder",
-            message: "Select a new location for selected entries:",
-            loadingLabel: `Processing ${entriesLabel}`,
+            message: "Select a new location for selected pages:",
+            loadingLabel: `Processing ${pagesLabel}`,
             acceptLabel: `Move`,
             focusedFolderId: currentFolderId || ROOT_FOLDER,
             async onAccept({ folder }) {
@@ -77,11 +77,9 @@ const ActionMove = () => {
     return (
         <IconButton
             icon={<MoveIcon />}
-            onAction={openMoveEntriesDialog}
-            label={`Move ${entriesLabel}`}
+            onAction={openMovePagesDialog}
+            label={`Move ${pagesLabel}`}
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionMove);
+});
