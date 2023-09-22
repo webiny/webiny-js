@@ -159,7 +159,7 @@ export const EditTab: React.FC = () => {
                                     opacity: isDragging ? 0.3 : 1,
                                     border: "none",
                                     boxShadow: "none",
-                                    marginBottom: 0,
+                                    marginBottom: "20px",
                                     padding: "10px"
                                 }}
                             >

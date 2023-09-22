@@ -1,10 +1,15 @@
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { AccordionItem } from "@webiny/ui/Accordion";
+import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
+
+export const StyledAccordion = styled(Accordion)`
+    background: var(--mdc-theme-background);
+    box-shadow: none;
+`;
 
 export const StyledAccordionItem = styled(AccordionItem)`
     & .webiny-ui-accordion-item__content {
-        background: var(--mdc-theme-background);
+        background: white;
     }
 `;
 

@@ -18,16 +18,15 @@ import {
     fieldContainer,
     Row,
     RowContainer,
+    StyledAccordion,
     StyledAccordionItem
 } from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
-import { Accordion } from "@webiny/ui/Accordion";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as HandleIcon } from "../../../../../icons/round-drag_indicator-24px.svg";
-
 import { Center, Vertical, Horizontal } from "../../../DropZone";
 
 import { i18n } from "@webiny/app/i18n";
@@ -137,7 +136,7 @@ export const FormStep = ({
 
     return (
         <div style={{ marginLeft: "40px" }} data-testid="form-step-element">
-            <Accordion>
+            <StyledAccordion>
                 <div className={rowHandle}>
                     <Icon icon={<HandleIcon />} />
                 </div>
@@ -146,12 +145,12 @@ export const FormStep = ({
                     open={true}
                     actions={
                         <AccordionItem.Actions>
+                            <AccordionItem.Action icon={<EditIcon />} onClick={onEdit} />
                             <AccordionItem.Action
                                 icon={<DeleteIcon />}
                                 onClick={onDelete}
                                 disabled={deleteStepDisabled}
                             />
-                            <AccordionItem.Action icon={<EditIcon />} onClick={onEdit} />
                         </AccordionItem.Actions>
                     }
                 >
@@ -183,7 +182,13 @@ export const FormStep = ({
                                     isDragging
                                 } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
                             ) => (
-                                <RowContainer style={{ opacity: isDragging ? 0.3 : 1 }}>
+                                <RowContainer
+                                    style={{
+                                        opacity: isDragging ? 0.3 : 1,
+                                        border: "1px solid var(--mdc-theme-background)",
+                                        boxShadow: "none"
+                                    }}
+                                >
                                     <div className={rowHandle} ref={drag}>
                                         <Icon icon={<HandleIcon />} />
                                     </div>
@@ -299,7 +304,7 @@ export const FormStep = ({
                         }}
                     />
                 </StyledAccordionItem>
-            </Accordion>
+            </StyledAccordion>
         </div>
     );
 };
