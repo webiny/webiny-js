@@ -27,7 +27,7 @@ Cypress.Commands.add("pbListPageBlocks", () => {
 
         return client.request(query).then(response => {
             const data = response.pageBuilder.listPageBlocks.data;
-            return data; 
+            return data;
         });
     });
 });
