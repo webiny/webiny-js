@@ -13,8 +13,7 @@ export const UsersTeamsMultiAutocomplete: React.FC<UsersTeamsMultiAutocompletePr
             label={"Add user or a team"}
             renderMultipleSelection={null}
             options={props.options}
-            valueProp={"id"}
-            textProp={"firstName"}
+            valueProp={"target"}
             unique={true}
             onChange={props.onChange}
             value={props.value || []}

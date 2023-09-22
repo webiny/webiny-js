@@ -16,6 +16,7 @@ const DATA_FIELD = /* GraphQL */ `
         permissions {
             target
             level
+            inheritedFrom
         }
         parentId
         type

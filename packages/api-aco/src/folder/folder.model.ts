@@ -74,7 +74,7 @@ const permissionsField = () =>
                             name: "required",
                             message: "Value is required."
                         }
-                    ],
+                    ]
                 },
                 {
                     id: "level",
@@ -102,9 +102,14 @@ const permissionsField = () =>
                             {
                                 label: "Owner",
                                 value: "owner"
-                            }
+                            },
+                            // TODO: Uncomment when we implement "remove" permission.
+                            // {
+                            //     label: "Remove",
+                            //     value: "remove"
+                            // }
                         ]
-                    },
+                    }
                 }
             ],
             layout: [["target"], ["level"]]

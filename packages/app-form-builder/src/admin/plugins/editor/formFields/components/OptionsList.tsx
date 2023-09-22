@@ -142,6 +142,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }
         data: null,
         index: null
     });
+
     const clearEditOption = (): void =>
         setEditOption({
             data: null,
@@ -156,6 +157,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }
                     value: optionsValue,
                     onChange: setOptionsValue
                 } = bind;
+
                 const onSubmit = useCallback(
                     (data: FieldOption): void => {
                         const newValue = [...optionsValue];

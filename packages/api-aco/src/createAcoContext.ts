@@ -32,10 +32,12 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     };
 
     const getIdentity = () => security.getIdentity();
+    const getPermissions = (permission: string) => security.getPermissions(permission);
 
     const params: CreateAcoParams = {
         getLocale,
         getIdentity,
+        getPermissions,
         getTenant,
         storageOperations: createAcoStorageOperations({
             /**

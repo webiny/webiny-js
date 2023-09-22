@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/rounded/arrow_right.svg";
 import { ReactComponent as Folder } from "@material-symbols/svg-400/rounded/folder-fill.svg";
-import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/rounded/folder_open-fill.svg";
+import { ReactComponent as FolderShared } from "@material-symbols/svg-400/rounded/folder_shared-fill.svg";
 import { ReactComponent as HomeIcon } from "@material-design-icons/svg/filled/home.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 import { MenuActions } from "../MenuActions";
@@ -27,10 +27,19 @@ type FolderProps = {
     isRoot: boolean;
     isOpen: boolean;
     isFocused?: boolean;
+    hasPermissions?: boolean;
 };
 
-export const FolderNode: React.VFC<FolderProps> = ({ isRoot, isOpen, isFocused, text }) => {
-    const icon = isRoot ? <HomeIcon /> : isOpen ? <FolderOpen /> : <Folder />;
+export const FolderNode: React.VFC<FolderProps> = ({ isRoot, isFocused, hasPermissions, text }) => {
+    let icon = <HomeIcon />;
+
+    if (!isRoot) {
+        if (hasPermissions) {
+            icon = <FolderShared />;
+        } else {
+            icon = <Folder />;
+        }
+    }
 
     return (
         <>
@@ -78,6 +87,11 @@ export const Node: React.VFC<NodeProps> = ({
         return id;
     }, [node.id]);
 
+    // If we have at least one permission that is not inherited, we mark the folder as having permissions.
+    const folderHasPermissions = useMemo(() => {
+        return node.data?.permissions?.some(p => !p.inheritedFrom);
+    }, [node.data?.permissions]);
+
     return (
         <Container
             isFocused={!!node.data?.isFocused}
@@ -93,6 +107,7 @@ export const Node: React.VFC<NodeProps> = ({
                 <FolderNode
                     isRoot={isRoot}
                     text={node.text}
+                    hasPermissions={folderHasPermissions}
                     isOpen={isRoot ? true : isOpen}
                     isFocused={!!node.data?.isFocused}
                 />

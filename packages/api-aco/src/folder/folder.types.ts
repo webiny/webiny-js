@@ -97,6 +97,7 @@ export type FolderAccessLevel = "owner" | "viewer" | "editor";
 export interface FolderPermission {
     target: string;
     level: FolderAccessLevel;
+    inheritedFrom?: string;
 }
 
 interface CanAccessFolderParams {

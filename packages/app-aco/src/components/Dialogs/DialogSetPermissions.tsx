@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useSnackbar } from "@webiny/app-admin";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSnackbar, useWcp } from "@webiny/app-admin";
 import {
     DialogTitle,
     DialogActions,
@@ -11,11 +11,11 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer } from "./styled";
 import { FolderItem } from "~/types";
-import { UsersTeamsMultiAutocomplete } from "~/components/Dialogs/UsersTeamsMultiAutocomplete";
-import UsersTeamsSelection from "~/components/Dialogs/UsersTeamsSelection";
+import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete";
+import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
+import { LIST_USERS, LIST_TEAMS } from "./DialogSetPermissions/graphql";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useQuery } from "@apollo/react-hooks";
-import { LIST_USERS } from "~/components/Dialogs/UsersTeamsMultiAutocomplete/graphql";
 
 interface FolderDialogUpdateProps {
     folder: FolderItem;
@@ -28,10 +28,10 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
     onClose,
     open
 }) => {
+    const { getProject } = useWcp();
     const { loading: updatingFolder, updateFolder } = useFolders();
     const [permissions, setPermissions] = useState(folder.permissions || []);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
     const closeDialog = useCallback(() => setDialogOpen(false), []);
@@ -39,63 +39,96 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
     const listUsersQuery = useQuery(LIST_USERS);
     const usersList = listUsersQuery.data?.adminUsers.listUsers.data || [];
 
-    const onSubmit: any = async data => {
-        console.log("ide", data);
-        try {
-            await updateFolder({
-                ...folder,
-                ...data,
-                parentId: parentId || null
-            });
-            setDialogOpen(false);
-            showSnackbar("Folder updated successfully!");
-        } catch (error) {
-            showSnackbar(error.message);
-        }
-    };
+    const project = getProject();
+    let teams = false;
+    if (project) {
+        teams = project.package.features.advancedAccessControlLayer.options.teams;
+    }
 
-    useEffect(() => {
-        setParentId(folder.parentId);
-    }, [folder.parentId]);
+    let teamsList = [];
+    if (teams) {
+        const listTeamsQuery = useQuery(LIST_TEAMS);
+        teamsList = listTeamsQuery.data?.security.listTeams.data || [];
+    }
 
     useEffect(() => {
         setDialogOpen(open);
     }, [open]);
 
     const addPermission = useCallback(
-        ([userTeam]) => {
-            setPermissions([...permissions, { target: `user:${userTeam.id}`, level: "owner" }]);
+        value => {
+            const selectedUserOrTeam = value[value.length - 1];
+            const newPermission = {
+                target: selectedUserOrTeam.target,
+                level: "editor"
+            };
+
+            setPermissions([newPermission, ...permissions]);
         },
         [permissions]
     );
 
-    const removeUserTeam = useCallback(item => {
-        console.log("removeam", item);
-    }, []);
-    const submit = useCallback(() => {}, []);
+    const updatePermission = useCallback(
+        updatedPermission => {
+            setPermissions(
+                permissions.map(permission => {
+                    if (permission.target === updatedPermission.target) {
+                        return updatedPermission;
+                    }
+                    return permission;
+                })
+            );
+        },
+        [permissions]
+    );
 
-    console.log("nove permisije", permissions);
-    const usersTeamsSelectionData = permissions.map(permission => {
-        console.log('permissionpermission' ,permission)
-        return {
-            permission,
-            user: usersList.find(item => {
-                console.log('perma', permission)
-                return item.id === permission.target.split(":")[1];
+    const removeUserTeam = useCallback(
+        item => {
+            setPermissions(
+                permissions.filter(permission => permission.target !== item.permission.target)
+            );
+        },
+        [permissions]
+    );
+
+    const submit = useCallback(() => {
+        const data = { ...folder, permissions };
+        updateFolder(data)
+            .then(() => {
+                setDialogOpen(false);
+                showSnackbar("Folder updated successfully!");
             })
-        };
-    });
+            .catch(error => {
+                showSnackbar(error.message);
+
+            });
+    }, [permissions]);
+
+    const options = useMemo(() => {
+        return [
+            ...usersList.map(user => ({
+                target: `user:${user.id}`,
+                name: `${user.firstName} ${user.lastName}`
+            })),
+            ...teamsList.map(team => ({
+                target: `team:${team.id}`,
+                name: `${team.name}`
+            })),
+
+        ];
+    }, [usersList, teamsList]);
+
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
-                    <DialogTitle>Manage permissions</DialogTitle>
+                    <DialogTitle>Update permissions</DialogTitle>
                     <DialogContent>
                         <Grid>
                             <Cell span={12}>
                                 <UsersTeamsMultiAutocomplete
-                                    options={usersList}
-                                    value={null}
+                                    options={options}
+                                    value={permissions}
                                     onChange={addPermission}
                                 />
                             </Cell>
@@ -103,15 +136,20 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
                         <Grid>
                             <Cell span={12}>
                                 <UsersTeamsSelection
-                                    data={usersTeamsSelectionData}
+                                    permissions={permissions}
+                                    usersList={usersList}
+                                    teamsList={teamsList}
                                     onRemoveAccess={removeUserTeam}
+                                    onUpdatePermission={updatePermission}
                                 />
                             </Cell>
                         </Grid>
                     </DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={closeDialog}>Close</DialogCancel>
-                        <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                        <ButtonPrimary onClick={submit} disabled={updatingFolder.UPDATE}>
+                            Save
+                        </ButtonPrimary>
                     </DialogActions>
                 </>
             )}

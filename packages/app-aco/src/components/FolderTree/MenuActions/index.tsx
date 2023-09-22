@@ -3,7 +3,7 @@ import React from "react";
 import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as More } from "@material-design-icons/svg/outlined/more_vert.svg";
-import { ReactComponent as Security } from "@material-design-icons/svg/outlined/security.svg";
+import { ReactComponent as Security } from "@material-design-icons/svg/outlined/add_moderator.svg";
 
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
@@ -38,17 +38,17 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
                         </ListItemGraphic>
                         {t`Edit`}
                     </MenuItem>
-                    <MenuItem onClick={() => onDeleteFolder(folder)}>
-                        <ListItemGraphic>
-                            <Icon icon={<Delete />} />
-                        </ListItemGraphic>
-                        {t`Delete`}
-                    </MenuItem>
                     <MenuItem onClick={() => onSetFolderPermissions(folder)}>
                         <ListItemGraphic>
                             <Icon icon={<Security />} />
                         </ListItemGraphic>
                         {t`Manage Permissions`}
+                    </MenuItem>
+                    <MenuItem onClick={() => onDeleteFolder(folder)}>
+                        <ListItemGraphic>
+                            <Icon icon={<Delete />} />
+                        </ListItemGraphic>
+                        {t`Delete`}
                     </MenuItem>
                 </Menu>
             </Container>
