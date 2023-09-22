@@ -69,6 +69,14 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     const [state, setState] = useState<State<T>>({
         data: props.data as T,
         originalData: (props.data || {}) as T,
@@ -341,32 +349,36 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         const { validators } = inputs.current[name];
         const hasValidators = Object.keys(validators).length > 0;
 
-        setState(state => ({
-            ...state,
-            validation: {
-                ...state.validation,
-                [name]: {
-                    ...state.validation[name],
-                    isValidating: true
+        if (isMounted.current) {
+            setState(state => ({
+                ...state,
+                validation: {
+                    ...state.validation,
+                    [name]: {
+                        ...state.validation[name],
+                        isValidating: true
+                    }
                 }
-            }
-        }));
+            }));
+        }
 
         return Promise.resolve(executeValidators(value, validators))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
-                setState(state => ({
-                    ...state,
-                    validation: {
-                        ...state.validation,
-                        [name]: {
-                            isValid,
-                            message: null,
-                            results: validationResults
+                if (isMounted.current) {
+                    setState(state => ({
+                        ...state,
+                        validation: {
+                            ...state.validation,
+                            [name]: {
+                                isValid,
+                                message: null,
+                                results: validationResults
+                            }
                         }
-                    }
-                }));
+                    }));
+                }
 
                 return validationResults;
             })
