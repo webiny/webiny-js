@@ -1,5 +1,4 @@
 import { GraphQLClient } from "graphql-request";
-import { customAlphabet } from "nanoid";
 
 const createCategoryMutation = /* GraphQL */ `
     mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
@@ -53,9 +52,8 @@ const createBlockMutation = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks) => {
+Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, blockNames) => {
     cy.login().then(user => {
-        const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
         const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
             headers: {
                 authorization: `Bearer ${user.idToken.jwtToken}`
@@ -69,11 +67,11 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks)
         return createCategoryPromise.then(categoryData => {
             const categorySlug = categoryData.slug;
 
+            // Use a loop to create blocks sequentially
             const createBlocksPromises = [];
-
-            for (let i = 0; i < numBlocks; i++) {
+            blockNames.forEach(blockName => {
                 const blockVariables = {
-                    name: nanoid(10).toLowerCase(),
+                    name: blockName,
                     content: {},
                     preview: {}
                 };
@@ -83,10 +81,14 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", (categoryVariables, numBlocks)
                     blockCategory: categorySlug
                 };
 
-                createBlocksPromises.push(client.request(createBlockMutation, { data: blockData }));
-            }
+                const createBlockPromise = client.request(createBlockMutation, { data: blockData });
+                createBlocksPromises.push(createBlockPromise);
+            });
 
-            return Promise.all(createBlocksPromises);
+            // Chain the promises sequentially
+            return createBlocksPromises.reduce((chain, promise) => {
+                return chain.then(() => promise);
+            }, Promise.resolve());
         });
     });
 });
