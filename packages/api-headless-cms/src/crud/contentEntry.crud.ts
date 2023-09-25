@@ -125,8 +125,8 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
 /**
  * Cleans and adds default values to create input data.
  */
-const mapAndCleanCreateInputData = (model: CmsModel, input: CreateCmsEntryInput) => {
-    return model.fields.reduce<CreateCmsEntryInput>((acc, field) => {
+const mapAndCleanCreateInputData = (fields: CmsModelField[], input: CreateCmsEntryInput) => {
+    return fields.reduce<CreateCmsEntryInput>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -147,8 +147,8 @@ const mapAndCleanCreateInputData = (model: CmsModel, input: CreateCmsEntryInput)
 /**
  * Cleans the update input entry data.
  */
-const mapAndCleanUpdatedInputData = (model: CmsModel, input: UpdateCmsEntryInput) => {
-    return model.fields.reduce<UpdateCmsEntryInput>((acc, field) => {
+const mapAndCleanUpdatedInputData = (fields: CmsModelField[], input: UpdateCmsEntryInput) => {
+    return fields.reduce<UpdateCmsEntryInput>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -653,7 +653,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const initialInput = mapAndCleanCreateInputData(model, inputData);
+        const initialInput = mapAndCleanCreateInputData(model.fields, inputData);
         /**
          * Possibility to save draft without validation.
          */
@@ -716,7 +716,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry,
                 storageEntry
             });
-
             await onEntryAfterCreate.publish({
                 entry,
                 storageEntry: result,
@@ -758,7 +757,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model, inputData);
+        const input = mapAndCleanUpdatedInputData(model.fields, inputData);
 
         /**
          * Entries are identified by a common parent ID + Revision number.
@@ -896,7 +895,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model, inputData);
+        const input = mapAndCleanUpdatedInputData(model.fields, inputData);
 
         /**
          * The entry we are going to update.
@@ -1763,16 +1762,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async createEntry(model, input) {
+        async createEntry(model, input, options) {
             return context.benchmark.measure("headlessCms.crud.entries.createEntry", async () => {
-                return createEntry(model, input);
+                return createEntry(model, input, options);
             });
         },
-        async createEntryRevisionFrom(model, sourceId, input) {
+        async createEntryRevisionFrom(model, sourceId, input, options) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.createEntryRevisionFrom",
                 async () => {
-                    return createEntryRevisionFrom(model, sourceId, input);
+                    return createEntryRevisionFrom(model, sourceId, input, options);
                 }
             );
         },

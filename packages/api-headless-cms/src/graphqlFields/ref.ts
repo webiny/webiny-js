@@ -164,7 +164,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
 
                     if (field.multipleValues) {
                         /**
-                         * We cast because value really can be array and single value.
+                         * We cast because value really can be an array or a single value.
                          * At this point, we are 99% sure that it is an array (+ we check for it)
                          */
                         const value = initialValue as RefFieldValue[];
@@ -173,6 +173,12 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         }
 
                         const entriesByModel = value.reduce((collection, ref) => {
+                            /**
+                             * There is a possibility that null was stored into the reference array, we can safely ignore it.
+                             */
+                            if (!ref?.modelId || !ref?.entryId) {
+                                return collection;
+                            }
                             if (!collection[ref.modelId]) {
                                 collection[ref.modelId] = [];
                             } else if (collection[ref.modelId].includes(ref.entryId) === true) {
@@ -184,7 +190,12 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                             return collection;
                         }, {} as Record<string, string[]>);
 
-                        const getters = Object.keys(entriesByModel).map(async modelId => {
+                        const entryKeys = Object.keys(entriesByModel);
+                        if (entryKeys.length === 0) {
+                            return [];
+                        }
+
+                        const getters = entryKeys.map(async modelId => {
                             const idList = entriesByModel[modelId];
                             // Get model manager, to get access to CRUD methods
                             const model = await cms.getModelManager(modelId);
@@ -208,6 +219,12 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     }
 
                     const value = initialValue as RefFieldValue;
+                    /**
+                     * Possibly a null value in the ref field, we can just return null.
+                     */
+                    if (!value?.modelId || !value?.entryId) {
+                        return null;
+                    }
 
                     // Get model manager, to get access to CRUD methods
                     const model = await cms.getEntryManager(value.modelId);
@@ -267,8 +284,12 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     resolvers: {
                         RefField: {
                             entryId: (parent: RefFieldValue) => {
-                                const { id } = parseIdentifier(parent.entryId || parent.id);
-                                return id;
+                                try {
+                                    const { id } = parseIdentifier(parent.entryId || parent.id);
+                                    return id;
+                                } catch {
+                                    return null;
+                                }
                             },
                             id: (parent: RefFieldValue) => {
                                 return parent.id || parent.entryId;

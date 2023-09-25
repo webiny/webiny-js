@@ -1,6 +1,6 @@
 import { CmsContext, CmsDynamicZoneTemplate, CmsModel, CmsModelField } from "~/types";
 import WebinyError from "@webiny/error";
-import dotProp from "dot-prop";
+import dotProp from "dot-prop-immutable";
 import { parseIdentifier } from "@webiny/utils";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
@@ -213,6 +213,13 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
     if (!referenceFieldPaths.length) {
         return output;
     }
+    /**
+     * Let's reverse the field paths as it will help with deleting null values from the arrays.
+     * For example, if array item 0 and 3 are null, if we did not reverse the paths order it would:
+     * 1. delete item 0
+     * 2. delete item 3 - which is not correct, because item 3 is now item 2
+     */
+    referenceFieldPaths.reverse();
 
     if (validateEntries) {
         await validateReferencedEntries({ output, context, referenceFieldPaths });
@@ -234,7 +241,10 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
          * to make sure that the legacy structure { entryId, modelId } is supported.
          */
         const { id, modelId, entryId: maybeEntryId } = refValue;
-
+        if ((!id && !maybeEntryId) || !modelId) {
+            output = dotProp.delete(output, path);
+            continue;
+        }
         const { id: entryId } = parseIdentifier(maybeEntryId || id);
 
         output = dotProp.set(output, path, {

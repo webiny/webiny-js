@@ -95,7 +95,7 @@ export const useProductReadHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
-        async listProducts(variables: Record<string, any>, headers: Record<string, any> = {}) {
+        async listProducts(variables: Record<string, any> = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listProductsQuery(model), variables },
                 headers

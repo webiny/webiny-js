@@ -126,8 +126,8 @@ const listProductsQuery = (model: CmsModel) => {
 
 const createProductMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation CreateProduct($data: ${model.singularApiName}Input!) {
-        createProduct: create${model.singularApiName}(data: $data) {
+        mutation CreateProduct($data: ${model.singularApiName}Input!, $options: CmsEntryCreateOptions) {
+        createProduct: create${model.singularApiName}(data: $data, options: $options) {
                 data {
                     ${productFields}
                 }
@@ -139,8 +139,8 @@ const createProductMutation = (model: CmsModel) => {
 
 const createProductFromMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation CreateProductFrom($revision: ID!) {
-            createProductFrom: create${model.singularApiName}From(revision: $revision) {
+        mutation CreateProductFrom($revision: ID!, $data: ${model.singularApiName}Input, $options: CmsEntryCreateFromOptions) {
+            createProductFrom: create${model.singularApiName}From(revision: $revision, data: $data, options: $options) {
                 data {
                     ${productFields}
                 }
@@ -152,8 +152,8 @@ const createProductFromMutation = (model: CmsModel) => {
 
 const updateProductMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation UpdateProduct($revision: ID!, $data: ${model.singularApiName}Input!) {
-            updateProduct: update${model.singularApiName}(revision: $revision, data: $data) {
+        mutation UpdateProduct($revision: ID!, $data: ${model.singularApiName}Input!, $options: CmsEntryUpdateOptions) {
+            updateProduct: update${model.singularApiName}(revision: $revision, data: $data, options: $options) {
                 data {
                     ${productFields}
                 }

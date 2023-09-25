@@ -21,8 +21,8 @@ export interface FromStorageParams<T, F extends CmsModelField> {
 export interface StorageTransformPluginParams<T, R, F extends CmsModelField> {
     name?: string;
     fieldType: string;
-    toStorage: (params: ToStorageParams<T, F>) => Promise<R>;
-    fromStorage: (params: FromStorageParams<R, F>) => Promise<T>;
+    toStorage?: (params: ToStorageParams<T, F>) => Promise<R>;
+    fromStorage?: (params: FromStorageParams<R, F>) => Promise<T>;
 }
 export class StorageTransformPlugin<
     T = any,
@@ -30,11 +30,11 @@ export class StorageTransformPlugin<
     F extends CmsModelField = CmsModelField
 > extends Plugin {
     public static override readonly type: string = "cms.storage.transform.plugin";
+    private readonly config: StorageTransformPluginParams<T, R, F>;
+
     public get fieldType(): string {
         return this.config.fieldType;
     }
-
-    private readonly config: StorageTransformPluginParams<T, R, F>;
 
     public constructor(config: StorageTransformPluginParams<T, R, F>) {
         super();
@@ -42,11 +42,25 @@ export class StorageTransformPlugin<
         this.config = config;
     }
 
+    public hasToStorage(): boolean {
+        return typeof this.config.toStorage === "function";
+    }
+
     public toStorage(params: ToStorageParams<T, F>): Promise<R> {
+        if (!this.config.toStorage) {
+            return params.value as unknown as Promise<R>;
+        }
         return this.config.toStorage(params);
     }
 
+    public hasFromStorage(): boolean {
+        return typeof this.config.fromStorage === "function";
+    }
+
     public fromStorage(params: FromStorageParams<R, F>): Promise<T> {
+        if (!this.config.fromStorage) {
+            return params.value as unknown as Promise<T>;
+        }
         return this.config.fromStorage(params);
     }
 }
