@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import {
     DropDown,
     DropDownItem,
-    useRichTextEditor,
+    useCurrentSelection,
     useTypographyAction
 } from "@webiny/lexical-editor";
 import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 import { useTheme } from "@webiny/app-admin";
+import { useCurrentElement } from "@webiny/lexical-editor/hooks/useCurrentElement";
+import { $isHeadingNode } from "@webiny/lexical-editor/nodes/HeadingNode";
+import { $isParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
+import { $isQuoteNode } from "@webiny/lexical-editor/nodes/QuoteNode";
+import { $isListNode, ListNode } from "@webiny/lexical-editor/nodes/ListNode";
+import { $getNearestNodeOfType } from "@lexical/utils";
 /*
  * This components support the typography selection for page builder and HCMS.
  * */
@@ -15,8 +21,8 @@ export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = useTheme();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const { textBlockSelection } = useRichTextEditor();
-    const textType = textBlockSelection?.state?.textType;
+    const { element } = useCurrentElement();
+    const { rangeSelection } = useCurrentSelection();
 
     const getAllTextStyles = (): TypographyStyle[] => {
         if (!theme?.styles.typography) {
@@ -46,26 +52,40 @@ export const TypographyDropDown = () => {
     };
 
     useEffect(() => {
-        if (textType) {
-            switch (textType) {
-                case "heading":
-                case "paragraph":
-                    setStyles(getAllTextStyles());
-                    break;
-                case "bullet":
-                    setStyles(getListStyles("ul"));
-                    break;
-                case "number":
-                    setStyles(getListStyles("ol"));
-                    break;
-                case "quoteblock":
-                    setStyles(theme?.styles.typography?.quotes || []);
-                    break;
-                default:
-                    setStyles([]);
-            }
+        if (!element || !rangeSelection) {
+            return;
         }
-    }, [textType]);
+
+        switch (true) {
+            case $isHeadingNode(element):
+            case $isParagraphNode(element):
+                setStyles(getAllTextStyles());
+                break;
+            case $isListNode(element):
+                let type;
+                try {
+                    const anchorNode = rangeSelection.anchor.getNode();
+                    const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+                    if (parentList) {
+                        type = parentList.getListType();
+                    }
+                } catch {
+                    type = element.getListType();
+                }
+
+                if (type === "bullet") {
+                    setStyles(getListStyles("ul"));
+                } else {
+                    setStyles(getListStyles("ol"));
+                }
+                break;
+            case $isQuoteNode(element):
+                setStyles(theme?.styles.typography?.quotes || []);
+                break;
+            default:
+                setStyles([]);
+        }
+    }, [element]);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useRef } from "react";
 import {
     $getSelection,
     $isRangeSelection,
@@ -151,18 +151,14 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     );
 };
 
-interface useToolbarProps {
-    editor: LexicalEditor;
-    anchorElem: HTMLElement;
+export interface ToolbarProps {
+    anchorElem?: HTMLElement;
 }
 
-const useToolbar: FC<useToolbarProps> = ({
-    editor,
-    anchorElem = document.body
-}): JSX.Element | null => {
+export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
+    const [editor] = useLexicalComposerContext();
     const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
         useRichTextEditor();
-    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
 
     const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -174,7 +170,7 @@ const useToolbar: FC<useToolbarProps> = ({
             const selection = $getSelection();
 
             if ($isRangeSelection(selection)) {
-                const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
+                const selectionState = getLexicalTextSelectionState(editor, selection);
                 if (selectionState) {
                     setTextBlockSelection(selectionState);
                     if (
@@ -193,7 +189,7 @@ const useToolbar: FC<useToolbarProps> = ({
                 return;
             }
         });
-    }, [toolbarActiveEditor]);
+    }, [editor]);
 
     useEffect(() => {
         document.addEventListener("selectionchange", updateToolbar);
@@ -207,7 +203,6 @@ const useToolbar: FC<useToolbarProps> = ({
             SELECTION_CHANGE_COMMAND,
             (_payload, newEditor) => {
                 updateToolbar();
-                setToolbarActiveEditor(newEditor);
                 setActiveEditor(newEditor);
                 return false;
             },
@@ -220,31 +215,18 @@ const useToolbar: FC<useToolbarProps> = ({
             editor.registerEditableListener(editable => {
                 setIsEditable(editable);
             }),
-            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            }),
             editor.registerRootListener(() => {
                 if (editor.getRootElement() === null) {
                     setNodeIsText(false);
                 }
             })
         );
-    }, [updateToolbar, editor, toolbarActiveEditor]);
+    }, [updateToolbar, editor]);
 
+    // this is the only place where this var is used! REFACTOR!
     if (!nodeIsText) {
         return null;
     }
 
     return createPortal(<FloatingToolbar anchorElem={anchorElem} editor={editor} />, anchorElem);
-};
-
-export interface ToolbarProps {
-    anchorElem?: HTMLElement;
-}
-
-export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
-    const [editor] = useLexicalComposerContext();
-    return useToolbar({ editor, anchorElem });
 };

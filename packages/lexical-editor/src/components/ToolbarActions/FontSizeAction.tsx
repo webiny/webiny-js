@@ -9,7 +9,7 @@ import {
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { DropDown, DropDownItem } from "../../ui/DropDown";
+import { DropDown, DropDownItem } from "~/ui/DropDown";
 
 const FONT_SIZE_OPTIONS: string[] = [
     "8px",

@@ -7,7 +7,7 @@ import {
     LexicalEditor,
     LexicalNode,
     RangeSelection,
-    TextNode
+    TextNode,
 } from "lexical";
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
@@ -98,6 +98,7 @@ export const getToolbarState = (
         state.textType = type;
     }
 
+    // BACKWARDS COMPATIBILITY: initially we used the original Lexical node.
     if ($isBaseHeadingNode(element)) {
         state.textType = "heading";
     }
@@ -107,6 +108,7 @@ export const getToolbarState = (
         state.heading.isSelected = true;
     }
 
+    // BACKWARDS COMPATIBILITY: initially we used the original Lexical node.
     if ($isBaseParagraphNode(element)) {
         state.textType = "paragraph";
     }
@@ -116,6 +118,7 @@ export const getToolbarState = (
         state.paragraph.isSelected = true;
     }
 
+    // BACKWARDS COMPATIBILITY: in the initial implementation, we had this node to handle typography.
     if ($isTypographyElementNode(element)) {
         state.typography.isSelected = true;
         const value = element?.getTypographyValue() as TypographyValue;
@@ -125,10 +128,6 @@ export const getToolbarState = (
         if (value.tag.includes("p")) {
             state.textType = "paragraph";
         }
-    }
-
-    if ($isTypographyElementNode(element)) {
-        state.fontColor.isSelected = true;
     }
 
     if ($isQuoteNode(element)) {

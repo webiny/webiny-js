@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
+import { LexicalEditor, LexicalNode } from "lexical";
 import { TextBlockSelection, ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { LexicalEditor } from "lexical";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
