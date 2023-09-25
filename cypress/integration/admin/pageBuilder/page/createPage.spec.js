@@ -14,7 +14,7 @@ context("Page Builder - Page Creation", () => {
         cy.visit("/page-builder/pages");
 
         // Button is hidden so we need to force click it.
-        cy.findByTestId("new-page-button", { timeout: 15000 }).click({ force: true });
+        cy.findByTestId("new-page-button", { timeout: 15000 }).click();
 
         cy.findByTestId("create-blank-page-button").click();
         cy.findByTestId("pb-content-add-block-button", { timeout: 15000 });
@@ -33,7 +33,7 @@ context("Page Builder - Page Creation", () => {
 
         cy.findByText("Your page was published successfully!");
 
-        cy.findByTestId("new-page-button").should("exist");
+        cy.url().should("includes", "/page-builder/pages");
 
         // Checking whether we have new page in the the list of pages.
         cy.findByText(newPageTitle, { timeout: 15000 });
