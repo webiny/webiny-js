@@ -14,9 +14,7 @@ import { $isParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
 import { $isQuoteNode } from "@webiny/lexical-editor/nodes/QuoteNode";
 import { $isListNode, ListNode } from "@webiny/lexical-editor/nodes/ListNode";
 import { $getNearestNodeOfType } from "@lexical/utils";
-/*
- * This components support the typography selection for page builder and HCMS.
- * */
+
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = useTheme();
@@ -34,8 +32,7 @@ export const TypographyDropDown = () => {
     };
 
     useEffect(() => {
-        // In static toolbar typography styles always need to be visible.
-        // User from the start can select immediately in witch style he wants to start typing.
+        // In static toolbar typography, styles always need to be visible.
         if (theme?.styles) {
             setStyles(getAllTextStyles());
         }
@@ -46,7 +43,7 @@ export const TypographyDropDown = () => {
         if (listStyles.length > 0) {
             return listStyles;
         }
-        // fallback
+
         const fallbackTag = tag === "ul" ? "ol" : "ul";
         return theme?.styles.typography.lists?.filter(x => x.tag === fallbackTag) || [];
     };

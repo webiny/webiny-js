@@ -1,16 +1,14 @@
-import { useMemo } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isRootOrShadowRoot } from "lexical";
-import { useCurrentSelection } from "~/hooks/useCurrentSelection";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 
 export function useCurrentElement() {
-    const { rangeSelection } = useCurrentSelection();
-
-    const element = useMemo(() => {
+    return useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
-            return null;
+            return { element: null };
         }
         const anchorNode = rangeSelection.anchor.getNode();
+
         const element =
             anchorNode.getKey() === "root"
                 ? anchorNode
@@ -19,8 +17,6 @@ export function useCurrentElement() {
                       return parent !== null && $isRootOrShadowRoot(parent);
                   });
 
-        return element || anchorNode.getTopLevelElementOrThrow();
-    }, [rangeSelection]);
-
-    return { element };
+        return { element: element || anchorNode.getTopLevelElementOrThrow() };
+    });
 }

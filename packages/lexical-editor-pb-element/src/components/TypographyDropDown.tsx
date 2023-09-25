@@ -33,7 +33,6 @@ export const TypographyDropDown = () => {
     };
 
     useEffect(() => {
-        console.log("current element", element);
         if (!element) {
             return;
         }
@@ -47,6 +46,7 @@ export const TypographyDropDown = () => {
                 const paragraphStyles = theme?.styles.typography?.paragraphs || [];
                 setStyles(paragraphStyles);
                 break;
+            // TODO: finish these
             // case "bullet":
             //     setStyles(getListStyles("ul"));
             //     break;

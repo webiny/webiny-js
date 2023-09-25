@@ -1,14 +1,38 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, $isNodeSelection } from "lexical";
+import {
+    $getSelection,
+    $isRangeSelection,
+    $isNodeSelection,
+    RangeSelection,
+    NodeSelection
+} from "lexical";
+
+export interface CurrentSelection {
+    selection: ReturnType<typeof $getSelection>;
+    rangeSelection: RangeSelection | null;
+    nodeSelection: NodeSelection | null;
+}
+
+interface Generator<T> {
+    (params: CurrentSelection): T;
+}
+
+function getOutput(selection: ReturnType<typeof $getSelection>) {
+    return {
+        selection,
+        rangeSelection: $isRangeSelection(selection) ? selection : null,
+        nodeSelection: $isNodeSelection(selection) ? selection : null
+    };
+}
 
 export function useCurrentSelection() {
     const [editor] = useLexicalComposerContext();
-    const [selection, setSelection] = useState<ReturnType<typeof $getSelection>>(null);
+    const [selection, setSelection] = useState<CurrentSelection>(getOutput(null));
 
     const storeSelection = useCallback(() => {
         editor.getEditorState().read(() => {
-            setSelection($getSelection());
+            setSelection(getOutput($getSelection()));
         });
     }, [editor]);
 
@@ -20,9 +44,26 @@ export function useCurrentSelection() {
         return editor.registerUpdateListener(storeSelection);
     }, []);
 
-    return {
-        selection,
-        rangeSelection: $isRangeSelection(selection) ? selection : null,
-        nodeSelection: $isNodeSelection(selection) ? selection : null
-    };
+    return selection;
+}
+
+export function useDeriveValueFromSelection<T>(generator: Generator<T>) {
+    const [editor] = useLexicalComposerContext();
+    const [value, setValue] = useState<T>(generator(getOutput(null)));
+
+    const generateValue = useCallback(() => {
+        editor.getEditorState().read(() => {
+            setValue(generator(getOutput($getSelection())));
+        });
+    }, [editor]);
+
+    useEffect(() => {
+        // On first mount, generate current value.
+        generateValue();
+
+        // Subscribe to editor updates and regenerate the value.
+        return editor.registerUpdateListener(generateValue);
+    }, []);
+
+    return value;
 }

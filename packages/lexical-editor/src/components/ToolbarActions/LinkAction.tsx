@@ -3,17 +3,14 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { $getSelection, $isRangeSelection } from "lexical";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isLink, setIsLink] = useState(false);
-    const { setNodeIsText } = useRichTextEditor();
 
     const insertLink = useCallback(() => {
         if (!isLink) {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
-            setNodeIsText(false);
         } else {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
         }

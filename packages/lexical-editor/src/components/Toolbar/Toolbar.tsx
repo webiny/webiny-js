@@ -1,21 +1,22 @@
 import React, { FC, Fragment, useCallback, useEffect, useRef } from "react";
 import {
     $getSelection,
-    $isRangeSelection,
-    COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
+    RangeSelection,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
+import { $isLinkNode as $isBaseLinkNode } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { $isLinkNode } from "~/nodes/LinkNode";
+import { getSelectedNode } from "~/utils/getSelectedNode";
 
 interface FloatingToolbarProps {
     anchorElem: HTMLElement;
@@ -151,80 +152,37 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     );
 };
 
+/**
+ * TODO: this logic should live in Node classes. A toolbar should not decide when to show itself.
+ */
+function isLinkNode(selection: RangeSelection) {
+    const node = getSelectedNode(selection);
+    const parent = node.getParent();
+
+    return (
+        $isBaseLinkNode(parent) ||
+        $isBaseLinkNode(node) ||
+        // custom link node
+        $isLinkNode(parent) ||
+        $isLinkNode(node)
+    );
+}
+
 export interface ToolbarProps {
     anchorElem?: HTMLElement;
 }
 
 export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
     const [editor] = useLexicalComposerContext();
-    const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
-        useRichTextEditor();
+    const showToolbar = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return false;
+        }
 
-    const updateToolbar = useCallback(() => {
-        editor.getEditorState().read(() => {
-            // Should not to pop up the floating toolbar when using IME input
-            if (editor.isComposing()) {
-                return;
-            }
+        return !isLinkNode(rangeSelection) && !rangeSelection.isCollapsed();
+    });
 
-            const selection = $getSelection();
-
-            if ($isRangeSelection(selection)) {
-                const selectionState = getLexicalTextSelectionState(editor, selection);
-                if (selectionState) {
-                    setTextBlockSelection(selectionState);
-                    if (
-                        selectionState.selectedText !== "" &&
-                        !selectionState.state?.link.isSelected
-                    ) {
-                        setNodeIsText(true);
-                    } else {
-                        setNodeIsText(false);
-                    }
-                }
-            }
-
-            if (!$isRangeSelection(selection)) {
-                setNodeIsText(false);
-                return;
-            }
-        });
-    }, [editor]);
-
-    useEffect(() => {
-        document.addEventListener("selectionchange", updateToolbar);
-        return () => {
-            document.removeEventListener("selectionchange", updateToolbar);
-        };
-    }, [updateToolbar]);
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
-
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerEditableListener(editable => {
-                setIsEditable(editable);
-            }),
-            editor.registerRootListener(() => {
-                if (editor.getRootElement() === null) {
-                    setNodeIsText(false);
-                }
-            })
-        );
-    }, [updateToolbar, editor]);
-
-    // this is the only place where this var is used! REFACTOR!
-    if (!nodeIsText) {
+    if (!showToolbar) {
         return null;
     }
 

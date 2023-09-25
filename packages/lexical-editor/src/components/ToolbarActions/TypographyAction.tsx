@@ -60,7 +60,6 @@ export const TypographyAction: TypographyAction = () => {
     const isParagraphSelected = $isParagraphNode(element);
     const isHeadingSelected = $isHeadingNode(element);
     const isQuoteSelected = $isQuoteNode(element);
-    const textType = isTypographySelected ? element?.getTypographyValue() : undefined;
 
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
@@ -159,7 +158,6 @@ export const TypographyAction: TypographyAction = () => {
     }, [
         element,
         isTypographySelected,
-        textType,
         isQuoteSelected,
         isParagraphSelected,
         isHeadingSelected
