@@ -30,7 +30,7 @@ context(
 
                 // Check title on the page preview drawer.
                 cy.findByText(`${pageTitle1}`, { timeout: 15000 }).click({ force: true });
-                // Check whether we oppened a page preview drawer.
+                // Check whether we opened a page preview drawer.
                 cy.url().should("include", "&id");
                 // Checking if title is correct.
                 cy.findByTestId("page-details-page-title").contains(`${pageTitle1}`);
@@ -81,7 +81,7 @@ context(
                 cy.get(`input[value="${pageTitle1}"]`).clear().type(pageTitle2).blur();
                 cy.findByText("Page title updated successfully!");
 
-                // Publishing newly create page.
+                // Publishing newly created page.
                 cy.findByTestId("pb.editor.header.publish.button").click();
 
                 // Confirming that we want to publish the page.
