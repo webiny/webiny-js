@@ -8,12 +8,13 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-long-text",
     fieldType: "long-text",
-    toIndex({ rawValue }) {
+    toIndex({ rawValue, field }) {
+        const isArray = field.multipleValues || Array.isArray(rawValue);
         /**
          * We take the raw value, before it was prepared via `transformToStorage` for storage (there might be some transform due to DynamoDB) and store it in the Elasticsearch to be indexed.
          */
         return {
-            value: Array.isArray(rawValue) ? rawValue : rawValue || ""
+            value: isArray ? rawValue || [] : rawValue || ""
         };
     },
     /**
@@ -22,9 +23,10 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
      *
      * We need to decode to support older systems.
      */
-    fromIndex({ value }) {
-        if (Array.isArray(value)) {
-            return value;
+    fromIndex({ value, field }) {
+        const isArray = field.multipleValues || Array.isArray(value);
+        if (isArray) {
+            return value || [];
         }
         return value || "";
     }

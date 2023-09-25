@@ -40,7 +40,7 @@ export const createLongTextStorageTransformPlugin = () => {
                     `LongText value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.fieldId}.`
                 );
             }
-            const { compression, value, isArray } = storageValue;
+            const { compression, value, isArray: isArrayValue } = storageValue;
             /**
              * Check if possibly undefined, null, empty...
              */
@@ -63,17 +63,17 @@ export const createLongTextStorageTransformPlugin = () => {
                     }
                 );
             }
+            const isArray = field.multipleValues || isArrayValue;
             try {
                 const buf = await ungzip(convertToBuffer(value));
                 const result = buf.toString(FROM_STORAGE_ENCODING);
                 if (!isArray) {
-                    return result;
+                    return result || "";
                 }
-                return JSON.parse(result);
+                return result ? JSON.parse(result) || [] : [];
             } catch (ex) {
-                console.log("Error while transforming long-text.");
-                console.log(ex.message);
-                return "";
+                console.log(`Error while transforming long-text: ${ex.message}`);
+                return isArray ? [] : "";
             }
         },
         toStorage: async ({ value: initialValue }) => {
