@@ -112,6 +112,9 @@ export const createEntriesStorageOperations = (
     const storageTransformPlugins = plugins
         .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
         .reduce((collection, plugin) => {
+            if (!plugin.hasToStorage() && !plugin.hasFromStorage()) {
+                return collection;
+            }
             collection[plugin.fieldType] = plugin;
             return collection;
         }, {} as Record<string, StorageTransformPlugin>);

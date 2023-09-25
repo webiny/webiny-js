@@ -67,24 +67,23 @@ export const createLongTextStorageTransformPlugin = () => {
                 const buf = await ungzip(convertToBuffer(value));
                 const result = buf.toString(FROM_STORAGE_ENCODING);
                 if (!isArray) {
-                    return result;
+                    return result || "";
                 }
-                return JSON.parse(result);
+                return result ? JSON.parse(result) || [] : [];
             } catch (ex) {
-                console.log("Error while transforming long-text.");
-                console.log(ex.message);
+                console.log(`Error while transforming long-text: ${ex.message}`);
                 return "";
             }
         },
-        toStorage: async ({ value: initialValue }) => {
+        toStorage: async ({ value: initialValue, field }) => {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              */
             if (initialValue && initialValue.hasOwnProperty("compression") === true) {
                 return initialValue as any;
             }
-            const isArray = Array.isArray(initialValue);
-            const value = isArray ? JSON.stringify(initialValue) : initialValue;
+            const isArray = field.multipleValues || Array.isArray(initialValue);
+            const value = isArray ? JSON.stringify(initialValue || []) : initialValue;
             const compressedValue = await gzip(value);
 
             const result: StorageValue = {
