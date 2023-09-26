@@ -32,9 +32,17 @@ const PeForm: FormRenderer = props => {
 
                         return data.formBuilder.getPublishedForm.data;
                     } catch {
+                        /*
+                            This query will always be called on the initial render of the page,
+                            so if we have deleted the form that we were using on the page,
+                            the page would crash. Because we are trying to request a form,
+                            that does not exist anymore.
+                            The "catch" helps to avoid that issue.
+                        */
                         return apolloClient
                             .query({ query: gql(GET_PUBLISHED_FORM), variables })
-                            .then(({ data }) => data.formBuilder.getPublishedForm.data);
+                            .then(({ data }) => data.formBuilder.getPublishedForm.data)
+                            .catch(() => null);
                     }
                 },
                 submitForm: ({ variables }) => {
