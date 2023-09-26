@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { QueryBuilder as QueryBuilderComponent } from "./components/QueryBuilder";
 import { QueryBuilderPresenter } from "./adapters/QueryBuilderPresenter";
@@ -12,17 +12,7 @@ interface QueryBuilderProps {
 }
 
 export const QueryBuilder = ({ fields, onForm, onSubmit }: QueryBuilderProps) => {
-    const [presenter, setPresenter] = useState<QueryBuilderPresenter | undefined>();
-
-    useEffect(() => {
-        if (fields) {
-            setPresenter(new QueryBuilderPresenter(fields));
-        }
-    }, []);
-
-    if (!presenter) {
-        return null;
-    }
+    const [presenter] = useState<QueryBuilderPresenter>(new QueryBuilderPresenter(fields));
 
     return <QueryBuilderComponent onForm={onForm} onSubmit={onSubmit} presenter={presenter} />;
 };
