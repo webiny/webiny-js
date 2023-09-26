@@ -14,7 +14,7 @@ This package provides method for parsing lexical object to custom json structure
 
 ## Parse the lexical data
 
-To parse the lexical data simply you need to import the `parseLexicalobject` method and parse the content from the
+To parse the lexical data you need to import the `parseLexicalobject` method and parse the content from the
 Webiny's Headless CMS.
 
 ```tsx
@@ -63,7 +63,7 @@ const cmsLexicalData = {
 const output = parseLexicalObject(cmsLexicalData);
 ```
 
-This is how the output of the parsed node objects looks like.
+This is how the output of the parsed nodes objects looks like.
 
 ```tsx
 const output = [
@@ -86,16 +86,17 @@ const output = [
 ];
 ```
 
-Output is array of parsed and customized objects that represents the lexical parsed nodes. Parser can be configured to
-export plain text or html in the `text` field. We will cover this in the next topic.
+Output is array that contains customized objects with parsed node content in plain text or html. Parser can be
+configured to export plain text or html in the `text` field. We will cover this in the next topic.
 
 ### Configure the nodes
 
-In order parser to recognize the lexical nodes, we need to configure the parser by importing
-the `configureLexicalParser`. This method will allow to specify the configuration object for the lexical parser.
+You can configure the parser importing the `configureLexicalParser` method. This method will allow to specify the
+configuration object for the lexical parser.
 
-This method accepts object with `LexicalParserConfig` type. Here we can specify a list of processors, we need to
-configure the lexical nodes, create custom html and output processor callbacks.
+This method accepts objects with `LexicalParserConfig` type. Here we can specify a list of processor objects. In the
+list, we need to configure the lexical nodes, and as an option, we can create a custom HTML and output processor
+callbacks.
 
 In the code below, we can see how we can configure the nodes.
 
