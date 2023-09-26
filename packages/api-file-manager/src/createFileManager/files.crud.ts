@@ -269,7 +269,10 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
-                tenant: getTenantId()
+                tenant: getTenantId(),
+                location: {
+                    folderId_in: ["64d22ca44b6cfc0008c9dab7#0001", "6509ac4232791400082d034c#0001"]
+                }
             };
 
             /**

@@ -53,8 +53,7 @@ export const loadingHandler = (
 export async function dataLoader<T>(loadingHandler: (flag: boolean) => void, loader: () => T) {
     loadingHandler(true);
 
-    const response = await loader();
-    loadingHandler(false);
-
-    return response;
+    return loader().finally(() => {
+        loadingHandler(false);
+    });
 }

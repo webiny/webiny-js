@@ -2,11 +2,18 @@ import styled from "@emotion/styled";
 import { Dialog, DialogActions as DefaultDialogActions } from "@webiny/ui/Dialog";
 
 export const DialogContainer = styled(Dialog)`
-    z-index: 22;
-    .mdc-dialog__surface {
-        width: 600px;
-        min-width: 600px;
-    }
+  z-index: 22;
+
+  .mdc-dialog__surface {
+    width: 600px;
+    min-width: 600px;
+  }
+
+  .mdc-dialog__title {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 `;
 
 export const DialogActions = styled(DefaultDialogActions)`

@@ -6,6 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 
 import { ActionEdit } from "./ActionEdit";
 import { ActionDelete } from "./ActionDelete";
+import { ActionManagePermissions } from "./ActionManagePermissions";
 
 import { Actions, FolderContainer, FolderContent, Text } from "./styled";
 
@@ -16,6 +17,7 @@ export interface FolderProps {
     onFolderClick: (id: string) => void;
     onMenuEditClick: (folder: FolderItem) => void;
     onMenuDeleteClick: (folder: FolderItem) => void;
+    onMenuManagePermissionsClick: (folder: FolderItem) => void;
 }
 
 export const Folder: React.VFC<FolderProps> = ({
@@ -36,6 +38,7 @@ export const Folder: React.VFC<FolderProps> = ({
             <Actions handle={<IconButton icon={<MoreIcon />} />}>
                 <ActionEdit onClick={() => onMenuEditClick(folder)} />
                 <ActionDelete onClick={() => onMenuDeleteClick(folder)} />
+                <ActionManagePermissions onClick={() => onMenuDeleteClick(folder)} />
             </Actions>
         </FolderContainer>
     );

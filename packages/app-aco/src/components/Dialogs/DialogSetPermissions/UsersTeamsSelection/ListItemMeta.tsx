@@ -104,7 +104,15 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
     }, [disabledReason]);
 
     const selectLevel = useCallback(e => {
-        const level = TARGET_LEVELS[e.target.index!];
+        const targetIndex = e.target.index!;
+
+        const level = TARGET_LEVELS[targetIndex];
+        if (!level) {
+            // If no level is selected, means that the "Remove access" option was selected.
+            onRemoveAccess({ permission });
+            return;
+        }
+
         // Needed to do this with a short delay because of a visual glitch. Looks better this way.
         setTimeout(() => {
             onUpdatePermission({

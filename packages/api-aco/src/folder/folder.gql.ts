@@ -35,6 +35,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         input FolderCreateInput {
             title: String!
             slug: String!
+            permissions: [FolderPermissionInput]
             type: String!
             parentId: ID
         }

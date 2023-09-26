@@ -11,7 +11,9 @@ interface FoldersContext {
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
+
     deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
+
     getDescendantFolders(id?: string): FolderItem[];
 }
 
@@ -92,12 +94,16 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             async updateFolder(folder) {
                 const { id, title, slug, permissions, parentId } = folder;
 
+                // We must omit all inherited permissions.
+                const filteredPermissions = permissions.filter(p => !p.inheritedFrom);
+
+                console.log(permissions, filteredPermissions)
                 return await dataLoader(loadingHandler("UPDATE", setLoading), () =>
                     foldersApi.updateFolder(type, {
                         id,
                         title,
                         slug,
-                        permissions,
+                        permissions: filteredPermissions,
                         parentId
                     })
                 );

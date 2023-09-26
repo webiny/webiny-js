@@ -9,7 +9,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import { FolderDialogDelete, FolderDialogUpdate, FolderDialogSetPermissions } from "~/components";
+import { FolderDialogDelete, FolderDialogUpdate, FolderDialogManagePermissions } from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
@@ -68,6 +68,7 @@ export const List: React.VFC<ListProps> = ({
             }
 
             setTreeData(newTree);
+
             await updateFolder({
                 ...item,
                 parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
@@ -153,7 +154,7 @@ export const List: React.VFC<ListProps> = ({
                             setSelectedFolder(undefined);
                         }}
                     />{" "}
-                    <FolderDialogSetPermissions
+                    <FolderDialogManagePermissions
                         folder={selectedFolder}
                         open={permissionsDialogOpen}
                         onClose={() => {

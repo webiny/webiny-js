@@ -16,6 +16,7 @@ import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection"
 import { LIST_USERS, LIST_TEAMS } from "./DialogSetPermissions/graphql";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useQuery } from "@apollo/react-hooks";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 interface FolderDialogUpdateProps {
     folder: FolderItem;
@@ -23,7 +24,7 @@ interface FolderDialogUpdateProps {
     onClose: DialogOnClose;
 }
 
-export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
+export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> = ({
     folder,
     onClose,
     open
@@ -39,15 +40,19 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
     const listUsersQuery = useQuery(LIST_USERS);
     const usersList = listUsersQuery.data?.adminUsers.listUsers.data || [];
 
+    let loadingOptions = listUsersQuery.loading;
+
     const project = getProject();
     let teams = false;
     if (project) {
         teams = project.package.features.advancedAccessControlLayer.options.teams;
     }
 
-    let teamsList = [];
+    let teamsList: any[] = [];
     if (teams) {
         const listTeamsQuery = useQuery(LIST_TEAMS);
+
+        loadingOptions = loadingOptions || listTeamsQuery.loading;
         teamsList = listTeamsQuery.data?.security.listTeams.data || [];
     }
 
@@ -63,7 +68,9 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
                 level: "editor"
             };
 
-            setPermissions([newPermission, ...permissions]);
+            // We want to add the new permission to the 2nd position in the array.
+            // The 1st position is reserved for the "current user" permission.
+            setPermissions([permissions[0], newPermission, ...permissions.slice(1)]);
         },
         [permissions]
     );
@@ -100,29 +107,33 @@ export const FolderDialogSetPermissions: React.VFC<FolderDialogUpdateProps> = ({
             })
             .catch(error => {
                 showSnackbar(error.message);
-
             });
     }, [permissions]);
 
     const options = useMemo(() => {
         return [
-            ...usersList.map(user => ({
+            ...usersList.map((user: any) => ({
                 target: `user:${user.id}`,
                 name: `${user.firstName} ${user.lastName}`
             })),
             ...teamsList.map(team => ({
                 target: `team:${team.id}`,
                 name: `${team.name}`
-            })),
-
+            }))
         ];
     }, [usersList, teamsList]);
+
+    const dialogTitle = `Manage permissions - ${folder.title}`;
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
-                    <DialogTitle>Update permissions</DialogTitle>
+                    {loadingOptions && <CircularProgress />}
+
+                    <DialogTitle>
+                        <span title={dialogTitle}>{dialogTitle}</span>
+                    </DialogTitle>
                     <DialogContent>
                         <Grid>
                             <Cell span={12}>

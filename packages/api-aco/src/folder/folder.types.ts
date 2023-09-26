@@ -1,6 +1,6 @@
 import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 
 export interface Folder {
     id: string;
@@ -10,7 +10,7 @@ export interface Folder {
     savedOn: string;
     title: string;
     slug: string;
-    permissions: FolderPermission[];
+    permissions?: FolderPermission[];
     type: string;
     parentId?: string | null;
 }
@@ -100,11 +100,20 @@ export interface FolderPermission {
     inheritedFrom?: string;
 }
 
-interface CanAccessFolderParams {
-    identity: SecurityIdentity;
-    folder: Pick<Folder, "id">;
-    foldersPermissions?: Pick<Folder, "id" | "slug" | "permissions">[];
+export interface FolderPermissions {
+    folderId: string;
+    permissions: FolderPermission[];
+}
+
+export interface CanAccessFolderParams {
+    folder: Folder;
     rwd?: "r" | "w" | "d";
+    foldersPermissions?: FolderPermissions[];
+
+    // If `foldersPermissions` is not provided, we must provide the following three params.
+    folders?: Folder[];
+    identity?: SecurityIdentity;
+    permissions?: SecurityPermission[];
 }
 
 export interface AcoFolderCrud {
