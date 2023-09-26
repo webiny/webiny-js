@@ -2,18 +2,21 @@ import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
 const plugin = new ValueFilterPlugin({
     operation: "contains",
-    matches: ({ value, compareValue }) => {
-        if (typeof value !== "string") {
-            if (Array.isArray(value) === true) {
-                const re = new RegExp(compareValue, "i");
-                return value.some((v: string) => {
-                    return v.match(re) !== null;
-                });
-            }
+    matches: ({ value: initialValue, compareValue: initialCompareValue }) => {
+        const isValueArray = Array.isArray(initialValue);
+        if (!initialValue || (isValueArray && initialValue.length === 0)) {
             return false;
+        } else if (initialCompareValue === undefined || initialCompareValue === null) {
+            return true;
         }
-        const re = new RegExp(compareValue, "i");
-        return value.match(re) !== null;
+        const values: string[] = isValueArray ? initialValue : [initialValue];
+        const compareValues: string[] = initialCompareValue.split(" ");
+
+        return values.some(target => {
+            return compareValues.every(compareValue => {
+                return target.match(new RegExp(compareValue, "gi")) !== null;
+            });
+        });
     }
 });
 
