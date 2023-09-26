@@ -11,6 +11,7 @@ import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { AcoAppRegisterPlugin } from "~/plugins";
+import { createFilterCrudMethods } from "~/filter/filter.crud";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
@@ -72,6 +73,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     context.aco = {
         folder: createFolderCrudMethods(params),
         search: createSearchRecordCrudMethods(params),
+        filter: createFilterCrudMethods(params),
         apps,
         getApp: (name: string) => apps.get(name),
         listApps: () => apps.list(),

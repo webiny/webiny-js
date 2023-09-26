@@ -22,6 +22,13 @@ import {
     MOVE_RECORD,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
+import {
+    CREATE_FILTER,
+    DELETE_FILTER,
+    GET_FILTER,
+    LIST_FILTERS,
+    UPDATE_FILTER
+} from "~tests/graphql/filter.gql";
 
 import { createAco } from "~/index";
 import { createIdentity } from "./identity";
@@ -114,6 +121,21 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async getAppModel(variables: { id: string }) {
             return invoke({ body: { query: GET_APP_MODEL, variables } });
+        },
+        async createFilter(variables = {}) {
+            return invoke({ body: { query: CREATE_FILTER, variables } });
+        },
+        async updateFilter(variables = {}) {
+            return invoke({ body: { query: UPDATE_FILTER, variables } });
+        },
+        async deleteFilter(variables = {}) {
+            return invoke({ body: { query: DELETE_FILTER, variables } });
+        },
+        async listFilters(variables = {}) {
+            return invoke({ body: { query: LIST_FILTERS, variables } });
+        },
+        async getFilter(variables = {}) {
+            return invoke({ body: { query: GET_FILTER, variables } });
         }
     };
 
