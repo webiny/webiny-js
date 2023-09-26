@@ -43,8 +43,6 @@ describe("GraphQLInputMapper", () => {
 
         const output = GraphQLInputMapper.toGraphQL(queryObjectDTO);
 
-        console.log(JSON.stringify(output, null, 2));
-
         expect(output).toEqual({
             [Operation.AND]: [
                 {

@@ -12,7 +12,7 @@ export enum TypeDTO {
     DATE = "date",
     TIME = "time",
     DATETIME_WITH_TIMEZONE = "dateTimeWithTimezone",
-    DATETIME_WITHOUT_TIMEZONE = "dateTimeWithOutTimezone",
+    DATETIME_WITHOUT_TIMEZONE = "dateTimeWithoutTimezone",
     MULTIPLE_VALUES = "multipleValues"
 }
 
