@@ -7,9 +7,10 @@
 
 ## About
 
-This package provides method for parsing lexical editor object to custom json structure.
+This package provides method for parsing lexical object to custom json structure.
 
-> important note: This is not final version of the package, and we are not recommending to use this code in production.
+> important note: This is not final version of the package it's only PoC, and we are not recommending to use this code
+> in production.
 
 ## Parse the lexical data
 
@@ -51,14 +52,62 @@ export plain text or html in the `text` field. We will cover this in the next to
 
 ### Configure the nodes
 
-### Create custom HTML tag for a specific node
+In order parser to recognize the lexical nodes, we need to configure the parser by importing
+the `configureLexicalParser`. This method will allow to specify the configuration object for the lexical parser.
 
-we can customize how the html is generated for specific lexical node. In this example we took the link node and created
-custom html processor method.
+This method accepts object with `LexicalParserConfig` type. Here we can specify a list of processors, we need to
+configure the lexical nodes, create custom html and output processor callbacks.
+
+In the code below, we can see how we can configure the nodes.
 
 ```ts
-export const defaultConfig: LexicalParserConfig = {
+import {parseLexicalObject, parseLexicalObject} from "@webiny/lexical-parser";
+
+export const mydDfaultConfig: LexicalParserConfig = {
     processors: [
+        {
+            elementNode: {
+                type: "heading-element",
+                outputType: "headings",
+                outputTextAsHtml: true
+            }
+        },
+        {
+            elementNode: {
+                type: "paragraph-element",
+                outputType: "paragraph",
+                tag: "p",
+                outputTextAsHtml: true
+            },
+            outputProcessor: (
+                parsedElement: ElementNode,
+                lexicalNode: Record<string, any>,
+                index: number,
+                config
+            ) => {
+                // create custom output when paragraph node is matched
+                return {
+                    order: index,
+                    type: config?.elementNode.outputType,
+                    text: `<div>${parsedElement.html}</div>`
+                };
+            }
+        },
+        {
+            elementNode: {
+                type: "webiny-list",
+                outputType: "list",
+                outputTextAsHtml: true
+            }
+        },
+        {
+            elementNode: {
+                type: "webiny-listitem",
+                outputType: "list-item",
+                tag: "li",
+                outputTextAsHtml: true
+            }
+        },
         {
             elementNode: {
                 type: "link",
@@ -73,6 +122,34 @@ export const defaultConfig: LexicalParserConfig = {
     ]
 };
 
+// apply the configuration
+configureLexicalParse(mydDfaultConfig);
+
+// parse the lexical object
+const output = parseLexicalObject(lexicalCmsObject);
+```
+
+### Create custom HTML tag for a specific node
+
+we can customize how the html is generated for specific lexical node. In this example we took the link node and created
+custom html processor method.
+
+```ts
+export const mydDfaultConfig: LexicalParserConfig = {
+    processors: [
+        {
+            elementNode: {
+                type: "link", // lexical node type
+                outputType: "link", // output node type name
+                tag: "a", // html tag if data don't have one
+                outputTextAsHtml: true // output to be as html or plain text
+            },
+            htmlProcessor: (parsedElement: ElementNode, linkNode) => {
+                return `<a href="${linkNode?.url}">${parsedElement.text}</a>`;
+            }
+        }
+    ]
+};
 ```
 
 Now the output for the link node will be:
@@ -93,7 +170,7 @@ const output = [
 You can customize the output of the parsed node in a following way:
 
 ```ts
-export const defaultConfig: LexicalParserConfig = {
+export const mydDfaultConfig: LexicalParserConfig = {
     processors: [
         {
             elementNode: {
