@@ -75,7 +75,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     );
 
     const columns: Columns<Entry> = useMemo(() => {
-        const titleColumnId = model.titleFieldId || "title";
+        const titleColumnId = model.titleFieldId || "id";
 
         return {
             [titleColumnId]: {
