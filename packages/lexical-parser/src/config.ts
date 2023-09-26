@@ -6,7 +6,8 @@ export const defaultLexicalParserConfig: LexicalParserConfig = {
             elementNode: {
                 type: "paragraph-element",
                 outputType: "paragraph",
-                tag: "p"
+                tag: "p",
+                outputTextAsHtml: true
             }
         },
         {
@@ -59,6 +60,3 @@ export const defaultLexicalParserConfig: LexicalParserConfig = {
         }
     ]
 };
-
-// elementProcessor: (): ElementNode => {},
-// outputProcessor

@@ -27,7 +27,7 @@ export const parse = (
             if (parsedElement) {
                 // Default output mapping. In the future this can be implemented as dynamic mapping.
                 let elementOutput: NodeContentOutput = {
-                    order: 1,
+                    order: index,
                     type: configuration?.elementNode?.outputType || parsedElement.type,
                     text: configuration?.elementNode?.outputTextAsHtml
                         ? parsedElement.html
