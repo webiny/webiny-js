@@ -109,7 +109,7 @@ describe("Forms Submission Security Test", () => {
                             status: "draft",
                             steps: [
                                 {
-                                    title: "Step",
+                                    title: "Step 1",
                                     layout: []
                                 }
                             ],
