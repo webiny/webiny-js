@@ -16296,6 +16296,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/lexical-parsers@workspace:packages/lexical-parser":
+  version: 0.0.0-use.local
+  resolution: "@webiny/lexical-parsers@workspace:packages/lexical-parser"
+  dependencies:
+    "@webiny/cli": 0.0.0
+    "@webiny/project-utils": 0.0.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/logger@0.0.0, @webiny/logger@workspace:packages/logger":
   version: 0.0.0-use.local
   resolution: "@webiny/logger@workspace:packages/logger"
