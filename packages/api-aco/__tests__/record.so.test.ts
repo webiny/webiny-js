@@ -5,6 +5,12 @@ import { createMockAcoApp } from "~tests/mocks/app";
 
 jest.setTimeout(500000);
 
+const emptyMeta = {
+    cursor: null,
+    hasMoreItems: false,
+    totalCount: 0
+};
+
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler({
         plugins: [
@@ -140,14 +146,21 @@ describe("`search` CRUD", () => {
             sort: ["createdOn_ASC"]
         });
 
-        expect(listResponsePageFolder2.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponsePageFolder2.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordC,
+                    createdBy: userMock,
+                    id: recordC.id
+                }
+            ],
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 1
+            },
+            error: null
+        });
 
         // List records -> type: "post" / folderId: "folder-1"
         const [listResponsePost] = await search.listRecords({
@@ -168,14 +181,14 @@ describe("`search` CRUD", () => {
                             {
                                 ...recordMocks.recordE,
                                 id: recordE.id,
-                                content: null,
+                                content: "",
                                 createdBy: userMock,
                                 data: {
                                     customCreatedOn: null,
                                     customLocked: null,
                                     customVersion: null,
                                     identity: null,
-                                    someText: null
+                                    someText: ""
                                 },
                                 tags: []
                             }
@@ -199,20 +212,26 @@ describe("`search` CRUD", () => {
         });
 
         expect(listResponsePageWithLimit.data.search.listRecords.data.length).toEqual(2);
-        expect(listResponsePageWithLimit.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
-                ]),
-                meta: expect.objectContaining({
-                    cursor: expect.any(String),
-                    totalCount: 3,
-                    hasMoreItems: true
-                }),
-                error: null
-            })
-        );
+        expect(listResponsePageWithLimit.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordA,
+                    createdBy: userMock,
+                    id: recordA.id
+                },
+                {
+                    ...recordMocks.recordB,
+                    createdBy: userMock,
+                    id: recordB.id
+                }
+            ],
+            meta: {
+                cursor: expect.any(String),
+                totalCount: 3,
+                hasMoreItems: true
+            },
+            error: null
+        });
 
         // Let's use previously returned cursor to continue with pagination.
         const cursor = listResponsePageWithLimit.data.search.listRecords.meta.cursor;
@@ -225,19 +244,21 @@ describe("`search` CRUD", () => {
         });
 
         expect(listResponsePageWithLimitAfter.data.search.listRecords.data.length).toEqual(1);
-        expect(listResponsePageWithLimitAfter.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
-                ]),
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 3,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(listResponsePageWithLimitAfter.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordC,
+                    createdBy: userMock,
+                    id: recordC.id
+                }
+            ],
+            meta: {
+                cursor: null,
+                totalCount: 3,
+                hasMoreItems: false
+            },
+            error: null
+        });
 
         // Let's search for records.
         const [searchResponse] = await search.listRecords({
@@ -246,30 +267,52 @@ describe("`search` CRUD", () => {
             search: "Lorem"
         });
 
-        expect(searchResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id }),
-                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
-                ]),
-                error: null
-            })
-        );
+        expect(searchResponse.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordB,
+                    createdBy: userMock,
+                    id: recordB.id
+                },
+                {
+                    ...recordMocks.recordC,
+                    createdBy: userMock,
+                    id: recordC.id
+                }
+            ],
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 2
+            },
+            error: null
+        });
 
         // Let's filter records using `tags_in`
         const [tagsInResponse] = await search.listRecords({
             where: { type: "page", tags_in: ["page-tag1"] }
         });
 
-        expect(tagsInResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
-                ]),
-                error: null
-            })
-        );
+        expect(tagsInResponse.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordB,
+                    createdBy: userMock,
+                    id: recordB.id
+                },
+                {
+                    ...recordMocks.recordA,
+                    createdBy: userMock,
+                    id: recordA.id
+                }
+            ],
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 2
+            },
+            error: null
+        });
 
         // Let's filter records using `tags_startsWith`
         const [tagsStartsWithResponse] = await search.listRecords({
@@ -303,17 +346,26 @@ describe("`search` CRUD", () => {
             where: { type: "page", tags_not_startsWith: "scope:" }
         });
 
-        expect(tagsNotStartsWithResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        ...recordMocks.recordB,
-                        id: recordB.id
-                    })
-                ]),
-                error: null
-            })
-        );
+        expect(tagsNotStartsWithResponse.data.search.listRecords).toEqual({
+            data: [
+                {
+                    ...recordMocks.recordC,
+                    createdBy: userMock,
+                    id: recordC.id
+                },
+                {
+                    ...recordMocks.recordB,
+                    createdBy: userMock,
+                    id: recordB.id
+                }
+            ],
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 2
+            },
+            error: null
+        });
 
         // Let's filter records using `createdBy`
         const [existingUserResponse] = await search.listRecords({
@@ -327,12 +379,11 @@ describe("`search` CRUD", () => {
             where: { type: "page", createdBy: "any-id" }
         });
 
-        expect(nonExistingUserResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: [],
-                error: null
-            })
-        );
+        expect(nonExistingUserResponse.data.search.listRecords).toEqual({
+            data: [],
+            meta: emptyMeta,
+            error: null
+        });
 
         // Let's update the "page-b" title.
         const updatedTitle = "Title updated";
@@ -613,21 +664,19 @@ describe("`search` CRUD", () => {
             }
         });
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: [
-                    { tag: "page-tag1", count: 1 },
-                    { tag: "page-tag2", count: 1 },
-                    { tag: "scope:page", count: 1 }
-                ],
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 3,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response.data.search.listTags).toEqual({
+            data: [
+                { tag: "page-tag1", count: 1 },
+                { tag: "page-tag2", count: 1 },
+                { tag: "scope:page", count: 1 }
+            ],
+            meta: {
+                cursor: null,
+                totalCount: 3,
+                hasMoreItems: false
+            },
+            error: null
+        });
     });
 
     it("should list existing tags, filtered by `tags_startsWith` param", async () => {
@@ -645,24 +694,22 @@ describe("`search` CRUD", () => {
             }
         });
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: [
-                    { tag: "page-tag1", count: 1 },
-                    { tag: "page-tag2", count: 1 },
-                    { tag: "post-tag1", count: 1 },
-                    { tag: "post-tag2", count: 1 },
-                    { tag: "scope:page", count: 1 },
-                    { tag: "scope:post", count: 1 }
-                ],
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 6,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response.data.search.listTags).toEqual({
+            data: [
+                { tag: "page-tag1", count: 1 },
+                { tag: "page-tag2", count: 1 },
+                { tag: "post-tag1", count: 1 },
+                { tag: "post-tag2", count: 1 },
+                { tag: "scope:page", count: 1 },
+                { tag: "scope:post", count: 1 }
+            ],
+            meta: {
+                cursor: null,
+                totalCount: 6,
+                hasMoreItems: false
+            },
+            error: null
+        });
     });
 
     it("should list existing tags, filtered by `tags_not_startsWith` param", async () => {
@@ -680,20 +727,18 @@ describe("`search` CRUD", () => {
             }
         });
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: [
-                    { tag: "page-tag1", count: 1 },
-                    { tag: "page-tag3", count: 1 }
-                ],
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 2,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response.data.search.listTags).toEqual({
+            data: [
+                { tag: "page-tag1", count: 1 },
+                { tag: "page-tag3", count: 1 }
+            ],
+            meta: {
+                cursor: null,
+                totalCount: 2,
+                hasMoreItems: false
+            },
+            error: null
+        });
     });
 
     it("should list existing tags for large amount of records", async () => {
@@ -737,11 +782,7 @@ describe("`search` CRUD", () => {
                 search: {
                     listTags: {
                         data: [],
-                        meta: expect.objectContaining({
-                            cursor: null,
-                            totalCount: 0,
-                            hasMoreItems: false
-                        }),
+                        meta: emptyMeta,
                         error: null
                     }
                 }
@@ -794,9 +835,10 @@ describe("`search` CRUD", () => {
             const [listResponse] = await anonymousSearch.listRecords({
                 where: { type: "page", location: { folderId: "folder-1" } }
             });
-            expect(listResponse.data.search.listRecords).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(listResponse.data.search.listRecords).toEqual({
+                ...notAuthorizedResponse,
+                meta: null
+            });
         }
 
         // Get with anonymous identity
@@ -804,9 +846,7 @@ describe("`search` CRUD", () => {
             const [getResponse] = await anonymousSearch.getRecord({
                 id: recordA.id
             });
-            expect(getResponse.data.search.getRecord).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(getResponse.data.search.getRecord).toEqual(notAuthorizedResponse);
         }
 
         // Update with anonymous identity
@@ -815,9 +855,7 @@ describe("`search` CRUD", () => {
                 id: recordA.id,
                 data: { title: `${recordA.title} + update` }
             });
-            expect(updateResponse.data.search.updateRecord).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(updateResponse.data.search.updateRecord).toEqual(notAuthorizedResponse);
         }
 
         // Delete with anonymous identity
@@ -825,17 +863,16 @@ describe("`search` CRUD", () => {
             const [deleteResponse] = await anonymousSearch.deleteRecord({
                 id: recordA.id
             });
-            expect(deleteResponse.data.search.deleteRecord).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(deleteResponse.data.search.deleteRecord).toEqual(notAuthorizedResponse);
         }
 
         // ListTags with anonymous identity
         {
             const [listTags] = await anonymousSearch.listTags();
-            expect(listTags.data.search.listTags).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(listTags.data.search.listTags).toEqual({
+                ...notAuthorizedResponse,
+                meta: null
+            });
         }
     });
 });

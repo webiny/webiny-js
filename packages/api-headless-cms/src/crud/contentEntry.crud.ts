@@ -19,7 +19,6 @@ import {
     CmsEntryStatus,
     CmsEntryValues,
     CmsModel,
-    CmsModelField,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
     CreateCmsEntryInput,
@@ -56,8 +55,7 @@ import {
     OnEntryRevisionBeforeDeleteTopicParams,
     OnEntryRevisionDeleteErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
-    OnEntryUpdateErrorTopicParams,
-    UpdateCmsEntryInput
+    OnEntryUpdateErrorTopicParams
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -75,100 +73,12 @@ import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security/";
 import { ROOT_FOLDER } from "~/constants";
+import { mapAndCleanCreateInputData, mapAndCleanUpdatedInputData } from "./contentEntry/clean";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
 export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
 export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
-type DefaultValue = boolean | number | string | null;
-/**
- * Used for some fields to convert their values.
- */
-const convertDefaultValue = (field: CmsModelField, value: DefaultValue): DefaultValue => {
-    switch (field.type) {
-        case "boolean":
-            return Boolean(value);
-        case "number":
-            return Number(value);
-        default:
-            return value;
-    }
-};
-const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) | undefined => {
-    const { settings, multipleValues } = field;
-    if (settings && settings.defaultValue !== undefined) {
-        return convertDefaultValue(field, settings.defaultValue);
-    }
-    const { predefinedValues } = field;
-    if (
-        !predefinedValues ||
-        !predefinedValues.enabled ||
-        Array.isArray(predefinedValues.values) === false
-    ) {
-        return undefined;
-    }
-    if (!multipleValues) {
-        const selectedValue = predefinedValues.values.find(value => {
-            return !!value.selected;
-        });
-        if (selectedValue) {
-            return convertDefaultValue(field, selectedValue.value);
-        }
-        return undefined;
-    }
-    return predefinedValues.values
-        .filter(({ selected }) => !!selected)
-        .map(({ value }) => {
-            return convertDefaultValue(field, value);
-        });
-};
-/**
- * Cleans and adds default values to create input data.
- */
-const mapAndCleanCreateInputData = (fields: CmsModelField[], input: CreateCmsEntryInput) => {
-    return fields.reduce<CreateCmsEntryInput>((acc, field) => {
-        /**
-         * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the fieldId on the field definition.
-         */
-        if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
-                field
-            });
-        }
-        const value = input[field.fieldId];
-        /**
-         * We set the default value on create input if value is not defined.
-         */
-        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
-        return acc;
-    }, {});
-};
-/**
- * Cleans the update input entry data.
- */
-const mapAndCleanUpdatedInputData = (fields: CmsModelField[], input: UpdateCmsEntryInput) => {
-    return fields.reduce<UpdateCmsEntryInput>((acc, field) => {
-        /**
-         * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the fieldId on the field definition.
-         */
-        if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
-                field
-            });
-        }
-        /**
-         * We cannot set default value here because user might want to update only certain field values.
-         */
-        const value = input[field.fieldId];
-        if (value === undefined) {
-            return acc;
-        }
-        acc[field.fieldId] = value;
-        return acc;
-    }, {});
-};
 /**
  * This method takes original entry meta and new input.
  * When new meta is merged onto the existing one, everything that has undefined or null value is removed.
@@ -653,7 +563,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const initialInput = mapAndCleanCreateInputData(model.fields, inputData);
+        const initialInput = mapAndCleanCreateInputData({
+            fields: model.fields,
+            input: inputData,
+            options
+        });
         /**
          * Possibility to save draft without validation.
          */
@@ -757,7 +671,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model.fields, inputData);
+        const input = mapAndCleanUpdatedInputData({
+            fields: model.fields,
+            input: inputData,
+            options
+        });
 
         /**
          * Entries are identified by a common parent ID + Revision number.
@@ -895,7 +813,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model.fields, inputData);
+        const input = mapAndCleanUpdatedInputData({
+            fields: model.fields,
+            input: inputData,
+            options
+        });
 
         /**
          * The entry we are going to update.

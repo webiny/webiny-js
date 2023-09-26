@@ -11,5 +11,8 @@ export function getRecordFieldValues(entry: CmsEntry<any>, fields?: string[]) {
 }
 
 export function getFolderFieldValues(entry: CmsEntry, fields: string[]) {
-    return { ...pick(entry, fields), ...entry.values } as Folder;
+    return {
+        ...pick(entry, fields),
+        ...entry.values
+    } as Folder;
 }

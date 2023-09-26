@@ -35,7 +35,7 @@ export const createFolderOperations = (
                 entry = await cms.getEntryById(model, id);
             } else if (slug && type) {
                 entry = await cms.getEntry(model, {
-                    where: { slug, type, parentId, latest: true }
+                    where: { slug, type, parentId: parentId || "", latest: true }
                 });
             }
 
@@ -104,13 +104,13 @@ export const createFolderOperations = (
                     params: {
                         type: data.type,
                         slug: data.slug,
-                        parentId: data.parentId
+                        parentId: data.parentId || ""
                     }
                 });
 
                 const entry = await cms.createEntry(model, {
                     ...data,
-                    parentId: data.parentId || null
+                    parentId: data.parentId || ""
                 });
 
                 return getFolderFieldValues(entry, baseFields);

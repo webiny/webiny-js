@@ -35,46 +35,50 @@ describe("`folder` CRUD", () => {
 
         // Let's check whether both of the folder exists, listing them by `type`.
         const [listResponse] = await aco.listFolders({ where: { type: "page" } });
-        expect(listResponse.data.aco.listFolders).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        title: "Folder A",
-                        slug: "folder-a",
-                        type: "page",
-                        parentId: null
-                    }),
-                    expect.objectContaining({
-                        title: "Folder B",
-                        slug: "folder-b",
-                        type: "page",
-                        parentId: "parent-folder-a"
-                    }),
-                    expect.objectContaining({
-                        title: "Folder C",
-                        slug: "folder-c",
-                        type: "page",
-                        parentId: null
-                    })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponse.data.aco.listFolders).toEqual({
+            data: [
+                {
+                    title: "Folder C",
+                    slug: "folder-c",
+                    type: "page",
+                    parentId: null,
+                    id: expect.stringMatching(/#0001$/),
+                    createdBy: userMock
+                },
+                {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    type: "page",
+                    parentId: "parent-folder-a",
+                    id: expect.stringMatching(/#0001$/),
+                    createdBy: userMock
+                },
+                {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: "page",
+                    parentId: null,
+                    id: expect.stringMatching(/#0001$/),
+                    createdBy: userMock
+                }
+            ],
+            error: null
+        });
 
         const [listFoldersResponse] = await aco.listFolders({ where: { type: "cms" } });
-        expect(listFoldersResponse.data.aco.listFolders).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        title: "Folder D",
-                        slug: "folder-d",
-                        type: "cms",
-                        parentId: "parent-folder-b"
-                    })
-                ]),
-                error: null
-            })
-        );
+        expect(listFoldersResponse.data.aco.listFolders).toEqual({
+            data: [
+                {
+                    title: "Folder D",
+                    slug: "folder-d",
+                    type: "cms",
+                    parentId: "parent-folder-b",
+                    id: expect.stringMatching(/#0001$/),
+                    createdBy: userMock
+                }
+            ],
+            error: null
+        });
 
         // Let's filter records using `createdBy`
         const [existingUserResponse] = await aco.listFolders({
@@ -88,12 +92,10 @@ describe("`folder` CRUD", () => {
             where: { type: "page", createdBy: "any-id" }
         });
 
-        expect(nonExistingUserResponse.data.aco.listFolders).toEqual(
-            expect.objectContaining({
-                data: [],
-                error: null
-            })
-        );
+        expect(nonExistingUserResponse.data.aco.listFolders).toEqual({
+            data: [],
+            error: null
+        });
 
         // Let's update the "folder-b".
         const update = {
@@ -206,11 +208,14 @@ describe("`folder` CRUD", () => {
                 aco: {
                     deleteFolder: {
                         data: null,
-                        error: expect.objectContaining({
+                        error: {
                             code: "DELETE_FOLDER_WITH_CHILDREN",
                             message:
-                                "Error: delete all child folders and entries before proceeding."
-                        })
+                                "Error: delete all child folders and entries before proceeding.",
+                            data: {
+                                folder: expect.objectContaining(parentFolder)
+                            }
+                        }
                     }
                 }
             }
@@ -392,10 +397,18 @@ describe("`folder` CRUD", () => {
                 aco: {
                     updateFolder: {
                         data: null,
-                        error: expect.objectContaining({
+                        error: {
                             code: "FOLDER_ALREADY_EXISTS",
-                            message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`
-                        })
+                            message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`,
+                            data: {
+                                id: expect.stringMatching(/#0001$/),
+                                params: {
+                                    parentId: null,
+                                    slug: "folder-a",
+                                    type: "page"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -435,17 +448,13 @@ describe("`folder` CRUD", () => {
         // List with anonymous identity
         {
             const [listResponse] = await anonymousAco.listFolders({ where: { type: "page" } });
-            expect(listResponse.data.aco.listFolders).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(listResponse.data.aco.listFolders).toEqual(notAuthorizedResponse);
         }
 
         // Get with anonymous identity
         {
             const [getResponse] = await anonymousAco.getFolder({ id: folderA.id });
-            expect(getResponse.data.aco.getFolder).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(getResponse.data.aco.getFolder).toEqual(notAuthorizedResponse);
         }
 
         // Update with anonymous identity
@@ -454,9 +463,7 @@ describe("`folder` CRUD", () => {
                 id: folderA.id,
                 data: { title: `${folderA.title} + update` }
             });
-            expect(updateResponse.data.aco.updateFolder).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(updateResponse.data.aco.updateFolder).toEqual(notAuthorizedResponse);
         }
 
         // Delete with anonymous identity
@@ -464,9 +471,7 @@ describe("`folder` CRUD", () => {
             const [deleteResponse] = await anonymousAco.deleteFolder({
                 id: folderA.id
             });
-            expect(deleteResponse.data.aco.deleteFolder).toEqual(
-                expect.objectContaining(notAuthorizedResponse)
-            );
+            expect(deleteResponse.data.aco.deleteFolder).toEqual(notAuthorizedResponse);
         }
     });
 });
