@@ -20,7 +20,46 @@ Webiny's Headless CMS.
 ```tsx
 import {parseLexicalObject} from "@webiny/lexical-parser";
 
-// This is how it looks the Lexical json from the Headlelss CMS
+const cmsLexicalData = {
+    root: {
+        children: [
+            {
+                children: [
+                    {
+                        detail: 0,
+                        format: 0,
+                        mode: "normal",
+                        style: "",
+                        text: "Test CMS Title",
+                        type: "text",
+                        version: 1
+                    }
+                ],
+                direction: "ltr",
+                format: "",
+                indent: 0,
+                type: "heading-element",
+                version: 1,
+                tag: "h1",
+                styles: [
+                    {
+                        styleId: "heading1",
+                        type: "typography"
+                    }
+                ]
+            }
+            // other nodes
+            ...
+        ],
+        direction: "ltr",
+        format: "",
+        indent: 0,
+        type: "root",
+        version: 1
+    }
+};
+
+
 const output = parseLexicalObject(cmsLexicalData);
 ```
 
