@@ -132,8 +132,7 @@ You can specify transformer callback functions in the following props:
 > `webiny-list`, `webiny-listitem`, `link-node` and `link`.
 >
 > Please check all available Webiny lexical nodes on
->
-following [GitHub link](https://github.com/webiny/webiny-js/blob/next/packages/lexical-editor/src/nodes/webinyNodes.ts).
+> following [GitHub link](https://github.com/webiny/webiny-js/blob/next/packages/lexical-editor/src/nodes/webinyNodes.ts).
 
 ```ts
 import {parseLexicalObject, parseLexicalObject} from "@webiny/lexical-parser";
