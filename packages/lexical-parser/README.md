@@ -18,6 +18,8 @@ the content in following three key points:
 
 These transformer methods will be covered under the `transformers` topic.
 
+> You can find more information for the `Lexical editor` and lexical nodes on following [link](https://lexical.dev/).
+
 ## Parse the lexical data
 
 To parse the lexical data you need to import the `parseLexicalobject` method and parse the content from the
