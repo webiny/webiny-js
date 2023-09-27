@@ -50,7 +50,10 @@ export const loadingHandler = (
  * A data loader wrapper that manages the loading state via a callback.
  * `loader` can be any function that returns a Promise.
  */
-export async function dataLoader<T>(loadingHandler: (flag: boolean) => void, loader: () => T) {
+export async function dataLoader<T>(
+    loadingHandler: (flag: boolean) => void,
+    loader: () => Promise<T>
+) {
     loadingHandler(true);
 
     return loader().finally(() => {
