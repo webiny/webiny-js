@@ -8,10 +8,10 @@ const createCompareValues = (value: string) => {
     return value
         .replace(/\s+/g, " ")
         .trim()
-        .replaceAll(/\?/g, `\\?`)
-        .replaceAll(/\//g, `\\/`)
-        .replaceAll(/:/g, ``)
-        .replaceAll(/\-/g, `\\-`)
+        .replace(/\?/g, `\\?`)
+        .replace(/\//g, `\\/`)
+        .replace(/:/g, ``)
+        .replace(/\-/g, `\\-`)
         .split(" ")
         .filter(val => {
             return val.length > 0;
