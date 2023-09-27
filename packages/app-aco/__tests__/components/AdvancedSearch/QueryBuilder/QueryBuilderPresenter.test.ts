@@ -125,44 +125,52 @@ describe("QueryBuilderPresenter", () => {
     });
 
     it("should be able to set the queryObject", () => {
-        // should be able to set the `queryObject` operation
-        presenter.setQueryObject({
-            ...viewModel.queryObject,
-            operation: Operation.OR
-        });
+        {
+            // should be able to set the `queryObject` operation
+            presenter.setQueryObject({
+                ...viewModel.queryObject,
+                operation: Operation.OR
+            });
 
-        expect(viewModel.queryObject.operation).toEqual(Operation.OR);
+            expect(presenter.getViewModel().queryObject.operation).toEqual(Operation.OR);
+        }
 
-        // should be able to set the `group` operation
-        presenter.setQueryObject({
-            ...viewModel.queryObject,
-            groups: [
-                {
-                    ...viewModel.queryObject.groups[0],
-                    operation: Operation.OR
-                }
-            ]
-        });
+        {
+            // should be able to set the `group` operation
+            presenter.setQueryObject({
+                ...viewModel.queryObject,
+                groups: [
+                    {
+                        ...viewModel.queryObject.groups[0],
+                        operation: Operation.OR
+                    }
+                ]
+            });
 
-        expect(viewModel.queryObject.groups[0].operation).toEqual(Operation.OR);
+            expect(presenter.getViewModel().queryObject.groups[0].operation).toEqual(Operation.OR);
+        }
 
-        // should be able to change the filter definition
-        presenter.setQueryObject({
-            ...viewModel.queryObject,
-            groups: [
-                {
-                    ...viewModel.queryObject.groups[0],
-                    filters: [
-                        {
-                            ...testFilter,
-                            field: "any-field"
-                        }
-                    ]
-                }
-            ]
-        });
+        {
+            // should be able to change the filter definition
+            presenter.setQueryObject({
+                ...viewModel.queryObject,
+                groups: [
+                    {
+                        ...viewModel.queryObject.groups[0],
+                        filters: [
+                            {
+                                ...testFilter,
+                                field: "any-field"
+                            }
+                        ]
+                    }
+                ]
+            });
 
-        expect(viewModel.queryObject.groups[0].filters[0].field).toEqual("any-field");
+            expect(presenter.getViewModel().queryObject.groups[0].filters[0].field).toEqual(
+                "any-field"
+            );
+        }
     });
 
     it("should perform validation and call provided callbacks `onSubmit`", () => {
@@ -185,10 +193,10 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
+        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
-        expect(Object.keys(viewModel.invalidFields).length).toBe(1);
+        expect(Object.keys(presenter.getViewModel().invalidFields).length).toBe(1);
 
         presenter.setQueryObject({
             ...viewModel.queryObject,
@@ -206,7 +214,7 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
+        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
         expect(viewModel.invalidFields).toEqual({});
