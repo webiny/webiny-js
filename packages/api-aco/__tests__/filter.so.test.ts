@@ -150,7 +150,7 @@ describe("`filter` CRUD", () => {
         });
     });
 
-    it.skip("should not allow creating a `filter` with no `operation` provided", async () => {
+    it("should not allow creating a `filter` with no `operation` provided", async () => {
         const [response] = await aco.createFilter({
             data: {
                 ...filterMocks.filterA,
