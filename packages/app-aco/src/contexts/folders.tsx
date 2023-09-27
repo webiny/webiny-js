@@ -10,7 +10,12 @@ interface FoldersContext {
     listFolders: () => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
-    updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
+    updateFolder: (
+        folder: Omit<FolderItem, "type">,
+        options?: Partial<{
+            refetchFoldersList: boolean;
+        }>
+    ) => Promise<FolderItem>;
 
     deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
 
@@ -91,22 +96,27 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                 return newFolder;
             },
 
-            async updateFolder(folder) {
+            async updateFolder(folder, options) {
                 const { id, title, slug, permissions, parentId } = folder;
 
                 // We must omit all inherited permissions.
                 const filteredPermissions = permissions.filter(p => !p.inheritedFrom);
 
-                console.log(permissions, filteredPermissions)
-                return await dataLoader(loadingHandler("UPDATE", setLoading), () =>
-                    foldersApi.updateFolder(type, {
+                return await dataLoader(loadingHandler("UPDATE", setLoading), async () => {
+                    const response = await foldersApi.updateFolder(type, {
                         id,
                         title,
                         slug,
                         permissions: filteredPermissions,
                         parentId
-                    })
-                );
+                    });
+
+                    if (options?.refetchFoldersList) {
+                        foldersApi.listFolders(type, { invalidateCache: true }).then(setFolders);
+                    }
+
+                    return response;
+                });
             },
 
             async deleteFolder(folder) {

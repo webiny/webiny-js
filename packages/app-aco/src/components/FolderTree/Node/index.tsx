@@ -9,6 +9,7 @@ import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 import { DndFolderItem, FolderItem } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 import { ROOT_FOLDER } from "~/constants";
+import { useSecurity } from "@webiny/app-security";
 
 type NodeProps = {
     node: NodeModel<DndFolderItem>;
@@ -28,13 +29,20 @@ type FolderProps = {
     isOpen: boolean;
     isFocused?: boolean;
     hasPermissions?: boolean;
+    canManagePermissions?: boolean;
 };
 
-export const FolderNode: React.VFC<FolderProps> = ({ isRoot, isFocused, hasPermissions, text }) => {
+export const FolderNode: React.VFC<FolderProps> = ({
+    isRoot,
+    isFocused,
+    hasPermissions,
+    canManagePermissions,
+    text
+}) => {
     let icon = <HomeIcon />;
 
     if (!isRoot) {
-        if (hasPermissions) {
+        if (hasPermissions && canManagePermissions) {
             icon = <FolderShared />;
         } else {
             icon = <Folder />;
@@ -62,6 +70,8 @@ export const Node: React.VFC<NodeProps> = ({
     onDeleteFolder,
     onSetFolderPermissions
 }) => {
+    const { identity } = useSecurity();
+
     const isRoot = node.id === ROOT_FOLDER;
     // Move the placeholder line to the left based on the element depth within the tree.
     // Let's add some pixels so that the element is detached from the container but takes up the whole length while it's highlighted during dnd.
@@ -92,6 +102,19 @@ export const Node: React.VFC<NodeProps> = ({
         return node.data?.permissions?.some(p => !p.inheritedFrom);
     }, [node.data?.permissions]);
 
+    // If we have at least one permission that is not inherited, we mark the folder as having permissions.
+    const canManagePermissions = useMemo(() => {
+        const userAccessLevel = node.data?.permissions.find(
+            p => p.target === "user:" + identity!.id
+        )?.level;
+
+        const teamAccessLevel = node.data?.permissions.find(
+            p => p.target === "team:todo" // TODO: replace with actual team ID
+        )?.level;
+
+        return [userAccessLevel, teamAccessLevel].filter(Boolean).includes("owner");
+    }, [folderHasPermissions]);
+
     return (
         <Container
             isFocused={!!node.data?.isFocused}
@@ -108,6 +131,7 @@ export const Node: React.VFC<NodeProps> = ({
                     isRoot={isRoot}
                     text={node.text}
                     hasPermissions={folderHasPermissions}
+                    canManagePermissions={canManagePermissions}
                     isOpen={isRoot ? true : isOpen}
                     isFocused={!!node.data?.isFocused}
                 />

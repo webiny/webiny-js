@@ -100,10 +100,10 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
 
     const submit = useCallback(() => {
         const data = { ...folder, permissions };
-        updateFolder(data)
+        return updateFolder(data, { refetchFoldersList: true })
             .then(() => {
                 setDialogOpen(false);
-                showSnackbar("Folder updated successfully!");
+                showSnackbar("Folder permissions updated successfully!");
             })
             .catch(error => {
                 showSnackbar(error.message);

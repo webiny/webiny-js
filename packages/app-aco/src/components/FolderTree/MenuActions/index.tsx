@@ -12,6 +12,7 @@ import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { Container, ListItemGraphic } from "./styled";
 
 import { FolderItem } from "~/types";
+import { useSecurity } from "@webiny/app-security";
 
 const t = i18n.ns("app-aco/components/folder-tree/menu-actions");
 
@@ -28,6 +29,17 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
     onDeleteFolder,
     onSetFolderPermissions
 }) => {
+    const { identity } = useSecurity();
+    const userAccessLevel = folder.permissions.find(
+        p => p.target === "user:" + identity!.id
+    )?.level;
+
+    const teamAccessLevel = folder.permissions.find(
+        p => p.target === "team:todo" // TODO: replace with actual team ID
+    )?.level;
+
+    const isFolderOwner = [userAccessLevel, teamAccessLevel].filter(Boolean).includes("owner");
+
     if (folder) {
         return (
             <Container className={"folder-tree-menu-action"}>
@@ -38,12 +50,15 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
                         </ListItemGraphic>
                         {t`Edit`}
                     </MenuItem>
-                    <MenuItem onClick={() => onSetFolderPermissions(folder)}>
-                        <ListItemGraphic>
-                            <Icon icon={<Security />} />
-                        </ListItemGraphic>
-                        {t`Manage Permissions`}
-                    </MenuItem>
+                    {isFolderOwner && (
+                        <MenuItem onClick={() => onSetFolderPermissions(folder)}>
+                            <ListItemGraphic>
+                                <Icon icon={<Security />} />
+                            </ListItemGraphic>
+                            {t`Manage Permissions`}
+                        </MenuItem>
+                    )}
+
                     <MenuItem onClick={() => onDeleteFolder(folder)}>
                         <ListItemGraphic>
                             <Icon icon={<Delete />} />

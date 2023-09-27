@@ -1,6 +1,5 @@
 import { createTopic } from "@webiny/pubsub";
-
-import { CreateAcoParams, Folder, FolderPermissions } from "~/types";
+import { CreateAcoParams } from "~/types";
 import {
     AcoFolderCrud,
     OnFolderAfterCreateTopicParams,
@@ -12,13 +11,11 @@ import {
 } from "./folder.types";
 
 import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
 
 export const createFolderCrudMethods = ({
     storageOperations,
-    getIdentity,
-    getPermissions
+    folderLevelPermissions
 }: CreateAcoParams): AcoFolderCrud => {
     // create
     const onFolderBeforeCreate = createTopic<OnFolderBeforeCreateTopicParams>(
@@ -39,237 +36,6 @@ export const createFolderCrudMethods = ({
     const onFolderAfterDelete =
         createTopic<OnFolderAfterDeleteTopicParams>("aco.onFolderAfterDelete");
 
-    interface CanAccessFolderParams {
-        folder: Folder;
-        rwd?: "r" | "w" | "d";
-        foldersPermissions?: FolderPermissions[];
-
-        // If `foldersPermissions` is not provided, we must provide the following three params.
-        folders?: Folder[];
-        identity?: SecurityIdentity;
-        permissions?: SecurityPermission[];
-    }
-
-    const canAccessFolder = async (params: CanAccessFolderParams): Promise<boolean> => {
-        const { folder } = params;
-
-        let { foldersPermissions } = params;
-        if (!foldersPermissions) {
-            const { identity, permissions } = params;
-            if (!identity || !permissions) {
-                throw new Error(
-                    `You must either provide "foldersPermissions" or "identity" and "permissions" to the "canAccessFolder" method.`
-                );
-            }
-
-            const { folders } = params;
-            foldersPermissions = await listFoldersPermissions({
-                identity,
-                permissions,
-                type: folder.type,
-
-                // If folders were passed, let's pass them to the "listFoldersPermissions" method.
-                // If not, they'll be fetched from the database, using the provided "type".
-                folders
-            });
-        }
-
-        const folderPermissions = foldersPermissions.find(fp => fp.folderId === folder.id);
-
-        const hasPermissions = folderPermissions && folderPermissions.permissions.length > 0;
-        if (!hasPermissions) {
-            return false;
-        }
-
-        const identity = getIdentity();
-        const userAccessLevel = folderPermissions.permissions.find(
-            p => p.target === "user:" + identity.id
-        )?.level;
-        const teamAccessLevel = folderPermissions.permissions.find(
-            p => p.target === "team:my-team"
-        )?.level;
-
-        if (!params.rwd || params.rwd === "r") {
-            return !!(userAccessLevel || teamAccessLevel);
-        }
-
-        // If we are here, it means we are checking for "w" or "d" access. In this case,
-        // we need to check if the user has "owner" access.
-        const accessLevels = [userAccessLevel, teamAccessLevel];
-        return accessLevels.includes("owner");
-    };
-
-    interface ListFoldersPermissionsParams {
-        type?: string;
-        folders?: Folder[];
-        identity: SecurityIdentity;
-        permissions: SecurityPermission[];
-    }
-
-    const listFoldersPermissions = async ({
-        type,
-        folders,
-        identity,
-        permissions
-    }: ListFoldersPermissionsParams): Promise<FolderPermissions[]> => {
-        if (!folders) {
-            if (!type) {
-                throw new Error(
-                    `You must either provide "type" or "folders" to the "listFoldersPermissions" method.`
-                );
-            }
-
-            folders = await storageOperations
-                .listFolders({
-                    where: { type },
-                    limit: 10000
-                })
-                .then(result => result[0]);
-        }
-
-        const processedFolderPermissions: FolderPermissions[] = [];
-
-        function processFolderPermissions(folder: Folder) {
-            if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
-                return;
-            }
-
-            // Copy permissions, so we don't modify the original object.
-            const currentFolderPermissions: FolderPermissions = {
-                folderId: folder.id,
-                // On new folders, permissions can be `null`. Guard against that.
-                permissions: folder.permissions?.map(permission => ({ ...permission })) || []
-            };
-
-            // Check for permissions inherited from parent folder.
-            if (folder.parentId) {
-                const parentFolder = folders!.find(f => f.id === folder.parentId)!;
-                if (parentFolder) {
-                    // First check if the parent folder has already been processed.
-                    let processedParentFolderPermissions = processedFolderPermissions.find(
-                        fp => fp.folderId === parentFolder.id
-                    );
-
-                    // If not, process the parent folder.
-                    if (!processedParentFolderPermissions) {
-                        processFolderPermissions(parentFolder);
-                        processedParentFolderPermissions = processedFolderPermissions.find(
-                            fp => fp.folderId === folder.parentId
-                        );
-                    }
-
-                    // If the parent folder has permissions, let's add them to the current folder.
-                    if (processedParentFolderPermissions) {
-                        const inheritedPermissions =
-                            processedParentFolderPermissions.permissions.map(p => {
-                                return {
-                                    ...p,
-                                    inheritedFrom:
-                                        "parent:" + processedParentFolderPermissions!.folderId
-                                };
-                            });
-
-                        currentFolderPermissions.permissions.push(...inheritedPermissions);
-                    }
-                }
-            }
-
-            // Finally, let's also ensure that the current user is included in the permissions,
-            // if not already. Let's also ensure the user is the first item in the array.
-            const [firstPermission] = currentFolderPermissions.permissions;
-
-            // If current identity is already listed as the first permission, we don't need to do anything.
-            const identityFirstPermission = firstPermission?.target === `user:${identity.id}`;
-
-            if (!identityFirstPermission) {
-                const currentIdentityPermissionIndex =
-                    currentFolderPermissions.permissions.findIndex(
-                        p => p.target === "user:" + getIdentity().id
-                    );
-
-                if (currentIdentityPermissionIndex >= 0) {
-                    const [identityPermission] = currentFolderPermissions.permissions.splice(
-                        currentIdentityPermissionIndex,
-                        1
-                    );
-                    currentFolderPermissions.permissions.unshift(identityPermission);
-                } else {
-                    // If the current identity is not in the permissions, let's add it.
-                    // If the user has full access, we'll add it as "owner".
-                    const hasFullAccess = permissions.some(p => p.name === "*");
-                    if (hasFullAccess) {
-                        currentFolderPermissions.permissions.unshift({
-                            target: "user:" + identity.id,
-                            level: "owner",
-                            inheritedFrom: "role:full-access"
-                        });
-                    }
-                }
-            }
-
-            processedFolderPermissions.push(currentFolderPermissions);
-        }
-
-        for (let i = 0; i < folders!.length; i++) {
-            const folder = folders![i];
-            processFolderPermissions(folder);
-        }
-
-        return processedFolderPermissions;
-    };
-
-    interface ProcessFolderPermissions {
-        folders: Folder[];
-        foldersPermissions?: FolderPermissions[];
-        rwd?: "r" | "w" | "d";
-        identity: SecurityIdentity;
-        permissions: SecurityPermission[];
-    }
-
-    /**
-     * Populates the `permissions` field on the given folders.
-     * Additionally, filters out the folders that the current user doesn't have access to.
-     * @param params
-     */
-    const processFoldersPermissions = async (
-        params: ProcessFolderPermissions
-    ): Promise<Folder[]> => {
-        const { folders, identity, permissions } = params;
-        if (folders.length === 0) {
-            return [];
-        }
-
-        let { foldersPermissions } = params;
-        if (!foldersPermissions) {
-            foldersPermissions = await listFoldersPermissions({
-                folders,
-                identity,
-                permissions
-            });
-        }
-
-        // Filter out folders that the current user doesn't have access to.
-        // Append extra permissions data to the folders that the user has access to.
-        const processedFolders: Folder[] = [];
-
-        for (let i = 0; i < folders.length; i++) {
-            const folder = folders[i];
-            const canAccess = await canAccessFolder({ folder, foldersPermissions });
-            if (canAccess) {
-                const folderPermissions = foldersPermissions.find(fp => fp.folderId === folder.id);
-                if (folderPermissions) {
-                    folder.permissions = folderPermissions.permissions;
-                } else {
-                    folder.permissions = [];
-                }
-
-                processedFolders.push(folder);
-            }
-        }
-
-        return processedFolders;
-    };
-
     return {
         /**
          * Lifecycle events
@@ -281,73 +47,52 @@ export const createFolderCrudMethods = ({
         onFolderBeforeDelete,
         onFolderAfterDelete,
 
-        canAccessFolder,
         async get(id) {
             const folder = await storageOperations.getFolder({ id });
 
-            const canGetFolder = await canAccessFolder({
+            const canGetFolder = await folderLevelPermissions.canAccessFolder({
                 folder,
-                rwd: "r",
-                identity: getIdentity(),
-                permissions: await getPermissions("*")
+                rwd: "r"
             });
 
             if (!canGetFolder) {
                 throw new NotAuthorizedError();
             }
 
-            const identity = getIdentity();
-            const permissions = await getPermissions("*");
-
-            const foldersPermissions = await listFoldersPermissions({
-                identity,
-                permissions,
-                type: folder.type
-            });
-
-            const [processedFolder] = await processFoldersPermissions({
-                folders: [folder],
-                rwd: "r",
-                foldersPermissions,
-                identity,
-                permissions
-            });
-
-            return processedFolder;
+            await folderLevelPermissions.assignFolderPermissions(folder);
+            return folder;
         },
         async list(params) {
             const [folders, meta] = await storageOperations.listFolders(params);
-
             if (folders.length === 0) {
                 return [folders, meta];
             }
 
-            const identity = getIdentity();
-            const permissions = await getPermissions("*");
-
-            const processedFolders = await processFoldersPermissions({
+            const filteredFolders = await folderLevelPermissions.filterFolders({
                 folders,
-                rwd: "r",
-                identity,
-                permissions
+                rwd: "r"
             });
 
-            const processedFoldersMeta = { ...meta };
-            return [processedFolders, processedFoldersMeta];
+            await folderLevelPermissions.assignFolderPermissions(filteredFolders);
+
+            const processedFoldersMeta = { ...meta }; // TODO: Process meta.
+            return [filteredFolders, processedFoldersMeta];
         },
+
+        async listAll(params) {
+            return this.list({ ...params, limit: 10000 });
+        },
+
         async create(data) {
             let canCreateFolder = false;
             if (data.parentId) {
                 const parentFolder = await storageOperations.getFolder({ id: data.parentId });
-                canCreateFolder = await canAccessFolder({
+                canCreateFolder = await folderLevelPermissions.canAccessFolder({
                     folder: parentFolder,
-                    rwd: "w",
-                    identity: getIdentity(),
-                    permissions: await getPermissions("*")
+                    rwd: "w"
                 });
             } else {
-                const permissions = await getPermissions("*");
-                canCreateFolder = permissions.length > 0;
+                canCreateFolder = await folderLevelPermissions.canCreateFolderInRoot();
             }
 
             if (!canCreateFolder) {
@@ -357,45 +102,30 @@ export const createFolderCrudMethods = ({
             await onFolderBeforeCreate.publish({ input: data });
             const folder = await storageOperations.createFolder({ data });
 
-            const identity = getIdentity();
-            const permissions = await getPermissions("*");
+            folderLevelPermissions.invalidateCache();
+            await folderLevelPermissions.assignFolderPermissions(folder);
 
-            const foldersPermissions = await listFoldersPermissions({
-                identity,
-                permissions,
-                type: folder.type
-            });
+            await onFolderAfterCreate.publish({ folder });
 
-            const [processedFolder] = await processFoldersPermissions({
-                folders: [folder],
-                rwd: "w",
-                foldersPermissions,
-                identity,
-                permissions
-            });
-
-            await onFolderAfterCreate.publish({ folder: processedFolder });
-
-            return processedFolder;
+            return folder;
         },
         async update(id, data) {
             const original = await storageOperations.getFolder({ id });
 
-            const canUpdateFolder = await canAccessFolder({
+            const canUpdateFolder = await folderLevelPermissions.canAccessFolder({
                 folder: original,
-                rwd: "w",
-                identity: getIdentity(),
-                permissions: await getPermissions("*")
+                rwd: "w"
             });
 
             if (!canUpdateFolder) {
                 throw new NotAuthorizedError();
             }
 
+            // TODO: Detect parent change.
+
             // Validate data.
-            if (data.permissions) {
-                for (let i = 0; i < data.permissions.length; i++) {
-                    const permission = data.permissions[i];
+            if (Array.isArray(data.permissions)) {
+                data.permissions.forEach(permission => {
                     const targetIsValid =
                         permission.target.startsWith("user:") ||
                         permission.target.startsWith("team:");
@@ -406,40 +136,24 @@ export const createFolderCrudMethods = ({
                     if (permission.inheritedFrom) {
                         throw new Error(`Permission "inheritedFrom" cannot be set manually.`);
                     }
-                }
+                });
             }
 
             await onFolderBeforeUpdate.publish({ original, input: { id, data } });
             const folder = await storageOperations.updateFolder({ id, data });
             await onFolderAfterUpdate.publish({ original, input: { id, data }, folder });
 
-            const identity = getIdentity();
-            const permissions = await getPermissions("*");
-
-            const foldersPermissions = await listFoldersPermissions({
-                identity,
-                permissions,
-                type: folder.type
-            });
-
-            const [processedFolder] = await processFoldersPermissions({
-                folders: [folder],
-                rwd: "w",
-                foldersPermissions,
-                identity,
-                permissions
-            });
-
-            return processedFolder;
+            folderLevelPermissions.invalidateCache();
+            await folderLevelPermissions.assignFolderPermissions(folder);
+            return folder;
         },
+
         async delete(id: string) {
             const folder = await storageOperations.getFolder({ id });
 
-            const canDeleteFolder = await canAccessFolder({
+            const canDeleteFolder = await folderLevelPermissions.canAccessFolder({
                 folder,
-                rwd: "w",
-                identity: getIdentity(),
-                permissions: await getPermissions("*")
+                rwd: "d"
             });
 
             if (!canDeleteFolder) {
@@ -451,6 +165,7 @@ export const createFolderCrudMethods = ({
             await onFolderAfterDelete.publish({ folder });
             return true;
         },
+
         async getFolderWithAncestors(id: string) {
             const { type } = await storageOperations.getFolder({ id });
             const [folders] = await storageOperations.listFolders({

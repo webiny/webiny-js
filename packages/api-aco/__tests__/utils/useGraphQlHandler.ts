@@ -29,6 +29,10 @@ import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import {
+    createFileManagerContext,
+} from "@webiny/api-file-manager";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -51,6 +55,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
+    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
 
     const handler = createHandler({
         plugins: [
@@ -65,6 +70,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             mockLocalesPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
+            }),
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco(),

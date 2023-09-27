@@ -5,33 +5,6 @@ const FOLDER_TYPE = "test-folders";
 describe("Folder Level Permissions", () => {
     const { aco } = useGraphQlHandler();
 
-    test("as a full-access user, I should be able to manage folders anywhere in the folder tree", async () => {
-        const folder = await aco
-            .createFolder({
-                data: {
-                    title: "Folder A",
-                    slug: "folder-a",
-                    type: FOLDER_TYPE
-                }
-            })
-            .then(([response]) => response.data.aco.createFolder.data);
-
-        expect(folder.id).toBeTruthy();
-
-        await expect(
-            aco
-                .updateFolder({
-                    id: folder.id,
-                    data: { title: "Folder A - Updated" }
-                })
-                .then(([response]) => {
-                    return response.data.aco.updateFolder.data;
-                })
-        ).resolves.toMatchObject({
-            title: "Folder A - Updated"
-        });
-    });
-
     it("should return folders with permissions when creating folders", async () => {
         const folderA = await aco
             .createFolder({
@@ -128,7 +101,7 @@ describe("Folder Level Permissions", () => {
             parentId: folderA.id,
             permissions: [
                 {
-                    inheritedFrom: "role:full-access",
+                    inheritedFrom: `parent:${folderA.id}`,
                     level: "owner",
                     target: "user:12345678"
                 }

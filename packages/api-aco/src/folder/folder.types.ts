@@ -1,6 +1,6 @@
 import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { FolderPermission } from "~/utils/FolderLevelPermissions";
 
 export interface Folder {
     id: string;
@@ -27,17 +27,14 @@ export interface ListFoldersParams {
     after?: string | null;
 }
 
-export interface ListAllFoldersParams {
-    where: ListFoldersWhere;
-    sort?: ListSort;
-}
+export type ListAllFoldersParams = Omit<ListFoldersParams, "limit" | "after">;
 
 export type CreateFolderParams = Pick<Folder, "title" | "slug" | "type" | "parentId">;
 
 export interface UpdateFolderParams {
     title?: string;
     slug?: string;
-    permissions?: any;
+    permissions?: FolderPermission[];
     parentId?: string;
 }
 
@@ -92,36 +89,12 @@ export interface OnFolderAfterDeleteTopicParams {
     folder: Folder;
 }
 
-export type FolderAccessLevel = "owner" | "viewer" | "editor";
-
-export interface FolderPermission {
-    target: string;
-    level: FolderAccessLevel;
-    inheritedFrom?: string;
-}
-
-export interface FolderPermissions {
-    folderId: string;
-    permissions: FolderPermission[];
-}
-
-export interface CanAccessFolderParams {
-    folder: Folder;
-    rwd?: "r" | "w" | "d";
-    foldersPermissions?: FolderPermissions[];
-
-    // If `foldersPermissions` is not provided, we must provide the following three params.
-    folders?: Folder[];
-    identity?: SecurityIdentity;
-    permissions?: SecurityPermission[];
-}
-
 export interface AcoFolderCrud {
-    canAccessFolder(params: CanAccessFolderParams): Promise<boolean>;
-
     get(id: string): Promise<Folder>;
 
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
+
+    listAll(params: ListAllFoldersParams): Promise<[Folder[], ListMeta]>;
 
     create(data: CreateFolderParams): Promise<Folder>;
 

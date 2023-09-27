@@ -32,15 +32,23 @@ export interface OnCacheUpdate {
 }
 
 export interface FoldersApiContext {
-    listFolders: (type: string) => Promise<FolderItem[]>;
+    listFolders: (
+        type: string,
+        options?: Partial<{ invalidateCache: boolean }>
+    ) => Promise<FolderItem[]>;
     getFolder: (type: string, id: string) => Promise<FolderItem>;
     createFolder: (type: string, folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (
         type: string,
         folder: Omit<FolderItem, "type" | "createdOn" | "createdBy" | "savedOn">
     ) => Promise<FolderItem>;
+
     deleteFolder(type: string, id: string): Promise<true>;
+
+    invalidateCache(folderType: string): FoldersApiContext;
+
     getDescendantFolders(type: string, id?: string): FolderItem[];
+
     onFoldersChanged(type: string, cb: OnCacheUpdate): OffCacheUpdate;
 }
 
@@ -97,8 +105,17 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
                 folderObservers.current.get(type)?.delete(cb);
             };
         },
-        async listFolders(type) {
-            if (cache[type]) {
+        invalidateCache: folderType => {
+            setCache(cache => {
+                const cacheClone = structuredClone<FoldersByType>(cache);
+                delete cacheClone[folderType];
+                return cacheClone;
+            });
+            return context;
+        },
+        async listFolders(type, options) {
+            const invalidateCache = options?.invalidateCache === true;
+            if (cache[type] && !invalidateCache) {
                 return cache[type];
             }
 
