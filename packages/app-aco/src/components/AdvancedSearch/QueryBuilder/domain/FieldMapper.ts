@@ -6,7 +6,7 @@ import {
     Predefined,
     PredefinedDTO,
     Type,
-    TypeDTO
+    FieldType
 } from "./Field";
 
 export class FieldMapper {
@@ -42,7 +42,7 @@ export class PredefinedMapper {
 }
 
 export class TypeMapper {
-    static toTDO(type: Type): TypeDTO {
+    static toTDO(type: Type): FieldType {
         return type.value;
     }
 }

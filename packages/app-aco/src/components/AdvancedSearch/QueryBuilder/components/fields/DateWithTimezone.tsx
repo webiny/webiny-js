@@ -36,7 +36,6 @@ export const DateWithTimezone = ({ name }: DateWithTimezoneProps) => {
                 type={"datetime-local"}
                 value={dateTime}
                 onChange={handleDateTimeChange}
-                required={true}
             />
 
             <Select
@@ -47,7 +46,6 @@ export const DateWithTimezone = ({ name }: DateWithTimezoneProps) => {
                     value
                 }))}
                 onChange={handleTimeZoneChange}
-                required={true}
             />
         </>
     );

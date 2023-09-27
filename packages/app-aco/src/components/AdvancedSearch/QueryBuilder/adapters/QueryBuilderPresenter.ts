@@ -1,16 +1,16 @@
 import { makeAutoObservable } from "mobx";
 import {
-    QueryObject,
-    QueryObjectMapper,
     Field,
+    FieldDTO,
     FieldMapper,
     FieldRaw,
     Operation,
-    QueryObjectDTO
+    QueryObject,
+    QueryObjectDTO,
+    QueryObjectMapper
 } from "../domain";
-import { QueryBuilderViewModel } from "./QueryBuilderViewModel";
 
-interface IQueryBuilderPresenter {
+export interface IQueryBuilderPresenter {
     getViewModel: () => QueryBuilderViewModel;
     addGroup: () => void;
     deleteGroup: (groupIndex: number) => void;
@@ -21,16 +21,23 @@ interface IQueryBuilderPresenter {
     onSubmit: (queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) => void;
 }
 
+export interface QueryBuilderViewModel {
+    queryObject: QueryObjectDTO;
+    fields: FieldDTO[];
+    invalidFields: Record<string, { isValid: boolean; message: string }>;
+}
+
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     private readonly viewModel: QueryBuilderViewModel;
     private formWasSubmitted = false;
 
     constructor(fields: FieldRaw[]) {
+        this.viewModel = {
+            queryObject: QueryObjectMapper.toDTO(QueryObject.createEmpty()),
+            fields: FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field))),
+            invalidFields: {}
+        };
         makeAutoObservable(this);
-        this.viewModel = new QueryBuilderViewModel(
-            QueryObjectMapper.toDTO(QueryObject.createEmpty()),
-            FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)))
-        );
     }
 
     getViewModel() {

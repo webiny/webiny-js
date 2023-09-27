@@ -5,14 +5,14 @@ export type FieldRaw = Pick<
     "id" | "type" | "label" | "multipleValues" | "predefinedValues" | "settings"
 >;
 
-export enum TypeDTO {
+export enum FieldType {
     TEXT = "text",
     NUMBER = "number",
     BOOLEAN = "boolean",
     DATE = "date",
     TIME = "time",
     DATETIME_WITH_TIMEZONE = "dateTimeWithTimezone",
-    DATETIME_WITHOUT_TIMEZONE = "dateTimeWithOutTimezone",
+    DATETIME_WITHOUT_TIMEZONE = "dateTimeWithoutTimezone",
     MULTIPLE_VALUES = "multipleValues"
 }
 
@@ -30,7 +30,7 @@ export interface FieldDTO {
     label: string;
     value: string;
     conditions: ConditionDTO[];
-    type: TypeDTO;
+    type: FieldType;
     predefined: PredefinedDTO[];
 }
 
@@ -160,38 +160,39 @@ export class Predefined {
 }
 
 export class Type {
-    public readonly value: TypeDTO;
+    public readonly value: FieldType;
 
     static createFromField(rawData: FieldRaw) {
-        if (rawData.settings?.type === TypeDTO.DATETIME_WITH_TIMEZONE) {
-            return new Type(TypeDTO.DATETIME_WITH_TIMEZONE);
+        if (rawData.settings?.type === FieldType.DATETIME_WITH_TIMEZONE) {
+            return new Type(FieldType.DATETIME_WITH_TIMEZONE);
         }
 
-        if (rawData.settings?.type === TypeDTO.DATETIME_WITHOUT_TIMEZONE) {
-            return new Type(TypeDTO.DATETIME_WITHOUT_TIMEZONE);
+        if (rawData.settings?.type === FieldType.DATETIME_WITHOUT_TIMEZONE) {
+            return new Type(FieldType.DATETIME_WITHOUT_TIMEZONE);
         }
 
         if (rawData?.multipleValues && rawData.predefinedValues?.enabled) {
-            return new Type(TypeDTO.MULTIPLE_VALUES);
+            return new Type(FieldType.MULTIPLE_VALUES);
         }
 
         if (rawData.type === "datetime") {
-            const value = rawData.settings?.type === TypeDTO.TIME ? TypeDTO.TIME : TypeDTO.DATE;
+            const value =
+                rawData.settings?.type === FieldType.TIME ? FieldType.TIME : FieldType.DATE;
             return new Type(value);
         }
 
-        if (rawData.type === TypeDTO.BOOLEAN) {
-            return new Type(TypeDTO.BOOLEAN);
+        if (rawData.type === FieldType.BOOLEAN) {
+            return new Type(FieldType.BOOLEAN);
         }
 
-        if (rawData.type === TypeDTO.NUMBER) {
-            return new Type(TypeDTO.NUMBER);
+        if (rawData.type === FieldType.NUMBER) {
+            return new Type(FieldType.NUMBER);
         }
 
-        return new Type(TypeDTO.TEXT);
+        return new Type(FieldType.TEXT);
     }
 
-    private constructor(value: TypeDTO) {
+    private constructor(value: FieldType) {
         this.value = value;
     }
 }

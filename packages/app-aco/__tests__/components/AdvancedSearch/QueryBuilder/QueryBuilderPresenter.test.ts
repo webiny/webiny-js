@@ -5,8 +5,8 @@ import {
 import {
     FieldDTO,
     FieldRaw,
-    Operation,
-    TypeDTO
+    FieldType,
+    Operation
 } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
 describe("QueryBuilderPresenter", () => {
@@ -241,14 +241,14 @@ describe("FieldDTO definition", () => {
     const fields: [FieldRaw, FieldDTO][] = [
         [
             {
-                id: `${TypeDTO.TEXT}-field`,
-                label: `${TypeDTO.TEXT} field`,
-                type: TypeDTO.TEXT
+                id: `${FieldType.TEXT}-field`,
+                label: `${FieldType.TEXT} field`,
+                type: FieldType.TEXT
             },
 
             {
-                label: `${TypeDTO.TEXT} field`,
-                value: `${TypeDTO.TEXT}-field`,
+                label: `${FieldType.TEXT} field`,
+                value: `${FieldType.TEXT}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "contains", value: "_contains" },
@@ -258,7 +258,7 @@ describe("FieldDTO definition", () => {
                     { label: "doesn't start with", value: "_not_startsWith" }
                 ],
                 predefined: [],
-                type: TypeDTO.TEXT
+                type: FieldType.TEXT
             }
         ],
         [
@@ -275,38 +275,38 @@ describe("FieldDTO definition", () => {
                     { label: "doesn't contain", value: "_not_contains" }
                 ],
                 predefined: [],
-                type: TypeDTO.TEXT
+                type: FieldType.TEXT
             }
         ],
         [
             {
-                id: `${TypeDTO.BOOLEAN}-field`,
-                label: `${TypeDTO.BOOLEAN} field`,
-                type: TypeDTO.BOOLEAN
+                id: `${FieldType.BOOLEAN}-field`,
+                label: `${FieldType.BOOLEAN} field`,
+                type: FieldType.BOOLEAN
             },
             {
-                label: `${TypeDTO.BOOLEAN} field`,
-                value: `${TypeDTO.BOOLEAN}-field`,
+                label: `${FieldType.BOOLEAN} field`,
+                value: `${FieldType.BOOLEAN}-field`,
                 conditions: [
                     { label: "is", value: " " },
                     { label: "is not", value: "_not" }
                 ],
                 predefined: [],
-                type: TypeDTO.BOOLEAN
+                type: FieldType.BOOLEAN
             }
         ],
         [
             {
-                id: `${TypeDTO.DATE}-field`,
-                label: `${TypeDTO.DATE} field`,
+                id: `${FieldType.DATE}-field`,
+                label: `${FieldType.DATE} field`,
                 type: "datetime",
                 settings: {
-                    type: TypeDTO.DATE
+                    type: FieldType.DATE
                 }
             },
             {
-                label: `${TypeDTO.DATE} field`,
-                value: `${TypeDTO.DATE}-field`,
+                label: `${FieldType.DATE} field`,
+                value: `${FieldType.DATE}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "is not equal to", value: "_not" },
@@ -316,21 +316,21 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: TypeDTO.DATE
+                type: FieldType.DATE
             }
         ],
         [
             {
-                id: `${TypeDTO.TIME}-field`,
-                label: `${TypeDTO.TIME} field`,
+                id: `${FieldType.TIME}-field`,
+                label: `${FieldType.TIME} field`,
                 type: "datetime",
                 settings: {
-                    type: TypeDTO.TIME
+                    type: FieldType.TIME
                 }
             },
             {
-                label: `${TypeDTO.TIME} field`,
-                value: `${TypeDTO.TIME}-field`,
+                label: `${FieldType.TIME} field`,
+                value: `${FieldType.TIME}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "is not equal to", value: "_not" },
@@ -340,21 +340,21 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: TypeDTO.TIME
+                type: FieldType.TIME
             }
         ],
         [
             {
-                id: `${TypeDTO.DATETIME_WITH_TIMEZONE}-field`,
-                label: `${TypeDTO.DATETIME_WITH_TIMEZONE} field`,
+                id: `${FieldType.DATETIME_WITH_TIMEZONE}-field`,
+                label: `${FieldType.DATETIME_WITH_TIMEZONE} field`,
                 type: "datetime",
                 settings: {
-                    type: TypeDTO.DATETIME_WITH_TIMEZONE
+                    type: FieldType.DATETIME_WITH_TIMEZONE
                 }
             },
             {
-                label: `${TypeDTO.DATETIME_WITH_TIMEZONE} field`,
-                value: `${TypeDTO.DATETIME_WITH_TIMEZONE}-field`,
+                label: `${FieldType.DATETIME_WITH_TIMEZONE} field`,
+                value: `${FieldType.DATETIME_WITH_TIMEZONE}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "is not equal to", value: "_not" },
@@ -364,21 +364,21 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: TypeDTO.DATETIME_WITH_TIMEZONE
+                type: FieldType.DATETIME_WITH_TIMEZONE
             }
         ],
         [
             {
-                id: `${TypeDTO.DATETIME_WITHOUT_TIMEZONE}-field`,
-                label: `${TypeDTO.DATETIME_WITHOUT_TIMEZONE} field`,
+                id: `${FieldType.DATETIME_WITHOUT_TIMEZONE}-field`,
+                label: `${FieldType.DATETIME_WITHOUT_TIMEZONE} field`,
                 type: "datetime",
                 settings: {
-                    type: TypeDTO.DATETIME_WITHOUT_TIMEZONE
+                    type: FieldType.DATETIME_WITHOUT_TIMEZONE
                 }
             },
             {
-                label: `${TypeDTO.DATETIME_WITHOUT_TIMEZONE} field`,
-                value: `${TypeDTO.DATETIME_WITHOUT_TIMEZONE}-field`,
+                label: `${FieldType.DATETIME_WITHOUT_TIMEZONE} field`,
+                value: `${FieldType.DATETIME_WITHOUT_TIMEZONE}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "is not equal to", value: "_not" },
@@ -388,13 +388,13 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: TypeDTO.DATETIME_WITHOUT_TIMEZONE
+                type: FieldType.DATETIME_WITHOUT_TIMEZONE
             }
         ],
         [
             {
-                id: `${TypeDTO.MULTIPLE_VALUES}-field`,
-                label: `${TypeDTO.MULTIPLE_VALUES} field`,
+                id: `${FieldType.MULTIPLE_VALUES}-field`,
+                label: `${FieldType.MULTIPLE_VALUES} field`,
                 type: "text",
                 multipleValues: true,
                 predefinedValues: {
@@ -408,8 +408,8 @@ describe("FieldDTO definition", () => {
                 }
             },
             {
-                label: `${TypeDTO.MULTIPLE_VALUES} field`,
-                value: `${TypeDTO.MULTIPLE_VALUES}-field`,
+                label: `${FieldType.MULTIPLE_VALUES} field`,
+                value: `${FieldType.MULTIPLE_VALUES}-field`,
                 conditions: [
                     { label: "contains", value: "_in" },
                     { label: "doesn't contain", value: "_not_in" }
@@ -420,18 +420,18 @@ describe("FieldDTO definition", () => {
                         label: "value 1"
                     }
                 ],
-                type: TypeDTO.MULTIPLE_VALUES
+                type: FieldType.MULTIPLE_VALUES
             }
         ],
         [
             {
-                id: `${TypeDTO.NUMBER}-field`,
-                label: `${TypeDTO.NUMBER} field`,
-                type: TypeDTO.NUMBER
+                id: `${FieldType.NUMBER}-field`,
+                label: `${FieldType.NUMBER} field`,
+                type: FieldType.NUMBER
             },
             {
-                label: `${TypeDTO.NUMBER} field`,
-                value: `${TypeDTO.NUMBER}-field`,
+                label: `${FieldType.NUMBER} field`,
+                value: `${FieldType.NUMBER}-field`,
                 conditions: [
                     { label: "is equal to", value: " " },
                     { label: "is not equal to", value: "_not" },
@@ -441,7 +441,7 @@ describe("FieldDTO definition", () => {
                     { label: "is greater or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: TypeDTO.NUMBER
+                type: FieldType.NUMBER
             }
         ],
         [
@@ -455,7 +455,7 @@ describe("FieldDTO definition", () => {
                 value: "any-field",
                 conditions: [],
                 predefined: [],
-                type: TypeDTO.TEXT
+                type: FieldType.TEXT
             }
         ]
     ];

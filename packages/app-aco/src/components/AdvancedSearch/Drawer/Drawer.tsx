@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
-import { observer } from "mobx-react-lite";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
@@ -20,7 +19,7 @@ interface DrawerProps {
     fields: FieldRaw[];
 }
 
-export const Drawer = observer(({ open, onClose, fields, onSubmit }: DrawerProps) => {
+export const Drawer = ({ open, onClose, fields, onSubmit }: DrawerProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -44,4 +43,4 @@ export const Drawer = observer(({ open, onClose, fields, onSubmit }: DrawerProps
             </DrawerContent>
         </DrawerContainer>
     );
-});
+};

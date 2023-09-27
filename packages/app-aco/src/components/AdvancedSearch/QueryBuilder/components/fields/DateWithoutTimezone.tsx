@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useBind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -8,31 +8,22 @@ interface DateWithoutTimezoneProps {
 }
 
 export const DateWithoutTimezone = ({ name }: DateWithoutTimezoneProps) => {
-    const { onChange, validate } = useBind({
+    const [dateTime, setDateTime] = useState("");
+
+    const { onChange } = useBind({
         name
     });
 
-    const onBlur = (ev: React.SyntheticEvent) => {
-        if (validate) {
-            // Since we are accessing event in an async operation, we need to persist it.
-            // See https://reactjs.org/docs/events.html#event-pooling.
-            ev.persist();
-            validate();
-        }
-    };
-
     const handleOnChange = (value: string) => {
-        const date = new Date(value);
-        onChange(date.toISOString());
+        const dateWithTimeZone = value + "Z";
+        const date = new Date(dateWithTimeZone);
+        const dateTimeToISOString = date.toISOString();
+
+        setDateTime(dateTimeToISOString.slice(0, -5));
+        onChange(dateTimeToISOString);
     };
 
     return (
-        <Input
-            label={"Value"}
-            type={"datetime-local"}
-            onChange={handleOnChange}
-            onBlur={onBlur}
-            required={true}
-        />
+        <Input label={"Value"} type={"datetime-local"} onChange={handleOnChange} value={dateTime} />
     );
 };
