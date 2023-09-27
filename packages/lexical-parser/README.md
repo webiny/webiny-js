@@ -112,13 +112,13 @@ In `elementNode` you must specify the lexical node type you want to match and pa
 output, html tag and text parsing option with following props:
 
 - With `type` prop you must define the lexical node type to match. Example: `paragraph-element`,
-- With `outputType` prop you can define the type you want to be set in the output `type` object. For example lexical
-  node type is `paragraph-element`, but, after the parsing, for the output `type` prop we want type name to be
-  only `heading`.
+- With `outputType` prop you can define the type you want to be set in the output `type` object. For example, the lexical
+  node type is `paragraph-element`, but, after the parsing, for the output `type` prop we want the type name to be
+  only `paragraph`.
 - `tag` prop allows you to specify the html tag you want to have this element. If it's not specified, it will try to
-  parse from the lexical node `tag` prop, if existing. For example for `headings` you don't need to specify the `tag`
+  parse from the lexical node `tag` prop, if it exists. For example for `headings` you don't need to specify the `tag`
   prop.
-- `outputTextAsHtml` will match the output `text` prop and set the parsed lexical content in plain text, id it's set
+- `outputTextAsHtml` will match the output `text` prop and set the parsed lexical content in plain text, if it's set
   to `false` or html content if it's set to `true`.
 
 You can specify transformer callback functions in the following props:
