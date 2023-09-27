@@ -231,7 +231,7 @@ export const mydDfaultConfig: LexicalParserConfig = {
                 tag: "a", // html tag if data don't have one
                 outputTextAsHtml: true // output to be as html or plain text
             },
-            htmlTransformer: (parsedElement: ElementNode, linkNode) => {
+            htmlTransformer: (parsedElement: ParsedElementNode, linkNode) => {
                 return `<a href="${linkNode?.url}">${parsedElement.text}</a>`;
             }
         }
@@ -239,7 +239,11 @@ export const mydDfaultConfig: LexicalParserConfig = {
 };
 ```
 
-Now the output for the link node will be:
+We can access to the `text` and `html` content through the `parsedElement`. This object contains the data of
+the current matched and parsed lexical node. With the transformer you can use the default parsed data and
+return custom result.
+
+The output for the link node will be:
 
 ```tsx
 const output = [
@@ -263,7 +267,7 @@ export const mydDfaultConfig: LexicalParserConfig = {
                 outputType: "paragraph", // output node type name
                 tag: "p"
             },
-            textTransformer: (parsedElement: ElementNode, linkNode) => {
+            textTransformer: (parsedElement: ParsedElementNode, linkNode) => {
                 if (parsedElement.text.trim().length === 0) {
                     return `N/A`;
                 }
@@ -274,7 +278,7 @@ export const mydDfaultConfig: LexicalParserConfig = {
 };
 ```
 
-Now the output for the node will be:
+The output for the node will be:
 
 ```tsx
 const output = [
@@ -302,7 +306,7 @@ export const mydDfaultConfig: LexicalParserConfig = {
                 outputTextAsHtml: true
             },
             outputTransformer: (
-                parsedElement: ElementNode,
+                parsedElement: ParsedElementNode,
                 lexicalNode: Record<string, any>,
                 index: number,
                 config
@@ -321,7 +325,7 @@ export const mydDfaultConfig: LexicalParserConfig = {
 
 ```
 
-Now the output for the paragraph node will be:
+The output for the paragraph node will be:
 
 ```tsx
 const output = [
