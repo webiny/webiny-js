@@ -64,6 +64,7 @@ export default /* GraphQL */ `
     type FmFile_Extensions {
         carMake: String
         year: Number
+        article: RefField
     }
 
     input FmFile_ExtensionsWhereInput {
@@ -88,6 +89,8 @@ export default /* GraphQL */ `
         year_between: [Number!]
         # there must be two numbers sent in the array
         year_not_between: [Number!]
+
+        article: RefFieldWhereInput
     }
 
     type FmFile {
@@ -121,6 +124,7 @@ export default /* GraphQL */ `
     input FmFile_ExtensionsInput {
         carMake: String
         year: Number
+        article: RefFieldInput
     }
 
     input FmFileCreateInput {

@@ -28,7 +28,7 @@ export interface TableProps {
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
-    selectedRows: string[];
+    selectedRows: PbPageDataItem[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
@@ -90,9 +90,9 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
     });
 };
 
-function isPageEntry(entry: Entry): entry is PageEntry {
+export const isPageEntry = (entry: Entry): entry is PageEntry => {
     return entry.$type === "RECORD";
-}
+};
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
@@ -205,7 +205,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
-                selectedRows={data.filter(record => selectedRows.includes(record.id))}
+                selectedRows={data.filter(record =>
+                    selectedRows.find(row => row.pid === record.id)
+                )}
                 isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
                 initialSorting={[
