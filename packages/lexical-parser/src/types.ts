@@ -9,50 +9,47 @@ export interface LexicalValue {
 export interface ElementNodeConfig {
     type: string;
     outputType?: string;
-    // default output text
+    // default output is plain text
     outputTextAsHtml?: boolean;
     // Define specific tag to be applied when element is processed
     tag?: string;
 }
 
-export interface LexicalNodeProcessorConfig {
+export interface LexicalNodeConfig {
     elementNode: ElementNodeConfig;
-    htmlProcessor?: (
-        parsedElement: ElementNode,
+    htmlTransformer?: (
+        parsedElement: ParsedElementNode,
         lexicalNode: Record<string, any>,
-        config?: LexicalNodeProcessorConfig
+        config?: LexicalNodeConfig
     ) => string;
-    outputProcessor?: (
-        parsedElement: ElementNode,
+
+    textTransformer?: (
+        parsedElement: ParsedElementNode,
+        lexicalNode: Record<string, any>,
+        config?: LexicalNodeConfig
+    ) => string;
+    outputTransformer?: (
+        parsedElement: ParsedElementNode,
         lexicalNode: Record<string, any>,
         index: number,
-        config?: LexicalNodeProcessorConfig
+        config?: LexicalNodeConfig
     ) => NodeContentOutput;
 }
 
 /**
- * Interface for the parsed nodes
- */
-
-/**
  * Parsed lexical element node
  */
-export interface ElementNode {
+export interface ParsedElementNode {
     type: string;
     text: string;
     html: string;
     tag: string;
 }
 
-/**
- * Processors
- */
 export interface NodeContentOutput {
     order?: number;
     type?: string;
     text?: string;
 }
 
-export interface LexicalParserConfig {
-    processors?: LexicalNodeProcessorConfig[];
-}
+export type LexicalParserConfig = LexicalNodeConfig[];

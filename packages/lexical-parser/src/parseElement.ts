@@ -1,12 +1,12 @@
 import { isLexicalElement } from "~/utils/isLexicalElement";
 import { getLexicalContentText } from "~/utils/getLexicalContentText";
 import { isTextNode } from "~/utils/isTextNode";
-import { ElementNode, LexicalNodeProcessorConfig } from "~/types";
+import { LexicalNodeConfig, ParsedElementNode } from "~/types";
 
 export const parseElement = (
     lexicalNode: Record<string, any>,
-    configMap: Map<string, LexicalNodeProcessorConfig>
-): ElementNode | null => {
+    configMap: Map<string, LexicalNodeConfig>
+): ParsedElementNode | null => {
     if (!configMap.has(lexicalNode.type)) {
         return null;
     }
@@ -16,9 +16,8 @@ export const parseElement = (
     }
 
     const config = configMap.get(lexicalNode.type);
-    const htmlProcessorCallback = config ? config?.htmlProcessor : undefined;
 
-    const elementNode: ElementNode = {
+    const elementNode: ParsedElementNode = {
         html: "",
         tag: config?.elementNode?.tag ?? lexicalNode?.tag,
         type: lexicalNode.type,
@@ -45,14 +44,21 @@ export const parseElement = (
                                return "";
                            })
                            .join("")
-                           .replace(/(\n)|(\r)|(\r\n)/gi, "") // Remove any new line char
+                           .replace(/(\r\n|\n|\r)/gm, "") // Remove any new line char
                            .trim()
                      : elementNode.text
              }
             </${elementNode.tag}>`;
 
-    if (htmlProcessorCallback) {
-        elementNode.html = htmlProcessorCallback(elementNode, lexicalNode, config);
+    const htmlTransformerCallback = config ? config?.htmlTransformer : undefined;
+    const textTransformerCallback = config ? config?.textTransformer : undefined;
+
+    if (htmlTransformerCallback) {
+        elementNode.html = htmlTransformerCallback(elementNode, lexicalNode, config);
+    }
+
+    if (textTransformerCallback) {
+        elementNode.text = textTransformerCallback(elementNode, lexicalNode, config);
     }
 
     return elementNode;

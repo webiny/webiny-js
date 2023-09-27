@@ -1,14 +1,14 @@
-import { LexicalNodeProcessorConfig, LexicalParserConfig } from "~/types";
+import { LexicalNodeConfig, LexicalParserConfig } from "~/types";
 
 export const createConfigMap = (
-    config: LexicalParserConfig
-): Map<string, LexicalNodeProcessorConfig> | null => {
-    if (!config?.processors?.length) {
+    configNodeList: LexicalParserConfig
+): Map<string, LexicalNodeConfig> | null => {
+    if (!configNodeList?.length) {
         return null;
     }
 
-    const map = new Map<string, LexicalNodeProcessorConfig>();
-    for (const configElement of config.processors) {
+    const map = new Map<string, LexicalNodeConfig>();
+    for (const configElement of configNodeList) {
         map.set(configElement?.elementNode.type, configElement);
     }
 

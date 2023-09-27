@@ -1,15 +1,10 @@
 import { parseElement } from "~/parseElement";
 import { isLexicalElement } from "~/utils/isLexicalElement";
-import {
-    ElementNodeConfig,
-    LexicalNodeProcessorConfig,
-    LexicalValue,
-    NodeContentOutput
-} from "~/types";
+import { ElementNodeConfig, LexicalNodeConfig, LexicalValue, NodeContentOutput } from "~/types";
 
 export const parse = (
     value: LexicalValue,
-    configMap: Map<string, LexicalNodeProcessorConfig>
+    configMap: Map<string, LexicalNodeConfig>
 ): NodeContentOutput[] => {
     const rootNode = value["root"];
     if (!rootNode?.children?.length) {
@@ -36,7 +31,7 @@ export const parse = (
 
                 // Custom output processor callback
                 if (configuration) {
-                    const outputProcessorCallback = configMap.get(node.type)?.outputProcessor;
+                    const outputProcessorCallback = configMap.get(node.type)?.outputTransformer;
                     if (outputProcessorCallback) {
                         elementOutput = outputProcessorCallback(
                             parsedElement,

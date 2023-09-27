@@ -1,20 +1,30 @@
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { parse } from "~/parse";
 import { createConfigMap } from "~/utils/createConfigMap";
-import { defaultLexicalParserConfig } from "~/config";
+import { defaultLexicalNodeConfigList } from "~/config";
 import { LexicalParserConfig, LexicalValue } from "~/types";
 
-let configuration: LexicalParserConfig;
+let generalLexicalNodeConfigList: LexicalParserConfig = [];
 
-export const configureLexicalParser = (config: LexicalParserConfig) => {
-    configuration = { ...config };
+/**
+ * General or app level configuration.
+ * @param lexicalNodeConfigList
+ */
+export const configureLexicalParser = (lexicalNodeConfigList: LexicalParserConfig) => {
+    generalLexicalNodeConfigList = [...lexicalNodeConfigList];
 };
 
-export const parseLexicalObject = (value: LexicalValue): Record<string, any> | null => {
-    configuration = { ...defaultLexicalParserConfig, ...configuration };
+export const parseLexicalObject = (
+    value: LexicalValue,
+    config?: LexicalParserConfig
+): Record<string, any> | null => {
+    generalLexicalNodeConfigList = config
+        ? [...config] // will override the general configuration
+        : [...defaultLexicalNodeConfigList, ...generalLexicalNodeConfigList];
+
     if (!isValidLexicalData(value)) {
         return null;
     }
-    const configMap = createConfigMap(configuration);
+    const configMap = createConfigMap(generalLexicalNodeConfigList);
     return configMap ? parse(value, configMap) : null;
 };

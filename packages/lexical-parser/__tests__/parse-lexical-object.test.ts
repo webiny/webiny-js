@@ -1,66 +1,72 @@
 import { parseLexicalObject } from "~/index";
-import { listElementNode, simpleHCMSJson, simpleHeadingElementNode } from "~tests/test-data";
-import { parseElement } from "~/parseElement";
-import { defaultConfig } from "~tests/mocks";
-import { createConfigMap } from "~/utils/createConfigMap";
+import { cmsFieldInputData } from "~tests/test-data";
+import { NodeContentOutput } from "~/types";
 
 describe("Test Lexical Parser", () => {
-    it("Parse lexical object to flat structure", () => {
-        const output = parseLexicalObject(simpleHCMSJson);
+    it("Parse lexical object to array of custom parsed objects", () => {
+        const output = parseLexicalObject(cmsFieldInputData);
 
-        expect(output).toEqual({
-            html: `<p>Test CMS Title</p>`,
-            tag: "h1",
-            text: "Test CMS Title",
-            type: "heading-element"
-        });
-    });
-
-    it("parse lexical list", () => {
-        const configMap = createConfigMap(defaultConfig);
-        if (!configMap) {
-            return;
-        }
-
-        const parsedElementObj = parseElement(listElementNode, configMap);
-
-        expect(parsedElementObj).toEqual({
-            html: `<ul><li>List item 1</li><li>List item 2</li><li>List item 3</li></ul>`,
-            tag: "ul",
-            text: "List item 1 List item 2 List item 3",
-            type: "webiny-list"
-        });
-    });
-
-    it("parse lexical heading", () => {
-        const configMap = createConfigMap(defaultConfig);
-        if (!configMap) {
-            return;
-        }
-
-        const parsedElementObj = parseElement(simpleHeadingElementNode, configMap);
-
-        expect(parsedElementObj).toEqual({
-            html: `<h1>Test CMS Title</h1>`,
-            tag: "h1",
-            text: "Test CMS Title",
-            type: "heading-element"
-        });
-    });
-
-    it("parse lexical paragraph", () => {
-        const configMap = createConfigMap(defaultConfig);
-        if (!configMap) {
-            return;
-        }
-
-        const parsedElementObj = parseElement(simpleHeadingElementNode, configMap);
-
-        expect(parsedElementObj).toEqual({
-            html: `<p>Test CMS Title</p>`,
-            tag: "h1",
-            text: "Test CMS Title",
-            type: "heading-element"
-        });
+        expect(output).toEqual([
+            {
+                order: 1,
+                text: `<h1>
+             Test CMS Title
+            </h1>`,
+                type: "heading"
+            },
+            {
+                order: 2,
+                text: "<br>",
+                type: "paragraph"
+            },
+            {
+                order: 3,
+                text: `<p>
+             Testing a <a href=\"https://space.com\">link</a> for parsing
+            </p>`,
+                type: "paragraph"
+            },
+            {
+                order: 4,
+                text: `<p>
+             Test CMS Paragraph
+            </p>`,
+                type: "paragraph"
+            },
+            {
+                order: 5,
+                text: "<br>",
+                type: "paragraph"
+            },
+            {
+                order: 6,
+                text: `<quoteblock>
+             Test quote from lexical CMS
+            </quoteblock>`,
+                type: "quote"
+            },
+            {
+                order: 7,
+                text: "<br>",
+                type: "paragraph"
+            },
+            {
+                order: 8,
+                text: `<ul>
+             <li>             List item 1            </li><li>             List item 2            </li><li>             List item 3            </li>
+            </ul>`,
+                type: "list"
+            },
+            {
+                order: 9,
+                text: "<br>",
+                type: "paragraph"
+            },
+            {
+                order: 10,
+                text: "<br>",
+                type: "paragraph"
+            }
+        ] as NodeContentOutput[]);
     });
 });
