@@ -28,37 +28,40 @@ export interface QueryBuilderViewModel {
 }
 
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
-    private readonly viewModel: QueryBuilderViewModel;
+    private queryObject: QueryBuilderViewModel["queryObject"];
+    private readonly fields: QueryBuilderViewModel["fields"];
+    private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
     constructor(fields: FieldRaw[]) {
-        this.viewModel = {
-            queryObject: QueryObjectMapper.toDTO(QueryObject.createEmpty()),
-            fields: FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field))),
-            invalidFields: {}
-        };
+        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty());
+        this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
         makeAutoObservable(this);
     }
 
-    getViewModel() {
-        return this.viewModel;
+    getViewModel(): QueryBuilderViewModel {
+        return {
+            queryObject: this.queryObject,
+            fields: this.fields,
+            invalidFields: this.invalidFields
+        };
     }
 
     addGroup() {
-        this.viewModel.queryObject.groups.push({
+        this.queryObject.groups.push({
             operation: Operation.AND,
             filters: [{ field: "", value: "", condition: "" }]
         });
     }
 
     deleteGroup(groupIndex: number) {
-        this.viewModel.queryObject.groups = this.viewModel.queryObject.groups.filter(
+        this.queryObject.groups = this.queryObject.groups.filter(
             (_, index) => index !== groupIndex
         );
 
         // Make sure we always have at least 1 group!
-        if (this.viewModel.queryObject.groups.length === 0) {
-            this.viewModel.queryObject.groups.push({
+        if (this.queryObject.groups.length === 0) {
+            this.queryObject.groups.push({
                 operation: Operation.AND,
                 filters: [{ field: "", value: "", condition: "" }]
             });
@@ -66,7 +69,7 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     addNewFilterToGroup(groupIndex: number) {
-        this.viewModel.queryObject.groups[groupIndex].filters.push({
+        this.queryObject.groups[groupIndex].filters.push({
             field: "",
             value: "",
             condition: ""
@@ -74,14 +77,14 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     deleteFilterFromGroup(groupIndex: number, filterIndex: number) {
-        const filters = this.viewModel.queryObject.groups[groupIndex].filters;
-        this.viewModel.queryObject.groups[groupIndex].filters = filters.filter(
+        const filters = this.queryObject.groups[groupIndex].filters;
+        this.queryObject.groups[groupIndex].filters = filters.filter(
             (_, index) => index !== filterIndex
         );
 
         // Make sure we always have at least 1 filter!
-        if (this.viewModel.queryObject.groups[groupIndex].filters.length === 0) {
-            this.viewModel.queryObject.groups[groupIndex].filters.push({
+        if (this.queryObject.groups[groupIndex].filters.length === 0) {
+            this.queryObject.groups[groupIndex].filters.push({
                 field: "",
                 value: "",
                 condition: ""
@@ -90,19 +93,19 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     emptyFilterIntoGroup(groupIndex: number, filterIndex: number) {
-        this.viewModel.queryObject.groups[groupIndex].filters = [
-            ...this.viewModel.queryObject.groups[groupIndex].filters.slice(0, filterIndex),
+        this.queryObject.groups[groupIndex].filters = [
+            ...this.queryObject.groups[groupIndex].filters.slice(0, filterIndex),
             {
                 field: "",
                 value: "",
                 condition: ""
             },
-            ...this.viewModel.queryObject.groups[groupIndex].filters.slice(filterIndex + 1)
+            ...this.queryObject.groups[groupIndex].filters.slice(filterIndex + 1)
         ];
     }
 
     setQueryObject(queryObject: QueryObjectDTO) {
-        this.viewModel.queryObject = queryObject;
+        this.queryObject = queryObject;
         if (this.formWasSubmitted) {
             this.validateQueryObject(queryObject);
         }
@@ -122,14 +125,14 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         const validation = QueryObject.validate(data);
 
         if (!validation.success) {
-            this.viewModel.invalidFields = validation.error.issues.reduce((acc, issue) => {
+            this.invalidFields = validation.error.issues.reduce((acc, issue) => {
                 return {
                     ...acc,
                     [issue.path.join(".")]: issue.message
                 };
             }, {});
         } else {
-            this.viewModel.invalidFields = {};
+            this.invalidFields = {};
         }
 
         return validation;
