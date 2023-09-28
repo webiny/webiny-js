@@ -83,30 +83,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         [canEdit, model.modelId, currentFolderId]
     );
 
-    //
-    // // If we have at least one permission that is not inherited, we mark the folder as having permissions.
-    // const folderHasPermissions = useMemo(() => {
-    //     return folder?.permissions?.some(p => !p.inheritedFrom);
-    // }, [folder?.permissions]);
-    //
-    // // If we have at least one permission that is not inherited, we mark the folder as having permissions.
-    // const canManagePermissions = useMemo(() => {
-    //     const userAccessLevel = folder?.permissions.find(
-    //         p => p.target === "user:" + identity!.id
-    //     )?.level;
-    //
-    //     const teamAccessLevel = folder?.permissions.find(
-    //         p => p.target === "team:todo" // TODO: replace with actual team ID
-    //     )?.level;
-    //
-    //     return [userAccessLevel, teamAccessLevel].filter(Boolean).includes("owner");
-    // }, [folderHasPermissions]);
-    //
-    // let icon = <FolderIcon />;
-    // if (folderHasPermissions && canManagePermissions) {
-    //     icon = <FolderSharedIcon />;
-    // }
-
     const columns: Columns<Entry> = useMemo(() => {
         return {
             title: {

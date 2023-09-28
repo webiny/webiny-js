@@ -196,7 +196,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             {entry.original.canManagePermissions && (
                                 <FolderActionManagePermissions
                                     onClick={() => {
-                                        setDeleteDialogOpen(true);
+                                        setManagePermissionsDialogOpen(true);
                                         setSelectedFolder(entry.original);
                                     }}
                                 />

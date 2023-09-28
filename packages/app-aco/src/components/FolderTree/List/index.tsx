@@ -121,13 +121,13 @@ export const List: React.VFC<ListProps> = ({
                                 setSelectedFolder(data);
                                 setUpdateDialogOpen(true);
                             }}
-                            onDeleteFolder={data => {
-                                setSelectedFolder(data);
-                                setDeleteDialogOpen(true);
-                            }}
                             onSetFolderPermissions={data => {
                                 setSelectedFolder(data);
                                 setPermissionsDialogOpen(true);
+                            }}
+                            onDeleteFolder={data => {
+                                setSelectedFolder(data);
+                                setDeleteDialogOpen(true);
                             }}
                         />
                     )}

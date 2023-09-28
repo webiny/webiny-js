@@ -116,10 +116,10 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
                 target: `user:${user.id}`,
                 name: `${user.firstName} ${user.lastName}`
             })),
-            ...teamsList.map(team => ({
-                target: `team:${team.id}`,
-                name: `${team.name}`
-            }))
+            // ...teamsList.map(team => ({
+            //     target: `team:${team.id}`,
+            //     name: `${team.name}`
+            // }))
         ];
     }, [usersList, teamsList]);
 
