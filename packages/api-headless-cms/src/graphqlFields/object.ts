@@ -1,12 +1,11 @@
 import upperFirst from "lodash/upperFirst";
+import lodashUpperFirst from "lodash/upperFirst";
 import {
     CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { attachRequiredFieldValue } from "./helpers";
-import lodashUpperFirst from "lodash/upperFirst";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
 interface AttachTypeDefinitionsParams {
@@ -209,10 +208,9 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 const { fieldType, typeDefs } = result;
 
                 return {
-                    fields: attachRequiredFieldValue(
-                        `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
-                        field
-                    ),
+                    fields: `${field.fieldId}: ${
+                        field.multipleValues ? `[${fieldType}!]` : fieldType
+                    }`,
                     typeDefs
                 };
             },
