@@ -3,10 +3,11 @@ import { Operation } from "~/filter/filter.types";
 export const filterMocks = {
     filterA: {
         name: "Filter A",
-        model: "demo-1",
+        description: "Filter description A",
+        modelId: "demo-1",
         operation: Operation.AND,
         groups: [
-            {
+            JSON.stringify({
                 operation: Operation.AND,
                 filters: [
                     {
@@ -20,15 +21,16 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            }
+            })
         ]
     },
     filterB: {
         name: "Filter B",
-        model: "demo-1",
+        description: "Filter description B",
+        modelId: "demo-1",
         operation: Operation.OR,
         groups: [
-            {
+            JSON.stringify({
                 operation: Operation.OR,
                 filters: [
                     {
@@ -42,15 +44,16 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            }
+            })
         ]
     },
     filterC: {
         name: "Filter C",
-        model: "demo-2",
+        description: "Filter description C",
+        modelId: "demo-2",
         operation: Operation.AND,
         groups: [
-            {
+            JSON.stringify({
                 operation: Operation.OR,
                 filters: [
                     {
@@ -64,7 +67,7 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            }
+            })
         ]
     }
 };

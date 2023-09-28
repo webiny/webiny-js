@@ -32,10 +32,11 @@ describe("`filter` CRUD", () => {
             ...filterMocks.filterC
         });
 
-        // Let's check whether both of the filter exists, listing them by `model`.
+        // Let's check whether both of the filter exists, listing them by `modelId`.
         const [listResponse1] = await aco.listFilters({
-            where: { model: "demo-1", createdBy: userMock.id }
+            where: { modelId: "demo-1" }
         });
+
         expect(listResponse1.data.aco.listFilters).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
@@ -47,22 +48,12 @@ describe("`filter` CRUD", () => {
         );
 
         const [listResponse2] = await aco.listFilters({
-            where: { model: "demo-2", createdBy: userMock.id }
+            where: { modelId: "demo-2" }
         });
+
         expect(listResponse2.data.aco.listFilters).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([expect.objectContaining(filterMocks.filterC)]),
-                error: null
-            })
-        );
-
-        const [nonExistingUserResponse] = await aco.listFilters({
-            where: { model: "demo-2", createdBy: "any-id" }
-        });
-
-        expect(nonExistingUserResponse.data.aco.listFilters).toEqual(
-            expect.objectContaining({
-                data: [],
                 error: null
             })
         );
@@ -170,6 +161,36 @@ describe("`filter` CRUD", () => {
         });
     });
 
+    it("should not allow creating a `filter` with no `modelId` provided", async () => {
+        const [response] = await aco.createFilter({
+            data: {
+                ...filterMocks.filterA,
+                modelId: ""
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFilter: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Value is required.",
+                                    fieldId: "modelId",
+                                    storageId: "text@modelId"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
     it("should not allow creating a `filter` with no `operation` provided", async () => {
         const [response] = await aco.createFilter({
             data: {
@@ -201,9 +222,8 @@ describe("`filter` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Value is too short.",
-                                    fieldId: "groups",
-                                    storageId: "object@groups"
+                                    error: "Array must contain at least 1 element(s)",
+                                    path: ""
                                 }
                             ]
                         }
@@ -213,15 +233,21 @@ describe("`filter` CRUD", () => {
         });
     });
 
-    it.skip("should not allow creating a `filter` with empty `groups.filters` provided", async () => {
+    it("should not allow creating a `filter` with empty `groups.operation` provided", async () => {
         const [response] = await aco.createFilter({
             data: {
                 ...filterMocks.filterA,
                 groups: [
-                    {
-                        operation: Operation.AND,
-                        filters: []
-                    }
+                    JSON.stringify({
+                        operation: "",
+                        filters: [
+                            {
+                                field: "any",
+                                condition: "any",
+                                value: "any"
+                            }
+                        ]
+                    })
                 ]
             }
         });
@@ -236,9 +262,90 @@ describe("`filter` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Value is too short.",
-                                    fieldId: "groups",
-                                    storageId: "object@groups"
+                                    error: "Invalid enum value. Expected 'AND' | 'OR', received ''",
+                                    path: "0.operation"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow creating a `filter` with empty `groups.filters` provided", async () => {
+        const [response] = await aco.createFilter({
+            data: {
+                ...filterMocks.filterA,
+                groups: [
+                    JSON.stringify({
+                        operation: Operation.AND,
+                        filters: []
+                    })
+                ]
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFilter: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Array must contain at least 1 element(s)",
+                                    path: "0.filters"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow creating a `filter` with wrong `groups.filters` provided", async () => {
+        const [response] = await aco.createFilter({
+            data: {
+                ...filterMocks.filterA,
+                groups: [
+                    JSON.stringify({
+                        operation: Operation.AND,
+                        filters: [
+                            {
+                                field: "",
+                                condition: "",
+                                value: ""
+                            }
+                        ]
+                    })
+                ]
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                aco: {
+                    createFilter: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED",
+                            message: "Validation failed.",
+                            data: [
+                                {
+                                    error: "Field is required.",
+                                    path: "0.filters.0.field"
+                                },
+                                {
+                                    error: "Condition is required.",
+                                    path: "0.filters.0.condition"
+                                },
+                                {
+                                    error: "Value is required.",
+                                    path: "0.filters.0.value"
                                 }
                             ]
                         }
@@ -265,6 +372,31 @@ describe("`filter` CRUD", () => {
                 data: null
             }
         });
+    });
+
+    it("should not list filters created by other users", async () => {
+        const { aco: otherAco } = useGraphQlHandler({
+            identity: {
+                id: "abcdefgh",
+                type: "admin",
+                displayName: "Smith Smith"
+            }
+        });
+        const { aco } = useGraphQlHandler();
+
+        // Let's create some filters.
+        await aco.createFilter({ data: filterMocks.filterA });
+
+        const [listResponse] = await otherAco.listFilters({
+            where: { modelId: "demo-1" }
+        });
+
+        expect(listResponse.data.aco.listFilters).toEqual(
+            expect.objectContaining({
+                data: [],
+                error: null
+            })
+        );
     });
 
     it("should enforce security rules", async () => {
@@ -299,7 +431,7 @@ describe("`filter` CRUD", () => {
         // List with anonymous identity
         {
             const [listResponse] = await anonymousAco.listFilters({
-                where: { createdBy: userMock.id }
+                where: { modelId: "demo-1" }
             });
             expect(listResponse.data.aco.listFilters).toEqual(
                 expect.objectContaining(notAuthorizedResponse)

@@ -1,4 +1,4 @@
-import { AcoBaseFields, ListMeta, ListSort, User } from "~/types";
+import { AcoBaseFields, ListMeta, ListSort } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export enum Operation {
@@ -19,14 +19,14 @@ export interface Group {
 
 export interface Filter extends AcoBaseFields {
     name: string;
-    model: string;
+    description?: string;
+    modelId: string;
     operation: Operation;
-    groups: Group[];
+    groups: string[];
 }
 
 export interface ListFiltersWhere {
-    model: string;
-    createdBy: User["id"];
+    modelId: string;
 }
 
 export interface ListFiltersParams {
@@ -36,13 +36,17 @@ export interface ListFiltersParams {
     after?: string | null;
 }
 
-export type CreateFilterParams = Pick<Filter, "name" | "model" | "operation" | "groups">;
+export type CreateFilterParams = Pick<
+    Filter,
+    "name" | "description" | "modelId" | "operation" | "groups"
+>;
 
 export interface UpdateFilterParams {
     name?: string;
-    model?: string;
+    description?: string;
+    modelId?: string;
     operation?: Operation;
-    groups?: Group[];
+    groups?: string[];
 }
 
 export interface DeleteFilterParams {

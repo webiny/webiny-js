@@ -4,10 +4,10 @@ import { assignFilterLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { Operation } from "~/filter/filter.types";
 
 const name = "Filter Lifecycle Events";
-const model = "demo-lifecycle-events";
+const modelId = "demo-lifecycle-events";
 const operation = Operation.AND;
 const groups = [
-    {
+    JSON.stringify({
         operation: Operation.OR,
         filters: [
             {
@@ -16,7 +16,7 @@ const groups = [
                 value: "any-value"
             }
         ]
-    }
+    })
 ];
 
 describe("Filter Lifecycle Events", () => {
@@ -32,7 +32,7 @@ describe("Filter Lifecycle Events", () => {
         const [response] = await aco.createFilter({
             data: {
                 name,
-                model,
+                modelId,
                 operation,
                 groups
             }
@@ -44,7 +44,7 @@ describe("Filter Lifecycle Events", () => {
                     createFilter: {
                         data: {
                             name,
-                            model,
+                            modelId,
                             operation,
                             groups
                         },
@@ -66,7 +66,7 @@ describe("Filter Lifecycle Events", () => {
         const [createResponse] = await aco.createFilter({
             data: {
                 name,
-                model,
+                modelId,
                 operation,
                 groups
             }
@@ -106,7 +106,7 @@ describe("Filter Lifecycle Events", () => {
         const [createResponse] = await aco.createFilter({
             data: {
                 name,
-                model,
+                modelId,
                 operation,
                 groups
             }

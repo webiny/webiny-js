@@ -1,6 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
 import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 export type FilterModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
@@ -17,10 +16,17 @@ const name = () =>
         ]
     });
 
-const model = () =>
+const description = () =>
     createModelField({
-        label: "Model",
-        fieldId: "model",
+        label: "Description",
+        fieldId: "description",
+        type: "text"
+    });
+
+const modelId = () =>
+    createModelField({
+        label: "Model Id",
+        fieldId: "modelId",
         type: "text",
         validation: [
             {
@@ -57,20 +63,12 @@ const operation = () =>
         ]
     });
 
-const groups = (fields: CmsModelField[]): CmsModelField =>
+const groups = () =>
     createModelField({
         label: "Groups",
         fieldId: "groups",
-        type: "object",
-        settings: {
-            fields,
-            layout: fields.map(field => [field.storageId])
-        },
+        type: "wby-aco-json",
         multipleValues: true,
-        predefinedValues: {
-            values: [],
-            enabled: false
-        },
         listValidation: [
             {
                 name: "minLength",
@@ -78,70 +76,6 @@ const groups = (fields: CmsModelField[]): CmsModelField =>
                 settings: {
                     value: "1"
                 }
-            }
-        ]
-    });
-
-const filters = (fields: CmsModelField[]): CmsModelField =>
-    createModelField({
-        label: "Filters",
-        fieldId: "filters",
-        type: "object",
-        settings: {
-            fields,
-            layout: fields.map(field => [field.storageId])
-        },
-        multipleValues: true,
-        predefinedValues: {
-            values: [],
-            enabled: false
-        },
-        listValidation: [
-            {
-                name: "minLength",
-                message: "Value is too short.",
-                settings: {
-                    value: "1"
-                }
-            }
-        ]
-    });
-
-const filterField = () =>
-    createModelField({
-        label: "Field",
-        fieldId: "field",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const filterCondition = () =>
-    createModelField({
-        label: "Condition",
-        fieldId: "condition",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const filterValue = () =>
-    createModelField({
-        label: "Value",
-        fieldId: "value",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
             }
         ]
     });
@@ -153,13 +87,8 @@ export const createFilterModelDefinition = (): FilterModelDefinition => {
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",
-        layout: [["name"], ["model"], ["operation"], ["groups"]],
-        fields: [
-            name(),
-            model(),
-            operation(),
-            groups([operation(), filters([filterField(), filterCondition(), filterValue()])])
-        ],
+        layout: [["name"], ["description"], ["modelId"], ["operation"], ["groups"]],
+        fields: [name(), description(), modelId(), operation(), groups()],
         description: "ACO - Filter content model",
         isPrivate: true
     };

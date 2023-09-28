@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 
 import { FILTER_MODEL_ID } from "./filter.model";
+import { validateFilterGroupsInput } from "./filter.validation";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
@@ -11,7 +12,7 @@ import { AcoFilterStorageOperations } from "./filter.types";
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoFilterStorageOperations => {
-    const { cms } = params;
+    const { cms, security } = params;
 
     const { withModel } = createOperationsWrapper({
         ...params,
@@ -37,12 +38,13 @@ export const createFilterOperations = (
         listFilters(params) {
             return withModel(async model => {
                 const { sort, where } = params;
+                const createdBy = security.getIdentity().id;
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
                     sort: createListSort(sort),
                     where: {
-                        ...(where || {})
+                        ...({ ...where, createdBy } || {})
                     }
                 });
 
@@ -51,6 +53,7 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
+                validateFilterGroupsInput(data.groups);
                 const entry = await cms.createEntry(model, data);
                 return getFilterFieldValues(entry, baseFields);
             });
@@ -63,6 +66,8 @@ export const createFilterOperations = (
                     ...original,
                     ...data
                 };
+
+                validateFilterGroupsInput(input.groups);
 
                 const entry = await cms.updateEntry(model, id, input);
                 return getFilterFieldValues(entry, baseFields);

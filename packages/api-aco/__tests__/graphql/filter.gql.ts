@@ -2,16 +2,10 @@ const DATA_FIELD = /* GraphQL */ `
     {
         id
         name
-        model
+        description
+        modelId
         operation
-        groups {
-            operation
-            filters {
-                field
-                condition
-                value
-            }
-        }
+        groups
         createdBy {
             id
             displayName
