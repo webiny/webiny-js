@@ -1,9 +1,8 @@
 import WebinyError from "@webiny/error";
-import { Converter } from "aws-sdk/clients/dynamodb";
+import { unmarshall, StreamRecord } from "@webiny/aws-sdk/client-dynamodb";
 import { decompress } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
-import { StreamRecord } from "aws-lambda/trigger/dynamodb-stream";
 import pRetry from "p-retry";
 
 enum Operations {
@@ -98,14 +97,14 @@ export const createEventHandler = () => {
                 if (!dynamodb) {
                     continue;
                 }
-                const newImage = Converter.unmarshall(dynamodb.NewImage) as RecordDynamoDbImage;
+                const newImage = unmarshall(dynamodb.NewImage) as RecordDynamoDbImage;
 
                 if (newImage.ignore === true) {
                     continue;
                 }
 
-                const oldImage = Converter.unmarshall(dynamodb.OldImage) as RecordDynamoDbImage;
-                const keys = Converter.unmarshall(dynamodb.Keys) as RecordDynamoDbKeys;
+                const oldImage = unmarshall(dynamodb.OldImage) as RecordDynamoDbImage;
+                const keys = unmarshall(dynamodb.Keys) as RecordDynamoDbKeys;
                 const _id = `${keys.PK}:${keys.SK}`;
                 const operation = record.eventName;
 

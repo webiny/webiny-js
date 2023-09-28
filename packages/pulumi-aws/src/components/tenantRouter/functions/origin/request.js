@@ -1,14 +1,11 @@
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+const { getDocumentClient } = require("@webiny/aws-sdk/client-dynamodb");
 
 // Since Lambda@Edge doesn't support ENV variables, the easiest way to pass
 // config values to it is to inject them into the source code before deploy.
 const DB_TABLE_NAME = "{DB_TABLE_NAME}";
 const DB_TABLE_REGION = "{DB_TABLE_REGION}";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: DB_TABLE_REGION
-});
+const documentClient = getDocumentClient({ region: DB_TABLE_REGION });
 
 function sanitizeRequestURI(uri) {
     // Make sure that `/` is not appended to index.html, or any path with extension.

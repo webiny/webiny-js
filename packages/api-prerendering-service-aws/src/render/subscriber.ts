@@ -1,4 +1,8 @@
-import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
+import {
+    SQSClient,
+    SendMessageBatchRequestEntry,
+    SendMessageBatchCommand
+} from "@webiny/aws-sdk/client-sqs";
 import lodashChunk from "lodash/chunk";
 import {
     RenderEvent,
@@ -14,7 +18,7 @@ export interface HandlerConfig {
 
 export default (params: HandlerConfig) => {
     const { storageOperations } = params;
-    const sqsClient = new SqsClient();
+    const sqsClient = new SQSClient();
 
     return createEventBridgeEventHandler<"RenderPages", RenderPagesEvent>(async ({ payload }) => {
         if (payload["detail-type"] !== "RenderPages") {
@@ -86,14 +90,14 @@ export default (params: HandlerConfig) => {
 
         const entriesChunked = lodashChunk(entries, 10);
         for (const chunk of entriesChunked) {
-            const result = await sqsClient
-                .sendMessageBatch({
+            const result = await sqsClient.send(
+                new SendMessageBatchCommand({
                     QueueUrl: settings.sqsQueueUrl,
                     Entries: chunk
                 })
-                .promise();
+            );
 
-            if (result.Failed.length) {
+            if (result.Failed?.length) {
                 console.error("Failed to deliver some of messages");
                 console.error(JSON.stringify(result.Failed));
             }

@@ -1,4 +1,4 @@
-import LambdaClient from "aws-sdk/clients/lambda";
+import { LambdaClient, InvokeCommand } from "@webiny/aws-sdk/client-lambda";
 import { MigrationStatusReporter } from "~/cli/MigrationStatusReporter";
 import {
     MigrationEventHandlerResponse,
@@ -135,13 +135,13 @@ export class MigrationRunner {
     }
 
     private async invokeMigration(payload: MigrationPayload) {
-        const response = await this.lambdaClient
-            .invoke({
+        const response = await this.lambdaClient.send(
+            new InvokeCommand({
                 FunctionName: this.functionName,
                 InvocationType: "Event",
                 Payload: JSON.stringify({ ...payload, command: "execute" })
             })
-            .promise();
+        );
 
         return response.StatusCode;
     }
@@ -152,18 +152,19 @@ export class MigrationRunner {
 
     private async getStatus(payload: Record<string, any>) {
         const getStatus = () => {
-            return this.lambdaClient
-                .invoke({
+            return this.lambdaClient.send(
+                new InvokeCommand({
                     FunctionName: this.functionName,
                     InvocationType: "RequestResponse",
                     Payload: JSON.stringify({ ...payload, command: "status" })
                 })
-                .promise();
+            );
         };
 
         const response = await executeWithRetry(getStatus);
 
-        return JSON.parse(response.Payload as string) as MigrationEventHandlerResponse;
+        const decoder = new TextDecoder("utf-8");
+        return JSON.parse(decoder.decode(response.Payload)) as MigrationEventHandlerResponse;
     }
 
     private getMigrationStatusReportInterval() {

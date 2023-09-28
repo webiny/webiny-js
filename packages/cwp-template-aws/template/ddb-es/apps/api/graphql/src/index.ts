@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
@@ -43,10 +43,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 const elasticsearchClient = createElasticsearchClient({
     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`

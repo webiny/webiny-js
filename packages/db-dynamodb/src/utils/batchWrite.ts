@@ -1,9 +1,9 @@
 import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface BatchWriteItem {
-    [key: string]: DocumentClient.WriteRequest;
+    [key: string]: WriteRequest;
 }
 
 export interface BatchWriteParams {
