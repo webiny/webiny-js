@@ -189,15 +189,8 @@ export class FolderLevelPermissions {
 
         const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
 
-        // If we detect that the user is an owner, we can immediately return true.
-        if (accessLevels.includes("owner")) {
-            return true;
-        }
-
-        // If the user is not an owner and we're checking for "write" or
-        // "delete" access, then we can immediately return false.
         if (params.rwd !== "r") {
-            return false;
+            return accessLevels.includes("owner");
         }
 
         // If we are here, it means we are checking for "read" access.
@@ -222,34 +215,52 @@ export class FolderLevelPermissions {
 
         const folderPermissions = await this.getFolderPermissions(folder);
 
-        const hasPermissions = folderPermissions && folderPermissions.permissions.length > 0;
-        if (!hasPermissions) {
-            return false;
-        }
-
         const identity = this.getIdentity();
 
-        const userAccessLevel = folderPermissions.permissions.find(
+        const userAccessLevel = folderPermissions?.permissions.find(
             p => p.target === "user:" + identity.id
         )?.level;
 
         let teamAccessLevel: FolderAccessLevel | undefined;
         const identityTeam = await this.getIdentityTeam();
         if (identityTeam) {
-            teamAccessLevel = folderPermissions.permissions.find(
+            teamAccessLevel = folderPermissions?.permissions.find(
                 p => p.target === identityTeam.id
             )?.level;
         }
 
         const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
 
-        if (params.rwd === "r") {
-            return accessLevels.length > 0;
+        // If the user is not an owner and we're checking for "write" or
+        // "delete" access, then we can immediately return false.
+        if (params.rwd !== "r") {
+            return accessLevels.includes("owner") || accessLevels.includes("editor");
         }
 
-        // If we are here, it means we are checking for "w" or "d" access on content.
-        // In this case, we need to check if the user has "editor" or "owner" access.
-        return accessLevels.includes("editor") || accessLevels.includes("owner");
+        // If we are here, it means we are checking for "read" access.
+        // For starters, let's check if the user has any access level.
+        if (accessLevels.length > 0) {
+            return true;
+        }
+
+        // If the user doesn't have any access level, let's check if the folder has any permissions set.
+        // Folders that don't have any permissions set are considered "public".
+        const hasPermissions = folderPermissions && folderPermissions.permissions.length > 0;
+        if (!hasPermissions) {
+            return true;
+        }
+
+        // No conditions were met, so we can return false.
+        return false;
+
+        //
+        // if (params.rwd === "r") {
+        //     return accessLevels.length > 0;
+        // }
+        //
+        // // If we are here, it means we are checking for "w" or "d" access on content.
+        // // In this case, we need to check if the user has "editor" or "owner" access.
+        // return accessLevels.includes("editor") || accessLevels.includes("owner");
     }
 
     async canCreateFolderInRoot() {

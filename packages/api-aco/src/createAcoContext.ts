@@ -11,8 +11,8 @@ import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { AcoAppRegisterPlugin } from "~/plugins";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
+import { FileManagerCrudDecorators } from "~/utils/decorators/FileManagerCrudDecorators";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
@@ -97,103 +97,11 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         }
     };
 
-    // Overriding CRUD methods.
-    const originalFmListFiles = context.fileManager.listFiles;
-    context.fileManager.listFiles = async params => {
-        const [allFolders] = await context.aco.folder.listAll({
-            where: { type: "FmFile" }
-        });
+    // Decorating CRUD methods.
+    new FileManagerCrudDecorators({ context }).decorate();
 
-        return originalFmListFiles({
-            ...params,
-            where: {
-                AND: [
-                    params?.where || {},
-                    {
-                        location: {
-                            // At the moment, all users can access files in the root folder.
-                            // Folder level permissions cannot be set yet.
-                            folderId_in: ["root", allFolders.map(folder => folder.id)]
-                        }
-                    }
-                ]
-            }
-        });
-    };
-
-    const originalFmGetFile = context.fileManager.getFile;
-    context.fileManager.getFile = async fileId => {
-        const file = await originalFmGetFile(fileId);
-
-        if (file && file.location.folderId !== "root") {
-            const folder = await context.aco.folder.get(file.location.folderId);
-            const canAccessFileFolder = await folderLevelPermissions.canAccessFolderContent({
-                folder,
-                rwd: "r"
-            });
-
-            if (!canAccessFileFolder) {
-                throw new NotAuthorizedError();
-            }
-        }
-
-        return file;
-    };
-
-    const originalFmCreateFile = context.fileManager.createFile;
-    context.fileManager.createFile = async params => {
-        if (params.location?.folderId && params.location.folderId !== "root") {
-            const folder = await context.aco.folder.get(params.location.folderId);
-            const canAccessFileFolder = await folderLevelPermissions.canAccessFolderContent({
-                folder,
-                rwd: "w"
-            });
-
-            if (!canAccessFileFolder) {
-                throw new NotAuthorizedError();
-            }
-        }
-
-        return originalFmCreateFile(params);
-    };
-
-    const originalFmUpdateFile = context.fileManager.updateFile;
-    context.fileManager.updateFile = async (fileId, data) => {
-        const file = await originalFmGetFile(fileId);
-
-        if (file.location?.folderId && file.location.folderId !== "root") {
-            const folder = await context.aco.folder.get(file.location.folderId);
-            const canAccessFileFolder = await folderLevelPermissions.canAccessFolderContent({
-                folder,
-                rwd: "w"
-            });
-
-            if (!canAccessFileFolder) {
-                throw new NotAuthorizedError();
-            }
-        }
-
-        return originalFmUpdateFile(fileId, data);
-    };
-
-    const originalFmDeleteFile = context.fileManager.deleteFile;
-    context.fileManager.deleteFile = async fileId => {
-        const file = await originalFmGetFile(fileId);
-
-        if (file.location?.folderId && file.location.folderId !== "root") {
-            const folder = await context.aco.folder.get(file.location.folderId);
-            const canAccessFileFolder = await folderLevelPermissions.canAccessFolderContent({
-                folder,
-                rwd: "d"
-            });
-
-            if (!canAccessFileFolder) {
-                throw new NotAuthorizedError();
-            }
-        }
-
-        return originalFmDeleteFile(fileId);
-    };
+    // new HeadlessCmsCrudDecorators({ context }).decorate();
+    // new PageBuilderCrudDecorators({ context }).decorate();
 };
 
 export const createAcoContext = () => {
