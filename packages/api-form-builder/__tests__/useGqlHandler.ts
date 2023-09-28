@@ -44,7 +44,7 @@ import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { FormBuilderStorageOperations } from "~/types";
-import {createPageBuilderContext} from "@webiny/api-page-builder";
+import { createPageBuilderContext } from "@webiny/api-page-builder";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
