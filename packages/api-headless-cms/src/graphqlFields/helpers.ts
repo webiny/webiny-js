@@ -31,11 +31,13 @@ const envVars: string[] = [
 export const createGraphQLInputField = (field: CmsModelField, graphQlType: string): string => {
     const singleRequired = getIsRequired(field.validation) ? "!" : "";
     if (!field.multipleValues) {
-        return `${field.fieldId}: ${graphQlType}${singleRequired}`;
+        // return `${field.fieldId}: ${graphQlType}${singleRequired}`;
+        return `${field.fieldId}: ${graphQlType}`;
     }
     const multipleRequired = getIsRequired(field.listValidation) ? "!" : "";
 
     const itemRequired = envVars.some(v => process.env[v] === "false") ? "" : singleRequired;
 
-    return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
+    return `${field.fieldId}: [${graphQlType}${itemRequired}]`;
+    // return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
 };
