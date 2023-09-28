@@ -19,7 +19,7 @@ export const createApolloClient = ({ uri }: CreateApolloClientParams) => {
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
-            new BatchHttpLink({ uri })
+            new BatchHttpLink({ uri, credentials: "include" })
         ]),
         cache: new InMemoryCache({
             addTypename: true,

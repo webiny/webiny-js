@@ -87,6 +87,9 @@
       "path": "../../../packages/db-dynamodb/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/handler/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/handler-aws/tsconfig.build.json"
     },
     {
@@ -177,6 +180,8 @@
       "@webiny/api-tenant-manager": ["../../../packages/api-tenant-manager/src"],
       "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
+      "@webiny/handler/*": ["../../../packages/handler/src/*"],
+      "@webiny/handler": ["../../../packages/handler/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/handler-db/*": ["../../../packages/handler-db/src/*"],

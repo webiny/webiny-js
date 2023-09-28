@@ -22,7 +22,8 @@ export const ApiCloudfront = createAppModule({
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
                         cookies: {
-                            forward: "none"
+                            forward: "whitelist",
+                            whitelistedNames: ["wby-identity"]
                         },
                         headers: ["Accept", "Accept-Language"],
                         queryString: true
@@ -71,7 +72,8 @@ export const ApiCloudfront = createAppModule({
                         cachedMethods: ["GET", "HEAD", "OPTIONS"],
                         forwardedValues: {
                             cookies: {
-                                forward: "none"
+                                forward: "whitelist",
+                                whitelistedNames: ["wby-identity"]
                             },
                             headers: ["Accept", "Accept-Language"],
                             queryString: true

@@ -38,6 +38,7 @@ import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
+import { createPrivateFiles, createPrivateFilesFastifyPlugin } from "~/plugins/privateFiles";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = new DocumentClient({
@@ -47,6 +48,7 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler({
     plugins: [
+        createPrivateFilesFastifyPlugin(),
         createBenchmarkEnablePlugin(),
         createWcpContext(),
         createWcpGraphQL(),
@@ -119,7 +121,8 @@ export const handler = createHandler({
                     name: "number-input"
                 }
             });
-        })
+        }),
+        createPrivateFiles()
     ],
     http: { debug }
 });
