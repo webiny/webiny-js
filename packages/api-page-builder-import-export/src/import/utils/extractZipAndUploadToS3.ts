@@ -1,7 +1,7 @@
 import yauzl from "yauzl";
 import { pipeline } from "stream";
 import { promisify } from "util";
-import S3 from "aws-sdk/clients/s3";
+import { CompleteMultipartUploadOutput } from "@webiny/aws-sdk/client-s3";
 import { s3Stream } from "~/export/s3Stream";
 import { getFileNameWithoutExt } from "./getFileNameWithoutExt";
 import { ImportData } from "~/types";
@@ -16,7 +16,7 @@ export function extractZipAndUploadToS3(
 ): Promise<ImportData> {
     return new Promise((resolve, reject) => {
         const filePaths = [];
-        const fileUploadPromises: Promise<S3.ManagedUpload.SendData>[] = [];
+        const fileUploadPromises: Promise<CompleteMultipartUploadOutput>[] = [];
         const uniqueKey = getFileNameWithoutExt(dataZipFilePath);
         let dataMap: ImportData = {
             key: uniqueKey,

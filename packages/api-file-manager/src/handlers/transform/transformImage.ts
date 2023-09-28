@@ -3,7 +3,7 @@
  */
 // @ts-ignore
 import sharp from "sharp";
-import { Body } from "aws-sdk/clients/s3";
+import { PutObjectCommandInput } from "@webiny/aws-sdk/client-s3";
 
 interface Transformation {
     width: string;
@@ -18,10 +18,10 @@ export interface TransformOptions {
  * Check "sanitizeImageTransformations.js" to allow additional image processing transformations.
  */
 export const transformImage = async (
-    buffer: Body,
+    buffer: PutObjectCommandInput["Body"],
     transformations: Transformation,
     options: TransformOptions = {}
-): Promise<Body> => {
+): Promise<PutObjectCommandInput["Body"]> => {
     const { width } = transformations;
     return await sharp(buffer, { animated: options.animated ?? false })
         .resize({ width })

@@ -3,7 +3,7 @@ import { getObjectParams } from "../../utils";
 import * as newUtils from "../utils";
 import * as legacyUtils from "../legacyUtils";
 import { ClientContext } from "@webiny/handler-client/types";
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 
 const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION as string;
 
@@ -63,7 +63,7 @@ export default {
             objectParams = getObjectParams(utils.getImageKey({ key: file.name, transformations }));
             try {
                 return {
-                    object: await s3.getObject(objectParams).promise(),
+                    object: await s3.getObject(objectParams),
                     params: objectParams
                 };
             } catch (e) {
@@ -78,7 +78,7 @@ export default {
                 }
 
                 return {
-                    object: await s3.getObject(objectParams).promise(),
+                    object: await s3.getObject(objectParams),
                     params: objectParams
                 };
             }
@@ -87,7 +87,7 @@ export default {
         objectParams = getObjectParams(utils.getImageKey({ key: file.name }));
         try {
             return {
-                object: await s3.getObject(objectParams).promise(),
+                object: await s3.getObject(objectParams),
                 params: objectParams
             };
         } catch (e) {
@@ -101,7 +101,7 @@ export default {
             }
 
             return {
-                object: await s3.getObject(objectParams).promise(),
+                object: await s3.getObject(objectParams),
                 params: objectParams
             };
         }

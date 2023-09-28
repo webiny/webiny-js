@@ -1,4 +1,4 @@
-const STS = require("aws-sdk/clients/sts");
+const { STS } = require("@webiny/aws-sdk/client-sts");
 const { green } = require("chalk");
 
 module.exports = {

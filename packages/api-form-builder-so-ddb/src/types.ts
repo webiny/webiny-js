@@ -5,7 +5,7 @@ import {
     FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
     FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations
 } from "@webiny/api-form-builder/types";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
 import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
 import {
@@ -26,7 +26,7 @@ export enum ENTITIES {
 }
 
 export interface FormBuilderStorageOperationsFactoryParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     table?: string;
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin;

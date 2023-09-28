@@ -1,18 +1,18 @@
-import DocumentClient from "aws-sdk/clients/dynamodb";
+import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
 import { scanOptions as DynamoDBToolboxScanOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { Entity } from "dynamodb-toolbox";
 
 export interface ScanParams {
     entity: Entity<any>;
     options: DynamoDBToolboxScanOptions;
-    params?: Partial<DocumentClient.ScanInput>;
+    params?: Partial<ScanInput>;
 }
 
 export interface ScanResponse<T> {
     items: T[];
     count: number;
     scannedCount: number;
-    lastEvaluatedKey?: DocumentClient.Key;
+    lastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
     next?: () => Promise<ScanResponse<T>>;
     requestId: string;
     error: any;
@@ -22,7 +22,7 @@ interface DdbScanResult<T> {
     Items: T[];
     Count: number;
     ScannedCount: number;
-    LastEvaluatedKey?: DocumentClient.Key;
+    LastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
     next?: () => Promise<DdbScanResult<T>>;
     error?: any;
     $response?: {

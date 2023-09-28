@@ -1,8 +1,8 @@
-/**
- * Not used anymore.
- */
-// @ts-ignore
-import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import {
+    CognitoIdentityProvider,
+    UserType,
+    ListUsersResponse
+} from "@webiny/aws-sdk/client-cognito-identity-provider";
 import { ApiKey, Group } from "@webiny/api-security/types";
 import {
     createApiKeyEntity,
@@ -23,17 +23,15 @@ interface OldLink {
 
 const userPoolId = process.env.COGNITO_USER_POOL_ID as string;
 
-async function listAllCognitoUsers(cognito: CognitoIdentityServiceProvider) {
-    const users: CognitoIdentityServiceProvider.UserType[] = [];
+async function listAllCognitoUsers(cognito: CognitoIdentityProvider) {
+    const users: UserType[] = [];
     let paginationToken: string | undefined = undefined;
     while (true) {
-        const { Users, PaginationToken } = (await cognito
-            .listUsers({
-                UserPoolId: userPoolId,
-                AttributesToGet: ["sub", "email"],
-                PaginationToken: paginationToken
-            })
-            .promise()) as CognitoIdentityServiceProvider.Types.ListUsersResponse;
+        const { Users, PaginationToken } = (await cognito.listUsers({
+            UserPoolId: userPoolId,
+            AttributesToGet: ["sub", "email"],
+            PaginationToken: paginationToken
+        })) as ListUsersResponse;
 
         if (!Users) {
             continue;
@@ -165,7 +163,7 @@ export const migration = (context: AdminUsersContext) => {
         const oldUsers = await batchReadAll<AdminUser>({ table, items: oldUserItems });
 
         // 3. Fetch data from Cognito, and use user's `sub` as the new user `id`
-        const cognito = new CognitoIdentityServiceProvider({ region: process.env.COGNITO_REGION });
+        const cognito = new CognitoIdentityProvider({ region: process.env.COGNITO_REGION });
 
         const cognitoUsers = await listAllCognitoUsers(cognito);
 

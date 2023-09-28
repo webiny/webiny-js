@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/db": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-db": "0.0.0",

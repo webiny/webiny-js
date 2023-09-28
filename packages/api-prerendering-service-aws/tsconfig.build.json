@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-prerendering-service/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },

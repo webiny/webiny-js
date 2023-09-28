@@ -34,7 +34,6 @@ module.exports = {
             "util",
             "events",
             "crypto",
-            "aws-sdk",
             "url",
             "worker_threads",
             "~tests",
