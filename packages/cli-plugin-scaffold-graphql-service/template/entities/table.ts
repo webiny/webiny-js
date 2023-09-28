@@ -1,7 +1,9 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 
 // https://github.com/jeremydaly/dynamodb-toolbox
 import { Table } from "dynamodb-toolbox";
+
+const DocumentClient = getDocumentClient();
 
 /**
  * Everything starts with a table. Note that the `name` property is passed via an environment
@@ -15,5 +17,5 @@ export default new Table({
     partitionKey: "PK",
     sortKey: "SK",
     entityField: "TYPE",
-    DocumentClient: new DocumentClient()
+    DocumentClient
 });

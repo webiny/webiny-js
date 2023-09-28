@@ -10,7 +10,7 @@ import {
     RemoveTargetsCommand,
     PutTargetsCommand,
     PutRuleCommand
-} from "@aws-sdk/client-cloudwatch-events";
+} from "@webiny/aws-sdk/client-cloudwatch";
 import { ClientContext } from "@webiny/handler-client/types";
 import { getApwSettings } from "~/scheduler/handlers/utils";
 

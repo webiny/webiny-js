@@ -2,14 +2,14 @@
  * Remove this when no apps are using our internal db drivers anymore
  */
 // @ts-nocheck
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import BatchProcess from "./BatchProcess";
 import QueryGenerator from "./QueryGenerator";
 import { DbDriver, Args, Result, ArgsBatch } from "@webiny/db";
 import { QueryKeys } from "~/types";
 
 type ConstructorArgs = {
-    documentClient?: DocumentClient;
+    documentClient?: DynamoDBClient;
 };
 
 const LOG_KEYS: QueryKeys = [
@@ -43,7 +43,7 @@ interface CreateLogParams {
 
 class DynamoDbDriver implements DbDriver {
     batchProcesses: Record<string, BatchProcess>;
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     constructor({ documentClient }: ConstructorArgs = {}) {
         this.batchProcesses = {};
         this.documentClient = documentClient || new DocumentClient();

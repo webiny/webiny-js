@@ -42,7 +42,7 @@ import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "./elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
@@ -834,8 +834,8 @@ export const createEntriesStorageOperations = (
         /**
          * Then we need to construct the queries for all the revisions and entries.
          */
-        const items: Record<string, DocumentClient.WriteRequest>[] = [];
-        const esItems: Record<string, DocumentClient.WriteRequest>[] = [];
+        const items: Record<string, WriteRequest>[] = [];
+        const esItems: Record<string, WriteRequest>[] = [];
         for (const id of entries) {
             /**
              * Latest item.

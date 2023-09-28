@@ -10,5 +10,10 @@
   "publishConfig": {
     "access": "public",
     "directory": "."
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   }
 }

@@ -3,7 +3,7 @@ import {
     EntityAttributeConfig,
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
@@ -16,7 +16,7 @@ export interface PartitionKeyOptions {
 }
 
 export interface CreateStorageOperationsParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     table?: string;
     attributes?: Attributes;
 }

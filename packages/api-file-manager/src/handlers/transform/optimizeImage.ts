@@ -3,9 +3,12 @@
  */
 // @ts-ignore
 import sharp from "sharp";
-import { Body } from "aws-sdk/clients/s3";
+import { PutObjectCommandInput } from "@webiny/aws-sdk/client-s3";
 
-export default async (buffer: Body, type: string): Promise<Body> => {
+export default async (
+    buffer: PutObjectCommandInput["Body"],
+    type: string
+): Promise<PutObjectCommandInput["Body"]> => {
     switch (type) {
         case "image/png": {
             return await sharp(buffer)

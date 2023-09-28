@@ -1,5 +1,5 @@
 import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { AdminSettings, AdminSettingsVariant } from "~/types";
 
 export interface TableModifier {
@@ -7,7 +7,7 @@ export interface TableModifier {
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     table?: TableModifier;
 }
 

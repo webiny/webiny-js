@@ -6,7 +6,7 @@ import {
     PageTemplateStorageOperations as BasePageTemplateStorageOperations
 } from "@webiny/api-page-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
@@ -55,7 +55,7 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     elasticsearch: Client;
     table?: TableModifier;
     esTable?: TableModifier;

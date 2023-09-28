@@ -1,7 +1,7 @@
 import fs from "fs";
 import fetch from "node-fetch";
 import FormData from "form-data";
-import S3Client from "aws-sdk/clients/s3";
+import { S3Client, PresignedPostOptions, HeadObjectCommand } from "@webiny/aws-sdk/client-s3";
 import mime from "mime";
 import chunk from "lodash/chunk";
 import { relative } from "path";
@@ -24,14 +24,15 @@ function getFileChecksum(file: string): Promise<string> {
     });
 }
 
-import { BucketName, CacheControl } from "aws-sdk/clients/s3";
-
 export interface Paths {
     full: string;
     relative: string;
 }
 
-export type CacheControls = Array<{ pattern: RegExp; value: CacheControl }>;
+export type CacheControls = Array<{
+    pattern: RegExp;
+    value: string;
+}>;
 
 export interface UploadFolderToS3Params {
     // Path to the folder that needs to be uploaded.
@@ -50,10 +51,10 @@ export interface UploadFolderToS3Params {
     onFileUploadSkip: (params: { paths: Paths }) => void;
 
     // Target bucket
-    bucket: BucketName;
+    bucket: PresignedPostOptions["Bucket"];
 
     // Cache control to apply to each uploaded file
-    cacheControl?: CacheControl | CacheControls;
+    cacheControl?: string | CacheControls;
 }
 
 export const uploadFolderToS3 = async ({
@@ -104,12 +105,12 @@ export const uploadFolderToS3 = async ({
 
                         let skipUpload = false;
                         try {
-                            const existingObject = await s3
-                                .headObject({
+                            const existingObject = await s3.send(
+                                new HeadObjectCommand({
                                     Bucket: bucket,
                                     Key: key
                                 })
-                                .promise();
+                            );
 
                             if (existingObject.Metadata?.checksum === checksum) {
                                 skipUpload = true;
