@@ -19,11 +19,13 @@ export interface Group {
 
 export interface Filter extends AcoBaseFields {
     name: string;
+    model: string;
     operation: Operation;
     groups: Group[];
 }
 
 export interface ListFiltersWhere {
+    model: string;
     createdBy: User["id"];
 }
 
@@ -34,10 +36,13 @@ export interface ListFiltersParams {
     after?: string | null;
 }
 
-export type CreateFilterParams = Pick<Filter, "name">;
+export type CreateFilterParams = Pick<Filter, "name" | "model" | "operation" | "groups">;
 
 export interface UpdateFilterParams {
     name?: string;
+    model?: string;
+    operation?: Operation;
+    groups?: Group[];
 }
 
 export interface DeleteFilterParams {

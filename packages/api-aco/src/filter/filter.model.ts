@@ -17,6 +17,19 @@ const name = () =>
         ]
     });
 
+const model = () =>
+    createModelField({
+        label: "Model",
+        fieldId: "model",
+        type: "text",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
 const operation = () =>
     createModelField({
         label: "Operation",
@@ -140,9 +153,10 @@ export const createFilterModelDefinition = (): FilterModelDefinition => {
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",
-        layout: [["name"], ["operation"], ["groups"]],
+        layout: [["name"], ["model"], ["operation"], ["groups"]],
         fields: [
             name(),
+            model(),
             operation(),
             groups([operation(), filters([filterField(), filterCondition(), filterValue()])])
         ],

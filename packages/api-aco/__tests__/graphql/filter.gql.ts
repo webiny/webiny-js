@@ -2,6 +2,7 @@ const DATA_FIELD = /* GraphQL */ `
     {
         id
         name
+        model
         operation
         groups {
             operation

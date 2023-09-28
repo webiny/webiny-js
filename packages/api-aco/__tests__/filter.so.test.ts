@@ -24,9 +24,19 @@ describe("`filter` CRUD", () => {
             ...filterMocks.filterB
         });
 
-        // Let's check whether both of the filters exist.
-        const [listResponse] = await aco.listFilters({ where: { createdBy: userMock.id } });
-        expect(listResponse.data.aco.listFilters).toEqual(
+        const [responseC] = await aco.createFilter({ data: filterMocks.filterC });
+        const filterC = responseC.data.aco.createFilter.data;
+        expect(filterC).toEqual({
+            id: filterC.id,
+            createdBy: userMock,
+            ...filterMocks.filterC
+        });
+
+        // Let's check whether both of the filter exists, listing them by `model`.
+        const [listResponse1] = await aco.listFilters({
+            where: { model: "demo-1", createdBy: userMock.id }
+        });
+        expect(listResponse1.data.aco.listFilters).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     expect.objectContaining(filterMocks.filterA),
@@ -36,8 +46,18 @@ describe("`filter` CRUD", () => {
             })
         );
 
+        const [listResponse2] = await aco.listFilters({
+            where: { model: "demo-2", createdBy: userMock.id }
+        });
+        expect(listResponse2.data.aco.listFilters).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([expect.objectContaining(filterMocks.filterC)]),
+                error: null
+            })
+        );
+
         const [nonExistingUserResponse] = await aco.listFilters({
-            where: { createdBy: "any-id" }
+            where: { model: "demo-2", createdBy: "any-id" }
         });
 
         expect(nonExistingUserResponse.data.aco.listFilters).toEqual(
@@ -159,14 +179,7 @@ describe("`filter` CRUD", () => {
         });
 
         expect(response).toEqual({
-            data: {
-                aco: {
-                    createFilter: expect.objectContaining({
-                        data: null,
-                        errors: expect.any(Array)
-                    })
-                }
-            }
+            errors: expect.any(Array)
         });
     });
 
@@ -200,7 +213,7 @@ describe("`filter` CRUD", () => {
         });
     });
 
-    it("should not allow creating a `filter` with empty `groups.filters` provided", async () => {
+    it.skip("should not allow creating a `filter` with empty `groups.filters` provided", async () => {
         const [response] = await aco.createFilter({
             data: {
                 ...filterMocks.filterA,

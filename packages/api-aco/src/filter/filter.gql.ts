@@ -38,6 +38,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
         type Filter {
             id: ID!
             name: String!
+            model: String!
             operation: OperationEnum!
             groups: [GroupType]!
             savedOn: DateTime
@@ -47,17 +48,20 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         input FilterCreateInput {
             name: String!
+            model: String!
             operation: OperationEnum!
             groups: [GroupInput]!
         }
 
         input FilterUpdateInput {
             name: String
+            model: String
             operation: OperationEnum
             groups: [GroupInput]
         }
 
         input FiltersListWhereInput {
+            model: String
             createdBy: ID
         }
 
