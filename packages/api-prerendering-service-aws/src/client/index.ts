@@ -1,4 +1,8 @@
-import EventBridgeClient, { PutEventsRequestEntry } from "aws-sdk/clients/eventbridge";
+import {
+    EventBridgeClient,
+    PutEventsRequestEntry,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge";
 import WebinyError from "@webiny/error";
 import { ClientContext } from "@webiny/handler-client/types";
 import { ContextPlugin } from "@webiny/api";
@@ -75,11 +79,11 @@ export default (configuration: PrerenderingServiceClientArgs) => {
         }
 
         async function sendEvents(events: PutEventsRequestEntry[]) {
-            const result = await client
-                .putEvents({
+            const result = await client.send(
+                new PutEventsCommand({
                     Entries: events
                 })
-                .promise();
+            );
 
             if (result.FailedEntryCount) {
                 throw new WebinyError({

@@ -1,9 +1,9 @@
 import { Table } from "dynamodb-toolbox";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface Params {
     table?: string;
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
 }
 
 export const createTable = ({ table, documentClient }: Params) => {

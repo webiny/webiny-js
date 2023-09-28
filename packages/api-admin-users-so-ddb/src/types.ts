@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
 import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
 import {
@@ -18,7 +18,7 @@ export enum ENTITIES {
 
 export interface CreateAdminUsersStorageOperations {
     (params: {
-        documentClient: DocumentClient;
+        documentClient: DynamoDBClient;
         table?: string;
         attributes?: Record<ENTITIES, Attributes>;
     }): AdminUsersStorageOperations;

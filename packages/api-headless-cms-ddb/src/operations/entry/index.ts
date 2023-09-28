@@ -34,7 +34,7 @@ import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
@@ -569,7 +569,7 @@ export const createEntriesStorageOperations = (
         /**
          * Then we need to construct the queries for all the revisions and entries.
          */
-        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        const items: Record<string, WriteRequest>[] = [];
         for (const id of entries) {
             /**
              * Latest item.

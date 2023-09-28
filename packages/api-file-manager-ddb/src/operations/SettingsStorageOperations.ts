@@ -1,5 +1,5 @@
 import { Entity } from "dynamodb-toolbox";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import {
     FileManagerSettings,
     FileManagerSettingsStorageOperations,
@@ -12,7 +12,7 @@ import WebinyError from "@webiny/error";
 import { get, createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 interface SettingsStorageOperationsConfig {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
 }
 
 const SORT_KEY = "A";

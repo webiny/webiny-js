@@ -1,11 +1,11 @@
 import { TableModifier } from "~/types";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table } from "dynamodb-toolbox";
 import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
 interface Params {
     table?: TableModifier;
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
 }
 export const createTable = ({ table, documentClient }: Params): Table => {
     const tableConfig: TableConstructor = {

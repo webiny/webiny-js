@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
 import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 import {
@@ -20,7 +20,7 @@ export enum ENTITIES {
 }
 
 export interface PrerenderingServiceFactoryParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     table?: TableModifier;
     attributes?: Record<ENTITIES, Attributes>;
 }
