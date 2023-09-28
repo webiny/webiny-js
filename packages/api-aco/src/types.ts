@@ -45,6 +45,7 @@ export interface AcoBaseFields {
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
+    folderLevelPermissions: FolderLevelPermissions;
     apps: IAcoApps;
     registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
     getApp: (name: string) => IAcoApp;

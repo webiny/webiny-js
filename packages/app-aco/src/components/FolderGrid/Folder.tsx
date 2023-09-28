@@ -10,9 +10,7 @@ import { ActionDelete } from "./ActionDelete";
 import { ActionManagePermissions } from "./ActionManagePermissions";
 
 import { Actions, FolderContainer, FolderContent, Text } from "./styled";
-
 import { FolderItem } from "~/types";
-import { useSecurity } from "@webiny/app-security";
 
 export interface FolderProps {
     folder: FolderItem;
@@ -31,38 +29,12 @@ export const Folder: React.VFC<FolderProps> = ({
 }) => {
     const { id, title } = folder;
 
-    const { identity } = useSecurity();
-
-    console.log(folder)
-    // If we have at least one permission that is not inherited, we mark the folder as having permissions.
-    const folderHasPermissions = useMemo(() => {
-        return folder?.permissions?.some(p => !p.inheritedFrom);
-    }, [folder?.permissions]);
-
-    // If we have at least one permission that is not inherited, we mark the folder as having permissions.
-    const canManagePermissions = useMemo(() => {
-        const userAccessLevel = folder?.permissions.find(
-            p => p.target === "user:" + identity!.id
-        )?.level;
-
-        const teamAccessLevel = folder?.permissions.find(
-            p => p.target === "team:todo" // TODO: replace with actual team ID
-        )?.level;
-
-        return [userAccessLevel, teamAccessLevel].filter(Boolean).includes("owner");
-    }, [folderHasPermissions]);
+    const { hasNonInheritedPermissions, canManagePermissions } = folder;
 
     let icon = <FolderIcon />;
-    if (folderHasPermissions && canManagePermissions) {
+    if (hasNonInheritedPermissions && canManagePermissions) {
         icon = <FolderSharedIcon />;
     }
-
-    console.log(
-        "folderHasPermissions",
-        folderHasPermissions,
-        "canManagePermissions",
-        canManagePermissions
-    );
 
     return (
         <FolderContainer>

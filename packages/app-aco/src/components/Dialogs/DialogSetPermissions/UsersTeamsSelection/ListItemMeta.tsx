@@ -101,7 +101,7 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
         }
 
         return handle;
-    }, [disabledReason]);
+    }, [disabledReason, currentLevel.label]);
 
     const selectLevel = useCallback(e => {
         const targetIndex = e.target.index!;

@@ -85,6 +85,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     context.aco = {
         folder: createFolderCrudMethods(params),
         search: createSearchRecordCrudMethods(params),
+        folderLevelPermissions,
         apps,
         getApp: (name: string) => apps.get(name),
         listApps: () => apps.list(),

@@ -3,26 +3,13 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 
 const FOLDER_TYPE = "test-folders";
 
-const createIdentityA = (): SecurityIdentity => {
-    return {
-        id: "1",
-        type: "admin",
-        displayName: "A"
-    };
-};
-
-const createIdentityB = (): SecurityIdentity => {
-    return {
-        id: "1",
-        type: "admin",
-        displayName: "A"
-    };
-};
+const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
+const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 
 describe("Folder Level Permissions", () => {
-    const { aco: acoIdentityA } = useGraphQlHandler({ identity: createIdentityA() });
+    const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
     const { aco: acoIdentityB } = useGraphQlHandler({
-        identity: createIdentityB(),
+        identity: identityB,
         permissions: [{ name: "cms.*" }]
     });
 
@@ -59,15 +46,17 @@ describe("Folder Level Permissions", () => {
         const createdFolders = [];
         for (let i = 1; i <= 4; i++) {
             createdFolders.push(
-                await acoIdentityA.createFolder({
-                    data: {
-                        title: `Folder ${i}`,
-                        slug: `folder-${i}`,
-                        type: FOLDER_TYPE
-                    }
-                }).then(([response]) => {
-                    return response.data.aco.createFolder.data;
-                })
+                await acoIdentityA
+                    .createFolder({
+                        data: {
+                            title: `Folder ${i}`,
+                            slug: `folder-${i}`,
+                            type: FOLDER_TYPE
+                        }
+                    })
+                    .then(([response]) => {
+                        return response.data.aco.createFolder.data;
+                    })
             );
         }
 

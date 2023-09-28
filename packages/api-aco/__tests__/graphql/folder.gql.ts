@@ -10,6 +10,8 @@ const DATA_FIELD = /* GraphQL */ `
             level
             inheritedFrom
         }
+        hasNonInheritedPermissions
+        canManagePermissions
         createdBy {
             id
             displayName

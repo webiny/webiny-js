@@ -1,4 +1,5 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 const FOLDER_TYPE = "test-folders";
 
@@ -420,6 +421,93 @@ describe("Folder Level Permissions", () => {
                         target: "team:t1"
                     }
                 ]
+            }
+        ]);
+    });
+
+    test("hasNonInheritedPermissions and canManagePermissions GraphQL field must show correct values", async () => {
+        const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
+        const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
+
+        const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
+        const { aco: acoIdentityB } = useGraphQlHandler({ identity: identityB, permissions: [] });
+
+        const folderA = await aco
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => response.data.aco.createFolder.data);
+
+        const folderB = await aco
+            .createFolder({
+                data: {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    type: FOLDER_TYPE,
+                    parentId: folderA.id
+                }
+            })
+            .then(([response]) => response.data.aco.createFolder.data);
+
+        // 1. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show true
+        //    for both folders because the user has full-access security role attached.
+        await expect(
+            acoIdentityA.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
+                return result.data.aco.listFolders.data;
+            })
+        ).resolves.toMatchObject([
+            {
+                id: folderB.id,
+                parentId: folderA.id,
+                permissions: [
+                    {
+                        inheritedFrom: `parent:${folderA.id}`,
+                        level: "owner",
+                        target: `user:${identityA.id}`
+                    }
+                ],
+                hasNonInheritedPermissions: false,
+                canManagePermissions: true
+            },
+            {
+                id: folderA.id,
+                parentId: null,
+                permissions: [
+                    {
+                        inheritedFrom: "role:full-access",
+                        level: "owner",
+                        target: `user:${identityA.id}`
+                    }
+                ],
+                hasNonInheritedPermissions: false,
+                canManagePermissions: true
+            }
+        ]);
+
+        // 2. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show false
+        //    for both folders because the user doesn't have full-access security role attached.
+        await expect(
+            acoIdentityB.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
+                return result.data.aco.listFolders.data;
+            })
+        ).resolves.toMatchObject([
+            {
+                id: folderB.id,
+                parentId: folderA.id,
+                permissions: [],
+                hasNonInheritedPermissions: false,
+                canManagePermissions: false
+            },
+            {
+                id: folderA.id,
+                parentId: null,
+                permissions: [],
+                hasNonInheritedPermissions: false,
+                canManagePermissions: false
             }
         ]);
     });

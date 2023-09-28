@@ -4,7 +4,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { checkPermissions } from "~/utils/checkPermissions";
 import { resolve } from "~/utils/resolve";
 
-import { AcoContext } from "~/types";
+import { AcoContext, Folder } from "~/types";
 
 export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
@@ -19,12 +19,19 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             level: String!
             inheritedFrom: ID
         }
-        
+
         type Folder {
             id: ID!
             title: String!
             slug: String!
             permissions: [FolderPermission]
+
+            # Tells us if the current user can manage permissions.
+            canManagePermissions: Boolean
+
+            # Tells us if the folder contains non-inherited permissions.
+            hasNonInheritedPermissions: Boolean
+
             type: String!
             parentId: ID
             savedOn: DateTime
@@ -80,6 +87,16 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
     `,
     resolvers: {
+        Folder: {
+            hasNonInheritedPermissions: (folder: Folder, _, context) => {
+                return context.aco.folderLevelPermissions.permissionsIncludeNonInheritedPermissions(
+                    folder.permissions
+                );
+            },
+            canManagePermissions: (folder, _, context) => {
+                return context.aco.folderLevelPermissions.canAccessFolder({ folder, rwd: "w" });
+            }
+        },
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
                 return resolve(() => {

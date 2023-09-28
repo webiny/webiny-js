@@ -1,6 +1,11 @@
 import React, { forwardRef, useCallback, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate, FolderDialogManagePermissions, useNavigateFolder } from "@webiny/app-aco";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions,
+    useNavigateFolder
+} from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -25,6 +30,7 @@ import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
+import { useSecurity } from "@webiny/app-security";
 
 interface Props {
     records: RecordEntry[];
@@ -35,6 +41,7 @@ interface Props {
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
+    const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folders, records, loading, sorting, onSortingChange } = props;
     const { model } = useModel();
@@ -75,6 +82,30 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         },
         [canEdit, model.modelId, currentFolderId]
     );
+
+    //
+    // // If we have at least one permission that is not inherited, we mark the folder as having permissions.
+    // const folderHasPermissions = useMemo(() => {
+    //     return folder?.permissions?.some(p => !p.inheritedFrom);
+    // }, [folder?.permissions]);
+    //
+    // // If we have at least one permission that is not inherited, we mark the folder as having permissions.
+    // const canManagePermissions = useMemo(() => {
+    //     const userAccessLevel = folder?.permissions.find(
+    //         p => p.target === "user:" + identity!.id
+    //     )?.level;
+    //
+    //     const teamAccessLevel = folder?.permissions.find(
+    //         p => p.target === "team:todo" // TODO: replace with actual team ID
+    //     )?.level;
+    //
+    //     return [userAccessLevel, teamAccessLevel].filter(Boolean).includes("owner");
+    // }, [folderHasPermissions]);
+    //
+    // let icon = <FolderIcon />;
+    // if (folderHasPermissions && canManagePermissions) {
+    //     icon = <FolderSharedIcon />;
+    // }
 
     const columns: Columns<Entry> = useMemo(() => {
         return {
@@ -147,12 +178,14 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                                     setSelectedFolder(record.original);
                                 }}
                             />
-                            <FolderActionManagePermissions
-                                onClick={() => {
-                                    setManagePermissionsDialogOpen(true);
-                                    setSelectedFolder(record.original);
-                                }}
-                            />
+                            {record.original.canManagePermissions && (
+                                <FolderActionManagePermissions
+                                    onClick={() => {
+                                        setManagePermissionsDialogOpen(true);
+                                        setSelectedFolder(record.original);
+                                    }}
+                                />
+                            )}
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);

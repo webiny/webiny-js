@@ -18,6 +18,8 @@ const DATA_FIELD = /* GraphQL */ `
             level
             inheritedFrom
         }
+        hasNonInheritedPermissions
+        canManagePermissions
         parentId
         type
         savedOn

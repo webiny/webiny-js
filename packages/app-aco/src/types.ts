@@ -17,6 +17,8 @@ export interface FolderItem {
     title: string;
     slug: string;
     permissions: FolderItemPermission[];
+    hasNonInheritedPermissions: boolean;
+    canManagePermissions: boolean;
     type: string;
     parentId: string | null;
     createdOn: string;
