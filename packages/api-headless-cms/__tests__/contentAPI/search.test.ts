@@ -345,7 +345,9 @@ describe("search", () => {
             banana: "A Not So Tasty Fruit: Banana w/ Yellow Dots",
             orange: "Awesome Fruit: Orange w/ Leaves",
             grape: "Wine - An Autumn Fruit: Grape w/ Seeds?",
-            tangerine: "An Autumn Fruit: Tangerine w/ Seeds?"
+            tangerine: "An Autumn Fruit: Tangerine w/ Seeds?",
+            cleaning: "Clean Building Day | The Ultimate Cleaning Trick Tips!",
+            car: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
         };
         const results: any[] = [];
         for (const title of Object.values(categories)) {
@@ -443,6 +445,52 @@ describe("search", () => {
                     ],
                     meta: {
                         totalCount: 2,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [cleaningListResponse] = await categoryManager.listCategories({
+            where: {
+                title_contains: "Clean Building Day | The Ultimate Cleaning Trick Tips!"
+            }
+        });
+        expect(cleaningListResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: categories.cleaning
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [carListResponse] = await categoryManager.listCategories({
+            where: {
+                title_contains: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
+            }
+        });
+        expect(carListResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: categories.car
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
                         hasMoreItems: false,
                         cursor: null
                     },
