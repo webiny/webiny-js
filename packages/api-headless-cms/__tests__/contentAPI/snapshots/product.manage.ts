@@ -140,7 +140,7 @@ export default /* GraphQL */ `
         name: String
         price: Number
         image: String
-        category: RefFieldInput!
+        category: RefFieldInput
         categories: [RefFieldInput]
         longText: [String]
     }
@@ -149,27 +149,27 @@ export default /* GraphQL */ `
         name: String
         price: Number
         images: [String]
-        category: RefFieldInput!
+        category: RefFieldInput
         options: [ProductApiSingular_Variant_OptionsInput!]
     }
 
     input ProductApiSingular_FieldsObjectInput {
-        text: String!
+        text: String
     }
 
 
     input ProductApiSingularInput {
         id: ID
         wbyAco_location: WbyAcoLocationInput
-        title: String!
-        category: RefFieldInput!
-        price: Number!
+        title: String
+        category: RefFieldInput
+        price: Number
         inStock: Boolean
         itemsInStock: Number
         availableOn: Date
-        color: String!
+        color: String
         availableSizes: [String!]
-        image: String!
+        image: String
         richText: JSON
         variant: ProductApiSingular_VariantInput
         fieldsObject: ProductApiSingular_FieldsObjectInput
@@ -360,11 +360,11 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createProductApiSingular(data: ProductApiSingularInput!): ProductApiSingularResponse
+        createProductApiSingular(data: ProductApiSingularInput!, options: CreateCmsEntryOptionsInput): ProductApiSingularResponse
 
-        createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput): ProductApiSingularResponse
+        createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput, options: CreateRevisionCmsEntryOptionsInput): ProductApiSingularResponse
 
-        updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!): ProductApiSingularResponse
+        updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!, options: UpdateCmsEntryOptionsInput): ProductApiSingularResponse
         
         moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
 
