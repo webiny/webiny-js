@@ -13,7 +13,6 @@ import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
-import "./pageBuilder/pbCheckPublishedPage";
 import "./headlessCms/cmsCreateContentModel";
 import "./headlessCms/cmsUpdateContentModel";
 import "./headlessCms/cmsDeleteContentModel";

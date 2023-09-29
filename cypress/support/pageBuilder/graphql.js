@@ -60,6 +60,7 @@ export const PUBLISH_PAGE = gql`
             publishPage(id: $id) {
                 data {
                     id
+                    url
                 }
             }
         }
