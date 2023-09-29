@@ -31,7 +31,7 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
 }) => {
     const { identity } = useSecurity();
     const userAccessLevel = folder.permissions.find(
-        p => p.target === "user:" + identity!.id
+        p => p.target === "identity:" + identity!.id
     )?.level;
 
     const teamAccessLevel = folder.permissions.find(

@@ -30,7 +30,7 @@ export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
 }) => {
     const selection = permissions
         .map(permission => {
-            const user = usersList.find(u => u.id === permission.target.replace("user:", ""));
+            const user = usersList.find(u => u.id === permission.target.replace("identity:", ""));
             if (user) {
                 return {
                     permission: permission,

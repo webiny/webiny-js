@@ -29,10 +29,18 @@ import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import {
-    createFileManagerContext,
-} from "@webiny/api-file-manager";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+
+import {
+    CREATE_FILE,
+    CREATE_FILES,
+    UPDATE_FILE,
+    DELETE_FILE,
+    GET_FILE,
+    LIST_FILES,
+    LIST_TAGS as LIST_FILE_TAGS
+} from "~tests/graphql/file";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -74,6 +82,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
             }),
+            createFileManagerGraphQL(),
             createHeadlessCmsGraphQL(),
             createAco(),
             plugins
@@ -149,12 +158,37 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const fm = {
+        // Files
+        async createFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILE(fields), variables } });
+        },
+        async updateFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
+        },
+        async createFiles(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILES(fields), variables } });
+        },
+        async deleteFile(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_FILE, variables } });
+        },
+        async getFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: GET_FILE(fields), variables } });
+        },
+        async listFiles(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: LIST_FILES(fields), variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_FILE_TAGS, variables } });
+        },
+    }
     return {
         params,
         handler,
         invoke,
         aco,
         search,
+        fm,
         async introspect() {
             return invoke({
                 body: {

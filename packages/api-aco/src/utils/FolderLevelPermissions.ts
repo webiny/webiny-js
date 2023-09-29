@@ -124,12 +124,12 @@ export class FolderLevelPermissions {
             const [firstPermission] = currentFolderPermissions.permissions;
 
             // If current identity is already listed as the first permission, we don't need to do anything.
-            const identityFirstPermission = firstPermission?.target === `user:${identity.id}`;
+            const identityFirstPermission = firstPermission?.target === `identity:${identity.id}`;
 
             if (!identityFirstPermission) {
                 const currentIdentityPermissionIndex =
                     currentFolderPermissions.permissions.findIndex(
-                        p => p.target === `user:${identity.id}`
+                        p => p.target === `identity:${identity.id}`
                     );
 
                 if (currentIdentityPermissionIndex >= 0) {
@@ -144,7 +144,7 @@ export class FolderLevelPermissions {
                     const hasFullAccess = permissions.some(p => p.name === "*");
                     if (hasFullAccess) {
                         currentFolderPermissions.permissions.unshift({
-                            target: `user:${identity.id}`,
+                            target: `identity:${identity.id}`,
                             level: "owner",
                             inheritedFrom: "role:full-access"
                         });
@@ -176,7 +176,7 @@ export class FolderLevelPermissions {
         const identity = this.getIdentity();
 
         const userAccessLevel = folderPermissions?.permissions.find(
-            p => p.target === "user:" + identity.id
+            p => p.target === "identity:" + identity.id
         )?.level;
 
         let teamAccessLevel: FolderAccessLevel | undefined;
@@ -218,7 +218,7 @@ export class FolderLevelPermissions {
         const identity = this.getIdentity();
 
         const userAccessLevel = folderPermissions?.permissions.find(
-            p => p.target === "user:" + identity.id
+            p => p.target === "identity:" + identity.id
         )?.level;
 
         let teamAccessLevel: FolderAccessLevel | undefined;

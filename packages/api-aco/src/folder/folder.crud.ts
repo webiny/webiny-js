@@ -127,7 +127,7 @@ export const createFolderCrudMethods = ({
             if (Array.isArray(data.permissions)) {
                 data.permissions.forEach(permission => {
                     const targetIsValid =
-                        permission.target.startsWith("user:") ||
+                        permission.target.startsWith("identity:") ||
                         permission.target.startsWith("team:");
                     if (!targetIsValid) {
                         throw new Error(`Permission target "${permission.target}" is not valid.`);

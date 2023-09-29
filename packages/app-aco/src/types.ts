@@ -7,7 +7,7 @@ import {
 export * from "~/graphql/records/types";
 
 export interface FolderItemPermission {
-    target: `user:${string}` | `team:${string}`;
+    target: `identity:${string}` | `team:${string}`;
     level: string;
     inheritedFrom?: string;
 }

@@ -46,7 +46,6 @@ export class FileManagerCrudDecorators {
 
             if (file && file.location.folderId !== "root") {
                 const folder = await context.aco.folder.get(file.location.folderId);
-                console.log('folder', folder)
                 const canAccessFileFolder = await folderLevelPermissions.canAccessFolderContent({
                     folder,
                     rwd: "r"
