@@ -27,7 +27,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "dynamodb-toolbox": "^0.3.5"
+    "dynamodb-toolbox": "^0.8.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

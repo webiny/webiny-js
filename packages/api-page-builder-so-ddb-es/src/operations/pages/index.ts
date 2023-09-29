@@ -181,7 +181,7 @@ export const createPageStorageOperations = (
             ...keys,
             SK: createLatestSortKey()
         };
-        const latestPageResult = await entity.get(latestKeys);
+        const latestPageResult = (await entity.get(latestKeys)) as any;
         const latestPage = cleanupItem(entity, latestPageResult ? latestPageResult.Item : null);
 
         const items = [
@@ -684,7 +684,7 @@ export const createPageStorageOperations = (
             SK: sortKey
         };
         try {
-            const result = await entity.get(keys);
+            const result = (await entity.get(keys)) as any;
             if (!result || !result.Item) {
                 return null;
             }

@@ -16,7 +16,7 @@ export class TenantLinkRecords_5_37_0_001_FileData
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly tenantLinkEntity: ReturnType<typeof createTenantLinkEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.tenantEntity = createTenantEntity(table);
         this.tenantLinkEntity = createTenantLinkEntity(table);
     }

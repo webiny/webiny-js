@@ -1,7 +1,11 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes, ENTITIES } from "~/types";
 
-const createEntity = (entityName: string, table: Table, attributes: Attributes): Entity<any> => {
+const createEntity = (
+    entityName: string,
+    table: Table<string, string, string>,
+    attributes: Attributes
+): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -26,7 +30,7 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes):
     });
 };
 
-export const createUserEntity = (table: Table) => {
+export const createUserEntity = (table: Table<string, string, string>) => {
     return createEntity(ENTITIES.USERS, table, {
         data: {
             type: "map"
@@ -34,7 +38,10 @@ export const createUserEntity = (table: Table) => {
     });
 };
 
-export const createSystemEntity = (table: Table, attributes: Attributes = {}) => {
+export const createSystemEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.SYSTEM, table, {
         tenant: {
             type: "string"

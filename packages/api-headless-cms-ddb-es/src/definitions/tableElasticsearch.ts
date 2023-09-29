@@ -10,8 +10,8 @@ export interface CreateElasticsearchTableParams {
 export const createElasticsearchTable = ({
     table,
     documentClient
-}: CreateElasticsearchTableParams): Table => {
-    const tableConfig: TableConstructor = {
+}: CreateElasticsearchTableParams): Table<string, string, string> => {
+    const tableConfig: TableConstructor<string, string, string> = {
         name: process.env.DB_TABLE_ELASTICSEARCH as string,
         partitionKey: "PK",
         sortKey: "SK",

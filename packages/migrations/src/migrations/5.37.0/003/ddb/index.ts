@@ -11,7 +11,7 @@ import { AcoRecords_5_37_0_003_AcoFolders } from "./AcoFolderMigration";
 export class AcoFolders_5_37_0_003 implements DataMigration {
     private readonly migrations: DataMigration[];
 
-    public constructor(table: Table) {
+    public constructor(table: Table<string, string, string>) {
         this.migrations = [new AcoRecords_5_37_0_003_AcoFolders(table)];
     }
 

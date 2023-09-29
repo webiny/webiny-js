@@ -1,7 +1,10 @@
 import { Table } from "dynamodb-toolbox";
 import chunk from "lodash/chunk";
 
-export const insertDynamoDbTestData = async (table: Table, data: Record<string, any>[]) => {
+export const insertDynamoDbTestData = async (
+    table: Table<string, string, string>,
+    data: Record<string, any>[]
+) => {
     const documentClient = table.DocumentClient;
 
     if (!documentClient) {

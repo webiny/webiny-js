@@ -6,7 +6,7 @@ interface Params {
     tableName?: string;
 }
 
-export const createElasticsearchTable = (params: Params): Table => {
+export const createElasticsearchTable = (params: Params): Table<string, string, string> => {
     const { tableName, documentClient } = params;
     return new Table({
         name: tableName || (process.env.DB_TABLE_ELASTICSEARCH as string),

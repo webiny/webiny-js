@@ -54,7 +54,7 @@ interface GsiKeys {
 
 export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     plugins: PluginsContainer;
 }
 

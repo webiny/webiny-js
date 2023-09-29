@@ -149,7 +149,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         async getSystemData({ tenant }) {
             const keys = createSystemKeys(tenant);
             try {
-                const result = await entities.system.get(keys);
+                const result = (await entities.system.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }

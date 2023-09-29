@@ -27,8 +27,8 @@ interface Response {
 
 interface Params {
     elasticsearchClient: ElasticsearchClient;
-    table: Table;
-    esTable: Table;
+    table: Table<string, string, string>;
+    esTable: Table<string, string, string>;
 }
 
 export const insertTestFolders = async (params: Params): Promise<Response> => {

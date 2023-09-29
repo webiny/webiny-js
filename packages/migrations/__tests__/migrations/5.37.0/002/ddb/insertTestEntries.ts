@@ -64,7 +64,10 @@ interface Options {
     maxItems?: number;
 }
 
-export const insertTestEntries = async (table: Table, options?: Options) => {
+export const insertTestEntries = async (
+    table: Table<string, string, string>,
+    options?: Options
+) => {
     const maxItems = options?.maxItems || defaultMaxItems;
     for (const tenant of tenants) {
         const items = [];

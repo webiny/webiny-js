@@ -39,10 +39,10 @@ export const getUserData = (user: any) => {
     return pick(user, Object.keys(attributes));
 };
 
-export const createLegacyUserEntity = (table: Table) => {
+export const createLegacyUserEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "AdminUsers.User", attributes);
 };
 
-export const createUserEntity = (table: Table) => {
+export const createUserEntity = (table: Table<string, string, string>) => {
     return createStandardEntity(table, "AdminUsers.User", attributes);
 };

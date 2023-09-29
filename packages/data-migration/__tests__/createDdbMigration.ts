@@ -7,9 +7,9 @@ export const createDdbMigration = (
     opts: { error?: boolean; skip?: boolean } = { error: false, skip: false }
 ): Constructor<DataMigration> => {
     class DynamoDbMigration implements DataMigration {
-        private readonly table: Table;
+        private readonly table: Table<string, string, string>;
 
-        constructor(table: Table) {
+        constructor(table: Table<string, string, string>) {
             this.table = table;
         }
 

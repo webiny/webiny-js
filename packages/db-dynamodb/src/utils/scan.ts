@@ -1,17 +1,17 @@
 import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
-import { scanOptions as DynamoDBToolboxScanOptions } from "dynamodb-toolbox/dist/classes/Table";
-import { Entity } from "dynamodb-toolbox";
+import { ScanOptions as DynamoDBToolboxScanOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { Entity, Table } from "dynamodb-toolbox";
 
 export interface ScanParams {
-    entity: Entity<any>;
+    entity: Entity<any> & { table: Table<string, string, string> };
     options: DynamoDBToolboxScanOptions;
     params?: Partial<ScanInput>;
 }
 
 export interface ScanResponse<T> {
     items: T[];
-    count: number;
-    scannedCount: number;
+    count?: number;
+    scannedCount?: number;
     lastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
     next?: () => Promise<ScanResponse<T>>;
     requestId: string;
@@ -19,9 +19,9 @@ export interface ScanResponse<T> {
 }
 
 interface DdbScanResult<T> {
-    Items: T[];
-    Count: number;
-    ScannedCount: number;
+    Items?: T[];
+    Count?: number;
+    ScannedCount?: number;
     LastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
     next?: () => Promise<DdbScanResult<T>>;
     error?: any;
@@ -44,7 +44,7 @@ const createNext = <T>(result: DdbScanResult<T>): NextCb<T> | undefined => {
 
 const convertResult = <T>(result: DdbScanResult<T>): ScanResponse<T> => {
     return {
-        items: result.Items,
+        items: result.Items || [],
         count: result.Count,
         scannedCount: result.ScannedCount,
         lastEvaluatedKey: result.LastEvaluatedKey || undefined,
@@ -66,7 +66,7 @@ export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
 
     const result = await entity.table.scan(options, params.params);
 
-    return convertResult(result);
+    return convertResult(result) as ScanResponse<T>;
 };
 
 export const scanWithCallback = async <T>(

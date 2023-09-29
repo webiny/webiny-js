@@ -11,7 +11,7 @@ import WebinyError from "@webiny/error";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSystemStorageOperations = (
@@ -64,7 +64,7 @@ export const createSystemStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get(keys);
+            const result = (await entity.get(keys)) as any;
             if (!result || !result.Item) {
                 return null;
             }

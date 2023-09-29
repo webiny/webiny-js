@@ -10,7 +10,9 @@ interface Response {
     ddbFolders: FolderDdbItem[];
 }
 
-export const insertTestFolders = async (table: Table): Promise<Response> => {
+export const insertTestFolders = async (
+    table: Table<string, string, string>
+): Promise<Response> => {
     const folders = createOldFoldersData();
     const tenants = createTenantsData().map(tenant => tenant.data.id);
     const testLocales = createLocalesData();

@@ -20,8 +20,8 @@ const INDEX_TYPE = "page-builder";
 interface InsertTestPagesParams {
     numberOfPages?: number;
     elasticsearchClient: ElasticsearchClient;
-    ddbTable: Table;
-    esTable: Table;
+    ddbTable: Table<string, string, string>;
+    esTable: Table<string, string, string>;
 }
 
 export const insertTestPages = async (params: InsertTestPagesParams) => {

@@ -234,7 +234,7 @@ export const createStorageOperations = (
             const keys = createApiKeyKeys({ id, tenant });
 
             try {
-                const result = await entities.apiKeys.get(keys);
+                const result = (await entities.apiKeys.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }
@@ -272,7 +272,9 @@ export const createStorageOperations = (
             try {
                 let result;
                 if (id) {
-                    const response = await entities.groups.get(createGroupKeys({ tenant, id }));
+                    const response = (await entities.groups.get(
+                        createGroupKeys({ tenant, id })
+                    )) as any;
                     if (response.Item) {
                         result = response.Item;
                     }
@@ -300,7 +302,9 @@ export const createStorageOperations = (
             try {
                 let result;
                 if (id) {
-                    const response = await entities.teams.get(createTeamKeys({ tenant, id }));
+                    const response = (await entities.teams.get(
+                        createTeamKeys({ tenant, id })
+                    )) as any;
                     if (response.Item) {
                         result = response.Item;
                     }
@@ -327,7 +331,7 @@ export const createStorageOperations = (
         async getSystemData({ tenant }): Promise<System | null> {
             const keys = createSystemKeys(tenant);
             try {
-                const result = await entities.system.get(keys);
+                const result = (await entities.system.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }

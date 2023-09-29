@@ -8,10 +8,10 @@ interface CreateTableParams {
     documentClient: DynamoDBClient;
 }
 
-export const createTable = (params: CreateTableParams): Table => {
+export const createTable = (params: CreateTableParams): Table<string, string, string> => {
     const { table, documentClient } = params;
 
-    const tableConfig: TableConstructor = {
+    const tableConfig: TableConstructor<string, string, string> = {
         name: (process.env.DB_TABLE_PRERENDERING_SERVICE || process.env.DB_TABLE) as string,
         partitionKey: "PK",
         sortKey: "SK",

@@ -99,7 +99,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     }
 
     public async delete({ tenant }: FileManagerStorageOperationsDeleteSettings): Promise<void> {
-        return this._entity.delete({
+        await this._entity.delete({
             PK: `T#${tenant}#FM#SETTINGS`,
             SK: SORT_KEY
         });

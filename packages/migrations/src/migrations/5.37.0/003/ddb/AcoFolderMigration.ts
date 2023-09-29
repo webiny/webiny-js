@@ -29,7 +29,7 @@ export class AcoRecords_5_37_0_003_AcoFolders
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.tenantEntity = createTenantEntity(table);

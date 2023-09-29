@@ -1,6 +1,10 @@
 import { Entity, Table } from "dynamodb-toolbox";
 
-const createEntity = (entityName: string, table: Table, attributes: any = {}): Entity<any> => {
+const createEntity = (
+    entityName: string,
+    table: Table<string, string, string>,
+    attributes: any = {}
+): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -25,7 +29,7 @@ const createEntity = (entityName: string, table: Table, attributes: any = {}): E
     });
 };
 
-export const createUserEntity = (table: Table): Entity<any> => {
+export const createUserEntity = (table: Table<string, string, string>): Entity<any> => {
     return createEntity("SecurityUser", table, {
         id: {
             type: "string"
@@ -51,7 +55,7 @@ export const createUserEntity = (table: Table): Entity<any> => {
     });
 };
 
-export const createLinkEntity = (table: Table): Entity<any> => {
+export const createLinkEntity = (table: Table<string, string, string>): Entity<any> => {
     return createEntity("SecurityUser2Tenant", table, {
         id: {
             type: "string"
@@ -65,7 +69,7 @@ export const createLinkEntity = (table: Table): Entity<any> => {
     });
 };
 
-export const createGroupEntity = (table: Table): Entity<any> => {
+export const createGroupEntity = (table: Table<string, string, string>): Entity<any> => {
     return createEntity("SecurityGroup", table, {
         id: {
             type: "string"
@@ -97,7 +101,7 @@ export const createGroupEntity = (table: Table): Entity<any> => {
     });
 };
 
-export const createApiKeyEntity = (table: Table): Entity<any> => {
+export const createApiKeyEntity = (table: Table<string, string, string>): Entity<any> => {
     return createEntity("SecurityApiKey", table, {
         id: {
             type: "string"

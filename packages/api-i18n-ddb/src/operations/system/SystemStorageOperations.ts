@@ -48,7 +48,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         };
 
         try {
-            const result = await this._entity.get(keys);
+            const result = (await this._entity.get(keys)) as any;
 
             return cleanupItem(this._entity, result?.Item);
         } catch (ex) {

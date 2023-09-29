@@ -39,7 +39,7 @@ export type DbRecord<T = any> = T & {
 export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
@@ -382,7 +382,7 @@ export const createFormStorageOperations = (
         };
 
         try {
-            const result = await entity.get(keys);
+            const result = (await entity.get(keys)) as any;
             if (!result || !result.Item) {
                 return null;
             }

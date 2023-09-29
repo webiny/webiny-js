@@ -19,7 +19,7 @@ export interface GetRecordParams {
 export const get = async <T>(params: GetRecordParams): Promise<T | null> => {
     const { entity, keys } = params;
 
-    const result = await entity.get(keys);
+    const result = (await entity.get(keys)) as any;
 
     if (!result || !result.Item) {
         return null;

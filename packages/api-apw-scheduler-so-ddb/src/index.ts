@@ -65,7 +65,7 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = await entity.get(keys);
+                const result = (await entity.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }
@@ -245,7 +245,7 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = await entity.get(keys);
+                const result = (await entity.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }

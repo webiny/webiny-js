@@ -1,13 +1,8 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
-import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
+import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
+import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
 import { PrerenderingServiceStorageOperations as BasePrerenderingServiceStorageOperations } from "@webiny/api-prerendering-service/types";
-
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -29,7 +24,7 @@ export type Entities = "render" | "queueJob" | "tagPathLink";
 
 export interface PrerenderingServiceStorageOperations
     extends BasePrerenderingServiceStorageOperations {
-    getTable(): Table;
+    getTable(): Table<string, string, string>;
     getEntities(): Record<Entities, Entity<any>>;
 }
 
@@ -38,7 +33,7 @@ export interface PrerenderingServiceFactory {
 }
 
 export interface TableModifier {
-    (table: TableConstructor): TableConstructor;
+    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
 }
 
 export interface DataContainer<T> {

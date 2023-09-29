@@ -1,10 +1,5 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
+import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
 
 /**
  * @internal

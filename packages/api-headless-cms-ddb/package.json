@@ -31,7 +31,7 @@
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.0.0",
     "dot-prop": "^6.0.1",
-    "dynamodb-toolbox": "^0.3.3",
+    "dynamodb-toolbox": "^0.8.5",
     "jsonpack": "^1.1.5",
     "lodash": "^4.5.0"
   },

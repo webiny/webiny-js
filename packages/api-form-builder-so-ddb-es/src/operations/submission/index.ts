@@ -30,7 +30,7 @@ import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
@@ -330,7 +330,7 @@ export const createSubmissionStorageOperations = (
         };
 
         try {
-            const result = await entity.get(keys);
+            const result = (await entity.get(keys)) as any;
 
             if (!result || !result.Item) {
                 return null;

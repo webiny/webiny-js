@@ -13,7 +13,7 @@ export class FileManager_5_35_0_001_FileManagerSettings {
     private readonly legacySettingsEntity: ReturnType<typeof createLegacySettingsEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newSettingsEntity = createStandardEntity(table, "FM.Settings");
         this.legacySettingsEntity = createLegacySettingsEntity(table);
         this.tenantEntity = createTenantEntity(table);

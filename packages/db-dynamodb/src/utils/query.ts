@@ -1,4 +1,4 @@
-import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { EntityQueryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Entity";
 import WebinyError from "@webiny/error";
 import { Entity } from "dynamodb-toolbox";
 

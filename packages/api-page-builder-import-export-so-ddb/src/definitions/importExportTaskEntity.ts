@@ -3,7 +3,7 @@ import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
-    table: Table;
+    table: Table<string, string, string>;
     attributes?: Attributes;
 }
 

@@ -11,7 +11,7 @@ import { AcoRecords_5_35_0_006_PageData } from "./PageDataMigration";
 export class AcoRecords_5_35_0_006 implements DataMigration {
     private migrations: DataMigration[];
 
-    public constructor(table: Table) {
+    public constructor(table: Table<string, string, string>) {
         this.migrations = [new AcoRecords_5_35_0_006_PageData(table)];
     }
 

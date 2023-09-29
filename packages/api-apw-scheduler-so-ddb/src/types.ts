@@ -1,11 +1,5 @@
-import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;
 

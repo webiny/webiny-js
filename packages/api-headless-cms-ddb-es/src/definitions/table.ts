@@ -7,8 +7,11 @@ export interface CreateTableParams {
     table?: TableModifier;
     documentClient: DynamoDBClient;
 }
-export const createTable = ({ table, documentClient }: CreateTableParams): Table => {
-    const tableConfig: TableConstructor = {
+export const createTable = ({
+    table,
+    documentClient
+}: CreateTableParams): Table<string, string, string> => {
+    const tableConfig: TableConstructor<string, string, string> = {
         name: process.env.DB_TABLE_HEADLESS_CMS || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",

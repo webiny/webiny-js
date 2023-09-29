@@ -31,7 +31,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    constructor(table: Table, elasticsearchClient: Client) {
+    constructor(table: Table<string, string, string>, elasticsearchClient: Client) {
         this.elasticsearchClient = elasticsearchClient;
         this.newFileEntity = createStandardEntity(table, "File", legacyAttributes);
         this.tenantEntity = createTenantEntity(table);

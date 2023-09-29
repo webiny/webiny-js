@@ -21,10 +21,10 @@ export const getSettingsData = (settings: any) => {
     return pick(settings, Object.keys(attributes));
 };
 
-export const createLegacySettingsEntity = (table: Table) => {
+export const createLegacySettingsEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "Settings", attributes);
 };
 
-export const createSettingsEntity = (table: Table) => {
+export const createSettingsEntity = (table: Table<string, string, string>) => {
     return createStandardEntity(table, "FM.Settings");
 };

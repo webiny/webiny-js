@@ -29,7 +29,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
     private readonly fileEntity: ReturnType<typeof createDdbFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.fileEntity = createDdbFileEntity(table);

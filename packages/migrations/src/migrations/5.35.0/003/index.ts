@@ -11,7 +11,7 @@ export class AdminUsers_5_35_0_003 {
     private readonly legacyUserEntity: ReturnType<typeof createLegacyUserEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newUserEntity = createUserEntity(table);
         this.legacyUserEntity = createLegacyUserEntity(table);
         this.tenantEntity = createTenantEntity(table);

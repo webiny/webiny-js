@@ -15,7 +15,7 @@ export * from "../types";
 export class FileManager_5_35_0_001 implements DataMigration {
     private migrations: DataMigration[];
 
-    constructor(table: Table, elasticsearchClient: Client) {
+    constructor(table: Table<string, string, string>, elasticsearchClient: Client) {
         this.migrations = [
             new FileManager_5_35_0_001_FileData(table, elasticsearchClient),
             new FileManager_5_35_0_001_FileManagerSettings(table)

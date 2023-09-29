@@ -1,13 +1,7 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
-import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
 import { AdminUsersStorageOperations as BaseAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito/types";
-
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -25,6 +19,6 @@ export interface CreateAdminUsersStorageOperations {
 }
 
 export interface AdminUsersStorageOperations extends BaseAdminUsersStorageOperations {
-    getTable(): Table;
+    getTable(): Table<string, string, string>;
     getEntities(): Record<"users" | "system", Entity<any>>;
 }

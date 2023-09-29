@@ -25,7 +25,7 @@ import { get } from "@webiny/db-dynamodb/utils/get";
 
 export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     plugins: PluginsContainer;
 }
 

@@ -2,7 +2,7 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes } from "~/types";
 
 export interface CreateModelEntityParams {
-    table: Table;
+    table: Table<string, string, string>;
     entityName: string;
     attributes: Attributes;
 }

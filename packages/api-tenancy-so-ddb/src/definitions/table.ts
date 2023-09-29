@@ -9,7 +9,7 @@ interface CreateTableParams {
 }
 
 export const createTable = ({ table, documentClient }: CreateTableParams) => {
-    const tableConfig: TableConstructor = {
+    const tableConfig: TableConstructor<string, string, string> = {
         name: (process.env.DB_TABLE_TENANCY || process.env.DB_TABLE) as string,
         partitionKey: "PK",
         sortKey: "SK",

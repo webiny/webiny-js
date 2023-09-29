@@ -6,7 +6,7 @@ import { OriginalPageRecord } from "./types";
 /**
  * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
  */
-export const insertTestPages = async (table: Table, numberOfPages = 15) => {
+export const insertTestPages = async (table: Table<string, string, string>, numberOfPages = 15) => {
     const ddbPages: OriginalPageRecord[] = [];
 
     const tenants = createTenantsData().map(tenant => tenant.data.id);

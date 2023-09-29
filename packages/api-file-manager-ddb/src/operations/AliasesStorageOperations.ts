@@ -26,7 +26,7 @@ interface CreatePartitionKeyParams {
 
 export class AliasesStorageOperations implements FileManagerAliasesStorageOperations {
     private readonly aliasEntity: Entity<any>;
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
 
     constructor({ documentClient }: AliasesStorageOperationsConfig) {
         this.table = createTable({ documentClient });

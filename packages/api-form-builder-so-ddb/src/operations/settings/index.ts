@@ -16,7 +16,7 @@ import { get } from "@webiny/db-dynamodb/utils/get";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSettingsStorageOperations = (

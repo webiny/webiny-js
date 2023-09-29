@@ -32,7 +32,7 @@ export class CmsModels_5_35_0_005 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    public constructor(table: Table) {
+    public constructor(table: Table<string, string, string>) {
         this.modelEntity = createModelEntity(table);
         this.tenantEntity = createTenantEntity(table);
         this.localeEntity = createLocaleEntity(table);

@@ -12,7 +12,7 @@ import { get } from "@webiny/db-dynamodb/utils/get";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSystemStorageOperations = (

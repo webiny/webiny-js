@@ -79,7 +79,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                const result = await entity.get(keys);
+                const result = (await entity.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }
@@ -365,7 +365,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 SK: createSortKey(where.id)
             };
             try {
-                const result = await entity.get(keys);
+                const result = (await entity.get(keys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }

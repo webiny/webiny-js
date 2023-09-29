@@ -90,6 +90,6 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
     }
 };
 
-export const createModelEntity = (table: Table) => {
+export const createModelEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "CmsModels", attributes);
 };

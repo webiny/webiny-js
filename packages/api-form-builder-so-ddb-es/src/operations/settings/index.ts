@@ -15,7 +15,7 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSettingsStorageOperations = (
@@ -71,7 +71,7 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get(keys);
+            const result = (await entity.get(keys)) as any;
             if (!result || !result.Item) {
                 return null;
             }

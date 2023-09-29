@@ -18,7 +18,7 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tag } from "@webiny/api-prerendering-service/types";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { EntityQueryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Entity";
 import { DataContainer } from "~/types";
 
 export interface CreateRenderStorageOperationsParams {

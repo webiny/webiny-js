@@ -6,7 +6,7 @@ interface Params {
     documentClient: DynamoDBClient;
 }
 
-export const createTable = (params: Params): Table => {
+export const createTable = (params: Params): Table<string, string, string> => {
     const { tableName, documentClient } = params;
 
     return new Table({

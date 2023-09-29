@@ -7,8 +7,11 @@ interface Params {
     table?: TableModifier;
     documentClient: DynamoDBClient;
 }
-export const createElasticsearchTable = ({ table, documentClient }: Params): Table => {
-    const tableConfig: TableConstructor = {
+export const createElasticsearchTable = ({
+    table,
+    documentClient
+}: Params): Table<string, string, string> => {
+    const tableConfig: TableConstructor<string, string, string> = {
         name: process.env.DB_TABLE_ELASTICSEARCH as string,
         partitionKey: "PK",
         sortKey: "SK",

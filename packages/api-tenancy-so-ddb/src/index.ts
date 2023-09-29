@@ -106,7 +106,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
         async getSystemData(): Promise<System | null> {
             try {
-                const result = await entities.system.get(systemKeys);
+                const result = (await entities.system.get(systemKeys)) as any;
                 if (!result || !result.Item) {
                     return null;
                 }

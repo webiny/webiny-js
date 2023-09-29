@@ -12,7 +12,7 @@ export class Tenancy_5_35_0_004 {
     private readonly legacyTenantEntity: ReturnType<typeof createLegacyTenantEntity>;
     private readonly newTenantEntity: ReturnType<typeof createNewTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.legacyTenantEntity = createLegacyTenantEntity(table);
         this.newTenantEntity = createNewTenantEntity(table);
     }

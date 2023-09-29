@@ -54,7 +54,11 @@ export class AcoRecords_5_37_0_004_PageData implements DataMigration<PageDataMig
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    constructor(
+        table: Table<string, string, string>,
+        esTable: Table<string, string, string>,
+        elasticsearchClient: Client
+    ) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);

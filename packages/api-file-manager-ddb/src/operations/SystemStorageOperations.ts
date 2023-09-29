@@ -38,10 +38,10 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
         tenant
     }: FileManagerSystemStorageOperationsGetParams): Promise<FileManagerSystem | null> {
         try {
-            const system = await this._entity.get({
+            const system = (await this._entity.get({
                 PK: `T#${tenant}#SYSTEM`,
                 SK: SORT_KEY
-            });
+            })) as any;
             if (!system || !system.Item) {
                 return null;
             }

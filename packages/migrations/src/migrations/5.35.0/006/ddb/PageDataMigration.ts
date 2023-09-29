@@ -27,7 +27,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
     private readonly pageEntity: ReturnType<typeof createDdbPageEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.pageEntity = createDdbPageEntity(table);

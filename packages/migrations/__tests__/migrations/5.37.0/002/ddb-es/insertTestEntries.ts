@@ -63,8 +63,8 @@ interface Options {
 }
 
 interface Params {
-    ddbTable: Table;
-    ddbToEsTable: Table;
+    ddbTable: Table<string, string, string>;
+    ddbToEsTable: Table<string, string, string>;
     elasticsearchClient: ElasticsearchClient;
     options?: Options;
 }

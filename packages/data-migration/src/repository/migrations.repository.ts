@@ -10,7 +10,7 @@ export class MigrationRepositoryImpl implements MigrationRepository {
     private readonly migration: Entity<any>;
     private readonly checkpoint: Entity<any>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.run = createStandardEntity({ table, name: "MigrationRun" });
         this.migration = createStandardEntity({ table, name: "Migration" });
         this.checkpoint = createStandardEntity({ table, name: "MigrationCheckpoint" });
@@ -80,18 +80,18 @@ export class MigrationRepositoryImpl implements MigrationRepository {
         });
     }
 
-    deleteCheckpoint(id: string): Promise<void> {
-        return this.checkpoint.delete({
+    async deleteCheckpoint(id: string): Promise<void> {
+        await this.checkpoint.delete({
             PK: `MIGRATION_CHECKPOINT#${id}`,
             SK: "A"
         });
     }
 
     async getCheckpoint(id: string): Promise<unknown | null> {
-        const record = await this.checkpoint.get({
+        const record = (await this.checkpoint.get({
             PK: `MIGRATION_CHECKPOINT#${id}`,
             SK: "A"
-        });
+        })) as any;
 
         if (!record || !record.Item) {
             return null;

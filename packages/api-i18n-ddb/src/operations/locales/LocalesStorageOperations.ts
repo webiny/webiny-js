@@ -30,7 +30,7 @@ const DEFAULT_SORT_KEY = "default";
 
 export class LocalesStorageOperations implements I18NLocalesStorageOperations {
     private readonly context: I18NContext;
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
     private readonly entity: Entity<any>;
 
     public constructor({ context }: ConstructorParams) {
@@ -49,10 +49,10 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         params: I18NLocalesStorageOperationsGetDefaultParams
     ): Promise<I18NLocaleData | null> {
         try {
-            const locale = await this.entity.get({
+            const locale = (await this.entity.get({
                 PK: this.createDefaultPartitionKey(params),
                 SK: DEFAULT_SORT_KEY
-            });
+            })) as any;
             if (!locale || !locale.Item) {
                 return null;
             }
@@ -69,10 +69,10 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         params: I18NLocalesStorageOperationsGetParams
     ): Promise<I18NLocaleData | null> {
         try {
-            const locale = await this.entity.get({
+            const locale = (await this.entity.get({
                 PK: this.createPartitionKey(params),
                 SK: params.code
-            });
+            })) as any;
             if (!locale || !locale.Item) {
                 return null;
             }

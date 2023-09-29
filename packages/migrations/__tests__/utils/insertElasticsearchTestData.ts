@@ -9,7 +9,7 @@ export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
 >(
     elasticsearch: ElasticsearchClient,
-    table: Table,
+    table: Table<string, string, string>,
     getIndexName: (item: TItem) => string
 ) => {
     const records: TItem[] = await Promise.all(

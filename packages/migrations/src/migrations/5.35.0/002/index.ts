@@ -16,7 +16,7 @@ export class PageBuilder_5_35_0_002 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newSettingsEntity = createSettingsEntity(table);
         this.legacySettingsEntity = createLegacySettingsEntity(table);
         this.tenantEntity = createTenantEntity(table);
