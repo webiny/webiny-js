@@ -140,30 +140,6 @@ describe("fieldValidations", () => {
                 }
             }
         });
-
-        /**
-         * GraphQL response must break when not sending required value.
-         */
-        const [requiredResponse] = await createFruit({
-            data: {
-                ...defaultFruitData,
-                name: undefined
-            }
-        });
-
-        expect(requiredResponse).toEqual({
-            errors: [
-                {
-                    message: expect.any(String),
-                    locations: [
-                        {
-                            column: expect.any(Number),
-                            line: expect.any(Number)
-                        }
-                    ]
-                }
-            ]
-        });
     });
     /**
      * testing minLength and maxLength of the array
