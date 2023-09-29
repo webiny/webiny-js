@@ -2244,12 +2244,20 @@ export interface CreateCmsEntryInput {
     [key: string]: any;
 }
 
+export interface CreateCmsEntryOptionsInput {
+    validate?: boolean;
+}
+
 /**
  * @category Context
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
     [key: string]: any;
+}
+
+export interface CreateRevisionCmsEntryOptionsInput {
+    validate?: boolean;
 }
 
 /**
@@ -2261,6 +2269,10 @@ export interface UpdateCmsEntryInput {
         folderId?: string | null;
     };
     [key: string]: any;
+}
+
+export interface UpdateCmsEntryOptionsInput {
+    validate?: boolean;
 }
 
 /**
@@ -2344,14 +2356,19 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (
+        model: CmsModel,
+        input: CreateCmsEntryInput,
+        options?: CreateCmsEntryOptionsInput
+    ) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        input: CreateFromCmsEntryInput
+        input: CreateFromCmsEntryInput,
+        options?: CreateRevisionCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
@@ -2360,7 +2377,8 @@ export interface CmsEntryContext {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput,
-        meta?: Record<string, any>
+        meta?: Record<string, any>,
+        options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
     /**
      * Move entry, and all its revisions, to a new folder.
