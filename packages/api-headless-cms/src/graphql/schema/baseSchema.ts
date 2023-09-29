@@ -63,6 +63,18 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 folderId_not: ID
                 folderId_not_in: [ID!]
             }
+
+            input CreateCmsEntryOptionsInput {
+                validate: Boolean
+            }
+
+            input CreateRevisionCmsEntryOptionsInput {
+                validate: Boolean
+            }
+
+            input UpdateCmsEntryOptionsInput {
+                validate: Boolean
+            }
         `,
         resolvers: {}
     });

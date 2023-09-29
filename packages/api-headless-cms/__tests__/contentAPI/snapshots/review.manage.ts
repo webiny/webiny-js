@@ -39,7 +39,7 @@ export default /* GraphQL */ `
     input ReviewApiModelInput {
         id: ID
         wbyAco_location: WbyAcoLocationInput
-        text: String!
+        text: String
         product: RefFieldInput
         rating: Number
         author: RefFieldInput
@@ -170,11 +170,11 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createReviewApiModel(data: ReviewApiModelInput!): ReviewApiModelResponse
+        createReviewApiModel(data: ReviewApiModelInput!, options: CreateCmsEntryOptionsInput): ReviewApiModelResponse
 
-        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput): ReviewApiModelResponse
+        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput, options: CreateRevisionCmsEntryOptionsInput): ReviewApiModelResponse
 
-        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
+        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!, options: UpdateCmsEntryOptionsInput): ReviewApiModelResponse
         
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
