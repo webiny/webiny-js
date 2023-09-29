@@ -8,6 +8,7 @@ import {
     ApwContentReviewStatus,
     ApwContentReviewStepStatus,
     ApwReviewerCrud,
+    ApwReviewsGroupCrud,
     ApwScheduleActionData,
     ApwWorkflowStepTypes,
     CreateApwContentReviewParams,
@@ -41,6 +42,7 @@ import { PluginsContainer } from "@webiny/plugins";
 
 export interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
+    getReviewersGroup: ApwReviewsGroupCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
     getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
     getContentUnPublisher: AdvancedPublishingWorkflow["getContentUnPublisher"];
