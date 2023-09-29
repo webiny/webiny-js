@@ -5,6 +5,8 @@ export class QueryObjectMapper {
         return {
             id: configuration.id,
             name: configuration.name,
+            description: configuration.description,
+            modelId: configuration.modelId,
             operation: configuration.operation,
             groups: configuration.groups.map(group => ({
                 operation: group.operation,

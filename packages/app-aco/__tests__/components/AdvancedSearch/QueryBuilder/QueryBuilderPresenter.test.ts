@@ -10,6 +10,7 @@ import {
 } from "~/components/AdvancedSearch/QueryBuilder/domain";
 
 describe("QueryBuilderPresenter", () => {
+    const modelId = "model-id";
     const defaultFilter = { field: "", value: "", condition: "" };
 
     const defaultGroup = {
@@ -44,7 +45,7 @@ describe("QueryBuilderPresenter", () => {
             }
         ];
 
-        presenter = new QueryBuilderPresenter(defaultFields);
+        presenter = new QueryBuilderPresenter(modelId, defaultFields);
         viewModel = presenter.getViewModel();
     });
 
@@ -64,6 +65,8 @@ describe("QueryBuilderPresenter", () => {
         expect(viewModel.queryObject).toEqual({
             id: expect.any(String),
             name: "Untitled",
+            description: "",
+            modelId: modelId,
             operation: "AND",
             groups: [testFolder]
         });
@@ -246,6 +249,7 @@ describe("QueryBuilderPresenter", () => {
 });
 
 describe("FieldDTO definition", () => {
+    const modelId = "modelId-id";
     const fields: [FieldRaw, FieldDTO][] = [
         [
             {
@@ -470,7 +474,7 @@ describe("FieldDTO definition", () => {
 
     fields.forEach(([fieldRaw, fieldDTO]) => {
         it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}" `, () => {
-            const presenter = new QueryBuilderPresenter([fieldRaw]);
+            const presenter = new QueryBuilderPresenter(modelId, [fieldRaw]);
             const viewModel = presenter.getViewModel();
 
             expect(viewModel.fields).toEqual([fieldDTO]);

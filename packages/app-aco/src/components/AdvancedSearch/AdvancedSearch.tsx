@@ -3,33 +3,68 @@ import React, { useCallback, useState } from "react";
 import { Button } from "./Button";
 import { Drawer } from "./Drawer";
 
-import { FieldRaw } from "./QueryBuilder/domain";
+import { FieldRaw, QueryObjectDTO } from "./QueryBuilder/domain";
+import { QueryManager } from "~/components/AdvancedSearch/QueryManager/QueryManager";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
+    modelId: string;
     onSubmit: (data: any) => void;
 }
 
-export const AdvancedSearch = ({ fields, onSubmit }: AdvancedSearchProps) => {
-    const [open, setOpen] = useState(false);
+export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
+    const [openManager, setOpenManager] = useState(false);
+    const [openBuilder, setOpenBuilder] = useState(false);
+    const [queryObject, setQueryObject] = useState<QueryObjectDTO>();
 
-    const onDrawerSubmit = useCallback(
+    const onQueryBuilderSubmit = useCallback(
         data => {
             // Close the drawer on submission
-            setOpen(false);
+            setOpenBuilder(false);
             onSubmit && onSubmit(data);
         },
         [onSubmit]
     );
 
+    const onQueryManagerSelect = useCallback(
+        data => {
+            // Close the dialog on submission
+            setOpenManager(false);
+            onSubmit && onSubmit(data);
+        },
+        [onSubmit]
+    );
+
+    const onQueryManagerEdit = (data?: QueryObjectDTO) => {
+        setQueryObject(data);
+        setOpenManager(false);
+        setOpenBuilder(true);
+    };
+
+    const onQueryManagerCreate = () => {
+        setQueryObject(undefined);
+        setOpenManager(false);
+        setOpenBuilder(true);
+    };
+
     return (
         <>
-            <Button onClick={() => setOpen(true)} />
+            <Button onClick={() => setOpenManager(true)} />
+            <QueryManager
+                modelId={modelId}
+                open={openManager}
+                onClose={() => setOpenManager(false)}
+                onEdit={onQueryManagerEdit}
+                onCreate={onQueryManagerCreate}
+                onSelect={onQueryManagerSelect}
+            />
             <Drawer
-                open={open}
-                onClose={() => setOpen(false)}
+                open={openBuilder}
+                onClose={() => setOpenBuilder(false)}
                 fields={fields}
-                onSubmit={onDrawerSubmit}
+                modelId={modelId}
+                onSubmit={onQueryBuilderSubmit}
+                existing={queryObject}
             />
         </>
     );

@@ -3,6 +3,7 @@ import {
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
+import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryManager/domain";
 
 export * from "~/graphql/records/types";
 
@@ -176,4 +177,60 @@ export interface AcoApp {
     id: string;
     model: AcoModel;
     getFields: () => AcoModelField[];
+}
+
+export interface ListFiltersQueryVariables {
+    modelId: string;
+    limit: number;
+    sort?: Record<string, any>;
+    after?: string | null;
+}
+
+export interface ListFiltersResponse {
+    aco: {
+        listFilters: {
+            data: QueryObjectRaw[] | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface CreateFilterVariables {
+    data: Omit<QueryObjectRaw, "id">;
+}
+
+export interface CreateFilterResponse {
+    aco: {
+        createFilter: {
+            data: QueryObjectRaw;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface UpdateFilterVariables {
+    id: string;
+    data: Partial<Omit<QueryObjectRaw, "id" | "createdOn" | "createdBy" | "savedOn">>;
+}
+
+export interface UpdateFilterResponse {
+    aco: {
+        updateFilter: {
+            data: QueryObjectRaw;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface DeleteFilterVariables {
+    id: string;
+}
+
+export interface DeleteFilterResponse {
+    aco: {
+        deleteFilter: {
+            data: boolean;
+            error: AcoError | null;
+        };
+    };
 }

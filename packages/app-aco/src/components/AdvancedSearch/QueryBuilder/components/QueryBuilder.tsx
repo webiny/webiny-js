@@ -48,6 +48,7 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                     {() => (
                         <Content>
                             <Content.Panel>
+                                {JSON.stringify(viewModel.queryObject)}
                                 <Grid>
                                     <Cell span={12} align={"middle"}>
                                         <CellInner align={"center"}>

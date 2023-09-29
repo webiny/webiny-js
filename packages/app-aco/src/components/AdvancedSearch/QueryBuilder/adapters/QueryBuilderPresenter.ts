@@ -30,13 +30,23 @@ export interface QueryBuilderViewModel {
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     private queryObject: QueryBuilderViewModel["queryObject"];
     private readonly fields: QueryBuilderViewModel["fields"];
+    private readonly modelId: string;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
-    constructor(fields: FieldRaw[]) {
-        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty());
+    constructor(modelId: string, fields: FieldRaw[]) {
+        this.modelId = modelId;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
+        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(modelId));
         makeAutoObservable(this);
+    }
+
+    create(source?: QueryObjectDTO) {
+        if (source) {
+            this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(source));
+        } else {
+            this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
+        }
     }
 
     getViewModel(): QueryBuilderViewModel {

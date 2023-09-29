@@ -16,6 +16,8 @@ export interface GroupDTO {
 export interface QueryObjectDTO {
     id: string;
     name: string;
+    description: string;
+    modelId: string;
     operation: Operation;
     groups: GroupDTO[];
 }
@@ -46,6 +48,8 @@ const groupValidationSchema = zod.object({
 const validationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
     name: zod.string().trim(),
+    description: zod.string().trim(),
+    model: zod.string().trim(),
     operation: operationValidator,
     groups: zod.array(groupValidationSchema).min(1)
 });
@@ -53,20 +57,43 @@ const validationSchema = zod.object({
 export class QueryObject {
     public readonly operations = Operation;
     public readonly id;
-    public name = "Untitled";
+    public name;
+    public description;
+    public modelId: string;
     public operation: Operation;
     public groups: Group[];
 
-    static createEmpty() {
-        return new QueryObject(Operation.AND, [new Group(Operation.AND, [new Filter()])]);
+    static createEmpty(modelId: string) {
+        return new QueryObject(modelId, Operation.AND, [new Group(Operation.AND, [new Filter()])]);
+    }
+
+    static create(data: QueryObjectDTO) {
+        return new QueryObject(
+            data.modelId,
+            data.operation,
+            data.groups,
+            data.id,
+            data.name,
+            data.description
+        );
     }
 
     static validate(data: QueryObjectDTO) {
         return validationSchema.safeParse(data);
     }
 
-    private constructor(operation: Operation, groups: Group[], id?: string) {
+    private constructor(
+        modelId: string,
+        operation: Operation,
+        groups: Group[],
+        id?: string,
+        name?: string,
+        description?: string
+    ) {
         this.id = id ?? generateId();
+        this.modelId = modelId;
+        this.name = name ?? "Untitled";
+        this.description = description ?? "";
         this.operation = operation;
         this.groups = groups;
     }
