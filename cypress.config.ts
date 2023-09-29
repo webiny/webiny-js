@@ -27,11 +27,12 @@ export default defineConfig({
         WEBSITE_PREVIEW_URL: "https://dgyvom14crvwi.cloudfront.net"
     },
     e2e: {
+	specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
         // We've imported your old cypress plugins here.
         // You may want to clean this up later by importing these.
         setupNodeEvents(on, config) {
             return require("./cypress/plugins/index.js")(on, config);
         },
-        baseUrl: "https://d3stqa6lsyg9y5.cloudfront.net"
+        baseUrl: "https://d3stqa6lsyg9y5.cloudfront.net",
     }
 });

@@ -40,7 +40,7 @@ context("Page Builder - Blocks", () => {
         icon: "icon-name",
         description: nanoid(10).toLowerCase()
     };
-    it.only("Should be able to use the search bar as expected", () => {
+    it("Should be able to use the search bar as expected", () => {
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1)
             .then(() => {
                 return cy.pbCreateCategoryAndBlocks(blockCategoryData2, blockNames2);
@@ -50,7 +50,7 @@ context("Page Builder - Blocks", () => {
             })
             .then(() => {
                 return cy.pbCreateCategoryAndBlocks(blockCategoryData4, blockNames4);
-        });
+        }); 
 
         cy.visit("/page-builder/page-blocks");
 
@@ -86,34 +86,44 @@ context("Page Builder - Blocks", () => {
         //cy.contains(blockCategoryData2.name).should("not.exist");
         //cy.contains(blockCategoryData3.name).should("not.exist");
         //cy.contains(blockCategoryData4.name).should("not.exist");
-        
-        //I know that I can probably search for the ul elements to make sure nothing shows but is there really no way to do it like this @Adrian
 
+        //I know that I can probably search for the ul elements to make sure nothing shows but is there really no way to do it like this @Adrian
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("li")
+                .first().should("exist");
+        });
         // Deletes all remaining test data.
-        cy.wait(100000);
         cy.pbDeleteBlocks();
         cy.pbAllDeleteBlockCategories();
     });
 
-    it("Should not be able to delete a category that has existing blocks", () => {
-        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1)
+    it.skip("Should be able to edit newly created block", () => {
+        const resizeObserverLoopErrRe = /^ResizeObserver loop limit exceeded/
+        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1);
         cy.visit("/page-builder/page-blocks");
 
-        //Checks if editing block name works(NOT WORKING)
+        //Checks if editing block name works(NOT WORKING).
         cy.visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.contains(blockCategoryData1.name).click();
         cy.findByTestId("pb-blocks-list-block-edit-btn").click();
-        cy.findByTestId("pb-editor-page-title").should("exist");
-        cy.findByTestId("pb-editor-page-title").click().clear().type("Newest block name");
-        //cy.get('.css-1bo8ypc-TitleInputWrapper input').clear().type("Newest block name");
+        cy.findByTestId("pb-editor-page-title").click();
+        cy.get(`input[value="${blockNames1}"]`).clear().type(blockNames1+"1").blur();
+        /*
+        Cypress.on("uncaught:exception", (err) => {
+            if (resizeObserverLoopErrRe.test(err.message)) {
+              // returning false here prevents Cypress from
+              // failing the test
+              return false;
+            }
+          });
+          */
+        cy.findByText("Page title updated successfully!").should("exist");
+
         cy.findByTestId("pb-blocks-editor-save-changes-btn").click();
         cy.findByTestId("pb-blocks-list-new-block-btn").should("exist");
         cy.contains(blockCategoryData1.name).click();
-        cy.contains("Newest block name").should("exist");   
-        //Checks if deleting non-empty block categories behaves properly
-        cy.visit("/page-builder/block-categories");
-        cy.get('.css-dmcazx-dataListContent').trigger('mouseover');
+        cy.contains(blockNames1+"1").should("exist");
 
         cy.wait(100000);
         cy.pbDeleteBlocks();

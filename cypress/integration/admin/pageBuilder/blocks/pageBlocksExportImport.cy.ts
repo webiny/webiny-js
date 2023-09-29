@@ -84,7 +84,7 @@ context("Page Builder - Blocks import", () => {
 
     it("Test the importation and exportation functionality of the import block button", () => {
         cy.visit("/page-builder/page-blocks");
-        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1)
+        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1);
         cy.contains(blockCategoryData1.name).click();
         cy.findByTestId("pb-blocks-list-block-export-btn").click();
         cy.findByText("Your export is now ready!").should("exist");
