@@ -1,8 +1,12 @@
 import S3 from "aws-sdk/clients/s3";
-import { getEnvironment } from "../utils";
+import { WcpContext } from "@webiny/api-wcp/types";
 import { RoutePlugin } from "@webiny/handler-aws/gateway";
+import { getEnvironment } from "../utils";
 import { getS3Object, isSmallObject } from "~/handlers/download/getS3Object";
 import { extractFileInformation } from "~/handlers/download/extractFileInformation";
+import { AccessControl } from "~/handlers/utils/AccessControl";
+import { LambdaClient } from "~/handlers/utils/LambdaClient";
+import { ApiGatewayLambdaClient } from "~/handlers/utils/ApiGatewayLambdaClient";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 const PRESIGNED_URL_EXPIRATION = 900; // 15 minutes
@@ -10,12 +14,52 @@ const PRESIGNED_URL_EXPIRATION = 900; // 15 minutes
 const { region } = getEnvironment();
 const s3 = new S3({ region });
 
+const canUsePrivateFiles = (context: WcpContext) => {
+    return context.wcp.canUseFeature("advancedAccessControlLayer");
+
+    // // TODO: WCP feature is not yet enabled in our WCP!
+    // const license = context.wcp.getProjectLicense();
+    //
+    // if (!license) {
+    //     return false;
+    // }
+    //
+    // const aacl = license.package.features.advancedAccessControlLayer;
+    //
+    // return aacl.enabled && aacl.options.privateFiles;
+};
+
 export const createDownloadFileByExactKeyPlugins = () => {
+    // TODO: this needs to be pulled from either ENV vars or a Dynamo DB record
+    const fnArn = "arn:aws:lambda:eu-central-1:656932293860:function:wby-graphql-b721688";
+    const lambdaClient = new LambdaClient(fnArn);
+    const apiGwLambdaClient = new ApiGatewayLambdaClient(lambdaClient);
+
     return [
         new RoutePlugin(({ onGet, context }) => {
             onGet("/files/*", async (request, reply) => {
+                const headers = {
+                    ...request.headers,
+                    "x-tenant": "root"
+                };
+
                 const fileInfo = extractFileInformation(request);
                 const { params, object } = await getS3Object(fileInfo, s3, context);
+
+                if (canUsePrivateFiles(context as any as WcpContext)) {
+                    const accessControl = new AccessControl(apiGwLambdaClient, headers);
+                    const { canAccess } = await accessControl.canAccess(fileInfo.filename);
+
+                    if (!canAccess) {
+                        return reply
+                            .code(403)
+                            .headers({
+                                "Content-Type": "application/json",
+                                "Cache-Control": "no-cache, no-store, must-revalidate"
+                            })
+                            .send({ error: "You're not allowed to access this file!" });
+                    }
+                }
 
                 if (object && isSmallObject(object)) {
                     console.log("This is a small file; responding with object body.");

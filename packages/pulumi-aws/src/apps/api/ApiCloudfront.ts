@@ -10,6 +10,11 @@ export const ApiCloudfront = createAppModule({
     config(app: PulumiApp) {
         const gateway = app.getModule(ApiGateway);
 
+        const cookies = {
+            forward: "whitelist",
+            whitelistedNames: ["wby-id-token"]
+        };
+
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
@@ -21,10 +26,7 @@ export const ApiCloudfront = createAppModule({
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
-                        cookies: {
-                            forward: "whitelist",
-                            whitelistedNames: ["wby-identity"]
-                        },
+                        cookies,
                         headers: ["Accept", "Accept-Language"],
                         queryString: true
                     },
@@ -71,10 +73,7 @@ export const ApiCloudfront = createAppModule({
                         ],
                         cachedMethods: ["GET", "HEAD", "OPTIONS"],
                         forwardedValues: {
-                            cookies: {
-                                forward: "whitelist",
-                                whitelistedNames: ["wby-identity"]
-                            },
+                            cookies: cookies,
                             headers: ["Accept", "Accept-Language"],
                             queryString: true
                         },

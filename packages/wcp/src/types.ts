@@ -46,7 +46,7 @@ export interface ProjectPackageFeatures {
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
         enabled: boolean;
-        options: { teams: boolean };
+        options: { teams: boolean; privateFiles: boolean };
     };
 }
 

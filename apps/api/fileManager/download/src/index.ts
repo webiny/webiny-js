@@ -1,4 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createWcpContext } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import {
     createDownloadFileByAliasPlugins,
@@ -12,6 +13,7 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler({
     plugins: [
+        createWcpContext(),
         createDownloadFileByExactKeyPlugins(),
         createDownloadFileByAliasPlugins({ documentClient })
     ]

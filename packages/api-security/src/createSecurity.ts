@@ -1,6 +1,12 @@
 import minimatch from "minimatch";
 import { createAuthentication } from "@webiny/api-authentication/createAuthentication";
-import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./types";
+import {
+    Authorizer,
+    Security,
+    SecurityPermission,
+    SecurityConfig,
+    AuthenticationToken
+} from "./types";
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
 import { createTeamsMethods } from "~/createSecurity/createTeamsMethods";
@@ -19,6 +25,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     const authorizers: Authorizer[] = [];
     let performAuthorization = true;
 
+    let authenticationToken: AuthenticationToken | undefined;
     let permissions: SecurityPermission[];
     let permissionsLoader: Promise<SecurityPermission[]>;
 
@@ -62,6 +69,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
     return {
         ...authentication,
+        async authenticate(token: string): Promise<void> {
+            await authentication.authenticate(token);
+            if (authentication.getIdentity()) {
+                authenticationToken = token;
+            }
+        },
         config,
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
@@ -85,6 +98,9 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         setIdentity(this: Security, identity) {
             authentication.setIdentity(identity);
             this.onIdentity.publish({ identity });
+        },
+        getToken(): AuthenticationToken | undefined {
+            return authenticationToken;
         },
         async withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T> {
             const isAuthorizationEnabled = performAuthorization;
