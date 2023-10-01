@@ -7,7 +7,6 @@ const createBlockMutation = /* GraphQL */ `
                 data {
                     id
                     blockCategory
-                    preview
                     name
                     content
                     createdOn

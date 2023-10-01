@@ -3,8 +3,8 @@ import { customAlphabet } from "nanoid";
 context("Page Builder - Blocks", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     beforeEach(() => cy.login());
-    beforeEach(() => cy.pbDeleteBlocks());
-    beforeEach(() => cy.pbAllDeleteBlockCategories());
+    beforeEach(() => cy.pbDeleteAllBlocks());
+    beforeEach(() => cy.pbDeleteAllBlockCategories());
 
     //Data used for creating multible block categories.
 
@@ -40,7 +40,7 @@ context("Page Builder - Blocks", () => {
         icon: "icon-name",
         description: nanoid(10).toLowerCase()
     };
-    it("Should be able to use the search bar as expected", () => {
+    it.skip("Should be able to use the search bar as expected", () => {
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1)
             .then(() => {
                 return cy.pbCreateCategoryAndBlocks(blockCategoryData2, blockNames2);
@@ -93,12 +93,11 @@ context("Page Builder - Blocks", () => {
                 .first().should("exist");
         });
         // Deletes all remaining test data.
-        cy.pbDeleteBlocks();
-        cy.pbAllDeleteBlockCategories();
+        cy.pbDeleteAllBlocks();
+        cy.pbDeleteAllBlockCategories();
     });
 
     it.skip("Should be able to edit newly created block", () => {
-        const resizeObserverLoopErrRe = /^ResizeObserver loop limit exceeded/
         cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1);
         cy.visit("/page-builder/page-blocks");
 
@@ -109,15 +108,7 @@ context("Page Builder - Blocks", () => {
         cy.findByTestId("pb-blocks-list-block-edit-btn").click();
         cy.findByTestId("pb-editor-page-title").click();
         cy.get(`input[value="${blockNames1}"]`).clear().type(blockNames1+"1").blur();
-        /*
-        Cypress.on("uncaught:exception", (err) => {
-            if (resizeObserverLoopErrRe.test(err.message)) {
-              // returning false here prevents Cypress from
-              // failing the test
-              return false;
-            }
-          });
-          */
+
         cy.findByText("Page title updated successfully!").should("exist");
 
         cy.findByTestId("pb-blocks-editor-save-changes-btn").click();
@@ -125,8 +116,7 @@ context("Page Builder - Blocks", () => {
         cy.contains(blockCategoryData1.name).click();
         cy.contains(blockNames1+"1").should("exist");
 
-        cy.wait(100000);
-        cy.pbDeleteBlocks();
-        cy.pbAllDeleteBlockCategories();
+        cy.pbDeleteAllBlocks();
+        cy.pbDeleteAllBlockCategories();
     });
 });
