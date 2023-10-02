@@ -43,12 +43,12 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
             onSubmit={onFormSubmit}
             invalidFields={viewModel.invalidFields}
         >
-            {() => (
+            {({ data }) => (
                 <Observer>
                     {() => (
                         <Content>
                             <Content.Panel>
-                                <button onClick={() => presenter.persistViewModel()}>
+                                <button onClick={async () => await presenter.onSave(data)}>
                                     Persist
                                 </button>
                                 <Grid>

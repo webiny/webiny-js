@@ -23,6 +23,7 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
         makeAutoObservable(this);
     }
 
+    // TODO: rename with load
     async listFilters() {
         await this.repository.listFilters();
     }
@@ -31,6 +32,7 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
         await this.repository.deleteFilter(id);
     }
 
+    // TODO: add getFilter
     selectFilter(id?: string) {
         this.repository.setSelected(id);
     }

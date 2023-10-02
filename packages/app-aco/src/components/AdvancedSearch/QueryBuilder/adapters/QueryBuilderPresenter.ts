@@ -51,14 +51,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         );
     }
 
-    async persistViewModel() {
-        if (this.repository.mode === Mode.UPDATE) {
-            return await this.repository.updateFilter(this.queryObject);
-        }
-
-        return await this.repository.createFilter(this.queryObject);
-    }
-
     getViewModel(): QueryBuilderViewModel {
         return {
             queryObject: this.queryObject,
@@ -139,6 +131,28 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         } else {
             onError && onError();
         }
+    }
+
+    async onSave(queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) {
+        this.formWasSubmitted = true;
+        const result = this.validateQueryObject(queryObject);
+
+        console.log("");
+
+        if (result.success) {
+            await this.persistViewModel(queryObject);
+            onSuccess && onSuccess();
+        } else {
+            onError && onError();
+        }
+    }
+
+    private async persistViewModel(queryObject: QueryObjectDTO) {
+        if (this.repository.mode === Mode.UPDATE) {
+            return await this.repository.updateFilter(queryObject);
+        }
+
+        return await this.repository.createFilter(queryObject);
     }
 
     private validateQueryObject(data: QueryObjectDTO) {

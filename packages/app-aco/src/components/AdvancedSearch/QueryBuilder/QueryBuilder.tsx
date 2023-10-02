@@ -13,10 +13,12 @@ interface QueryBuilderProps {
 }
 
 export const QueryBuilder = ({ repository, fields, onForm, onSubmit }: QueryBuilderProps) => {
+    // TODO: Receive a queryObject ->
     const [presenter] = useState<QueryBuilderPresenter>(
         new QueryBuilderPresenter(repository, fields)
     );
 
+    // TODO: pass the selected id
     useEffect(() => {
         presenter.create();
     }, [repository?.selected]);

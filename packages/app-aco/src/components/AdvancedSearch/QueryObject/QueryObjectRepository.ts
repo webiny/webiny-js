@@ -13,7 +13,7 @@ export class QueryObjectRepository {
     mode: Mode = Mode.CREATE;
 
     constructor(client: ApolloClient<any>, modelId: string) {
-        this.gateway = new FiltersGraphQL(client);
+        this.gateway = new FiltersGraphQL(client); // TODO: inject the gateway
         this.modelId = modelId;
         makeAutoObservable(this);
     }

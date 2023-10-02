@@ -14,6 +14,8 @@ interface AdvancedSearchProps {
 }
 
 export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
+    // TODO: create presenter for AdvancedSearch to handle these piece of state
+    // TODO: create repository to handle selected filter
     const client = useApolloClient();
     const [repository] = useState(QueryObjectRepository.getInstance(client, modelId));
 
@@ -62,6 +64,7 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
                 open={openManager}
             />
             <Drawer
+                // TODO: add the full queryObject prop to pass to presenter
                 fields={fields}
                 repository={repository}
                 onClose={() => setOpenBuilder(false)}
