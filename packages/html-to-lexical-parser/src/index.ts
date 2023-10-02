@@ -1,7 +1,16 @@
-import { generateInitialLexicalValue, getSupportedNodeList } from "@webiny/lexical-editor";
+import {
+    generateInitialLexicalValue,
+    getSupportedNodeList,
+    getTheme
+} from "@webiny/lexical-editor";
 import { createHeadlessEditor } from "@lexical/headless";
-import { JSDOM } from "jsdom";
 import { $generateNodesFromDOM } from "@lexical/html";
+import { TextEncoder } from "util";
+
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
+global.TextEncoder = TextEncoder;
 
 /**
  * Parse html string to lexical object.
@@ -17,12 +26,13 @@ export const parseToLexicalObject = (
 
     const editor = createHeadlessEditor({
         nodes: getSupportedNodeList(),
-        onError: onError
+        onError: onError,
+        theme: getTheme()
     });
 
     const dom = new JSDOM(htmlString);
 
     // Convert to lexical node objects format that can be stored in db.
-    const nodesData = $generateNodesFromDOM(editor, dom).map(node => node.get());
+    const nodesData = $generateNodesFromDOM(editor, dom).map(node => node.exportJSON());
     return nodesData;
 };

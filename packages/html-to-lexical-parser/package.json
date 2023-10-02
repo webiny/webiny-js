@@ -19,5 +19,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
+  "test": "jest --verbose --runInBand --detectOpenHandles --forceExit"
 }
