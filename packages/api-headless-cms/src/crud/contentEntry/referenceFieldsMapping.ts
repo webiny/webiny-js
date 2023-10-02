@@ -213,12 +213,14 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
     /**
      * Load all models and use only those that are used in reference.
      */
-    const models = (await context.cms.listModels()).filter(model => {
-        const entries = referencesByModel[model.modelId];
-        if (!Array.isArray(entries) || entries.length === 0) {
-            return false;
-        }
-        return true;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter(model => {
+            const entries = referencesByModel[model.modelId];
+            if (!Array.isArray(entries) || entries.length === 0) {
+                return false;
+            }
+            return true;
+        });
     });
     /**
      * Check for any model existence, just in case.
@@ -230,8 +232,10 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
     /**
      * Load all the entries by their ID
      */
-    const promises = models.map(model => {
-        return context.cms.getEntriesByIds(model, referencesByModel[model.modelId]);
+    const promises = await context.security.withoutAuthorization(async () => {
+        return models.map(model => {
+            return context.cms.getEntriesByIds(model, referencesByModel[model.modelId]);
+        });
     });
 
     const results = await Promise.all(promises);
