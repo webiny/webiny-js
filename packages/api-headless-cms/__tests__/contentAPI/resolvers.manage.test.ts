@@ -428,7 +428,8 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
-                                storageId: expect.stringMatching("text@"),
+                                storageId: "text@slug",
+                                id: "slug",
                                 fieldId: "slug"
                             }
                         ],

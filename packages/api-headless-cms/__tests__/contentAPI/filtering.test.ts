@@ -561,6 +561,14 @@ describe("filtering", () => {
                 category: {
                     modelId: categoryModel.modelId,
                     id: fruitCategoryId
+                },
+                variant: {
+                    images: null,
+                    options: {
+                        categories: null,
+                        image: null,
+                        longText: null
+                    }
                 }
             }
         });
@@ -583,6 +591,14 @@ describe("filtering", () => {
                 category: {
                     modelId: categoryModel.modelId,
                     id: fruitCategoryId
+                },
+                variant: {
+                    images: null,
+                    options: {
+                        categories: null,
+                        image: null,
+                        longText: null
+                    }
                 }
             }
         });

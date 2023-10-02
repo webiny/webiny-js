@@ -135,6 +135,7 @@ describe("predefined values", () => {
                             {
                                 storageId: expect.stringMatching("text@"),
                                 fieldId: "bugType",
+                                id: "bugType",
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -171,6 +172,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
@@ -208,11 +210,13 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
+                                id: "bugType",
                                 storageId: expect.stringMatching("text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             },
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }

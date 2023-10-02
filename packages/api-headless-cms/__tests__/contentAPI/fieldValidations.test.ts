@@ -106,6 +106,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "name",
+                                id: "name",
                                 storageId: expect.stringMatching("text@"),
                                 error: "Min length is 2."
                             }
@@ -132,6 +133,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "name",
+                                id: "name",
                                 storageId: expect.stringMatching("text@"),
                                 error: "Max length is 15."
                             }
@@ -170,6 +172,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                id: "numbers",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Numbers must contain at least 2 items."
                             }
@@ -196,6 +199,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                id: "numbers",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Numbers can contain at most 7 items."
                             }
@@ -222,6 +226,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                id: "numbers",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Number must be greater or equal 5."
                             }
@@ -248,6 +253,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                id: "numbers",
                                 storageId: expect.stringMatching("number@"),
                                 error: "Number be less or equal 15."
                             }
@@ -301,6 +307,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "email",
+                                    id: "email",
                                     storageId: expect.stringMatching("text@"),
                                     error: "Must be in a form of an email."
                                 }
@@ -355,6 +362,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "url",
+                                    id: "url",
                                     storageId: expect.stringMatching("text@"),
                                     error: "Must be in a form of a url."
                                 }
@@ -403,6 +411,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "lowerCase",
+                                    id: "lowerCase",
                                     storageId: expect.stringMatching("text@"),
                                     error: "Everything must be lowercase."
                                 }
@@ -450,6 +459,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "upperCase",
+                                    id: "upperCase",
                                     storageId: expect.stringMatching("text@"),
                                     error: "Everything must be uppercase."
                                 }
@@ -493,6 +503,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "date",
+                                    id: "date",
                                     storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -536,6 +547,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "dateTime",
+                                    id: "dateTime",
                                     storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -582,6 +594,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "dateTimeZ",
+                                    id: "dateTimeZ",
                                     storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -625,6 +638,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "time",
+                                    id: "time",
                                     storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
@@ -676,8 +690,9 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "slug",
+                                id: "slug",
                                 error: "Field value must be unique.",
-                                storageId: expect.stringMatching("text@")
+                                storageId: "text@slug"
                             }
                         ]
                     }
@@ -792,7 +807,7 @@ describe("fieldValidations", () => {
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
                         isSomething: null,
-                        description: "",
+                        description: null,
                         slug: "apple"
                     },
                     error: null
