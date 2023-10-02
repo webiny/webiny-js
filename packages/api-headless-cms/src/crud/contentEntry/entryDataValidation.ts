@@ -1,11 +1,11 @@
 import {
+    CmsContext,
+    CmsEntry,
     CmsModel,
     CmsModelField,
     CmsModelFieldValidation,
-    CmsContext,
     CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateParams,
-    CmsEntry
+    CmsModelFieldValidatorValidateParams
 } from "~/types";
 import WebinyError from "@webiny/error";
 
@@ -13,7 +13,7 @@ type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) =
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 type InputData = Record<string, any>;
 
-interface ValidateArgs {
+interface ExecuteValidationParams {
     validatorList: PluginValidationList;
     field: CmsModelField;
     model: CmsModel;
@@ -25,7 +25,7 @@ interface ValidateArgs {
 type PossibleValue = boolean | number | string | null | undefined;
 
 const validateValue = async (
-    args: ValidateArgs,
+    params: ExecuteValidationParams,
     fieldValidators: CmsModelFieldValidation[],
     value: PossibleValue | PossibleValue[]
 ): Promise<string | null> => {
@@ -33,7 +33,7 @@ const validateValue = async (
         return null;
     }
 
-    const { validatorList, context, field, model, entry } = args;
+    const { validatorList, context, field, model, entry } = params;
     try {
         for (const fieldValidator of fieldValidators) {
             const name = fieldValidator.name;
@@ -80,18 +80,20 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
  * When multiple values is selected we must run validations on the array containing the values
  * And then on each value in the array
  */
-const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<string | null> => {
-    const { field, data } = args;
+const runFieldMultipleValuesValidations = async (
+    params: ExecuteValidationParams
+): Promise<string | null> => {
+    const { field, data } = params;
     const values = data[field.fieldId] || [];
     if (Array.isArray(values) === false) {
         return `Value of the field "${field.fieldId}" is not an array.`;
     }
-    const valuesError = await validateValue(args, field.listValidation || [], values);
+    const valuesError = await validateValue(params, field.listValidation || [], values);
     if (valuesError) {
         return valuesError;
     }
     for (const value of values) {
-        const valueError = await validateValue(args, field.validation || [], value);
+        const valueError = await validateValue(params, field.validation || [], value);
         if (valueError) {
             return valueError;
         }
@@ -105,21 +107,23 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
 /**
  * Runs validation on given value.
  */
-const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
-    const { data, field } = args;
+const runFieldValueValidations = async (
+    params: ExecuteValidationParams
+): Promise<string | null> => {
+    const { data, field } = params;
     const value = data[field.fieldId];
-    const error = await validateValue(args, field.validation || [], value);
+    const error = await validateValue(params, field.validation || [], value);
     if (error) {
         return error;
     }
     return validatePredefinedValue(field, value);
 };
 
-const execValidation = async (args: ValidateArgs): Promise<string | null> => {
-    if (args.field.multipleValues) {
-        return await runFieldMultipleValuesValidations(args);
+const execValidation = async (params: ExecuteValidationParams): Promise<string | null> => {
+    if (params.field.multipleValues) {
+        return await runFieldMultipleValuesValidations(params);
     }
-    return await runFieldValueValidations(args);
+    return await runFieldValueValidations(params);
 };
 
 export interface ValidateModelEntryDataParams {
@@ -128,6 +132,7 @@ export interface ValidateModelEntryDataParams {
     data: InputData;
     entry?: CmsEntry;
 }
+
 export const validateModelEntryData = async (params: ValidateModelEntryDataParams) => {
     const { context, model, entry, data } = params;
     /**
@@ -146,34 +151,116 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
             return acc;
         }, {} as PluginValidationList);
 
+    return await validate({
+        validatorList,
+        context,
+        model,
+        entry,
+        fields: model.fields,
+        data: {
+            ...entry?.values,
+            ...data
+        }
+    });
+};
+
+export const throwValidateModelEntryData = async (params: ValidateModelEntryDataParams) => {
+    const invalidFields = await validateModelEntryData(params);
+    if (invalidFields.length === 0) {
+        return;
+    }
+    throw new WebinyError("Validation failed.", "VALIDATION_FAILED", invalidFields);
+};
+
+/**
+ *
+ */
+interface FieldError {
+    id: string;
+    fieldId: string;
+    storageId: string;
+    error: any;
+}
+
+interface ValidateParams {
+    validatorList: PluginValidationList;
+    model: CmsModel;
+    data: InputData;
+    context: CmsContext;
+    fields: CmsModelField[];
+    entry?: CmsEntry;
+}
+
+const executeFieldValidation = async (
+    params: Omit<ValidateParams, "fields"> & {
+        field: CmsModelField;
+    }
+): Promise<FieldError[]> => {
     /**
-     * Loop through model fields and validate the corresponding data.
-     * Run validation only if the field has validation configured.
+     * Object field.
      */
-    const invalidFields = [];
-    for (const field of model.fields) {
-        const error = await execValidation({
-            model,
-            validatorList,
-            field,
-            data: {
-                ...(entry?.values || {}),
-                ...data
-            },
-            context,
-            entry
+    if (params.field.settings?.fields) {
+        const validations: FieldError[] = [];
+        for (const field of params.field.settings?.fields) {
+            const data = params.data?.[field.fieldId];
+            const defaultValue = field.multipleValues ? [] : {};
+            const errors = await executeFieldValidation({
+                ...params,
+                field,
+                data: data || defaultValue
+            });
+            if (errors.length === 0) {
+                continue;
+            }
+            validations.push(...errors);
+        }
+        return validations;
+    }
+    /**
+     * Dynamic Zone Field
+     */
+    //
+    else if (params.field.type === "dynamicZone") {
+        const validations: FieldError[] = [];
+        // const fields = (params.field.settings?.fields ||
+        //     []);
+        // for(const field of fields) {
+        // TODO implement dynamic zone validation
+        // const templates = (params.field.settings?.templates || []) as CmsDynamicZoneTemplate[];
+        // for(const template of templates) {
+        //     const fields = template.fields;
+        // }
+        // }
+        return validations;
+    }
+    const error = await execValidation({
+        ...params
+    });
+    if (!error) {
+        return [];
+    }
+    return [
+        {
+            id: params.field.id,
+            fieldId: params.field.fieldId,
+            storageId: params.field.storageId,
+            error
+        }
+    ];
+};
+
+const validate = async (params: ValidateParams): Promise<any[]> => {
+    const { fields } = params;
+    const errors: FieldError[] = [];
+    for (const field of fields) {
+        const results = await executeFieldValidation({
+            ...params,
+            field
         });
-        if (!error) {
+        if (results.length === 0) {
             continue;
         }
-        invalidFields.push({
-            fieldId: field.fieldId,
-            storageId: field.storageId,
-            error
-        });
+        errors.push(...results);
     }
-
-    if (invalidFields.length > 0) {
-        throw new WebinyError("Validation failed.", "VALIDATION_FAILED", invalidFields);
-    }
+    return errors;
 };
