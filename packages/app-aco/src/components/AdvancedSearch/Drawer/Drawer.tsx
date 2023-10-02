@@ -8,20 +8,19 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 
 import { QueryBuilder } from "~/components/AdvancedSearch/QueryBuilder/QueryBuilder";
-import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { FieldRaw, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
 
 import { DrawerContainer } from "./Drawer.styled";
 
 interface DrawerProps {
-    modelId: string;
+    repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
     fields: FieldRaw[];
-    existing?: QueryObjectDTO;
 }
 
-export const Drawer = ({ modelId, open, onClose, fields, onSubmit, existing }: DrawerProps) => {
+export const Drawer = ({ repository, open, onClose, fields, onSubmit }: DrawerProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -37,9 +36,8 @@ export const Drawer = ({ modelId, open, onClose, fields, onSubmit, existing }: D
             <DrawerContent dir="ltr">
                 <Header onClose={onClose} />
                 <QueryBuilder
-                    modelId={modelId}
+                    repository={repository}
                     fields={fields}
-                    existing={existing}
                     onForm={form => (ref.current = form)}
                     onSubmit={onSubmit}
                 />

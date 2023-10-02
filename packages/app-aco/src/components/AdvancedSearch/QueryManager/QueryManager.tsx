@@ -2,28 +2,27 @@ import React, { useState } from "react";
 
 import { QueryManager as QueryManagerComponent } from "./components/QueryManager";
 import { QueryManagerPresenter } from "./adapters/QueryManagerPresenter";
-import { useApolloClient } from "@apollo/react-hooks";
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject/QueryObjectRepository";
 
 interface QueryBuilderProps {
-    modelId: string;
+    repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
-    onEdit: (data?: QueryObjectDTO) => void;
+    onEdit: (callback?: () => void) => void;
     onSelect: (data: QueryObjectDTO) => void;
-    onCreate: () => void;
+    onCreate: (callback?: () => void) => void;
 }
 
 export const QueryManager = ({
-    modelId,
+    repository,
     open,
     onClose,
     onEdit,
     onSelect,
     onCreate
 }: QueryBuilderProps) => {
-    const client = useApolloClient();
-    const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(client, modelId));
+    const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(repository));
 
     return (
         <QueryManagerComponent

@@ -2,7 +2,7 @@ import React from "react";
 
 import { Boolean, DateWithoutTimezone, DateWithTimezone, Input, MultipleValues } from "./fields";
 
-import { FieldDTO, FieldType } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { FieldDTO, FieldType } from "~/components/AdvancedSearch/QueryObject";
 
 interface InputFieldProps {
     field?: FieldDTO;

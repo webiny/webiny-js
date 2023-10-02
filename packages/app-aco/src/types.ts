@@ -3,7 +3,7 @@ import {
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
-import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryManager/domain";
+import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
 export * from "~/graphql/records/types";
 

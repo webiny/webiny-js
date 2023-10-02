@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Observer, observer } from "mobx-react-lite";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
-import { QueryObjectDTO } from "../domain";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { Filter } from "./Filter";
 import { CellInner, Content, GroupContainer } from "./Querybuilder.styled";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -48,7 +48,9 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                     {() => (
                         <Content>
                             <Content.Panel>
-                                {JSON.stringify(viewModel.queryObject)}
+                                <button onClick={() => presenter.persistViewModel()}>
+                                    Persist
+                                </button>
                                 <Grid>
                                     <Cell span={12} align={"middle"}>
                                         <CellInner align={"center"}>

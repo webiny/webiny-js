@@ -11,7 +11,7 @@ import {
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryManager/domain";
+import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
 const ERROR_FIELD = /* GraphQL */ `
     {

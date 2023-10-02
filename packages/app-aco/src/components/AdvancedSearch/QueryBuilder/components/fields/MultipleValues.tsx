@@ -3,7 +3,7 @@ import React from "react";
 import { Bind } from "@webiny/form";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 
-import { Predefined } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { Predefined } from "~/components/AdvancedSearch/QueryObject";
 
 interface MultipleValuesProps {
     predefined: Predefined[];

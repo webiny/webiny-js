@@ -1,12 +1,15 @@
 import React from "react";
+import { Observer } from "mobx-react-lite";
 import { Bind } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { FieldDTO, FilterDTO } from "../domain";
-import { CellInner, FilterWrapper } from "./Querybuilder.styled";
 import { Select } from "@webiny/ui/Select";
+
 import { InputField } from "./InputField";
 import { RemoveFilter } from "./controls";
-import { Observer } from "mobx-react-lite";
+
+import { FieldDTO, FilterDTO } from "../../QueryObject";
+
+import { CellInner, FilterWrapper } from "./Querybuilder.styled";
 
 interface FilterProps {
     name: string;

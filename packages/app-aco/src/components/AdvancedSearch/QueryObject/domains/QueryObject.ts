@@ -2,6 +2,14 @@ import zod from "zod";
 import { generateId } from "@webiny/utils";
 import { Operation } from "./Operation";
 
+export interface QueryObjectRaw {
+    id: string;
+    name: string;
+    description?: string;
+    modelId: string;
+    operation: Operation;
+    groups: string[];
+}
 export interface FilterDTO {
     field: string;
     condition: string;
@@ -67,15 +75,16 @@ export class QueryObject {
         return new QueryObject(modelId, Operation.AND, [new Group(Operation.AND, [new Filter()])]);
     }
 
-    static create(data: QueryObjectDTO) {
-        return new QueryObject(
-            data.modelId,
-            data.operation,
-            data.groups,
-            data.id,
-            data.name,
-            data.description
-        );
+    static create(modelId: string, existing?: QueryObjectDTO) {
+        // Extract the properties from 'data' or use defaults
+        const operation = existing?.operation || Operation.AND;
+        const groups = existing?.groups || [new Group(Operation.AND, [new Filter()])];
+        const id = existing?.id;
+        const name = existing?.name;
+        const description = existing?.description;
+
+        // Create a new instance of QueryObject with the extracted properties
+        return new QueryObject(modelId, operation, groups, id, name, description);
     }
 
     static validate(data: QueryObjectDTO) {

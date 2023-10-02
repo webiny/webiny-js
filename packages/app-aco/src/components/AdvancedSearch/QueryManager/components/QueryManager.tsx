@@ -16,16 +16,16 @@ import {
 
 import { DialogContainer, ListActions } from "./QueryManager.styled";
 import { QueryManagerPresenter } from "~/components/AdvancedSearch/QueryManager/adapters";
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
+import { Mode, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 interface QueryManagerProps {
     presenter: QueryManagerPresenter;
     open: boolean;
     onClose: () => void;
-    onCreate: () => void;
-    onEdit: (filter?: QueryObjectDTO) => void;
+    onCreate: (callback?: () => void) => void;
+    onEdit: (callback?: () => void) => void;
     onSelect: (data: QueryObjectDTO) => void;
 }
 
@@ -68,7 +68,14 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
                                                     />
                                                 }
                                             >
-                                                <MenuItem onClick={() => props.onEdit(filter)}>
+                                                <MenuItem
+                                                    onClick={() =>
+                                                        props.onEdit(() => {
+                                                            presenter.setMode(Mode.UPDATE);
+                                                            presenter.selectFilter(filter.id);
+                                                        })
+                                                    }
+                                                >
                                                     Edit
                                                 </MenuItem>
                                                 <MenuItem
@@ -88,7 +95,7 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
                     <DialogActions>
                         <ButtonDefault
                             onClick={() => {
-                                presenter.setSelected();
+                                presenter.selectFilter();
                                 props.onClose();
                             }}
                         >
@@ -96,8 +103,10 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
                         </ButtonDefault>
                         <ButtonPrimary
                             onClick={() => {
-                                presenter.setSelected();
-                                props.onCreate();
+                                props.onCreate(() => {
+                                    presenter.setMode(Mode.CREATE);
+                                    presenter.selectFilter();
+                                });
                             }}
                         >
                             {"Create new"}

@@ -4,11 +4,13 @@ import {
     FieldDTO,
     FieldMapper,
     FieldRaw,
+    Mode,
+    QueryObjectRepository,
     Operation,
     QueryObject,
     QueryObjectDTO,
     QueryObjectMapper
-} from "../domain";
+} from "../../QueryObject";
 
 export interface IQueryBuilderPresenter {
     getViewModel: () => QueryBuilderViewModel;
@@ -28,25 +30,33 @@ export interface QueryBuilderViewModel {
 }
 
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
+    private readonly repository: QueryObjectRepository;
     private queryObject: QueryBuilderViewModel["queryObject"];
     private readonly fields: QueryBuilderViewModel["fields"];
-    private readonly modelId: string;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
-    constructor(modelId: string, fields: FieldRaw[]) {
-        this.modelId = modelId;
+    constructor(repository: QueryObjectRepository, fields: FieldRaw[]) {
+        this.repository = repository;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
-        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(modelId));
+        this.queryObject = QueryObjectMapper.toDTO(
+            QueryObject.createEmpty(this.repository.modelId)
+        );
         makeAutoObservable(this);
     }
 
-    create(source?: QueryObjectDTO) {
-        if (source) {
-            this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(source));
-        } else {
-            this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
+    create() {
+        this.queryObject = QueryObjectMapper.toDTO(
+            QueryObject.create(this.repository.modelId, this.repository?.selected)
+        );
+    }
+
+    async persistViewModel() {
+        if (this.repository.mode === Mode.UPDATE) {
+            return await this.repository.updateFilter(this.queryObject);
         }
+
+        return await this.repository.createFilter(this.queryObject);
     }
 
     getViewModel(): QueryBuilderViewModel {
