@@ -29,7 +29,11 @@ import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import {
+    createFileManagerContext,
+    createFileManagerGraphQL,
+    FilePhysicalStoragePlugin
+} from "@webiny/api-file-manager";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 
 import {
@@ -83,6 +87,15 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 storageOperations: fileManagerStorage.storageOperations
             }),
             createFileManagerGraphQL(),
+            /**
+             * Mock physical file storage plugin.
+             */
+            new FilePhysicalStoragePlugin({
+                // eslint-disable-next-line
+                upload: async () => {},
+                // eslint-disable-next-line
+                delete: async () => {}
+            }),
             createHeadlessCmsGraphQL(),
             createAco(),
             plugins

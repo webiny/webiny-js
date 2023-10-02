@@ -2,11 +2,22 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mdbid } from "@webiny/utils";
 
-const FOLDER_TYPE = "test-folders";
+const FOLDER_TYPE = "FmFile";
 
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
+
+const expectNotAuthorized = async (promise: Promise<any>) => {
+    await expect(promise).resolves.toEqual({
+        data: null,
+        error: {
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: null,
+            message: "Not authorized!"
+        }
+    });
+};
 
 const createSampleFileData = (overrides: Record<string, any> = {}) => {
     const id = mdbid();
@@ -24,7 +35,7 @@ const createSampleFileData = (overrides: Record<string, any> = {}) => {
     };
 };
 
-describe("Folder Level Permissions", () => {
+describe("Folder Level Permissions - File Manager GraphQL API", () => {
     const gqlIdentityA = useGraphQlHandler({ identity: identityA });
     const gqlIdentityB = useGraphQlHandler({
         identity: identityB,
@@ -137,18 +148,11 @@ describe("Folder Level Permissions", () => {
         // Getting files in the folder should be forbidden for identity C.
         for (let i = 0; i < createdFiles.length; i++) {
             const createdFile = createdFiles[i];
-            await expect(
+            await expectNotAuthorized(
                 gqlIdentityC.fm.getFile({ id: createdFile.id }).then(([response]) => {
                     return response.data.fileManager.getFile;
                 })
-            ).resolves.toEqual({
-                data: null,
-                error: {
-                    code: "SECURITY_NOT_AUTHORIZED",
-                    data: null,
-                    message: "Not authorized!"
-                }
-            });
+            );
         }
 
         // Listing files in the folder should be forbidden for identity C.
@@ -167,6 +171,95 @@ describe("Folder Level Permissions", () => {
         });
 
         // Creating a file in the folder should be forbidden for identity C.
+        await expectNotAuthorized(
+            gqlIdentityC.fm
+                .createFile({
+                    data: createSampleFileData({
+                        location: { folderId: folder.id }
+                    })
+                })
+                .then(([response]) => {
+                    return response.data.fileManager.createFile;
+                })
+        );
+
+        // Updating a file in the folder should be forbidden for identity C.
+        for (let i = 0; i < createdFiles.length; i++) {
+            const createdFile = createdFiles[i];
+            await expectNotAuthorized(
+                gqlIdentityC.fm
+                    .updateFile({
+                        id: createdFile.id,
+                        data: { name: createdFile.name + "-update" }
+                    })
+                    .then(([response]) => {
+                        return response.data.fileManager.updateFile;
+                    })
+            );
+        }
+
+        // Deleting a file in the folder should be forbidden for identity C.
+        for (let i = 0; i < createdFiles.length; i++) {
+            const createdFile = createdFiles[i];
+            await expectNotAuthorized(
+                gqlIdentityC.fm
+                    .deleteFile({
+                        id: createdFile.id,
+                        data: { name: createdFile.name + "-update" }
+                    })
+                    .then(([response]) => {
+                        return response.data.fileManager.deleteFile;
+                    })
+            );
+        }
+
+        // Set identity C as owner of the folder. CRUD should now be allowed.
+        await gqlIdentityA.aco.updateFolder({
+            id: folder.id,
+            data: {
+                permissions: [
+                    {
+                        target: `identity:${identityC.id}`,
+                        level: "owner"
+                    }
+                ]
+            }
+        });
+
+        // Getting files in the folder should be now allowed for identity C.
+        for (let i = 0; i < createdFiles.length; i++) {
+            const createdFile = createdFiles[i];
+            await expect(
+                gqlIdentityC.fm.getFile({ id: createdFile.id }).then(([response]) => {
+                    return response.data.fileManager.getFile;
+                })
+            ).resolves.toMatchObject({
+                data: { id: createdFile.id },
+                error: null
+            });
+        }
+
+        // Listing files in the folder should be now allowed for identity C.
+        await expect(
+            gqlIdentityC.fm.listFiles().then(([response]) => {
+                return response.data.fileManager.listFiles;
+            })
+        ).resolves.toMatchObject({
+            data: [
+                { id: createdFiles[3].id },
+                { id: createdFiles[2].id },
+                { id: createdFiles[1].id },
+                { id: createdFiles[0].id }
+            ],
+            error: null,
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 4
+            }
+        });
+
+        // Creating a file in the folder should be now allowed for identity C.
         await expect(
             gqlIdentityC.fm
                 .createFile({
@@ -177,16 +270,11 @@ describe("Folder Level Permissions", () => {
                 .then(([response]) => {
                     return response.data.fileManager.createFile;
                 })
-        ).resolves.toEqual({
-            data: null,
-            error: {
-                code: "SECURITY_NOT_AUTHORIZED",
-                data: null,
-                message: "Not authorized!"
-            }
+        ).resolves.toMatchObject({
+            data: { id: expect.any(String) }
         });
 
-        // Updating a file in the folder should be forbidden for identity C.
+        // Updating a file in the folder should be now allowed for identity C.
         for (let i = 0; i < createdFiles.length; i++) {
             const createdFile = createdFiles[i];
             await expect(
@@ -198,17 +286,12 @@ describe("Folder Level Permissions", () => {
                     .then(([response]) => {
                         return response.data.fileManager.updateFile;
                     })
-            ).resolves.toEqual({
-                data: null,
-                error: {
-                    code: "SECURITY_NOT_AUTHORIZED",
-                    data: null,
-                    message: "Not authorized!"
-                }
+            ).resolves.toMatchObject({
+                data: { name: createdFile.name + "-update" }
             });
         }
 
-        // Deleting a file in the folder should be forbidden for identity C.
+        // Deleting a file in the folder should be now allowed for identity C.
         for (let i = 0; i < createdFiles.length; i++) {
             const createdFile = createdFiles[i];
             await expect(
@@ -220,14 +303,7 @@ describe("Folder Level Permissions", () => {
                     .then(([response]) => {
                         return response.data.fileManager.deleteFile;
                     })
-            ).resolves.toEqual({
-                data: null,
-                error: {
-                    code: "SECURITY_NOT_AUTHORIZED",
-                    data: null,
-                    message: "Not authorized!"
-                }
-            });
+            ).resolves.toMatchObject({ data: true, error: null });
         }
     });
 });
