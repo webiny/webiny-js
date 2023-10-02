@@ -45,6 +45,7 @@ export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
+export { getSupportedNodeList } from "~/utils/getSupportedNodeList";
 // Commands
 export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 // types
