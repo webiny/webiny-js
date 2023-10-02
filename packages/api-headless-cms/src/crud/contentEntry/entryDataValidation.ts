@@ -1,5 +1,6 @@
 import {
     CmsContext,
+    CmsDynamicZoneTemplate,
     CmsEntry,
     CmsModel,
     CmsModelField,
@@ -196,12 +197,17 @@ const executeFieldValidation = async (
         field: CmsModelField;
     }
 ): Promise<FieldError[]> => {
+    // TODO put per-field validation into plugins.
     /**
      * Object field.
      */
-    if (params.field.settings?.fields) {
+    if (params.field.type === "object" && params.field.settings?.fields) {
+        const fields = params.field.settings?.fields;
+        if (!Array.isArray(fields)) {
+            return [];
+        }
         const validations: FieldError[] = [];
-        for (const field of params.field.settings?.fields) {
+        for (const field of fields) {
             const data = params.data?.[field.fieldId];
             const defaultValue = field.multipleValues ? [] : {};
             const errors = await executeFieldValidation({
@@ -222,15 +228,34 @@ const executeFieldValidation = async (
     //
     else if (params.field.type === "dynamicZone") {
         const validations: FieldError[] = [];
-        // const fields = (params.field.settings?.fields ||
-        //     []);
-        // for(const field of fields) {
-        // TODO implement dynamic zone validation
-        // const templates = (params.field.settings?.templates || []) as CmsDynamicZoneTemplate[];
-        // for(const template of templates) {
-        //     const fields = template.fields;
-        // }
-        // }
+        const templates = (params.field.settings?.templates || []) as CmsDynamicZoneTemplate[];
+        for (const template of templates) {
+            const fields = template.fields;
+            const data = params.data?.[params.field.fieldId] as any[];
+            if (!Array.isArray(data)) {
+                continue;
+            }
+            const templateValue = data.find(value => {
+                return value && !!value[template.gqlTypeName];
+            });
+            if (!templateValue) {
+                continue;
+            }
+            const value = templateValue[template.gqlTypeName] || {};
+            for (const field of fields) {
+                const defaultValue = field.multipleValues ? [] : {};
+                const errors = await executeFieldValidation({
+                    ...params,
+                    field,
+                    data: value || defaultValue
+                });
+                if (errors.length === 0) {
+                    continue;
+                }
+                validations.push(...errors);
+            }
+        }
+
         return validations;
     }
     const error = await execValidation({
