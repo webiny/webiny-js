@@ -164,7 +164,9 @@ export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
 }
 
 export interface ApwReviewersGroup extends ApwBaseFields {
-    displayName: string | null;
+    name: string;
+    slug: string;
+    description?: string;
     reviewers: ApwReviewer[];
 }
 
@@ -340,13 +342,17 @@ export interface UpdateApwContentReviewParams {
 }
 
 export interface CreateApwReviewsGroupParams {
-    displayName: string;
+    name: string;
+    slug: string;
+    description?: string;
     reviewers: ApwReviewer[];
 }
 
 export interface UpdateApwReviewsGroupParams {
     groupId: string;
-    displayName: string;
+    name: string;
+    slug: string;
+    description?: string;
     reviewers: ApwReviewer[];
 }
 
@@ -582,7 +588,9 @@ interface StorageOperationsDeleteReviewerParams {
 }
 
 interface CreateApwReviewersGroupData {
-    displayName: string;
+    name: string;
+    slug: string;
+    description?: string;
     reviewers: ApwReviewer[];
 }
 
@@ -1008,7 +1016,9 @@ export type WorkflowModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "
  * @category Lifecycle events
  */
 export interface OnReviewerGroupBeforeCreateTopicParams {
-    displayName: string;
+    name: string;
+    slug: string;
+    description?: string;
     reviewers: ApwReviewer[];
 }
 
