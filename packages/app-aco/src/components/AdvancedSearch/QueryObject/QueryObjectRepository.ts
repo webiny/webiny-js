@@ -39,7 +39,9 @@ export class QueryObjectRepository {
         const filterDTO = QueryObjectMapper.toDTO(response);
 
         if (response) {
-            this.filters = [...this.filters, filterDTO];
+            runInAction(() => {
+                this.filters = [filterDTO, ...this.filters];
+            });
         }
     }
 
@@ -52,14 +54,17 @@ export class QueryObjectRepository {
 
             if (filterIndex > -1) {
                 const filterDTO = QueryObjectMapper.toDTO(response);
-                this.filters = [
-                    ...this.filters.slice(0, filterIndex),
-                    {
-                        ...this.filters[filterIndex],
-                        ...filterDTO
-                    },
-                    ...this.filters.slice(filterIndex + 1)
-                ];
+
+                runInAction(() => {
+                    this.filters = [
+                        ...this.filters.slice(0, filterIndex),
+                        {
+                            ...this.filters[filterIndex],
+                            ...filterDTO
+                        },
+                        ...this.filters.slice(filterIndex + 1)
+                    ];
+                });
             }
         }
     }
@@ -68,7 +73,9 @@ export class QueryObjectRepository {
         const response = await this.gateway.delete(id);
 
         if (response) {
-            this.filters = this.filters.filter(filter => filter.id !== id);
+            runInAction(() => {
+                this.filters = this.filters.filter(filter => filter.id !== id);
+            });
         }
     }
 
