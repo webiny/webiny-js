@@ -1,15 +1,15 @@
 import {
     CmsEntry as BaseCmsEntry,
-    OnEntryBeforePublishTopicParams,
     OnEntryAfterPublishTopicParams,
-    OnEntryAfterUnpublishTopicParams
+    OnEntryAfterUnpublishTopicParams,
+    OnEntryBeforePublishTopicParams
 } from "@webiny/api-headless-cms/types";
 import {
-    Page,
-    OnPageBeforeCreateTopicParams,
     OnPageBeforeCreateFromTopicParams,
-    OnPageBeforeUpdateTopicParams,
+    OnPageBeforeCreateTopicParams,
     OnPageBeforePublishTopicParams,
+    OnPageBeforeUpdateTopicParams,
+    Page,
     PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/api/types";
@@ -161,6 +161,13 @@ export interface ApwReviewer extends ApwBaseFields {
 
 export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
     email: string;
+}
+
+export interface ApwReviewersGroup extends ApwBaseFields {
+    name: string;
+    slug: string;
+    description?: string;
+    reviewers: ApwReviewer[];
 }
 
 export interface ApwComment extends ApwBaseFields {
@@ -334,6 +341,21 @@ export interface UpdateApwContentReviewParams {
     content?: ApwContentReviewContent;
 }
 
+export interface CreateApwReviewsGroupParams {
+    name: string;
+    slug: string;
+    description?: string;
+    reviewers: ApwReviewer[];
+}
+
+export interface UpdateApwReviewsGroupParams {
+    groupId: string;
+    name: string;
+    slug: string;
+    description?: string;
+    reviewers: ApwReviewer[];
+}
+
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
     get(id: string): Promise<TEntry>;
 
@@ -465,6 +487,19 @@ export interface ApwContentReviewCrud
     onContentReviewBeforeList: Topic<OnContentReviewBeforeListTopicParams>;
 }
 
+export interface ApwReviewsGroupCrud
+    extends BaseApwCrud<
+        ApwReviewersGroup,
+        CreateApwReviewsGroupParams,
+        any //UpdateApwReviewsGroupParams
+    > {
+    /**
+     * Lifecycle events
+     */
+    onReviewersGroupBeforeCreate: Topic<OnReviewerGroupBeforeCreateTopicParams>;
+    onReviewersGroupAfterCreate: Topic<OnReviewerGroupAfterCreateTopicParams>;
+}
+
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
@@ -550,6 +585,17 @@ interface StorageOperationsUpdateReviewerParams {
 
 interface StorageOperationsDeleteReviewerParams {
     id: string;
+}
+
+interface CreateApwReviewersGroupData {
+    name: string;
+    slug: string;
+    description?: string;
+    reviewers: ApwReviewer[];
+}
+
+interface StorageOperationsCreateReviewersGroupParams {
+    data: CreateApwReviewersGroupData;
 }
 
 interface StorageOperationsGetParams {
@@ -642,6 +688,12 @@ export interface ApwReviewerStorageOperations {
     deleteReviewer(params: StorageOperationsDeleteReviewerParams): Promise<Boolean>;
 }
 
+export interface ApwReviewersGroupStorageOperations {
+    createReviewersGroup(
+        params: StorageOperationsCreateReviewersGroupParams
+    ): Promise<ApwReviewersGroup>;
+}
+
 export interface ApwWorkflowStorageOperations {
     /*
      * Workflow methods
@@ -716,6 +768,7 @@ export interface ApwCommentStorageOperations {
 
 export interface ApwStorageOperations
     extends ApwReviewerStorageOperations,
+        ApwReviewersGroupStorageOperations,
         ApwWorkflowStorageOperations,
         ApwContentReviewStorageOperations,
         ApwChangeRequestStorageOperations,
@@ -958,6 +1011,23 @@ export interface OnWorkflowAfterDeleteTopicParams {
 }
 
 export type WorkflowModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnReviewerGroupBeforeCreateTopicParams {
+    name: string;
+    slug: string;
+    description?: string;
+    reviewers: ApwReviewer[];
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnReviewerGroupAfterCreateTopicParams {
+    group: ApwReviewersGroup;
+}
 
 /**
  * Headless CMS

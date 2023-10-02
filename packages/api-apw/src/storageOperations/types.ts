@@ -1,10 +1,11 @@
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import {
-    ApwReviewerStorageOperations as BaseApwReviewerStorageOperations,
-    ApwWorkflowStorageOperations as BaseApwWorkflowStorageOperations,
-    ApwContentReviewStorageOperations as BaseApwContentReviewStorageOperations,
     ApwChangeRequestStorageOperations as BaseApwChangeRequestStorageOperations,
-    ApwCommentStorageOperations as BaseApwCommentStorageOperations
+    ApwCommentStorageOperations as BaseApwCommentStorageOperations,
+    ApwContentReviewStorageOperations as BaseApwContentReviewStorageOperations,
+    ApwReviewersGroupStorageOperations as BaseApwReviewersGroupStorageOperations,
+    ApwReviewerStorageOperations as BaseApwReviewerStorageOperations,
+    ApwWorkflowStorageOperations as BaseApwWorkflowStorageOperations
 } from "~/types";
 
 export interface ApwCommentStorageOperations extends BaseApwCommentStorageOperations {
@@ -19,6 +20,13 @@ export interface ApwReviewerStorageOperations extends BaseApwReviewerStorageOper
      * @internal
      */
     getReviewerModel(): Promise<CmsModel>;
+}
+
+export interface ApwReviewersGroupStorageOperations extends BaseApwReviewersGroupStorageOperations {
+    /**
+     * @internal
+     */
+    getReviewersGroupModel(): Promise<CmsModel>;
 }
 
 export interface ApwWorkflowStorageOperations extends BaseApwWorkflowStorageOperations {

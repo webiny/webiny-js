@@ -8,6 +8,7 @@ import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { isInstallationPending } from "~/plugins/utils";
+import { createReviewersGroupModelDefinition } from "~/storageOperations/models/reviewersGroup.model";
 
 export const createApwModels = (context: CmsContext) => {
     /**
@@ -52,6 +53,7 @@ export const createApwModels = (context: CmsContext) => {
      */
     const changeRequestModelDefinition = createChangeRequestModelDefinition();
     const reviewerModelDefinition = createReviewerModelDefinition();
+    const reviewersGroupDefinition = createReviewersGroupModelDefinition();
     const workflowModelDefinition = createWorkflowModelDefinition({
         reviewerModelId: reviewerModelDefinition.modelId
     });
@@ -66,6 +68,7 @@ export const createApwModels = (context: CmsContext) => {
         workflowModelDefinition,
         contentReviewModelDefinition,
         reviewerModelDefinition,
+        reviewersGroupDefinition,
         changeRequestModelDefinition,
         commentModelDefinition
     ];

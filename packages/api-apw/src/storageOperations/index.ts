@@ -8,8 +8,15 @@ import { createChangeRequestStorageOperations } from "./changeRequestStorageOper
 import { createCommentStorageOperations } from "~/storageOperations/commentStorageOperations";
 import { createApwModels } from "./models";
 import { Security } from "@webiny/api-security/types";
+import { createReviewersGroupStorageOperations } from "~/storageOperations/reviewsGroupStorageOperations";
 
 export interface CreateApwStorageOperationsParams {
+    cms: HeadlessCms;
+    security: Security;
+    getCmsContext: () => CmsContext;
+}
+
+export interface CreateApwReviewersGroupStorageOperationsParams {
     cms: HeadlessCms;
     security: Security;
     getCmsContext: () => CmsContext;
@@ -36,6 +43,7 @@ export const createStorageOperations = (
 
     return {
         ...createReviewerStorageOperations(params),
+        ...createReviewersGroupStorageOperations(params),
         ...createWorkflowStorageOperations(params),
         ...createContentReviewStorageOperations(params),
         ...createChangeRequestStorageOperations(params),
