@@ -1,5 +1,4 @@
-const { Converter } = require("aws-sdk/clients/dynamodb");
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+const { getDocumentClient, marshall } = require("@webiny/aws-sdk/client-dynamodb");
 
 const processDelete = async (documentClient, handler, params) => {
     if (!params || params.TableName !== process.env.DB_TABLE_ELASTICSEARCH) {
@@ -7,7 +6,7 @@ const processDelete = async (documentClient, handler, params) => {
     }
     // Get original item from DDB to use as OldImage
     const { Key, TableName } = params;
-    const { Item } = await documentClient.get({ Key, TableName }).promise();
+    const { Item } = await documentClient.get({ Key, TableName });
 
     if (!Item || !Item.index) {
         return;
@@ -42,9 +41,10 @@ const processBatchWrite = async (documentClient, handler, params) => {
     for (let i = 0; i < operations.length; i++) {
         const { PutRequest, DeleteRequest } = operations[i];
         if (DeleteRequest) {
-            const { Item } = await documentClient
-                .get({ Key: DeleteRequest.Key, TableName: process.env.DB_TABLE_ELASTICSEARCH })
-                .promise();
+            const { Item } = await documentClient.get({
+                Key: DeleteRequest.Key,
+                TableName: process.env.DB_TABLE_ELASTICSEARCH
+            });
 
             if (!Item) {
                 const { PK, SK } = DeleteRequest.Key;
@@ -133,9 +133,9 @@ const createDynamoStreamRecord = (eventName, data = {}) => {
         awsRegion: "eu-central-1",
         dynamodb: {
             ApproximateCreationDateTime: 1613939165,
-            Keys: Converter.marshall(Keys),
-            NewImage: NewImage ? Converter.marshall(NewImage) : undefined,
-            OldImage: OldImage ? Converter.marshall(OldImage) : undefined,
+            Keys: marshall(Keys),
+            NewImage: NewImage ? marshall(NewImage) : undefined,
+            OldImage: OldImage ? marshall(OldImage) : undefined,
             SequenceNumber: "300000000029551639656",
             SizeBytes: 14,
             StreamViewType: "NEW_AND_OLD_IMAGES"
@@ -151,15 +151,13 @@ const createDynamoStreamEvent = (...records) => {
 
 let documentClient = null;
 
-const getDocumentClient = () => {
+const getClient = () => {
     if (!documentClient) {
-        documentClient = new DocumentClient({
-            convertEmptyValues: true,
+        documentClient = getDocumentClient({
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-            sslEnabled: false,
+            tls: false,
             region: "local",
-            accessKeyId: "test",
-            secretAccessKey: "test"
+            credentials: { accessKeyId: "test", secretAccessKey: "test" }
         });
     }
 
@@ -167,7 +165,7 @@ const getDocumentClient = () => {
 };
 
 module.exports = {
-    getDocumentClient,
+    getDocumentClient: getClient,
     simulateStream,
     createDynamoStreamEvent,
     createDynamoStreamRecord

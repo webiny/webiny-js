@@ -35,14 +35,8 @@ export async function importPage({
 
     log(`Downloading Page data file: ${pageDataFileKey} at "${PAGE_DATA_FILE_PATH}"`);
     // Download and save page data file in disk.
-    await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(pageDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(PAGE_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
-    });
+    const readStream = await s3Stream.readStream(pageDataFileKey);
+    readStream.pipe(createWriteStream(PAGE_DATA_FILE_PATH));
 
     // Load the page data file from disk.
     log(`Load file ${pageDataFileKey}`);

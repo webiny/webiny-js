@@ -93,7 +93,9 @@ export const createEventHandler = () => {
             const operations = [];
 
             for (const record of event.Records) {
-                const dynamodb = record.dynamodb as Required<StreamRecord>;
+                const dynamodb = record.dynamodb as Required<
+                    Omit<StreamRecord, "ApproximateCreationDateTime">
+                >;
                 if (!dynamodb) {
                     continue;
                 }

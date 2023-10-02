@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { useHandler } from "~tests/useHandler";
 import { createTable } from "~/createTable";
 import { createDdbMigration } from "~tests/createDdbMigration";
@@ -34,13 +34,11 @@ const groupMigrations = (migrations: MigrationRunItem[]) => {
 };
 
 describe("Migration Lambda Handler", () => {
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
+    const documentClient = getDocumentClient({
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-        sslEnabled: false,
+        tls: false,
         region: "local",
-        accessKeyId: "test",
-        secretAccessKey: "test"
+        credentials: { accessKeyId: "test", secretAccessKey: "test" }
     });
 
     const table = createTable({ name: String(process.env.DB_TABLE), documentClient });
@@ -63,7 +61,7 @@ describe("Migration Lambda Handler", () => {
         await handler({ version: "0.1.0" });
 
         // Doing this assertion using native table.scan, to verify the DynamoDB item structure.
-        const { Items, Count } = await table.scan();
+        const { Items, Count } = (await table.scan()) as any;
         expect(Count).toEqual(2);
 
         const migrationRecord = Items.find((item: { TYPE: string }) => item.TYPE === "migration");

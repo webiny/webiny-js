@@ -36,14 +36,8 @@ export async function importBlock({
 
     log(`Downloading Block data file: ${blockDataFileKey} at "${BLOCK_DATA_FILE_PATH}"`);
     // Download and save block data file in disk.
-    await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(blockDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(BLOCK_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
-    });
+    const readStream = await s3Stream.readStream(blockDataFileKey);
+    readStream.pipe(createWriteStream(BLOCK_DATA_FILE_PATH));
 
     // Load the block data file from disk.
     log(`Load file ${blockDataFileKey}`);

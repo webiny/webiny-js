@@ -1,5 +1,5 @@
 import { DynamoDbDriver } from "../src/index";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Db } from "@webiny/db";
 
 jest.setTimeout(120000);
@@ -11,10 +11,9 @@ describe("connection timeouts test", () => {
         const db = new Db({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
+                documentClient: getDocumentClient({
                     endpoint: "invalid-table",
-                    sslEnabled: false,
+                    tls: false,
                     region: "local"
                 })
             })
@@ -38,10 +37,9 @@ describe("connection timeouts test", () => {
     test("should throw error if invalid table specified", async () => {
         const db = new Db({
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
+                documentClient: getDocumentClient({
                     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
+                    tls: false,
                     region: "local"
                 })
             })

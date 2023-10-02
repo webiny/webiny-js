@@ -1,10 +1,9 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import { getDocumentClient } from "./getDocumentClient";
+import { DynamoDBClient, getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface CreateTableParams {
     name?: string;
-    documentClient?: DocumentClient;
+    documentClient?: DynamoDBClient;
 }
 
 export const getPrimaryDynamoDbTable = (params?: CreateTableParams) => {
@@ -14,7 +13,14 @@ export const getPrimaryDynamoDbTable = (params?: CreateTableParams) => {
         name: name || String(process.env.DB_TABLE),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient || getDocumentClient(),
+        DocumentClient:
+            documentClient ||
+            getDocumentClient({
+                endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+                tls: false,
+                region: "local",
+                credentials: { accessKeyId: "test", secretAccessKey: "test" }
+            }),
         indexes: {
             GSI1: {
                 partitionKey: "GSI1_PK",

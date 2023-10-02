@@ -9,7 +9,7 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
@@ -55,13 +55,11 @@ interface Params {
 
 export const useHandler = (params: Params) => {
     const elasticsearch = createElasticsearchClient();
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
+    const documentClient = getDocumentClient({
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-        sslEnabled: false,
+        tls: false,
         region: "local",
-        accessKeyId: "test",
-        secretAccessKey: "test"
+        credentials: { accessKeyId: "test", secretAccessKey: "test" }
     });
 
     const storageOperations = createStorageOperations({

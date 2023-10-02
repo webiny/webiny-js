@@ -38,14 +38,8 @@ export async function importTemplate({
 
     log(`Downloading Template data file: ${templateDataFileKey} at "${TEMPLATE_DATA_FILE_PATH}"`);
     // Download and save template data file in disk.
-    await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(templateDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(TEMPLATE_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
-    });
+    const readStream = await s3Stream.readStream(templateDataFileKey);
+    readStream.pipe(createWriteStream(TEMPLATE_DATA_FILE_PATH));
 
     // Load the template data file from disk.
     log(`Load file ${templateDataFileKey}`);
