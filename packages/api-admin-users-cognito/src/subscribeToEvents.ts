@@ -1,7 +1,6 @@
 import { PermissionsTenantLink, SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
-import { migration } from "~/migration";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
@@ -164,7 +163,4 @@ export const subscribeToEvents = (context: Context): void => {
     adminUsers.onInstall.subscribe(async ({ user }) => {
         await adminUsers.createUser(user);
     });
-
-    // Setup migration script
-    migration(context);
 };
