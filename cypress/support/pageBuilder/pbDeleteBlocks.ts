@@ -1,5 +1,14 @@
 import { GraphQLClient } from "graphql-request";
 
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbDeleteBlocks(): any;
+        }
+    }
+}
+
 const mutation = /* GraphQL */ `
     mutation DeletePageBlock($id: ID!) {
         pageBuilder {

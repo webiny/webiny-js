@@ -5,9 +5,11 @@ context("Page Builder - Blocks", () => {
     const blockCategoryName = nanoid(10); // Generate a random 10-character lowercase string
     const blockCategorySlug = nanoid(10); // Generate another random 10-character lowercase string
 
-    beforeEach(() => cy.login());
-    beforeEach(() => cy.pbDeleteAllBlocks());
-    beforeEach(() => cy.pbDeleteAllBlockCategories());
+    beforeEach(() => {
+        cy.login();
+        cy.pbDeleteAllBlocks();
+        cy.pbDeleteAllBlockCategories();
+    });
 
     it("Should be able to create a block category and a block and then edit, duplicate and delete it", () => {
         // Navigates to page, checks for proper loading and then clicks create new category button.

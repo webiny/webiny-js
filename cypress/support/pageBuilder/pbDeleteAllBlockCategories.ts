@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 
-const mutation = /* GraphQL */ `
+const MUTATION = /* GraphQL */ `
     mutation DeleteBlockCategory($slug: String!) {
         pageBuilder {
             deleteBlockCategory(slug: $slug) {
@@ -12,6 +12,15 @@ const mutation = /* GraphQL */ `
         }
     }
 `;
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbDeleteAllBlockCategories(): Promise<unknown>;
+        }
+    }
+}
 
 Cypress.Commands.add("pbDeleteAllBlockCategories", () => {
     cy.pbListBlockCategories().then(categories => {
@@ -29,7 +38,7 @@ Cypress.Commands.add("pbDeleteAllBlockCategories", () => {
                     };
 
                     return client
-                        .request(mutation, variables)
+                        .request(MUTATION, variables)
                         .then(response => response.pageBuilder.deleteBlockCategory);
                 })
             );

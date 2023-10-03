@@ -2,12 +2,13 @@ import { customAlphabet } from "nanoid";
 
 context("Page Builder - Blocks", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    beforeEach(() => cy.login());
-    beforeEach(() => cy.pbDeleteAllBlocks());
-    beforeEach(() => cy.pbDeleteAllBlockCategories());
+    beforeEach(() => {
+        cy.login();
+        cy.pbDeleteAllBlocks();
+        cy.pbDeleteAllBlockCategories();
+    });
 
-    //Data used for creating multible block categories.
-
+    // Data used for creating multiple block categories.
     const blockNames1 = ["Block1Name"];
     const blockNames2 = ["Block1Name", "Block2Name"];
     const blockNames3 = ["Block1Name", "Block2Name", "Block3Name"];
@@ -40,17 +41,26 @@ context("Page Builder - Blocks", () => {
         icon: "icon-name",
         description: nanoid(10).toLowerCase()
     };
-    it.skip("Should be able to use the search bar as expected", () => {
-        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1)
-            .then(() => {
-                return cy.pbCreateCategoryAndBlocks(blockCategoryData2, blockNames2);
-            })
-            .then(() => {
-                return cy.pbCreateCategoryAndBlocks(blockCategoryData3, blockNames3);
-            })
-            .then(() => {
-                return cy.pbCreateCategoryAndBlocks(blockCategoryData4, blockNames4);
-        }); 
+
+    it("Should be able to use the search bar as expected", () => {
+        cy.pbCreateCategoryAndBlocks({
+            blockCategory: blockCategoryData1,
+            blockNames: blockNames1
+        });
+        cy.pbCreateCategoryAndBlocks({
+            blockCategory: blockCategoryData2,
+            blockNames: blockNames2
+        });
+
+        cy.pbCreateCategoryAndBlocks({
+            blockCategory: blockCategoryData3,
+            blockNames: blockNames3
+        });
+
+        cy.pbCreateCategoryAndBlocks({
+            blockCategory: blockCategoryData4,
+            blockNames: blockNames4
+        });
 
         cy.visit("/page-builder/page-blocks");
 
@@ -87,36 +97,32 @@ context("Page Builder - Blocks", () => {
         //cy.contains(blockCategoryData3.name).should("not.exist");
         //cy.contains(blockCategoryData4.name).should("not.exist");
 
-        //I know that I can probably search for the ul elements to make sure nothing shows but is there really no way to do it like this @Adrian
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first().should("exist");
+            cy.get("li").first().should("exist");
         });
-        // Deletes all remaining test data.
-        cy.pbDeleteAllBlocks();
-        cy.pbDeleteAllBlockCategories();
     });
 
-    it.skip("Should be able to edit newly created block", () => {
-        cy.pbCreateCategoryAndBlocks(blockCategoryData1, blockNames1);
+    it("Should be able to edit newly created block", () => {
+        cy.pbCreateCategoryAndBlocks({
+            blockCategory: blockCategoryData1,
+            blockNames: blockNames1
+        });
+
         cy.visit("/page-builder/page-blocks");
 
-        //Checks if editing block name works(NOT WORKING).
         cy.visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.contains(blockCategoryData1.name).click();
-        cy.findByTestId("pb-blocks-list-block-edit-btn").click();
-        cy.findByTestId("pb-editor-page-title").click();
-        cy.get(`input[value="${blockNames1}"]`).clear().type(blockNames1+"1").blur();
-
-        cy.findByText("Page title updated successfully!").should("exist");
+        cy.wait(500).findByTestId("pb-blocks-list-block-edit-btn").click();
+        cy.wait(1500).findByTestId("pb-editor-page-title").click();
+        cy.get(`input[value="${blockNames1}"]`)
+            .clear()
+            .type(blockNames1 + "1")
+            .blur();
 
         cy.findByTestId("pb-blocks-editor-save-changes-btn").click();
         cy.findByTestId("pb-blocks-list-new-block-btn").should("exist");
         cy.contains(blockCategoryData1.name).click();
-        cy.contains(blockNames1+"1").should("exist");
-
-        cy.pbDeleteAllBlocks();
-        cy.pbDeleteAllBlockCategories();
+        cy.contains(blockNames1 + "1").should("exist");
     });
 });

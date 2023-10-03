@@ -2,7 +2,11 @@
   "compilerOptions": {
     "strict": true,
     "target": "es5",
-    "lib": ["es5", "dom"],
+    "lib": [
+      "es5",
+      "dom",
+      "es2015"
+    ],
     "types": ["cypress", "@testing-library/cypress"]
   },
   "include": ["**/*.ts"]

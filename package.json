@@ -54,7 +54,7 @@
     "chalk": "^4.1.0",
     "commitizen": "^2.10.1",
     "cross-env": "^5.2.0",
-    "cypress": "^9.6.0",
+    "cypress": "^13.0.0",
     "cypress-image-snapshot": "^4.0.1",
     "cypress-mailosaur": "^2.7.0",
     "cypress-wait-until": "^1.7.1",
