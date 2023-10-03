@@ -27,19 +27,14 @@ const CREATE_BLOCK_CATEGORY_MUTATION = /* GraphQL */ `
                     createdBy {
                         id
                         displayName
-                        __typename
                     }
-                    __typename
                 }
                 error {
                     code
                     message
                     data
-                    __typename
                 }
-                __typename
             }
-            __typename
         }
     }
 `;
@@ -58,19 +53,14 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
                         id
                         displayName
                         type
-                        __typename
                     }
-                    __typename
                 }
                 error {
                     code
                     message
                     data
-                    __typename
                 }
-                __typename
             }
-            __typename
         }
     }
 `;

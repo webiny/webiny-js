@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-const mutation = /* GraphQL */ `
+const MUTATION = /* GraphQL */ `
     mutation DeletePageBlock($id: ID!) {
         pageBuilder {
             deletePageBlock(id: $id) {
@@ -40,7 +40,7 @@ Cypress.Commands.add("pbDeleteAllBlocks", () => {
                     };
 
                     return client
-                        .request(mutation, variables)
+                        .request(MUTATION, variables)
                         .then(response => response.pageBuilder.deletePageBlock);
                 })
             );

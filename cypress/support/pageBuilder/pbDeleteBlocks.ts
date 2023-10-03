@@ -4,12 +4,12 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeleteBlocks(): any;
+            pbDeleteBlocks(): Record<string, any>;
         }
     }
 }
 
-const mutation = /* GraphQL */ `
+const MUTATION = /* GraphQL */ `
     mutation DeletePageBlock($id: ID!) {
         pageBuilder {
             deletePageBlock(id: $id) {
@@ -42,7 +42,7 @@ Cypress.Commands.add("pbDeleteBlocks", () => {
                     };
 
                     return client
-                        .request(mutation, variables)
+                        .request(MUTATION, variables)
                         .then(response => response.pageBuilder.deletePageBlock);
                 })
             );
