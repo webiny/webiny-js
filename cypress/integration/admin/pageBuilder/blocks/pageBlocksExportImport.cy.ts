@@ -37,7 +37,7 @@ context("Page Builder - Blocks Export/Import", () => {
         description: nanoid(10).toLowerCase()
     };
 
-    it.only("Test the importation and exportation of all blocks", () => {
+    it("Test the importation and exportation of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
         // Exports all created data and saves the exported string value.
         cy.pbCreateCategoryAndBlocks({
