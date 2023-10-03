@@ -182,6 +182,23 @@ interface FieldError {
     storageId: string;
     error: any;
 }
+interface GetTemplateValueParams {
+    field: CmsModelField;
+    template: CmsDynamicZoneTemplate;
+    data: any;
+}
+const getTemplateValue = (params: GetTemplateValueParams) => {
+    const { field, template, data } = params;
+    if (field.multipleValues) {
+        if (!Array.isArray(data)) {
+            return undefined;
+        }
+        return data.find(value => {
+            return value && !!value[template.gqlTypeName];
+        });
+    }
+    return data?.[template.gqlTypeName];
+};
 
 interface ValidateParams {
     validatorList: PluginValidationList;
@@ -231,17 +248,13 @@ const executeFieldValidation = async (
         const templates = (params.field.settings?.templates || []) as CmsDynamicZoneTemplate[];
         for (const template of templates) {
             const fields = template.fields;
-            const data = params.data?.[params.field.fieldId] as any[];
-            if (!Array.isArray(data)) {
-                continue;
-            }
-            const templateValue = data.find(value => {
-                return value && !!value[template.gqlTypeName];
+            const data = (params.data?.[params.field.fieldId] || []) as any[];
+            const templateValue = getTemplateValue({
+                field: params.field,
+                template,
+                data
             });
-            if (!templateValue) {
-                continue;
-            }
-            const value = templateValue[template.gqlTypeName] || {};
+            const value = templateValue?.[template.gqlTypeName];
             for (const field of fields) {
                 const defaultValue = field.multipleValues ? [] : {};
                 const errors = await executeFieldValidation({
