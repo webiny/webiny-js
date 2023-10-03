@@ -75,8 +75,10 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     );
 
     const columns: Columns<Entry> = useMemo(() => {
+        const titleColumnId = model.titleFieldId || "id";
+
         return {
-            title: {
+            [titleColumnId]: {
                 header: "Name",
                 className: "cms-aco-list-title",
                 cell: (record: Entry) => {
