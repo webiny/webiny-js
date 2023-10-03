@@ -16190,6 +16190,7 @@ __metadata:
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
     jsdom: 22.1.0
+    lexical: ^0.11.3
   languageName: unknown
   linkType: soft
 
