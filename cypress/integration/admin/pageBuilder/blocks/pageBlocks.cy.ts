@@ -90,13 +90,6 @@ context("Page Builder - Blocks", () => {
         cy.findByPlaceholderText("Search blocks").clear().type("!#$%&/()=");
         cy.contains(blockCategoryData4.name).should("exist");
 
-        //Check that no categories are displayed when searching for a string that doesn't match any created block names.
-        //cy.findByPlaceholderText("Search blocks").clear().type("Testing, Testing, Testing");
-        //cy.contains(blockCategoryData1.name).should("not.exist");
-        //cy.contains(blockCategoryData2.name).should("not.exist");
-        //cy.contains(blockCategoryData3.name).should("not.exist");
-        //cy.contains(blockCategoryData4.name).should("not.exist");
-
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li").first().should("exist");
         });

@@ -41,13 +41,6 @@ context("Page Builder - Blocks", () => {
         cy.findByPlaceholderText("Search block categories", { timeout: 10000 }).should("exist");
         cy.contains(blockCategoryName + "1").should("exist");
 
-        // Check if export blocks from current category button functions properly.
-        // Also covered in page pageBlocksExportImport.cy.ts
-        //cy.visit("/page-builder/page-blocks");
-        //cy.contains(blockCategoryName).click();
-        //cy.findByTestId("pb-blocks-list-block-export-btn").click();
-        //cy.findByText("Your export is now ready!").should("exist");
-
         // Checks if block duplication works.
         cy.visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");

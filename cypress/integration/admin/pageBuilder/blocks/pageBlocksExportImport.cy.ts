@@ -58,7 +58,7 @@ context("Page Builder - Blocks Export/Import", () => {
         cy.findByText("Export all blocks").click();
         cy.findByText("Your export is now ready!").should("exist");
 
-        cy.get("span.link-text.mdc-typography--body2")
+        cy.findByTestId("export-blocks.export-ready-dialog")
             .invoke("text")
             .then(importUrl => {
                 cy.pbDeleteAllBlockCategories();
@@ -68,6 +68,7 @@ context("Page Builder - Blocks Export/Import", () => {
                 cy.findByPlaceholderText("Search blocks").should("exist");
                 cy.findByTestId("pb-blocks-list-options-menu").click();
                 cy.findByRole("menuitem", { name: "Import blocks" }).click();
+                cy.contains('Paste File URL').should("exist").click();
                 cy.contains("File URL").type(importUrl);
                 cy.contains("Continue").click();
                 cy.findByText("All blocks have been imported").should("exist");
