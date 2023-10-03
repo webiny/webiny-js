@@ -210,7 +210,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     useEffect(() => {
         setFolders(prev => {
             // We might receive a different field name as `title`, here we set it back to `title` for folders.
-            const titleField = props?.titleFieldId || "title";
+            const titleField = props?.titleFieldId || "id";
             return sortTableItems(prev, state.listSort, {
                 [titleField]: "title"
             });
