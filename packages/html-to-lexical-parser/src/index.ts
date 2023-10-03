@@ -5,7 +5,7 @@ import {
 } from "@webiny/lexical-editor";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
-import { $getRoot, $insertNodes } from "lexical";
+import { $getRoot, $getSelection } from "lexical";
 
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
@@ -29,16 +29,29 @@ export const parseToLexicalObject = (
         theme: getTheme()
     });
 
-    editor.update(() => {
-        // Generate dom tree
-        const dom = new JSDOM(htmlString);
-        // Convert to lexical node objects format that can be stored in db.
-        const lexicalNodes = $generateNodesFromDOM(editor, dom.window.document);
-        // Select the root
-        $getRoot().select();
-        // Insert them at a selection.
-        $insertNodes(lexicalNodes);
-        // callback
+    editor.update(
+        async () => {
+            // Generate dom tree
+            const dom = new JSDOM(htmlString);
+            // Convert to lexical node objects format that can be stored in db.
+            const lexicalNodes = $generateNodesFromDOM(editor, dom.window.document);
+
+            // Select the root
+            $getRoot().select();
+
+            // Insert them at a selection.
+            const selection = $getSelection();
+            if (selection) {
+                selection.insertNodes(lexicalNodes);
+            }
+        },
+        /**
+         * discrete – If true, prevents this update from being batched, forcing it to run synchronously.
+         */
+        { discrete: true }
+    );
+
+    editor.getEditorState().read(() => {
         onSuccess(editor.getEditorState().toJSON());
     });
 };
