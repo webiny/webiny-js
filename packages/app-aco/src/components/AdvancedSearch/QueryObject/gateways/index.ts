@@ -1,1 +1,2 @@
-export * from "./FiltersGraphQL";
+export * from "./BaseGateway";
+export * from "./FiltersGraphQLGateway";

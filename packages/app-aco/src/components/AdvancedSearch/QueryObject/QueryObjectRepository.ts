@@ -1,26 +1,25 @@
-import { ApolloClient } from "apollo-client";
 import { makeAutoObservable, runInAction } from "mobx";
 
 import { Mode, QueryObjectMapper, QueryObjectDTO } from "./domains";
-import { FiltersGraphQL } from "./gateways";
+import { FiltersGraphQLGateway } from "./gateways";
 
 export class QueryObjectRepository {
-    private gateway: FiltersGraphQL;
+    private gateway: FiltersGraphQLGateway;
     private static instance: QueryObjectRepository;
     modelId: string;
     filters: QueryObjectDTO[] = [];
     selected: QueryObjectDTO | undefined = undefined;
     mode: Mode = Mode.CREATE;
 
-    constructor(client: ApolloClient<any>, modelId: string) {
-        this.gateway = new FiltersGraphQL(client); // TODO: inject the gateway
+    constructor(gateway: FiltersGraphQLGateway, modelId: string) {
+        this.gateway = gateway;
         this.modelId = modelId;
         makeAutoObservable(this);
     }
 
-    static getInstance(client: ApolloClient<any>, modelId: string) {
+    static getInstance(gateway: FiltersGraphQLGateway, modelId: string) {
         if (!QueryObjectRepository.instance) {
-            QueryObjectRepository.instance = new QueryObjectRepository(client, modelId);
+            QueryObjectRepository.instance = new QueryObjectRepository(gateway, modelId);
         }
         return QueryObjectRepository.instance;
     }

@@ -11,7 +11,7 @@ import {
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
+import { BaseGateway, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -76,7 +76,7 @@ export const DELETE_FILTER = gql`
     }
 `;
 
-export class FiltersGraphQL {
+export class FiltersGraphQLGateway implements BaseGateway {
     private client: ApolloClient<any>;
 
     constructor(client: ApolloClient<any>) {

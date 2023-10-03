@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import { QueryManager } from "~/components/AdvancedSearch/QueryManager/QueryManager";
-import { FieldRaw, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
+import {
+    FieldRaw,
+    FiltersGraphQLGateway,
+    QueryObjectRepository
+} from "~/components/AdvancedSearch/QueryObject";
 
 import { Button } from "./Button";
 import { Drawer } from "./Drawer";
@@ -17,7 +21,9 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
     // TODO: create presenter for AdvancedSearch to handle these piece of state
     // TODO: create repository to handle selected filter
     const client = useApolloClient();
-    const [repository] = useState(QueryObjectRepository.getInstance(client, modelId));
+    const [repository] = useState(
+        QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
+    );
 
     const [openManager, setOpenManager] = useState(false);
     const [openBuilder, setOpenBuilder] = useState(false);
@@ -56,6 +62,7 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
         <>
             <Button onClick={() => setOpenManager(true)} />
             <QueryManager
+                // TODO: rename it
                 repository={repository}
                 onClose={() => setOpenManager(false)}
                 onEdit={onQueryManagerEdit}
