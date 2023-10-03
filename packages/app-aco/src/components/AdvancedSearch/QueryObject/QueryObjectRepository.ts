@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 
-import { Mode, QueryObjectMapper, QueryObjectDTO } from "./domains";
+import { QueryObjectMapper, QueryObjectDTO } from "./domains";
 import { FiltersGraphQLGateway } from "./gateways";
 
 export class QueryObjectRepository {
@@ -9,7 +9,6 @@ export class QueryObjectRepository {
     modelId: string;
     filters: QueryObjectDTO[] = [];
     selected: QueryObjectDTO | undefined = undefined;
-    mode: Mode = Mode.CREATE;
 
     constructor(gateway: FiltersGraphQLGateway, modelId: string) {
         this.gateway = gateway;

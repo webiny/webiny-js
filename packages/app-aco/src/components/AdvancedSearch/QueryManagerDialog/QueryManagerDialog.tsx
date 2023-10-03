@@ -9,9 +9,9 @@ interface QueryBuilderProps {
     repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
-    onEdit: (callback?: () => void) => void;
+    onEdit: (data: QueryObjectDTO) => void;
     onSelect: (data: QueryObjectDTO) => void;
-    onCreate: (callback?: () => void) => void;
+    onCreate: () => void;
 }
 
 export const QueryManagerDialog = ({

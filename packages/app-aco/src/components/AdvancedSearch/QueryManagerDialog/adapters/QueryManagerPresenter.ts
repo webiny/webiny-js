@@ -1,9 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import {
-    Mode,
-    QueryObjectDTO,
-    QueryObjectRepository
-} from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectDTO, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
 
 export interface IQueryManagerPresenter {
     getViewModel: () => QueryManagerViewModel;
@@ -35,10 +31,6 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
     // TODO: add getFilter
     selectFilter(id?: string) {
         this.repository.setSelected(id);
-    }
-
-    setMode(mode: Mode) {
-        this.repository.mode = mode;
     }
 
     getViewModel() {

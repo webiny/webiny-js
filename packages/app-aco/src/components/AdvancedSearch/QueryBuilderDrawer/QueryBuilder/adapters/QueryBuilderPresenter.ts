@@ -4,7 +4,6 @@ import {
     FieldDTO,
     FieldMapper,
     FieldRaw,
-    Mode,
     QueryObjectRepository,
     Operation,
     QueryObject,
@@ -45,9 +44,9 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         makeAutoObservable(this);
     }
 
-    create() {
+    create(queryObject?: QueryObjectDTO) {
         this.queryObject = QueryObjectMapper.toDTO(
-            QueryObject.create(this.repository.modelId, this.repository?.selected)
+            QueryObject.create(this.repository.modelId, queryObject)
         );
     }
 
@@ -148,10 +147,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     private async persistViewModel(queryObject: QueryObjectDTO) {
-        if (this.repository.mode === Mode.UPDATE) {
-            return await this.repository.updateFilter(queryObject);
-        }
-
         return await this.repository.createFilter(queryObject);
     }
 

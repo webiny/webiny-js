@@ -8,11 +8,16 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import { FieldRaw, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
+import {
+    FieldRaw,
+    QueryObjectDTO,
+    QueryObjectRepository
+} from "~/components/AdvancedSearch/QueryObject";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 
 interface DrawerProps {
+    queryObject: QueryObjectDTO | undefined;
     repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
@@ -21,6 +26,7 @@ interface DrawerProps {
 }
 
 export const QueryBuilderDrawer = ({
+    queryObject,
     repository,
     open,
     onClose,
@@ -42,6 +48,7 @@ export const QueryBuilderDrawer = ({
             <DrawerContent dir="ltr">
                 <Header onClose={onClose} />
                 <QueryBuilder
+                    queryObject={queryObject}
                     repository={repository}
                     fields={fields}
                     onForm={form => (ref.current = form)}

@@ -18,15 +18,15 @@ import { DialogContainer, ListActions } from "./QueryManager.styled";
 import { QueryManagerPresenter } from "../adapters";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { Mode, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 interface QueryManagerProps {
     presenter: QueryManagerPresenter;
     open: boolean;
     onClose: () => void;
-    onCreate: (callback?: () => void) => void;
-    onEdit: (callback?: () => void) => void;
+    onEdit: (data: QueryObjectDTO) => void;
     onSelect: (data: QueryObjectDTO) => void;
+    onCreate: () => void;
 }
 
 export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps) => {
@@ -68,14 +68,7 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
                                                     />
                                                 }
                                             >
-                                                <MenuItem
-                                                    onClick={() =>
-                                                        props.onEdit(() => {
-                                                            presenter.setMode(Mode.UPDATE);
-                                                            presenter.selectFilter(filter.id);
-                                                        })
-                                                    }
-                                                >
+                                                <MenuItem onClick={() => props.onEdit(filter)}>
                                                     Edit
                                                 </MenuItem>
                                                 <MenuItem
@@ -93,24 +86,8 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
                         </List>
                     </DialogContent>
                     <DialogActions>
-                        <ButtonDefault
-                            onClick={() => {
-                                presenter.selectFilter();
-                                props.onClose();
-                            }}
-                        >
-                            {"Cancel"}
-                        </ButtonDefault>
-                        <ButtonPrimary
-                            onClick={() => {
-                                props.onCreate(() => {
-                                    presenter.setMode(Mode.CREATE);
-                                    presenter.selectFilter();
-                                });
-                            }}
-                        >
-                            {"Create new"}
-                        </ButtonPrimary>
+                        <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
+                        <ButtonPrimary onClick={props.onCreate}>{"Create new"}</ButtonPrimary>
                     </DialogActions>
                 </>
             ) : null}

@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import {
@@ -6,6 +7,8 @@ import {
     FiltersGraphQLGateway,
     QueryObjectRepository
 } from "~/components/AdvancedSearch/QueryObject";
+import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
+import { advancedSearchRepository } from "./AdvancedSearchRepository";
 
 import { Button } from "./Button";
 import { QueryManagerDialog } from "./QueryManagerDialog";
@@ -17,66 +20,37 @@ interface AdvancedSearchProps {
     onSubmit: (data: any) => void;
 }
 
-export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
-    // TODO: create presenter for AdvancedSearch to handle these piece of state
-    // TODO: create repository to handle selected filter
+export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
     const client = useApolloClient();
-    const [repository] = useState(
+
+    const [queryObjectRepository] = useState(
         QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
     );
-
-    const [openManager, setOpenManager] = useState(false);
-    const [openBuilder, setOpenBuilder] = useState(false);
-
-    const onQueryBuilderSubmit = useCallback(
-        data => {
-            // Close the drawer on submission
-            setOpenBuilder(false);
-            onSubmit && onSubmit(data);
-        },
-        [onSubmit]
+    const [presenter] = useState<AdvancedSearchPresenter>(
+        new AdvancedSearchPresenter(advancedSearchRepository, onSubmit)
     );
 
-    const onQueryManagerSelect = useCallback(
-        data => {
-            // Close the dialog on submission
-            setOpenManager(false);
-            onSubmit && onSubmit(data);
-        },
-        [onSubmit]
-    );
-
-    const onQueryManagerEdit = (callback?: () => any) => {
-        setOpenManager(false);
-        setOpenBuilder(true);
-        callback && callback();
-    };
-
-    const onQueryManagerCreate = (callback?: () => any) => {
-        setOpenManager(false);
-        setOpenBuilder(true);
-        callback && callback();
-    };
+    const viewModel = presenter.getViewModel();
 
     return (
         <>
-            <Button onClick={() => setOpenManager(true)} />
+            <Button onClick={() => presenter.openManager()} />
             <QueryManagerDialog
-                repository={repository}
-                onClose={() => setOpenManager(false)}
-                onEdit={onQueryManagerEdit}
-                onCreate={onQueryManagerCreate}
-                onSelect={onQueryManagerSelect}
-                open={openManager}
+                onClose={presenter.closeManager}
+                onCreate={presenter.onManagerCreateFilter}
+                onEdit={presenter.onManagerEditFilter}
+                onSelect={presenter.onManagerSelectFilter}
+                open={viewModel.showManager}
+                repository={queryObjectRepository}
             />
             <QueryBuilderDrawer
-                // TODO: add the full queryObject prop to pass to presenter
                 fields={fields}
-                repository={repository}
-                onClose={() => setOpenBuilder(false)}
-                onSubmit={onQueryBuilderSubmit}
-                open={openBuilder}
+                onClose={presenter.closeBuilder}
+                onSubmit={presenter.onBuilderSubmit}
+                open={viewModel.showBuilder}
+                queryObject={viewModel.queryObject}
+                repository={queryObjectRepository}
             />
         </>
     );
-};
+});
