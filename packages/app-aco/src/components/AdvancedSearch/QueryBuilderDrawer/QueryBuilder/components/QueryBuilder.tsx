@@ -5,9 +5,9 @@ import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { Filter } from "./Filter";
 import { CellInner, Content, GroupContainer } from "./Querybuilder.styled";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { OperationSelector } from "~/components/AdvancedSearch/QueryBuilder/components/OperationSelector";
+import { OperationSelector } from "./OperationSelector";
 import { AddFilter, AddGroup, RemoveGroup } from "./controls";
-import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilder/adapters";
+import { QueryBuilderPresenter } from "../adapters";
 
 export interface QueryBuilderProps {
     presenter: QueryBuilderPresenter;

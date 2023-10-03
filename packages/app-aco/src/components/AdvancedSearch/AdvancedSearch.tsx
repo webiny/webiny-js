@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 
-import { QueryManager } from "~/components/AdvancedSearch/QueryManager/QueryManager";
 import {
     FieldRaw,
     FiltersGraphQLGateway,
@@ -9,7 +8,8 @@ import {
 } from "~/components/AdvancedSearch/QueryObject";
 
 import { Button } from "./Button";
-import { Drawer } from "./Drawer";
+import { QueryManagerDialog } from "./QueryManagerDialog";
+import { QueryBuilderDrawer } from "./QueryBuilderDrawer";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
@@ -61,8 +61,7 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
     return (
         <>
             <Button onClick={() => setOpenManager(true)} />
-            <QueryManager
-                // TODO: rename it
+            <QueryManagerDialog
                 repository={repository}
                 onClose={() => setOpenManager(false)}
                 onEdit={onQueryManagerEdit}
@@ -70,7 +69,7 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
                 onSelect={onQueryManagerSelect}
                 open={openManager}
             />
-            <Drawer
+            <QueryBuilderDrawer
                 // TODO: add the full queryObject prop to pass to presenter
                 fields={fields}
                 repository={repository}

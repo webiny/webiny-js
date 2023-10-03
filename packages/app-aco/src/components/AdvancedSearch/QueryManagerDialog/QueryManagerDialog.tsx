@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { QueryManager as QueryManagerComponent } from "./components/QueryManager";
+import { QueryManager } from "./components/QueryManager";
 import { QueryManagerPresenter } from "./adapters/QueryManagerPresenter";
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject/QueryObjectRepository";
@@ -14,7 +14,7 @@ interface QueryBuilderProps {
     onCreate: (callback?: () => void) => void;
 }
 
-export const QueryManager = ({
+export const QueryManagerDialog = ({
     repository,
     open,
     onClose,
@@ -25,7 +25,7 @@ export const QueryManager = ({
     const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(repository));
 
     return (
-        <QueryManagerComponent
+        <QueryManager
             open={open}
             onClose={onClose}
             onEdit={onEdit}

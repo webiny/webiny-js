@@ -15,7 +15,7 @@ import {
 } from "@webiny/ui/List";
 
 import { DialogContainer, ListActions } from "./QueryManager.styled";
-import { QueryManagerPresenter } from "~/components/AdvancedSearch/QueryManager/adapters";
+import { QueryManagerPresenter } from "../adapters";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { Mode, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";

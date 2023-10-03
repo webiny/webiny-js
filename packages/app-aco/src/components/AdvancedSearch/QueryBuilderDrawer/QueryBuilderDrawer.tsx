@@ -6,11 +6,11 @@ import { DrawerContent } from "@webiny/ui/Drawer";
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { QueryBuilder } from "./QueryBuilder";
 
-import { QueryBuilder } from "~/components/AdvancedSearch/QueryBuilder/QueryBuilder";
 import { FieldRaw, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
 
-import { DrawerContainer } from "./Drawer.styled";
+import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 
 interface DrawerProps {
     repository: QueryObjectRepository;
@@ -20,7 +20,13 @@ interface DrawerProps {
     fields: FieldRaw[];
 }
 
-export const Drawer = ({ repository, open, onClose, fields, onSubmit }: DrawerProps) => {
+export const QueryBuilderDrawer = ({
+    repository,
+    open,
+    onClose,
+    fields,
+    onSubmit
+}: DrawerProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,

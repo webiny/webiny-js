@@ -10,7 +10,7 @@ import {
     QueryObject,
     QueryObjectDTO,
     QueryObjectMapper
-} from "../../QueryObject";
+} from "../../../QueryObject";
 
 export interface IQueryBuilderPresenter {
     getViewModel: () => QueryBuilderViewModel;
