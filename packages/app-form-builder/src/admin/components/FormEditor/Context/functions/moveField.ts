@@ -1,10 +1,4 @@
-import {
-    FbFormModel,
-    FbFormModelField,
-    FbFormStep,
-    FieldIdType,
-    FieldLayoutPositionType
-} from "~/types";
+import { FbFormModel, FbFormModelField, FbFormStep, DropTarget, DropDestination } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**
@@ -12,57 +6,68 @@ import getFieldPosition from "./getFieldPosition";
  * @param data
  */
 
-const cleanupEmptyRows = (params: MoveFieldParams): void => {
-    const { data, targetStepId } = params;
-    const targetStep = data.steps.find(s => s.id === targetStepId) as FbFormStep;
+interface MoveField {
+    data: FbFormModel;
+    field: FbFormModelField | string;
+    target: DropTarget;
+    destination: DropDestination;
+}
+
+const cleanupEmptyRows = ({ destination, data }: MoveField): void => {
+    const targetStep = data.steps.find(s => s.id === destination.containerId) as FbFormStep;
 
     targetStep.layout = targetStep?.layout.filter(row => row.length > 0);
 };
 
-interface MoveFieldParams {
-    field: FieldIdType | FbFormModelField;
-    position: FieldLayoutPositionType;
-    data: FbFormModel;
-    targetStepId: string;
-}
-
-const moveField = (params: MoveFieldParams) => {
-    const { field, position, data, targetStepId } = params;
-    const { row, index } = position;
+const moveField = ({ data, field, destination }: MoveField) => {
+    const destinationContainerLayout = data.steps.find(
+        step => step.id === destination.containerId
+    ) as FbFormStep;
     const fieldId = typeof field === "string" ? field : field._id;
     if (!fieldId) {
         console.log("Missing data when moving field.");
-        console.log(params);
         return;
     }
 
-    const targetStepLayout = data.steps.find(s => s.id === targetStepId) as FbFormStep;
-    targetStepLayout.layout = targetStepLayout.layout.filter(row => Boolean(row));
-    const existingPosition = getFieldPosition({
-        field: fieldId,
-        data: targetStepLayout
-    });
-    if (existingPosition) {
-        targetStepLayout.layout[existingPosition.row].splice(existingPosition.index, 1);
-    }
+    if (destinationContainerLayout) {
+        destinationContainerLayout.layout = destinationContainerLayout?.layout.filter(row =>
+            Boolean(row)
+        );
 
-    // Setting a form field into a new non-existing row.
-    if (!targetStepLayout?.layout[row]) {
-        targetStepLayout.layout[row] = [fieldId];
-        return;
-    }
+        const existingFieldPosition = getFieldPosition({
+            field: fieldId,
+            data: destinationContainerLayout
+        });
 
-    // If row exists, we drop the field at the specified index.
-    if (index === null) {
-        // Create a new row with the new field at the given row index,
-        targetStepLayout.layout.splice(row, 0, [fieldId]);
-        return;
-    }
+        if (existingFieldPosition) {
+            destinationContainerLayout.layout[existingFieldPosition.row].splice(
+                existingFieldPosition.index,
+                1
+            );
+        }
 
-    targetStepLayout.layout[row].splice(index, 0, fieldId);
+        // Setting a form field into a new non-existing row.
+        if (!destinationContainerLayout?.layout[destination.position.row]) {
+            destinationContainerLayout.layout[destination.position.row] = [fieldId];
+            return;
+        }
+
+        // If row exists, we drop the field at the specified index.
+        if (destination.position.index === null) {
+            // Create a new row with the new field at the given row index,
+            destinationContainerLayout.layout.splice(destination.position.row, 0, [fieldId]);
+            return;
+        }
+
+        destinationContainerLayout.layout[destination.position.row].splice(
+            destination.position.index,
+            0,
+            fieldId
+        );
+    }
 };
 
-export default (params: MoveFieldParams) => {
+export default (params: MoveField) => {
     moveField(params);
     cleanupEmptyRows(params);
 };

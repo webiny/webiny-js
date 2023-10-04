@@ -1,23 +1,23 @@
 import { FbFormStep } from "~/types";
-
 interface MoveRowParams {
-    source: number;
-    destination: number;
-    data: FbFormStep;
+    sourceRow: number;
+    destinationRow: number;
+    sourceContainer: FbFormStep;
 }
-export default ({ data, source, destination }: MoveRowParams): void => {
-    data.layout =
-        source < destination
+
+export default ({ sourceContainer, sourceRow, destinationRow }: MoveRowParams) => {
+    sourceContainer.layout =
+        sourceRow < destinationRow
             ? [
-                  ...data.layout.slice(0, source),
-                  ...data.layout.slice(source + 1, destination),
-                  data.layout[source],
-                  ...data.layout.slice(destination)
+                  ...sourceContainer.layout.slice(0, sourceRow),
+                  ...sourceContainer.layout.slice(sourceRow + 1, destinationRow),
+                  sourceContainer.layout[sourceRow],
+                  ...sourceContainer.layout.slice(destinationRow)
               ]
             : [
-                  ...data.layout.slice(0, destination),
-                  data.layout[source],
-                  ...data.layout.slice(destination, source),
-                  ...data.layout.slice(source + 1)
+                  ...sourceContainer.layout.slice(0, destinationRow),
+                  sourceContainer.layout[sourceRow],
+                  ...sourceContainer.layout.slice(destinationRow, sourceRow),
+                  ...sourceContainer.layout.slice(sourceRow + 1)
               ];
 };
