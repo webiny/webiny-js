@@ -2,9 +2,9 @@ import { makeAutoObservable } from "mobx";
 import { QueryObjectDTO, QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject";
 
 export interface IQueryManagerPresenter {
+    deleteFilter: (id: string) => Promise<void>;
     getViewModel: () => QueryManagerViewModel;
-    listFilters: () => void;
-    deleteFilter: (id: string) => void;
+    load: () => Promise<void>;
 }
 
 export interface QueryManagerViewModel {
@@ -19,18 +19,12 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
         makeAutoObservable(this);
     }
 
-    // TODO: rename with load
-    async listFilters() {
+    async load() {
         await this.repository.listFilters();
     }
 
     async deleteFilter(id: string) {
         await this.repository.deleteFilter(id);
-    }
-
-    // TODO: add getFilter
-    selectFilter(id?: string) {
-        this.repository.setSelected(id);
     }
 
     getViewModel() {

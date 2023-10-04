@@ -12,14 +12,15 @@ import {
 } from "../../../QueryObject";
 
 export interface IQueryBuilderPresenter {
-    getViewModel: () => QueryBuilderViewModel;
     addGroup: () => void;
-    deleteGroup: (groupIndex: number) => void;
     addNewFilterToGroup: (groupIndex: number) => void;
     deleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
+    deleteGroup: (groupIndex: number) => void;
     emptyFilterIntoGroup: (groupIndex: number, filterIndex: number) => void;
-    setQueryObject: (queryObject: QueryObjectDTO) => void;
+    getViewModel: () => QueryBuilderViewModel;
+    load: (queryObject: QueryObjectDTO | null) => void;
     onSubmit: (queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) => void;
+    setQueryObject: (queryObject: QueryObjectDTO) => void;
 }
 
 export interface QueryBuilderViewModel {
@@ -29,11 +30,11 @@ export interface QueryBuilderViewModel {
 }
 
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
-    private readonly repository: QueryObjectRepository;
-    private queryObject: QueryBuilderViewModel["queryObject"];
     private readonly fields: QueryBuilderViewModel["fields"];
-    private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
+    private readonly repository: QueryObjectRepository;
     private formWasSubmitted = false;
+    private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
+    private queryObject: QueryBuilderViewModel["queryObject"];
 
     constructor(repository: QueryObjectRepository, fields: FieldRaw[]) {
         this.repository = repository;
@@ -44,10 +45,14 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         makeAutoObservable(this);
     }
 
-    create(queryObject?: QueryObjectDTO) {
-        this.queryObject = QueryObjectMapper.toDTO(
-            QueryObject.create(this.repository.modelId, queryObject)
-        );
+    load(queryObject: QueryObjectDTO | null) {
+        if (queryObject) {
+            this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(queryObject));
+        } else {
+            this.queryObject = QueryObjectMapper.toDTO(
+                QueryObject.createEmpty(this.repository.modelId)
+            );
+        }
     }
 
     getViewModel(): QueryBuilderViewModel {
@@ -130,24 +135,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         } else {
             onError && onError();
         }
-    }
-
-    async onSave(queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) {
-        this.formWasSubmitted = true;
-        const result = this.validateQueryObject(queryObject);
-
-        console.log("");
-
-        if (result.success) {
-            await this.persistViewModel(queryObject);
-            onSuccess && onSuccess();
-        } else {
-            onError && onError();
-        }
-    }
-
-    private async persistViewModel(queryObject: QueryObjectDTO) {
-        return await this.repository.createFilter(queryObject);
     }
 
     private validateQueryObject(data: QueryObjectDTO) {

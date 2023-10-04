@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
@@ -15,13 +15,15 @@ import {
 } from "~/components/AdvancedSearch/QueryObject";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
+import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
 
 interface DrawerProps {
-    queryObject: QueryObjectDTO | undefined;
+    queryObject: QueryObjectDTO | null;
     repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => void;
+    onPersist: (data: QueryObjectDTO) => void;
+    onSubmit: (data: QueryObjectDTO) => void;
     fields: FieldRaw[];
 }
 
@@ -31,8 +33,17 @@ export const QueryBuilderDrawer = ({
     open,
     onClose,
     fields,
-    onSubmit
+    onSubmit,
+    onPersist
 }: DrawerProps) => {
+    const [presenter] = useState<QueryBuilderPresenter>(
+        new QueryBuilderPresenter(repository, fields)
+    );
+
+    useEffect(() => {
+        presenter.load(queryObject);
+    }, [queryObject]);
+
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -48,13 +59,16 @@ export const QueryBuilderDrawer = ({
             <DrawerContent dir="ltr">
                 <Header onClose={onClose} />
                 <QueryBuilder
-                    queryObject={queryObject}
-                    repository={repository}
-                    fields={fields}
                     onForm={form => (ref.current = form)}
                     onSubmit={onSubmit}
+                    presenter={presenter}
                 />
-                <Footer formRef={ref} onClose={onClose} />
+                <Footer
+                    formRef={ref}
+                    onClose={onClose}
+                    onPersist={onPersist}
+                    presenter={presenter}
+                />
             </DrawerContent>
         </DrawerContainer>
     );

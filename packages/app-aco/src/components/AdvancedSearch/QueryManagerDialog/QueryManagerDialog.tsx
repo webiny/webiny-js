@@ -6,12 +6,12 @@ import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject/QueryObjectRepository";
 
 interface QueryBuilderProps {
-    repository: QueryObjectRepository;
-    open: boolean;
     onClose: () => void;
+    onCreate: () => void;
     onEdit: (data: QueryObjectDTO) => void;
     onSelect: (data: QueryObjectDTO) => void;
-    onCreate: () => void;
+    open: boolean;
+    repository: QueryObjectRepository;
 }
 
 export const QueryManagerDialog = ({

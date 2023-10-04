@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { SimpleFormFooter as BaseSimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
 import { IconButton } from "@webiny/ui/Button";
 import { Drawer as RmwcDrawer } from "@webiny/ui/Drawer";
 
@@ -39,4 +40,8 @@ export const DrawerContainer = styled(RmwcDrawer)`
     .mdc-switch--checked .mdc-switch__thumb-underlay {
         transform: translateX(20px);
     }
+`;
+
+export const SimpleFormFooter = styled(BaseSimpleFormFooter)`
+    justify-content: flex-end;
 `;

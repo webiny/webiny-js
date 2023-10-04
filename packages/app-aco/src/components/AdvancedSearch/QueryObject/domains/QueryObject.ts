@@ -55,7 +55,7 @@ const groupValidationSchema = zod.object({
 
 const validationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
-    name: zod.string().trim(),
+    name: zod.string().trim().nonempty(),
     description: zod.string().trim(),
     model: zod.string().trim(),
     operation: operationValidator,
@@ -75,15 +75,9 @@ export class QueryObject {
         return new QueryObject(modelId, Operation.AND, [new Group(Operation.AND, [new Filter()])]);
     }
 
-    static create(modelId: string, existing?: QueryObjectDTO) {
-        // Extract the properties from 'data' or use defaults
-        const operation = existing?.operation || Operation.AND;
-        const groups = existing?.groups || [new Group(Operation.AND, [new Filter()])];
-        const id = existing?.id;
-        const name = existing?.name;
-        const description = existing?.description;
+    static create(queryObjectDto: QueryObjectDTO) {
+        const { modelId, operation, groups, id, name, description } = queryObjectDto;
 
-        // Create a new instance of QueryObject with the extracted properties
         return new QueryObject(modelId, operation, groups, id, name, description);
     }
 

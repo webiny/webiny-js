@@ -13,6 +13,7 @@ import { advancedSearchRepository } from "./AdvancedSearchRepository";
 import { Button } from "./Button";
 import { QueryManagerDialog } from "./QueryManagerDialog";
 import { QueryBuilderDrawer } from "./QueryBuilderDrawer";
+import { QuerySaverDialog } from "./QuerySaverDialog";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
@@ -46,8 +47,17 @@ export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedS
             <QueryBuilderDrawer
                 fields={fields}
                 onClose={presenter.closeBuilder}
+                onPersist={presenter.onBuilderPersist}
                 onSubmit={presenter.onBuilderSubmit}
                 open={viewModel.showBuilder}
+                queryObject={viewModel.queryObject}
+                repository={queryObjectRepository}
+            />
+            <QuerySaverDialog
+                mode={viewModel.mode}
+                onSubmit={presenter.onSaverSubmit}
+                onClose={presenter.closeSaver}
+                open={viewModel.showSaver}
                 queryObject={viewModel.queryObject}
                 repository={queryObjectRepository}
             />

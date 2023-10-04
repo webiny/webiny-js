@@ -29,6 +29,7 @@ const DATA_FIELD = /* GraphQL */ `
         modelId
         operation
         groups
+        createdOn
     }
 `;
 
@@ -134,7 +135,7 @@ export class FiltersGraphQLGateway implements BaseGateway {
     }
 
     async update(filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">) {
-        const { id, name, operation, groups } = filter;
+        const { id, name, description, operation, groups } = filter;
 
         const { data: response } = await this.client.mutate<
             UpdateFilterResponse,
@@ -145,6 +146,7 @@ export class FiltersGraphQLGateway implements BaseGateway {
                 id,
                 data: {
                     name,
+                    description,
                     operation,
                     groups
                 }

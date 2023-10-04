@@ -1,38 +1,125 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { Observer, observer } from "mobx-react-lite";
+import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { CellInner, Content, GroupContainer } from "./Querybuilder.styled";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { AddFilter, AddGroup, RemoveGroup, Filter, OperationSelector } from "./components";
+import { QueryBuilderPresenter } from "./adapters";
 
-import { QueryBuilder as QueryBuilderComponent } from "./components/QueryBuilder";
-import { QueryBuilderPresenter } from "./adapters/QueryBuilderPresenter";
-import { FormAPI } from "@webiny/form";
-import {
-    FieldRaw,
-    QueryObjectDTO,
-    QueryObjectRepository
-} from "~/components/AdvancedSearch/QueryObject";
-
-interface QueryBuilderProps {
-    queryObject: QueryObjectDTO | undefined;
-    repository: QueryObjectRepository;
-    fields: FieldRaw[];
+export interface QueryBuilderProps {
+    presenter: QueryBuilderPresenter;
     onForm: (form: FormAPI) => void;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: QueryObjectDTO) => void;
 }
 
-export const QueryBuilder = ({
-    queryObject,
-    repository,
-    fields,
-    onForm,
-    onSubmit
-}: QueryBuilderProps) => {
-    // TODO: Receive a queryObject ->
-    const [presenter] = useState<QueryBuilderPresenter>(
-        new QueryBuilderPresenter(repository, fields)
-    );
+export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuilderProps) => {
+    const viewModel = presenter.getViewModel();
+    const formRef = React.createRef<FormAPI>();
 
-    // TODO: pass the selected id
     useEffect(() => {
-        presenter.create(queryObject);
-    }, [queryObject]);
+        if (formRef.current) {
+            onForm(formRef.current);
+        }
+    }, []);
 
-    return <QueryBuilderComponent onForm={onForm} onSubmit={onSubmit} presenter={presenter} />;
-};
+    const onChange = (data: QueryObjectDTO) => {
+        presenter.setQueryObject(data);
+    };
+
+    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = data => {
+        presenter.onSubmit(data, () => {
+            onSubmit(viewModel.queryObject);
+        });
+    };
+
+    return (
+        <Form
+            ref={formRef}
+            data={viewModel.queryObject}
+            onChange={onChange}
+            onSubmit={onFormSubmit}
+            invalidFields={viewModel.invalidFields}
+        >
+            {() => (
+                <Observer>
+                    {() => (
+                        <Content>
+                            <Content.Panel>
+                                <Grid>
+                                    <Cell span={12} align={"middle"}>
+                                        <CellInner align={"center"}>
+                                            <OperationSelector name={"operation"} />
+                                        </CellInner>
+                                    </Cell>
+                                </Grid>
+                                {viewModel.queryObject.groups.map((group, groupIndex) => (
+                                    <GroupContainer key={`group-${groupIndex}`}>
+                                        <Grid>
+                                            <Cell span={11} align={"middle"}>
+                                                <CellInner align={"left"}>
+                                                    <OperationSelector
+                                                        name={`groups.${groupIndex}.operation`}
+                                                    />
+                                                </CellInner>
+                                            </Cell>
+                                            <Cell span={1} align={"middle"}>
+                                                <CellInner align={"center"}>
+                                                    <RemoveGroup
+                                                        onClick={() =>
+                                                            presenter.deleteGroup(groupIndex)
+                                                        }
+                                                    />
+                                                </CellInner>
+                                            </Cell>
+                                        </Grid>
+                                        {group.filters.map((filter, filterIndex) => (
+                                            <Filter
+                                                key={filterIndex}
+                                                name={`groups.${groupIndex}.filters.${filterIndex}`}
+                                                filter={filter}
+                                                fields={viewModel.fields}
+                                                onEmpty={() => {
+                                                    presenter.emptyFilterIntoGroup(
+                                                        groupIndex,
+                                                        filterIndex
+                                                    );
+                                                }}
+                                                onDelete={() => {
+                                                    presenter.deleteFilterFromGroup(
+                                                        groupIndex,
+                                                        filterIndex
+                                                    );
+                                                }}
+                                            />
+                                        ))}
+                                        <Grid>
+                                            <Cell span={12} align={"middle"}>
+                                                <CellInner align={"center"}>
+                                                    <AddFilter
+                                                        onClick={() =>
+                                                            presenter.addNewFilterToGroup(
+                                                                groupIndex
+                                                            )
+                                                        }
+                                                    />
+                                                </CellInner>
+                                            </Cell>
+                                        </Grid>
+                                    </GroupContainer>
+                                ))}
+                                <Grid>
+                                    <Cell span={12}>
+                                        <CellInner align={"center"}>
+                                            <AddGroup onClick={() => presenter.addGroup()} />
+                                        </CellInner>
+                                    </Cell>
+                                </Grid>
+                            </Content.Panel>
+                        </Content>
+                    )}
+                </Observer>
+            )}
+        </Form>
+    );
+});

@@ -33,7 +33,7 @@ export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps
     const viewModel = presenter.getViewModel();
 
     useEffect(() => {
-        presenter.listFilters();
+        presenter.load();
     }, []);
 
     return (

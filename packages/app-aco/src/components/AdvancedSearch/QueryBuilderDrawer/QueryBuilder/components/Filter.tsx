@@ -9,7 +9,7 @@ import { RemoveFilter } from "./controls";
 
 import { FieldDTO, FilterDTO } from "../../../QueryObject";
 
-import { CellInner, FilterWrapper } from "./Querybuilder.styled";
+import { CellInner, FilterWrapper } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;

@@ -1,24 +1,31 @@
 import React from "react";
-import styled from "@emotion/styled";
+
+import { observer } from "mobx-react-lite";
 import { FormAPI } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
-import { SimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
 
-const SimpleFormFooterStyled = styled(SimpleFormFooter)`
-    justify-content: flex-end;
-`;
+import { SimpleFormFooter } from "./QueryBuilderDrawer.styled";
 
 interface FooterProps {
     onClose: () => void;
     formRef: React.RefObject<FormAPI>;
+    onPersist: (data: QueryObjectDTO) => void;
+    presenter: QueryBuilderPresenter;
 }
 
-export const Footer = ({ formRef, onClose }: FooterProps) => {
+export const Footer = observer(({ formRef, onPersist, onClose, presenter }: FooterProps) => {
+    const viewModel = presenter.getViewModel();
+
     return (
-        <SimpleFormFooterStyled>
+        <SimpleFormFooter>
             <ButtonDefault onClick={onClose}>Cancel</ButtonDefault>
+            <ButtonDefault onClick={() => onPersist(viewModel.queryObject)}>
+                Save filter
+            </ButtonDefault>
             <ButtonPrimary onClick={() => formRef.current?.submit()}>Apply filter</ButtonPrimary>
-        </SimpleFormFooterStyled>
+        </SimpleFormFooter>
     );
-};
+});
