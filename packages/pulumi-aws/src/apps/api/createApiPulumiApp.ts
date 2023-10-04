@@ -125,12 +125,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName
-                }
-            });
-
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
 
@@ -170,6 +164,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
+            });
+
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName,
+                    MAIN_API_FUNCTION: graphql.functions.graphql.output.arn
+                }
             });
 
             const apiGateway = app.addModule(ApiGateway, {

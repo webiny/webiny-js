@@ -30,21 +30,23 @@ const canUsePrivateFiles = (context: WcpContext) => {
 };
 
 export const createDownloadFileByExactKeyPlugins = () => {
-    // TODO: this needs to be pulled from either ENV vars or a Dynamo DB record
-    const fnArn = "arn:aws:lambda:eu-central-1:656932293860:function:wby-graphql-b721688";
+    const fnArn = String(process.env["MAIN_API_FUNCTION"]);
     const lambdaClient = new LambdaClient(fnArn);
     const apiGwLambdaClient = new ApiGatewayLambdaClient(lambdaClient);
 
     return [
         new RoutePlugin(({ onGet, context }) => {
             onGet("/files/*", async (request, reply) => {
+                const fileInfo = extractFileInformation(request);
+                // TODO: add metadata extraction to `getS3Object` utility
+                const { params, object, metadata } = await getS3Object(fileInfo, s3, context);
+
+                // TODO: get file metadata
                 const headers = {
                     ...request.headers,
-                    "x-tenant": "root"
+                    "x-tenant": metadata.tenant,
+                    "x-i18n-locale": metadata.locale
                 };
-
-                const fileInfo = extractFileInformation(request);
-                const { params, object } = await getS3Object(fileInfo, s3, context);
 
                 if (canUsePrivateFiles(context as any as WcpContext)) {
                     const accessControl = new AccessControl(apiGwLambdaClient, headers);

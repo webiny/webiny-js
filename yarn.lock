@@ -13232,6 +13232,7 @@ __metadata:
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
