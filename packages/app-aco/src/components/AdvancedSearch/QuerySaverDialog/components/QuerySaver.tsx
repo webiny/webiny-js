@@ -6,7 +6,7 @@ import { DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 
 import { DialogContainer } from "./QuerySaver.styled";
 import { QuerySaverPresenter } from "../adapters";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { Mode, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
@@ -26,19 +26,26 @@ export const QuerySaver = observer(({ presenter, ...props }: QueryManagerProps) 
         presenter.setQueryObject(data);
     };
 
-    const onFormSubmit = () => {
-        presenter.persistQueryObject(props.mode);
-        props.onSubmit(viewModel.queryObject);
+    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = async data => {
+        await presenter.onSubmit(data, () => {
+            props.onSubmit(data);
+            presenter.persistQueryObject(data, props.mode);
+        });
     };
 
     return (
         <DialogContainer open={props.open} onClose={props.onClose}>
             {props.open ? (
-                <>
-                    <DialogTitle>{"Save search filter"}</DialogTitle>
-                    <DialogContent>
-                        <Form data={viewModel.queryObject} onChange={onChange}>
-                            {({ Bind }) => (
+                <Form
+                    data={viewModel.queryObject}
+                    onChange={onChange}
+                    onSubmit={onFormSubmit}
+                    invalidFields={viewModel.invalidFields}
+                >
+                    {({ Bind, form }) => (
+                        <>
+                            <DialogTitle>{"Save search filter"}</DialogTitle>
+                            <DialogContent>
                                 <Observer>
                                     {() => (
                                         <Grid>
@@ -60,14 +67,16 @@ export const QuerySaver = observer(({ presenter, ...props }: QueryManagerProps) 
                                         </Grid>
                                     )}
                                 </Observer>
-                            )}
-                        </Form>
-                    </DialogContent>
-                    <DialogActions>
-                        <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
-                        <ButtonPrimary onClick={onFormSubmit}>{"Save and apply"}</ButtonPrimary>
-                    </DialogActions>
-                </>
+                            </DialogContent>
+                            <DialogActions>
+                                <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
+                                <ButtonPrimary onClick={form.submit}>
+                                    {"Save and apply"}
+                                </ButtonPrimary>
+                            </DialogActions>
+                        </>
+                    )}
+                </Form>
             ) : null}
         </DialogContainer>
     );

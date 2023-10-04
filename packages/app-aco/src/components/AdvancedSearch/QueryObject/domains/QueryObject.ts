@@ -55,7 +55,7 @@ const groupValidationSchema = zod.object({
 
 const validationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
-    name: zod.string().trim().nonempty(),
+    name: zod.string().trim().nonempty("Name is required."),
     description: zod.string().trim(),
     modelId: zod.string().trim(),
     operation: operationValidator,
