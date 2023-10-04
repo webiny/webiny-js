@@ -46,12 +46,12 @@ export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedS
             />
             <QueryBuilderDrawer
                 fields={fields}
+                modelId={modelId}
                 onClose={presenter.closeBuilder}
                 onPersist={presenter.onBuilderPersist}
                 onSubmit={presenter.onBuilderSubmit}
                 open={viewModel.showBuilder}
                 queryObject={viewModel.queryObject}
-                repository={queryObjectRepository}
             />
             <QuerySaverDialog
                 mode={viewModel.mode}

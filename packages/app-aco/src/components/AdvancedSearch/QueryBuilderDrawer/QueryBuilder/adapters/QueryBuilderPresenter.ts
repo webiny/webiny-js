@@ -4,7 +4,6 @@ import {
     FieldDTO,
     FieldMapper,
     FieldRaw,
-    QueryObjectRepository,
     Operation,
     QueryObject,
     QueryObjectDTO,
@@ -30,18 +29,16 @@ export interface QueryBuilderViewModel {
 }
 
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
+    private modelId: string;
     private readonly fields: QueryBuilderViewModel["fields"];
-    private readonly repository: QueryObjectRepository;
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private queryObject: QueryBuilderViewModel["queryObject"];
 
-    constructor(repository: QueryObjectRepository, fields: FieldRaw[]) {
-        this.repository = repository;
+    constructor(modelId: string, fields: FieldRaw[]) {
+        this.modelId = modelId;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
-        this.queryObject = QueryObjectMapper.toDTO(
-            QueryObject.createEmpty(this.repository.modelId)
-        );
+        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
         makeAutoObservable(this);
     }
 
@@ -49,9 +46,7 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         if (queryObject) {
             this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(queryObject));
         } else {
-            this.queryObject = QueryObjectMapper.toDTO(
-                QueryObject.createEmpty(this.repository.modelId)
-            );
+            this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
         }
     }
 

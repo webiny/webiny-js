@@ -8,18 +8,14 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import {
-    FieldRaw,
-    QueryObjectDTO,
-    QueryObjectRepository
-} from "~/components/AdvancedSearch/QueryObject";
+import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
 
 interface DrawerProps {
+    modelId: string;
     queryObject: QueryObjectDTO | null;
-    repository: QueryObjectRepository;
     open: boolean;
     onClose: () => void;
     onPersist: (data: QueryObjectDTO) => void;
@@ -28,17 +24,15 @@ interface DrawerProps {
 }
 
 export const QueryBuilderDrawer = ({
+    modelId,
     queryObject,
-    repository,
     open,
     onClose,
     fields,
     onSubmit,
     onPersist
 }: DrawerProps) => {
-    const [presenter] = useState<QueryBuilderPresenter>(
-        new QueryBuilderPresenter(repository, fields)
-    );
+    const [presenter] = useState<QueryBuilderPresenter>(new QueryBuilderPresenter(modelId, fields));
 
     useEffect(() => {
         presenter.load(queryObject);

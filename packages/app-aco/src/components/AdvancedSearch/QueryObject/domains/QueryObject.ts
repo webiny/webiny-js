@@ -24,7 +24,7 @@ export interface GroupDTO {
 export interface QueryObjectDTO {
     id: string;
     name: string;
-    description: string;
+    description?: string;
     modelId: string;
     operation: Operation;
     groups: GroupDTO[];
@@ -57,7 +57,7 @@ const validationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
     name: zod.string().trim().nonempty(),
     description: zod.string().trim(),
-    model: zod.string().trim(),
+    modelId: zod.string().trim(),
     operation: operationValidator,
     groups: zod.array(groupValidationSchema).min(1)
 });

@@ -1,13 +1,8 @@
 import {
     QueryBuilderPresenter,
     QueryBuilderViewModel
-} from "~/components/AdvancedSearch/QueryBuilder/adapters";
-import {
-    FieldDTO,
-    FieldRaw,
-    FieldType,
-    Operation
-} from "~/components/AdvancedSearch/QueryBuilder/domain";
+} from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
+import { FieldDTO, FieldRaw, FieldType, Operation } from "~/components/AdvancedSearch/QueryObject";
 
 describe("QueryBuilderPresenter", () => {
     const modelId = "model-id";
@@ -28,7 +23,7 @@ describe("QueryBuilderPresenter", () => {
         value: ""
     };
 
-    const testFolder = {
+    const testGroup = {
         operation: Operation.AND,
         filters: [testFilter]
     };
@@ -68,32 +63,58 @@ describe("QueryBuilderPresenter", () => {
             description: "",
             modelId: modelId,
             operation: "AND",
-            groups: [testFolder]
+            groups: [testGroup]
         });
 
         // `viewModel` should have the expected `invalidFields` definition
         expect(viewModel.invalidFields).toEqual({});
     });
 
+    it("should load a QueryObject into QueryBuilderPresenter", () => {
+        const queryObjectDto = {
+            id: "any-id",
+            name: "Any name",
+            description: "Any description",
+            operation: Operation.OR,
+            groups: [testGroup],
+            modelId
+        };
+
+        // let's load a queryObjectDTO
+        presenter.load(queryObjectDto);
+        expect(presenter.getViewModel().queryObject).toEqual(queryObjectDto);
+
+        // let's load a nullish queryObjectDTO
+        presenter.load(null);
+        expect(presenter.getViewModel().queryObject).toEqual({
+            id: expect.any(String),
+            name: "Untitled",
+            description: "",
+            modelId: modelId,
+            operation: "AND",
+            groups: [testGroup]
+        });
+    });
+
     it("should be able to add and delete groups", () => {
         // should only have 1 group, created by default
         expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups).toEqual([testFolder]);
+        expect(viewModel.queryObject.groups).toEqual([testGroup]);
 
         presenter.addGroup();
 
         // should have 2 groups
         expect(viewModel.queryObject.groups.length).toBe(2);
-        expect(viewModel.queryObject.groups).toEqual([testFolder, testFolder]);
+        expect(viewModel.queryObject.groups).toEqual([testGroup, testGroup]);
 
-        const testGroup = viewModel.queryObject.groups[1];
+        const viewModelGroup = viewModel.queryObject.groups[1];
 
         // let's delete the first group
         presenter.deleteGroup(0);
 
         // should have 1 group only
         expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups).toEqual([testGroup]);
+        expect(viewModel.queryObject.groups).toEqual([viewModelGroup]);
 
         // let's delete the remaining group
         presenter.deleteGroup(0);

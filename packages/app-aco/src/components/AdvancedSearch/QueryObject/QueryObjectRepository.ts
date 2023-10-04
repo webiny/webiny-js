@@ -1,22 +1,22 @@
 import { makeAutoObservable, runInAction } from "mobx";
 
 import { QueryObjectMapper, QueryObjectDTO } from "./domains";
-import { FiltersGraphQLGateway } from "./gateways";
+import { BaseGateway } from "./gateways";
 
 export class QueryObjectRepository {
-    private gateway: FiltersGraphQLGateway;
+    private gateway: BaseGateway;
     private static instance: QueryObjectRepository;
     modelId: string;
     filters: QueryObjectDTO[] = [];
     selected: QueryObjectDTO | undefined = undefined;
 
-    constructor(gateway: FiltersGraphQLGateway, modelId: string) {
+    constructor(gateway: BaseGateway, modelId: string) {
         this.gateway = gateway;
         this.modelId = modelId;
         makeAutoObservable(this);
     }
 
-    static getInstance(gateway: FiltersGraphQLGateway, modelId: string) {
+    static getInstance(gateway: BaseGateway, modelId: string) {
         if (!QueryObjectRepository.instance) {
             QueryObjectRepository.instance = new QueryObjectRepository(gateway, modelId);
         }
@@ -32,6 +32,7 @@ export class QueryObjectRepository {
     }
 
     async createFilter(filter: QueryObjectDTO) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _, ...rawFilter } = QueryObjectMapper.toRaw(filter);
         const response = await this.gateway.create(rawFilter);
         const filterDTO = QueryObjectMapper.toDTO(response);

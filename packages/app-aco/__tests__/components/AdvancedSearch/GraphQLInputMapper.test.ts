@@ -1,11 +1,12 @@
 import { GraphQLInputMapper } from "~/components/AdvancedSearch/GraphQLInputMapper";
-import { Operation, QueryObjectDTO } from "~/components/AdvancedSearch/QueryBuilder/domain";
+import { Operation, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 describe("GraphQLInputMapper", () => {
     it("should return a GraphQL formatted output based on the received queryObject", () => {
         const queryObjectDTO: QueryObjectDTO = {
             id: "any-id",
             name: "Untitled",
+            modelId: "any-modelId",
             operation: Operation.AND,
             groups: [
                 {
