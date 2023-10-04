@@ -108,6 +108,37 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             return projectLicense?.package?.features?.[wcpFeatureId]?.enabled === true;
         },
 
+        canUseAacl() {
+            return this.canUseFeature("advancedAccessControlLayer");
+        },
+
+        canUseTeams() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options.teams;
+        },
+
+        canUseFolderLevelPermissions() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options.folderLevelPermissions;
+        },
+
+        canUsePrivateFiles() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options.privateFiles;
+        },
+
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             if (this.canUseFeature(wcpFeatureId)) {
                 return;

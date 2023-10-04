@@ -9,9 +9,10 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users-cognito";
+import createAdminUsersApp from "@webiny/api-admin-users";
+import createAdminUsersCognitoApp from "@webiny/api-admin-users-cognito";
 import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
@@ -44,6 +45,8 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     createAdminUsersApp({
         storageOperations: createAdminUsersStorageOperations({ documentClient })
     }),
+
+    createAdminUsersCognitoApp(),
 
     /**
      * Sync Admin Users with Cognito User Pool.

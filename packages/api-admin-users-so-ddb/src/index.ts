@@ -10,7 +10,7 @@ import {
     AdminUser,
     StorageOperationsGetUserParams,
     StorageOperationsListUsersParams
-} from "@webiny/api-admin-users-cognito/types";
+} from "@webiny/api-admin-users/types";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 const cleanupAttributes = ["TYPE"];

@@ -7,8 +7,9 @@
   },
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
+    "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-admin-users-cognito": "0.0.0",
-    "@webiny/api-admin-users-cognito-so-ddb": "0.0.0",
+    "@webiny/api-admin-users-so-ddb": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
@@ -51,7 +52,7 @@
     "ignore": {
       "dependencies": [
         "@webiny/api-admin-users-cognito",
-        "@webiny/api-admin-users-cognito-so-ddb",
+        "@webiny/api-admin-users-so-ddb",
         "@webiny/api-security-cognito",
         "@webiny/api-security-okta"
       ],

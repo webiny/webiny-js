@@ -40,7 +40,7 @@ export interface FoldersApiContext {
     createFolder: (type: string, folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (
         type: string,
-        folder: Omit<FolderItem, "type" | "createdOn" | "createdBy" | "savedOn">
+        folder: Omit<FolderItem, "type" | "canManagePermissions" | "hasNonInheritedPermissions" | "createdOn" | "createdBy" | "savedOn">
     ) => Promise<FolderItem>;
 
     deleteFolder(type: string, id: string): Promise<true>;
@@ -69,6 +69,8 @@ const rootFolder: FolderItem = {
         id: "",
         displayName: ""
     },
+    hasNonInheritedPermissions: false,
+    canManagePermissions: false,
     savedOn: "",
     type: "$ROOT"
 };
@@ -107,7 +109,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
         },
         invalidateCache: folderType => {
             setCache(cache => {
-                const cacheClone = structuredClone<FoldersByType>(cache);
+                const cacheClone = structuredClone(cache);
                 delete cacheClone[folderType];
                 return cacheClone;
             });

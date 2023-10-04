@@ -5,7 +5,7 @@ import {
     EntityAttributeConfig,
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
-import { AdminUsersStorageOperations as BaseAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito/types";
+import { AdminUsersStorageOperations as BaseAdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 

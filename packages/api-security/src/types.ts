@@ -421,7 +421,6 @@ export interface TenantLink<TData = any> {
 export type PermissionsTenantLink = TenantLink<{
     groups: Array<{ id: string; permissions: SecurityPermission[] }>;
     teams: Array<{ id: string; groups: Array<{ id: string; permissions: SecurityPermission[] }> }>;
-    profile: { id: string; displayName: string };
 }>;
 
 export interface ApiKey {

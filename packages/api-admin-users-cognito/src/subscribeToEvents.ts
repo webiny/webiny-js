@@ -1,6 +1,6 @@
 import { PermissionsTenantLink, SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { AdminUsersContext } from "~/types";
+import { AdminUsersContext } from "@webiny/api-admin-users/types";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 

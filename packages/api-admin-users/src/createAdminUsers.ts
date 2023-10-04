@@ -144,7 +144,7 @@ export const createAdminUsers = ({
                 try {
                     await onUserAfterCreate.publish({ user: result, inputData: data });
                 } catch (err) {
-                    console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
+                    console.log("@webiny/api-admin-users/src/createAdminUsers.ts");
                     // Not sure if we care about errors in `onAfterCreate`.
                     // Maybe add an `onCreateError` event for potential cleanup operations?
                     // For now, just log it.

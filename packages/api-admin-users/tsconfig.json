@@ -2,48 +2,20 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../api-admin-users"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../utils"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-wcp"
-    }
+    { "path": "../api" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" },
+    { "path": "../pubsub" },
+    { "path": "../utils" },
+    { "path": "../validation" },
+    { "path": "../api-i18n" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -54,8 +26,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
-      "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
@@ -72,6 +42,12 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],

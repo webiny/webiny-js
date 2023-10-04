@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api-admin-users-cognito" },
+    { "path": "../api-admin-users" },
     { "path": "../db-dynamodb" },
     { "path": "../error" }
   ],
@@ -13,8 +13,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-admin-users-cognito/*": ["../api-admin-users-cognito/src/*"],
-      "@webiny/api-admin-users-cognito": ["../api-admin-users-cognito/src"],
+      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

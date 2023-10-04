@@ -113,8 +113,8 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
     const options = useMemo(() => {
         return [
             ...usersList.map((identity: any) => ({
-                target: `identity:${user.id}`,
-                name: `${user.firstName} ${user.lastName}`
+                target: `identity:${identity.id}`,
+                name: `${identity.firstName} ${identity.lastName}`
             })),
             // ...teamsList.map(team => ({
             //     target: `team:${team.id}`,

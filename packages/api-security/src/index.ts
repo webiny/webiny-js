@@ -10,7 +10,6 @@ import {
 import graphqlPlugins from "./graphql";
 import gqlInterfaces from "./graphql/interfaces.gql";
 import { createSecurity } from "~/createSecurity";
-import { applyIdentityProfilePlugin } from "~/createSecurity/identityProfiles";
 import { attachGroupInstaller } from "~/installation/groups";
 import {
     applyMultiTenancyGraphQLPlugins,
@@ -45,8 +44,6 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
             },
             storageOperations
         });
-
-        applyIdentityProfilePlugin(context);
 
         attachGroupInstaller(context.security);
 
