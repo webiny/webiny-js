@@ -1,69 +1,326 @@
 import { useValidationManageHandler } from "./handler";
-import { createModel, createValidationStructure } from "./mocks/structure";
-import { CmsDynamicZoneTemplate, CmsModelFieldInput } from "~/types";
-
-interface FieldError {
-    error: string;
-    id: string;
-    fieldId: string;
-    storageId: string;
-}
-
-const createFieldErrors = (fields: Pick<CmsModelFieldInput, "id" | "fieldId" | "settings">[]) => {
-    return fields.reduce<FieldError[]>((errors, field) => {
-        if (field.settings?.fields?.length) {
-            errors.push(...createFieldErrors(field.settings.fields));
-            return errors;
-        } else if (field.settings?.templates?.length) {
-            const templates = field.settings.templates as CmsDynamicZoneTemplate[];
-            const templateFieldErrors = templates
-                .reduce<FieldError[]>((output, template) => {
-                    output.push(...createFieldErrors(template.fields));
-                    return output;
-                }, [])
-                .map(error => {
-                    // @ts-expect-error
-                    delete error["storageId"];
-                    return error;
-                });
-            errors.push(...templateFieldErrors);
-            return errors;
-        }
-        errors.push({
-            error: expect.any(String),
-            id: field.id,
-            fieldId: field.fieldId,
-            storageId: expect.stringMatching(`@`)
-        });
-
-        return errors;
-    }, []);
-};
+import ucFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
+import { createValidationStructure } from "./mocks/structure";
+import {
+    createBooleanField,
+    createDateField,
+    createDateTimeField,
+    createDynamicZoneField,
+    createFileField,
+    createLongTextField,
+    createNumberField,
+    createObjectField,
+    createReferenceField,
+    createRichTextField,
+    createTextField,
+    createTimeField
+} from "./mocks/fields";
+import { createError, createFieldErrors, isNestedError } from "./mocks/errors";
 
 describe("content entry validation", () => {
-    const manager = useValidationManageHandler({
-        path: "manage/en-US",
-        plugins: [createValidationStructure()]
-    });
-
-    const model = createModel();
-
+    /**
+     * Single field per test
+     */
+    const constructs: [string, any][] = [
+        ["boolean", createBooleanField],
+        ["date", createDateField],
+        ["dateTime", createDateTimeField],
+        ["dynamicZone", createDynamicZoneField],
+        ["file", createFileField],
+        ["long-text", createLongTextField],
+        ["number", createNumberField],
+        ["object", createObjectField],
+        ["reference", createReferenceField],
+        ["rich-text", createRichTextField],
+        ["text", createTextField],
+        ["time", createTimeField]
+    ];
+    // boolean
+    it.each(constructs)(
+        "should return error for invalid %s field - single value",
+        async (name, fn) => {
+            const field = fn();
+            const { plugins, model } = createValidationStructure({
+                modelId: `testingSingleValue${ucFirst(camelCase(name))}`,
+                singularApiName: `TestingSingleValues${ucFirst(camelCase(name))}`,
+                pluralApiName: `TestingSingleValues${ucFirst(camelCase(name))}`,
+                fields: [field]
+            });
+            const manager = useValidationManageHandler({
+                path: "manage/en-US",
+                plugins,
+                model
+            });
+            const [response] = await manager.validate({
+                data: {}
+            });
+            expect(response).toEqual({
+                data: {
+                    validate: {
+                        data: [createError(field)],
+                        error: null
+                    }
+                }
+            });
+        }
+    );
+    it.each(constructs)(
+        "should return error for invalid %s field - multiple values",
+        async (name, fn) => {
+            const field = fn({
+                multipleValues: true
+            });
+            const { plugins, model } = createValidationStructure({
+                modelId: `testingMultipleValue${ucFirst(camelCase(name))}`,
+                singularApiName: `TestingMultipleValues${ucFirst(camelCase(name))}`,
+                pluralApiName: `TestingMultipleValues${ucFirst(camelCase(name))}`,
+                fields: [field]
+            });
+            const manager = useValidationManageHandler({
+                path: "manage/en-US",
+                plugins,
+                model
+            });
+            const [response] = await manager.validate({
+                data: {}
+            });
+            const error = createError(field);
+            expect(response).toEqual({
+                data: {
+                    validate: {
+                        data: [error],
+                        error: null
+                    }
+                }
+            });
+        }
+    );
+    /**
+     * All fields.
+     */
     it("should return errors for invalid entry", async () => {
+        const { plugins, model } = createValidationStructure();
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
         const [response] = await manager.validate({
             data: {}
         });
+
         /**
-         * Count all the fields and reduce the number for all the objects and the dynamic zones.
+         * Remove all dz and nested fields.
          */
-        expect(response.data.validateProduct.data).toHaveLength(40);
+        const expectedErrors = createFieldErrors(model.fields).filter(error => {
+            return !isNestedError(error);
+        });
 
         expect(response).toEqual({
             data: {
-                validateProduct: {
-                    data: createFieldErrors(model.fields),
+                validate: {
+                    data: expectedErrors,
                     error: null
                 }
             }
         });
+        /**
+         * Count all the fields and reduce the number for all the objects and the dynamic zones.
+         */
+        expect(response.data.validate.data).toHaveLength(expectedErrors.length);
+    });
+
+    it("should return errors for array not having any items", async () => {
+        const field = createTextField({
+            multipleValues: true
+        });
+        const { plugins, model } = createValidationStructure({
+            modelId: `testingEmptyArrayValues`,
+            singularApiName: `TestingEmptyArrayValues`,
+            pluralApiName: `TestingEmptyArrayValues`,
+            fields: [field]
+        });
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [response] = await manager.validate({
+            data: {
+                [field.fieldId]: []
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                validate: {
+                    data: [createError(field)],
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should return errors for invalid field - nested and dynamic zone", async () => {
+        const { plugins, model } = createValidationStructure();
+
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [response] = await manager.validate({
+            data: {
+                nested: {},
+                dz: {
+                    Hero: {
+                        dzNested: {}
+                    }
+                }
+            }
+        });
+
+        /**
+         * We need to remove nested, dz and nestedDz as they are populated.
+         */
+        const expectedErrors = createFieldErrors(model.fields).filter(error => {
+            return !["nested", "dz", "dzNested"].includes(error.fieldId);
+        });
+
+        expect(response).toEqual({
+            data: {
+                validate: {
+                    data: expectedErrors,
+                    error: null
+                }
+            }
+        });
+        /**
+         * Count all the fields and reduce the number for all the objects and the dynamic zones.
+         */
+        expect(response.data.validate.data).toHaveLength(expectedErrors.length);
+    });
+
+    it("should not return errors for valid entry", async () => {
+        const { plugins, model } = createValidationStructure();
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [response] = await manager.validate({
+            data: {
+                title: "text test",
+                enabled: true,
+                price: 2,
+                description: "long-text test",
+                body: [
+                    {
+                        type: "h1",
+                        content: "rich text test"
+                    }
+                ],
+                releaseDate: "2021-01-01",
+                runningTime: "22:45",
+                lastPublishedOn: "2023-01-01T00:00:00.000+00:00",
+                image: "https://webiny.com/image.png",
+                category: {
+                    id: "category-1",
+                    modelId: "category"
+                },
+                nested: {
+                    nestedTitle: "nested text test",
+                    nestedEnabled: false,
+                    nestedPrice: 3,
+                    nestedDescription: "nested long-text test",
+                    nestedBody: [
+                        {
+                            type: "h2",
+                            content: "nested rich text test"
+                        }
+                    ],
+                    nestedReleaseDate: "2022-01-01",
+                    nestedRunningTime: "23:55",
+                    nestedLastPublishedOn: "2022-01-01T00:00:00.000+02:00",
+                    nestedImage: "https://webiny.com/image2.png",
+                    nestedCategory: {
+                        id: "category-2",
+                        modelId: "category"
+                    }
+                },
+                dz: {
+                    Hero: {
+                        dzTitle: "dz text test",
+                        dzEnabled: false,
+                        dzPrice: 4,
+                        dzDescription: "dz long-text test",
+                        dzBody: [
+                            {
+                                type: "h2",
+                                content: "dz rich text test"
+                            }
+                        ],
+                        dzReleaseDate: "2021-01-01",
+                        dzRunningTime: "21:55",
+                        dzLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                        dzImage: "https://webiny.com/image2.png",
+                        dzCategory: {
+                            id: "category-3",
+                            modelId: "category"
+                        },
+                        dzNested: {
+                            dzNestedTitle: "dzNested text test",
+                            dzNestedEnabled: false,
+                            dzNestedPrice: 4,
+                            dzNestedDescription: "dzNested long-text test",
+                            dzNestedBody: [
+                                {
+                                    type: "h2",
+                                    content: "dzNested rich text test"
+                                }
+                            ],
+                            dzNestedReleaseDate: "2021-01-01",
+                            dzNestedRunningTime: "21:55",
+                            dzNestedLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                            dzNestedImage: "https://webiny.com/image2.png",
+                            dzNestedCategory: {
+                                id: "category-4",
+                                modelId: "category"
+                            }
+                        }
+                    }
+                },
+                // multiple values
+                multiValueTitle: "text test",
+                multiValueEnabled: false,
+                multiValuePrice: 4,
+                multiValueDescription: "long-text test",
+                multiValueBody: [
+                    {
+                        type: "h2",
+                        content: "rich text test"
+                    }
+                ],
+                multiValueReleaseDate: "2021-01-01",
+                multiValueRunningTime: "21:55",
+                multiValueLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                multiValueImage: "https://webiny.com/image2.png",
+                multiValueCategory: {
+                    id: "category-11",
+                    modelId: "category"
+                }
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                validate: {
+                    data: [],
+                    error: null
+                }
+            }
+        });
+        expect(response.data.validate.data).toHaveLength(0);
     });
 });

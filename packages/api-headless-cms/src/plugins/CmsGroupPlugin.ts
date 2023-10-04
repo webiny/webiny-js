@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsGroup as BaseCmsGroup } from "~/types";
 
-interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion"> {
+export interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion"> {
     tenant?: string;
     locale?: string;
 }

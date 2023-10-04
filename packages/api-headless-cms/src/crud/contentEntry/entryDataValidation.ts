@@ -33,7 +33,6 @@ const validateValue = async (
     if (!fieldValidators) {
         return null;
     }
-
     const { validatorList, context, field, model, entry } = params;
     try {
         for (const fieldValidator of fieldValidators) {
@@ -85,13 +84,13 @@ const runFieldMultipleValuesValidations = async (
     params: ExecuteValidationParams
 ): Promise<string | null> => {
     const { field, data } = params;
-    const values = data[field.fieldId] || [];
-    if (Array.isArray(values) === false) {
-        return `Value of the field "${field.fieldId}" is not an array.`;
-    }
+    const values = data?.[field.fieldId];
     const valuesError = await validateValue(params, field.listValidation || [], values);
     if (valuesError) {
         return valuesError;
+    }
+    if (!values) {
+        return null;
     }
     for (const value of values) {
         const valueError = await validateValue(params, field.validation || [], value);
@@ -121,7 +120,8 @@ const runFieldValueValidations = async (
 };
 
 const execValidation = async (params: ExecuteValidationParams): Promise<string | null> => {
-    if (params.field.multipleValues) {
+    const { field } = params;
+    if (field.multipleValues) {
         return await runFieldMultipleValuesValidations(params);
     }
     return await runFieldValueValidations(params);
@@ -157,6 +157,7 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
         context,
         model,
         entry,
+        parents: [],
         fields: model.fields,
         data: {
             ...entry?.values,
@@ -181,7 +182,24 @@ interface FieldError {
     fieldId: string;
     storageId: string;
     error: any;
+    parents: string[];
 }
+
+interface GetObjectValueParams {
+    field: CmsModelField;
+    data: any;
+}
+
+const getObjectValue = (params: GetObjectValueParams) => {
+    const { field, data } = params;
+    if (field.multipleValues) {
+        if (!Array.isArray(data)) {
+            return [];
+        }
+        return data || [];
+    }
+    return data || {};
+};
 interface GetTemplateValueParams {
     field: CmsModelField;
     template: CmsDynamicZoneTemplate;
@@ -193,15 +211,18 @@ const getTemplateValue = (params: GetTemplateValueParams) => {
         if (!Array.isArray(data)) {
             return undefined;
         }
-        return data.find(value => {
-            return value && !!value[template.gqlTypeName];
-        });
+        return data
+            .filter(value => {
+                return !!value?.[template.gqlTypeName];
+            })
+            .map(value => value[template.gqlTypeName]);
     }
     return data?.[template.gqlTypeName];
 };
 
 interface ValidateParams {
     validatorList: PluginValidationList;
+    parents: string[];
     model: CmsModel;
     data: InputData;
     context: CmsContext;
@@ -215,22 +236,51 @@ const executeFieldValidation = async (
     }
 ): Promise<FieldError[]> => {
     // TODO put per-field validation into plugins.
+    const { field } = params;
     /**
      * Object field.
      */
-    if (params.field.type === "object" && params.field.settings?.fields) {
-        const fields = params.field.settings?.fields;
+    if (field.type === "object") {
+        const fields = field.settings?.fields;
         if (!Array.isArray(fields)) {
             return [];
         }
         const validations: FieldError[] = [];
-        for (const field of fields) {
-            const data = params.data?.[field.fieldId];
-            const defaultValue = field.multipleValues ? [] : {};
+        /**
+         * We need to validate the object field as well.
+         */
+        const error = await execValidation({
+            ...params,
+            field
+        });
+        if (error) {
+            validations.push({
+                id: field.id,
+                fieldId: field.fieldId,
+                storageId: field.storageId,
+                error,
+                parents: params.parents
+            });
+        }
+        const data = params.data?.[field.fieldId];
+        if (!data) {
+            return validations;
+        }
+
+        const value = getObjectValue({
+            field,
+            data
+        });
+
+        for (const childField of fields) {
             const errors = await executeFieldValidation({
                 ...params,
-                field,
-                data: data || defaultValue
+                parents: params.parents.concat([field.fieldId]),
+                field: {
+                    ...childField,
+                    multipleValues: field.multipleValues
+                },
+                data: value
             });
             if (errors.length === 0) {
                 continue;
@@ -243,24 +293,44 @@ const executeFieldValidation = async (
      * Dynamic Zone Field
      */
     //
-    else if (params.field.type === "dynamicZone") {
+    else if (field.type === "dynamicZone") {
         const validations: FieldError[] = [];
-        const templates = (params.field.settings?.templates || []) as CmsDynamicZoneTemplate[];
+
+        const error = await execValidation({
+            ...params,
+            field
+        });
+        if (error) {
+            validations.push({
+                id: field.id,
+                fieldId: field.fieldId,
+                storageId: field.storageId,
+                error,
+                parents: params.parents
+            });
+        }
+
+        const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
         for (const template of templates) {
             const fields = template.fields;
-            const data = (params.data?.[params.field.fieldId] || []) as any[];
-            const templateValue = getTemplateValue({
-                field: params.field,
+            const data = params.data?.[field.fieldId];
+            const value = getTemplateValue({
+                field,
                 template,
                 data
             });
-            const value = templateValue?.[template.gqlTypeName];
-            for (const field of fields) {
-                const defaultValue = field.multipleValues ? [] : {};
+            if (!value) {
+                continue;
+            }
+            for (const childField of fields) {
                 const errors = await executeFieldValidation({
                     ...params,
-                    field,
-                    data: value || defaultValue
+                    parents: params.parents.concat([field.fieldId]),
+                    field: {
+                        ...childField,
+                        multipleValues: field.multipleValues
+                    },
+                    data: value
                 });
                 if (errors.length === 0) {
                     continue;
@@ -279,10 +349,11 @@ const executeFieldValidation = async (
     }
     return [
         {
-            id: params.field.id,
-            fieldId: params.field.fieldId,
-            storageId: params.field.storageId,
-            error
+            id: field.id,
+            fieldId: field.fieldId,
+            storageId: field.storageId,
+            error,
+            parents: params.parents
         }
     ];
 };

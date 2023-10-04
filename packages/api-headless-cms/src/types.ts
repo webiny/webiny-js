@@ -954,10 +954,12 @@ export interface CmsSettingsContext {
     getSettings: () => Promise<CmsSettings | null>;
     /**
      * Updates settings model with a new date.
+     * @deprecated
      */
     updateModelLastChange: () => Promise<void>;
     /**
      * Get the datetime when content model last changed.
+     * @deprecated
      */
     getModelLastChange: () => Promise<Date | null>;
 }
