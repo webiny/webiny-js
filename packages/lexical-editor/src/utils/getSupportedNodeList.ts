@@ -1,5 +1,5 @@
 import { Klass, LexicalNode } from "lexical";
-import { WebinyNodes } from "~/nodes/webinyNodes";
+import { allNodes } from "~/nodes/allNodes";
 
 /**
  * Get the supported list of lexical nodes types.
@@ -12,5 +12,5 @@ export const getSupportedNodeList = (): ReadonlyArray<
           with: <T extends { new (...args: any): any }>(node: InstanceType<T>) => LexicalNode;
       }
 > => {
-    return [...WebinyNodes];
+    return [...allNodes];
 };

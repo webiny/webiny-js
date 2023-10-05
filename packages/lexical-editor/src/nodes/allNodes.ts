@@ -17,7 +17,7 @@ import { ImageNode } from "~/nodes/ImageNode";
 import { LinkNode } from "~/nodes/link-node";
 
 // This is a list of all the nodes that our Lexical implementation supports OOTB.
-export const WebinyNodes: ReadonlyArray<
+export const allNodes: ReadonlyArray<
     | Klass<LexicalNode>
     | {
           replace: Klass<LexicalNode>;

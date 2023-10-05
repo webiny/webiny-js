@@ -1,11 +1,7 @@
-import {
-    generateInitialLexicalValue,
-    getSupportedNodeList,
-    getTheme
-} from "@webiny/lexical-editor";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { $getRoot, $getSelection } from "lexical";
+import { allNodes } from "@webiny/lexical-editor/nodes/allNodes";
 
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
@@ -20,13 +16,12 @@ export const parseToLexicalObject = (
     onError?: (onError: Error) => void
 ): void => {
     if (!htmlString?.length) {
-        return JSON.parse(generateInitialLexicalValue());
+        return;
     }
 
     const editor = createHeadlessEditor({
-        nodes: getSupportedNodeList(),
-        onError: onError,
-        theme: getTheme()
+        nodes: allNodes,
+        onError: onError
     });
 
     editor.update(

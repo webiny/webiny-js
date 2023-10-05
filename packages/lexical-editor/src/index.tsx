@@ -51,6 +51,7 @@ export { getTheme } from "~/utils/getTheme";
 export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 // types
 export * as types from "./types";
+export * from "./nodes/allNodes";
 // config
 export {
     LexicalEditorConfig,
