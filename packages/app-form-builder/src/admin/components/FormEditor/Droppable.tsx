@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
-import { FieldLayoutPositionType } from "~/types";
+import { FbFormStep, FieldLayoutPositionType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -25,12 +25,27 @@ export interface IsVisibleCallableParams {
     isDragging: boolean;
     ui: string;
     pos?: Partial<FieldLayoutPositionType>;
+    formStep?: FbFormStep;
 }
 export interface IsVisibleCallable {
     (params: IsVisibleCallableParams): boolean;
 }
+/*
+    We need to extend DragObjectWithType type because it does not support fields,
+    that we set through "beginDrag".
+    * "ui" propetry gives us information about the Entity that we are moving.
+    "Entity" can be step, field, row or custom. "Entity" will be custom in case we are moving field from a "Custom Field" menu.
+    * "name" property contains the type of the field, it can be text, number or one of the available fields.
+    * "pos" propety contains info about Entity position that we are moving
+    pos can be undefined in case we are moving field from a "Custom Field" menu.
+*/
+export interface DragObjectWithFieldInfo extends DragObjectWithType {
+    ui: string;
+    name: string;
+    pos?: Partial<FieldLayoutPositionType>;
+}
 export interface OnDropCallable {
-    (item: DragObjectWithType): DroppableDropResult | undefined;
+    (item: DragObjectWithFieldInfo): DroppableDropResult | undefined;
 }
 export interface DroppableProps {
     type?: string;
