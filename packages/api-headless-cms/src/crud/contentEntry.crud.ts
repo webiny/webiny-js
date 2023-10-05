@@ -59,7 +59,10 @@ import {
     OnEntryUpdateErrorTopicParams,
     UpdateCmsEntryInput
 } from "~/types";
-import { validateModelEntryData } from "./contentEntry/entryDataValidation";
+import {
+    validateModelEntryDataOrThrow,
+    validateModelEntryData
+} from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
@@ -656,7 +659,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const initialInput = mapAndCleanCreateInputData(model, inputData);
 
         if (options?.validate !== false) {
-            await validateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: initialInput
@@ -790,7 +793,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         };
 
         if (options?.validate !== false) {
-            await validateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: initialValues,
@@ -914,7 +917,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
         if (options?.validate !== false) {
-            await validateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: input,
@@ -1007,6 +1010,36 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         }
+    };
+
+    const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
+        await entriesPermissions.ensure({ rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
+
+        const input = mapAndCleanUpdatedInputData(model, inputData || {});
+        let originalEntry: CmsEntry | undefined;
+        if (id) {
+            /**
+             * The entry we are going to update.
+             */
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                id
+            });
+
+            if (!originalStorageEntry) {
+                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            }
+            originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        }
+        const result = await validateModelEntryData({
+            context,
+            model,
+            data: input,
+            entry: originalEntry
+        });
+        return result.length > 0 ? result : [];
     };
 
     const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
@@ -1371,7 +1404,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await validateModelEntryData({
+        await validateModelEntryDataOrThrow({
             context,
             model,
             data: originalEntry.values,
@@ -1771,6 +1804,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         async updateEntry(model, id, input, meta, options) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
                 return updateEntry(model, id, input, meta, options);
+            });
+        },
+        async validateEntry(model, id, input) {
+            return context.benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
+                return validateEntry(model, id, input);
             });
         },
         async moveEntry(model, id, folderId) {

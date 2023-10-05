@@ -451,6 +451,11 @@ export default /* GraphQL */ `
             options: UpdateCmsEntryOptionsInput
         ): PageModelApiNameResponse
 
+        validatePageModelApiName(
+            revision: ID
+            data: PageModelApiNameInput!
+        ): CmsEntryValidationResponse!
+
         movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
 
         deletePageModelApiName(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse

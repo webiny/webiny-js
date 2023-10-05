@@ -265,7 +265,9 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "title",
-                                    storageId: "text@title"
+                                    storageId: "text@title",
+                                    id: "title",
+                                    parents: []
                                 }
                             ]
                         }
@@ -295,7 +297,9 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "slug",
-                                    storageId: "text@slug"
+                                    storageId: "text@slug",
+                                    id: "slug",
+                                    parents: []
                                 }
                             ]
                         }
@@ -325,7 +329,9 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value must consist of only 'a-z', '0-9' and '-'.",
                                     fieldId: "slug",
-                                    storageId: "text@slug"
+                                    storageId: "text@slug",
+                                    id: "slug",
+                                    parents: []
                                 }
                             ]
                         }

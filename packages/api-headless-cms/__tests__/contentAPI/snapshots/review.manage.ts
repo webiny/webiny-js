@@ -176,6 +176,8 @@ export default /* GraphQL */ `
 
         updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!, options: UpdateCmsEntryOptionsInput): ReviewApiModelResponse
         
+        validateReviewApiModel(revision: ID, data: ReviewApiModelInput!): CmsEntryValidationResponse!
+        
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
         deleteReviewApiModel(
