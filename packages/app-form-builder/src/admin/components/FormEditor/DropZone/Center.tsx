@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { Droppable, OnDropCallable } from "./../Droppable";
+import { Droppable, OnDropCallable, IsVisibleCallable } from "./../Droppable";
 
 interface ContainerProps {
     isOver: boolean;
@@ -38,11 +38,12 @@ export interface CenterProps {
     children: React.ReactNode;
     active?: boolean;
     highlight?: boolean;
+    isVisible?: IsVisibleCallable;
 }
 
-export const Center: React.FC<CenterProps> = ({ onDrop, children }) => {
+export const Center: React.FC<CenterProps> = ({ onDrop, children, isVisible }) => {
     return (
-        <Droppable onDrop={onDrop}>
+        <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
                 <div
                     ref={drop}

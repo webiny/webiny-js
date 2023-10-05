@@ -19,6 +19,14 @@ interface BeginDragProps {
     };
     formStep?: FbFormStep;
     name?: string;
+    id?: String;
+    /*
+        "container" contains info about source element.
+    */
+    container?: {
+        type: "step" | "conditionGroup";
+        id: string;
+    };
 }
 
 type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;

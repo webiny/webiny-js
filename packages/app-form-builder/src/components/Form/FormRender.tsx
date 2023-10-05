@@ -113,44 +113,54 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
-
         return fieldLayout.map(row => {
-            return row.map(id => {
-                /**
-                 * We can cast safely because we are adding validators
-                 */
-                const field = getFieldById(id) as FormRenderFbFormModelField;
-                field.validators = (field.validation || []).reduce((collection, item) => {
-                    const validatorPlugin = validatorPlugins.find(
-                        plugin => plugin.validator.name === item.name
-                    );
-
-                    if (
-                        !validatorPlugin ||
-                        typeof validatorPlugin.validator.validate !== "function"
-                    ) {
-                        return collection;
+            return row
+                .map(id => {
+                    /**
+                     * We can cast safely because we are adding validators
+                     */
+                    const field = getFieldById(id) as FormRenderFbFormModelField;
+                    /* This is a temporary fix of the issue that occures when we delete a Condition Group */
+                    if (field === null) {
+                        return false as unknown as FormRenderFbFormModelField;
                     }
+                    field.validators = (field.validation || []).reduce((collection, item) => {
+                        const validatorPlugin = validatorPlugins.find(
+                            plugin => plugin.validator.name === item.name
+                        );
 
-                    const validator: FieldValidator = async (value: string): Promise<boolean> => {
-                        let isInvalid;
-                        try {
-                            const result = await validatorPlugin.validator.validate(value, item);
-                            isInvalid = result === false;
-                        } catch (e) {
-                            isInvalid = true;
+                        if (
+                            !validatorPlugin ||
+                            typeof validatorPlugin.validator.validate !== "function"
+                        ) {
+                            return collection;
                         }
 
-                        if (isInvalid) {
-                            throw new Error(item.message || "Invalid value.");
-                        }
-                        return true;
-                    };
-                    collection.push(validator);
-                    return collection;
-                }, [] as FieldValidator[]);
-                return field;
-            });
+                        const validator: FieldValidator = async (
+                            value: string
+                        ): Promise<boolean> => {
+                            let isInvalid;
+                            try {
+                                const result = await validatorPlugin.validator.validate(
+                                    value,
+                                    item
+                                );
+                                isInvalid = result === false;
+                            } catch (e) {
+                                isInvalid = true;
+                            }
+
+                            if (isInvalid) {
+                                throw new Error(item.message || "Invalid value.");
+                            }
+                            return true;
+                        };
+                        collection.push(validator);
+                        return collection;
+                    }, [] as FieldValidator[]);
+                    return field;
+                })
+                .filter(row => Boolean(row));
         });
     };
 

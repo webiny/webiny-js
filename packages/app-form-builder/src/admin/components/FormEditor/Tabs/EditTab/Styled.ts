@@ -77,3 +77,34 @@ export const rowHandle = css({
 export const fieldHandle = css({
     cursor: "grab"
 });
+
+export const conditionGroupContainer = css({
+    position: "relative",
+    flex: "1 100%",
+    backgroundColor: "white",
+    padding: "0 15px",
+    margin: 10,
+    transition: "box-shadow 225ms",
+    color: "var(--mdc-theme-on-surface)",
+    cursor: "grab",
+    "&:hover": {
+        boxShadow:
+            "var(--mdc-theme-on-background) 1px 1px 1px, var(--mdc-theme-on-background) 1px 1px 2px"
+    }
+});
+
+export const StepRulesTag = styled.div<{ isValid: boolean }>`
+    display: inline-block;
+    padding: 5px 20px 7px 20px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid;
+    border-color: ${props =>
+        props.isValid ? props.theme.styles.colors.color4 : props.theme.styles.colors.color1};
+    margin-right: 10px;
+    cursor: default;
+    font-size: 16px;
+    font-weight: normal;
+    color: ${props =>
+        props.isValid ? props.theme.styles.colors.color4 : props.theme.styles.colors.color1};
+`;
