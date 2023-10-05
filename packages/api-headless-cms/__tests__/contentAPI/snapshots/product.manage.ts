@@ -366,6 +366,8 @@ export default /* GraphQL */ `
 
         updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!, options: UpdateCmsEntryOptionsInput): ProductApiSingularResponse
         
+        validateProductApiSingular(revision: ID, data: ProductApiSingularInput!): CmsEntryValidationResponse!
+        
         moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
 
         deleteProductApiSingular(

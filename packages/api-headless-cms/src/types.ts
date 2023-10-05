@@ -954,10 +954,12 @@ export interface CmsSettingsContext {
     getSettings: () => Promise<CmsSettings | null>;
     /**
      * Updates settings model with a new date.
+     * @deprecated
      */
     updateModelLastChange: () => Promise<void>;
     /**
      * Get the datetime when content model last changed.
+     * @deprecated
      */
     getModelLastChange: () => Promise<Date | null>;
 }
@@ -2305,6 +2307,9 @@ export interface DeleteMultipleEntriesParams {
 
 export type DeleteMultipleEntriesResponse = { id: string }[];
 
+export interface CmsEntryValidateResponse {
+    [key: string]: any;
+}
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2380,6 +2385,14 @@ export interface CmsEntryContext {
         meta?: Record<string, any>,
         options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
+    /**
+     * Validate the entry - either new one or existing one.
+     */
+    validateEntry: (
+        model: CmsModel,
+        id?: string,
+        input?: UpdateCmsEntryInput
+    ) => Promise<CmsEntryValidateResponse>;
     /**
      * Move entry, and all its revisions, to a new folder.
      */

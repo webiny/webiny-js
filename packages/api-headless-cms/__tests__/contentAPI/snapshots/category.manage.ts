@@ -163,6 +163,8 @@ export default /* GraphQL */ `
         createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput, options: CreateRevisionCmsEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!, options: UpdateCmsEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        
+        validateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CmsEntryValidationResponse!
     
         moveCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, folderId: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdMoveResponse
 
