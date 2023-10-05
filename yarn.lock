@@ -7787,12 +7787,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/headless@npm:^0.12.2":
-  version: 0.12.2
-  resolution: "@lexical/headless@npm:0.12.2"
+"@lexical/headless@npm:^0.11.3":
+  version: 0.11.3
+  resolution: "@lexical/headless@npm:0.11.3"
   peerDependencies:
-    lexical: 0.12.2
-  checksum: 8954bf8efb6cabe6f69e138d65e4785999b6b675275e46937c1573e55376598a153f408904583976543d46fa986da9c6f04c1a34117e2b51768599afa190987e
+    lexical: 0.11.3
+  checksum: 9bbabea45714a69deff7a6df7df55033c71904ffcee7398b8713e6178aace28f2fd75e111ca1f4113b13b2161498413ec82d90587f6289b35ab0de355494ebd2
   languageName: node
   linkType: hard
 
@@ -7807,7 +7807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/html@npm:0.11.3":
+"@lexical/html@npm:0.11.3, @lexical/html@npm:^0.11.3":
   version: 0.11.3
   resolution: "@lexical/html@npm:0.11.3"
   dependencies:
@@ -7815,17 +7815,6 @@ __metadata:
   peerDependencies:
     lexical: 0.11.3
   checksum: 08ecd189fc4ebc0c9e598658b07035f8905dd5ea8c254e01e4e655296453a4d03796f354fb9e8febdddadb8f3c29f57bbf2ef15a013d1a1bb69cf41853276936
-  languageName: node
-  linkType: hard
-
-"@lexical/html@npm:^0.12.2":
-  version: 0.12.2
-  resolution: "@lexical/html@npm:0.12.2"
-  dependencies:
-    "@lexical/selection": 0.12.2
-  peerDependencies:
-    lexical: 0.12.2
-  checksum: a3538d923f2ffd5d0b5db186016d5cdeab21f42c55ac40d393b7cfbd59f1e42f12515b79ce291eafa57d67960995bbe90bc46a5042a177753f4acccfc1746fa1
   languageName: node
   linkType: hard
 
@@ -7956,15 +7945,6 @@ __metadata:
   peerDependencies:
     lexical: 0.11.3
   checksum: e57ca9a08f1e302f62349245e44949f71235ac48e297cb0390b6dff3db4aeb475fced62e78d81692f1e2974a0766dd25c0f83e6130870e848de0f5f0554af4f5
-  languageName: node
-  linkType: hard
-
-"@lexical/selection@npm:0.12.2":
-  version: 0.12.2
-  resolution: "@lexical/selection@npm:0.12.2"
-  peerDependencies:
-    lexical: 0.12.2
-  checksum: 4c35dc644c401c3782ed8a10e404a92b1f18c763332035e1f8707a1ac6143754b463bbb122b7cc82c99766e0b5650927025e2d081538ffbbd76386cf9cf4c66c
   languageName: node
   linkType: hard
 
@@ -16203,8 +16183,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/html-to-lexical-parser@workspace:packages/html-to-lexical-parser"
   dependencies:
-    "@lexical/headless": ^0.12.2
-    "@lexical/html": ^0.12.2
+    "@lexical/headless": ^0.11.3
+    "@lexical/html": ^0.11.3
     "@types/jsdom": 21.1.3
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
