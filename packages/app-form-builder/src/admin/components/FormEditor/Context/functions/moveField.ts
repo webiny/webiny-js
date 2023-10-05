@@ -54,7 +54,7 @@ const moveField = ({ data, field, destination }: MoveField) => {
 
         // If row exists, we drop the field at the specified index.
         if (destination.position.index === null) {
-            // Create a new row with the new field at the given row index,
+            // Create a new row with the new field at the given row index.
             destinationContainerLayout.layout.splice(destination.position.row, 0, [fieldId]);
             return;
         }

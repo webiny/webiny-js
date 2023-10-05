@@ -6,7 +6,6 @@ import {
     FbBuilderFieldPlugin,
     FbFormModel,
     FbFormStep,
-    HandleDropProps,
     DropTarget,
     DropSource,
     DropDestination
@@ -98,8 +97,15 @@ export const FormStep = ({
     }, []);
 
     const handleDrop = useCallback(
-        (props: HandleDropProps) => {
-            const { target, source, destination } = props;
+        ({
+            target,
+            source,
+            destination
+        }: {
+            target: DropTarget;
+            source: DropSource;
+            destination: DropDestination;
+        }) => {
             if (target.name === "custom") {
                 /**
                  * We can cast because field is empty in the start

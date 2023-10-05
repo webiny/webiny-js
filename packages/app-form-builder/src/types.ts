@@ -11,54 +11,9 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
 
-export interface HandleDropProps {
-    /*
-        "target" contains info about the Element that we are dragging.
-    */
-    target: {
-        type: "field" | "row" | "conditionGroup" | "step";
-        /*
-            Property "id" is optional,
-            because when we move row it does not have an id.
-        */
-        id?: string;
-        name: string;
-    };
-    /*
-        "source" contains info about the Container from which we are dragging an element or elements.
-        containerId and containerType could be undefined in case we are creating a custom field.
-    */
-    source: {
-        containerId?: string;
-        containerType?: "step" | "conditionGroup";
-        position: {
-            row: number;
-            /*
-                Property "index" can be null in case we move row.
-            */
-            index: number | null;
-        };
-    };
-    /*
-        "destination" contains info about the Container,
-        in which we are dropping an element or elements.
-    */
-    destination: {
-        containerId: string;
-        containerType: "step" | "conditionGroup";
-        position: {
-            row: number;
-            /*
-                Property "index" can be null in case we move row.
-            */
-            index: number | null;
-        };
-    };
-}
-
 export interface DropTarget {
     /*
-        "target" contains info about the Element that we are dragging.
+        Contains info about the Element that we are dragging.
     */
     type: "field" | "row" | "conditionGroup" | "step";
     /*
@@ -71,7 +26,7 @@ export interface DropTarget {
 
 export interface DropSource {
     /*
-        "source" contains info about the Container from which we are dragging an element or elements.
+        Contains info about the Container from which we are dragging an element or elements.
         containerId and containerType could be undefined in case we are creating a custom field.
     */
     containerId?: string;
@@ -87,7 +42,7 @@ export interface DropSource {
 
 export interface DropDestination {
     /*
-        "destination" contains info about the Container,
+        Contains info about the Container,
         in which we are dropping an element or elements.
     */
     containerId: string;
