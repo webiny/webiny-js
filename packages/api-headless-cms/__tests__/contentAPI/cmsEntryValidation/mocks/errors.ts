@@ -9,12 +9,11 @@ export interface FieldError {
     error: string;
     id: string;
     fieldId: string;
-    storageId: string;
     parents: string[];
 }
 
 export const createFieldErrors = (
-    fields: Pick<CmsModelFieldInput, "id" | "fieldId" | "settings">[]
+    fields: Pick<CmsModelFieldInput, "id" | "fieldId" | "settings" | "type">[]
 ) => {
     return fields.reduce<FieldError[]>((errors, field) => {
         /**
@@ -24,22 +23,16 @@ export const createFieldErrors = (
         /**
          * Object field.
          */
-        if (field.settings?.fields?.length) {
+        if (field.type === "object" && field.settings?.fields?.length) {
             errors.push(...createFieldErrors(field.settings.fields));
         }
         // Dynamic Zone field.
-        else if (field.settings?.templates?.length) {
+        else if (field.type === "dynamicZone" && field.settings?.templates?.length) {
             const templates = field.settings.templates as CmsDynamicZoneTemplate[];
-            const templateFieldErrors = templates
-                .reduce<FieldError[]>((output, template) => {
-                    output.push(...createFieldErrors(template.fields));
-                    return output;
-                }, [])
-                .map(error => {
-                    // @ts-expect-error
-                    delete error["storageId"];
-                    return error;
-                });
+            const templateFieldErrors = templates.reduce<FieldError[]>((output, template) => {
+                output.push(...createFieldErrors(template.fields));
+                return output;
+            }, []);
             errors.push(...templateFieldErrors);
         }
 
@@ -47,14 +40,17 @@ export const createFieldErrors = (
     }, []);
 };
 
-export const createError = (
-    field: Pick<CmsModelFieldInput, "id" | "fieldId" | "settings">
-): FieldError => {
+interface CreateErrorParams extends Pick<CmsModelFieldInput, "id" | "fieldId" | "settings"> {
+    parents?: string[];
+    error?: string;
+}
+
+export const createError = (params: CreateErrorParams): FieldError => {
+    const { error, id, fieldId, parents } = params;
     return {
-        error: expect.any(String),
-        id: field.id,
-        fieldId: field.fieldId,
-        storageId: expect.stringMatching(`@`),
-        parents: expect.any(Array)
+        error: error || expect.any(String),
+        id,
+        fieldId,
+        parents: parents || expect.any(Array)
     };
 };

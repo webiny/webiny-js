@@ -17,6 +17,7 @@ import {
     createTimeField
 } from "./mocks/fields";
 import { createError, createFieldErrors, isNestedError } from "./mocks/errors";
+import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 
 describe("content entry validation", () => {
     /**
@@ -200,6 +201,124 @@ describe("content entry validation", () => {
          * Count all the fields and reduce the number for all the objects and the dynamic zones.
          */
         expect(response.data.validate.data).toHaveLength(expectedErrors.length);
+    });
+
+    it("should return errors for invalid dynamic zone field values", async () => {
+        const { plugins, model } = createValidationStructure({
+            ...(pageModel as any)
+        });
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [response] = await manager.validate({
+            data: {
+                content: [
+                    {
+                        Hero: {},
+                        SimpleText: {},
+                        Objecting: {
+                            nestedObject: {
+                                objectNestedObject: [
+                                    {
+                                        nestedObjectNestedTitle: null
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        Hero: {
+                            title: "ok hero 2"
+                        },
+                        SimpleText: {},
+                        Objecting: {
+                            nestedObject: {
+                                objectNestedObject: [
+                                    {
+                                        nestedObjectNestedTitle: "ok 1"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                header: {
+                    TextHeader: {}
+                },
+                objective: {
+                    Objecting: {
+                        nestedObject: {
+                            objectNestedObject: [
+                                {
+                                    nestedObjectNestedTitle: "ok"
+                                },
+                                {
+                                    nestedObjectNestedTitle: null
+                                },
+                                {
+                                    nestedObjectNestedTitle: "ok 2"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                validate: {
+                    data: [
+                        createError({
+                            error: "Value is required.",
+                            id: "dwodev6q",
+                            fieldId: "title",
+                            parents: ["content", "0", "Hero"]
+                        }),
+                        createError({
+                            error: `"nestedObject.objectTitle" is required.`,
+                            id: "rt3uhvds",
+                            fieldId: "objectTitle",
+                            parents: ["content", "0", "Objecting", "nestedObject"]
+                        }),
+                        createError({
+                            error: '"nestedObject.objectNestedObject.nestedObjectNestedTitle" is required.',
+                            fieldId: "nestedObjectNestedTitle",
+                            id: "g9huerprgds",
+                            parents: [
+                                "content",
+                                "0",
+                                "Objecting",
+                                "nestedObject",
+                                "objectNestedObject",
+                                "0"
+                            ]
+                        }),
+                        createError({
+                            error: `"nestedObject.objectTitle" is required.`,
+                            fieldId: "objectTitle",
+                            id: "rt3uhvds",
+                            parents: ["content", "1", "Objecting", "nestedObject"]
+                        }),
+                        createError({
+                            error: `"nestedObjectNestedTitle" is required.`,
+                            fieldId: "nestedObjectNestedTitle",
+                            id: "hpgtierghpiue",
+                            parents: [
+                                "objective",
+                                "Objecting",
+                                "nestedObject",
+                                "objectNestedObject",
+                                "1"
+                            ]
+                        })
+                    ],
+                    error: null
+                }
+            }
+        });
     });
 
     it("should not return errors for valid entry", async () => {

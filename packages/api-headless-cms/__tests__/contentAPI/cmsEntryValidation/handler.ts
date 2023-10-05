@@ -14,7 +14,12 @@ const validateMutation = (model: Pick<CmsApiModel, "singularApiName">) => {
     return /* GraphQL */ `
         mutation ValidateProduct($revision: ID, $data: ${model.singularApiName}Input!) {
         validate: validate${model.singularApiName}(revision: $revision, data: $data) {
-                data
+                data {
+                    id
+                    fieldId
+                    error
+                    parents
+                }
                 ${ERROR}
             }
         }

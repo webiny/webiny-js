@@ -76,8 +76,15 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 validate: Boolean
             }
 
+            type CmsEntryValidationResponseData {
+                error: String!
+                id: String!
+                fieldId: String!
+                parents: [String!]!
+            }
+
             type CmsEntryValidationResponse {
-                data: JSON
+                data: [CmsEntryValidationResponseData!]
                 error: CmsError
             }
         `,

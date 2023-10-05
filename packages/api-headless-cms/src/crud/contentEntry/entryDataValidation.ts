@@ -166,7 +166,7 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
     });
 };
 
-export const throwValidateModelEntryData = async (params: ValidateModelEntryDataParams) => {
+export const validateModelEntryDataOrThrow = async (params: ValidateModelEntryDataParams) => {
     const invalidFields = await validateModelEntryData(params);
     if (invalidFields.length === 0) {
         return;
@@ -184,41 +184,6 @@ interface FieldError {
     error: any;
     parents: string[];
 }
-
-interface GetObjectValueParams {
-    field: CmsModelField;
-    data: any;
-}
-
-const getObjectValue = (params: GetObjectValueParams) => {
-    const { field, data } = params;
-    if (field.multipleValues) {
-        if (!Array.isArray(data)) {
-            return [];
-        }
-        return data || [];
-    }
-    return data || {};
-};
-interface GetTemplateValueParams {
-    field: CmsModelField;
-    template: CmsDynamicZoneTemplate;
-    data: any;
-}
-const getTemplateValue = (params: GetTemplateValueParams) => {
-    const { field, template, data } = params;
-    if (field.multipleValues) {
-        if (!Array.isArray(data)) {
-            return undefined;
-        }
-        return data
-            .filter(value => {
-                return !!value?.[template.gqlTypeName];
-            })
-            .map(value => value[template.gqlTypeName]);
-    }
-    return data?.[template.gqlTypeName];
-};
 
 interface ValidateParams {
     validatorList: PluginValidationList;
@@ -262,30 +227,26 @@ const executeFieldValidation = async (
                 parents: params.parents
             });
         }
-        const data = params.data?.[field.fieldId];
-        if (!data) {
+        const objectValue = params.data?.[field.fieldId];
+        if (!objectValue) {
             return validations;
         }
-
-        const value = getObjectValue({
-            field,
-            data
-        });
-
-        for (const childField of fields) {
-            const errors = await executeFieldValidation({
-                ...params,
-                parents: params.parents.concat([field.fieldId]),
-                field: {
-                    ...childField,
-                    multipleValues: field.multipleValues
-                },
-                data: value
-            });
-            if (errors.length === 0) {
-                continue;
+        const values = Array.isArray(objectValue) ? objectValue : [objectValue];
+        for (const index in values) {
+            const parents = field.multipleValues ? [field.fieldId, index] : [field.fieldId];
+            const value = values[index];
+            for (const childField of fields) {
+                const errors = await executeFieldValidation({
+                    ...params,
+                    parents: params.parents.concat(parents),
+                    field: childField,
+                    data: value
+                });
+                if (errors.length === 0) {
+                    continue;
+                }
+                validations.push(...errors);
             }
-            validations.push(...errors);
         }
         return validations;
     }
@@ -313,29 +274,39 @@ const executeFieldValidation = async (
         const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
         for (const template of templates) {
             const fields = template.fields;
-            const data = params.data?.[field.fieldId];
-            const value = getTemplateValue({
-                field,
-                template,
-                data
-            });
-            if (!value) {
+            const fieldData = params.data?.[field.fieldId];
+            if (!fieldData) {
                 continue;
             }
-            for (const childField of fields) {
-                const errors = await executeFieldValidation({
-                    ...params,
-                    parents: params.parents.concat([field.fieldId]),
-                    field: {
-                        ...childField,
-                        multipleValues: field.multipleValues
-                    },
-                    data: value
-                });
-                if (errors.length === 0) {
+            const values = Array.isArray(fieldData) ? fieldData : [fieldData];
+            for (const index in values) {
+                const templateValue = values[index]?.[template.gqlTypeName];
+                if (!templateValue) {
                     continue;
                 }
-                validations.push(...errors);
+                /**
+                 * Order of the parents must be
+                 * - fieldId
+                 * - index (if multiple values)
+                 * - gqlTypeName
+                 */
+                const parents = [field.fieldId];
+                if (field.multipleValues) {
+                    parents.push(index);
+                }
+                parents.push(template.gqlTypeName);
+                for (const childField of fields) {
+                    const errors = await executeFieldValidation({
+                        ...params,
+                        parents: params.parents.concat(parents),
+                        field: childField,
+                        data: templateValue
+                    });
+                    if (errors.length === 0) {
+                        continue;
+                    }
+                    validations.push(...errors);
+                }
             }
         }
 

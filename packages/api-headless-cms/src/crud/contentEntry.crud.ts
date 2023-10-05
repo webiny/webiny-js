@@ -60,7 +60,7 @@ import {
     UpdateCmsEntryInput
 } from "~/types";
 import {
-    throwValidateModelEntryData,
+    validateModelEntryDataOrThrow,
     validateModelEntryData
 } from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -659,7 +659,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const initialInput = mapAndCleanCreateInputData(model, inputData);
 
         if (options?.validate !== false) {
-            await throwValidateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: initialInput
@@ -793,7 +793,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         };
 
         if (options?.validate !== false) {
-            await throwValidateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: initialValues,
@@ -917,7 +917,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
         if (options?.validate !== false) {
-            await throwValidateModelEntryData({
+            await validateModelEntryDataOrThrow({
                 context,
                 model,
                 data: input,
@@ -1404,7 +1404,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await throwValidateModelEntryData({
+        await validateModelEntryDataOrThrow({
             context,
             model,
             data: originalEntry.values,
