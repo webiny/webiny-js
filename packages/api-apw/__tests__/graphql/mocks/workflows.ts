@@ -1,4 +1,9 @@
-import { ApwReviewer, ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
+import {
+    ApwReviewer,
+    ApwWorkflowApplications,
+    ApwWorkflowStepTypes,
+    WorkflowScopeTypes
+} from "~/types";
 
 import { generateAlphaNumericId } from "@webiny/utils";
 
@@ -6,7 +11,7 @@ export interface CreateWorkflowParams {
     title?: string;
     app: ApwWorkflowApplications;
     scope?: {
-        type: string;
+        type: WorkflowScopeTypes;
         data?: Record<string, any>;
     };
 }
@@ -68,24 +73,24 @@ export default {
     }),
     scopes: [
         {
-            type: "default"
+            type: WorkflowScopeTypes.DEFAULT
         },
         {
-            type: "default"
+            type: WorkflowScopeTypes.DEFAULT
         },
         {
-            type: "custom"
+            type: WorkflowScopeTypes.CUSTOM
         },
         {
-            type: "custom"
+            type: WorkflowScopeTypes.CUSTOM
         },
         {
-            type: "custom"
+            type: WorkflowScopeTypes.CUSTOM
         }
     ],
     getPageBuilderScope: (pageId: string, pageCategory?: string) => [
         {
-            type: "custom",
+            type: WorkflowScopeTypes.CUSTOM,
             data: {
                 entries: [],
                 models: [],
@@ -94,10 +99,10 @@ export default {
             }
         },
         {
-            type: "default"
+            type: WorkflowScopeTypes.DEFAULT
         },
         {
-            type: "custom",
+            type: WorkflowScopeTypes.CUSTOM,
             data: {
                 entries: [],
                 models: [],
@@ -106,7 +111,7 @@ export default {
             }
         },
         {
-            type: "custom",
+            type: WorkflowScopeTypes.CUSTOM,
             data: {
                 entries: [],
                 models: [],
@@ -115,7 +120,7 @@ export default {
             }
         },
         {
-            type: "custom",
+            type: WorkflowScopeTypes.CUSTOM,
             data: {
                 entries: [],
                 models: [],
@@ -140,7 +145,7 @@ export default {
             })
         ],
         scope: {
-            type: "custom",
+            type: WorkflowScopeTypes.CUSTOM,
             data: {
                 entries: [],
                 models: [],
