@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-
 import { parseToLexicalObject } from "~/index";
 import { simpleHtml } from "./html-articles";
 
