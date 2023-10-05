@@ -160,7 +160,7 @@ describe("QueryBuilderPresenter", () => {
         }
 
         {
-            // should be able to set the `group` operation
+            // should be able to set the `queryObject` group
             presenter.setQueryObject({
                 ...viewModel.queryObject,
                 groups: [
@@ -175,7 +175,7 @@ describe("QueryBuilderPresenter", () => {
         }
 
         {
-            // should be able to change the filter definition
+            // should be able to change the `queryObject` filter definition
             presenter.setQueryObject({
                 ...viewModel.queryObject,
                 groups: [

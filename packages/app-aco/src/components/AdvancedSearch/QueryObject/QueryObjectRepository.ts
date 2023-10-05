@@ -8,7 +8,6 @@ export class QueryObjectRepository {
     private static instance: QueryObjectRepository;
     modelId: string;
     filters: QueryObjectDTO[] = [];
-    selected: QueryObjectDTO | undefined = undefined;
 
     constructor(gateway: BaseGateway, modelId: string) {
         this.gateway = gateway;
@@ -35,9 +34,9 @@ export class QueryObjectRepository {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _, ...rawFilter } = QueryObjectMapper.toRaw(filter);
         const response = await this.gateway.create(rawFilter);
-        const filterDTO = QueryObjectMapper.toDTO(response);
 
         if (response) {
+            const filterDTO = QueryObjectMapper.toDTO(response);
             runInAction(() => {
                 this.filters = [filterDTO, ...this.filters];
             });
@@ -76,9 +75,5 @@ export class QueryObjectRepository {
                 this.filters = this.filters.filter(filter => filter.id !== id);
             });
         }
-    }
-
-    setSelected(id?: string) {
-        this.selected = id ? this.filters.find(filter => filter.id === id) : undefined;
     }
 }
