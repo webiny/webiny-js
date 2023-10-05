@@ -3,7 +3,6 @@ import cloneDeep from "lodash/cloneDeep";
 
 import {
     FbFormModelField,
-    FieldLayoutPositionType,
     FbBuilderFieldPlugin,
     FbFormModel,
     FbFormStep,
@@ -88,7 +87,7 @@ export const FormStep = ({
     deleteField: (field: FbFormModelField, stepId: string) => void;
 }) => {
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
-    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType | null>(null);
+    const [dropTarget, setDropTarget] = useState<DropDestination | null>(null);
 
     const editField = useCallback((field: FbFormModelField | null) => {
         if (!field) {
@@ -106,7 +105,7 @@ export const FormStep = ({
                  * We can cast because field is empty in the start
                  */
                 editField({} as FbFormModelField);
-                setDropTarget(destination.position);
+                setDropTarget(destination);
                 return;
             }
 
@@ -424,9 +423,9 @@ export const FormStep = ({
                                         name: data.name
                                     },
                                     destination: {
-                                        containerType: "step",
-                                        containerId: formStep.id,
-                                        position: dropTarget
+                                        containerType: dropTarget.containerType,
+                                        containerId: dropTarget.containerId,
+                                        position: dropTarget.position
                                     }
                                 });
                             }
