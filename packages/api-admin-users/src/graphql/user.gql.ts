@@ -113,10 +113,15 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             resolvers: {
                 AdminUserIdentity: {
                     async profile(identity, _, context) {
-                        const profile = await context.adminUsers.getUser({
-                            where: {
-                                id: identity.id
-                            }
+                        // We wrapped `getUser` call in `withoutAuthorization` because we don't need to
+                        // check for permissions here. This field will always return the information
+                        // related to the current identity, so we don't need to check for permissions.
+                        const profile = await context.security.withoutAuthorization(() => {
+                            return context.adminUsers.getUser({
+                                where: {
+                                    id: identity.id
+                                }
+                            });
                         });
 
                         if (profile) {
@@ -127,17 +132,19 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                         // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                         const tenant = context.tenancy.getCurrentTenant();
 
-                        return await context.adminUsers.getUser({
-                            where: {
-                                id: identity.id,
-                                /**
-                                 * TODO @ts-refactor @pavel
-                                 * What happens if tenant has no parent?
-                                 * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
-                                 */
-                                // @ts-ignore
-                                tenant: tenant.parent
-                            }
+                        return context.security.withoutAuthorization(() => {
+                            return context.adminUsers.getUser({
+                                where: {
+                                    id: identity.id,
+                                    /**
+                                     * TODO @ts-refactor @pavel
+                                     * What happens if tenant has no parent?
+                                     * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
+                                     */
+                                    // @ts-ignore
+                                    tenant: tenant.parent
+                                }
+                            });
                         });
                     },
                     __isTypeOf(obj: SecurityIdentity) {

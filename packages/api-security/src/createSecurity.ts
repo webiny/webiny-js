@@ -101,6 +101,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             this: Security,
             permission: string
         ): Promise<TPermission | null> {
+            console.log(performAuthorization, permission)
             if (!performAuthorization) {
                 return { name: "*" } as TPermission;
             }

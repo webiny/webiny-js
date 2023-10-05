@@ -8,7 +8,6 @@
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-admin-users": "0.0.0",
-    "@webiny/api-admin-users-cognito": "0.0.0",
     "@webiny/api-admin-users-so-ddb": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
@@ -31,6 +30,7 @@
     "@webiny/api-prerendering-service-aws": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-security-cognito": "0.0.0",
+    "@webiny/api-security-okta": "workspace:^",
     "@webiny/api-security-so-ddb": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
@@ -51,7 +51,6 @@
   "adio": {
     "ignore": {
       "dependencies": [
-        "@webiny/api-admin-users-cognito",
         "@webiny/api-admin-users-so-ddb",
         "@webiny/api-security-cognito",
         "@webiny/api-security-okta"

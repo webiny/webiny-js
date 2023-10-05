@@ -11,8 +11,11 @@ import { attachUserValidation } from "./createAdminUsers/users.validation";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
+
     getPermission(name: string): Promise<SecurityPermission | null>;
+
     getTenant(): string;
+
     storageOperations: AdminUsersStorageOperations;
     incrementWcpSeats: () => Promise<void>;
     decrementWcpSeats: () => Promise<void>;
@@ -97,7 +100,8 @@ export const createAdminUsers = ({
             await checkPermission();
             const tenant = getTenant();
 
-            await this.isEmailTaken(data.email);
+            // TODO: only cognito
+            // await this.isEmailTaken(data.email);
 
             const identity = getIdentity();
 
@@ -205,7 +209,9 @@ export const createAdminUsers = ({
             }
         },
         async getUser({ where }) {
+            console.log("check perms");
             await checkPermission();
+            console.log("prosao check permsa");
 
             // Majority of querying is happening via `id`, so let's use a DataLoader here.
             if (where.id) {
@@ -217,7 +223,7 @@ export const createAdminUsers = ({
 
             // Querying by email is very rare, so we don't need to bother with DataLoader for now.
             const tenant = getTenant();
-            return storageOperations.getUser({ where: { tenant, ...where } });
+            return await storageOperations.getUser({ where: { tenant, ...where } });
         },
         async listUsers(params = {}) {
             await checkPermission();

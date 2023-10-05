@@ -12,13 +12,17 @@ import { validation } from "@webiny/validation";
 import { AdminUsers } from "~/types";
 
 const CreateUserDataModel = withFields({
-    email: string({ validation: validation.create("required,minLength:2") }),
-    firstName: string({ validation: validation.create("required,minLength:2") }),
-    lastName: string({ validation: validation.create("required,minLength:2") }),
+    id: string({ validation: validation.create("minLength:2") }),
+    displayName: string({ validation: validation.create("required,minLength:2") }),
+    email: string({ validation: validation.create("minLength:2") }),
+    firstName: string({ validation: validation.create("minLength:2") }),
+    lastName: string({ validation: validation.create("minLength:2") }),
     avatar: object()
 })();
 
 const UpdateUserDataModel = withFields({
+    id: string({ validation: validation.create("minLength:2") }),
+    displayName: string({ validation: validation.create("minLength:2") }),
     avatar: object(),
     firstName: string({ validation: validation.create("minLength:2") }),
     lastName: string({ validation: validation.create("minLength:2") }),

@@ -5,6 +5,8 @@ import {
     Config as CognitoConfig,
     TokenData
 } from "@webiny/api-cognito-authenticator";
+import { syncWithCognito } from "~/syncWithCognito";
+import { createAdminUsersHooks } from "./createAdminUsersHooks";
 
 interface GetIdentityParams<TContext, TToken> {
     identityType: string;
@@ -18,7 +20,9 @@ interface GetPermissionsParams<TContext> {
 
 interface Config<TContext, TToken, TIdentity> extends CognitoConfig {
     identityType: string;
+
     getIdentity?(params: GetIdentityParams<TContext, TToken>): TIdentity;
+
     getPermissions?(params: GetPermissionsParams<TContext>): Promise<SecurityPermission[] | null>;
 }
 
@@ -27,6 +31,7 @@ export interface CognitoTokenData extends TokenData {
     family_name: string;
     email: string;
     "custom:id": string;
+
     [key: string]: any;
 }
 
@@ -44,38 +49,43 @@ export const createCognito = <
 
     const { getIdentity, getPermissions } = config;
 
-    return new ContextPlugin<TContext>(context => {
-        context.security.addAuthenticator(async token => {
-            const tokenObj = await cognitoAuthenticator<TToken>(token);
+    return [
+        new ContextPlugin<TContext>(context => {
+            context.security.addAuthenticator(async token => {
+                const tokenObj = await cognitoAuthenticator<TToken>(token);
 
-            if (!tokenObj) {
-                return null;
-            }
+                if (!tokenObj) {
+                    return null;
+                }
 
-            if (typeof getIdentity === "function") {
-                return getIdentity({
-                    identityType: config.identityType,
-                    token: tokenObj,
-                    context
+                if (typeof getIdentity === "function") {
+                    return getIdentity({
+                        identityType: config.identityType,
+                        token: tokenObj,
+                        context
+                    });
+                }
+
+                return {
+                    id: tokenObj["custom:id"] || tokenObj.sub,
+                    type: config.identityType,
+                    displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
+                    email: tokenObj.email,
+                    firstName: tokenObj.given_name,
+                    lastName: tokenObj.family_name
+                };
+            });
+
+            if (getPermissions) {
+                context.security.addAuthorizer(async () => {
+                    return getPermissions({ context });
                 });
             }
-
-            return {
-                id: tokenObj["custom:id"] || tokenObj.sub,
-                type: config.identityType,
-                displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
-                email: tokenObj.email,
-                firstName: tokenObj.given_name,
-                lastName: tokenObj.family_name
-            };
-        });
-
-        if (getPermissions) {
-            context.security.addAuthorizer(async () => {
-                return getPermissions({ context });
-            });
-        }
-    });
+        }),
+        createAdminUsersHooks()
+    ];
 };
+
+export { syncWithCognito };
 
 export default createCognito;

@@ -31,6 +31,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     }
 
     const tenantId = config.parent ? tenant.parent : tenant.id;
+    console.log('config.parent1', tenantId, config.parent)
     if (!tenantId) {
         return null;
     }

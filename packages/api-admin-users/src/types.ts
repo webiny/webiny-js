@@ -13,22 +13,29 @@ export interface CreatedBy {
 }
 
 export interface BaseUserAttributes {
+    id: string;
+    displayName: string;
+
+    // Required field, but, note that some users coming with a 3rd party IdP might not
+    // be able to provide it. In that case, we assign the identity's ID as the email.
+    // Check `api-security-okta` package for an example.
     email: string;
-    firstName: string;
-    lastName: string;
+
+    // All optional attributes.
+    firstName?: string;
+    lastName?: string;
+    avatar?: Record<string, any>;
 }
 
-export interface CreateUserInput extends BaseUserAttributes {
+export interface CreateUserInput extends Omit<BaseUserAttributes, "id"> {
     id?: string;
-    password: string;
-    group?: string;
-    avatar?: Record<string, any>;
+    // TODO: Cognito only
+    password?: string;
 }
 
 export type UpdateUserInput = Partial<CreateUserInput>;
 
 export interface AdminUser extends BaseUserAttributes {
-    id: string;
     tenant: string;
     group?: string;
     team?: string;
@@ -169,18 +176,28 @@ export interface AdminUsers {
     onInstall: Topic<InstallEvent>;
     onSystemAfterInstall: Topic<InstallEvent>;
     onCleanup: Topic<ErrorEvent>;
+
     getStorageOperations(): AdminUsersStorageOperations;
+
     isEmailTaken(email: string): Promise<void>;
+
     getUser<TUser extends AdminUser = AdminUser>(params: GetUserParams): Promise<TUser>;
+
     listUsers<TUser extends AdminUser = AdminUser>(params?: ListUsersParams): Promise<TUser[]>;
+
     createUser<TUser extends AdminUser = AdminUser>(data: CreateUserInput): Promise<TUser>;
+
     updateUser<TUser extends AdminUser = AdminUser>(
         id: string,
         data: UpdateUserInput
     ): Promise<TUser>;
+
     deleteUser(id: string): Promise<void>;
+
     getVersion(): Promise<string | null>;
+
     setVersion(version: string): Promise<System>;
+
     install(params: InstallParams): Promise<void>;
 }
 
@@ -230,19 +247,26 @@ export interface AdminUsersStorageOperations {
     getUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsGetUserParams
     ): Promise<TUser | null>;
+
     listUsers<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsListUsersParams
     ): Promise<TUser[]>;
+
     createUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsCreateUserParams<TUser>
     ): Promise<TUser>;
+
     updateUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsUpdateUserParams<TUser>
     ): Promise<TUser>;
+
     deleteUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsDeleteUserParams<TUser>
     ): Promise<void>;
+
     getSystemData(params: StorageOperationsGetSystemParams): Promise<System>;
+
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
+
     updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
 }

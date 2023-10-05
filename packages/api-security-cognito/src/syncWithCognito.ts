@@ -18,16 +18,22 @@ export interface AttributeGetter {
 interface CognitoConfigAutoVerify {
     email?: boolean;
 }
+
+export interface GetUsernameUser extends Omit<BaseUserAttributes, "id"> {
+    id?: string;
+}
+
 export interface CognitoConfig {
     region: string;
     userPoolId: string;
     updateAttributes?: Record<string, string | AttributeGetter>;
-    getUsername?<TUser extends BaseUserAttributes = BaseUserAttributes>(user: TUser): string;
+
+    getUsername?<TUser extends GetUsernameUser = GetUsernameUser>(user: TUser): string;
+
     autoVerify?: CognitoConfigAutoVerify;
 }
 
-const defaultGetUsername: CognitoConfig["getUsername"] = (user: BaseUserAttributes) =>
-    user.email.toLowerCase();
+const defaultGetUsername: CognitoConfig["getUsername"] = user => user.email.toLowerCase();
 
 const defaultAutoVerify: CognitoConfigAutoVerify = {
     email: true
@@ -134,7 +140,7 @@ export const syncWithCognito = ({
                 await cognito
                     .adminSetUserPassword({
                         Permanent: true,
-                        Password: inputData.password,
+                        Password: inputData.password!,
                         Username: username,
                         UserPoolId: userPoolId
                     })

@@ -9,9 +9,6 @@
       "path": "../../../packages/api-admin-users/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
-    },
-    {
       "path": "../../../packages/api-admin-users-so-ddb/tsconfig.build.json"
     },
     {
@@ -116,8 +113,6 @@
       "~/*": ["./src/*"],
       "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
       "@webiny/api-aco": ["../../../packages/api-aco/src"],
-      "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
-      "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-so-ddb/*": ["../../../packages/api-admin-users-so-ddb/src/*"],
       "@webiny/api-admin-users-so-ddb": ["../../../packages/api-admin-users-so-ddb/src"],
       "@webiny/api-apw/*": ["../../../packages/api-apw/src/*"],
