@@ -83,8 +83,8 @@ export class Condition {
             case "text":
                 if (field.predefinedValues?.enabled) {
                     return createConditions([
-                        { label: "contains", value: "_in" },
-                        { label: "doesn't contain", value: "_not_in" }
+                        { label: "is equal to", value: " " },
+                        { label: "is not equal to", value: "_not" }
                     ]);
                 }
 
@@ -105,8 +105,8 @@ export class Condition {
 
             case "boolean":
                 return createConditions([
-                    { label: "is", value: " " },
-                    { label: "is not", value: "_not" }
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" }
                 ]);
 
             case "number":

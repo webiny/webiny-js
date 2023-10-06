@@ -62,7 +62,7 @@ describe("QueryBuilderPresenter", () => {
         // `viewModel` should have the expected `queryObject` definition
         expect(viewModel.queryObject).toEqual({
             id: expect.any(String),
-            name: "Untitled",
+            name: "Draft filter",
             description: "",
             modelId: modelId,
             operation: "AND",
@@ -95,7 +95,7 @@ describe("QueryBuilderPresenter", () => {
         presenter.updateQueryObject(null);
         expect(viewModel.queryObject).toEqual({
             id: expect.any(String),
-            name: "Untitled",
+            name: "Draft filter",
             description: "",
             modelId: modelId,
             operation: "AND",
@@ -347,8 +347,8 @@ describe("FieldDTO definition", () => {
                 label: `${FieldType.BOOLEAN} field`,
                 value: `${FieldType.BOOLEAN}-field`,
                 conditions: [
-                    { label: "is", value: " " },
-                    { label: "is not", value: "_not" }
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" }
                 ],
                 predefined: [],
                 type: FieldType.BOOLEAN
@@ -470,8 +470,8 @@ describe("FieldDTO definition", () => {
                 label: `${FieldType.MULTIPLE_VALUES} field`,
                 value: `${FieldType.MULTIPLE_VALUES}-field`,
                 conditions: [
-                    { label: "contains", value: "_in" },
-                    { label: "doesn't contain", value: "_not_in" }
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" }
                 ],
                 predefined: [
                     {

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Bind } from "@webiny/form";
-import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import { Select } from "@webiny/ui/Select";
 
 import { Predefined } from "~/components/AdvancedSearch/QueryObject";
 
@@ -13,20 +13,18 @@ interface MultipleValuesProps {
 export const MultipleValues = ({ predefined, name }: MultipleValuesProps) => {
     return (
         <Bind name={name}>
-            <CheckboxGroup label="Values">
-                {({ onChange, getValue }) => (
-                    <>
-                        {predefined.map(({ label, value }) => (
-                            <Checkbox
-                                key={value}
-                                label={label}
-                                value={getValue(value)}
-                                onChange={onChange(value)}
-                            />
-                        ))}
-                    </>
-                )}
-            </CheckboxGroup>
+            {({ value, onChange, validation }) => (
+                <Select
+                    label={"Values"}
+                    options={predefined.map(field => ({
+                        label: field.label,
+                        value: field.value
+                    }))}
+                    value={value}
+                    onChange={data => onChange(data)}
+                    validation={validation}
+                />
+            )}
         </Bind>
     );
 };
