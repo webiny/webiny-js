@@ -9,6 +9,7 @@ import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "~/apps/awsUtils";
+import { ApiGraphql } from "~/apps";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
 
@@ -20,6 +21,7 @@ export const ApiFileManager = createAppModule({
     name: "ApiFileManager",
     config(app: PulumiApp, config: ApiFileManagerConfig) {
         const core = app.getModule(CoreOutput);
+        const graphql = app.getModule(ApiGraphql);
         const accountId = getAwsAccountId(app);
 
         const policy = createFileManagerLambdaPolicy(app);
@@ -77,29 +79,22 @@ export const ApiFileManager = createAppModule({
             }
         });
 
+        const baseConfig = graphql.functions.graphql.config.clone();
+
         const download = app.addResource(aws.lambda.Function, {
             name: "fm-download",
             config: {
-                role: role.output.arn,
-                runtime: "nodejs14.x",
-                handler: "handler.handler",
-                timeout: 30,
-                memorySize: 512,
+                ...baseConfig,
                 description: "Serves previously uploaded files.",
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "fileManager/download/build")
-                    )
-                }),
                 environment: {
-                    variables: getCommonLambdaEnvVariables().apply(value => ({
-                        ...value,
-                        S3_BUCKET: core.fileManagerBucketId,
-                        IMAGE_TRANSFORMER_FUNCTION: transform.output.arn,
-                        ...config.env
-                    }))
-                },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+                    variables: graphql.functions.graphql.output.environment.apply(env => {
+                        return {
+                            ...env?.variables,
+                            IMAGE_TRANSFORMER_FUNCTION: transform.output.arn,
+                            ...config.env
+                        };
+                    })
+                }
             }
         });
 

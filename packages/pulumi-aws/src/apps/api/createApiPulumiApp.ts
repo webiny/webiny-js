@@ -168,8 +168,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    MAIN_API_FUNCTION: graphql.functions.graphql.output.arn
+                    DB_TABLE: core.primaryDynamodbTableName
                 }
             });
 

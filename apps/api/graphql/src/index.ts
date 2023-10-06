@@ -21,6 +21,10 @@ import {
     createFileManagerGraphQL,
     createFileModelModifier
 } from "@webiny/api-file-manager";
+import {
+    createDownloadFileByAliasPlugins,
+    createDownloadFileByExactKeyPlugins
+} from "@webiny/api-file-manager/handlers/download";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
@@ -122,6 +126,8 @@ export const handler = createHandler({
                 }
             });
         }),
+        createDownloadFileByExactKeyPlugins(),
+        createDownloadFileByAliasPlugins({ documentClient }),
         createPrivateFiles()
     ],
     http: { debug }

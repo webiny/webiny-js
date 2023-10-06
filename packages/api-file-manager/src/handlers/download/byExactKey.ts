@@ -7,6 +7,7 @@ import { extractFileInformation } from "~/handlers/download/extractFileInformati
 import { AccessControl } from "~/handlers/utils/AccessControl";
 import { LambdaClient } from "~/handlers/utils/LambdaClient";
 import { ApiGatewayLambdaClient } from "~/handlers/utils/ApiGatewayLambdaClient";
+import { HandlerOnRequestPlugin } from "@webiny/handler";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 const PRESIGNED_URL_EXPIRATION = 900; // 15 minutes
@@ -30,38 +31,40 @@ const canUsePrivateFiles = (context: WcpContext) => {
 };
 
 export const createDownloadFileByExactKeyPlugins = () => {
-    const fnArn = String(process.env["MAIN_API_FUNCTION"]);
-    const lambdaClient = new LambdaClient(fnArn);
-    const apiGwLambdaClient = new ApiGatewayLambdaClient(lambdaClient);
-
     return [
+        new HandlerOnRequestPlugin(async request => {
+            const fileInfo = extractFileInformation(request);
+
+            // TODO: get file metadata
+
+            const metadata = { tenant: "root", locale: "en-US" };
+            request.headers = {
+                ...request.headers,
+                "x-tenant": metadata.tenant,
+                "x-i18n-locale": metadata.locale
+            };
+        }),
         new RoutePlugin(({ onGet, context }) => {
             onGet("/files/*", async (request, reply) => {
                 const fileInfo = extractFileInformation(request);
+
                 // TODO: add metadata extraction to `getS3Object` utility
-                const { params, object, metadata } = await getS3Object(fileInfo, s3, context);
+                const { params, object } = await getS3Object(fileInfo, s3, context);
 
-                // TODO: get file metadata
-                const headers = {
-                    ...request.headers,
-                    "x-tenant": metadata.tenant,
-                    "x-i18n-locale": metadata.locale
-                };
-
-                if (canUsePrivateFiles(context as any as WcpContext)) {
-                    const accessControl = new AccessControl(apiGwLambdaClient, headers);
-                    const { canAccess } = await accessControl.canAccess(fileInfo.filename);
-
-                    if (!canAccess) {
-                        return reply
-                            .code(403)
-                            .headers({
-                                "Content-Type": "application/json",
-                                "Cache-Control": "no-cache, no-store, must-revalidate"
-                            })
-                            .send({ error: "You're not allowed to access this file!" });
-                    }
-                }
+                // if (canUsePrivateFiles(context as any as WcpContext)) {
+                //     const accessControl = new AccessControl(apiGwLambdaClient, request.headers);
+                //     const { canAccess } = await accessControl.canAccess(fileInfo.filename);
+                //
+                //     if (!canAccess) {
+                //         return reply
+                //             .code(403)
+                //             .headers({
+                //                 "Content-Type": "application/json",
+                //                 "Cache-Control": "no-cache, no-store, must-revalidate"
+                //             })
+                //             .send({ error: "You're not allowed to access this file!" });
+                //     }
+                // }
 
                 if (object && isSmallObject(object)) {
                     console.log("This is a small file; responding with object body.");
