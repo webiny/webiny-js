@@ -43,7 +43,7 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
             <AdvancedSearchContainer>
                 <Button onClick={() => presenter.openManager()} />
                 <SelectedFilter
-                    show={viewModel.showChip}
+                    show={viewModel.showSelected}
                     queryObject={viewModel.queryObject}
                     onEdit={() => presenter.onChipEdit()}
                     onDelete={() => presenter.onChipDelete()}

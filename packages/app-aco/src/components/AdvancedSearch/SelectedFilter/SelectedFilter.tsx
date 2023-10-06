@@ -6,14 +6,14 @@ import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 import { CloseIcon, EditIcon } from "./SelectedFilter.styled";
 
-interface ChipProps {
+interface SelectedFilterProps {
     queryObject: QueryObjectDTO | null;
     onEdit: () => void;
     onDelete: () => void;
     show: boolean;
 }
 
-export const SelectedFilter = (props: ChipProps) => {
+export const SelectedFilter = (props: SelectedFilterProps) => {
     if (!props.queryObject || !props.show) {
         return null;
     }

@@ -27,7 +27,7 @@ export interface AdvancedSearchViewModel {
     showBuilder: boolean;
     showManager: boolean;
     showSaver: boolean;
-    showChip: boolean;
+    showSelected: boolean;
 }
 
 export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
@@ -36,7 +36,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
-    private showChip = false;
+    private showSelected = false;
     private callback: ((viewModel: AdvancedSearchViewModel) => void) | undefined = undefined;
 
     viewModel: AdvancedSearchViewModel;
@@ -53,7 +53,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
             showBuilder: this.showBuilder,
             showManager: this.showManager,
             showSaver: this.showSaver,
-            showChip: this.showChip
+            showSelected: this.showSelected
         };
         makeAutoObservable(this);
     }
@@ -70,7 +70,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
             showBuilder: this.showBuilder,
             showManager: this.showManager,
             showSaver: this.showSaver,
-            showChip: this.showChip
+            showSelected: this.showSelected
         };
         this.callback && this.callback(this.viewModel);
     }
@@ -105,20 +105,20 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
         this.updateViewModel();
     }
 
-    openChip() {
-        this.showChip = true;
+    openSelected() {
+        this.showSelected = true;
         this.updateViewModel();
     }
 
-    closeChip() {
-        this.showChip = false;
+    closeSelected() {
+        this.showSelected = false;
         this.updateViewModel();
     }
 
     onManagerSelectFilter(filter: QueryObjectDTO) {
         this.repository.setFilter(filter);
         this.onSubmitCallback(filter);
-        this.openChip();
+        this.openSelected();
         this.closeManager();
         this.updateViewModel();
     }
@@ -134,6 +134,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
     onManagerEditFilter(filter: QueryObjectDTO) {
         this.repository.setFilter(filter);
         this.repository.setMode(Mode.UPDATE);
+        this.closeSelected();
         this.closeManager();
         this.openBuilder();
         this.updateViewModel();
@@ -143,7 +144,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
         this.repository.setFilter(filter);
         this.onSubmitCallback(filter);
         this.closeBuilder();
-        this.openChip();
+        this.openSelected();
         this.updateViewModel();
     }
 
@@ -158,7 +159,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
         this.repository.setFilter(filter);
         this.closeBuilder();
         this.closeSaver();
-        this.openChip();
+        this.openSelected();
         this.updateViewModel();
     }
 
@@ -169,7 +170,7 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
 
     onChipDelete() {
         this.repository.setFilter(null);
-        this.closeChip();
+        this.closeSelected();
         this.onSubmitCallback(null);
         this.updateViewModel();
     }
