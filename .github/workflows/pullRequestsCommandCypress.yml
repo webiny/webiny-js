@@ -42,9 +42,10 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
@@ -84,11 +85,12 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
         with:
           path: dev
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
@@ -242,11 +244,12 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
         with:
           path: dev
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
@@ -294,9 +297,10 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
@@ -339,11 +343,12 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
         with:
           path: dev
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         working-directory: dev
@@ -500,11 +505,12 @@ jobs:
         with:
           node-version: 16
 
-      - uses: geertvdc/setup-hub@master
-
       - uses: actions/checkout@v3
         with:
           path: dev
+
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
 
       - name: Checkout Pull Request
         working-directory: dev
