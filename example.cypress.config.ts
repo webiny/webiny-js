@@ -30,10 +30,6 @@ export default defineConfig({
     },
     e2e: {
         specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
-        // TODO: temporary disabled.
-        // setupNodeEvents(on, config) {
-        //     return require("./cypress/plugins/index.js")(on, config);
-        // },
         baseUrl: "{ADMIN_URL}"
     }
 });
