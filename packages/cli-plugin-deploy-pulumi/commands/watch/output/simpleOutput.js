@@ -1,6 +1,6 @@
 const os = require("os");
 const logUpdate = require("log-update");
-const { green, yellow, gray, bold } = require("chalk");
+const { green, yellow, gray, bold, red } = require("chalk");
 
 let logs = [];
 let deployment = gray("Automatic re-deployments enabled. Watching for code changes...");
@@ -9,6 +9,9 @@ let deployingInterval;
 
 const EOL = os.EOL;
 const HL = EOL + bold(gray("—")).repeat(62) + EOL;
+
+const SECONDS_STILL_DEPLOYING_MESSAGE = 12;
+const SECONDS_LONGER_THAN_EXPECTED_MESSAGE = 40;
 
 const log = () => {
     let update = "";
@@ -25,6 +28,8 @@ const log = () => {
 let deployStartedOn = null;
 const getDeployDurationInSeconds = () => Math.round((Date.now() - deployStartedOn) / 1000);
 
+let hiddenDeploymentLogs = [];
+
 const startDeploying = () => {
     let dotsCount = 3;
     deployStartedOn = Date.now();
@@ -33,9 +38,17 @@ const startDeploying = () => {
             dotsCount = 0;
         }
 
-        deployment = yellow(
-            "‣ " + getDeployDurationInSeconds() + "s ‣ Deploying" + ".".repeat(dotsCount)
-        );
+        const deployDuration = getDeployDurationInSeconds();
+        let message = "Deploying";
+        if (deployDuration > SECONDS_STILL_DEPLOYING_MESSAGE) {
+            message = "Still deploying";
+        }
+
+        if (deployDuration > SECONDS_LONGER_THAN_EXPECTED_MESSAGE) {
+            message = "Deployment taking longer than expected, hold on";
+        }
+
+        deployment = yellow("‣ " + deployDuration + `s ‣ ${message}` + ".".repeat(dotsCount));
 
         log();
 
@@ -70,8 +83,23 @@ module.exports = {
                 startDeploying();
             }
 
+            if (deployStartedOn) {
+                hiddenDeploymentLogs.push(message);
+            }
+
             if (message.includes("Update complete.")) {
+                hiddenDeploymentLogs = [];
                 stopDeploying();
+            }
+
+            if (message.includes("Update failed.")) {
+                logs.push(hiddenDeploymentLogs.join(EOL));
+                deployment = red(
+                    "Deployment failed. Please examine the logs above and address any issues before running the watch command again. Exiting..."
+                );
+                log();
+                process.exit(1);
+
             }
         }
 

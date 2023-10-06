@@ -25,6 +25,8 @@ export interface BaseUserAttributes {
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any>;
+    group?: string | null;
+    team?: string | null;
 }
 
 export interface CreateUserInput extends Omit<BaseUserAttributes, "id"> {

@@ -12,12 +12,38 @@ export const createAdminUsersHooks = () => {
             const email = identity.email || `id:${id}`;
             const displayName = identity.displayName || "Missing display name";
 
-            if (user) {
-                await adminUsers.updateUser(identity.id, { displayName, email });
-                return;
-            }
+            await security.withoutAuthorization(async () => {
+                let groupId: string | null = null;
+                let teamId: string | null = null;
 
-            await adminUsers.createUser({ id, email, displayName });
+                if (identity.group) {
+                    const group = await security.getGroup({ where: { slug: identity.group } });
+                    if (group) {
+                        groupId = group.id;
+                    }
+                }
+
+                if (identity.team) {
+                    const team = await security.getTeam({ where: { slug: identity.team } });
+                    if (team) {
+                        teamId = team.id;
+                    }
+                }
+
+                const data = {
+                    displayName,
+                    email,
+                    group: groupId,
+                    team: teamId
+                };
+
+                if (user) {
+                    await adminUsers.updateUser(identity.id, data);
+                    return;
+                }
+
+                await adminUsers.createUser({ id, ...data });
+            });
         });
     });
 };

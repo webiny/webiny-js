@@ -29,7 +29,7 @@ interface FilterFoldersParams {
 
 export interface FolderLevelPermissionsParams {
     getIdentity: Authentication["getIdentity"];
-    getIdentityTeam: () => Promise<any>;
+    getIdentityTeam: () => Promise<Team | null>;
     listPermissions: () => Promise<SecurityPermission[]>;
     listAllFolders: (folderType: string) => Promise<Folder[]>;
     canUseTeams: () => boolean;
@@ -199,7 +199,7 @@ export class FolderLevelPermissions {
             const identityTeam = await this.getIdentityTeam();
             if (identityTeam) {
                 teamAccessLevel = folderPermissions?.permissions.find(
-                    p => p.target === identityTeam.id
+                    p => p.target === "team:" + identityTeam.id
                 )?.level;
             }
         }
@@ -247,7 +247,7 @@ export class FolderLevelPermissions {
             const identityTeam = await this.getIdentityTeam();
             if (identityTeam) {
                 teamAccessLevel = folderPermissions?.permissions.find(
-                    p => p.target === identityTeam.id
+                    p => p.target === "team:" + identityTeam.id
                 )?.level;
             }
         }

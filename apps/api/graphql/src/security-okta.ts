@@ -77,7 +77,10 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
                 id: token.sub,
                 type: "admin",
                 displayName: token.name,
-                group: token.webiny_group
+
+                //
+                group: token.webiny_group,
+                team: token.webiny_team
             };
         },
         /**
@@ -85,7 +88,8 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
          */
         getGroupSlug(context) {
             return context.security.getIdentity().group;
-        }
+        },
+        // getTeamSlug()
     }),
 
     /**

@@ -30,7 +30,6 @@ import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
-import { useSecurity } from "@webiny/app-security";
 
 interface Props {
     records: RecordEntry[];
@@ -41,7 +40,6 @@ interface Props {
 }
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folders, records, loading, sorting, onSortingChange } = props;
     const { model } = useModel();

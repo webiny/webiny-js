@@ -47,7 +47,20 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 
     const folderLevelPermissions = new FolderLevelPermissions({
         getIdentity: () => security.getIdentity(),
-        getIdentityTeam: () => new Promise(resolve => resolve(null)), // TODO: implement this
+        getIdentityTeam: async () => {
+            const identity = security.getIdentity();
+            const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
+            if (!adminUser) {
+                return null;
+            }
+
+            if (!adminUser.team) {
+                return null;
+            }
+
+            return context.security.getTeam({ where: { id: adminUser.team } });
+
+        },
         listPermissions: () => security.listPermissions(),
         listAllFolders: type =>
             storageOperations
