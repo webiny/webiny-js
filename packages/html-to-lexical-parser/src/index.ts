@@ -3,33 +3,32 @@ import { $generateNodesFromDOM } from "@lexical/html";
 import { $getRoot, $getSelection } from "lexical";
 import { allNodes } from "@webiny/lexical-editor/nodes/allNodes";
 import { $createParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
-import { Configuration } from "~/types";
+import { ParserConfigurationOptions } from "~/types";
 
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
-let configuration: Configuration = { nodes: [] };
+let configuration: ParserConfigurationOptions = { editorConfig: { nodes: [] } };
 
-export const configureParser = (config: Configuration) => {
+/**
+ * Lexical editor configuration on application level.
+ * The default configuration includes all lexical nodes used in @webiny/lexical-editor package.
+ */
+export const configureParser = (config: ParserConfigurationOptions) => {
     configuration = config;
 };
 
 /**
- * Parse html string to lexical object.
- * Note: This parser by default uses the Webiny lexical nodes.
+ * Parse html string to lexical JSON object.
  */
-export const parseHtmlToLexical = (
-    htmlString: string,
-    onSuccess: (data: Record<string, any>) => void,
-    onError?: (onError: Error) => void
-): void => {
+export const parseHtmlToLexical = (htmlString: string): Record<string, any> | null => {
     if (!htmlString?.length) {
-        return;
+        return null;
     }
 
     const editor = createHeadlessEditor({
-        nodes: [...allNodes, ...(configuration?.nodes || [])],
-        onError: onError
+        ...configuration.editorConfig,
+        nodes: [...allNodes, ...(configuration?.editorConfig?.nodes || [])]
     });
 
     editor.update(
@@ -43,8 +42,7 @@ export const parseHtmlToLexical = (
                  * lexical will throw an error.
                  * To fix this issue, we append the text node inside the paragraph node(parent element).
                  *
-                 * In case when text node doesn't have parent element:
-                 *
+                 * The case when text node doesn't have parent element:
                  * When we parse the DOM, sometimes, 'span' html tag doesn't have parent elements that match the
                  * lexical node elements, like paragraph or headings. In that case lexical will parse the 'span' tag
                  * as text node, but without parent element.
@@ -72,7 +70,5 @@ export const parseHtmlToLexical = (
         { discrete: true }
     );
 
-    editor.getEditorState().read(() => {
-        onSuccess(editor.getEditorState().toJSON());
-    });
+    return editor.getEditorState().toJSON();
 };
