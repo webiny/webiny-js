@@ -26,7 +26,7 @@ const args = {
     }
 
     const cypressExampleConfigPath = path.resolve("example.cypress.config.ts");
-    const cypressConfigPath = path.resolve("cypress.config.ts");
+    const cypressConfigPath = path.resolve("cypress-tests/cypress.config.ts");
     if (fs.existsSync(cypressConfigPath)) {
         if (args.force) {
             fs.unlinkSync(cypressConfigPath);
