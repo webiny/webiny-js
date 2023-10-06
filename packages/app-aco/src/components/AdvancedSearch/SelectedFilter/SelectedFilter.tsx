@@ -1,8 +1,10 @@
 import React from "react";
 
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { CloseIcon, EditIcon } from "~/components/AdvancedSearch/Chip/Chip.styled";
+
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+
+import { CloseIcon, EditIcon } from "./SelectedFilter.styled";
 
 interface ChipProps {
     queryObject: QueryObjectDTO | null;
