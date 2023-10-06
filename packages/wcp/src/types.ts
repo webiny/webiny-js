@@ -15,7 +15,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     SEATS = "seats",
     MT = "multiTenancy",
     APW = "advancedPublishingWorkflow",
-    AACL = "advancedAccessControlLayer"
+    AACL = "advancedAccessControlLayer",
+    AL = "auditLogs"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -47,6 +48,9 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
         enabled: boolean;
         options: { teams: boolean };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
+        enabled: boolean;
     };
 }
 
