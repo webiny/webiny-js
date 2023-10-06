@@ -8,7 +8,7 @@ name: Pull Requests Command - Cypress
 
 jobs:
   check_comment:
-    name: Check comment for /cypress-test
+    name: Check comment for /cypress2
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -17,7 +17,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress-test
+          command: cypress2
           reaction: "true"
           reaction-type: "eyes"
           allow-edits: "false"
@@ -202,7 +202,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: dev
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -212,7 +212,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress/cypress.config.ts | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: dev
@@ -275,7 +275,7 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: dev
-        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: dev
@@ -458,7 +458,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: dev
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -468,7 +468,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress/cypress.config.ts | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: dev
@@ -534,7 +534,7 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: dev
-        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: dev
