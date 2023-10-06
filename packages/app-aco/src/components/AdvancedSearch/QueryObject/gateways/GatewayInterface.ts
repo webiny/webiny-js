@@ -1,7 +1,8 @@
 import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
-export interface BaseGateway {
+export interface GatewayInterface {
     list: (modelId: string) => Promise<QueryObjectRaw[]>;
+    get: (id: string) => Promise<QueryObjectRaw>;
     create: (
         filter: Omit<QueryObjectRaw, "id" | "createdOn" | "createdBy" | "savedOn">
     ) => Promise<QueryObjectRaw>;

@@ -65,8 +65,8 @@ export interface AcoError {
     data?: Record<string, any> | null;
 }
 
-export type ListSearchRecordsSortItem = `${string}_ASC` | `${string}_DESC`;
-export type ListSearchRecordsSort = ListSearchRecordsSortItem[];
+export type ListSortItem = `${string}_ASC` | `${string}_DESC`;
+export type ListSort = ListSortItem[];
 
 export interface ListMeta {
     cursor: string | null;
@@ -193,6 +193,19 @@ export interface ListFiltersResponse {
             error: AcoError | null;
         };
     };
+}
+
+export interface GetFilterResponse {
+    aco: {
+        getFilter: {
+            data: QueryObjectRaw | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface GetFilterQueryVariables {
+    id: string;
 }
 
 export interface CreateFilterVariables {

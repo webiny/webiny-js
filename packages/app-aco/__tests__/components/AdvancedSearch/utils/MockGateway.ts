@@ -1,7 +1,8 @@
-import { BaseGateway } from "~/components/AdvancedSearch/QueryObject";
+import { GatewayInterface } from "~/components/AdvancedSearch/QueryObject";
 
-const mockGateway: BaseGateway = {
+const mockGateway: GatewayInterface = {
     list: jest.fn(),
+    get: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn()
@@ -9,12 +10,14 @@ const mockGateway: BaseGateway = {
 
 export const createMockGateway = ({
     list,
+    get,
     create,
     update,
     delete: deleteFn
-}: Partial<BaseGateway>): BaseGateway => ({
+}: Partial<GatewayInterface>): GatewayInterface => ({
     ...mockGateway,
     ...(list && { list }),
+    ...(get && { get }),
     ...(create && { create }),
     ...(update && { update }),
     ...(deleteFn && { delete: deleteFn })

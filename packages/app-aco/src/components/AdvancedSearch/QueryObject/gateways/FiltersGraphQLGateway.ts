@@ -6,12 +6,14 @@ import {
     CreateFilterVariables,
     DeleteFilterResponse,
     DeleteFilterVariables,
+    GetFilterQueryVariables,
+    GetFilterResponse,
     ListFiltersQueryVariables,
     ListFiltersResponse,
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { BaseGateway, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
+import { GatewayInterface, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -55,6 +57,17 @@ export const LIST_FILTERS = gql`
     }
 `;
 
+export const GET_FILTER = gql`
+    query GetFilters($id: ID!) {
+        aco {
+            getFilter(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const UPDATE_FILTER = gql`
     mutation UpdateFilter($id: ID!, $data: FilterUpdateInput!) {
         aco {
@@ -77,7 +90,7 @@ export const DELETE_FILTER = gql`
     }
 `;
 
-export class FiltersGraphQLGateway implements BaseGateway {
+export class FiltersGraphQLGateway implements GatewayInterface {
     private client: ApolloClient<any>;
 
     constructor(client: ApolloClient<any>) {
@@ -105,6 +118,28 @@ export class FiltersGraphQLGateway implements BaseGateway {
 
         if (!data) {
             throw new Error(error?.message || "Could not fetch filters.");
+        }
+
+        return data;
+    }
+
+    async get(id: string) {
+        const { data: response } = await this.client.query<
+            GetFilterResponse,
+            GetFilterQueryVariables
+        >({
+            query: GET_FILTER,
+            variables: { id }
+        });
+
+        if (!response) {
+            throw new Error("Network error while fetch filter.");
+        }
+
+        const { data, error } = response.aco.getFilter;
+
+        if (!data) {
+            throw new Error(error?.message || `Could not fetch filter with id: ${id}`);
         }
 
         return data;

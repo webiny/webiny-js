@@ -1,2 +1,2 @@
-export * from "./BaseGateway";
 export * from "./FiltersGraphQLGateway";
+export * from "./GatewayInterface";

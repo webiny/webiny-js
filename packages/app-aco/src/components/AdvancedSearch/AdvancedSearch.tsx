@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import { observer } from "mobx-react-lite";
 
-import { FieldRaw, FiltersGraphQLGateway, QueryObjectRepository } from "./QueryObject";
-import { AdvancedSearchPresenter, AdvancedSearchViewModel } from "./AdvancedSearchPresenter";
-import { advancedSearchRepository } from "./AdvancedSearchRepository";
+import {
+    FieldRaw,
+    FiltersGraphQLGateway,
+    QueryObjectDTO,
+    QueryObjectRepository
+} from "./QueryObject";
+import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
 import { Button } from "./Button";
 import { QueryManagerDialog } from "./QueryManagerDialog";
@@ -16,25 +21,20 @@ import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
 interface AdvancedSearchProps {
     fields: FieldRaw[];
     modelId: string;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: QueryObjectDTO | null) => void;
 }
 
-export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
+export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
     const client = useApolloClient();
 
-    const [queryObjectRepository] = useState(
+    const [repository] = useState(
         QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
     );
     const [presenter] = useState<AdvancedSearchPresenter>(
-        new AdvancedSearchPresenter(advancedSearchRepository, onSubmit)
+        new AdvancedSearchPresenter(repository, onSubmit)
     );
-    const [viewModel, setViewModel] = useState<AdvancedSearchViewModel | undefined>();
 
-    useEffect(() => {
-        presenter.load(setViewModel);
-    }, []);
-
-    if (!viewModel) {
+    if (!presenter.vm) {
         return null;
     }
 
@@ -43,37 +43,37 @@ export const AdvancedSearch = ({ fields, modelId, onSubmit }: AdvancedSearchProp
             <AdvancedSearchContainer>
                 <Button onClick={() => presenter.openManager()} />
                 <SelectedFilter
-                    show={viewModel.showSelected}
-                    queryObject={viewModel.queryObject}
-                    onEdit={() => presenter.onChipEdit()}
-                    onDelete={() => presenter.onChipDelete()}
+                    show={presenter.vm.showSelected}
+                    filter={presenter.vm.queryObject}
+                    onEdit={filter => presenter.editFilter(filter.id)}
+                    onRemove={() => presenter.removeFilter()}
                 />
             </AdvancedSearchContainer>
             <QueryManagerDialog
                 onClose={() => presenter.closeManager()}
-                onCreate={() => presenter.onManagerCreateFilter()}
-                onEdit={filter => presenter.onManagerEditFilter(filter)}
-                onSelect={filter => presenter.onManagerSelectFilter(filter)}
-                open={viewModel.showManager}
-                repository={queryObjectRepository}
+                onCreate={() => presenter.createFilter()}
+                onEdit={filter => presenter.editFilter(filter.id)}
+                onSelect={filter => presenter.applyFilter(filter.id)}
+                open={presenter.vm.showManager}
+                repository={repository}
             />
             <QueryBuilderDrawer
                 fields={fields}
                 modelId={modelId}
                 onClose={() => presenter.closeBuilder()}
-                onPersist={filter => presenter.onBuilderPersist(filter)}
-                onSubmit={filter => presenter.onBuilderSubmit(filter)}
-                open={viewModel.showBuilder}
-                queryObject={viewModel.queryObject}
+                onPersist={filter => presenter.persistFilter(filter.id)}
+                onSubmit={filter => presenter.applyFilter(filter.id)}
+                open={presenter.vm.showBuilder}
+                queryObject={presenter.vm.queryObject}
             />
             <QuerySaverDialog
-                mode={viewModel.mode}
-                onSubmit={filter => presenter.onSaverSubmit(filter)}
+                mode={presenter.vm.mode}
+                onSubmit={filter => presenter.saveFilter(filter.id)}
                 onClose={() => presenter.closeSaver()}
-                open={viewModel.showSaver}
-                queryObject={viewModel.queryObject}
-                repository={queryObjectRepository}
+                open={presenter.vm.showSaver}
+                queryObject={presenter.vm.queryObject}
+                repository={repository}
             />
         </>
     );
-};
+});

@@ -1,11 +1,9 @@
 import orderBy from "lodash/orderBy";
 
-import { ListSearchRecordsSort, ListSearchRecordsSortItem } from "~/types";
+import { ListSort, ListSortItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
-export const validateOrGetDefaultDbSort = (
-    initial?: ListSearchRecordsSort
-): ListSearchRecordsSort => {
+export const validateOrGetDefaultDbSort = (initial?: ListSort): ListSort => {
     if (!Array.isArray(initial) || initial.length === 0) {
         return ["createdOn_DESC"];
     }
@@ -19,7 +17,7 @@ interface IRecord {
 
 export const sortTableItems = (
     records: IRecord[],
-    sort?: ListSearchRecordsSort,
+    sort?: ListSort,
     mapKeys: Record<string, string> = {}
 ): any[] => {
     const dbSorting = validateOrGetDefaultDbSort(sort);
@@ -36,12 +34,12 @@ export const sortTableItems = (
     return orderBy(records, fields, orders);
 };
 
-export const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
+export const createSort = (sorting?: Sorting): ListSort | undefined => {
     if (!sorting?.length) {
         return undefined;
     }
-    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
-        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
+    return sorting.reduce<ListSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSortItem;
         if (items.includes(sort)) {
             return items;
         }

@@ -1,20 +1,24 @@
 import { makeAutoObservable } from "mobx";
-import { Mode, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
-import { AdvancedSearchRepository } from "~/components/AdvancedSearch/AdvancedSearchRepository";
+import {
+    Mode,
+    QueryObjectDTO,
+    QueryObjectRepository
+} from "~/components/AdvancedSearch/QueryObject";
+import { QuerySaverViewModel } from "~/components/AdvancedSearch/QuerySaverDialog/adapters";
 
 export interface IAdvancedSearchPresenter {
     closeBuilder: () => void;
     closeManager: () => void;
     closeSaver: () => void;
     load: (callback: (viewModel: AdvancedSearchViewModel) => void) => void;
-    onBuilderPersist: (filter: QueryObjectDTO) => void;
-    onBuilderSubmit: (filter: QueryObjectDTO) => void;
+    onBuilderPersist: (filterId: string) => Promise<void>;
+    onBuilderSubmit: (filterId: string) => Promise<void>;
     onChipDelete: () => void;
     onChipEdit: () => void;
     onManagerCreateFilter: () => void;
-    onManagerEditFilter: (filter: QueryObjectDTO) => void;
-    onManagerSelectFilter: (filter: QueryObjectDTO) => void;
-    onSaverSubmit: (filter: QueryObjectDTO) => void;
+    onManagerEditFilter: (filterId: string) => Promise<void>;
+    onManagerSelectFilter: (filterId: string) => Promise<void>;
+    onSaverSubmit: (filterId: string) => Promise<void>;
     openBuilder: () => void;
     openManager: () => void;
     openSaver: () => void;
@@ -30,26 +34,26 @@ export interface AdvancedSearchViewModel {
     showSelected: boolean;
 }
 
-export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
-    private repository: AdvancedSearchRepository;
+export class AdvancedSearchPresenter {
+    private repository: QueryObjectRepository;
     private readonly onSubmitCallback: (data: QueryObjectDTO | null) => void;
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
     private showSelected = false;
-    private callback: ((viewModel: AdvancedSearchViewModel) => void) | undefined = undefined;
-
+    private mode: Mode = Mode.CREATE;
+    private queryObject: QueryObjectDTO | null = null;
     viewModel: AdvancedSearchViewModel;
 
     constructor(
-        repository: AdvancedSearchRepository,
+        repository: QueryObjectRepository,
         onSubmitCallback: (data: QueryObjectDTO | null) => void
     ) {
         this.repository = repository;
         this.onSubmitCallback = onSubmitCallback;
         this.viewModel = {
-            queryObject: this.repository.getFilter(),
-            mode: this.repository.getMode(),
+            queryObject: null,
+            mode: this.mode,
             showBuilder: this.showBuilder,
             showManager: this.showManager,
             showSaver: this.showSaver,
@@ -58,120 +62,91 @@ export class AdvancedSearchPresenter implements IAdvancedSearchPresenter {
         makeAutoObservable(this);
     }
 
-    load(callback: (viewModel: AdvancedSearchViewModel) => void) {
-        this.callback = callback;
-        this.updateViewModel();
-    }
-
-    updateViewModel() {
-        this.viewModel = {
-            queryObject: this.repository.getFilter(),
-            mode: this.repository.getMode(),
-            showBuilder: this.showBuilder,
-            showManager: this.showManager,
-            showSaver: this.showSaver,
-            showSelected: this.showSelected
-        };
-        this.callback && this.callback(this.viewModel);
+    get vm() {
+        return this.viewModel;
     }
 
     openManager() {
         this.showManager = true;
-        this.updateViewModel();
     }
 
     closeManager() {
         this.showManager = false;
-        this.updateViewModel();
     }
 
     openBuilder() {
         this.showBuilder = true;
-        this.updateViewModel();
     }
 
     closeBuilder() {
         this.showBuilder = false;
-        this.updateViewModel();
     }
 
     openSaver() {
         this.showSaver = true;
-        this.updateViewModel();
     }
 
     closeSaver() {
         this.showSaver = false;
-        this.updateViewModel();
     }
 
     openSelected() {
         this.showSelected = true;
-        this.updateViewModel();
     }
 
     closeSelected() {
         this.showSelected = false;
-        this.updateViewModel();
     }
 
-    onManagerSelectFilter(filter: QueryObjectDTO) {
-        this.repository.setFilter(filter);
-        this.onSubmitCallback(filter);
-        this.openSelected();
-        this.closeManager();
-        this.updateViewModel();
-    }
-
-    onManagerCreateFilter() {
-        this.repository.setFilter(null);
-        this.repository.setMode(Mode.CREATE);
-        this.closeManager();
-        this.openBuilder();
-        this.updateViewModel();
-    }
-
-    onManagerEditFilter(filter: QueryObjectDTO) {
-        this.repository.setFilter(filter);
-        this.repository.setMode(Mode.UPDATE);
+    createFilter() {
+        this.queryObject = null;
+        this.mode = Mode.CREATE;
         this.closeSelected();
         this.closeManager();
         this.openBuilder();
-        this.updateViewModel();
+        this.closeSaver();
     }
 
-    onBuilderSubmit(filter: QueryObjectDTO) {
-        this.repository.setFilter(filter);
-        this.onSubmitCallback(filter);
-        this.closeBuilder();
-        this.openSelected();
-        this.updateViewModel();
+    async editFilter(filterId: string) {
+        this.queryObject = await this.repository.getFilterById(filterId);
+        this.mode = Mode.UPDATE;
+        this.closeManager();
+        this.openBuilder();
+        this.closeSaver();
     }
 
-    onBuilderPersist(filter: QueryObjectDTO) {
-        this.repository.setFilter(filter);
-        this.openSaver();
-        this.updateViewModel();
-    }
-
-    onSaverSubmit(filter: QueryObjectDTO) {
-        this.onSubmitCallback(filter);
-        this.repository.setFilter(filter);
+    removeFilter() {
+        this.queryObject = null;
+        this.onSubmitCallback(null);
+        this.closeSelected();
+        this.closeManager();
         this.closeBuilder();
         this.closeSaver();
+    }
+
+    async applyFilter(filterId: string) {
+        const filter = await this.repository.getFilterById(filterId);
+        this.queryObject = filter;
+        this.onSubmitCallback(filter);
         this.openSelected();
-        this.updateViewModel();
+        this.closeManager();
+        this.closeBuilder();
+        this.closeSaver();
     }
 
-    onChipEdit() {
+    async persistFilter(filterId: string) {
+        this.queryObject = await this.repository.getFilterById(filterId);
+        this.closeManager();
         this.openBuilder();
-        this.updateViewModel();
+        this.openSaver();
     }
 
-    onChipDelete() {
-        this.repository.setFilter(null);
-        this.closeSelected();
-        this.onSubmitCallback(null);
-        this.updateViewModel();
+    async saveFilter(filterId: string) {
+        this.queryObject = await this.repository.getFilterById(filterId);
+        this.onSubmitCallback(this.queryObject);
+        this.openSelected();
+        this.closeManager();
+        this.closeBuilder();
+        this.closeSaver();
     }
 }
