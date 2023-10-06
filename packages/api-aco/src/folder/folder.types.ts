@@ -42,6 +42,18 @@ export interface DeleteFolderParams {
     id: string;
 }
 
+export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
+    id: string;
+    target: string;
+    name: string;
+    type: string;
+    meta: TMeta;
+}
+
+export interface FolderLevelPermissionsTargetListMeta {
+    totalCount: number;
+}
+
 export interface StorageOperationsGetFolderParams {
     id?: string;
     slug?: string;
@@ -93,6 +105,10 @@ export interface AcoFolderCrud {
     get(id: string): Promise<Folder>;
 
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
+
+    listFolderLevelPermissionsTargets(): Promise<
+        [FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]
+    >;
 
     listAll(params: ListAllFoldersParams): Promise<[Folder[], ListMeta]>;
 

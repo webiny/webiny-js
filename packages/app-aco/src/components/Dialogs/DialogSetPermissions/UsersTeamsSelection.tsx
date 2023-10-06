@@ -7,9 +7,8 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 
 interface UsersTeamsSelectionProps {
+    targetsList: any[];
     permissions: any[];
-    usersList: any[];
-    teamsList: any[];
     onRemoveAccess: any;
     onUpdatePermission: any;
 }
@@ -23,27 +22,15 @@ const StyledListItem = styled(ListItem)`
 
 export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
     permissions = [],
-    usersList = [],
-    teamsList = [],
+    targetsList,
     onRemoveAccess,
     onUpdatePermission
 }) => {
     const selection = permissions
         .map(permission => {
-            const user = usersList.find(u => u.id === permission.target.replace("identity:", ""));
-            if (user) {
-                return {
-                    permission: permission,
-                    user
-                };
-            }
-
-            const team = teamsList.find(t => t.id === permission.target.replace("team:", ""));
-            if (team) {
-                return {
-                    permission: permission,
-                    team
-                };
+            const target = targetsList.find(u => u.target === permission.target);
+            if (target) {
+                return { permission, target };
             }
 
             return null;

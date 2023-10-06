@@ -70,6 +70,24 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             error: AcoError
         }
 
+        type FolderLevelPermissionsTarget {
+            id: ID!
+            type: String!
+            target: ID!
+            name: String!
+            meta: JSON
+        }
+
+        type FolderLevelPermissionsTargetsListMeta {
+            totalCount: Int!
+        }
+
+        type FolderLevelPermissionsTargetsListResponse {
+            data: [FolderLevelPermissionsTarget]
+            meta:  FolderLevelPermissionsTargetsListMeta
+            error: AcoError
+        }
+
         extend type AcoQuery {
             getFolder(id: ID!): FolderResponse
             listFolders(
@@ -78,6 +96,8 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
                 after: String
                 sort: AcoSort
             ): FoldersListResponse
+
+            listFolderLevelPermissionsTargets: FolderLevelPermissionsTargetsListResponse
         }
 
         extend type AcoMutation {
@@ -108,6 +128,15 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
                 try {
                     checkPermissions(context);
                     const [entries, meta] = await context.aco.folder.list(args);
+                    return new ListResponse(entries, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            listFolderLevelPermissionsTargets: async (_, args: any, context) => {
+                try {
+                    checkPermissions(context);
+                    const [entries, meta] = await context.aco.folder.listFolderLevelPermissionsTargets();
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);

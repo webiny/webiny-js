@@ -7,24 +7,23 @@ import {
 import { useSecurity } from "@webiny/app-security";
 
 interface ListItemTextProps {
-    user?: any;
-    team?: any;
+    target?: any;
 }
 
-export const ListItemText: React.FC<ListItemTextProps> = ({ user, team }) => {
+export const ListItemText: React.FC<ListItemTextProps> = ({ target }) => {
     const { identity } = useSecurity();
 
-    if (user) {
+    if (target.type === 'identity') {
         return (
             <UiListItemText>
                 <ListItemTextPrimary>
-                    {user.firstName} {user.lastName}&nbsp;
-                    {user.id === identity!.id && <em>(you)</em>}
+                    {target.name}&nbsp;
+                    {target.id === identity!.id && <em>(you)</em>}
                 </ListItemTextPrimary>
-                <ListItemTextSecondary>{user.email}</ListItemTextSecondary>
+                <ListItemTextSecondary>{target.meta.email}</ListItemTextSecondary>
             </UiListItemText>
         );
     }
 
-    return <>{team.name}</>;
+    return <>{target.name}</>;
 };

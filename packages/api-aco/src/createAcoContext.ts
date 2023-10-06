@@ -82,8 +82,12 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         });
     }
 
+
+    const listAdminUsers = () => context.adminUsers.listUsers();
+    const listTeams = () => context.security.listTeams();
+
     context.aco = {
-        folder: createFolderCrudMethods(params),
+        folder: createFolderCrudMethods({ ...params, listAdminUsers, listTeams }),
         search: createSearchRecordCrudMethods(params),
         folderLevelPermissions,
         apps,

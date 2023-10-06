@@ -58,15 +58,14 @@ const StyledMenuItem = styled(MenuItem)`
 
 interface ListItemMetaProps {
     permission: any;
-    user?: any;
-    team?: any;
+    target?: any;
     onRemoveAccess: any;
     onUpdatePermission: any;
 }
 
 export const ListItemMeta: React.FC<ListItemMetaProps> = ({
     permission,
-    user,
+    target,
     onRemoveAccess,
     onUpdatePermission
 }) => {
@@ -81,7 +80,7 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
             return "Inherited from parent folder.";
         }
 
-        if (identity!.id === user.id) {
+        if (identity!.id === target.id) {
             return "You can't change your own permissions.";
         }
 

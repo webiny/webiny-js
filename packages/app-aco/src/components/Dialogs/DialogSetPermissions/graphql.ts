@@ -1,37 +1,15 @@
 import gql from "graphql-tag";
 
-export const LIST_TEAMS = gql`
-    query listTeams {
-        security {
-            listTeams {
+export const LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS = gql`
+    query ListFolderLevelPermissionsTargets {
+        aco {
+            listFolderLevelPermissionsTargets {
                 data {
                     id
-                    slug
+                    type
+                    target
                     name
-                    description
-                    createdOn
-                }
-            }
-        }
-    }
-`;
-
-export const LIST_USERS = gql`
-    query ListUsers {
-        adminUsers {
-            listUsers {
-                data {
-                    id
-                    firstName
-                    lastName
-                    email
-                    avatar
-                    gravatar
-                }
-                error {
-                    data
-                    message
-                    code
+                    meta
                 }
             }
         }

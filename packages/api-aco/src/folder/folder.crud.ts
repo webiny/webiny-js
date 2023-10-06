@@ -12,11 +12,20 @@ import {
 
 import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
+import { AdminUser } from "@webiny/api-admin-users/types";
+import { Team } from "@webiny/api-security/types";
+
+interface CreateFolderCrudMethodsParams extends CreateAcoParams {
+    listAdminUsers: () => Promise<AdminUser[]>;
+    listTeams: () => Promise<Team[]>;
+}
 
 export const createFolderCrudMethods = ({
     storageOperations,
-    folderLevelPermissions
-}: CreateAcoParams): AcoFolderCrud => {
+    folderLevelPermissions,
+    listAdminUsers,
+    listTeams
+}: CreateFolderCrudMethodsParams): AcoFolderCrud => {
     // create
     const onFolderBeforeCreate = createTopic<OnFolderBeforeCreateTopicParams>(
         "aco.onFolderBeforeCreate"
@@ -175,6 +184,43 @@ export const createFolderCrudMethods = ({
                 limit: 10000
             });
             return getFolderAndItsAncestors({ id, folders });
+        },
+
+        async listFolderLevelPermissionsTargets() {
+            const adminUsers = await listAdminUsers();
+            const teams = await listTeams();
+
+            const teamTargets = teams.map(team => ({
+                id: team.id,
+                type: "team",
+                target: `team:${team.id}`,
+                name: team.name || "",
+                meta: {}
+            }));
+
+            const adminUserTargets = adminUsers.map(user => {
+                let name = user.displayName;
+                if (!name) {
+                    // For backwards compatibility, we also want to try concatenating first and last name.
+                    name = [user.firstName, user.lastName].filter(Boolean).join(" ");
+                }
+
+                return {
+                    id: user.id,
+                    type: "identity",
+                    target: `identity:${user.id}`,
+                    name,
+                    meta: {
+                        image: user.avatar?.src || null,
+                        email: user.email
+                    }
+                };
+            });
+
+            const results = [...teamTargets, ...adminUserTargets];
+            const meta = { totalCount: results.length };
+
+            return [results, meta];
         }
     };
 };

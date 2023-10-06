@@ -5,8 +5,7 @@ import { Avatar } from "@webiny/ui/Avatar";
 import styled from "@emotion/styled";
 
 interface ListItemGraphicProps {
-    user?: any;
-    team?: any;
+    target?: any;
 }
 
 // Internally, the `Avatar` component applies top/left positioning to the image, which we don't want.
@@ -16,14 +15,14 @@ const StyledAvatar = styled(Avatar)`
     left: initial;
 `;
 
-export const ListItemGraphic: React.FC<ListItemGraphicProps> = ({ user, team }) => {
-    if (user) {
+export const ListItemGraphic: React.FC<ListItemGraphicProps> = ({ target }) => {
+    if (target) {
         return (
             <UiListItemGraphic>
                 <StyledAvatar
                     renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-                    src={user.avatar ? user.avatar.src : user.gravatar}
-                    fallbackText={user.firstName}
+                    src={target.meta.image}
+                    fallbackText={target.name.charAt(0)}
                     alt={"User's avatar."}
                 />
             </UiListItemGraphic>
@@ -32,7 +31,7 @@ export const ListItemGraphic: React.FC<ListItemGraphicProps> = ({ user, team }) 
 
     return (
         <UiListItemGraphic>
-            <StyledAvatar fallbackText={team.name.charAt(0)} />
+            <StyledAvatar fallbackText={target.name.charAt(0)} />
         </UiListItemGraphic>
     );
 };
