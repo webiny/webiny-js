@@ -42,6 +42,8 @@ jobs:
         with:
           node-version: 16
 
+      - uses: geertvdc/setup-hub@master
+
       - uses: actions/checkout@v3
 
       - name: Checkout Pull Request
@@ -81,6 +83,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - uses: geertvdc/setup-hub@master
 
       - uses: actions/checkout@v3
         with:
@@ -234,6 +238,12 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: geertvdc/setup-hub@master
+
       - uses: actions/checkout@v3
         with:
           path: dev
@@ -284,6 +294,8 @@ jobs:
         with:
           node-version: 16
 
+      - uses: geertvdc/setup-hub@master
+
       - uses: actions/checkout@v3
 
       - name: Checkout Pull Request
@@ -326,6 +338,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - uses: geertvdc/setup-hub@master
 
       - uses: actions/checkout@v3
         with:
@@ -482,6 +496,12 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: geertvdc/setup-hub@master
+
       - uses: actions/checkout@v3
         with:
           path: dev

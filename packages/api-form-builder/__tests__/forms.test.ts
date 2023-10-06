@@ -82,7 +82,12 @@ describe('Form Builder "Form" Test', () => {
 
         const newData = {
             name: "New name",
-            layout: [["QIspyfQRx", "AVoKqyAuH"], ["fNJag3ZdX"]]
+            steps: [
+                {
+                    title: "Test Step",
+                    layout: [["QIspyfQRx", "AVoKqyAuH"], ["fNJag3ZdX"]]
+                }
+            ]
         };
 
         const [update] = await updateRevision({ revision: id, data: newData });
@@ -103,6 +108,79 @@ describe('Form Builder "Form" Test', () => {
         const { data } = list.data.formBuilder.listForms;
         expect(data.length).toBe(1);
         expect(data[0].name).toEqual(newData.name);
+    });
+
+    test(`should correctly add step, rename step and remove step from the form`, async () => {
+        const [create] = await createForm({ data: { name: "general-info" } });
+        const { id } = create.data.formBuilder.createForm.data;
+
+        const newDataWithSteps = {
+            name: "Personal Info",
+            steps: [
+                {
+                    title: "General Info",
+                    layout: [["AVoKqyAuH", "QIspyfQRx"]]
+                },
+                {
+                    title: "Web Info",
+                    layout: [["fNJag3ZdX"]]
+                }
+            ]
+        };
+
+        const [update] = await updateRevision({ revision: id, data: newDataWithSteps });
+        expect(update.data.formBuilder.updateRevision.data).toMatchObject(newDataWithSteps);
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].name === newDataWithSteps.name,
+            {
+                name: "list forms after adding step"
+            }
+        );
+
+        const [get] = await getForm({ revision: id });
+        expect(get.data.formBuilder.getForm.data).toMatchObject(newDataWithSteps);
+
+        const newDataWithRenamedStep = {
+            name: "Personal Info",
+            steps: [
+                {
+                    title: "General Info",
+                    layout: [["AVoKqyAuH", "QIspyfQRx"]]
+                },
+                {
+                    title: "Email",
+                    layout: [["fNJag3ZdX"]]
+                }
+            ]
+        };
+
+        const [rename] = await updateRevision({ revision: id, data: newDataWithRenamedStep });
+        expect(rename.data.formBuilder.updateRevision.data).toMatchObject(newDataWithRenamedStep);
+
+        const [getFormAfterRename] = await getForm({ revision: id });
+        expect(getFormAfterRename.data.formBuilder.getForm.data).toMatchObject(
+            newDataWithRenamedStep
+        );
+
+        const dataAfterRemovingStep = {
+            name: "Personal Info",
+            steps: [
+                {
+                    title: "Email",
+                    layout: [["fNJag3ZdX"]]
+                }
+            ]
+        };
+
+        const [remove] = await updateRevision({ revision: id, data: dataAfterRemovingStep });
+        expect(remove.data.formBuilder.updateRevision.data).toMatchObject(dataAfterRemovingStep);
+
+        const [getAfterRemovingStep] = await getForm({ revision: id });
+        expect(getAfterRemovingStep.data.formBuilder.getForm.data).toMatchObject(
+            dataAfterRemovingStep
+        );
     });
 
     test(`should correctly update the "latest" revision when a revision is deleted`, async () => {
@@ -290,7 +368,10 @@ describe('Form Builder "Form" Test', () => {
         const { id } = create.data.formBuilder.createForm.data;
 
         // Add fields definitions
-        await updateRevision({ revision: id, data: { fields } });
+        await updateRevision({
+            revision: id,
+            data: { fields, steps: [{ title: "Test Step", layout: [] }] }
+        });
 
         await publishRevision({ revision: id });
 
@@ -302,6 +383,7 @@ describe('Form Builder "Form" Test', () => {
             data: formSubmissionDataA.data,
             meta: formSubmissionDataA.meta
         });
+
         expect(createSubmission1Response).toMatchObject({
             data: {
                 formBuilder: {

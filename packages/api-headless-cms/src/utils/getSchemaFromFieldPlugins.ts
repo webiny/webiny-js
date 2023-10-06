@@ -1,5 +1,7 @@
-import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
+import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 
 const TYPE_MAP: Record<string, "manage" | "read"> = {
     preview: "read",
@@ -7,13 +9,30 @@ const TYPE_MAP: Record<string, "manage" | "read"> = {
     manage: "manage"
 };
 
+interface CreatePluginCallableParams {
+    schema: GraphQLSchemaDefinition<CmsContext>;
+    type: "manage" | "preview" | "read";
+    fieldType: string;
+}
+
+interface CreatePluginCallable {
+    (params: CreatePluginCallableParams): GraphQLSchemaPlugin<CmsContext>;
+}
+
+const defaultCreatePlugin: CreatePluginCallable = ({ schema, type, fieldType }) => {
+    const plugin = new CmsGraphQLSchemaPlugin(schema);
+    plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldType}`;
+    return plugin;
+};
+
 interface Params {
     models: CmsModel[];
     fieldTypePlugins: CmsFieldTypePlugins;
     type: ApiEndpoint;
+    createPlugin?: CreatePluginCallable;
 }
 export const createGraphQLSchemaPluginFromFieldPlugins = (params: Params) => {
-    const { models, fieldTypePlugins, type } = params;
+    const { models, fieldTypePlugins, type, createPlugin = defaultCreatePlugin } = params;
 
     const plugins: CmsGraphQLSchemaPlugin[] = [];
     for (const key in fieldTypePlugins) {
@@ -28,8 +47,13 @@ export const createGraphQLSchemaPluginFromFieldPlugins = (params: Params) => {
         }
         const schema = createSchema({ models });
 
-        const plugin = new CmsGraphQLSchemaPlugin(schema);
-        plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldTypePlugin.fieldType}`;
+        // const plugin = new CmsGraphQLSchemaPlugin(schema);
+        // plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldTypePlugin.fieldType}`;
+        const plugin = createPlugin({
+            schema,
+            type,
+            fieldType: fieldTypePlugin.fieldType
+        });
         plugins.push(plugin);
     }
     return plugins;
