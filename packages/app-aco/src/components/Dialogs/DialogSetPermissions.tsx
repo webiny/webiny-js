@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useSnackbar, useWcp } from "@webiny/app-admin";
+import React, { useCallback, useEffect, useState } from "react";
+import { useSnackbar } from "@webiny/app-admin";
 import {
     DialogTitle,
     DialogActions,
@@ -13,7 +13,7 @@ import { DialogContainer } from "./styled";
 import { FolderItem } from "~/types";
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete";
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
-import { LIST_USERS, LIST_TEAMS } from "./DialogSetPermissions/graphql";
+import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useQuery } from "@apollo/react-hooks";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -29,7 +29,6 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
     onClose,
     open
 }) => {
-    const { getProject } = useWcp();
     const { loading: updatingFolder, updateFolder } = useFolders();
     const [permissions, setPermissions] = useState(folder.permissions || []);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -37,24 +36,8 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
 
     const closeDialog = useCallback(() => setDialogOpen(false), []);
 
-    const listUsersQuery = useQuery(LIST_USERS);
-    const usersList = listUsersQuery.data?.adminUsers.listUsers.data || [];
-
-    let loadingOptions = listUsersQuery.loading;
-
-    const project = getProject();
-    let teams = false;
-    if (project) {
-        teams = project.package.features.advancedAccessControlLayer.options.teams;
-    }
-
-    let teamsList: any[] = [];
-    if (teams) {
-        const listTeamsQuery = useQuery(LIST_TEAMS);
-
-        loadingOptions = loadingOptions || listTeamsQuery.loading;
-        teamsList = listTeamsQuery.data?.security.listTeams.data || [];
-    }
+    const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
+    const targetsList = listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
 
     useEffect(() => {
         setDialogOpen(open);
@@ -110,26 +93,13 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
             });
     }, [permissions]);
 
-    const options = useMemo(() => {
-        return [
-            ...usersList.map((identity: any) => ({
-                target: `identity:${identity.id}`,
-                name: `${identity.firstName} ${identity.lastName}`
-            })),
-            // ...teamsList.map(team => ({
-            //     target: `team:${team.id}`,
-            //     name: `${team.name}`
-            // }))
-        ];
-    }, [usersList, teamsList]);
-
     const dialogTitle = `Manage permissions - ${folder.title}`;
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
                 <>
-                    {loadingOptions && <CircularProgress />}
+                    {listTargetsQuery.loading && <CircularProgress />}
 
                     <DialogTitle>
                         <span title={dialogTitle}>{dialogTitle}</span>
@@ -138,7 +108,7 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
                         <Grid>
                             <Cell span={12}>
                                 <UsersTeamsMultiAutocomplete
-                                    options={options}
+                                    options={targetsList}
                                     value={permissions}
                                     onChange={addPermission}
                                 />
@@ -148,8 +118,7 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
                             <Cell span={12}>
                                 <UsersTeamsSelection
                                     permissions={permissions}
-                                    usersList={usersList}
-                                    teamsList={teamsList}
+                                    targetsList={targetsList}
                                     onRemoveAccess={removeUserTeam}
                                     onUpdatePermission={updatePermission}
                                 />
