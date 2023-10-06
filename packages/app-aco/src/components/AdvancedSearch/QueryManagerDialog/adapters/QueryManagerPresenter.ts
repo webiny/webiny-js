@@ -24,7 +24,7 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
 
     load(callback: (viewModel: QueryManagerViewModel) => void) {
         this.callback = callback;
-        //this.updateViewModel();
+        this.updateViewModel();
     }
 
     getViewModel() {
@@ -35,12 +35,12 @@ export class QueryManagerPresenter implements IQueryManagerPresenter {
 
     async listFilters() {
         await this.repository.listFilters();
-        //this.updateViewModel();
+        this.updateViewModel();
     }
 
     async deleteFilter(id: string) {
         await this.repository.deleteFilter(id);
-        //this.updateViewModel();
+        this.updateViewModel();
     }
 
     updateViewModel() {

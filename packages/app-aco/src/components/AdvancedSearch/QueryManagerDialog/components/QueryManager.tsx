@@ -30,8 +30,6 @@ interface QueryManagerProps {
 }
 
 export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps) => {
-    //const [viewModel, setViewModel] = useState<QueryManagerViewModel | undefined>();
-
     const viewModel = presenter.getViewModel();
 
     useEffect(() => {

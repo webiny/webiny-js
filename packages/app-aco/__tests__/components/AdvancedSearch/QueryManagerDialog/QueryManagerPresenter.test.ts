@@ -68,15 +68,20 @@ describe("QueryManagerPresenter", () => {
             viewModel = generatedViewModel;
         });
 
+        // Let's load some filters
+        await presenter.listFilters();
+
         expect(gateway.list).toBeCalledTimes(1);
         expect(viewModel.filters).toEqual([queryObjectDTO]);
     });
 
     it("should delete a filter, via the provided gateway", async () => {
-        // Let's load first
         await presenter.load(generatedViewModel => {
             viewModel = generatedViewModel;
         });
+
+        // Let's load some filters
+        await presenter.listFilters();
 
         // Let's delete the filter
         await presenter.deleteFilter(id);
@@ -102,6 +107,9 @@ describe("QueryManagerPresenter", () => {
                 viewModel = generatedViewModel;
             });
 
+            // Let's load some filters
+            await presenter.listFilters();
+
             expect(badGateway.list).toBeCalledTimes(1);
             expect(viewModel.filters).toEqual([]);
         } catch (e) {
@@ -123,10 +131,12 @@ describe("QueryManagerPresenter", () => {
         const presenter = new QueryManagerPresenter(repository);
 
         try {
-            // Let's load first
             await presenter.load(generatedViewModel => {
                 viewModel = generatedViewModel;
             });
+
+            // Let's load some filters
+            await presenter.listFilters();
 
             expect(viewModel.filters).toEqual([queryObjectDTO]);
 
