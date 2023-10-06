@@ -95,7 +95,7 @@ export class QueryObject {
     ) {
         this.id = id ?? generateId();
         this.modelId = modelId;
-        this.name = name ?? "Untitled";
+        this.name = name ?? "Draft filter";
         this.description = description ?? "";
         this.operation = operation;
         this.groups = groups;
