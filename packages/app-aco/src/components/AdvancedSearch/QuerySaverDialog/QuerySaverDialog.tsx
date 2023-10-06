@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { QuerySaver } from "./components";
-import { QuerySaverPresenter } from "./adapters";
+import { QuerySaverPresenter, QuerySaverViewModel } from "./adapters";
 
 import {
     Mode,
@@ -27,10 +27,19 @@ export const QuerySaverDialog = ({
     repository
 }: QuerySaverDialogProps) => {
     const [presenter] = useState<QuerySaverPresenter>(new QuerySaverPresenter(repository));
+    const [viewModel, setViewModel] = useState<QuerySaverViewModel | undefined>();
 
     useEffect(() => {
-        presenter.load(queryObject);
+        presenter.load(setViewModel);
+    }, []);
+
+    useEffect(() => {
+        presenter.updateQueryObject(queryObject);
     }, [queryObject]);
+
+    if (!viewModel) {
+        return null;
+    }
 
     return (
         <QuerySaver
@@ -39,6 +48,7 @@ export const QuerySaverDialog = ({
             open={open}
             presenter={presenter}
             mode={mode}
+            viewModel={viewModel}
         />
     );
 };

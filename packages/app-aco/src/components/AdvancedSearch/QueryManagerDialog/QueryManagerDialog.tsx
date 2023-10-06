@@ -4,6 +4,7 @@ import { QueryManager } from "./components/QueryManager";
 import { QueryManagerPresenter } from "./adapters/QueryManagerPresenter";
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject/QueryObjectRepository";
+import { observer } from "mobx-react-lite";
 
 interface QueryBuilderProps {
     onClose: () => void;
@@ -14,24 +15,19 @@ interface QueryBuilderProps {
     repository: QueryObjectRepository;
 }
 
-export const QueryManagerDialog = ({
-    repository,
-    open,
-    onClose,
-    onEdit,
-    onSelect,
-    onCreate
-}: QueryBuilderProps) => {
-    const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(repository));
+export const QueryManagerDialog = observer(
+    ({ repository, open, onClose, onEdit, onSelect, onCreate }: QueryBuilderProps) => {
+        const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(repository));
 
-    return (
-        <QueryManager
-            open={open}
-            onClose={onClose}
-            onEdit={onEdit}
-            onSelect={onSelect}
-            onCreate={onCreate}
-            presenter={presenter}
-        />
-    );
-};
+        return (
+            <QueryManager
+                open={open}
+                onClose={onClose}
+                onEdit={onEdit}
+                onSelect={onSelect}
+                onCreate={onCreate}
+                presenter={presenter}
+            />
+        );
+    }
+);

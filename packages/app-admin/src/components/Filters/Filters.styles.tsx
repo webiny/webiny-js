@@ -1,20 +1,14 @@
 import styled from "@emotion/styled";
-import { Grid } from "@webiny/ui/Grid";
 
-export const FiltersContainer = styled(Grid)`
+export const FiltersContainer = styled("div")`
     width: 100%;
     height: auto;
     background-color: var(--mdc-theme-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     padding: 8px;
-`;
-
-interface CellInnerProps {
-    align: "left" | "center" | "right";
-}
-
-export const CellInner = styled(`div`)<CellInnerProps>`
-    text-align: ${props => props.align || "left"};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 export const FormContainer = styled.div`

@@ -41,10 +41,13 @@ describe("QueryBuilderPresenter", () => {
         ];
 
         presenter = new QueryBuilderPresenter(modelId, defaultFields);
-        viewModel = presenter.getViewModel();
     });
 
     it("should create QueryBuilderPresenter with `viewModel` definition", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // `viewModel` should have the expected `fields` definition
         expect(viewModel.fields).toEqual([
             {
@@ -80,13 +83,17 @@ describe("QueryBuilderPresenter", () => {
             modelId
         };
 
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // let's load a queryObjectDTO
-        presenter.load(queryObjectDto);
-        expect(presenter.getViewModel().queryObject).toEqual(queryObjectDto);
+        presenter.updateQueryObject(queryObjectDto);
+        expect(viewModel.queryObject).toEqual(queryObjectDto);
 
         // let's load a nullish queryObjectDTO
-        presenter.load(null);
-        expect(presenter.getViewModel().queryObject).toEqual({
+        presenter.updateQueryObject(null);
+        expect(viewModel.queryObject).toEqual({
             id: expect.any(String),
             name: "Untitled",
             description: "",
@@ -97,6 +104,11 @@ describe("QueryBuilderPresenter", () => {
     });
 
     it("should be able to add and delete groups", () => {
+        // let's load a queryObjectDTO
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // should only have 1 group, created by default
         expect(viewModel.queryObject.groups.length).toBe(1);
         expect(viewModel.queryObject.groups).toEqual([testGroup]);
@@ -125,6 +137,10 @@ describe("QueryBuilderPresenter", () => {
     });
 
     it("should be able to add and delete filters from a group", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         presenter.addNewFilterToGroup(0);
 
         // should have 2 filters inside the only existing group
@@ -149,6 +165,10 @@ describe("QueryBuilderPresenter", () => {
     });
 
     it("should be able to set the queryObject", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         {
             // should be able to set the `queryObject` operation
             presenter.setQueryObject({
@@ -156,7 +176,7 @@ describe("QueryBuilderPresenter", () => {
                 operation: Operation.OR
             });
 
-            expect(presenter.getViewModel().queryObject.operation).toEqual(Operation.OR);
+            expect(viewModel.queryObject.operation).toEqual(Operation.OR);
         }
 
         {
@@ -171,7 +191,7 @@ describe("QueryBuilderPresenter", () => {
                 ]
             });
 
-            expect(presenter.getViewModel().queryObject.groups[0].operation).toEqual(Operation.OR);
+            expect(viewModel.queryObject.groups[0].operation).toEqual(Operation.OR);
         }
 
         {
@@ -191,13 +211,15 @@ describe("QueryBuilderPresenter", () => {
                 ]
             });
 
-            expect(presenter.getViewModel().queryObject.groups[0].filters[0].field).toEqual(
-                "any-field"
-            );
+            expect(viewModel.queryObject.groups[0].filters[0].field).toEqual("any-field");
         }
     });
 
     it("should perform validation and call provided callbacks `onSubmit`", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         const onSuccess = jest.fn();
         const onError = jest.fn();
 
@@ -217,10 +239,10 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
+        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
-        expect(Object.keys(presenter.getViewModel().invalidFields).length).toBe(1);
+        expect(Object.keys(viewModel.invalidFields).length).toBe(1);
 
         presenter.setQueryObject({
             ...viewModel.queryObject,
@@ -238,13 +260,17 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
+        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
         expect(viewModel.invalidFields).toEqual({});
     });
 
     it("should able to empty a filter from a group", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // Let's change the queryObject and change the only exising filter
         presenter.setQueryObject({
             ...viewModel.queryObject,
@@ -494,10 +520,16 @@ describe("FieldDTO definition", () => {
     ];
 
     fields.forEach(([fieldRaw, fieldDTO]) => {
-        it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}" `, () => {
-            const presenter = new QueryBuilderPresenter(modelId, [fieldRaw]);
-            const viewModel = presenter.getViewModel();
+        let viewModel: QueryBuilderViewModel;
 
+        beforeEach(() => {
+            const presenter = new QueryBuilderPresenter(modelId, [fieldRaw]);
+            presenter.load(generatedViewModel => {
+                viewModel = generatedViewModel;
+            });
+        });
+
+        it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {
             expect(viewModel.fields).toEqual([fieldDTO]);
         });
     });

@@ -6,7 +6,10 @@ import {
     QueryObjectDTO,
     QueryObjectRepository
 } from "~/components/AdvancedSearch/QueryObject";
-import { QuerySaverPresenter } from "~/components/AdvancedSearch/QuerySaverDialog/adapters";
+import {
+    QuerySaverPresenter,
+    QuerySaverViewModel
+} from "~/components/AdvancedSearch/QuerySaverDialog/adapters";
 
 import { createMockGateway } from "../utils/MockGateway";
 
@@ -56,6 +59,7 @@ describe("QuerySaverPresenter", () => {
 
     let repository: QueryObjectRepository;
     let presenter: QuerySaverPresenter;
+    let viewModel: QuerySaverViewModel;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -65,13 +69,17 @@ describe("QuerySaverPresenter", () => {
     });
 
     it("should load a QueryObject into QuerySaverPresenter", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // let's load a queryObjectDTO
-        presenter.load(queryObjectDTO);
-        expect(presenter.getViewModel().queryObject).toEqual(queryObjectDTO);
+        presenter.updateQueryObject(queryObjectDTO);
+        expect(viewModel.queryObject).toEqual(queryObjectDTO);
 
         // let's load a nullish queryObjectDTO
-        presenter.load(null);
-        expect(presenter.getViewModel().queryObject).toEqual({
+        presenter.updateQueryObject(null);
+        expect(viewModel.queryObject).toEqual({
             id: expect.any(String),
             name: "Untitled",
             description: "",
@@ -82,58 +90,70 @@ describe("QuerySaverPresenter", () => {
     });
 
     it("should be able to set the queryObject", () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // let's load a queryObjectDTO
-        presenter.load(queryObjectDTO);
-        expect(presenter.getViewModel().queryObject).toEqual(queryObjectDTO);
+        presenter.updateQueryObject(queryObjectDTO);
+        expect(viewModel.queryObject).toEqual(queryObjectDTO);
 
         // should be able to set the `queryObject` name
         presenter.setQueryObject({
-            ...presenter.getViewModel().queryObject,
+            ...viewModel.queryObject,
             name: "Any other name"
         });
 
-        expect(presenter.getViewModel().queryObject.name).toEqual("Any other name");
+        expect(viewModel.queryObject.name).toEqual("Any other name");
 
         // should be able to set the `queryObject` description
         presenter.setQueryObject({
-            ...presenter.getViewModel().queryObject,
+            ...viewModel.queryObject,
             description: "Any other description"
         });
 
-        expect(presenter.getViewModel().queryObject.description).toEqual("Any other description");
+        expect(viewModel.queryObject.description).toEqual("Any other description");
     });
 
     it("should perform validation and call provided callbacks `onSubmit`", () => {
         const onSuccess = jest.fn();
         const onError = jest.fn();
 
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         // let's load a queryObjectDTO
-        presenter.load(queryObjectDTO);
+        presenter.updateQueryObject(queryObjectDTO);
 
         // let's change `name`value so the validation will fail
         presenter.setQueryObject({
-            ...presenter.getViewModel().queryObject,
+            ...viewModel.queryObject,
             name: ""
         });
 
-        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
+        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
-        expect(Object.keys(presenter.getViewModel().invalidFields).length).toBe(1);
+        expect(Object.keys(viewModel.invalidFields).length).toBe(1);
 
         // let's change back `name`value so the validation will pass
         presenter.setQueryObject({
-            ...presenter.getViewModel().queryObject,
+            ...viewModel.queryObject,
             name: "Any name"
         });
 
-        presenter.onSubmit(presenter.getViewModel().queryObject, onSuccess, onError);
+        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
-        expect(presenter.getViewModel().invalidFields).toEqual({});
+        expect(viewModel.invalidFields).toEqual({});
     });
 
     it("should persist the a brand new queryObject - CREATE", async () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         await presenter.persistQueryObject(queryObjectDTO, Mode.CREATE);
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
@@ -146,6 +166,10 @@ describe("QuerySaverPresenter", () => {
     });
 
     it("should persist the an existing queryObject - UPDATE", async () => {
+        presenter.load(generatedViewModel => {
+            viewModel = generatedViewModel;
+        });
+
         await presenter.persistQueryObject(queryObjectDTO, Mode.UPDATE);
         expect(gateway.update).toBeCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({

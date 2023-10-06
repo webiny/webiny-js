@@ -1,8 +1,7 @@
 import React from "react";
 import { Form, FormOnSubmit, FormProps, GenericFormData } from "@webiny/form";
 
-import { CellInner, FilterContainer, FiltersContainer, FormContainer } from "./Filters.styles";
-import { Cell } from "@webiny/ui/Grid";
+import { FilterContainer, FiltersContainer, FormContainer } from "./Filters.styles";
 
 type Filter = {
     name: string;
@@ -29,22 +28,16 @@ export const Filters = <T extends GenericFiltersData = GenericFiltersData>(
 
     return (
         <FiltersContainer data-testid={props["data-testid"] || "filters-container"}>
-            <Cell span={2}>
-                <Form data={props.data} onChange={props.onChange}>
-                    {() => (
-                        <FormContainer>
-                            {props.filters.map(filter => (
-                                <FilterContainer key={filter.name}>
-                                    {filter.element}
-                                </FilterContainer>
-                            ))}
-                        </FormContainer>
-                    )}
-                </Form>
-            </Cell>
-            <Cell span={10} align={"middle"}>
-                <CellInner align={"right"}>{props.children}</CellInner>
-            </Cell>
+            <Form data={props.data} onChange={props.onChange}>
+                {() => (
+                    <FormContainer>
+                        {props.filters.map(filter => (
+                            <FilterContainer key={filter.name}>{filter.element}</FilterContainer>
+                        ))}
+                        {props.children}
+                    </FormContainer>
+                )}
+            </Form>
         </FiltersContainer>
     );
 };

@@ -23,11 +23,14 @@ export class QueryObjectRepository {
     }
 
     async listFilters() {
-        const rawFilters = await this.gateway.list(this.modelId);
-
-        runInAction(() => {
-            this.filters = rawFilters.map(filter => QueryObjectMapper.toDTO(filter));
-        });
+        try {
+            const rawFilters = await this.gateway.list(this.modelId);
+            runInAction(() => {
+                this.filters = rawFilters.map(filter => QueryObjectMapper.toDTO(filter));
+            });
+        } catch (e) {
+            throw new Error(e.message);
+        }
     }
 
     async createFilter(filter: QueryObjectDTO) {

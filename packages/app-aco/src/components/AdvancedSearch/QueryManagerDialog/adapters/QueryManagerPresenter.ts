@@ -3,8 +3,9 @@ import { QueryObjectDTO, QueryObjectRepository } from "~/components/AdvancedSear
 
 export interface IQueryManagerPresenter {
     deleteFilter: (id: string) => Promise<void>;
-    getViewModel: () => QueryManagerViewModel;
-    load: () => Promise<void>;
+    listFilters: () => Promise<void>;
+    updateViewModel: () => void;
+    load: (callback: (viewModel: QueryManagerViewModel) => void) => void;
 }
 
 export interface QueryManagerViewModel {
@@ -13,24 +14,39 @@ export interface QueryManagerViewModel {
 
 export class QueryManagerPresenter implements IQueryManagerPresenter {
     private repository: QueryObjectRepository;
+    private callback: ((viewModel: QueryManagerViewModel) => void) | undefined = undefined;
+    viewModel: QueryManagerViewModel | undefined;
 
     constructor(repository: QueryObjectRepository) {
         this.repository = repository;
         makeAutoObservable(this);
     }
 
-    async load() {
-        await this.repository.listFilters();
-    }
-
-    async deleteFilter(id: string) {
-        await this.repository.deleteFilter(id);
+    load(callback: (viewModel: QueryManagerViewModel) => void) {
+        this.callback = callback;
+        //this.updateViewModel();
     }
 
     getViewModel() {
         return {
-            filters: this.repository.filters,
-            selected: this.repository.selected
+            filters: this.repository.filters
         };
+    }
+
+    async listFilters() {
+        await this.repository.listFilters();
+        //this.updateViewModel();
+    }
+
+    async deleteFilter(id: string) {
+        await this.repository.deleteFilter(id);
+        //this.updateViewModel();
+    }
+
+    updateViewModel() {
+        this.viewModel = {
+            filters: this.repository.filters
+        };
+        this.callback && this.callback(this.viewModel);
     }
 }

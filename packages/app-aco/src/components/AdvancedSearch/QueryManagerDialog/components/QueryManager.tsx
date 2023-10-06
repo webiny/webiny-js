@@ -30,67 +30,64 @@ interface QueryManagerProps {
 }
 
 export const QueryManager = observer(({ presenter, ...props }: QueryManagerProps) => {
+    //const [viewModel, setViewModel] = useState<QueryManagerViewModel | undefined>();
+
     const viewModel = presenter.getViewModel();
 
     useEffect(() => {
-        presenter.load();
+        async function load() {
+            await presenter.listFilters();
+        }
+
+        load();
     }, []);
+
+    if (!viewModel) {
+        return null;
+    }
 
     return (
         <DialogContainer open={props.open} onClose={props.onClose}>
-            {props.open ? (
-                <>
-                    <DialogTitle>{"Advanced search filter"}</DialogTitle>
-                    <DialogContent>
-                        <List twoLine nonInteractive>
-                            {viewModel.filters.map(filter => (
-                                <ListItem key={filter.id}>
-                                    <ListItemText>
-                                        <ListItemTextPrimary>{filter.name}</ListItemTextPrimary>
-                                        <ListItemTextSecondary>
-                                            {filter.description}
-                                        </ListItemTextSecondary>
-                                    </ListItemText>
-                                    <ListItemMeta>
-                                        <ListActions>
-                                            <Tooltip content={"Apply filter"}>
-                                                <IconButton
-                                                    icon={<SavedSearchIcon />}
-                                                    label={"Apply filter"}
-                                                    onClick={() => props.onSelect(filter)}
-                                                />
-                                            </Tooltip>
-                                            <Menu
-                                                handle={
-                                                    <IconButton
-                                                        icon={<MoreIcon />}
-                                                        label={"Open menu"}
-                                                    />
-                                                }
-                                            >
-                                                <MenuItem onClick={() => props.onEdit(filter)}>
-                                                    Edit
-                                                </MenuItem>
-                                                <MenuItem
-                                                    onClick={() =>
-                                                        presenter.deleteFilter(filter.id)
-                                                    }
-                                                >
-                                                    Delete
-                                                </MenuItem>
-                                            </Menu>
-                                        </ListActions>
-                                    </ListItemMeta>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </DialogContent>
-                    <DialogActions>
-                        <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
-                        <ButtonPrimary onClick={props.onCreate}>{"Create new"}</ButtonPrimary>
-                    </DialogActions>
-                </>
-            ) : null}
+            <DialogTitle>{"Advanced search filter"}</DialogTitle>
+            <DialogContent>
+                <List twoLine nonInteractive>
+                    {viewModel.filters.map(filter => (
+                        <ListItem key={filter.id}>
+                            <ListItemText>
+                                <ListItemTextPrimary>{filter.name}</ListItemTextPrimary>
+                                <ListItemTextSecondary>{filter.description}</ListItemTextSecondary>
+                            </ListItemText>
+                            <ListItemMeta>
+                                <ListActions>
+                                    <Tooltip content={"Apply filter"}>
+                                        <IconButton
+                                            icon={<SavedSearchIcon />}
+                                            label={"Apply filter"}
+                                            onClick={() => props.onSelect(filter)}
+                                        />
+                                    </Tooltip>
+                                    <Menu
+                                        handle={
+                                            <IconButton icon={<MoreIcon />} label={"Open menu"} />
+                                        }
+                                    >
+                                        <MenuItem onClick={() => props.onEdit(filter)}>
+                                            Edit
+                                        </MenuItem>
+                                        <MenuItem onClick={() => presenter.deleteFilter(filter.id)}>
+                                            Delete
+                                        </MenuItem>
+                                    </Menu>
+                                </ListActions>
+                            </ListItemMeta>
+                        </ListItem>
+                    ))}
+                </List>
+            </DialogContent>
+            <DialogActions>
+                <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
+                <ButtonPrimary onClick={props.onCreate}>{"Create new"}</ButtonPrimary>
+            </DialogActions>
         </DialogContainer>
     );
 });
