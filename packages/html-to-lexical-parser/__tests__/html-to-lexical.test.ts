@@ -1,12 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import { parseHtmlToLexical } from "~/index";
+import { createHtmlToLexicalParser } from "~/index";
 import { simpleHtml } from "./html-articles";
 
 describe("Test html-to-lexical parser", () => {
     it("should parse html paragraph string to lexical object", async () => {
-        expect(parseHtmlToLexical(simpleHtml)).toMatchObject({
+        const parser = createHtmlToLexicalParser();
+        expect(parser(simpleHtml)).toMatchObject({
             root: {
                 children: [
                     {

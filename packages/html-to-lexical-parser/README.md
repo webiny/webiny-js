@@ -88,14 +88,14 @@ visit [Lexical's documentation web page](https://lexical.dev/docs/intro).
 
 Configuration uses the `ParserConfigurationOptions` interface to define the configuration options for the parser.
 
+By default, this parser configuration includes all lexical nodes from the @webiny/lexical-editor package.
+
 | Property     | Type             | Default value | Description                                                      |
 |--------------|------------------|---------------|------------------------------------------------------------------|
 | editorConfig | CreateEditorArgs | { nodes: [] } | Provide the original lexical interface for editor configuration. |
 
 By providing the `editorConfig` configuration, we can add custom Lexical nodes, custom theme and other editor related
 options.
-
-> By default, this parser configuration includes all lexical nodes from the @webiny/lexical-editor package.
 
 Please check the full type definition, of the Lexical `CreateEditorArgs`, on the
 following [link](https://lexical.dev/docs/api/modules/lexical#createeditorargs).
