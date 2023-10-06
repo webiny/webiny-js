@@ -18,11 +18,17 @@ interface FooterProps {
 export const Footer = ({ formRef, onPersist, onClose, viewModel }: FooterProps) => {
     return (
         <SimpleFormFooter>
-            <ButtonDefault onClick={onClose}>Cancel</ButtonDefault>
-            <ButtonDefault onClick={() => onPersist(viewModel.queryObject)}>
-                Save filter
-            </ButtonDefault>
-            <ButtonPrimary onClick={() => formRef.current?.submit()}>Apply filter</ButtonPrimary>
+            <div>
+                <ButtonDefault onClick={() => onPersist(viewModel.queryObject)}>
+                    Save filter
+                </ButtonDefault>
+            </div>
+            <div>
+                <ButtonDefault onClick={onClose}>Cancel</ButtonDefault>
+                <ButtonPrimary onClick={() => formRef.current?.submit()}>
+                    Apply filter
+                </ButtonPrimary>
+            </div>
         </SimpleFormFooter>
     );
 };

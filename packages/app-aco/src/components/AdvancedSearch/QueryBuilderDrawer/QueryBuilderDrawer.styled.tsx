@@ -43,5 +43,5 @@ export const DrawerContainer = styled(RmwcDrawer)`
 `;
 
 export const SimpleFormFooter = styled(BaseSimpleFormFooter)`
-    justify-content: flex-end;
+    justify-content: space-between;
 `;
