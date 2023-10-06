@@ -52,7 +52,9 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         listAllFolders: type =>
             storageOperations
                 .listFolders({ where: { type }, limit: 10000 })
-                .then(result => result[0])
+                .then(result => result[0]),
+        canUseTeams: () => context.wcp.canUseTeams(),
+        canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions()
     });
 
     const params: CreateAcoParams = {
@@ -82,12 +84,15 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         });
     }
 
-
     const listAdminUsers = () => context.adminUsers.listUsers();
     const listTeams = () => context.security.listTeams();
 
     context.aco = {
-        folder: createFolderCrudMethods({ ...params, listAdminUsers, listTeams }),
+        folder: createFolderCrudMethods({
+            ...params,
+            listAdminUsers,
+            listTeams
+        }),
         search: createSearchRecordCrudMethods(params),
         folderLevelPermissions,
         apps,

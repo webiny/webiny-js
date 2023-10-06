@@ -32,6 +32,8 @@ export interface FolderLevelPermissionsParams {
     getIdentityTeam: () => Promise<any>;
     listPermissions: () => Promise<SecurityPermission[]>;
     listAllFolders: (folderType: string) => Promise<Folder[]>;
+    canUseTeams: () => boolean;
+    canUseFolderLevelPermissions: () => boolean;
 }
 
 export class FolderLevelPermissions {
@@ -39,6 +41,8 @@ export class FolderLevelPermissions {
     private readonly getIdentityTeam: () => Promise<Team | null>;
     private readonly listPermissions: () => Promise<SecurityPermission[]>;
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
+    private readonly canUseTeams: () => boolean;
+    private readonly canUseFolderLevelPermissions: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
@@ -46,6 +50,8 @@ export class FolderLevelPermissions {
         this.getIdentityTeam = params.getIdentityTeam;
         this.listPermissions = params.listPermissions;
         this.listAllFoldersCallback = params.listAllFolders;
+        this.canUseTeams = params.canUseTeams;
+        this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
     }
 
     async listAllFolders(folderType: string) {
@@ -68,6 +74,10 @@ export class FolderLevelPermissions {
     }
 
     async listFoldersPermissions(folderType: string): Promise<FolderPermissionsList> {
+        if (!this.canUseFolderLevelPermissions()) {
+            return [];
+        }
+
         const allFolders = await this.listAllFolders(folderType);
         const identity = this.getIdentity();
         const permissions = await this.listPermissions();
@@ -169,6 +179,10 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolder(params: CanAccessFolderParams) {
+        if (!this.canUseFolderLevelPermissions()) {
+            return true;
+        }
+
         const { folder } = params;
 
         const folderPermissions = await this.getFolderPermissions(folder);
@@ -180,11 +194,14 @@ export class FolderLevelPermissions {
         )?.level;
 
         let teamAccessLevel: FolderAccessLevel | undefined;
-        const identityTeam = await this.getIdentityTeam();
-        if (identityTeam) {
-            teamAccessLevel = folderPermissions?.permissions.find(
-                p => p.target === identityTeam.id
-            )?.level;
+
+        if (this.canUseTeams()) {
+            const identityTeam = await this.getIdentityTeam();
+            if (identityTeam) {
+                teamAccessLevel = folderPermissions?.permissions.find(
+                    p => p.target === identityTeam.id
+                )?.level;
+            }
         }
 
         const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
@@ -211,6 +228,10 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolderContent(params: CanAccessFolderParams) {
+        if (!this.canUseFolderLevelPermissions()) {
+            return true;
+        }
+
         const { folder } = params;
 
         const folderPermissions = await this.getFolderPermissions(folder);
@@ -222,11 +243,13 @@ export class FolderLevelPermissions {
         )?.level;
 
         let teamAccessLevel: FolderAccessLevel | undefined;
-        const identityTeam = await this.getIdentityTeam();
-        if (identityTeam) {
-            teamAccessLevel = folderPermissions?.permissions.find(
-                p => p.target === identityTeam.id
-            )?.level;
+        if (this.canUseTeams()) {
+            const identityTeam = await this.getIdentityTeam();
+            if (identityTeam) {
+                teamAccessLevel = folderPermissions?.permissions.find(
+                    p => p.target === identityTeam.id
+                )?.level;
+            }
         }
 
         const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
@@ -252,18 +275,13 @@ export class FolderLevelPermissions {
 
         // No conditions were met, so we can return false.
         return false;
-
-        //
-        // if (params.rwd === "r") {
-        //     return accessLevels.length > 0;
-        // }
-        //
-        // // If we are here, it means we are checking for "w" or "d" access on content.
-        // // In this case, we need to check if the user has "editor" or "owner" access.
-        // return accessLevels.includes("editor") || accessLevels.includes("owner");
     }
 
     async canCreateFolderInRoot() {
+        if (!this.canUseFolderLevelPermissions()) {
+            return true;
+        }
+
         const permissions = await this.listPermissions();
         return permissions.some(p => p.name === "*");
     }
