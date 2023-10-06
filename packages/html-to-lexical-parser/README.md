@@ -7,8 +7,30 @@
 
 ## About
 
-This package provides actions plugins for Lexical editor.
+This package provides method for parsing html to lexical.
 
-## Where is it used?
+## Usage
 
-Currently, this packaged is used in [@webiny/app-serverless-cms](../app-serverless-cms).
+To parse the html string, you need to import `parseHtmlToLexical` function, and provide
+the html string.
+
+```tsx
+import {parseHtmlToLexical} from "@webiny/lexical-html-to-lexical-parser";
+
+const html = "<p>My paragraph</p>";
+
+parseHtmlToLexical(html, data => {
+        // success
+        console.log("data is parsed")
+    },
+    error => {
+        // error
+        console.log("error", error.message);
+    });
+```
+
+
+
+
+
+
