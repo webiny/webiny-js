@@ -216,7 +216,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: dev/cypress-tests
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -472,7 +472,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: dev/cypress-tests
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
