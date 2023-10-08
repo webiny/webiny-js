@@ -77,7 +77,7 @@ context("Admin Installation", () => {
 
             // 7. Installation complete, click the button and check if the pages list was shown to the user.
             cy.findByTestId("open-webiny-cms-admin-button").click();
-            cy.findByText(/Learn more about Webiny/i).should("exist");
+            cy.findByText(/Get to know Webiny team members/i).should("exist");
         }
     );
 });
