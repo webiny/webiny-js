@@ -12,7 +12,7 @@ export const recordMocks = {
             customLocked: true,
             customVersion: 12,
             someText: "A text which is searchable",
-            identity: {
+            admin: {
                 id: "user-1",
                 displayName: "John Doe",
                 type: "user"
@@ -33,7 +33,7 @@ export const recordMocks = {
             customLocked: false,
             customVersion: 5,
             someText: "A text which is searchable as well",
-            identity: {
+            admin: {
                 id: "user-2",
                 displayName: "Jane Doe",
                 type: "admin"
@@ -54,7 +54,7 @@ export const recordMocks = {
             customLocked: false,
             customVersion: 2,
             someText: "A text which is searchable as well",
-            identity: {
+            admin: {
                 id: "user-3",
                 displayName: "Janine Doe",
                 type: "admin"
@@ -75,7 +75,7 @@ export const recordMocks = {
             customCreatedOn: "2023-02-15T00:00:00.000Z",
             customVersion: 1,
             someText: "A text which is searchable as well",
-            identity: {
+            admin: {
                 id: "user-4",
                 displayName: "James Doe",
                 type: "admin"

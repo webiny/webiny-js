@@ -75,7 +75,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
-                identity: identity === undefined ? createIdentity() : identity
+                admin: identity === undefined ? createIdentity() : identity
             }),
             createI18NContext(),
             ...i18nStorage.storageOperations,

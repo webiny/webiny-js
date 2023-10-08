@@ -118,6 +118,7 @@ export const createFolderCrudMethods = ({
 
             return folder;
         },
+
         async update(id, data) {
             const original = await storageOperations.getFolder({ id });
 
@@ -136,7 +137,7 @@ export const createFolderCrudMethods = ({
             if (Array.isArray(data.permissions)) {
                 data.permissions.forEach(permission => {
                     const targetIsValid =
-                        permission.target.startsWith("identity:") ||
+                        permission.target.startsWith("admin:") ||
                         permission.target.startsWith("team:");
                     if (!targetIsValid) {
                         throw new Error(`Permission target "${permission.target}" is not valid.`);
@@ -208,7 +209,7 @@ export const createFolderCrudMethods = ({
                 return {
                     id: user.id,
                     type: "identity",
-                    target: `identity:${user.id}`,
+                    target: `admin:${user.id}`,
                     name,
                     meta: {
                         image: user.avatar?.src || null,

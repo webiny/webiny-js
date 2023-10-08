@@ -35,7 +35,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: "role:full-access",
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ],
             slug: "folder-a"
@@ -48,7 +48,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: `parent:${folderA.id}`,
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ],
             slug: "folder-b"
@@ -88,7 +88,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: "role:full-access",
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ]
         });
@@ -104,7 +104,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: `parent:${folderA.id}`,
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ]
         });
@@ -145,7 +145,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: "role:full-access",
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ]
         });
@@ -163,7 +163,7 @@ describe("Folder Level Permissions", () => {
                 {
                     inheritedFrom: `parent:${folderA.id}`,
                     level: "owner",
-                    target: "identity:12345678"
+                    target: "admin:12345678"
                 }
             ]
         });
@@ -203,7 +203,7 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: `parent:${folderA.id}`,
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     }
                 ]
             },
@@ -214,14 +214,14 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: "role:full-access",
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     }
                 ]
             }
         ]);
     });
 
-    it('should not allow passing targets that don\'t start with "identity:" or "team:" prefixes', async () => {
+    it('should not allow passing targets that don\'t start with "admin:" or "team:" prefixes', async () => {
         const folderA = await aco
             .createFolder({
                 data: {
@@ -266,7 +266,7 @@ describe("Folder Level Permissions", () => {
                     id: folderA.id,
                     data: {
                         title: "Folder A - Updated",
-                        permissions: [{ level: "owner", target: "identity:xyz", inheritedFrom: "xyz" }]
+                        permissions: [{ level: "owner", target: "admin:xyz", inheritedFrom: "xyz" }]
                     }
                 })
                 .then(([results]) => results.data.aco.updateFolder.error)
@@ -285,7 +285,7 @@ describe("Folder Level Permissions", () => {
                     slug: "folder-a",
                     type: FOLDER_TYPE,
                     permissions: [
-                        { target: "identity:u1", level: "owner" },
+                        { target: "admin:u1", level: "owner" },
                         { target: "team:t1", level: "owner" }
                     ]
                 }
@@ -302,7 +302,7 @@ describe("Folder Level Permissions", () => {
                     type: FOLDER_TYPE,
                     parentId: folderA.id,
                     permissions: [
-                        { target: "identity:u2", level: "editor" },
+                        { target: "admin:u2", level: "editor" },
                         { target: "team:t2", level: "editor" }
                     ]
                 }
@@ -319,7 +319,7 @@ describe("Folder Level Permissions", () => {
                     type: FOLDER_TYPE,
                     parentId: folderB.id,
                     permissions: [
-                        { target: "identity:u3", level: "viewer" },
+                        { target: "admin:u3", level: "viewer" },
                         { target: "team:t3", level: "viewer" }
                     ]
                 }
@@ -336,7 +336,7 @@ describe("Folder Level Permissions", () => {
                     type: FOLDER_TYPE,
                     parentId: folderC.id,
                     permissions: [
-                        { target: "identity:u4", level: "owner" },
+                        { target: "admin:u4", level: "owner" },
                         { target: "team:t4", level: "owner" }
                     ]
                 }
@@ -357,15 +357,15 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: `parent:${folderC.id}`,
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     },
-                    { inheritedFrom: null, level: "owner", target: "identity:u4" },
+                    { inheritedFrom: null, level: "owner", target: "admin:u4" },
                     { inheritedFrom: null, level: "owner", target: "team:t4" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "identity:u3" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "admin:u3" },
                     { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "team:t3" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "identity:u2" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "admin:u2" },
                     { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "identity:u1" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "admin:u1" },
                     { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "team:t1" }
                 ]
             },
@@ -376,13 +376,13 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: `parent:${folderB.id}`,
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     },
-                    { inheritedFrom: null, level: "viewer", target: "identity:u3" },
+                    { inheritedFrom: null, level: "viewer", target: "admin:u3" },
                     { inheritedFrom: null, level: "viewer", target: "team:t3" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "identity:u2" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "admin:u2" },
                     { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "identity:u1" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "admin:u1" },
                     { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "team:t1" }
                 ]
             },
@@ -393,11 +393,11 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: `parent:${folderA.id}`,
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     },
-                    { inheritedFrom: null, level: "editor", target: "identity:u2" },
+                    { inheritedFrom: null, level: "editor", target: "admin:u2" },
                     { inheritedFrom: null, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "identity:u1" },
+                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "admin:u1" },
                     { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "team:t1" }
                 ]
             },
@@ -408,12 +408,12 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: "role:full-access",
                         level: "owner",
-                        target: "identity:12345678"
+                        target: "admin:12345678"
                     },
                     {
                         inheritedFrom: null,
                         level: "owner",
-                        target: "identity:u1"
+                        target: "admin:u1"
                     },
                     {
                         inheritedFrom: null,
@@ -467,7 +467,7 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: `parent:${folderA.id}`,
                         level: "owner",
-                        target: `identity:${identityA.id}`
+                        target: `admin:${identityA.id}`
                     }
                 ],
                 hasNonInheritedPermissions: false,
@@ -480,7 +480,7 @@ describe("Folder Level Permissions", () => {
                     {
                         inheritedFrom: "role:full-access",
                         level: "owner",
-                        target: `identity:${identityA.id}`
+                        target: `admin:${identityA.id}`
                     }
                 ],
                 hasNonInheritedPermissions: false,

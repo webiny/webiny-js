@@ -89,7 +89,7 @@ describe("`search` CRUD", () => {
                 customLocked: null,
                 customVersion: null,
                 someText: null,
-                identity: null
+                admin: null
             },
             tags: [],
             createdBy: userMock
@@ -174,7 +174,7 @@ describe("`search` CRUD", () => {
                                     customCreatedOn: null,
                                     customLocked: null,
                                     customVersion: null,
-                                    identity: null,
+                                    admin: null,
                                     someText: null
                                 },
                                 tags: []
@@ -751,7 +751,7 @@ describe("`search` CRUD", () => {
 
     it("should enforce security rules", async () => {
         const { search: anonymousSearch } = useGraphQlHandler({
-            identity: null,
+            admin: null,
             plugins: [
                 createMockAcoApp({
                     name: "Webiny",

@@ -52,7 +52,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
 
         type AcoSearchRecordWebiny_Data {
           someText: String
-          identity: AcoSearchRecordWebiny_Data_Identity
+          admin: AcoSearchRecordWebiny_Data_Identity
           customCreatedOn: DateTime
           customVersion: Number
           customLocked: Boolean
@@ -68,7 +68,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
           someText_startsWith: String
           someText_not_startsWith: String
 
-          identity: AcoSearchRecordWebiny_Data_IdentityWhereInput
+          admin: AcoSearchRecordWebiny_Data_IdentityWhereInput
 
           customCreatedOn: DateTime
           customCreatedOn_not: DateTime
@@ -121,7 +121,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
 
         input AcoSearchRecordWebiny_DataInput {
           someText: String
-          identity: AcoSearchRecordWebiny_Data_IdentityInput
+          admin: AcoSearchRecordWebiny_Data_IdentityInput
           customCreatedOn: DateTime
           customVersion: Number
           customLocked: Boolean

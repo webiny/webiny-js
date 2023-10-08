@@ -138,7 +138,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             data: {
                 permissions: [
                     {
-                        target: `identity:${identityB.id}`,
+                        target: `admin:${identityB.id}`,
                         level: "owner"
                     }
                 ]
@@ -219,7 +219,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             data: {
                 permissions: [
                     {
-                        target: `identity:${identityC.id}`,
+                        target: `admin:${identityC.id}`,
                         level: "owner"
                     }
                 ]

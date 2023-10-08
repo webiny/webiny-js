@@ -209,9 +209,7 @@ export const createAdminUsers = ({
             }
         },
         async getUser({ where }) {
-            console.log("check perms");
             await checkPermission();
-            console.log("prosao check permsa");
 
             // Majority of querying is happening via `id`, so let's use a DataLoader here.
             if (where.id) {

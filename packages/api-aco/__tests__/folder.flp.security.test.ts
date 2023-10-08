@@ -7,9 +7,9 @@ const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" }
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 
 describe("Folder Level Permissions", () => {
-    const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
+    const { aco: acoIdentityA } = useGraphQlHandler({ admin: identityA });
     const { aco: acoIdentityB } = useGraphQlHandler({
-        identity: identityB,
+        admin: identityB,
         permissions: [{ name: "cms.*" }]
     });
 

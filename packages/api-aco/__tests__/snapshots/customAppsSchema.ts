@@ -52,7 +52,7 @@ export const createCustomAppsSchemaSnapshot = () => {
 
         type AcoSearchRecordCustomTestingApp_Data {
           someText: String
-          identity: AcoSearchRecordCustomTestingApp_Data_Identity
+          admin: AcoSearchRecordCustomTestingApp_Data_Identity
           customCreatedOn: DateTime
           customVersion: Number
           customLocked: Boolean
@@ -70,7 +70,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           someText_startsWith: String
           someText_not_startsWith: String
 
-          identity: AcoSearchRecordCustomTestingApp_Data_IdentityWhereInput
+          admin: AcoSearchRecordCustomTestingApp_Data_IdentityWhereInput
 
           customCreatedOn: DateTime
           customCreatedOn_not: DateTime
@@ -145,7 +145,7 @@ export const createCustomAppsSchemaSnapshot = () => {
 
         input AcoSearchRecordCustomTestingApp_DataInput {
           someText: String
-          identity: AcoSearchRecordCustomTestingApp_Data_IdentityInput
+          admin: AcoSearchRecordCustomTestingApp_Data_IdentityInput
           customCreatedOn: DateTime
           customVersion: Number
           customLocked: Boolean

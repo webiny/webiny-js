@@ -39,8 +39,8 @@ export type UpdateUserInput = Partial<CreateUserInput>;
 
 export interface AdminUser extends BaseUserAttributes {
     tenant: string;
-    group?: string;
-    team?: string;
+    group?: string | null;
+    team?: string | null;
     avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy | null | undefined;

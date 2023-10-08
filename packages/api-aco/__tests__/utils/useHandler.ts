@@ -28,7 +28,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         plugins: [
             ...cmsStorage.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
+            ...createTenancyAndSecurity({ permissions, admin: identity || createIdentity() }),
             i18nContext(),
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
