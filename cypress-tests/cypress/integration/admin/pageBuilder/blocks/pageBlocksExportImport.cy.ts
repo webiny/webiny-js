@@ -68,7 +68,7 @@ context("Page Builder - Blocks Export/Import", () => {
                 cy.findByPlaceholderText("Search blocks").should("exist");
                 cy.findByTestId("pb-blocks-list-options-menu").click();
                 cy.findByRole("menuitem", { name: "Import blocks" }).click();
-                cy.contains('Paste File URL').should("exist").click();
+                cy.contains("Paste File URL").should("exist").click();
                 cy.contains("File URL").type(importUrl);
                 cy.contains("Continue").click();
                 cy.findByText("All blocks have been imported").should("exist");
