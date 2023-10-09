@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { observer } from "mobx-react-lite";
 
-import {
-    FieldRaw,
-    FiltersGraphQLGateway,
-    QueryObjectDTO,
-    QueryObjectRepository
-} from "./QueryObject";
-import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
+import { FieldRaw, FiltersGraphQLGateway, QueryObjectRepository } from "./QueryObject";
+import { AdvancedSearchPresenter, AdvancedSearchViewModel } from "./AdvancedSearchPresenter";
 
 import { Button } from "./Button";
 import { QueryManagerDialog } from "./QueryManagerDialog";
@@ -17,11 +11,12 @@ import { QuerySaverDialog } from "./QuerySaverDialog";
 import { SelectedFilter } from "./SelectedFilter";
 
 import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
+import { observer } from "mobx-react-lite";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
     modelId: string;
-    onSubmit: (data: QueryObjectDTO | null) => void;
+    onSubmit: (data: any) => void;
 }
 
 export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
@@ -34,7 +29,13 @@ export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedS
         new AdvancedSearchPresenter(repository, onSubmit)
     );
 
-    if (!presenter.vm) {
+    const [viewModel, setViewModel] = useState<AdvancedSearchViewModel | undefined>();
+
+    useEffect(() => {
+        presenter.load(setViewModel);
+    }, []);
+
+    if (!viewModel) {
         return null;
     }
 
@@ -43,35 +44,35 @@ export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedS
             <AdvancedSearchContainer>
                 <Button onClick={() => presenter.openManager()} />
                 <SelectedFilter
-                    show={presenter.vm.showSelected}
-                    filter={presenter.vm.queryObject}
-                    onEdit={filter => presenter.editFilter(filter.id)}
+                    show={viewModel.showSelected}
+                    filter={viewModel.queryObject}
+                    onEdit={filter => presenter.editFilter(filter)}
                     onRemove={() => presenter.removeFilter()}
                 />
             </AdvancedSearchContainer>
             <QueryManagerDialog
                 onClose={() => presenter.closeManager()}
                 onCreate={() => presenter.createFilter()}
-                onEdit={filter => presenter.editFilter(filter.id)}
-                onSelect={filter => presenter.applyFilter(filter.id)}
-                open={presenter.vm.showManager}
+                onEdit={filter => presenter.editFilter(filter)}
+                onSelect={filter => presenter.applyFilter(filter)}
+                open={viewModel.showManager}
                 repository={repository}
             />
             <QueryBuilderDrawer
                 fields={fields}
                 modelId={modelId}
                 onClose={() => presenter.closeBuilder()}
-                onPersist={filter => presenter.persistFilter(filter.id)}
-                onSubmit={filter => presenter.applyFilter(filter.id)}
-                open={presenter.vm.showBuilder}
-                queryObject={presenter.vm.queryObject}
+                onPersist={filter => presenter.persistFilter(filter)}
+                onSubmit={filter => presenter.applyFilter(filter)}
+                open={viewModel.showBuilder}
+                queryObject={viewModel.queryObject}
             />
             <QuerySaverDialog
-                mode={presenter.vm.mode}
-                onSubmit={filter => presenter.saveFilter(filter.id)}
+                mode={viewModel.mode}
+                onSubmit={filter => presenter.saveFilter(filter)}
                 onClose={() => presenter.closeSaver()}
-                open={presenter.vm.showSaver}
-                queryObject={presenter.vm.queryObject}
+                open={viewModel.showSaver}
+                queryObject={viewModel.queryObject}
                 repository={repository}
             />
         </>

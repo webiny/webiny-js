@@ -4,7 +4,6 @@ import {
     QueryObjectDTO,
     QueryObjectRepository
 } from "~/components/AdvancedSearch/QueryObject";
-import { QuerySaverViewModel } from "~/components/AdvancedSearch/QuerySaverDialog/adapters";
 
 export interface IAdvancedSearchPresenter {
     closeBuilder: () => void;
@@ -41,6 +40,7 @@ export class AdvancedSearchPresenter {
     private showManager = false;
     private showSaver = false;
     private showSelected = false;
+    private callback: ((viewModel: AdvancedSearchViewModel) => void) | undefined = undefined;
     private mode: Mode = Mode.CREATE;
     private queryObject: QueryObjectDTO | null = null;
     viewModel: AdvancedSearchViewModel;
@@ -62,16 +62,31 @@ export class AdvancedSearchPresenter {
         makeAutoObservable(this);
     }
 
-    get vm() {
-        return this.viewModel;
+    load(callback: (viewModel: AdvancedSearchViewModel) => void) {
+        this.callback = callback;
+        this.callback && this.callback(this.viewModel);
+    }
+
+    updateViewModel() {
+        this.viewModel = {
+            queryObject: this.queryObject,
+            mode: this.mode,
+            showBuilder: this.showBuilder,
+            showManager: this.showManager,
+            showSaver: this.showSaver,
+            showSelected: this.showSelected
+        };
+        this.callback && this.callback(this.viewModel);
     }
 
     openManager() {
         this.showManager = true;
+        this.updateViewModel();
     }
 
     closeManager() {
         this.showManager = false;
+        this.updateViewModel();
     }
 
     openBuilder() {
@@ -80,6 +95,7 @@ export class AdvancedSearchPresenter {
 
     closeBuilder() {
         this.showBuilder = false;
+        this.updateViewModel();
     }
 
     openSaver() {
@@ -88,6 +104,7 @@ export class AdvancedSearchPresenter {
 
     closeSaver() {
         this.showSaver = false;
+        this.updateViewModel();
     }
 
     openSelected() {
@@ -96,6 +113,7 @@ export class AdvancedSearchPresenter {
 
     closeSelected() {
         this.showSelected = false;
+        this.updateViewModel();
     }
 
     createFilter() {
@@ -105,14 +123,16 @@ export class AdvancedSearchPresenter {
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
+        this.updateViewModel();
     }
 
-    async editFilter(filterId: string) {
-        this.queryObject = await this.repository.getFilterById(filterId);
+    editFilter(queryObject: QueryObjectDTO) {
+        this.queryObject = queryObject;
         this.mode = Mode.UPDATE;
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
+        this.updateViewModel();
     }
 
     removeFilter() {
@@ -122,31 +142,34 @@ export class AdvancedSearchPresenter {
         this.closeManager();
         this.closeBuilder();
         this.closeSaver();
+        this.updateViewModel();
     }
 
-    async applyFilter(filterId: string) {
-        const filter = await this.repository.getFilterById(filterId);
-        this.queryObject = filter;
-        this.onSubmitCallback(filter);
+    applyFilter(queryObject: QueryObjectDTO) {
+        this.queryObject = queryObject;
+        this.onSubmitCallback(queryObject);
         this.openSelected();
         this.closeManager();
         this.closeBuilder();
         this.closeSaver();
+        this.updateViewModel();
     }
 
-    async persistFilter(filterId: string) {
-        this.queryObject = await this.repository.getFilterById(filterId);
+    persistFilter(queryObject: QueryObjectDTO) {
+        this.queryObject = queryObject;
         this.closeManager();
         this.openBuilder();
         this.openSaver();
+        this.updateViewModel();
     }
 
-    async saveFilter(filterId: string) {
-        this.queryObject = await this.repository.getFilterById(filterId);
-        this.onSubmitCallback(this.queryObject);
+    saveFilter(queryObject: QueryObjectDTO) {
+        this.queryObject = queryObject;
+        this.onSubmitCallback(queryObject);
         this.openSelected();
         this.closeManager();
         this.closeBuilder();
         this.closeSaver();
+        this.updateViewModel();
     }
 }
