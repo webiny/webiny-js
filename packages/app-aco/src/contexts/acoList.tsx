@@ -4,7 +4,7 @@ import {
     GenericSearchData,
     ListMeta,
     ListSearchRecordsQueryVariables,
-    ListSearchRecordsSort,
+    ListSort,
     SearchRecordItem
 } from "~/types";
 import { useAcoApp, useNavigateFolder } from "~/hooks";
@@ -28,7 +28,7 @@ export interface AcoListContextData<T> {
     records: SearchRecordItem<T>[];
     selected: T[];
     setFilters: (data: Record<string, any>) => void;
-    setListSort: (state: ListSearchRecordsSort) => void;
+    setListSort: (state: ListSort) => void;
     setSearchQuery: (query: string) => void;
     setSelected: (selected: T[]) => void;
     showFilters: () => void;
@@ -45,7 +45,7 @@ export interface State<T> {
     folderId?: string;
     isSearch: boolean;
     limit: number;
-    listSort: ListSearchRecordsSort;
+    listSort: ListSort;
     searchQuery: string;
     selected: T[];
     showingFilters: boolean;
@@ -291,7 +291,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
         setFilters(data) {
             setState({ filters: data, after: undefined });
         },
-        setListSort(sort: ListSearchRecordsSort) {
+        setListSort(sort: ListSort) {
             setState({ listSort: sort, after: undefined });
         },
         setSelected(selected) {

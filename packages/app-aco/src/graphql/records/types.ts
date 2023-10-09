@@ -1,4 +1,4 @@
-import { AcoError, ListMeta, ListSearchRecordsSort, SearchRecordItem, TagItem } from "~/types";
+import { AcoError, ListMeta, ListSort, SearchRecordItem, TagItem } from "~/types";
 
 export interface UpdateSearchRecordResponse {
     search: {
@@ -81,7 +81,7 @@ export interface ListSearchRecordsQueryVariables {
     search?: string;
     limit?: number;
     after?: string | null;
-    sort?: ListSearchRecordsSort;
+    sort?: ListSort;
 }
 
 export interface GetSearchRecordResponse {
