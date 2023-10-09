@@ -69,6 +69,15 @@ import {configureParser} from "@webiny/lexical-html-to-lexical-parser";
 import {myCustomTheme} from "./theme/myCustomTheme";
 import {MyCustomLexicalNode} from './lexical/nodes/MyCustomLexicalNode'
 
+const addCustomThemeStyleToHeadings = (node: LexicalNode): LexicalNode => {
+    if (node.getType() === "heading-element") {
+        return (node as HeadingNode).setThemeStyles([
+            {styleId: "my-default-id", type: "typography"}
+        ]);
+    }
+    return node;
+};
+
 // App level configuration. 
 configureParser({
     // Lexical editor configuration
@@ -77,7 +86,10 @@ configureParser({
         nodes: [MyCustomLexicalNode],
         // Add you custom theme
         theme: myCustomTheme
-    }
+    },
+    nodeMapper: addCustomThemeStyleToHeadings,
+    normalizeTextNodes: true // by default is 'true'
+
 })
 ```
 
@@ -90,9 +102,11 @@ Configuration uses the `ParserConfigurationOptions` interface to define the conf
 
 By default, this parser configuration includes all lexical nodes from the @webiny/lexical-editor package.
 
-| Property     | Type             | Default value | Description                                                      |
-|--------------|------------------|---------------|------------------------------------------------------------------|
-| editorConfig | CreateEditorArgs | { nodes: [] } | Provide the original lexical interface for editor configuration. |
+| Prop               | Type                                                    | Default value | Description                                                          |
+|--------------------|---------------------------------------------------------|---------------|----------------------------------------------------------------------|
+| editorConfig       | CreateEditorArgs                                        | { nodes: [] } | Configure the Lexical editor by providing the editor initialization  |
+| nodeMapper         | ({ node: LexicalNode, editor: LexicalEditor  } => void; |               | Define custom mapper function for mapping lexical nodes.             |
+| normalizeTextNodes | boolean                                                 | true          | By default, parser will wrap single text nodes with paragraph nodes. |
 
 By providing the `editorConfig` configuration, we can add custom Lexical nodes, custom theme and other editor related
 options.
