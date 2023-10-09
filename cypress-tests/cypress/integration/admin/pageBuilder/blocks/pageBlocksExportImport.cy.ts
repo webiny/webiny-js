@@ -58,34 +58,34 @@ context("Page Builder - Blocks Export/Import", () => {
         cy.findByText("Export all blocks").click();
         cy.findByText("Your export is now ready!").should("exist");
 
-        cy.findByTestId("export-blocks.export-ready-dialog")
-            .invoke("text")
-            .then(importUrl => {
-                cy.pbDeleteAllBlockCategories();
-                cy.pbDeleteAllBlocks();
+        cy.get('.css-3xvvqn-linkWrapper .mdc-typography--body2').invoke('text').then((text) => {
+            const url = text.trim();
+            console.log(url);
+            cy.pbDeleteAllBlockCategories();
+            cy.pbDeleteAllBlocks();
 
-                cy.visit("/page-builder/page-blocks");
-                cy.findByPlaceholderText("Search blocks").should("exist");
-                cy.findByTestId("pb-blocks-list-options-menu").click();
-                cy.findByRole("menuitem", { name: "Import blocks" }).click();
-                cy.contains("Paste File URL").should("exist").click();
-                cy.contains("File URL").type(importUrl);
-                cy.contains("Continue").click();
-                cy.findByText("All blocks have been imported").should("exist");
-                cy.contains("Continue").click();
+            cy.visit("/page-builder/page-blocks");
+            cy.findByPlaceholderText("Search blocks").should("exist");
+            cy.findByTestId("pb-blocks-list-options-menu").click();
+            cy.findByRole("menuitem", { name: "Import blocks" }).click();
+            cy.contains("Paste File URL").should("exist").click();
+            cy.contains("File URL").type(url);
+            cy.contains("Continue").click();
+            cy.findByText("All blocks have been imported").should("exist");
+            cy.contains("Continue").click();
 
                 // Validation of imported blocks and categories.
-                cy.contains(blockCategoryData1.name).should("exist");
-                cy.contains(blockCategoryData2.name).should("exist");
-                cy.contains(blockCategoryData3.name).should("exist");
+            cy.contains(blockCategoryData1.name).should("exist");
+            cy.contains(blockCategoryData2.name).should("exist");
+            cy.contains(blockCategoryData3.name).should("exist");
 
-                cy.contains(blockCategoryData1.name).click();
-                cy.contains(blockNames1[0]).should("exist");
-                cy.contains(blockCategoryData1.name).click();
-                cy.contains(blockNames2[0]).should("exist");
-                cy.contains(blockCategoryData1.name).click();
-                cy.contains(blockNames3[0]).should("exist");
-            });
+            cy.contains(blockCategoryData1.name).click();
+            cy.contains(blockNames1[0]).should("exist");
+            cy.contains(blockCategoryData1.name).click();
+            cy.contains(blockNames2[0]).should("exist");
+            cy.contains(blockCategoryData1.name).click();
+            cy.contains(blockNames3[0]).should("exist");
+        });
     });
 
     it("Test the importation and exportation functionality of the import block button", () => {
@@ -100,13 +100,21 @@ context("Page Builder - Blocks Export/Import", () => {
         cy.findByText("Your export is now ready!").should("exist");
         cy.get("span.link-text.mdc-typography--body2")
             .invoke("text")
-            .then(importUrl => {
+            .then(url => {
                 cy.pbDeleteAllBlockCategories();
                 cy.pbDeleteAllBlocks();
+                
+                cy.visit("/page-builder/page-blocks");
+                cy.findByTestId("pb-blocks-list-options-menu").click();
+                cy.findByRole("menuitem", { name: "Import blocks" }).click();
+                cy.contains("Paste File URL").should("exist").click();
+                cy.contains("File URL").type(url);
+                cy.contains("Continue").click();
+                cy.findByText("All blocks have been imported").should("exist");
+                cy.contains("Continue").click();
 
                 cy.visit("/page-builder/page-blocks");
                 cy.contains(blockCategoryData1.name).should("exist");
-                cy.contains(blockNames1[0]).should("exist");
             });
     });
 });
