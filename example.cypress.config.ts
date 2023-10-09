@@ -25,7 +25,7 @@ export default defineConfig({
         DEFAULT_ADMIN_USER_FIRST_NAME: "admin-first-name",
         DEFAULT_ADMIN_USER_LAST_NAME: "admin-last-name",
 
-        // https://github.com/jaredpalmer/cypress-image-snapshot#preventing-failures
+        /* https://github.com/jaredpalmer/cypress-image-snapshot#preventing-failures */
         failOnSnapshotDiff: false
     },
     e2e: {
