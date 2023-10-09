@@ -144,17 +144,18 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output = terminalOutput;
+    let output ;
 
+    // TODO: deprecate browser/terminal options with 5.40.0 release.
     switch (inputs.output) {
         case "browser":
             output = browserOutput;
             break;
-        case "simple":
-            output = simpleOutput;
+        case "terminal":
+            output = terminalOutput;
             break;
         default:
-            output = terminalOutput;
+            output = simpleOutput;
     }
 
     if (typeof output.initialize === "function") {

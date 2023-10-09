@@ -1,7 +1,7 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
-import { checkPermissions } from "~/utils/checkPermissions";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext, Folder } from "~/types";
@@ -26,7 +26,10 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             slug: String!
             permissions: [FolderPermission]
 
-            # Tells us if the current user can manage permissions.
+            # Tells us if the current user can manage folder structure.
+            canManageStructure: Boolean
+
+            # Tells us if the current user can manage folder permissions.
             canManagePermissions: Boolean
 
             # Tells us if the folder contains non-inherited permissions.
@@ -84,7 +87,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         type FolderLevelPermissionsTargetsListResponse {
             data: [FolderLevelPermissionsTarget]
-            meta:  FolderLevelPermissionsTargetsListMeta
+            meta: FolderLevelPermissionsTargetsListMeta
             error: AcoError
         }
 
@@ -113,20 +116,23 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
                     folder.permissions
                 );
             },
+            canManageStructure: (folder, _, context) => {
+                return context.aco.folderLevelPermissions.canManageFolderStructure(folder);
+            },
             canManagePermissions: (folder, _, context) => {
-                return context.aco.folderLevelPermissions.canAccessFolder({ folder, rwd: "w" });
+                return context.aco.folderLevelPermissions.canManageFolderPermissions(folder);
             }
         },
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.get(id);
                 });
             },
             listFolders: async (_, args: any, context) => {
                 try {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const [entries, meta] = await context.aco.folder.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
@@ -135,8 +141,9 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             },
             listFolderLevelPermissionsTargets: async (_, args: any, context) => {
                 try {
-                    checkPermissions(context);
-                    const [entries, meta] = await context.aco.folder.listFolderLevelPermissionsTargets();
+                    ensureAuthentication(context);
+                    const [entries, meta] =
+                        await context.aco.folder.listFolderLevelPermissionsTargets();
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -146,19 +153,19 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         AcoMutation: {
             createFolder: async (_, { data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.create(data);
                 });
             },
             updateFolder: async (_, { id, data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.update(id, data);
                 });
             },
             deleteFolder: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.delete(id);
                 });
             }

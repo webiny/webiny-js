@@ -227,6 +227,22 @@ export class FolderLevelPermissions {
         return false;
     }
 
+    canManageFolderPermissions(folder: Folder) {
+        if (!this.canUseFolderLevelPermissions()) {
+            return false;
+        }
+
+        return this.canAccessFolder({ folder, rwd: "w" });
+    }
+
+    canManageFolderStructure(folder: Folder) {
+        if (!this.canUseFolderLevelPermissions()) {
+            return true;
+        }
+
+        return this.canAccessFolder({ folder, rwd: "w" });
+    }
+
     async canAccessFolderContent(params: CanAccessFolderParams) {
         if (!this.canUseFolderLevelPermissions()) {
             return true;
