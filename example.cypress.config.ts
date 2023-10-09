@@ -29,7 +29,6 @@ export default defineConfig({
         failOnSnapshotDiff: false
     },
     e2e: {
-        specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
         baseUrl: "{ADMIN_URL}"
     }
 });
