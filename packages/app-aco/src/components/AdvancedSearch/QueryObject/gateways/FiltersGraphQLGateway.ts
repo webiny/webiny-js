@@ -6,12 +6,14 @@ import {
     CreateFilterVariables,
     DeleteFilterResponse,
     DeleteFilterVariables,
+    GetFilterQueryVariables,
+    GetFilterResponse,
     ListFiltersQueryVariables,
     ListFiltersResponse,
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { BaseGateway, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
+import { IQueryObjectGateway, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -37,6 +39,17 @@ export const CREATE_FILTER = gql`
     mutation CreateFilter($data: FilterCreateInput!) {
         aco {
             createFilter(data: $data) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_FILTER = gql`
+    query GetFilter($id: String!) {
+        aco {
+            getFilter(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -77,11 +90,34 @@ export const DELETE_FILTER = gql`
     }
 `;
 
-export class FiltersGraphQLGateway implements BaseGateway {
+export class FiltersGraphQLGateway implements IQueryObjectGateway {
     private client: ApolloClient<any>;
 
     constructor(client: ApolloClient<any>) {
         this.client = client;
+    }
+
+    async getById(id: string): Promise<QueryObjectRaw> {
+        const { data: response } = await this.client.query<
+            GetFilterResponse,
+            GetFilterQueryVariables
+        >({
+            query: LIST_FILTERS,
+            variables: { id },
+            fetchPolicy: "network-only"
+        });
+
+        if (!response) {
+            throw new Error("Network error while fetching a filter.");
+        }
+
+        const { data, error } = response.aco.getFilter;
+
+        if (!data) {
+            throw new Error(error?.message || "Could not fetch filter.");
+        }
+
+        return data;
     }
 
     async list(modelId: string) {

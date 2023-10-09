@@ -56,7 +56,7 @@ export const Filters = () => {
             <AdvancedSearch
                 fields={fields}
                 modelId={model.modelId}
-                onSubmit={applyAdvancedSearch}
+                onApplyFilter={applyAdvancedSearch}
             />
         </BaseFilters>
     );

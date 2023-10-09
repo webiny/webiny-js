@@ -1,3 +1,3 @@
 export * from "./AdvancedSearch";
-export * from "./Chip";
+export * from "./SelectedFilter";
 export * from "./GraphQLInputMapper";

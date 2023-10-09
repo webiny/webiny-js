@@ -1,23 +1,15 @@
 import React from "react";
-
 import { Chips, Chip } from "@webiny/ui/Chips";
-
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
-
 import { CloseIcon, EditIcon } from "./SelectedFilter.styled";
 
 interface SelectedFilterProps {
-    queryObject: QueryObjectDTO | null;
+    queryObject: QueryObjectDTO;
     onEdit: () => void;
     onDelete: () => void;
-    show: boolean;
 }
 
 export const SelectedFilter = (props: SelectedFilterProps) => {
-    if (!props.queryObject || !props.show) {
-        return null;
-    }
-
     return (
         <Chips>
             <Chip

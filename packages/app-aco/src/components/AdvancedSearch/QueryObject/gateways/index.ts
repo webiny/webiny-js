@@ -1,2 +1,2 @@
-export * from "./BaseGateway";
+export * from "./IQueryObjectGateway";
 export * from "./FiltersGraphQLGateway";

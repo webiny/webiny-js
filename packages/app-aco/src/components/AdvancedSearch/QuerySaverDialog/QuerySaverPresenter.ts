@@ -1,17 +1,17 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 import {
-    Mode,
     QueryObject,
     QueryObjectDTO,
     QueryObjectMapper,
     QueryObjectRepository
-} from "../../QueryObject";
+} from "../QueryObject";
 
 interface IQuerySaverPresenter {
-    load: (callback: (viewModel: QuerySaverViewModel) => void) => void;
-    persistQueryObject: (queryObject: QueryObjectDTO, mode: Mode) => Promise<void>;
+    load: () => Promise<void>;
+    persistQueryObject: (queryObject: QueryObjectDTO, mode: string) => Promise<void>;
     setQueryObject: (queryObject: QueryObjectDTO) => void;
+    vm: QuerySaverViewModel;
 }
 
 export interface QuerySaverViewModel {
@@ -24,64 +24,50 @@ export class QuerySaverPresenter implements IQuerySaverPresenter {
     private queryObject: QuerySaverViewModel["queryObject"];
     private invalidFields: QuerySaverViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
-    private callback: ((viewModel: QuerySaverViewModel) => void) | undefined = undefined;
-    viewModel: QuerySaverViewModel;
 
     constructor(repository: QueryObjectRepository) {
         this.repository = repository;
         this.queryObject = QueryObjectMapper.toDTO(
             QueryObject.createEmpty(this.repository.modelId)
         );
-        this.viewModel = {
-            queryObject: this.queryObject,
-            invalidFields: this.invalidFields
-        };
         makeAutoObservable(this);
     }
 
-    load(callback: (viewModel: QuerySaverViewModel) => void) {
-        this.callback = callback;
-        this.updateViewModel();
-    }
-
-    updateViewModel() {
-        this.viewModel = {
+    get vm() {
+        return {
             queryObject: this.queryObject,
             invalidFields: this.invalidFields
         };
-        this.callback && this.callback(this.viewModel);
+    }
+
+    async load() {
+        //
     }
 
     updateQueryObject(queryObject: QueryObjectDTO | null) {
         if (queryObject) {
-            this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(queryObject));
+            this.queryObject = queryObject;
         } else {
             this.queryObject = QueryObjectMapper.toDTO(
                 QueryObject.createEmpty(this.repository.modelId)
             );
         }
-        this.updateViewModel();
     }
 
     setQueryObject(queryObject: QueryObjectDTO) {
         this.queryObject = queryObject;
-        this.updateViewModel();
 
         if (this.formWasSubmitted) {
             this.validateQueryObject(queryObject);
         }
     }
 
-    persistQueryObject = async (queryObject: QueryObjectDTO, mode: Mode) => {
-        if (mode === Mode.UPDATE) {
+    persistQueryObject = async (queryObject: QueryObjectDTO, mode: string) => {
+        if (mode === "UPDATE") {
             await this.repository.updateFilter(queryObject);
         } else {
             await this.repository.createFilter(queryObject);
         }
-
-        runInAction(() => {
-            this.updateViewModel();
-        });
     };
 
     async onSubmit(queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) {
@@ -108,7 +94,6 @@ export class QuerySaverPresenter implements IQuerySaverPresenter {
             this.invalidFields = {};
         }
 
-        this.updateViewModel();
         return validation;
     }
 }

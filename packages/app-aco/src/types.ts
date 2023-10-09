@@ -179,6 +179,19 @@ export interface AcoApp {
     getFields: () => AcoModelField[];
 }
 
+export interface GetFilterResponse {
+    aco: {
+        getFilter: {
+            data: QueryObjectRaw | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface GetFilterQueryVariables {
+    id: string;
+}
+
 export interface ListFiltersQueryVariables {
     modelId: string;
     limit: number;

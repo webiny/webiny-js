@@ -1,25 +1,44 @@
 import { makeAutoObservable, runInAction } from "mobx";
 
 import { QueryObjectMapper, QueryObjectDTO } from "./domains";
-import { BaseGateway } from "./gateways";
+import { IQueryObjectGateway } from "./gateways";
+
+const instances: Map<string, QueryObjectRepository> = new Map();
 
 export class QueryObjectRepository {
-    private gateway: BaseGateway;
-    private static instance: QueryObjectRepository;
-    modelId: string;
+    private readonly gateway: IQueryObjectGateway;
+    readonly modelId: string;
     filters: QueryObjectDTO[] = [];
 
-    constructor(gateway: BaseGateway, modelId: string) {
+    constructor(gateway: IQueryObjectGateway, modelId: string) {
         this.gateway = gateway;
         this.modelId = modelId;
         makeAutoObservable(this);
     }
 
-    static getInstance(gateway: BaseGateway, modelId: string) {
-        if (!QueryObjectRepository.instance) {
-            QueryObjectRepository.instance = new QueryObjectRepository(gateway, modelId);
+    static getInstance(gateway: IQueryObjectGateway, modelId: string) {
+        if (!instances.has(modelId)) {
+            instances.set(modelId, new QueryObjectRepository(gateway, modelId));
         }
-        return QueryObjectRepository.instance;
+        return instances.get(modelId) as QueryObjectRepository;
+    }
+
+    static clearInstances() {
+        instances.clear();
+    }
+
+    async getFilterById(id: string) {
+        const filter = this.filters.find(filter => filter.id === id);
+        if (filter) {
+            return filter;
+        }
+
+        try {
+            const rawFilter = await this.gateway.getById(id);
+            return QueryObjectMapper.toDTO(rawFilter);
+        } catch (e) {
+            throw new Error(e.message);
+        }
     }
 
     async listFilters() {
