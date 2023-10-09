@@ -212,7 +212,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: dev/cypress-tests
@@ -468,7 +468,7 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: dev/cypress-tests
