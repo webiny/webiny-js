@@ -692,4 +692,119 @@ describe("content entry picked validation", () => {
             }
         });
     });
+    it("should skip validation on update and create from", async () => {
+        const { plugins, model } = createValidationStructure({
+            singularApiName: "UpdateTesting",
+            fields: [createTextField({})]
+        });
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [createResponse] = await manager.create({
+            data: {},
+            options: {
+                skipValidators: ["required"]
+            }
+        });
+        expect(createResponse).toMatchObject({
+            data: {
+                create: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const { id, entryId } = createResponse.data.create.data;
+        const [updateResponse] = await manager.update({
+            revision: id,
+            data: {},
+            options: {
+                skipValidators: ["required"]
+            }
+        });
+        expect(updateResponse).toMatchObject({
+            data: {
+                update: {
+                    data: {
+                        id
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [createFromResponse] = await manager.createRevision({
+            revision: id,
+            data: {},
+            options: {
+                skipValidators: ["required"]
+            }
+        });
+        expect(createFromResponse).toMatchObject({
+            data: {
+                createRevision: {
+                    data: {
+                        id: `${entryId}#0002`
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should execute validation on publish and return an error", async () => {
+        const { plugins, model } = createValidationStructure({
+            singularApiName: "UpdateTesting",
+            fields: [createTextField({})]
+        });
+        const manager = useValidationManageHandler({
+            path: "manage/en-US",
+            plugins,
+            model
+        });
+        const [createResponse] = await manager.create({
+            data: {},
+            options: {
+                skipValidators: ["required"]
+            }
+        });
+        expect(createResponse).toMatchObject({
+            data: {
+                create: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [publishResponse] = await manager.publish({
+            revision: createResponse.data.create.data.id
+        });
+        expect(publishResponse).toMatchObject({
+            data: {
+                publish: {
+                    data: null,
+                    error: {
+                        message: "Validation failed.",
+                        code: "VALIDATION_FAILED",
+                        data: [
+                            {
+                                error: "Value is required.",
+                                fieldId: "title",
+                                id: "title",
+                                parents: [],
+                                storageId: "text@title"
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+    });
 });

@@ -56,7 +56,7 @@ export const createMutation = (model: Pick<CmsApiModel, "singularApiName">) => {
 
 export const createRevisionMutation = (model: Pick<CmsApiModel, "singularApiName">) => {
     return /* GraphQL */ `
-        mutation CreateProductFrom($revision: ID!, $options: CreateFromCmsEntryOptionsInput) {
+        mutation CreateProductFrom($revision: ID!, $options: CreateRevisionCmsEntryOptionsInput) {
             createRevision: create${model.singularApiName}From(revision: $revision, options: $options) {
                 data {
                     ${fields}
@@ -85,6 +85,19 @@ export const deleteMutation = (model: Pick<CmsApiModel, "singularApiName">) => {
         mutation DeleteProduct($revision: ID!) {
             delete: delete${model.singularApiName}(revision: $revision) {
                 data
+                ${ERROR}
+            }
+        }
+    `;
+};
+
+export const publishMutation = (model: Pick<CmsApiModel, "singularApiName">) => {
+    return /* GraphQL */ `
+        mutation UpdateProduct($revision: ID!) {
+            publish: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fields}
+                }
                 ${ERROR}
             }
         }

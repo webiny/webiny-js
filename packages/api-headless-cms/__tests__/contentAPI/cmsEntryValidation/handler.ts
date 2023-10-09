@@ -4,7 +4,8 @@ import {
     validateMutation,
     createMutation,
     updateMutation,
-    createRevisionMutation
+    createRevisionMutation,
+    publishMutation
 } from "./handler.graphql";
 
 interface Params extends Partial<GraphQLHandlerParams> {
@@ -50,6 +51,15 @@ export const useValidationManageHandler = (params: Params) => {
             return await contentHandler.invoke({
                 body: {
                     query: updateMutation(params.model),
+                    variables
+                },
+                headers
+            });
+        },
+        async publish(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: publishMutation(params.model),
                     variables
                 },
                 headers
