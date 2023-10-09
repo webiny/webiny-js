@@ -60,8 +60,8 @@ import {
     UpdateCmsEntryInput
 } from "~/types";
 import {
-    validateModelEntryDataOrThrow,
-    validateModelEntryData
+    validateModelEntryData,
+    validateModelEntryDataOrThrow
 } from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
@@ -658,13 +658,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const initialInput = mapAndCleanCreateInputData(model, inputData);
 
-        if (options?.validate !== false) {
-            await validateModelEntryDataOrThrow({
-                context,
-                model,
-                data: initialInput
-            });
-        }
+        await validateModelEntryDataOrThrow({
+            context,
+            model,
+            data: initialInput,
+            skipValidators: options?.skipValidators
+        });
 
         const input = await referenceFieldsMapping({
             context,
@@ -792,14 +791,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...input
         };
 
-        if (options?.validate !== false) {
-            await validateModelEntryDataOrThrow({
-                context,
-                model,
-                data: initialValues,
-                entry: originalEntry
-            });
-        }
+        await validateModelEntryDataOrThrow({
+            context,
+            model,
+            data: initialValues,
+            entry: originalEntry,
+            skipValidators: options?.skipValidators
+        });
 
         const values = await referenceFieldsMapping({
             context,
@@ -916,14 +914,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        if (options?.validate !== false) {
-            await validateModelEntryDataOrThrow({
-                context,
-                model,
-                data: input,
-                entry: originalEntry
-            });
-        }
+        await validateModelEntryDataOrThrow({
+            context,
+            model,
+            data: input,
+            entry: originalEntry,
+            skipValidators: options?.skipValidators
+        });
 
         await entriesPermissions.ensure({ owns: originalEntry.createdBy });
 

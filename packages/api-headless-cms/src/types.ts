@@ -343,6 +343,9 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
  * @category ModelField
  * @category FieldValidation
  */
+export interface CmsModelFieldValidatorPluginValidateCb {
+    (params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+}
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
      * A plugin type.
@@ -359,7 +362,7 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
         /**
          * Validation method.
          */
-        validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+        validate: CmsModelFieldValidatorPluginValidateCb;
     };
 }
 
@@ -2247,7 +2250,7 @@ export interface CreateCmsEntryInput {
 }
 
 export interface CreateCmsEntryOptionsInput {
-    validate?: boolean;
+    skipValidators?: string[];
 }
 
 /**
@@ -2259,7 +2262,7 @@ export interface CreateFromCmsEntryInput {
 }
 
 export interface CreateRevisionCmsEntryOptionsInput {
-    validate?: boolean;
+    skipValidators?: string[];
 }
 
 /**
@@ -2274,7 +2277,7 @@ export interface UpdateCmsEntryInput {
 }
 
 export interface UpdateCmsEntryOptionsInput {
-    validate?: boolean;
+    skipValidators?: string[];
 }
 
 /**

@@ -9,6 +9,7 @@ import {
     CmsModelFieldValidatorValidateParams
 } from "~/types";
 import WebinyError from "@webiny/error";
+import camelCase from "lodash/camelCase";
 
 type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
@@ -76,6 +77,15 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
     }
     return "Value sent does not match any of the available predefined values.";
 };
+
+const getFieldValidation = (
+    listValidation?: CmsModelFieldValidation[]
+): CmsModelFieldValidation[] => {
+    if (!listValidation?.length) {
+        return [];
+    }
+    return listValidation.filter(item => item.name !== "dynamicZone");
+};
 /**
  * When multiple values is selected we must run validations on the array containing the values
  * And then on each value in the array
@@ -85,15 +95,19 @@ const runFieldMultipleValuesValidations = async (
 ): Promise<string | null> => {
     const { field, data } = params;
     const values = data?.[field.fieldId];
-    const valuesError = await validateValue(params, field.listValidation || [], values);
+    const valuesError = await validateValue(
+        params,
+        getFieldValidation(field.listValidation),
+        values
+    );
     if (valuesError) {
         return valuesError;
     }
-    if (!values) {
+    if (values === null || values === undefined) {
         return null;
     }
     for (const value of values) {
-        const valueError = await validateValue(params, field.validation || [], value);
+        const valueError = await validateValue(params, getFieldValidation(field.validation), value);
         if (valueError) {
             return valueError;
         }
@@ -132,25 +146,47 @@ export interface ValidateModelEntryDataParams {
     model: CmsModel;
     data: InputData;
     entry?: CmsEntry;
+    skipValidators?: string[];
 }
 
 export const validateModelEntryData = async (params: ValidateModelEntryDataParams) => {
-    const { context, model, entry, data } = params;
+    const { context, model, entry, data, skipValidators } = params;
+
+    const isValidatorSkipped = (plugin: CmsModelFieldValidatorPlugin) => {
+        if (!skipValidators) {
+            return false;
+        }
+        return skipValidators.includes(camelCase(plugin.validator.name));
+    };
+
+    const skippedValidators = new Set<string>();
+
     /**
      * To later simplify searching for the validations we map them to a name.
      * @see CmsModelFieldValidatorPlugin.validator.validate
      */
-    const validatorList: PluginValidationList = context.plugins
-        .byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator")
-        .reduce((acc, plugin) => {
-            const name = plugin.validator.name;
-            if (!acc[name]) {
-                acc[name] = [];
-            }
-            acc[name].push(plugin.validator.validate);
-
-            return acc;
-        }, {} as PluginValidationList);
+    const validatorList: PluginValidationList = {};
+    const validators = context.plugins.byType<CmsModelFieldValidatorPlugin>(
+        "cms-model-field-validator"
+    );
+    for (const plugin of validators) {
+        const name = plugin.validator.name;
+        if (!validatorList[name]) {
+            validatorList[name] = [];
+        }
+        const isSkipped = isValidatorSkipped(plugin);
+        if (isSkipped) {
+            skippedValidators.add(name);
+        }
+        validatorList[name].push(isSkipped ? async () => true : plugin.validator.validate);
+    }
+    /**
+     * No point in continuing if all validators are skipped.
+     */
+    const keys = Object.keys(validatorList);
+    if (keys.length === skippedValidators.size) {
+        return [];
+    }
 
     return await validate({
         validatorList,
