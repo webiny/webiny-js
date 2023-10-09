@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import { gqlClient } from "../utils";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -26,12 +26,6 @@ Cypress.Commands.add("pbDeleteAllBlocks", () => {
     // Use pbListPageBlocks to get an array of page blocks
     cy.pbListPageBlocks().then(pageBlocks => {
         cy.login().then(user => {
-            const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-                headers: {
-                    authorization: `Bearer ${user.idToken.jwtToken}`
-                }
-            });
-
             // Use Promise.all to map and execute the deletePageBlock mutation for each page block
             return Promise.all(
                 pageBlocks.map(pageBlock => {
@@ -39,8 +33,12 @@ Cypress.Commands.add("pbDeleteAllBlocks", () => {
                         id: pageBlock.id // Assuming the page block object has an 'id' property
                     };
 
-                    return client
-                        .request(MUTATION, variables)
+                    return gqlClient
+                        .request({
+                            query: MUTATION,
+                            variables,
+                            authToken: user.idToken.jwtToken
+                        })
                         .then(response => response.pageBuilder.deletePageBlock);
                 })
             );
