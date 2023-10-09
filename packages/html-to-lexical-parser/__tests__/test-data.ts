@@ -16,3 +16,6 @@ export const bulletListHtml = `<ul><li>list item 1</li><li>list item 2</li></ul>
 export const numberedListHtml = `<ol><li>list item 1</li><li>list item 2</li></ol>`;
 export const linkHtml = `<p><a href="https://webiny.com" target="_blank" rel="noopener noreferrer">My webiny link</a></p>`;
 export const quoteHtml = `<blockquote>My quote block</blockquote>`;
+export const codeHtml = `<code>Text code formatting</code>`;
+
+export const imageHtml = `<img src="https://d1mjtaoiepp9z3.cloudfront.net/files/8lf86ndrt-img.svg?width=2500" alt="webiny image">`;

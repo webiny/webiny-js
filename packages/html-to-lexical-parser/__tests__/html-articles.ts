@@ -47,9 +47,8 @@ export const volvoArticle = `<article data-c="article" class="_2bcH0">
                     <figure data-c="inline-image" class="_3kWNL _2YlTE">
                         <button type="button" aria-label="Open Gallery" class="_2bgbL">
                             <div style="padding-bottom: 56.22857142857143%;" class="_3Xz97"><img
-                                    src="https://www.motortrend.com/uploads/2023/06/00-2025-volvo-ex30-front-three-quarter.jpg?fit=around%7C875:492"
-                                    alt="00 2025 volvo ex30 front three quarter" class="_36kQT _3D5f0"
-                                    pinger-seen="true"></div>
+                                    src="https://d1mjtaoiepp9z3.cloudfront.net/files/8lf86ndrt-img.svg?width=2500"
+                                    alt="webiny image"></div>
                             <span class="_1gT27"><img
                                     src="data:image/svg+xml,%3csvg fill='none' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath clip-rule='evenodd' d='m8 2h12c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2h-12c-1.1 0-2-.9-2-2v-12c0-1.1.9-2 2-2zm12 14v-12h-12v12zm-8.5-4.33 1.69 2.26 2.48-3.1 3.33 4.17h-10zm-9.5 8.33v-14h2v14h14v2h-14c-1.1 0-2-.9-2-2z' fill='%23fff' fill-rule='evenodd'/%3e%3c/svg%3e"
                                     alt="" width="24" height="24" class="_1ykV2" pinger-seen="true"><span

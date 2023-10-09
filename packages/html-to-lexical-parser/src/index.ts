@@ -53,8 +53,8 @@ export const createHtmlToLexicalParser = (config: ParserConfigurationOptions = {
 
                 // Convert to lexical node objects that can be stored in db.
                 const lexicalNodes = $generateNodesFromDOM(editor, dom.window.document)
-                    .map(textNodeNormalizer)
-                    .map(customNodeMapper);
+                    .map(node => textNodeNormalizer(node))
+                    .map(node => customNodeMapper(node, editor));
 
                 // Select the root
                 $getRoot().select();

@@ -1,6 +1,6 @@
-import { CreateEditorArgs, LexicalNode } from "lexical";
+import { CreateEditorArgs, LexicalEditor, LexicalNode } from "lexical";
 
-export type NodeMapper = (node: LexicalNode) => LexicalNode;
+export type NodeMapper = (node: LexicalNode, editor?: LexicalEditor) => LexicalNode;
 
 export interface ParserConfigurationOptions {
     editorConfig?: CreateEditorArgs;

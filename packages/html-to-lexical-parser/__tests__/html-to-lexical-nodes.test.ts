@@ -5,14 +5,16 @@
 import {
     boldItalicUnderlineFormatHtml,
     bulletListHtml,
+    codeHtml,
     headingH1Html,
     headingH4Html,
     htmlWithNotSupportedHtmlTags,
+    imageHtml,
     linkHtml,
     numberedListHtml,
     paragraphHtmlTag,
     quoteHtml
-} from "./data";
+} from "./test-data";
 import { createHtmlToLexicalParser } from "../src/index";
 
 const parser = createHtmlToLexicalParser();
@@ -373,7 +375,18 @@ it("should not generate paragraph and link node", () => {
     });
 });
 
-it("should not generate image node", () => {});
+it("should not generate image node", () => {
+    expect(parser(imageHtml)).toMatchObject({
+        root: {
+            children: [],
+            direction: null,
+            format: "",
+            indent: 0,
+            type: "root",
+            version: 1
+        }
+    });
+});
 
 it("should generate quote node", () => {
     expect(parser(quoteHtml)).toMatchObject({
@@ -409,4 +422,35 @@ it("should generate quote node", () => {
     });
 });
 
-it("should generate code node", () => {});
+it("should generate code node", () => {
+    expect(parser(codeHtml)).toMatchObject({
+        root: {
+            children: [
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 16, // lexical number for code format
+                            mode: "normal",
+                            style: "",
+                            text: "Text code formatting",
+                            type: "text",
+                            version: 1
+                        }
+                    ],
+                    direction: null,
+                    format: "",
+                    indent: 0,
+                    type: "paragraph-element",
+                    version: 1,
+                    styles: []
+                }
+            ],
+            direction: null,
+            format: "",
+            indent: 0,
+            type: "root",
+            version: 1
+        }
+    });
+});
