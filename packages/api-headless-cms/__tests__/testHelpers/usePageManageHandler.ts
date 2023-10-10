@@ -25,6 +25,27 @@ const pageFields = `
                     nestedObjectNestedTitle
                 }
             }
+            dynamicZone {
+                __typename
+                ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
+                    authors {
+                        id
+                        modelId
+                    }
+                }
+            }
+            _templateId
+            __typename
+        }
+        ...on ${singularPageApiName}_Content_Author {
+            author {
+                id
+                modelId
+            }
+            authors {
+                id
+                modelId
+            }
             _templateId
             dynamicZone {
                 __typename
