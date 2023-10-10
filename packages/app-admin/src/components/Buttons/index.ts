@@ -1,2 +1,2 @@
-export { Buttons } from "./Buttons";
+export { Buttons, ButtonContainer } from "./Buttons";
 export { useButtons } from "./useButtons";

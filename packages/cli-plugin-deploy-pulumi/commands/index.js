@@ -315,24 +315,6 @@ module.exports = [
                     process.exit(0);
                 }
             );
-
-            yargs.command(
-                "get-migration-status",
-                `Get data migrations Lambda status.`,
-                () => {
-                    yargs.example("$0 get-migration-status --env dev");
-
-                    yargs.option("env", {
-                        describe: `Environment`,
-                        type: "string",
-                        required: true
-                    });
-                },
-                async argv => {
-                    await require("./printMigrationStatus")(argv, context);
-                    process.exit(0);
-                }
-            );
         }
     }
 ];

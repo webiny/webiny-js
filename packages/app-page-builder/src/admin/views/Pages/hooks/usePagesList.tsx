@@ -1,73 +1,72 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import debounce from "lodash/debounce";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
-import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry } from "~/types";
+import debounce from "lodash/debounce";
+import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
+import { createSort, useAcoList } from "@webiny/app-aco";
+import { PbPageDataItem } from "~/types";
+import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, createSort } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
-import { ListMeta } from "@webiny/app-aco/types";
-import {
-    transformCmsContentEntriesToRecordEntries,
-    transformFolderItemsToFolderEntries
-} from "~/utils/acoRecordTransform";
-import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
+import { PageEntry, TableProps, isPageEntry } from "~/admin/components/Table/Table";
 
 interface UpdateSearchCallableParams {
     search: string;
     query: URLSearchParams;
 }
+
 interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-interface UseContentEntries {
-    folders: FolderEntry[];
-    hideFilters: () => void;
+interface PagesListProviderContext {
+    folders: FolderItem[];
     isListLoading: boolean;
     isListLoadingMore: boolean;
     isSearch: boolean;
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    records: RecordEntry[];
+    onSelectRow: TableProps["onSelectRow"];
+    records: SearchRecordItem<PbPageDataItem>[];
     search: string;
+    selected: PbPageDataItem[];
     setSearch: (value: string) => void;
+    setSelected: (data: PbPageDataItem[]) => void;
     setSorting: OnSortingChange;
-    showFilters: () => void;
-    showingFilters: boolean;
     sorting: Sorting;
-    setFilters: (data: Record<string, any>) => void;
 }
 
-export const useContentEntriesList = (): UseContentEntries => {
+export const PagesListContext = React.createContext<PagesListProviderContext | undefined>(
+    undefined
+);
+
+interface PagesListProviderProps {
+    children: React.ReactNode;
+}
+
+export const PagesListProvider = ({ children }: PagesListProviderProps) => {
     const { history } = useRouter();
-    const { contentModel } = useContentEntries();
 
     const {
-        folders: initialFolders,
+        folders,
         isListLoading,
         isListLoadingMore,
         isSearch,
         listMoreRecords,
         listTitle,
         meta,
-        records: initialRecords,
+        records,
+        selected,
         setSearchQuery,
-        setListSort,
-        setFilters,
-        showFilters,
-        hideFilters,
-        showingFilters
-    } = useAcoList();
+        setSelected,
+        setListSort
+    } = useAcoList<PbPageDataItem>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
-    const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
 
-    // Search-related logics: update `searchQuery` state and querystring
+    // Search-related logics: update `listParams` and update querystring
     const updateSearch = useCallback(
         debounce<UpdateSearchCallable>(({ search, query }) => {
             const searchQuery = query.get("search");
@@ -86,10 +85,10 @@ export const useContentEntriesList = (): UseContentEntries => {
                     // Otherwise, add it to `querystring`
                     query.set("search", search);
                 }
-                history.push(`${baseUrl}?${query.toString()}`);
+                history.push(`${PAGE_BUILDER_LIST_LINK}?${query.toString()}`);
             }
         }, 500),
-        [baseUrl]
+        []
     );
 
     // Set "search" from search "query" on page load.
@@ -102,15 +101,12 @@ export const useContentEntriesList = (): UseContentEntries => {
         updateSearch({ search, query });
     }, [search]);
 
-    const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(
-            initialRecords as unknown as CmsContentEntry[]
-        );
-    }, [initialRecords]);
-
-    const folders = useMemo(() => {
-        return transformFolderItemsToFolderEntries(initialFolders);
-    }, [initialFolders]);
+    // Handle rows selection.
+    const onSelectRow: TableProps["onSelectRow"] = rows => {
+        const recordEntries = rows.filter(isPageEntry) as PageEntry[];
+        const pageEntries = recordEntries.map(record => record.original);
+        setSelected(pageEntries);
+    };
 
     useEffect(() => {
         if (!sorting?.length) {
@@ -123,22 +119,33 @@ export const useContentEntriesList = (): UseContentEntries => {
         setListSort(sort);
     }, [sorting]);
 
-    return {
+    const context: PagesListProviderContext = {
         folders,
         isListLoading,
         isListLoadingMore,
         isSearch,
-        listTitle,
         listMoreRecords,
+        listTitle,
         meta,
+        onSelectRow,
         records,
         search,
+        selected,
         setSearch,
-        sorting,
+        setSelected,
         setSorting,
-        showingFilters,
-        showFilters,
-        hideFilters,
-        setFilters
+        sorting
     };
+
+    return <PagesListContext.Provider value={context}>{children}</PagesListContext.Provider>;
+};
+
+export const usePagesList = (): PagesListProviderContext => {
+    const context = React.useContext(PagesListContext);
+
+    if (!context) {
+        throw new Error("usePagesList must be used within a PagesListContext");
+    }
+
+    return context;
 };

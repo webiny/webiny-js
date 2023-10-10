@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import omit from "lodash/omit";
@@ -9,9 +9,6 @@ import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
-import { Aliases } from "./components/Aliases";
-import { Name } from "./components/Name";
-import { Tags } from "./components/Tags";
 import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
 import { PreviewMeta } from "./components/PreviewMeta";
@@ -27,6 +24,8 @@ import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 import { useFileDetails } from "~/hooks/useFileDetails";
 import { FileProvider } from "~/contexts/FileProvider";
+import { prepareFormData } from "@webiny/app-headless-cms-common";
+import { CmsModelField } from "@webiny/app-headless-cms/types";
 
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
@@ -51,20 +50,37 @@ interface FileDetailsInnerProps {
     onClose: () => void;
 }
 
+const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => {
+    const output = omit(data, ["createdBy", "createdOn", "src"]);
+    if (fields.length === 0) {
+        return output;
+    }
+    return {
+        ...output,
+        extensions: prepareFormData(output.extensions, fields)
+    };
+};
+
 const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const fileModel = useFileModel();
     const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
+    const { fileDetails } = useFileManagerViewConfig();
 
-    const hasExtensions = useMemo(() => {
-        return fileModel.fields.find(field => field.fieldId === "extensions");
+    const extensionFields = useMemo(() => {
+        const fields = fileModel.fields.find(field => field.fieldId === "extensions");
+        if (!fields?.settings?.fields) {
+            return [];
+        }
+        return fields?.settings?.fields || [];
     }, [fileModel]);
 
     const onSubmit: FormOnSubmit<FileItem> = async ({ id, ...data }) => {
         setLoading(true);
-        await updateFile(id, omit(data, ["createdBy", "createdOn", "src"]));
+        const fileData = prepareFileData(data, extensionFields);
+        await updateFile(id, fileData);
         setLoading(false);
         showSnackbar("File updated successfully!");
         close();
@@ -89,18 +105,14 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
                                 <Tabs>
                                     <Tab label={"Basic Details"}>
                                         <Grid>
-                                            <Cell span={12}>
-                                                <Name />
-                                            </Cell>
-                                            <Cell span={12}>
-                                                <Tags />
-                                            </Cell>
-                                            <Cell span={12}>
-                                                <Aliases />
-                                            </Cell>
+                                            {fileDetails.fields.map(field => (
+                                                <Cell span={12} key={field.name}>
+                                                    {field.element}
+                                                </Cell>
+                                            ))}
                                         </Grid>
                                     </Tab>
-                                    {hasExtensions ? (
+                                    {extensionFields.length > 0 ? (
                                         <Tab label={"Advanced Details"}>
                                             <Extensions model={fileModel} />
                                         </Tab>
