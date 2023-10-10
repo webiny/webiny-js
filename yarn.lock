@@ -12867,6 +12867,7 @@ __metadata:
     "@types/ungap__structured-clone": ^0.3.0
     "@ungap/structured-clone": ^1.2.0
     "@webiny/api": 0.0.0
+    "@webiny/api-admin-users": 0.0.0
     "@webiny/api-authentication": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -12886,6 +12887,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
+    "@webiny/wcp": 0.0.0
     graphql: ^15.8.0
     lodash: ^4.4.2
     prettier: ^2.8.3
