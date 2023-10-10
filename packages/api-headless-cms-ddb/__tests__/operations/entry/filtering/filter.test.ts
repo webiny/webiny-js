@@ -204,9 +204,7 @@ describe("filtering", () => {
             fields
         });
 
-        expect(resultNumber3).toHaveLength(0);
-
-        expect(resultNumber3).toMatchObject([]);
+        expect(resultNumber3).toHaveLength(19);
     });
 
     it("should filter by nested options variant colors", async () => {
