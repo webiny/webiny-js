@@ -4,7 +4,7 @@ import { QueryObject, QueryObjectDTO } from "../QueryObject";
 
 interface IQuerySaverDialogPresenter {
     load: (queryObject: QueryObjectDTO) => void;
-    setQueryObject: (queryObject: QueryObjectDTO) => void;
+    setQueryObject: (queryObject: QuerySaverDialogFormData) => void;
     onSubmit: (
         onSuccess?: (queryObject: QueryObjectDTO) => void,
         onError?: (
@@ -12,6 +12,11 @@ interface IQuerySaverDialogPresenter {
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
     ) => Promise<void>;
+}
+
+export interface QuerySaverDialogFormData {
+    name: string;
+    description: string;
 }
 
 export interface QuerySaverDialogViewModel {
@@ -35,16 +40,22 @@ export class QuerySaverDialogPresenter implements IQuerySaverDialogPresenter {
 
     get vm() {
         return {
-            queryObject: this.queryObject,
-            invalidFields: this.invalidFields
+            invalidFields: this.invalidFields,
+            data: {
+                name: this.queryObject.name,
+                description: this.queryObject.description
+            }
         };
     }
 
-    setQueryObject(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
+    setQueryObject(data: QuerySaverDialogFormData) {
+        this.queryObject = {
+            ...this.queryObject,
+            ...data
+        };
 
         if (this.formWasSubmitted) {
-            this.validateQueryObject(queryObject);
+            this.validateQueryObject(this.queryObject);
         }
     }
 

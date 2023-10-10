@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 
 import { Form, FormOnSubmit } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
@@ -6,7 +7,7 @@ import { DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 
-import { QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
+import { QuerySaverDialogFormData, QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
 import { QueryObjectDTO } from "../QueryObject";
 
@@ -19,7 +20,7 @@ interface QuerySaverDialogProps {
     queryObject: QueryObjectDTO;
 }
 
-export const QuerySaverDialog = ({ queryObject, ...props }: QuerySaverDialogProps) => {
+export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverDialogProps) => {
     const [presenter] = useState<QuerySaverDialogPresenter>(
         new QuerySaverDialogPresenter(queryObject)
     );
@@ -28,11 +29,11 @@ export const QuerySaverDialog = ({ queryObject, ...props }: QuerySaverDialogProp
         presenter.load(queryObject);
     }, [queryObject]);
 
-    const onChange = (data: QueryObjectDTO) => {
+    const onChange = (data: QuerySaverDialogFormData) => {
         presenter.setQueryObject(data);
     };
 
-    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = () => {
+    const onFormSubmit: FormOnSubmit<QuerySaverDialogFormData> = () => {
         presenter.onSubmit(queryObject => {
             props.onSubmit(queryObject);
         });
@@ -42,7 +43,7 @@ export const QuerySaverDialog = ({ queryObject, ...props }: QuerySaverDialogProp
         <DialogContainer open={props.open} onClose={props.onClose}>
             {props.open ? (
                 <Form
-                    data={presenter.vm.queryObject}
+                    data={presenter.vm.data}
                     onChange={onChange}
                     onSubmit={onFormSubmit}
                     invalidFields={presenter.vm.invalidFields}
@@ -76,4 +77,4 @@ export const QuerySaverDialog = ({ queryObject, ...props }: QuerySaverDialogProp
             ) : null}
         </DialogContainer>
     );
-};
+});
