@@ -166,12 +166,13 @@ const PageTemplatesDataList = ({
                     <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
                 </ButtonSecondary>
                 <OptionsMenu
+                    data-testid={"pb-templates-list-options-btn"}
                     items={[
                         {
                             label: "Import Templates",
                             icon: <FileUploadIcon />,
                             onClick: showImportDialog,
-                            "data-testid": "import-template-button"
+                            "data-testid": "pb-templates-list-options-import-template-btn"
                         }
                     ]}
                 />
