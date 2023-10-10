@@ -102,7 +102,7 @@ const permissionsField = () =>
                             {
                                 label: "Owner",
                                 value: "owner"
-                            },
+                            }
                             // TODO: Uncomment when we implement "remove" permission.
                             // {
                             //     label: "Remove",

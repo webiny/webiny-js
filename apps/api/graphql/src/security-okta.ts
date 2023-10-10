@@ -88,7 +88,7 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
          */
         getGroupSlug(context) {
             return context.security.getIdentity().group;
-        },
+        }
         // getTeamSlug()
     }),
 

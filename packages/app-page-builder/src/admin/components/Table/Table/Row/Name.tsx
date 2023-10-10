@@ -35,7 +35,12 @@ interface PageProps extends Props {
     onClick: () => void;
 }
 
-export const FolderName = ({ name, id, hasNonInheritedPermissions, canManagePermissions }: Props): ReactElement => {
+export const FolderName = ({
+    name,
+    id,
+    hasNonInheritedPermissions,
+    canManagePermissions
+}: Props): ReactElement => {
     const { navigateToFolder } = useNavigateFolder();
 
     let icon = <Folder />;
@@ -45,9 +50,7 @@ export const FolderName = ({ name, id, hasNonInheritedPermissions, canManagePerm
 
     return (
         <Title onClick={() => navigateToFolder(id)}>
-            <Icon>
-                {icon}
-            </Icon>
+            <Icon>{icon}</Icon>
             <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );

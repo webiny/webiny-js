@@ -4,7 +4,7 @@ import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
-import {TenancyContext} from "@webiny/api-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;

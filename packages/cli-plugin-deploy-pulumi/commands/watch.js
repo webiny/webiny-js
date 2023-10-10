@@ -144,7 +144,7 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output ;
+    let output;
 
     // TODO: deprecate browser/terminal options with 5.40.0 release.
     switch (inputs.output) {

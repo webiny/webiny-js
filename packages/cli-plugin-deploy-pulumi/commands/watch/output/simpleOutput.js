@@ -101,7 +101,9 @@ module.exports = {
             if (message.includes("Update complete.")) {
                 stopDeploying();
                 hiddenDeploymentLogs = [];
-                deployment = green("‣ " + getDeployDurationInSeconds() + "s ‣ Deployment successful.");
+                deployment = green(
+                    "‣ " + getDeployDurationInSeconds() + "s ‣ Deployment successful."
+                );
                 return;
             }
 

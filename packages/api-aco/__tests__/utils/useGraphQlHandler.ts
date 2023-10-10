@@ -49,7 +49,7 @@ import {
 } from "~tests/graphql/file";
 import { createWcpContext } from "@webiny/api-wcp";
 import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
-import {AdminUsersStorageOperations} from "@webiny/api-admin-users/types";
+import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -91,7 +91,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
             createAdminUsersApp({
-                storageOperations:adminUsersStorage.storageOperations
+                storageOperations: adminUsersStorage.storageOperations
             }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations

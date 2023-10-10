@@ -40,7 +40,15 @@ export interface FoldersApiContext {
     createFolder: (type: string, folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (
         type: string,
-        folder: Omit<FolderItem, "type" | "canManagePermissions" | "hasNonInheritedPermissions" | "createdOn" | "createdBy" | "savedOn">
+        folder: Omit<
+            FolderItem,
+            | "type"
+            | "canManagePermissions"
+            | "hasNonInheritedPermissions"
+            | "createdOn"
+            | "createdBy"
+            | "savedOn"
+        >
     ) => Promise<FolderItem>;
 
     deleteFolder(type: string, id: string): Promise<true>;

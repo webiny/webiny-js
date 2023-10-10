@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
-import { FolderDialogDelete, FolderDialogUpdate, FolderDialogManagePermissions } from "~/components";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "~/components";
 
 import { Folder } from "~/components/FolderGrid/Folder";
 import { Grid } from "~/components/FolderGrid/styled";

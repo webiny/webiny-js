@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import {FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermission} from "~/types";
+import { FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 
 const TARGET_LEVELS = [
     {
@@ -28,11 +28,11 @@ const TARGET_LEVELS = [
 ];
 
 const StyledHandle = styled.div<{ disabled: boolean }>`
-  display: flex;
-  color: var(--mdc-theme-text-primary-on-background);
-  cursor: pointer;
-  padding: 20px 0 20px 20px;
-  ${({disabled}) => disabled && `opacity: 0.5; pointer-events: none;`}
+    display: flex;
+    color: var(--mdc-theme-text-primary-on-background);
+    cursor: pointer;
+    padding: 20px 0 20px 20px;
+    ${({ disabled }) => disabled && `opacity: 0.5; pointer-events: none;`}
 `;
 
 const StyledMenuItem = styled(MenuItem)`
