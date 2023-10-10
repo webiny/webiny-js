@@ -1,16 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-
-export const FilterWrapper = styled("div")`
-    &:first-of-type {
-        margin-top: 24px;
-    }
-`;
-
-export const GroupContainer = styled("div")`
-    margin: 24px 24px 0;
-    border: 4px dashed var(--mdc-theme-background);
-`;
+import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add.svg";
 
 interface CellInnerProps {
     align: "left" | "center" | "right";
@@ -18,6 +8,61 @@ interface CellInnerProps {
 
 export const CellInner = styled(`div`)<CellInnerProps>`
     text-align: ${props => props.align || "left"};
+`;
+
+export const AccordionItemInner = styled.div`
+    position: relative;
+`;
+
+export const FilterContainer = styled.div`
+    .mdc-layout-grid {
+        padding: 4px;
+    }
+`;
+
+export const GroupOperationContainer = styled.div`
+    text-align: right;
+    margin-bottom: 24px;
+`;
+
+export const FilterOperationContainer = styled.div`
+    margin-right: 8px;
+`;
+
+export const GroupOperationLabelContainer = styled.span`
+    background: #fff;
+    border: 1px solid var(--mdc-theme-background);
+    border-radius: 24px;
+    width: 56px;
+    height: 28px;
+    line-height: 28px;
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    margin-left: -28px;
+    z-index: 10;
+    text-align: center;
+`;
+
+export const FilterOperationLabelContainer = styled.div`
+    padding: 12px 0;
+    text-align: center;
+`;
+
+export const AddFilterInner = styled.div`
+    padding: 16px 0 16px;
+    text-align: center;
+`;
+
+export const AddGroupInner = styled.div`
+    padding: 24px 0 0;
+    text-align: center;
+`;
+
+export const ButtonIcon = styled(AddIcon)`
+    fill: var(--mdc-theme-primary);
+    width: 18px;
+    margin-right: 8px;
 `;
 
 const Horizontal = styled.div`
@@ -28,6 +73,7 @@ const Horizontal = styled.div`
 const Grow = styled.div`
     flex: 1;
     overflow: scroll;
+    padding: 24px;
 `;
 
 interface ContentProps {

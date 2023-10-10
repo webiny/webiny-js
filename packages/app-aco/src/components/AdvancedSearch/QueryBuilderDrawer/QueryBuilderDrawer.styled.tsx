@@ -40,6 +40,25 @@ export const DrawerContainer = styled(RmwcDrawer)`
     .mdc-switch--checked .mdc-switch__thumb-underlay {
         transform: translateX(20px);
     }
+
+    .mdc-list-item {
+        margin: 0 0;
+        padding: 0 0;
+        font-size: 1rem;
+
+        .webiny-ui-accordion-item__content {
+            border: 0 !important;
+        }
+
+        &:nth-child(1) {
+            margin-top: 0;
+        }
+
+        .mdc-list-item__meta {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+    }
 `;
 
 export const SimpleFormFooter = styled(BaseSimpleFormFooter)`

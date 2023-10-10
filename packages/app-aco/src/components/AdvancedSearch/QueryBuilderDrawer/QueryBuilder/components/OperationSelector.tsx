@@ -1,30 +1,35 @@
 import React from "react";
 import { Bind } from "@webiny/form";
-import { Radio, RadioGroup } from "@webiny/ui/Radio";
-
-const operations = ["AND", "OR"];
+import { Switch } from "@webiny/ui/Switch";
+import { Operation } from "~/components/AdvancedSearch/QueryObject";
 
 interface OperationSelectorProps {
+    label: string;
     name: string;
 }
 
-export const OperationSelector = ({ name }: OperationSelectorProps) => {
+export const OperationSelector = ({ label, name }: OperationSelectorProps) => {
+    const getValue = (value: Operation): boolean => {
+        return value === Operation.AND;
+    };
+
+    const setValue = (value: boolean): Operation => {
+        if (value) {
+            return Operation.AND;
+        } else {
+            return Operation.OR;
+        }
+    };
+
     return (
         <Bind name={name}>
-            <RadioGroup label={"Operation"}>
-                {({ onChange, getValue }) => (
-                    <>
-                        {operations.map(option => (
-                            <Radio
-                                key={option}
-                                label={option}
-                                value={getValue(option)}
-                                onChange={onChange(option)}
-                            />
-                        ))}
-                    </>
-                )}
-            </RadioGroup>
+            {({ value, onChange }) => (
+                <Switch
+                    label={label}
+                    value={getValue(value)}
+                    onChange={value => onChange(setValue(value))}
+                />
+            )}
         </Bind>
     );
 };

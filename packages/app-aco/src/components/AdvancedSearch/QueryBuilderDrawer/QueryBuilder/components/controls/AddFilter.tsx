@@ -3,14 +3,18 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
+import { AddFilterInner } from "../../Querybuilder.styled";
+
 interface AddFilterProps {
     onClick: () => void;
 }
 
 export const AddFilter = ({ onClick }: AddFilterProps) => {
     return (
-        <Tooltip content={"Add filter"} placement={"bottom"}>
-            <IconButton label={"Add filter"} icon={<AddIcon />} onClick={onClick} />
-        </Tooltip>
+        <AddFilterInner>
+            <Tooltip content={"Add new condition"} placement={"bottom"}>
+                <IconButton label={"Add new condition"} icon={<AddIcon />} onClick={onClick} />
+            </Tooltip>
+        </AddFilterInner>
     );
 };

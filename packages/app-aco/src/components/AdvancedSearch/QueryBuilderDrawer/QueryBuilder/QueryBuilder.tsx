@@ -1,10 +1,29 @@
 import React, { useEffect } from "react";
+
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
+
+import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
-import { CellInner, Content, GroupContainer } from "./Querybuilder.styled";
-import { Cell, Grid } from "@webiny/ui/Grid";
-import { AddFilter, AddGroup, RemoveGroup, Filter, OperationSelector } from "./components";
+
+import {
+    AddFilter,
+    AddGroup,
+    Filter,
+    FilterOperationLabel,
+    GroupOperationLabel,
+    OperationSelector
+} from "./components";
+
+import {
+    AccordionItemInner,
+    Content,
+    FilterOperationContainer,
+    GroupOperationContainer
+} from "./Querybuilder.styled";
+
 import { QueryBuilderPresenter, QueryBuilderViewModel } from "./adapters";
+
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 export interface QueryBuilderProps {
     onForm: (form: FormAPI) => void;
@@ -43,68 +62,79 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
             {() => (
                 <Content>
                     <Content.Panel>
-                        <Grid>
-                            <Cell span={12} align={"middle"}>
-                                <CellInner align={"center"}>
-                                    <OperationSelector name={"operation"} />
-                                </CellInner>
-                            </Cell>
-                        </Grid>
-                        {viewModel.queryObject.groups.map((group, groupIndex) => (
-                            <GroupContainer key={`group-${groupIndex}`}>
-                                <Grid>
-                                    <Cell span={11} align={"middle"}>
-                                        <CellInner align={"left"}>
-                                            <OperationSelector
-                                                name={`groups.${groupIndex}.operation`}
-                                            />
-                                        </CellInner>
-                                    </Cell>
-                                    <Cell span={1} align={"middle"}>
-                                        <CellInner align={"center"}>
-                                            <RemoveGroup
-                                                onClick={() => presenter.deleteGroup(groupIndex)}
-                                            />
-                                        </CellInner>
-                                    </Cell>
-                                </Grid>
-                                {group.filters.map((filter, filterIndex) => (
-                                    <Filter
-                                        key={filterIndex}
-                                        name={`groups.${groupIndex}.filters.${filterIndex}`}
-                                        filter={filter}
-                                        fields={viewModel.fields}
-                                        onEmpty={() => {
-                                            presenter.emptyFilterIntoGroup(groupIndex, filterIndex);
-                                        }}
-                                        onDelete={() => {
-                                            presenter.deleteFilterFromGroup(
-                                                groupIndex,
-                                                filterIndex
-                                            );
-                                        }}
+                        <GroupOperationContainer>
+                            <OperationSelector
+                                name={"operation"}
+                                label={"Match all filter groups"}
+                            />
+                        </GroupOperationContainer>
+                        <Accordion>
+                            {viewModel.queryObject.groups.map((group, groupIndex, groups) => (
+                                <AccordionItemInner key={`group-${groupIndex}`}>
+                                    <AccordionItem
+                                        title={`Filter group #${groupIndex + 1}`}
+                                        open={groupIndex === 0}
+                                        actions={
+                                            <AccordionItem.Actions>
+                                                <AccordionItem.Element
+                                                    element={
+                                                        <FilterOperationContainer>
+                                                            <OperationSelector
+                                                                label={"Match all conditions"}
+                                                                name={`groups.${groupIndex}.operation`}
+                                                            />
+                                                        </FilterOperationContainer>
+                                                    }
+                                                />
+                                                <AccordionItem.Action
+                                                    icon={<DeleteIcon />}
+                                                    onClick={() =>
+                                                        presenter.deleteGroup(groupIndex)
+                                                    }
+                                                />
+                                            </AccordionItem.Actions>
+                                        }
+                                    >
+                                        {group.filters.map((filter, filterIndex, filters) => (
+                                            <>
+                                                <Filter
+                                                    key={filterIndex}
+                                                    name={`groups.${groupIndex}.filters.${filterIndex}`}
+                                                    filter={filter}
+                                                    fields={viewModel.fields}
+                                                    onEmpty={() => {
+                                                        presenter.emptyFilterIntoGroup(
+                                                            groupIndex,
+                                                            filterIndex
+                                                        );
+                                                    }}
+                                                    onDelete={() => {
+                                                        presenter.deleteFilterFromGroup(
+                                                            groupIndex,
+                                                            filterIndex
+                                                        );
+                                                    }}
+                                                />
+                                                <FilterOperationLabel
+                                                    show={filters.length !== filterIndex + 1}
+                                                    operation={group.operation}
+                                                />
+                                            </>
+                                        ))}
+                                        <AddFilter
+                                            onClick={() =>
+                                                presenter.addNewFilterToGroup(groupIndex)
+                                            }
+                                        />
+                                    </AccordionItem>
+                                    <GroupOperationLabel
+                                        show={groups.length !== groupIndex + 1}
+                                        operation={viewModel.queryObject.operation}
                                     />
-                                ))}
-                                <Grid>
-                                    <Cell span={12} align={"middle"}>
-                                        <CellInner align={"center"}>
-                                            <AddFilter
-                                                onClick={() =>
-                                                    presenter.addNewFilterToGroup(groupIndex)
-                                                }
-                                            />
-                                        </CellInner>
-                                    </Cell>
-                                </Grid>
-                            </GroupContainer>
-                        ))}
-                        <Grid>
-                            <Cell span={12}>
-                                <CellInner align={"center"}>
-                                    <AddGroup onClick={() => presenter.addGroup()} />
-                                </CellInner>
-                            </Cell>
-                        </Grid>
+                                </AccordionItemInner>
+                            ))}
+                        </Accordion>
+                        <AddGroup onClick={() => presenter.addGroup()} />
                     </Content.Panel>
                 </Content>
             )}

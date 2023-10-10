@@ -9,7 +9,7 @@ import { RemoveFilter } from "./controls";
 
 import { FieldDTO, FilterDTO } from "../../../QueryObject";
 
-import { CellInner, FilterWrapper } from "../Querybuilder.styled";
+import { CellInner, FilterContainer } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;
@@ -21,7 +21,7 @@ interface FilterProps {
 
 export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps) => {
     return (
-        <FilterWrapper>
+        <FilterContainer>
             <Grid>
                 <Cell span={4}>
                     <CellInner align={"left"}>
@@ -82,6 +82,6 @@ export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps)
                     </CellInner>
                 </Cell>
             </Grid>
-        </FilterWrapper>
+        </FilterContainer>
     );
 };
