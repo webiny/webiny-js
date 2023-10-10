@@ -19,6 +19,7 @@ import { AbsoluteLoader as Loader } from "./Loader";
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const FieldLabel = styled("h3")({
     fontSize: 24,
@@ -261,12 +262,18 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const message = getRecordCountMessage(values.length);
 
+    const { validation } = bind;
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
     return (
         <>
             <FieldLabel>
                 <FieldName>{field.label}</FieldName>
                 <RecordCount>({message})</RecordCount>
             </FieldLabel>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
             <Container
                 className={
                     (entries.length < 1 ? "no-entries" : "has-entries") +

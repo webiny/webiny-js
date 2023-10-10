@@ -17,6 +17,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const Container = styled("div")({});
 
@@ -169,9 +170,15 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
         };
     }, [entries, loadedModels]);
 
+    const { validation } = bind;
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
     return (
         <>
             <FieldLabel>{field.label}</FieldLabel>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
             <Container>
                 {loading && <Loader />}
                 {initialValue && (

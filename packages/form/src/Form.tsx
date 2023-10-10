@@ -64,7 +64,7 @@ export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
         }
     }, []);
 
-    // @ts-ignore
+    // @ts-expect-error
     return form.createField(props);
 }
 
@@ -73,15 +73,19 @@ interface InputRecord {
     validators: Validator[];
     afterChange?: (value: unknown, form: FormAPI) => void;
 }
-// interface ValidationInputFormData {
-//     inputs: Record<string, InputRecord>;
-//     data: FormData;
-// }
 
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     const [state, setState] = useState<State<T>>({
         data: props.data as T,
         originalData: (props.data || {}) as T,
@@ -90,6 +94,8 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     });
 
     const [prevData, setPrevData] = useState<Partial<T> | null>(null);
+    const [prevInvalidFields, setPrevInvalidFields] =
+        useState<FormProps["invalidFields"]>(undefined);
 
     // This simulates "getDerivedStateFromProps"
     if (props.data !== prevData) {
@@ -106,7 +112,12 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 validation: {}
             }));
         }
+    }
 
+    if (props.invalidFields !== prevInvalidFields) {
+        setPrevInvalidFields(() => {
+            return props.invalidFields || undefined;
+        });
         // Check for validation errors
         let validation = lodashCloneDeep(state.validation);
         if (
@@ -298,7 +309,6 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 }
                 return;
             }
-            console.log(valid);
             return onInvalid();
         });
     };
@@ -357,46 +367,47 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             if (!validator.validatorName || !skipValidators) {
                 return true;
             }
-            const result =
+            /**
+             * We need to remove the validators which are in the skipValidators array, thus the ! before the checks.
+             */
+            return !(
                 skipValidators.includes(validator.validatorName) ||
-                skipValidators.includes(camelCase(validator.validatorName));
-            if (result) {
-                console.log("skipping validator", validator.validatorName);
-            }
-            return !result;
+                skipValidators.includes(camelCase(validator.validatorName))
+            );
         });
 
         const hasValidators = Object.keys(validators).length > 0;
 
-        setState(state => ({
-            ...state,
-            validation: {
-                ...state.validation,
-                [name]: {
-                    ...state.validation[name],
-                    isValidating: true
+        if (isMounted.current) {
+            setState(state => ({
+                ...state,
+                validation: {
+                    ...state.validation,
+                    [name]: {
+                        ...state.validation[name],
+                        isValidating: true
+                    }
                 }
-            }
-        }));
+            }));
+        }
 
-        const result = await Promise.resolve(executeValidators(value, validators))
+        return await Promise.resolve(executeValidators(value, validators))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
-                setState(state => ({
-                    ...state,
-                    validation: {
-                        ...state.validation,
-                        [name]: {
-                            isValid,
-                            message: null,
-                            results: validationResults
+                if (isMounted.current) {
+                    setState(state => ({
+                        ...state,
+                        validation: {
+                            ...state.validation,
+                            [name]: {
+                                isValid,
+                                message: null,
+                                results: validationResults
+                            }
                         }
-                    }
-                }));
-
-                console.log("Logging validation results");
-                console.log(validationResults);
+                    }));
+                }
                 return validationResults;
             })
             .catch(validationError => {
@@ -412,13 +423,9 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                         }
                     }
                 }));
-                console.log("Logging validation error", name);
-                console.log(validationError);
 
                 return false;
             });
-        console.log(result);
-        return result;
     };
 
     const setValue = (name: string, value: any) => {
