@@ -1,7 +1,9 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import {
     Mode,
+    QueryObject,
     QueryObjectDTO,
+    QueryObjectMapper,
     QueryObjectRepository
 } from "~/components/AdvancedSearch/QueryObject";
 
@@ -30,63 +32,56 @@ export interface AdvancedSearchViewModel {
     showBuilder: boolean;
     showManager: boolean;
     showSaver: boolean;
-    showSelected: boolean;
 }
 
 export class AdvancedSearchPresenter {
     private repository: QueryObjectRepository;
-    private readonly onSubmitCallback: (data: QueryObjectDTO | null) => void;
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
-    private showSelected = false;
-    private callback: ((viewModel: AdvancedSearchViewModel) => void) | undefined = undefined;
     private mode: Mode = Mode.CREATE;
-    private queryObject: QueryObjectDTO | null = null;
-    viewModel: AdvancedSearchViewModel;
+    currentFilter: QueryObjectDTO | null = null;
+    appliedFilter: QueryObjectDTO | null = null;
 
-    constructor(
-        repository: QueryObjectRepository,
-        onSubmitCallback: (data: QueryObjectDTO | null) => void
-    ) {
+    constructor(repository: QueryObjectRepository) {
         this.repository = repository;
-        this.onSubmitCallback = onSubmitCallback;
-        this.viewModel = {
-            queryObject: null,
-            mode: this.mode,
-            showBuilder: this.showBuilder,
-            showManager: this.showManager,
-            showSaver: this.showSaver,
-            showSelected: this.showSelected
-        };
         makeAutoObservable(this);
     }
 
-    load(callback: (viewModel: AdvancedSearchViewModel) => void) {
-        this.callback = callback;
-        this.callback && this.callback(this.viewModel);
+    async load() {
+        await this.repository.listFilters();
     }
 
-    updateViewModel() {
-        this.viewModel = {
-            queryObject: this.queryObject,
-            mode: this.mode,
+    get vm() {
+        return {
+            appliedFilter: this.appliedFilter,
+            currentFilter: this.currentFilter,
             showBuilder: this.showBuilder,
-            showManager: this.showManager,
             showSaver: this.showSaver,
-            showSelected: this.showSelected
+            managerVm: {
+                open: this.showManager,
+                filters: this.repository.filters.map(filter => ({
+                    id: filter.id,
+                    name: filter.name,
+                    description: filter.description || ""
+                }))
+            },
+            builderVm: {
+                open: this.showBuilder
+            },
+            saverVm: {
+                open: this.showSaver,
+                filter: this.currentFilter
+            }
         };
-        this.callback && this.callback(this.viewModel);
     }
 
     openManager() {
         this.showManager = true;
-        this.updateViewModel();
     }
 
     closeManager() {
         this.showManager = false;
-        this.updateViewModel();
     }
 
     openBuilder() {
@@ -95,7 +90,6 @@ export class AdvancedSearchPresenter {
 
     closeBuilder() {
         this.showBuilder = false;
-        this.updateViewModel();
     }
 
     openSaver() {
@@ -104,72 +98,86 @@ export class AdvancedSearchPresenter {
 
     closeSaver() {
         this.showSaver = false;
-        this.updateViewModel();
     }
 
-    openSelected() {
-        this.showSelected = true;
+    async applyFilter(filterId: string) {
+        const filter = await this.repository.getFilterById(filterId);
+
+        runInAction(() => {
+            this.appliedFilter = filter;
+            this.currentFilter = null;
+            this.closeManager();
+            this.closeBuilder();
+            this.closeSaver();
+        });
     }
 
-    closeSelected() {
-        this.showSelected = false;
-        this.updateViewModel();
+    applyQueryObject(queryObject: QueryObjectDTO) {
+        this.appliedFilter = queryObject;
+        this.currentFilter = queryObject;
+        this.closeManager();
+        this.closeBuilder();
+        this.closeSaver();
+    }
+
+    unsetFilter() {
+        this.appliedFilter = null;
+        this.currentFilter = null;
+    }
+
+    editAppliedFilter() {
+        this.currentFilter = this.appliedFilter;
+        this.openBuilder();
     }
 
     createFilter() {
-        this.queryObject = null;
+        this.currentFilter = QueryObjectMapper.toDTO(
+            QueryObject.createEmpty(this.repository.modelId)
+        );
         this.mode = Mode.CREATE;
-        this.closeSelected();
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
-        this.updateViewModel();
     }
 
-    editFilter(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
-        this.mode = Mode.UPDATE;
-        this.closeManager();
-        this.openBuilder();
-        this.closeSaver();
-        this.updateViewModel();
+    async editFilter(filterId: string) {
+        const filter = await this.repository.getFilterById(filterId);
+
+        runInAction(() => {
+            this.currentFilter = filter;
+            this.mode = Mode.UPDATE;
+            this.closeManager();
+            this.openBuilder();
+            this.closeSaver();
+        });
     }
 
-    removeFilter() {
-        this.queryObject = null;
-        this.onSubmitCallback(null);
-        this.closeSelected();
-        this.closeManager();
-        this.closeBuilder();
-        this.closeSaver();
-        this.updateViewModel();
-    }
-
-    applyFilter(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
-        this.onSubmitCallback(queryObject);
-        this.openSelected();
-        this.closeManager();
-        this.closeBuilder();
-        this.closeSaver();
-        this.updateViewModel();
+    async deleteFilter(id: string) {
+        await this.repository.deleteFilter(id);
+        this.currentFilter = null;
+        this.appliedFilter = null;
     }
 
     persistFilter(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
+        this.currentFilter = queryObject;
         this.closeManager();
         this.openBuilder();
         this.openSaver();
-        this.updateViewModel();
     }
 
-    saveFilter(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
-        this.onSubmitCallback(queryObject);
-        this.openSelected();
-        this.closeManager();
-        this.closeBuilder();
-        this.closeSaver();
-        this.updateViewModel();
+    async saveFilter(filter: QueryObjectDTO) {
+        if (this.mode === Mode.CREATE) {
+            await this.repository.createFilter(filter);
+        } else {
+            await this.repository.updateFilter(filter);
+        }
+
+        runInAction(() => {
+            this.appliedFilter = filter;
+            this.currentFilter = null;
+            this.closeManager();
+            this.closeBuilder();
+            this.closeSaver();
+        });
     }
 }

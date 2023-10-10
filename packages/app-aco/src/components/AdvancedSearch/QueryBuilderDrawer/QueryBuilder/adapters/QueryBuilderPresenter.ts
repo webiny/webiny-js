@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import {
     Field,
     FieldDTO,
@@ -6,8 +6,7 @@ import {
     FieldRaw,
     Operation,
     QueryObject,
-    QueryObjectDTO,
-    QueryObjectMapper
+    QueryObjectDTO
 } from "../../../QueryObject";
 
 export interface IQueryBuilderPresenter {
@@ -16,10 +15,11 @@ export interface IQueryBuilderPresenter {
     deleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
     deleteGroup: (groupIndex: number) => void;
     emptyFilterIntoGroup: (groupIndex: number, filterIndex: number) => void;
-    load: (callback: (viewModel: QueryBuilderViewModel) => void) => void;
-    onSubmit: (queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) => void;
+    onSubmit: (
+        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onError?: (queryObject: QueryObjectDTO) => void
+    ) => void;
     setQueryObject: (queryObject: QueryObjectDTO) => void;
-    updateQueryObject: (queryObject: QueryObjectDTO | null) => void;
     updateViewModel: () => void;
 }
 
@@ -30,23 +30,15 @@ export interface QueryBuilderViewModel {
 }
 
 export class QueryBuilderPresenter implements IQueryBuilderPresenter {
-    private readonly modelId: string;
     private readonly fields: QueryBuilderViewModel["fields"];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private queryObject: QueryBuilderViewModel["queryObject"];
     private callback: ((viewModel: QueryBuilderViewModel) => void) | undefined = undefined;
-    viewModel: QueryBuilderViewModel;
 
-    constructor(modelId: string, fields: FieldRaw[]) {
-        this.modelId = modelId;
+    constructor(queryObject: QueryObjectDTO, fields: FieldRaw[]) {
+        this.queryObject = queryObject;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
-        this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
-        this.viewModel = {
-            queryObject: this.queryObject,
-            fields: this.fields,
-            invalidFields: this.invalidFields
-        };
         makeAutoObservable(this);
     }
 
@@ -56,21 +48,13 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     updateViewModel() {
-        this.viewModel = {
+        const viewModel = {
             queryObject: this.queryObject,
             fields: this.fields,
             invalidFields: this.invalidFields
         };
-        this.callback && this.callback(this.viewModel);
-    }
 
-    updateQueryObject(queryObject: QueryObjectDTO | null) {
-        if (queryObject) {
-            this.queryObject = QueryObjectMapper.toDTO(QueryObject.create(queryObject));
-        } else {
-            this.queryObject = QueryObjectMapper.toDTO(QueryObject.createEmpty(this.modelId));
-        }
-        this.updateViewModel();
+        this.callback && this.callback(viewModel);
     }
 
     addGroup() {
@@ -136,25 +120,42 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
     }
 
     setQueryObject(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
-        this.updateViewModel();
+        runInAction(() => {
+            this.queryObject = queryObject;
+            this.updateViewModel();
 
-        if (this.formWasSubmitted) {
-            this.validateQueryObject(queryObject);
+            if (this.formWasSubmitted) {
+                this.validateQueryObject(queryObject);
+            }
+        });
+    }
+
+    onSubmit(
+        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onError?: (queryObject: QueryObjectDTO) => void
+    ) {
+        const result = this.validateQueryObject(this.queryObject);
+        if (result.success) {
+            onSuccess && onSuccess(this.queryObject);
+        } else {
+            onError && onError(this.queryObject);
         }
     }
 
-    onSubmit(queryObject: QueryObjectDTO, onSuccess?: () => void, onError?: () => void) {
-        this.formWasSubmitted = true;
-        const result = this.validateQueryObject(queryObject);
+    onSave(
+        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onError?: (queryObject: QueryObjectDTO) => void
+    ) {
+        const result = this.validateQueryObject(this.queryObject);
         if (result.success) {
-            onSuccess && onSuccess();
+            onSuccess && onSuccess(this.queryObject);
         } else {
-            onError && onError();
+            onError && onError(this.queryObject);
         }
     }
 
     private validateQueryObject(data: QueryObjectDTO) {
+        this.formWasSubmitted = true;
         const validation = QueryObject.validate(data);
 
         if (!validation.success) {

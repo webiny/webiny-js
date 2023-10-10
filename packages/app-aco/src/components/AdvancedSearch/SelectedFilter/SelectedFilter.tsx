@@ -7,25 +7,20 @@ import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 import { CloseIcon, EditIcon } from "./SelectedFilter.styled";
 
 interface SelectedFilterProps {
-    filter: QueryObjectDTO | null;
-    onEdit: (data: QueryObjectDTO) => void;
-    onRemove: () => void;
-    show: boolean;
+    filter: QueryObjectDTO;
+    onEdit: () => void;
+    onDelete: () => void;
 }
 
 export const SelectedFilter = (props: SelectedFilterProps) => {
-    if (!props.filter || !props.show) {
-        return null;
-    }
-
     return (
         <Chips>
             <Chip
                 key={props.filter.id}
                 label={props.filter.name}
                 icon={<EditIcon />}
-                onTrailingIconInteraction={props.onRemove}
-                onInteraction={() => props.onEdit(props.filter as QueryObjectDTO)}
+                onTrailingIconInteraction={props.onDelete}
+                onInteraction={props.onEdit}
                 trailingIcon={<CloseIcon />}
             />
         </Chips>

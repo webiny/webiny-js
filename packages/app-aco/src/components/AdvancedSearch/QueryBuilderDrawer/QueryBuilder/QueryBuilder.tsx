@@ -45,9 +45,9 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
         presenter.setQueryObject(data);
     };
 
-    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = data => {
-        presenter.onSubmit(data, () => {
-            onSubmit(viewModel.queryObject);
+    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = () => {
+        presenter.onSubmit(queryObject => {
+            onSubmit(queryObject);
         });
     };
 

@@ -16,38 +16,31 @@ import {
     QueryBuilderViewModel
 } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
 
-interface DrawerProps {
+interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
     modelId: string;
     onClose: () => void;
     onPersist: (data: QueryObjectDTO) => void;
     onSubmit: (data: QueryObjectDTO) => void;
+    queryObject: QueryObjectDTO;
     open: boolean;
-    queryObject: QueryObjectDTO | null;
 }
 
-export const QueryBuilderDrawer = ({
-    modelId,
-    queryObject,
-    open,
-    onClose,
-    fields,
-    onSubmit,
-    onPersist
-}: DrawerProps) => {
-    const [presenter] = useState<QueryBuilderPresenter>(new QueryBuilderPresenter(modelId, fields));
+export const QueryBuilderDrawer = (props: QueryBuilderDrawerProps) => {
+    const [presenter] = useState<QueryBuilderPresenter>(
+        new QueryBuilderPresenter(props.queryObject, props.fields)
+    );
     const [viewModel, setViewModel] = useState<QueryBuilderViewModel | undefined>();
 
     useEffect(() => {
         presenter.load(setViewModel);
-        presenter.updateQueryObject(queryObject);
-    }, [queryObject]);
+    }, []);
 
     useHotkeys({
         zIndex: 55,
         disabled: !open,
         keys: {
-            esc: onClose
+            esc: props.onClose
         }
     });
 
@@ -58,20 +51,20 @@ export const QueryBuilderDrawer = ({
     }
 
     return (
-        <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
+        <DrawerContainer modal open={props.open} onClose={props.onClose} dir="rtl">
             <DrawerContent dir="ltr">
-                <Header onClose={onClose} />
+                <Header onClose={props.onClose} />
                 <QueryBuilder
                     onForm={form => (ref.current = form)}
-                    onSubmit={onSubmit}
+                    onSubmit={props.onSubmit}
                     presenter={presenter}
                     viewModel={viewModel}
                 />
                 <Footer
                     formRef={ref}
-                    onClose={onClose}
-                    onPersist={onPersist}
-                    viewModel={viewModel}
+                    onClose={props.onClose}
+                    onPersist={props.onPersist}
+                    presenter={presenter}
                 />
             </DrawerContent>
         </DrawerContainer>

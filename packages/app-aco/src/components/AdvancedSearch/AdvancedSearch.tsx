@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 import { useApolloClient } from "@apollo/react-hooks";
 
-import { FieldRaw, FiltersGraphQLGateway, QueryObjectRepository } from "./QueryObject";
-import { AdvancedSearchPresenter, AdvancedSearchViewModel } from "./AdvancedSearchPresenter";
+import {
+    FieldRaw,
+    FiltersGraphQLGateway,
+    QueryObjectDTO,
+    QueryObjectRepository
+} from "./QueryObject";
+import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
 import { Button } from "./Button";
 import { QueryManagerDialog } from "./QueryManagerDialog";
@@ -11,70 +17,92 @@ import { QuerySaverDialog } from "./QuerySaverDialog";
 import { SelectedFilter } from "./SelectedFilter";
 
 import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
-import { observer } from "mobx-react-lite";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
     modelId: string;
-    onSubmit: (data: any) => void;
+    onApplyFilter: (data: QueryObjectDTO | null) => void;
 }
 
-export const AdvancedSearch = observer(({ fields, modelId, onSubmit }: AdvancedSearchProps) => {
-    const client = useApolloClient();
+export const AdvancedSearch = observer(
+    ({ fields, modelId, onApplyFilter }: AdvancedSearchProps) => {
+        const client = useApolloClient();
 
-    const [repository] = useState(
-        QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
-    );
-    const [presenter] = useState<AdvancedSearchPresenter>(
-        new AdvancedSearchPresenter(repository, onSubmit)
-    );
+        const [repository] = useState(
+            QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
+        );
+        const [presenter] = useState<AdvancedSearchPresenter>(
+            new AdvancedSearchPresenter(repository)
+        );
 
-    const [viewModel, setViewModel] = useState<AdvancedSearchViewModel | undefined>();
+        useEffect(() => {
+            presenter.load();
+        }, []);
 
-    useEffect(() => {
-        presenter.load(setViewModel);
-    }, []);
+        const applyFilter = async (filterId: string) => {
+            await presenter.applyFilter(filterId);
+            if (presenter.vm.appliedFilter) {
+                onApplyFilter(presenter.vm.appliedFilter);
+            }
+        };
 
-    if (!viewModel) {
-        return null;
-    }
+        const applyQueryObject = async (queryObject: QueryObjectDTO) => {
+            await presenter.applyQueryObject(queryObject);
+            if (presenter.vm.appliedFilter) {
+                onApplyFilter(presenter.vm.appliedFilter);
+            }
+        };
 
-    return (
-        <>
-            <AdvancedSearchContainer>
-                <Button onClick={() => presenter.openManager()} />
-                <SelectedFilter
-                    show={viewModel.showSelected}
-                    filter={viewModel.queryObject}
-                    onEdit={filter => presenter.editFilter(filter)}
-                    onRemove={() => presenter.removeFilter()}
+        const persistAndApplyQueryObject = async (queryObject: QueryObjectDTO) => {
+            await presenter.saveFilter(queryObject);
+            onApplyFilter(queryObject);
+        };
+
+        const unsetFilter = () => {
+            presenter.unsetFilter();
+            onApplyFilter(null);
+        };
+
+        return (
+            <>
+                <AdvancedSearchContainer>
+                    <Button onClick={() => presenter.openManager()} />
+                    {presenter.appliedFilter ? (
+                        <SelectedFilter
+                            filter={presenter.appliedFilter}
+                            onEdit={() => presenter.editAppliedFilter()}
+                            onDelete={unsetFilter}
+                        />
+                    ) : null}
+                </AdvancedSearchContainer>
+                <QueryManagerDialog
+                    onClose={() => presenter.closeManager()}
+                    onCreate={() => presenter.createFilter()}
+                    onEdit={filterId => presenter.editFilter(filterId)}
+                    onDelete={filterId => presenter.deleteFilter(filterId)}
+                    onSelect={applyFilter}
+                    vm={presenter.vm.managerVm}
                 />
-            </AdvancedSearchContainer>
-            <QueryManagerDialog
-                onClose={() => presenter.closeManager()}
-                onCreate={() => presenter.createFilter()}
-                onEdit={filter => presenter.editFilter(filter)}
-                onSelect={filter => presenter.applyFilter(filter)}
-                open={viewModel.showManager}
-                repository={repository}
-            />
-            <QueryBuilderDrawer
-                fields={fields}
-                modelId={modelId}
-                onClose={() => presenter.closeBuilder()}
-                onPersist={filter => presenter.persistFilter(filter)}
-                onSubmit={filter => presenter.applyFilter(filter)}
-                open={viewModel.showBuilder}
-                queryObject={viewModel.queryObject}
-            />
-            <QuerySaverDialog
-                mode={viewModel.mode}
-                onSubmit={filter => presenter.saveFilter(filter)}
-                onClose={() => presenter.closeSaver()}
-                open={viewModel.showSaver}
-                queryObject={viewModel.queryObject}
-                repository={repository}
-            />
-        </>
-    );
-});
+                {presenter.currentFilter ? (
+                    <>
+                        <QueryBuilderDrawer
+                            fields={fields}
+                            modelId={modelId}
+                            onClose={() => presenter.closeBuilder()}
+                            onPersist={filter => presenter.persistFilter(filter)}
+                            onSubmit={applyQueryObject}
+                            queryObject={presenter.currentFilter}
+                            open={presenter.vm.builderVm.open}
+                        />
+                        <QuerySaverDialog
+                            onSubmit={persistAndApplyQueryObject}
+                            onClose={() => presenter.closeSaver()}
+                            open={presenter.vm.saverVm.open}
+                            queryObject={presenter.currentFilter}
+                        />
+                    </>
+                ) : null}
+            </>
+        );
+    }
+);

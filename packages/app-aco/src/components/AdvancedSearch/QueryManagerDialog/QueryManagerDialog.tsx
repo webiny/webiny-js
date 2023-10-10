@@ -1,33 +1,81 @@
-import React, { useState } from "react";
-
-import { QueryManager } from "./components/QueryManager";
-import { QueryManagerPresenter } from "./adapters/QueryManagerPresenter";
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
-import { QueryObjectRepository } from "~/components/AdvancedSearch/QueryObject/QueryObjectRepository";
-import { observer } from "mobx-react-lite";
+import React from "react";
+import { ReactComponent as SavedSearchIcon } from "@material-design-icons/svg/outlined/saved_search.svg";
+import { ReactComponent as MoreIcon } from "@material-design-icons/svg/outlined/more_vert.svg";
+import { DialogContainer, ListActions } from "./QueryManagerDialog.styled";
+import { DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
+import {
+    List,
+    ListItem,
+    ListItemMeta,
+    ListItemText,
+    ListItemTextPrimary,
+    ListItemTextSecondary
+} from "@webiny/ui/List";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { ButtonDefault, ButtonPrimary, IconButton } from "@webiny/ui/Button";
+import { Menu, MenuItem } from "@webiny/ui/Menu";
 
 interface QueryBuilderProps {
     onClose: () => void;
     onCreate: () => void;
-    onEdit: (data: QueryObjectDTO) => void;
-    onSelect: (data: QueryObjectDTO) => void;
-    open: boolean;
-    repository: QueryObjectRepository;
+    onEdit: (filterId: string) => void;
+    onDelete: (filterId: string) => void;
+    onSelect: (filterId: string) => void;
+    vm: {
+        open: boolean;
+        filters: QueryManagerFilter[];
+    };
 }
 
-export const QueryManagerDialog = observer(
-    ({ repository, open, onClose, onEdit, onSelect, onCreate }: QueryBuilderProps) => {
-        const [presenter] = useState<QueryManagerPresenter>(new QueryManagerPresenter(repository));
+interface QueryManagerFilter {
+    id: string;
+    name: string;
+    description: string;
+}
 
-        return (
-            <QueryManager
-                open={open}
-                onClose={onClose}
-                onEdit={onEdit}
-                onSelect={onSelect}
-                onCreate={onCreate}
-                presenter={presenter}
-            />
-        );
-    }
-);
+export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
+    return (
+        <DialogContainer open={vm.open} onClose={props.onClose}>
+            <DialogTitle>{"Advanced search filter"}</DialogTitle>
+            <DialogContent>
+                <List twoLine nonInteractive>
+                    {vm.filters.map(filter => (
+                        <ListItem key={filter.id}>
+                            <ListItemText>
+                                <ListItemTextPrimary>{filter.name}</ListItemTextPrimary>
+                                <ListItemTextSecondary>{filter.description}</ListItemTextSecondary>
+                            </ListItemText>
+                            <ListItemMeta>
+                                <ListActions>
+                                    <Tooltip content={"Apply filter"}>
+                                        <IconButton
+                                            icon={<SavedSearchIcon />}
+                                            label={"Apply filter"}
+                                            onClick={() => props.onSelect(filter.id)}
+                                        />
+                                    </Tooltip>
+                                    <Menu
+                                        handle={
+                                            <IconButton icon={<MoreIcon />} label={"Open menu"} />
+                                        }
+                                    >
+                                        <MenuItem onClick={() => props.onEdit(filter.id)}>
+                                            Edit
+                                        </MenuItem>
+                                        <MenuItem onClick={() => props.onDelete(filter.id)}>
+                                            Delete
+                                        </MenuItem>
+                                    </Menu>
+                                </ListActions>
+                            </ListItemMeta>
+                        </ListItem>
+                    ))}
+                </List>
+            </DialogContent>
+            <DialogActions>
+                <ButtonDefault onClick={props.onClose}>{"Cancel"}</ButtonDefault>
+                <ButtonPrimary onClick={props.onCreate}>{"Create new"}</ButtonPrimary>
+            </DialogActions>
+        </DialogContainer>
+    );
+};
