@@ -90,6 +90,7 @@ export class AdvancedSearchPresenter {
 
     closeBuilder() {
         this.showBuilder = false;
+        this.currentFilter = null;
     }
 
     openSaver() {
@@ -127,6 +128,7 @@ export class AdvancedSearchPresenter {
 
     editAppliedFilter() {
         this.currentFilter = this.appliedFilter;
+        this.mode = Mode.UPDATE;
         this.openBuilder();
     }
 
@@ -154,8 +156,10 @@ export class AdvancedSearchPresenter {
 
     async deleteFilter(id: string) {
         await this.repository.deleteFilter(id);
-        this.currentFilter = null;
-        this.appliedFilter = null;
+        runInAction(() => {
+            this.currentFilter = null;
+            this.appliedFilter = null;
+        });
     }
 
     persistFilter(queryObject: QueryObjectDTO) {
