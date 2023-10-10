@@ -59,6 +59,7 @@ const StyledMenuItem = styled(MenuItem)`
 interface ListItemMetaProps {
     permission: any;
     target?: any;
+    targetsList?: any;
     onRemoveAccess: any;
     onUpdatePermission: any;
 }
@@ -66,6 +67,7 @@ interface ListItemMetaProps {
 export const ListItemMeta: React.FC<ListItemMetaProps> = ({
     permission,
     target,
+    targetsList,
     onRemoveAccess,
     onUpdatePermission
 }) => {
@@ -81,7 +83,16 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
         }
 
         if (identity!.id === target.id) {
-            return "You can't change your own permissions.";
+            let message = "You can't change your own permissions.";
+            if (permission.inheritedFrom?.startsWith("team:")) {
+                const team = targetsList.find(t => t.target === permission.inheritedFrom);
+                message += " Access to this folder is managed by a team";
+                if (team) {
+                    message += ` (${team.name})`;
+                }
+                message += ".";
+            }
+            return message;
         }
 
         return null;

@@ -47,6 +47,7 @@ export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
                         <ListItemText {...item} />
                         <ListItemMeta
                             {...item!}
+                            targetsList={targetsList}
                             onRemoveAccess={onRemoveAccess}
                             onUpdatePermission={onUpdatePermission}
                         />

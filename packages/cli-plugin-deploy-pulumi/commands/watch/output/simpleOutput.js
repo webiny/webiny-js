@@ -58,15 +58,26 @@ const startDeploying = () => {
 
 const stopDeploying = () => {
     clearInterval(deployingInterval);
-    deployment = green("‣ " + getDeployDurationInSeconds() + "s ‣ Deployment successful.");
 };
+
+// If we only need a single pane, then we don't need to instantiate panes-layout with blessed at all.
+let usesSingleLogType = false;
 
 module.exports = {
     type: "watch-output",
     name: "watch-output-terminal",
+    initialize: args => {
+        // If we only need a single pane, then we don't need to instantiate panes-layout with blessed at all.
+        usesSingleLogType = !!args.build + !!args.deploy + !!args.remoteRuntimeLogs === 1;
+    },
     log({ message, type }) {
         message = message.trim().replace(/^\s+|\s+$/g, "");
         if (!message) {
+            return;
+        }
+
+        if (usesSingleLogType) {
+            console.log(message);
             return;
         }
 
@@ -79,27 +90,28 @@ module.exports = {
         }
 
         if (type === "deploy") {
-            if (message.includes("Updating...")) {
-                startDeploying();
-            }
-
             if (deployStartedOn) {
                 hiddenDeploymentLogs.push(message);
             }
 
+            if (message.includes("Updating...")) {
+                startDeploying();
+            }
+
             if (message.includes("Update complete.")) {
-                hiddenDeploymentLogs = [];
                 stopDeploying();
+                hiddenDeploymentLogs = [];
+                deployment = green("‣ " + getDeployDurationInSeconds() + "s ‣ Deployment successful.");
+                return;
             }
 
             if (message.includes("Update failed.")) {
+                stopDeploying();
+                deployment = red("‣ " + getDeployDurationInSeconds() + "s ‣ Deployment failed.");
                 logs.push(hiddenDeploymentLogs.join(EOL));
-                deployment = red(
-                    "Deployment failed. Please examine the logs above and address any issues before running the watch command again. Exiting..."
-                );
+                hiddenDeploymentLogs = [];
                 log();
-                process.exit(1);
-
+                return;
             }
         }
 

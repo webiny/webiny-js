@@ -1,5 +1,5 @@
 import { createTopic } from "@webiny/pubsub";
-import { CreateAcoParams } from "~/types";
+import { CreateAcoParams, Folder } from "~/types";
 import {
     AcoFolderCrud,
     OnFolderAfterCreateTopicParams,
@@ -14,6 +14,8 @@ import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
 import { AdminUser } from "@webiny/api-admin-users/types";
 import { Team } from "@webiny/api-security/types";
+import structuredClone from "@ungap/structured-clone";
+import WError from "@webiny/error";
 
 interface CreateFolderCrudMethodsParams extends CreateAcoParams {
     listAdminUsers: () => Promise<AdminUser[]>;
@@ -131,8 +133,6 @@ export const createFolderCrudMethods = ({
                 throw new NotAuthorizedError();
             }
 
-            // TODO: Detect parent change.
-
             // Validate data.
             if (Array.isArray(data.permissions)) {
                 data.permissions.forEach(permission => {
@@ -148,6 +148,52 @@ export const createFolderCrudMethods = ({
                     }
                 });
             }
+
+            // Parent change is not allowed if the user doesn't have access to the new parent.
+            if (data.parentId && data.parentId !== original.parentId) {
+                try {
+                    // Getting the parent folder will throw an error if the user doesn't have access.
+                    await this.get(data.parentId);
+                } catch (e) {
+                    if (e instanceof NotAuthorizedError) {
+                        throw new WError(
+                            `Cannot move folder to a new parent because you don't have access to the new parent.`,
+                            "CANNOT_MOVE_FOLDER_TO_NEW_PARENT"
+                        );
+                    }
+
+                    // If we didn't receive the expected error, we still want to throw it.
+                    throw e;
+                }
+            }
+
+            // Let's prepare a custom folder permissions list, where the folder contains the updated data.
+            const customFoldersList = await folderLevelPermissions
+                .listAllFolders(original.type)
+                .then(folders => {
+                    const foldersClone = structuredClone<Folder[]>(folders);
+                    return foldersClone.map(folder => {
+                        if (folder.id === id) {
+                            Object.assign(folder, data);
+                        }
+                        return folder;
+                    });
+                });
+
+            const stillHasAccess = await folderLevelPermissions.canAccessFolder({
+                folder: { id, type: original.type },
+                rwd: "w",
+                foldersList: customFoldersList
+            });
+
+            if (!stillHasAccess) {
+                throw new WError(
+                    `Cannot continue because you would loose access to this folder.`,
+                    "CANNOT_LOOSE_FOLDER_ACCESS"
+                );
+            }
+
+            // TODO: Detect unallowed parent change.
 
             await onFolderBeforeUpdate.publish({ original, input: { id, data } });
             const folder = await storageOperations.updateFolder({ id, data });

@@ -35,6 +35,8 @@ import {
     FilePhysicalStoragePlugin
 } from "@webiny/api-file-manager";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import createAdminUsersApp from "@webiny/api-admin-users";
 
 import {
     CREATE_FILE,
@@ -45,12 +47,16 @@ import {
     LIST_FILES,
     LIST_TAGS as LIST_FILE_TAGS
 } from "~tests/graphql/file";
+import { createWcpContext } from "@webiny/api-wcp";
+import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
+import {AdminUsersStorageOperations} from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
+    testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 interface InvokeParams {
@@ -68,18 +74,25 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+
+    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
     const handler = createHandler({
         plugins: [
             ...cmsStorage.plugins,
+            createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
-                admin: identity === undefined ? createIdentity() : identity
+                identity: identity === undefined ? createIdentity() : identity
             }),
             createI18NContext(),
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
+            createAdminUsersApp({
+                storageOperations:adminUsersStorage.storageOperations
+            }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
@@ -193,8 +206,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async listTags(variables = {}) {
             return invoke({ body: { query: LIST_FILE_TAGS, variables } });
-        },
-    }
+        }
+    };
     return {
         params,
         handler,

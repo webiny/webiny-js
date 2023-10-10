@@ -10,21 +10,32 @@ export interface FolderPermission {
     inheritedFrom?: string;
 }
 
-export interface FolderPermissions {
+export interface FolderPermissionsListItem {
     folderId: string;
     permissions: FolderPermission[];
 }
 
-export type FolderPermissionsList = FolderPermissions[];
+export type FolderPermissionsList = FolderPermissionsListItem[];
 
 export interface CanAccessFolderParams {
-    folder: Folder;
+    folder: Pick<Folder, "id" | "type">;
     rwd?: "r" | "w" | "d";
+    foldersList?: Folder[];
 }
 
 interface FilterFoldersParams {
     folders: Array<Folder>;
     rwd?: "r" | "w" | "d";
+}
+
+interface GetFolderPermissionsParams {
+    folder: Pick<Folder, "id" | "type">;
+    foldersList?: Folder[];
+}
+
+interface ListFolderPermissionsParams {
+    folderType: string;
+    foldersList?: Folder[];
 }
 
 export interface FolderLevelPermissionsParams {
@@ -73,16 +84,25 @@ export class FolderLevelPermissions {
         }
     }
 
-    async listFoldersPermissions(folderType: string): Promise<FolderPermissionsList> {
+    async listFoldersPermissions(
+        params: ListFolderPermissionsParams
+    ): Promise<FolderPermissionsList> {
         if (!this.canUseFolderLevelPermissions()) {
             return [];
         }
 
-        const allFolders = await this.listAllFolders(folderType);
+        const { folderType, foldersList } = params;
+
+        const allFolders = foldersList || (await this.listAllFolders(folderType));
         const identity = this.getIdentity();
         const permissions = await this.listPermissions();
 
-        const processedFolderPermissions: FolderPermissions[] = [];
+        const processedFolderPermissions: FolderPermissionsListItem[] = [];
+
+        let identityTeam: Team | null;
+        if (this.canUseTeams()) {
+            identityTeam = await this.getIdentityTeam();
+        }
 
         const processFolderPermissions = (folder: Folder) => {
             if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
@@ -90,7 +110,7 @@ export class FolderLevelPermissions {
             }
 
             // Copy permissions, so we don't modify the original object.
-            const currentFolderPermissions: FolderPermissions = {
+            const currentFolderPermissions: FolderPermissionsListItem = {
                 folderId: folder.id,
                 // On new folders, permissions can be `null`. Guard against that.
                 permissions: folder.permissions?.map(permission => ({ ...permission })) || []
@@ -133,8 +153,12 @@ export class FolderLevelPermissions {
             // if not already. Let's also ensure the user is the first item in the array.
             const [firstPermission] = currentFolderPermissions.permissions;
 
+            let identityFirstPermission: FolderPermission | undefined;
+
             // If current identity is already listed as the first permission, we don't need to do anything.
-            const identityFirstPermission = firstPermission?.target === `admin:${identity.id}`;
+            if (firstPermission?.target === `admin:${identity.id}`) {
+                identityFirstPermission = firstPermission;
+            }
 
             if (!identityFirstPermission) {
                 const currentIdentityPermissionIndex =
@@ -148,16 +172,37 @@ export class FolderLevelPermissions {
                         1
                     );
                     currentFolderPermissions.permissions.unshift(identityPermission);
+                    identityFirstPermission = identityPermission;
                 } else {
                     // If the current identity is not in the permissions, let's add it.
                     // If the user has full access, we'll add it as "owner".
                     const hasFullAccess = permissions.some(p => p.name === "*");
                     if (hasFullAccess) {
-                        currentFolderPermissions.permissions.unshift({
+                        identityFirstPermission = {
                             target: `admin:${identity.id}`,
                             level: "owner",
                             inheritedFrom: "role:full-access"
-                        });
+                        };
+                        currentFolderPermissions.permissions.unshift(identityFirstPermission);
+                    }
+                }
+            }
+
+            // Let's check if there is a team associated with the current identity.
+            if (!identityFirstPermission) {
+                if (identityTeam) {
+                    const teamPermission = currentFolderPermissions.permissions.find(
+                        p => p.target === `team:${identityTeam!.id}`
+                    );
+
+                    if (teamPermission) {
+                        identityFirstPermission = {
+                            target: `admin:${identity.id}`,
+                            level: teamPermission.level,
+                            inheritedFrom: "team:" + identityTeam!.id
+                        };
+
+                        currentFolderPermissions.permissions.unshift(identityFirstPermission);
                     }
                 }
             }
@@ -173,8 +218,15 @@ export class FolderLevelPermissions {
         return processedFolderPermissions;
     }
 
-    async getFolderPermissions(folder: Folder): Promise<FolderPermissions | undefined> {
-        const folderPermissionsList = await this.listFoldersPermissions(folder.type);
+    async getFolderPermissions(
+        params: GetFolderPermissionsParams
+    ): Promise<FolderPermissionsListItem | undefined> {
+        const { folder, foldersList } = params;
+        const folderPermissionsList = await this.listFoldersPermissions({
+            folderType: folder.type,
+            foldersList
+        });
+
         return folderPermissionsList.find(fp => fp.folderId === folder.id);
     }
 
@@ -185,7 +237,10 @@ export class FolderLevelPermissions {
 
         const { folder } = params;
 
-        const folderPermissions = await this.getFolderPermissions(folder);
+        const folderPermissions = await this.getFolderPermissions({
+            folder,
+            foldersList: params.foldersList
+        });
 
         const identity = this.getIdentity();
 
@@ -248,9 +303,12 @@ export class FolderLevelPermissions {
             return true;
         }
 
-        const { folder } = params;
+        const { folder, foldersList } = params;
 
-        const folderPermissions = await this.getFolderPermissions(folder);
+        const folderPermissions = await this.getFolderPermissions({
+            folder,
+            foldersList
+        });
 
         const identity = this.getIdentity();
 
@@ -322,7 +380,7 @@ export class FolderLevelPermissions {
 
         for (let i = 0; i < folders.length; i++) {
             const folder = folders[i];
-            const folderPermissions = await this.getFolderPermissions(folder);
+            const folderPermissions = await this.getFolderPermissions({ folder });
             if (folderPermissions) {
                 folder.permissions = folderPermissions.permissions;
             } else {
