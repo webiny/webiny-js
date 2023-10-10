@@ -265,6 +265,9 @@ const PageTemplatesDataList = ({
                                         <ListActions>
                                             {canEdit(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-edit-template-btn"
+                                                    }
                                                     icon={<EditIcon />}
                                                     onClick={() =>
                                                         history.push(
@@ -275,6 +278,9 @@ const PageTemplatesDataList = ({
                                             )}
                                             {canDelete(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-delete-template-btn"
+                                                    }
                                                     icon={<DeleteIcon />}
                                                     onClick={() => onDelete(template)}
                                                 />
