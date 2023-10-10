@@ -7,15 +7,27 @@ describe("Test how parser configuration options", () => {
     it("should be able to turn off default node text node normalizer", async () => {
         const parser = createHtmlToLexicalParser({ normalizeTextNodes: false });
 
-        /** By removing the default text node normalizer, text nodes can't exist alone, so we expect error to be thrown.
-         * Error #56 on the lexical website: https://lexical.dev/docs/error?code=56
-         */
+        let editorState;
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const nodes = parser(htmlWithNotSupportedHtmlTags);
+            editorState = parser(htmlWithNotSupportedHtmlTags);
         } catch (e) {
+            /** By removing the default text node normalizer, text nodes can't exist alone, so we expect error to be thrown.
+             * Error #56 on the lexical website: https://lexical.dev/docs/error?code=56
+             */
             expect(e.message).toMatch(e.message.contains("Minified Lexical error #56;"));
         }
+
+        expect(editorState).toMatchObject({
+            root: {
+                children: [],
+                direction: null,
+                format: "",
+                indent: 0,
+                type: "root",
+                version: 1
+            }
+        });
     });
 
     it("should be able to add custom node mapper", async () => {
