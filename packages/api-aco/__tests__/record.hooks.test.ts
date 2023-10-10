@@ -12,7 +12,7 @@ const folderId = "folderId-lifecycle-events";
 
 const data = {
     someText: "Some strange title",
-    admin: {
+    identity: {
         id: "theJohnDoeUserId",
         displayName: "John Doe",
         type: "admin"

@@ -128,7 +128,7 @@ export const createEventHandler = () => {
                      */
                     if (data === undefined || data === null) {
                         console.error(
-                            `get decompressed data, skipping ES operation "${operation}", ID ${_id}`
+                            `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
                         );
                         continue;
                     }

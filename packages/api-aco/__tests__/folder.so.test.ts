@@ -403,7 +403,7 @@ describe("`folder` CRUD", () => {
     });
 
     it("should enforce security rules", async () => {
-        const { aco: anonymousAco } = useGraphQlHandler({ admin: null });
+        const { aco: anonymousAco } = useGraphQlHandler({ identity: null });
         const { aco } = useGraphQlHandler();
 
         const notAuthorizedResponse = {
