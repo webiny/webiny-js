@@ -10,7 +10,7 @@ import {
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer } from "./styled";
-import { FolderItem } from "~/types";
+import { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete";
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
 import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql";
@@ -37,7 +37,8 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
     const closeDialog = useCallback(() => setDialogOpen(false), []);
 
     const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
-    const targetsList = listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
+    const targetsList: FolderLevelPermissionsTarget[] =
+        listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
 
     useEffect(() => {
         setDialogOpen(open);
@@ -46,7 +47,7 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
     const addPermission = useCallback(
         value => {
             const selectedUserOrTeam = value[value.length - 1];
-            const newPermission = {
+            const newPermission: FolderPermission = {
                 target: selectedUserOrTeam.target,
                 level: "editor"
             };

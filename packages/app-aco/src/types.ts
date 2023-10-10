@@ -6,17 +6,27 @@ import {
 
 export * from "~/graphql/records/types";
 
-export interface FolderItemPermission {
+export type FolderAccessLevel = "owner" | "viewer" | "editor";
+
+export interface FolderPermission {
     target: `admin:${string}` | `team:${string}`;
-    level: string;
+    level: FolderAccessLevel;
     inheritedFrom?: string;
+}
+
+export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
+    id: string;
+    target: string;
+    name: string;
+    type: string;
+    meta: TMeta;
 }
 
 export interface FolderItem {
     id: string;
     title: string;
     slug: string;
-    permissions: FolderItemPermission[];
+    permissions: FolderPermission[];
     hasNonInheritedPermissions: boolean;
     canManagePermissions: boolean;
     type: string;
@@ -186,3 +196,4 @@ export interface AcoApp {
     model: AcoModel;
     getFields: () => AcoModelField[];
 }
+

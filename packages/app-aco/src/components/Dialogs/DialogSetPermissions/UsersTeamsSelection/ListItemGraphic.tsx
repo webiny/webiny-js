@@ -3,9 +3,10 @@ import { Image } from "@webiny/app/components";
 import { ListItemGraphic as UiListItemGraphic } from "@webiny/ui/List";
 import { Avatar } from "@webiny/ui/Avatar";
 import styled from "@emotion/styled";
+import { FolderLevelPermissionsTarget } from "~/types";
 
 interface ListItemGraphicProps {
-    target?: any;
+    target: FolderLevelPermissionsTarget;
 }
 
 // Internally, the `Avatar` component applies top/left positioning to the image, which we don't want.
@@ -16,7 +17,7 @@ const StyledAvatar = styled(Avatar)`
 `;
 
 export const ListItemGraphic: React.FC<ListItemGraphicProps> = ({ target }) => {
-    if (target) {
+    if (target.type === "admin") {
         return (
             <UiListItemGraphic>
                 <StyledAvatar

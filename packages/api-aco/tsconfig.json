@@ -21,7 +21,7 @@
     { "path": "../api-wcp" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
-    { "path": "../wcp" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

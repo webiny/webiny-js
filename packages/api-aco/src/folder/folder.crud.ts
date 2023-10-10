@@ -254,7 +254,7 @@ export const createFolderCrudMethods = ({
 
                 return {
                     id: user.id,
-                    type: "identity",
+                    type: "admin",
                     target: `admin:${user.id}`,
                     name,
                     meta: {

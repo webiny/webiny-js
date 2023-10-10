@@ -4,7 +4,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 interface UsersTeamsMultiAutocompleteProps {
     options: any;
     value: any;
-    onChange: any;
+    onChange: (value: any) => void;
 }
 
 export const UsersTeamsMultiAutocomplete: React.FC<UsersTeamsMultiAutocompleteProps> = props => {

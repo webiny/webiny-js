@@ -5,12 +5,13 @@ import { ListItemText } from "./UsersTeamsSelection/ListItemText";
 import { ListItemMeta } from "./UsersTeamsSelection/ListItemMeta";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
+import { FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 
 interface UsersTeamsSelectionProps {
-    targetsList: any[];
-    permissions: any[];
-    onRemoveAccess: any;
-    onUpdatePermission: any;
+    targetsList: FolderLevelPermissionsTarget[];
+    permissions: FolderPermission[];
+    onRemoveAccess: (params: { permission: FolderPermission }) => void;
+    onUpdatePermission: (params: { permission: FolderPermission }) => void;
 }
 
 // We've set scroll list to be non-interactive, but we still need to override the hover color.
@@ -19,6 +20,8 @@ const StyledListItem = styled(ListItem)`
         background-color: var(--mdc-theme-background) !important;
     }
 `;
+
+type Selection = Array<{ permission: FolderPermission; target: FolderLevelPermissionsTarget }>;
 
 export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
     permissions = [],
@@ -35,7 +38,7 @@ export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
 
             return null;
         })
-        .filter(Boolean);
+        .filter(Boolean) as Selection;
 
     return (
         <>

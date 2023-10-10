@@ -7,6 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import {FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermission} from "~/types";
 
 const TARGET_LEVELS = [
     {
@@ -27,11 +28,11 @@ const TARGET_LEVELS = [
 ];
 
 const StyledHandle = styled.div<{ disabled: boolean }>`
-    display: flex;
-    color: var(--mdc-theme-text-primary-on-background);
-    cursor: pointer;
-    padding: 20px 0 20px 20px;
-    ${({ disabled }) => disabled && `opacity: 0.5; pointer-events: none;`}
+  display: flex;
+  color: var(--mdc-theme-text-primary-on-background);
+  cursor: pointer;
+  padding: 20px 0 20px 20px;
+  ${({disabled}) => disabled && `opacity: 0.5; pointer-events: none;`}
 `;
 
 const StyledMenuItem = styled(MenuItem)`
@@ -57,11 +58,11 @@ const StyledMenuItem = styled(MenuItem)`
 `;
 
 interface ListItemMetaProps {
-    permission: any;
-    target?: any;
-    targetsList?: any;
-    onRemoveAccess: any;
-    onUpdatePermission: any;
+    permission: FolderPermission;
+    target: FolderLevelPermissionsTarget;
+    targetsList: FolderLevelPermissionsTarget[];
+    onRemoveAccess: (params: { permission: FolderPermission }) => void;
+    onUpdatePermission: (params: { permission: FolderPermission }) => void;
 }
 
 export const ListItemMeta: React.FC<ListItemMetaProps> = ({
@@ -126,8 +127,10 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
         // Needed to do this with a short delay because of a visual glitch. Looks better this way.
         setTimeout(() => {
             onUpdatePermission({
-                ...permission,
-                level: level.id
+                permission: {
+                    ...permission,
+                    level: level.id as FolderAccessLevel
+                }
             });
         }, 75);
     }, []);

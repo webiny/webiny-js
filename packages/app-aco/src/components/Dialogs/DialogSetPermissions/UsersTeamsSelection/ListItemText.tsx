@@ -5,15 +5,16 @@ import {
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { useSecurity } from "@webiny/app-security";
+import { FolderLevelPermissionsTarget } from "~/types";
 
 interface ListItemTextProps {
-    target?: any;
+    target: FolderLevelPermissionsTarget;
 }
 
 export const ListItemText: React.FC<ListItemTextProps> = ({ target }) => {
     const { identity } = useSecurity();
 
-    if (target.type === 'identity') {
+    if (target.type === "admin") {
         return (
             <UiListItemText>
                 <ListItemTextPrimary>
