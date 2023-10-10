@@ -50,7 +50,7 @@ export const DrawerContainer = styled(RmwcDrawer)`
             border: 0 !important;
         }
 
-        &:nth-child(1) {
+        &:nth-of-type(1) {
             margin-top: 0;
         }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 
@@ -96,9 +96,8 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
                                         }
                                     >
                                         {group.filters.map((filter, filterIndex, filters) => (
-                                            <>
+                                            <Fragment key={filterIndex}>
                                                 <Filter
-                                                    key={filterIndex}
                                                     name={`groups.${groupIndex}.filters.${filterIndex}`}
                                                     filter={filter}
                                                     fields={viewModel.fields}
@@ -119,7 +118,7 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
                                                     show={filters.length !== filterIndex + 1}
                                                     operation={group.operation}
                                                 />
-                                            </>
+                                            </Fragment>
                                         ))}
                                         <AddFilter
                                             onClick={() =>
