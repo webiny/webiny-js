@@ -249,7 +249,7 @@ export class FolderLevelPermissions {
             if (parentFolder) {
                 const canAccessParentFolder = await this.canAccessFolder({
                     ...params,
-                    folder: parentFolder,
+                    folder: parentFolder
                 });
 
                 if (!canAccessParentFolder) {

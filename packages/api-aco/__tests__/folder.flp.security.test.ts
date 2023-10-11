@@ -323,10 +323,10 @@ describe("Folder Level Permissions", () => {
             })
         ).resolves.toMatchObject([
             {
-                "canManagePermissions": false,
-                "hasNonInheritedPermissions": false,
-                "id": folderC.id,
-                "permissions": [],
+                canManagePermissions: false,
+                hasNonInheritedPermissions: false,
+                id: folderC.id,
+                permissions: []
             }
         ]);
     });
