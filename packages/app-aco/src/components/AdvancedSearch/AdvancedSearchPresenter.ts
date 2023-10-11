@@ -70,35 +70,61 @@ export class AdvancedSearchPresenter {
         );
     }
 
+    private get managerVm() {
+        const vm = {
+            isOpen: this.showManager,
+            view: "EMPTY",
+            loadingLabel: this.listLoading.loadingLabel || this.deleteLoading.loadingLabel,
+            filters: this.repository.filters.map(filter => ({
+                id: filter.id,
+                name: filter.name,
+                description: filter.description || ""
+            }))
+        };
+
+        if (this.repository.filters.length !== 0) {
+            vm.view = "LIST";
+        }
+
+        if (this.listLoading.isLoading || this.deleteLoading.isLoading) {
+            vm.view = "LOADING";
+        }
+
+        return vm;
+    }
+
+    private get feedbackVm() {
+        return {
+            isOpen: Boolean(this.feedback.message),
+            message: this.feedback.message
+        };
+    }
+
+    private get builderVm() {
+        return {
+            open: this.showBuilder
+        };
+    }
+
+    private get saverVm() {
+        return {
+            open: this.showSaver,
+            isLoading: this.createLoading.isLoading || this.updateLoading.isLoading,
+            loadingLabel: this.createLoading.loadingLabel || this.updateLoading.loadingLabel,
+            filter: this.currentFilter
+        };
+    }
+
     get vm() {
         return {
             appliedFilter: this.appliedFilter,
             currentFilter: this.currentFilter,
             showBuilder: this.showBuilder,
             showSaver: this.showSaver,
-            feedbackVm: {
-                isOpen: !!this.feedback.message,
-                message: this.feedback.message
-            },
-            managerVm: {
-                isOpen: this.showManager,
-                isLoading: this.listLoading.isLoading || this.deleteLoading.isLoading,
-                loadingLabel: this.listLoading.loadingLabel || this.deleteLoading.loadingLabel,
-                filters: this.repository.filters.map(filter => ({
-                    id: filter.id,
-                    name: filter.name,
-                    description: filter.description || ""
-                }))
-            },
-            builderVm: {
-                open: this.showBuilder
-            },
-            saverVm: {
-                open: this.showSaver,
-                isLoading: this.createLoading.isLoading || this.updateLoading.isLoading,
-                loadingLabel: this.createLoading.loadingLabel || this.updateLoading.loadingLabel,
-                filter: this.currentFilter
-            }
+            feedbackVm: this.feedbackVm,
+            managerVm: this.managerVm,
+            builderVm: this.builderVm,
+            saverVm: this.saverVm
         };
     }
 
