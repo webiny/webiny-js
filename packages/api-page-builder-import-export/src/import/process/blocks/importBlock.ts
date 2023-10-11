@@ -37,7 +37,11 @@ export async function importBlock({
     log(`Downloading Block data file: ${blockDataFileKey} at "${BLOCK_DATA_FILE_PATH}"`);
     // Download and save block data file in disk.
     const readStream = await s3Stream.readStream(blockDataFileKey);
-    readStream.pipe(createWriteStream(BLOCK_DATA_FILE_PATH));
+    const writeStream = createWriteStream(BLOCK_DATA_FILE_PATH);
+
+    await new Promise((resolve, reject) => {
+        readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
+    });
 
     // Load the block data file from disk.
     log(`Load file ${blockDataFileKey}`);
@@ -71,7 +75,7 @@ export async function importBlock({
     if (category) {
         loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
         if (!loadedCategory) {
-            await context.pageBuilder.createBlockCategory({
+            loadedCategory = await context.pageBuilder.createBlockCategory({
                 name: category.name,
                 slug: category.slug,
                 icon: category.icon,
