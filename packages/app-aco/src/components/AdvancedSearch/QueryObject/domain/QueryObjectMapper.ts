@@ -1,5 +1,5 @@
 import { QueryObject, QueryObjectDTO } from "./QueryObject";
-import { Group, QueryObjectRaw } from "../domains";
+import { Group, QueryObjectRaw } from "../domain";
 
 export class QueryObjectMapper {
     static toDTO(configuration: QueryObject | QueryObjectRaw): QueryObjectDTO {

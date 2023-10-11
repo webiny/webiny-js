@@ -14,6 +14,7 @@ import {
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ButtonDefault, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 interface QueryBuilderProps {
     onClose: () => void;
@@ -22,7 +23,9 @@ interface QueryBuilderProps {
     onDelete: (filterId: string) => void;
     onSelect: (filterId: string) => void;
     vm: {
-        open: boolean;
+        isOpen: boolean;
+        isLoading: boolean;
+        loadingLabel: string;
         filters: QueryManagerFilter[];
     };
 }
@@ -35,8 +38,9 @@ interface QueryManagerFilter {
 
 export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
     return (
-        <DialogContainer open={vm.open} onClose={props.onClose}>
+        <DialogContainer open={vm.isOpen} onClose={props.onClose}>
             <DialogTitle>{"Advanced search filter"}</DialogTitle>
+            {vm.isLoading && <CircularProgress label={vm.loadingLabel} />}
             <DialogContent>
                 <List twoLine nonInteractive>
                     {vm.filters.map(filter => (

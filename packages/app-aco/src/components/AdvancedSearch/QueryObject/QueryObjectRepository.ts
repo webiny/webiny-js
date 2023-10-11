@@ -1,7 +1,7 @@
 import orderBy from "lodash/orderBy";
 import { makeAutoObservable, runInAction } from "mobx";
 
-import { QueryObjectMapper, QueryObjectDTO } from "./domains";
+import { QueryObjectMapper, QueryObjectDTO } from "./domain";
 import { GatewayInterface } from "./gateways";
 import { ListSort } from "~/types";
 

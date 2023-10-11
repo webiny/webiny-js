@@ -11,6 +11,7 @@ import {
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
 import { Button } from "./Button";
+import { Feedback } from "./Feedback";
 import { QueryManagerDialog } from "./QueryManagerDialog";
 import { QueryBuilderDrawer } from "./QueryBuilderDrawer";
 import { QuerySaverDialog } from "./QuerySaverDialog";
@@ -46,6 +47,18 @@ export const AdvancedSearch = observer(
             }
         };
 
+        const unsetFilter = () => {
+            if (presenter.vm.appliedFilter) {
+                presenter.unsetFilter();
+                onApplyFilter(null);
+            }
+        };
+
+        const deleteFilter = async (filterId: string) => {
+            await presenter.deleteFilter(filterId);
+            unsetFilter();
+        };
+
         const applyQueryObject = async (queryObject: QueryObjectDTO) => {
             await presenter.applyQueryObject(queryObject);
             if (presenter.vm.appliedFilter) {
@@ -56,11 +69,6 @@ export const AdvancedSearch = observer(
         const persistAndApplyQueryObject = async (queryObject: QueryObjectDTO) => {
             await presenter.saveFilter(queryObject);
             onApplyFilter(queryObject);
-        };
-
-        const unsetFilter = () => {
-            presenter.unsetFilter();
-            onApplyFilter(null);
         };
 
         return (
@@ -79,7 +87,7 @@ export const AdvancedSearch = observer(
                     onClose={() => presenter.closeManager()}
                     onCreate={() => presenter.createFilter()}
                     onEdit={filterId => presenter.editFilter(filterId)}
-                    onDelete={filterId => presenter.deleteFilter(filterId)}
+                    onDelete={deleteFilter}
                     onSelect={applyFilter}
                     vm={presenter.vm.managerVm}
                 />
@@ -98,10 +106,16 @@ export const AdvancedSearch = observer(
                             onSubmit={persistAndApplyQueryObject}
                             onClose={() => presenter.closeSaver()}
                             open={presenter.vm.saverVm.open}
+                            isLoading={presenter.vm.saverVm.isLoading}
+                            loadingLabel={presenter.vm.saverVm.loadingLabel}
                             queryObject={presenter.currentFilter}
                         />
                     </>
                 ) : null}
+                <Feedback
+                    isOpen={presenter.vm.feedbackVm.isOpen}
+                    message={presenter.vm.feedbackVm.message}
+                />
             </>
         );
     }

@@ -6,6 +6,7 @@ import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 import { QuerySaverDialogFormData, QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
@@ -17,6 +18,8 @@ interface QuerySaverDialogProps {
     onClose: () => void;
     onSubmit: (data: QueryObjectDTO) => void;
     open: boolean;
+    isLoading: boolean;
+    loadingLabel: string;
     queryObject: QueryObjectDTO;
 }
 
@@ -51,6 +54,7 @@ export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverD
                     {({ Bind, form }) => (
                         <>
                             <DialogTitle>{"Save search filter"}</DialogTitle>
+                            {props.isLoading && <CircularProgress label={props.loadingLabel} />}
                             <DialogContent>
                                 <Grid>
                                     <Cell span={12} align={"middle"}>
