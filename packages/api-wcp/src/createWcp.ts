@@ -22,7 +22,7 @@ export interface CreateWcpParams {
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-export const createWcp = async (params: CreateWcpParams): Promise<WcpContextObject> => {
+export const createWcp = async (params: CreateWcpParams = {}): Promise<WcpContextObject> => {
     if (params.testProjectLicense) {
         cachedWcpProjectLicense.license = params.testProjectLicense;
     } else if (wcpProjectEnvironment) {

@@ -60,7 +60,7 @@ export const FolderDialogManagePermissions: React.VFC<FolderDialogUpdateProps> =
     );
 
     const updatePermission = useCallback(
-        updatedPermission => {
+        ({ permission: updatedPermission }) => {
             setPermissions(
                 permissions.map(permission => {
                     if (permission.target === updatedPermission.target) {
