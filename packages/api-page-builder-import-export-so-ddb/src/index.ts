@@ -104,7 +104,6 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 entity: entity,
                 partitionKey: PARENT_TASK_GSI1_PK,
                 options: {
-                    beginsWith: "",
                     index: "GSI1",
                     limit: limit || undefined
                 }

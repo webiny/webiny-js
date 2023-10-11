@@ -373,8 +373,7 @@ export const createStorageOperations = (
                     entity: entities.apiKeys,
                     partitionKey: `T#${tenant}#API_KEYS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -400,8 +399,7 @@ export const createStorageOperations = (
                     entity: entities.groups,
                     partitionKey: `T#${tenant}#GROUPS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -434,8 +432,7 @@ export const createStorageOperations = (
                     entity: entities.teams,
                     partitionKey: `T#${tenant}#TEAMS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -467,7 +464,7 @@ export const createStorageOperations = (
             const links = await queryAll<TenantLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `T#${tenant}`,
-                options: { index: "GSI1", beginsWith: "" }
+                options: { index: "GSI1" }
             });
 
             return cleanupItems(entities.tenantLinks, links);

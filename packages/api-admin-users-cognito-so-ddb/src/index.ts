@@ -172,8 +172,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                     entity: entities.users,
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
