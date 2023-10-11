@@ -46,6 +46,21 @@ export const Row = styled("div")({
     overflowX: "auto"
 });
 
+export const conditionGroupContainer = css({
+    position: "relative",
+    flex: "1 100%",
+    backgroundColor: "white",
+    padding: "0 15px",
+    margin: 10,
+    transition: "box-shadow 225ms",
+    color: "var(--mdc-theme-on-surface)",
+    cursor: "grab",
+    "&:hover": {
+        boxShadow:
+            "var(--mdc-theme-on-background) 1px 1px 1px, var(--mdc-theme-on-background) 1px 1px 2px"
+    }
+});
+
 export const fieldContainer = css({
     position: "relative",
     flex: "1 100%",

@@ -12,6 +12,7 @@ import {
 import Draggable from "../../../Draggable";
 import EditFieldDialog from "../EditFieldDialog";
 import Field from "../Field";
+import ConditionalGroupField from "../ConditionGroup";
 import {
     rowHandle,
     fieldHandle,
@@ -19,7 +20,8 @@ import {
     Row,
     RowContainer,
     StyledAccordion,
-    StyledAccordionItem
+    StyledAccordionItem,
+    conditionGroupContainer
 } from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
@@ -45,7 +47,8 @@ export const FormStep = ({
     insertField,
     getLayoutFields,
     updateField,
-    deleteField
+    deleteField,
+    deleteConditionGroup
 }: {
     title: string;
     deleteStepDisabled: boolean;
@@ -69,6 +72,13 @@ export const FormStep = ({
     getLayoutFields: (stepId: string) => FbFormModelField[][];
     updateField: (field: FbFormModelField) => void;
     deleteField: (field: FbFormModelField, stepId: string) => void;
+    deleteConditionGroup: ({
+        formStep,
+        conditionGroup
+    }: {
+        formStep: FbFormStep;
+        conditionGroup: FbFormModelField;
+    }) => void;
 }) => {
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
     const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType | null>(null);
@@ -218,7 +228,14 @@ export const FormStep = ({
                                                 }}
                                             >
                                                 {({ drag }) => (
-                                                    <div className={fieldContainer} ref={drag}>
+                                                    <div
+                                                        className={
+                                                            field.name === "conditionGroup"
+                                                                ? conditionGroupContainer
+                                                                : fieldContainer
+                                                        }
+                                                        ref={drag}
+                                                    >
                                                         <Vertical
                                                             onDrop={item => {
                                                                 handleDropField(item, {
@@ -234,15 +251,36 @@ export const FormStep = ({
                                                             }
                                                         />
 
-                                                        <div className={fieldHandle}>
-                                                            <Field
-                                                                field={field}
-                                                                onEdit={editField}
-                                                                onDelete={() =>
-                                                                    deleteField(field, formStep.id)
-                                                                }
-                                                            />
-                                                        </div>
+                                                        {field.name === "conditionGroup" ? (
+                                                            <div>
+                                                                <ConditionalGroupField
+                                                                    field={field}
+                                                                    onEdit={editField}
+                                                                    targetStepId={formStep.id}
+                                                                    onDelete={deleteField}
+                                                                    deleteConditionGroup={
+                                                                        deleteConditionGroup
+                                                                    }
+                                                                    onDrop={handleDrop}
+                                                                    formStep={formStep}
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className={fieldHandle}>
+                                                                <Field
+                                                                    field={field}
+                                                                    onEdit={editField}
+                                                                    onDelete={() =>
+                                                                        deleteField({
+                                                                            field,
+                                                                            containerId:
+                                                                                formStep.id,
+                                                                            containerType: "step"
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        )}
 
                                                         {/* Field end */}
                                                         {fieldIndex === row.length - 1 && (
