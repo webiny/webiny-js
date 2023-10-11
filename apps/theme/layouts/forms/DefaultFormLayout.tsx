@@ -47,6 +47,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     submit,
     goToNextStep,
     goToPreviousStep,
+    handleConditionGroupDisplay,
     isLastStep,
     isFirstStep,
     isMultiStepForm,
@@ -89,7 +90,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
     return (
         /* "onSubmit" callback gets triggered once all the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
-        <Form onSubmit={submitForm} data={getDefaultValues()}>
+        <Form
+            onSubmit={submitForm}
+            data={getDefaultValues()}
+            onChange={data => handleConditionGroupDisplay(data, currentStepIndex)}
+        >
             {({ submit }) => (
                 <Wrapper>
                     <StepTitle>{currentStep?.title}</StepTitle>

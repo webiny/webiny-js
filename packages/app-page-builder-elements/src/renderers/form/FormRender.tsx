@@ -5,7 +5,8 @@ import {
     handleFormTriggers,
     reCaptchaEnabled,
     termsOfServiceEnabled,
-    onFormMounted
+    onFormMounted,
+    getHideOrShowConditionGroup
 } from "./FormRender/functions";
 
 import {
@@ -167,6 +168,24 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return { ...values, ...overrides };
     };
 
+    const handleConditionGroupDisplay = (
+        formData: Record<string, any> | undefined,
+        stepIndex: number
+    ) => {
+        const currentStep = resolvedSteps[stepIndex];
+        const stepLayout = steps.find(step => step.id === currentStep.id) as FbFormStep;
+        stepLayout.layout.map((row, fieldIndex) => {
+            return row.map(field => {
+                return getHideOrShowConditionGroup({
+                    formData,
+                    fieldIndex,
+                    currentStep,
+                    field: getFieldById(field)
+                });
+            });
+        });
+    };
+
     const submit = async (
         formSubmissionFieldValues: FormSubmissionFieldValues
     ): Promise<FormSubmissionResponse> => {
@@ -221,6 +240,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        handleConditionGroupDisplay,
         isFirstStep,
         isLastStep,
         isMultiStepForm,

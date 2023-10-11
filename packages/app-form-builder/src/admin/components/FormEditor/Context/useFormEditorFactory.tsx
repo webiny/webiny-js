@@ -17,7 +17,8 @@ import {
     moveRow,
     deleteField,
     moveStep,
-    moveRowBetweenSteps
+    moveRowBetweenSteps,
+    validateConditionGroupRule
 } from "./functions";
 import { plugins } from "@webiny/plugins";
 
@@ -60,6 +61,7 @@ export interface FormEditor {
     addStep: () => void;
     deleteStep: (id: string) => void;
     updateStep: (title: string, id: string | null) => void;
+    validateConditionGroupRules: (data: FbFormModel) => FbFormModel;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (
         data: FbFormModel | null
@@ -352,7 +354,10 @@ export const useFormEditorFactory = (
                         layout: []
                     });
 
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
             deleteStep: (targetStepId: string) => {
@@ -370,7 +375,10 @@ export const useFormEditorFactory = (
                     deleteStepFields(data);
                     data.steps.splice(deleteStepIndex, 1);
 
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
             updateStep: (stepTitle, id) => {
@@ -383,6 +391,28 @@ export const useFormEditorFactory = (
                         return data;
                     });
                 }
+            },
+            validateConditionGroupRules: data => {
+                const fields = data.fields.map(field => {
+                    const rules = (field?.settings.rules || []).map(rule => {
+                        const isValid = validateConditionGroupRule({
+                            fields: data.fields,
+                            steps: data.steps
+                        });
+
+                        return { ...rule, isValid };
+                    });
+
+                    return {
+                        ...field,
+                        settings: {
+                            ...field.settings,
+                            rules
+                        }
+                    };
+                });
+
+                return { ...data, fields };
             },
             /**
              * Inserts a new field into the target position.
@@ -418,7 +448,10 @@ export const useFormEditorFactory = (
                     });
 
                     // We are dropping a new field at the specified index.
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
 
@@ -437,7 +470,10 @@ export const useFormEditorFactory = (
                             data,
                             targetStepId
                         });
-                        return data;
+                        return {
+                            ...data,
+                            fields: self.validateConditionGroupRules(data).fields
+                        };
                     });
                 } else {
                     self.setData(data => {
@@ -448,7 +484,10 @@ export const useFormEditorFactory = (
                             targetStepId,
                             sourceStepId
                         });
-                        return data;
+                        return {
+                            ...data,
+                            fields: self.validateConditionGroupRules(data).fields
+                        };
                     });
                 }
             },
@@ -460,7 +499,10 @@ export const useFormEditorFactory = (
                         data: data.steps
                     });
 
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
             /**
@@ -474,7 +516,10 @@ export const useFormEditorFactory = (
                             source,
                             destination
                         });
-                        return data;
+                        return {
+                            ...data,
+                            fields: self.validateConditionGroupRules(data).fields
+                        };
                     });
                 } else {
                     self.setData(data => {
@@ -485,7 +530,10 @@ export const useFormEditorFactory = (
                             targetStepId,
                             sourceStep
                         });
-                        return data;
+                        return {
+                            ...data,
+                            fields: self.validateConditionGroupRules(data).fields
+                        };
                     });
                 }
             },
@@ -502,7 +550,10 @@ export const useFormEditorFactory = (
                             break;
                         }
                     }
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
 
@@ -512,7 +563,10 @@ export const useFormEditorFactory = (
             deleteField: (field, targetStepId) => {
                 self.setData(data => {
                     deleteField({ field, data, targetStepId });
-                    return data;
+                    return {
+                        ...data,
+                        fields: self.validateConditionGroupRules(data).fields
+                    };
                 });
             },
 

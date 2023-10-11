@@ -8,7 +8,8 @@ import {
     handleFormTriggers,
     onFormMounted,
     reCaptchaEnabled,
-    termsOfServiceEnabled
+    termsOfServiceEnabled,
+    getHideOrShowConditionGroup
 } from "./functions";
 
 import {
@@ -20,7 +21,8 @@ import {
     FbFormModelField,
     FormRenderFbFormModelField,
     FbFormModel,
-    FbFormLayout
+    FbFormLayout,
+    FbFormStep
 } from "~/types";
 import { FbFormLayoutPlugin } from "~/plugins";
 
@@ -48,6 +50,12 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const [layoutRenderKey, setLayoutRenderKey] = useState<string>(new Date().getTime().toString());
     const resetLayoutRenderKey = useCallback(() => {
         setLayoutRenderKey(new Date().getTime().toString());
+    }, []);
+
+    // Here we are triggerind "defaultBehaviour" of the condition groups of the first step,
+    // on the initial rendering.
+    useEffect(() => {
+        handleConditionGroupDisplay(undefined, currentStepIndex);
     }, []);
 
     useEffect((): void => {
@@ -176,6 +184,24 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return { ...values, ...overrides };
     };
 
+    const handleConditionGroupDisplay = (
+        formData: Record<string, any> | undefined,
+        stepIndex: number
+    ) => {
+        const currentStep = resolvedSteps[stepIndex];
+        const stepLayout = steps.find(step => step.id === currentStep.id) as FbFormStep;
+        stepLayout.layout.map((row, fieldIndex) => {
+            return row.map(field => {
+                return getHideOrShowConditionGroup({
+                    formData,
+                    fieldIndex,
+                    currentStep,
+                    field: getFieldById(field)
+                });
+            });
+        });
+    };
+
     const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
@@ -251,6 +277,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        handleConditionGroupDisplay,
         isLastStep,
         isFirstStep,
         currentStepIndex,
