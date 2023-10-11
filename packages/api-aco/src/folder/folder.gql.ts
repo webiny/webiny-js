@@ -71,6 +71,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         type FoldersListResponse {
             data: [Folder]
             error: AcoError
+            meta: AcoMeta
         }
 
         type FolderLevelPermissionsTarget {

@@ -9,14 +9,18 @@ interface UsersTeamsMultiAutocompleteProps {
 
 export const UsersTeamsMultiAutocomplete: React.FC<UsersTeamsMultiAutocompleteProps> = props => {
     return (
-        <MultiAutoComplete
-            label={"Add user or a team"}
-            renderMultipleSelection={null}
-            options={props.options}
-            valueProp={"target"}
-            unique={true}
-            onChange={props.onChange}
-            value={props.value || []}
-        />
+        <>
+            {/* A hack that ensures the autocomplete is not being auto-focused. */}
+            <input style={{ position: "fixed", left: 10000 }} type="text" />
+            <MultiAutoComplete
+                label={"Add user or a team"}
+                renderMultipleSelection={null}
+                options={props.options}
+                valueProp={"target"}
+                unique={true}
+                onChange={props.onChange}
+                value={props.value || []}
+            />
+        </>
     );
 };

@@ -62,11 +62,17 @@ export const DELETE_FOLDER = /* GraphQL */ `
 `;
 
 export const LIST_FOLDERS = /* GraphQL */ `
-    query ListFolders($where: FoldersListWhereInput!) {
+    query ListFolders($limit: Int,  $after: String, $where: FoldersListWhereInput!) {
         aco {
-            listFolders(where: $where) {
+            listFolders( limit: $limit, after: $after, where: $where) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
+                meta {
+                    cursor
+                    totalCount
+                    hasMoreItems
+                }
+
             }
         }
     }

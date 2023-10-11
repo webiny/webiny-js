@@ -511,4 +511,77 @@ describe("Folder Level Permissions", () => {
             }
         ]);
     });
+
+    test("when listing folders, meta should show correct information", async () => {
+        const createdFolders = [];
+        for (let i = 0; i < 20; i++) {
+            const folder = await aco
+                .createFolder({
+                    data: {
+                        title: `Folder ${i}`,
+                        slug: `folder-${i}`,
+                        type: FOLDER_TYPE
+                    }
+                })
+                .then(([response]) => response.data.aco.createFolder.data);
+
+            createdFolders.push(folder);
+        }
+
+        createdFolders.reverse();
+
+        const listFolders = async (params: Record<string, any> = {}) => {
+            return aco.listFolders({ ...params, where: { type: FOLDER_TYPE } }).then(([result]) => {
+                return result.data.aco.listFolders;
+            });
+        };
+
+        await expect(listFolders()).resolves.toMatchObject({
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 20
+            }
+        });
+
+        await expect(listFolders({ limit: 6 })).resolves.toMatchObject({
+            meta: {
+                cursor: createdFolders[5].id,
+                hasMoreItems: true,
+                totalCount: 20
+            }
+        });
+
+        await expect(listFolders({ limit: 6, after: createdFolders[5].id })).resolves.toMatchObject(
+            {
+                meta: {
+                    cursor: createdFolders[11].id,
+                    hasMoreItems: true,
+                    totalCount: 20
+                }
+            }
+        );
+
+        await expect(
+            listFolders({ limit: 6, after: createdFolders[11].id })
+        ).resolves.toMatchObject({
+            meta: {
+                cursor: createdFolders[17].id,
+                hasMoreItems: true,
+                totalCount: 20
+            }
+        });
+
+        const lastPageResult = await listFolders({ limit: 6, after: createdFolders[17].id });
+
+        expect(lastPageResult).toMatchObject({
+            data: [{ slug: "folder-1" }, { slug: "folder-0" }],
+            error: null,
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 20
+            }
+        });
+    });
 });

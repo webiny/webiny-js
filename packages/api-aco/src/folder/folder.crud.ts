@@ -17,6 +17,8 @@ import { Team } from "@webiny/api-security/types";
 import structuredClone from "@ungap/structured-clone";
 import WError from "@webiny/error";
 
+const FIXED_FOLDER_LISTING_LIMIT = 10_000;
+
 interface CreateFolderCrudMethodsParams extends CreateAcoParams {
     listAdminUsers: () => Promise<AdminUser[]>;
     listTeams: () => Promise<Team[]>;
@@ -74,7 +76,13 @@ export const createFolderCrudMethods = ({
             return folder;
         },
         async list(params) {
-            const [folders, meta] = await storageOperations.listFolders(params);
+            // No matter what was the limit set in the params, initially, we always retrieve
+            // all folders.The limit is then applied with the filtered folders list below.
+            const [folders, meta] = await storageOperations.listFolders({
+                ...params,
+                limit: FIXED_FOLDER_LISTING_LIMIT
+            });
+
             if (folders.length === 0) {
                 return [folders, meta];
             }
@@ -86,12 +94,33 @@ export const createFolderCrudMethods = ({
 
             await folderLevelPermissions.assignFolderPermissions(filteredFolders);
 
-            const processedFoldersMeta = { ...meta }; // TODO: Process meta.
-            return [filteredFolders, processedFoldersMeta];
+            const totalCount = filteredFolders.length;
+            let hasMoreItems = false;
+            let cursor: string | null = null;
+
+            // Apply cursor/limit params.
+            if (params.after) {
+                const afterListItemIndex = filteredFolders.findIndex(
+                    folder => folder.id === params.after
+                );
+                if (afterListItemIndex >= 0) {
+                    // Remove all items below the "after" item.
+                    filteredFolders.splice(0, afterListItemIndex + 1);
+                }
+            }
+
+            hasMoreItems = !!params.limit && filteredFolders.length > params.limit;
+
+            if (hasMoreItems) {
+                cursor = filteredFolders[params.limit! - 1]?.id || null;
+                filteredFolders.splice(params.limit!);
+            }
+
+            return [filteredFolders, { totalCount, hasMoreItems, cursor }];
         },
 
         async listAll(params) {
-            return this.list({ ...params, limit: 10000 });
+            return this.list({ ...params, limit: FIXED_FOLDER_LISTING_LIMIT });
         },
 
         async create(data) {
@@ -193,8 +222,6 @@ export const createFolderCrudMethods = ({
                 );
             }
 
-            // TODO: Detect unallowed parent change.
-
             await onFolderBeforeUpdate.publish({ original, input: { id, data } });
             const folder = await storageOperations.updateFolder({ id, data });
             await onFolderAfterUpdate.publish({ original, input: { id, data }, folder });
@@ -223,13 +250,8 @@ export const createFolderCrudMethods = ({
         },
 
         async getFolderWithAncestors(id: string) {
-            const { type } = await storageOperations.getFolder({ id });
-            const [folders] = await storageOperations.listFolders({
-                where: {
-                    type
-                },
-                limit: 10000
-            });
+            const { type } = await this.get(id);
+            const [folders] = await this.listAll({ where: { type } });
             return getFolderAndItsAncestors({ id, folders });
         },
 
