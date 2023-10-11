@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add.svg";
+import { ReactComponent as SavedSearchIcon } from "@material-design-icons/svg/outlined/saved_search.svg";
+import { Typography } from "@webiny/ui/Typography";
 
 interface CellInnerProps {
     align: "left" | "center" | "right";
@@ -20,9 +22,20 @@ export const FilterContainer = styled.div`
     }
 `;
 
-export const GroupOperationContainer = styled.div`
-    text-align: right;
+export const DetailsContainer = styled.div`
     margin-bottom: 24px;
+`;
+
+export const FilterDetailsIcon = styled(SavedSearchIcon)`
+    width: 48px;
+    height: auto;
+    fill: var(--mdc-theme-text-icon-on-background);
+`;
+
+export const FilterDetailsDetails = styled(Typography)`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `;
 
 export const FilterOperationContainer = styled.div`

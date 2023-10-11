@@ -70,10 +70,6 @@ export const AdvancedSearch = observer(
             await presenter.saveFilter(filter);
 
             onApplyFilter(filter);
-
-            console.log("saveFilterAndApply", filter);
-            console.log("appliedFilter", presenter.vm.appliedFilter);
-            console.log("currentFilter", presenter.vm.currentFilter);
         };
 
         return (

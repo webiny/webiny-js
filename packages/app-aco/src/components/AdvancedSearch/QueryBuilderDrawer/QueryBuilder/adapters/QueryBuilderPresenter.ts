@@ -1,9 +1,10 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import {
     Field,
     FieldDTO,
     FieldMapper,
     FieldRaw,
+    GroupDTO,
     Operation,
     QueryObject,
     QueryObjectDTO
@@ -24,17 +25,23 @@ export interface IQueryBuilderPresenter {
 }
 
 export interface QueryBuilderViewModel {
+    name: string;
+    description: string;
     fields: FieldDTO[];
     invalidFields: Record<string, { isValid: boolean; message: string }>;
-    queryObject: QueryObjectDTO;
+    data: QueryBuilderFormData;
 }
 
-export class QueryBuilderPresenter implements IQueryBuilderPresenter {
+export interface QueryBuilderFormData {
+    operation: Operation;
+    groups: (GroupDTO & { title: string; open: boolean })[];
+}
+
+export class QueryBuilderPresenter {
     private readonly fields: QueryBuilderViewModel["fields"];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
-    private queryObject: QueryBuilderViewModel["queryObject"];
-    private callback: ((viewModel: QueryBuilderViewModel) => void) | undefined = undefined;
+    private queryObject: QueryObjectDTO;
 
     constructor(queryObject: QueryObjectDTO, fields: FieldRaw[]) {
         this.queryObject = queryObject;
@@ -42,19 +49,28 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         makeAutoObservable(this);
     }
 
-    load(callback: (viewModel: QueryBuilderViewModel) => void) {
-        this.callback = callback;
-        this.updateViewModel();
-    }
-
-    updateViewModel() {
-        const viewModel = {
-            queryObject: this.queryObject,
+    get vm() {
+        return {
+            name: this.queryObject.name,
+            description: this.queryObject.description,
             fields: this.fields,
-            invalidFields: this.invalidFields
+            invalidFields: this.invalidFields,
+            data: {
+                operation: this.queryObject.operation,
+                groups: this.queryObject.groups.map((group: GroupDTO, groupIndex) => {
+                    return {
+                        title: `Filter group #${groupIndex + 1}`,
+                        open: groupIndex === 0,
+                        operation: group.operation,
+                        filters: group.filters.map(filter => ({
+                            field: filter.field,
+                            condition: filter.condition,
+                            value: filter.value
+                        }))
+                    };
+                })
+            }
         };
-
-        this.callback && this.callback(viewModel);
     }
 
     addGroup() {
@@ -62,7 +78,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
             operation: Operation.AND,
             filters: [{ field: "", value: "", condition: "" }]
         });
-        this.updateViewModel();
     }
 
     deleteGroup(groupIndex: number) {
@@ -77,7 +92,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
                 filters: [{ field: "", value: "", condition: "" }]
             });
         }
-        this.updateViewModel();
     }
 
     addNewFilterToGroup(groupIndex: number) {
@@ -86,7 +100,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
             value: "",
             condition: ""
         });
-        this.updateViewModel();
     }
 
     deleteFilterFromGroup(groupIndex: number, filterIndex: number) {
@@ -103,7 +116,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
                 condition: ""
             });
         }
-        this.updateViewModel();
     }
 
     emptyFilterIntoGroup(groupIndex: number, filterIndex: number) {
@@ -116,18 +128,21 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
             },
             ...this.queryObject.groups[groupIndex].filters.slice(filterIndex + 1)
         ];
-        this.updateViewModel();
     }
 
-    setQueryObject(queryObject: QueryObjectDTO) {
-        runInAction(() => {
-            this.queryObject = queryObject;
-            this.updateViewModel();
+    setQueryObject(data: QueryBuilderFormData) {
+        this.queryObject = {
+            ...this.queryObject,
+            operation: data.operation,
+            groups: data.groups.map(group => ({
+                operation: group.operation,
+                filters: group.filters
+            }))
+        };
 
-            if (this.formWasSubmitted) {
-                this.validateQueryObject(queryObject);
-            }
-        });
+        if (this.formWasSubmitted) {
+            this.validateQueryObject(this.queryObject);
+        }
     }
 
     onSubmit(
@@ -168,8 +183,6 @@ export class QueryBuilderPresenter implements IQueryBuilderPresenter {
         } else {
             this.invalidFields = {};
         }
-
-        this.updateViewModel();
 
         return validation;
     }

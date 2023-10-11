@@ -1,38 +1,34 @@
 import React, { Fragment, useEffect } from "react";
 
+import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 
+import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+
+import { QueryBuilderFormData, QueryBuilderPresenter } from "./adapters";
+
 import {
     AddFilter,
     AddGroup,
+    Details,
     Filter,
     FilterOperationLabel,
     GroupOperationLabel,
     OperationSelector
 } from "./components";
 
-import {
-    AccordionItemInner,
-    Content,
-    FilterOperationContainer,
-    GroupOperationContainer
-} from "./Querybuilder.styled";
-
-import { QueryBuilderPresenter, QueryBuilderViewModel } from "./adapters";
-
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { AccordionItemInner, Content, FilterOperationContainer } from "./Querybuilder.styled";
 
 export interface QueryBuilderProps {
     onForm: (form: FormAPI) => void;
     onSubmit: (data: QueryObjectDTO) => void;
     presenter: QueryBuilderPresenter;
-    viewModel: QueryBuilderViewModel;
 }
 
-export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBuilderProps) => {
+export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuilderProps) => {
     const formRef = React.createRef<FormAPI>();
 
     useEffect(() => {
@@ -41,11 +37,11 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
         }
     }, []);
 
-    const onChange = (data: QueryObjectDTO) => {
+    const onChange = (data: QueryBuilderFormData) => {
         presenter.setQueryObject(data);
     };
 
-    const onFormSubmit: FormOnSubmit<QueryObjectDTO> = () => {
+    const onFormSubmit: FormOnSubmit<QueryBuilderFormData> = () => {
         presenter.onSubmit(queryObject => {
             onSubmit(queryObject);
         });
@@ -54,26 +50,21 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
     return (
         <Form
             ref={formRef}
-            data={viewModel.queryObject}
+            data={presenter.vm.data}
             onChange={onChange}
             onSubmit={onFormSubmit}
-            invalidFields={viewModel.invalidFields}
+            invalidFields={presenter.vm.invalidFields}
         >
             {() => (
                 <Content>
                     <Content.Panel>
-                        <GroupOperationContainer>
-                            <OperationSelector
-                                name={"operation"}
-                                label={"Match all filter groups"}
-                            />
-                        </GroupOperationContainer>
-                        <Accordion>
-                            {viewModel.queryObject.groups.map((group, groupIndex, groups) => (
+                        <Details name={presenter.vm.name} description={presenter.vm.description} />
+                        <Accordion elevation={1}>
+                            {presenter.vm.data.groups.map((group, groupIndex, groups) => (
                                 <AccordionItemInner key={`group-${groupIndex}`}>
                                     <AccordionItem
-                                        title={`Filter group #${groupIndex + 1}`}
-                                        open={groupIndex === 0}
+                                        title={group.title}
+                                        open={group.open}
                                         actions={
                                             <AccordionItem.Actions>
                                                 <AccordionItem.Element
@@ -100,7 +91,7 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
                                                 <Filter
                                                     name={`groups.${groupIndex}.filters.${filterIndex}`}
                                                     filter={filter}
-                                                    fields={viewModel.fields}
+                                                    fields={presenter.vm.fields}
                                                     onEmpty={() => {
                                                         presenter.emptyFilterIntoGroup(
                                                             groupIndex,
@@ -128,7 +119,7 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
                                     </AccordionItem>
                                     <GroupOperationLabel
                                         show={groups.length !== groupIndex + 1}
-                                        operation={viewModel.queryObject.operation}
+                                        operation={presenter.vm.data.operation}
                                     />
                                 </AccordionItemInner>
                             ))}
@@ -139,4 +130,4 @@ export const QueryBuilder = ({ presenter, onForm, onSubmit, viewModel }: QueryBu
             )}
         </Form>
     );
-};
+});
