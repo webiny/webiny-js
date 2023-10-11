@@ -8,7 +8,7 @@ import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
-import { QueryBuilderFormData, QueryBuilderPresenter } from "./QueryBuilderPresenter";
+import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "../QueryBuilderDrawerPresenter";
 
 import {
     AddFilter,
@@ -25,7 +25,7 @@ import { AccordionItemInner, Content, FilterOperationContainer } from "./Querybu
 export interface QueryBuilderProps {
     onForm: (form: FormAPI) => void;
     onSubmit: (data: QueryObjectDTO) => void;
-    presenter: QueryBuilderPresenter;
+    presenter: QueryBuilderDrawerPresenter;
 }
 
 export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuilderProps) => {

@@ -12,7 +12,7 @@ import { QueryBuilder } from "./QueryBuilder";
 import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
-import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
+import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
@@ -25,8 +25,8 @@ interface QueryBuilderDrawerProps {
 }
 
 export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
-    const [presenter] = useState<QueryBuilderPresenter>(
-        new QueryBuilderPresenter(props.queryObject, props.fields)
+    const [presenter] = useState<QueryBuilderDrawerPresenter>(
+        new QueryBuilderDrawerPresenter(props.queryObject, props.fields)
     );
 
     useHotkeys({

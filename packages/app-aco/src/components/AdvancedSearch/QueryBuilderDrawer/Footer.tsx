@@ -4,7 +4,7 @@ import { FormAPI } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
-import { QueryBuilderPresenter } from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
+import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 
 import { SimpleFormFooter } from "./QueryBuilderDrawer.styled";
 
@@ -12,7 +12,7 @@ interface FooterProps {
     onClose: () => void;
     formRef: React.RefObject<FormAPI>;
     onPersist: (data: QueryObjectDTO) => void;
-    presenter: QueryBuilderPresenter;
+    presenter: QueryBuilderDrawerPresenter;
 }
 
 export const Footer = ({ formRef, onPersist, onClose, presenter }: FooterProps) => {

@@ -8,9 +8,9 @@ import {
     Operation,
     QueryObject,
     QueryObjectDTO
-} from "../../QueryObject";
+} from "../QueryObject";
 
-export interface IQueryBuilderPresenter {
+export interface IQueryBuilderDrawerPresenter {
     addGroup: () => void;
     addNewFilterToGroup: (groupIndex: number) => void;
     deleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
@@ -37,7 +37,7 @@ export interface QueryBuilderFormData {
     groups: (GroupDTO & { title: string; open: boolean })[];
 }
 
-export class QueryBuilderPresenter {
+export class QueryBuilderDrawerPresenter {
     private readonly fields: QueryBuilderViewModel["fields"];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
