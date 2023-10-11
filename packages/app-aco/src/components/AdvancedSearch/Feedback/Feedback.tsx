@@ -8,10 +8,5 @@ export interface FeedbackProps {
 }
 
 export const Feedback = (props: FeedbackProps) => {
-    return (
-        <>
-            {JSON.stringify(props)}
-            <Snackbar open={props.isOpen} message={props.message} />
-        </>
-    );
+    return <Snackbar open={props.isOpen} message={props.message} />;
 };
