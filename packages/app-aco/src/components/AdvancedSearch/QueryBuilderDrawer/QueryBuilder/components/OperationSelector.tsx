@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Bind } from "@webiny/form";
 import { Switch } from "@webiny/ui/Switch";
 import { Operation } from "~/components/AdvancedSearch/QueryObject";

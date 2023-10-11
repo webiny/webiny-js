@@ -8,7 +8,7 @@ import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 
 import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
-import { QueryBuilderFormData, QueryBuilderPresenter } from "./adapters";
+import { QueryBuilderFormData, QueryBuilderPresenter } from "./QueryBuilderPresenter";
 
 import {
     AddFilter,

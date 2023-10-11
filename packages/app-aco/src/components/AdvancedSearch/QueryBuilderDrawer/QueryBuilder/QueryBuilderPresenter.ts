@@ -8,7 +8,7 @@ import {
     Operation,
     QueryObject,
     QueryObjectDTO
-} from "../../../QueryObject";
+} from "../../QueryObject";
 
 export interface IQueryBuilderPresenter {
     addGroup: () => void;

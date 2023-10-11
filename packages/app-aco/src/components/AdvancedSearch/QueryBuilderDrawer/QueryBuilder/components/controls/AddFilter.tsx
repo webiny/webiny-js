@@ -1,4 +1,5 @@
 import React from "react";
+
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_circle_outline.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";

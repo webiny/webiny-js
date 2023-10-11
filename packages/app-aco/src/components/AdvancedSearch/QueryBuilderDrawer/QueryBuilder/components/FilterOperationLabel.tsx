@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Typography } from "@webiny/ui/Typography";
 
 import { FilterOperationLabelContainer } from "../Querybuilder.styled";
