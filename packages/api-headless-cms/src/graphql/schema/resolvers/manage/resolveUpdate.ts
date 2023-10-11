@@ -20,6 +20,7 @@ export const resolveUpdate: ResolveUpdate =
                 model,
                 args.revision,
                 args.data,
+                {},
                 args.options
             );
 
