@@ -66,7 +66,8 @@
     ],
     "ignore": {
       "src": [
-        "sharp"
+        "sharp",
+        "stream"
       ]
     }
   },

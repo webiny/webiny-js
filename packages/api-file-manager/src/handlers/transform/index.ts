@@ -6,6 +6,7 @@ import * as newUtils from "./utils";
 import * as legacyUtils from "./legacyUtils";
 import { TransformHandlerEventPayload } from "~/handlers/types";
 import { createEvent } from "@webiny/handler";
+import type { Readable } from "stream";
 
 export const createTransformFilePlugins = () => {
     return [
@@ -39,7 +40,7 @@ export const createTransformFilePlugins = () => {
                         ...params.optimized,
                         ContentType: optimizedImageObject.ContentType,
                         Body: await optimizeImage(
-                            optimizedImageObject.Body,
+                            optimizedImageObject.Body as Readable,
                             optimizedImageObject.ContentType as string
                         )
                     });
@@ -61,9 +62,13 @@ export const createTransformFilePlugins = () => {
                 await s3.putObject({
                     ...params.optimizedTransformed,
                     ContentType: optimizedImageObject.ContentType,
-                    Body: await transformImage(optimizedImageObject.Body, transformations, {
-                        animated: isAnimated
-                    })
+                    Body: await transformImage(
+                        optimizedImageObject.Body as Readable,
+                        transformations,
+                        {
+                            animated: isAnimated
+                        }
+                    )
                 });
 
                 return {
