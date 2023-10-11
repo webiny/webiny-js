@@ -209,8 +209,6 @@ export class AdvancedSearchPresenter {
         }
 
         runInAction(() => {
-            this.appliedFilter = filter;
-            this.currentFilter = null;
             this.closeManager();
             this.closeBuilder();
             this.closeSaver();
@@ -218,8 +216,21 @@ export class AdvancedSearchPresenter {
     }
 
     private async createFilterIntoRepository(filter: QueryObjectDTO) {
+        const createFilter = async () => {
+            const newFilter = await this.repository.createFilter(filter);
+
+            /**
+             * repository.createFilter returns the storage generated filter id.
+             * We need to set it back as appliedFilter, otherwise further actions on the filter would fail (update/delete).
+             */
+            runInAction(() => {
+                this.appliedFilter = newFilter;
+                this.currentFilter = null;
+            });
+        };
+
         await this.createLoading.runCallbackWithLoading(
-            this.repository.createFilter(filter),
+            createFilter(),
             "Creating filter",
             `Filter "${filter.name}" was successfully created.`
         );
@@ -231,5 +242,10 @@ export class AdvancedSearchPresenter {
             "Updating filter",
             `Filter "${filter.name}" was successfully updated.`
         );
+
+        runInAction(() => {
+            this.appliedFilter = filter;
+            this.currentFilter = null;
+        });
     }
 }

@@ -59,12 +59,12 @@ export class QueryObjectRepository {
         const { id: _, ...rawFilter } = QueryObjectMapper.toRaw(filter);
         const response = await this.gateway.create(rawFilter);
 
-        if (response) {
-            const filterDTO = QueryObjectMapper.toDTO(response);
-            runInAction(() => {
-                this.filters = [filterDTO, ...this.filters];
-            });
-        }
+        const filterDTO = QueryObjectMapper.toDTO(response);
+        runInAction(() => {
+            this.filters = [filterDTO, ...this.filters];
+        });
+
+        return filterDTO;
     }
 
     async updateFilter(filter: QueryObjectDTO) {

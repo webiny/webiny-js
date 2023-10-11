@@ -66,9 +66,14 @@ export const AdvancedSearch = observer(
             }
         };
 
-        const persistAndApplyQueryObject = async (queryObject: QueryObjectDTO) => {
-            await presenter.saveFilter(queryObject);
-            onApplyFilter(queryObject);
+        const saveFilterAndApply = async (filter: QueryObjectDTO) => {
+            await presenter.saveFilter(filter);
+
+            onApplyFilter(filter);
+
+            console.log("saveFilterAndApply", filter);
+            console.log("appliedFilter", presenter.vm.appliedFilter);
+            console.log("currentFilter", presenter.vm.currentFilter);
         };
 
         return (
@@ -103,7 +108,7 @@ export const AdvancedSearch = observer(
                             open={presenter.vm.builderVm.open}
                         />
                         <QuerySaverDialog
-                            onSubmit={persistAndApplyQueryObject}
+                            onSubmit={saveFilterAndApply}
                             onClose={() => presenter.closeSaver()}
                             open={presenter.vm.saverVm.open}
                             isLoading={presenter.vm.saverVm.isLoading}
