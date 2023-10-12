@@ -47,14 +47,15 @@ export class Loading {
     async runCallbackWithLoading(
         callback: Promise<void>,
         loadingLabel?: string,
-        feedback?: string
+        successMessage?: string,
+        failureMessage?: string
     ) {
         try {
             this.setLoading(loadingLabel);
             await callback;
-            this.setLoadSuccess(feedback);
+            this.setLoadSuccess(successMessage);
         } catch (e) {
-            this.setLoadError(e.message);
+            this.setLoadError(e.message || failureMessage);
         }
     }
 }

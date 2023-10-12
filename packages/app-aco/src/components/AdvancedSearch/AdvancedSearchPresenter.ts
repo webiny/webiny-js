@@ -31,11 +31,7 @@ export class AdvancedSearchPresenter {
     private repository: QueryObjectRepository;
 
     private readonly feedback: Feedback;
-    private listLoading: Loading;
-    private createLoading: Loading;
-    private updateLoading: Loading;
-    private deleteLoading: Loading;
-
+    private loading: Loading;
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
@@ -46,25 +42,27 @@ export class AdvancedSearchPresenter {
     constructor(repository: QueryObjectRepository) {
         this.repository = repository;
         this.feedback = new Feedback();
-        this.listLoading = new Loading(this.feedback);
-        this.createLoading = new Loading(this.feedback);
-        this.updateLoading = new Loading(this.feedback);
-        this.deleteLoading = new Loading(this.feedback);
+        this.loading = new Loading(this.feedback);
         makeAutoObservable(this);
     }
 
+    private async runWithLoading(
+        action: Promise<void>,
+        loadingLabel: string,
+        successMessage?: string
+    ): Promise<void> {
+        return await this.loading.runCallbackWithLoading(action, loadingLabel, successMessage);
+    }
+
     async load() {
-        await this.listLoading.runCallbackWithLoading(
-            this.repository.listFilters(),
-            "Listing filters"
-        );
+        await this.runWithLoading(this.repository.listFilters(), "Listing filters");
     }
 
     private get managerVm() {
         const vm = {
             isOpen: this.showManager,
             view: "EMPTY",
-            loadingLabel: this.listLoading.loadingLabel || this.deleteLoading.loadingLabel,
+            loadingLabel: this.loading.loadingLabel,
             filters: this.repository.filters.map(filter => ({
                 id: filter.id,
                 name: filter.name,
@@ -76,7 +74,7 @@ export class AdvancedSearchPresenter {
             vm.view = "LIST";
         }
 
-        if (this.listLoading.isLoading || this.deleteLoading.isLoading) {
+        if (this.loading.isLoading) {
             vm.view = "LOADING";
         }
 
@@ -99,8 +97,8 @@ export class AdvancedSearchPresenter {
     private get saverVm() {
         return {
             open: this.showSaver,
-            isLoading: this.createLoading.isLoading || this.updateLoading.isLoading,
-            loadingLabel: this.createLoading.loadingLabel || this.updateLoading.loadingLabel,
+            isLoading: this.loading.isLoading,
+            loadingLabel: this.loading.loadingLabel,
             filter: this.currentFilter
         };
     }
@@ -200,7 +198,7 @@ export class AdvancedSearchPresenter {
     async deleteFilter(id: string) {
         const filter = await this.repository.getFilterById(id);
 
-        await this.deleteLoading.runCallbackWithLoading(
+        await this.runWithLoading(
             this.repository.deleteFilter(id),
             "Deleting filters",
             `Filter "${filter.name}" was successfully deleted.`
@@ -246,7 +244,7 @@ export class AdvancedSearchPresenter {
             });
         };
 
-        await this.createLoading.runCallbackWithLoading(
+        await this.runWithLoading(
             createFilter(),
             "Creating filter",
             `Filter "${filter.name}" was successfully created.`
@@ -254,7 +252,7 @@ export class AdvancedSearchPresenter {
     }
 
     private async updateFilterIntoRepository(filter: QueryObjectDTO) {
-        await this.updateLoading.runCallbackWithLoading(
+        await this.runWithLoading(
             this.repository.updateFilter(filter),
             "Updating filter",
             `Filter "${filter.name}" was successfully updated.`
