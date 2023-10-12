@@ -143,6 +143,10 @@ export class AdvancedSearchPresenter {
         this.showSaver = false;
     }
 
+    showFeedback(message: string) {
+        this.feedback.message = message;
+    }
+
     async applyFilter(filterId: string) {
         const filter = await this.repository.getFilterById(filterId);
 

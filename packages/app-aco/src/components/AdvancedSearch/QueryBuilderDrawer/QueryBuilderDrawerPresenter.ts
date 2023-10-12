@@ -43,6 +43,7 @@ export class QueryBuilderDrawerPresenter {
     private readonly fields: QueryBuilderViewModel["fields"];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
+    private invalidMessage = "";
     private queryObject: QueryObjectDTO;
 
     constructor(queryObject: QueryObjectDTO, fields: FieldRaw[]) {
@@ -61,6 +62,7 @@ export class QueryBuilderDrawerPresenter {
             description: this.queryObject.description,
             fields: this.fields,
             invalidFields: this.invalidFields,
+            invalidMessage: this.invalidMessage,
             data: {
                 operation: this.queryObject.operation,
                 groups: this.queryObject.groups.map((group: GroupDTO, groupIndex) => {
@@ -177,6 +179,7 @@ export class QueryBuilderDrawerPresenter {
         const validation = QueryObject.validate(data);
 
         if (!validation.success) {
+            this.invalidMessage = "Error during the validation: check the filter configuration.";
             this.invalidFields = validation.error.issues.reduce((acc, issue) => {
                 return {
                     ...acc,
@@ -184,6 +187,7 @@ export class QueryBuilderDrawerPresenter {
                 };
             }, {});
         } else {
+            this.invalidMessage = "";
             this.invalidFields = {};
         }
 

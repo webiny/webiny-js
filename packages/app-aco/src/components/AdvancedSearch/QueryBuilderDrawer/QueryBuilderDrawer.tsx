@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
@@ -19,6 +19,7 @@ interface QueryBuilderDrawerProps {
     onClose: () => void;
     onPersist: (data: QueryObjectDTO) => void;
     onSubmit: (data: QueryObjectDTO) => void;
+    onValidationError: (message: string) => void;
     queryObject: QueryObjectDTO;
     open: boolean;
 }
@@ -27,6 +28,10 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
     const [presenter] = useState<QueryBuilderDrawerPresenter>(
         new QueryBuilderDrawerPresenter(props.queryObject, props.fields)
     );
+
+    const onValidationError = useCallback(() => {
+        props.onValidationError(presenter.vm.invalidMessage);
+    }, [presenter.vm.invalidMessage]);
 
     useEffect(() => {
         presenter.load(props.queryObject);
@@ -49,12 +54,14 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
                 <QueryBuilder
                     onForm={form => (ref.current = form)}
                     onSubmit={props.onSubmit}
+                    onValidationError={onValidationError}
                     presenter={presenter}
                 />
                 <Footer
                     formRef={ref}
                     onClose={props.onClose}
                     onPersist={props.onPersist}
+                    onValidationError={onValidationError}
                     presenter={presenter}
                 />
             </DrawerContent>

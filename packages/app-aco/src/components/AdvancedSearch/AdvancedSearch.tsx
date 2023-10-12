@@ -98,6 +98,7 @@ export const AdvancedSearch = observer(
                             onClose={() => presenter.closeBuilder()}
                             onPersist={filter => presenter.persistFilter(filter)}
                             onSubmit={applyQueryObject}
+                            onValidationError={message => presenter.showFeedback(message)}
                             queryObject={presenter.currentFilter}
                             open={presenter.vm.builderVm.open}
                         />

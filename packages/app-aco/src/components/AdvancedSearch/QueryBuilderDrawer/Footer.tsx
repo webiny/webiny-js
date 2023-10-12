@@ -12,14 +12,26 @@ interface FooterProps {
     onClose: () => void;
     formRef: React.RefObject<FormAPI>;
     onPersist: (data: QueryObjectDTO) => void;
+    onValidationError: () => void;
     presenter: QueryBuilderDrawerPresenter;
 }
 
-export const Footer = ({ formRef, onPersist, onClose, presenter }: FooterProps) => {
+export const Footer = ({
+    formRef,
+    onPersist,
+    onClose,
+    onValidationError,
+    presenter
+}: FooterProps) => {
     const onSave = () => {
-        presenter.onSave(queryObject => {
-            onPersist(queryObject);
-        });
+        presenter.onSave(
+            queryObject => {
+                onPersist(queryObject);
+            },
+            () => {
+                onValidationError();
+            }
+        );
     };
 
     return (
