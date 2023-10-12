@@ -78,21 +78,9 @@ export const createFolderCrudMethods = ({
         async list(params) {
             // No matter what was the limit set in the params, initially, we always retrieve
             // all folders. The limit is then applied with the filtered folders list below.
-            const [folders, meta] = await storageOperations.listFolders({
-                ...params,
-                limit: FIXED_FOLDER_LISTING_LIMIT
-            });
-
-            if (folders.length === 0) {
-                return [folders, meta];
-            }
-
-            const filteredFolders = await folderLevelPermissions.filterFolders({
-                folders,
-                rwd: "r"
-            });
-
-            await folderLevelPermissions.assignFolderPermissions(filteredFolders);
+            const filteredFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
+                params.where.type
+            );
 
             const totalCount = filteredFolders.length;
             let hasMoreItems = false;
