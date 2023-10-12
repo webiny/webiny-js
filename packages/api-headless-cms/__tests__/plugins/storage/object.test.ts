@@ -29,7 +29,8 @@ describe("object storage transform", () => {
             value: {
                 titleFieldId: "Some title",
                 dateFieldId: "2022-09-01",
-                dateMultipleFieldId: ["2022-09-02", "2022-09-03", "2022-09-04"]
+                dateMultipleFieldId: ["2022-09-02", "2022-09-03", "2022-09-04"],
+                nestedTextWithDefaultFieldId: ""
             },
             plugins: container,
             field,
@@ -40,7 +41,8 @@ describe("object storage transform", () => {
         expect(result).toEqual({
             titleFieldId: "Some title",
             dateFieldId: "2022-09-01",
-            dateMultipleFieldId: ["2022-09-02", "2022-09-03", "2022-09-04"]
+            dateMultipleFieldId: ["2022-09-02", "2022-09-03", "2022-09-04"],
+            nestedTextWithDefaultFieldId: "nested field with default value"
         });
     });
 });
