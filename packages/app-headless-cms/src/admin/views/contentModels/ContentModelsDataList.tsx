@@ -302,17 +302,21 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                                         />
                                                     </Tooltip>
                                                 )}
+                                                <Tooltip
+                                                    content={"Clone content model"}
+                                                    placement={"top"}
+                                                >
+                                                    <IconButton
+                                                        data-testid={
+                                                            "cms-clone-content-model-button"
+                                                        }
+                                                        icon={<CloneIcon />}
+                                                        label={t`View entries`}
+                                                        onClick={() => onClone(contentModel)}
+                                                    />
+                                                </Tooltip>
                                             </>
                                         )}
-
-                                        <Tooltip content={"Clone content model"} placement={"top"}>
-                                            <IconButton
-                                                data-testid={"cms-clone-content-model-button"}
-                                                icon={<CloneIcon />}
-                                                label={t`View entries`}
-                                                onClick={() => onClone(contentModel)}
-                                            />
-                                        </Tooltip>
 
                                         {canDelete(contentModel, "cms.contentModel") && (
                                             <>

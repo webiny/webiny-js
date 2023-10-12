@@ -11,8 +11,10 @@ import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
 import { AdminPageBuilderContextProvider } from "~/admin/contexts/AdminPageBuilder";
 import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPagePublish";
+import { DefaultOnPageUnpublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageUnpublish";
 import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
+import { PagesModule } from "~/admin/views/Pages/PagesModule";
 
 export type { EditorProps };
 export { EditorRenderer };
@@ -110,12 +112,14 @@ const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
 export const PageBuilder: React.FC = () => {
     return (
         <Fragment>
+            <PagesModule />
             <PageBuilderProviderPlugin />
             <EditorRendererPlugin />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />
                 <DefaultOnPagePublish />
+                <DefaultOnPageUnpublish />
                 <DefaultOnPageDelete />
             </Plugins>
         </Fragment>

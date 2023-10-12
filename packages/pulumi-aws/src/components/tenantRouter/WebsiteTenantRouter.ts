@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface Config {
     apiFolder?: string;
@@ -89,7 +90,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
             `${name}-origin-request`,
             {
                 publish: true,
-                runtime: "nodejs14.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "index.handler",
                 role: role.arn,
                 timeout: 5,
