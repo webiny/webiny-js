@@ -90,13 +90,13 @@ export class AdvancedSearchPresenter {
 
     private get builderVm() {
         return {
-            open: this.showBuilder
+            isOpen: this.showBuilder
         };
     }
 
     private get saverVm() {
         return {
-            open: this.showSaver,
+            isOpen: this.showSaver,
             isLoading: this.loading.isLoading,
             loadingLabel: this.loading.loadingLabel,
             filter: this.currentFilter
@@ -107,8 +107,6 @@ export class AdvancedSearchPresenter {
         return {
             appliedFilter: this.appliedFilter,
             currentFilter: this.currentFilter,
-            showBuilder: this.showBuilder,
-            showSaver: this.showSaver,
             feedbackVm: this.feedbackVm,
             managerVm: this.managerVm,
             builderVm: this.builderVm,

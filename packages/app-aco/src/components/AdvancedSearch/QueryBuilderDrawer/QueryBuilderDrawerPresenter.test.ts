@@ -1,17 +1,15 @@
+import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 import {
-    QueryBuilderPresenter,
-    QueryBuilderViewModel
-} from "~/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/adapters";
-import { FieldDTO, FieldRaw, FieldType, Operation } from "~/components/AdvancedSearch/QueryObject";
+    FieldDTO,
+    FieldRaw,
+    FieldType,
+    Operation,
+    QueryObjectDTO
+} from "~/components/AdvancedSearch/QueryObject";
 
-describe("QueryBuilderPresenter", () => {
+describe("QueryBuilderDrawerPresenter", () => {
     const modelId = "model-id";
     const defaultFilter = { field: "", value: "", condition: "" };
-
-    const defaultGroup = {
-        operation: Operation.AND,
-        filters: [defaultFilter]
-    };
 
     const fieldId = "test-field";
     const fieldLabel = "Test Field";
@@ -28,8 +26,16 @@ describe("QueryBuilderPresenter", () => {
         filters: [testFilter]
     };
 
-    let presenter: QueryBuilderPresenter;
-    let viewModel: QueryBuilderViewModel;
+    const queryObject: QueryObjectDTO = {
+        id: "",
+        name: "QueryObject name",
+        description: "QueryObject description",
+        modelId,
+        operation: Operation.AND,
+        groups: [testGroup]
+    };
+
+    let presenter: QueryBuilderDrawerPresenter;
 
     beforeEach(() => {
         const defaultFields: FieldRaw[] = [
@@ -40,16 +46,18 @@ describe("QueryBuilderPresenter", () => {
             }
         ];
 
-        presenter = new QueryBuilderPresenter(modelId, defaultFields);
+        presenter = new QueryBuilderDrawerPresenter(queryObject, defaultFields);
     });
 
-    it("should create QueryBuilderPresenter with `viewModel` definition", () => {
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
+    it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
+        presenter.load(queryObject);
 
-        // `viewModel` should have the expected `fields` definition
-        expect(viewModel.fields).toEqual([
+        // `vm` should have the expected `name` and `description` definition
+        expect(presenter.vm.name).toEqual(queryObject.name);
+        expect(presenter.vm.description).toEqual(queryObject.description);
+
+        // `vm` should have the expected `fields` definition
+        expect(presenter.vm.fields).toEqual([
             {
                 label: fieldLabel,
                 value: fieldId,
@@ -59,148 +67,162 @@ describe("QueryBuilderPresenter", () => {
             }
         ]);
 
-        // `viewModel` should have the expected `queryObject` definition
-        expect(viewModel.queryObject).toEqual({
-            id: expect.any(String),
-            name: "Draft filter",
-            description: "",
-            modelId: modelId,
+        // `vm` should have the expected `data` definition
+        expect(presenter.vm.data).toEqual({
             operation: "AND",
-            groups: [testGroup]
+            groups: [
+                {
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.AND,
+                    filters: [testFilter]
+                }
+            ]
         });
 
-        // `viewModel` should have the expected `invalidFields` definition
-        expect(viewModel.invalidFields).toEqual({});
-    });
-
-    it("should load a QueryObject into QueryBuilderPresenter", () => {
-        const queryObjectDto = {
-            id: "any-id",
-            name: "Any name",
-            description: "Any description",
-            operation: Operation.OR,
-            groups: [testGroup],
-            modelId
-        };
-
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
-
-        // let's load a queryObjectDTO
-        presenter.updateQueryObject(queryObjectDto);
-        expect(viewModel.queryObject).toEqual(queryObjectDto);
-
-        // let's load a nullish queryObjectDTO
-        presenter.updateQueryObject(null);
-        expect(viewModel.queryObject).toEqual({
-            id: expect.any(String),
-            name: "Draft filter",
-            description: "",
-            modelId: modelId,
-            operation: "AND",
-            groups: [testGroup]
-        });
+        // `vm` should have the expected `invalidFields` and `invalidMessage` definition
+        expect(presenter.vm.invalidFields).toEqual({});
+        expect(presenter.vm.invalidMessage).toEqual("");
     });
 
     it("should be able to add and delete groups", () => {
         // let's load a queryObjectDTO
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
+        presenter.load(queryObject);
 
         // should only have 1 group, created by default
-        expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups).toEqual([testGroup]);
+        expect(presenter.vm.data.groups.length).toBe(1);
+        expect(presenter.vm.data.groups).toEqual([
+            {
+                title: "Filter group #1",
+                open: true,
+                operation: Operation.AND,
+                filters: [testFilter]
+            }
+        ]);
 
         presenter.addGroup();
 
         // should have 2 groups
-        expect(viewModel.queryObject.groups.length).toBe(2);
-        expect(viewModel.queryObject.groups).toEqual([testGroup, testGroup]);
-
-        const viewModelGroup = viewModel.queryObject.groups[1];
+        expect(presenter.vm.data.groups.length).toBe(2);
+        expect(presenter.vm.data.groups).toEqual([
+            {
+                title: "Filter group #1",
+                open: true,
+                operation: Operation.AND,
+                filters: [testFilter]
+            },
+            {
+                title: "Filter group #2",
+                open: false,
+                operation: Operation.AND,
+                filters: [testFilter]
+            }
+        ]);
 
         // let's delete the first group
         presenter.deleteGroup(0);
 
         // should have 1 group only
-        expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups).toEqual([viewModelGroup]);
+        expect(presenter.vm.data.groups.length).toBe(1);
+        expect(presenter.vm.data.groups).toEqual([
+            {
+                title: "Filter group #1",
+                open: true,
+                operation: Operation.AND,
+                filters: [testFilter]
+            }
+        ]);
 
         // let's delete the remaining group
         presenter.deleteGroup(0);
 
         // should still have 1 default group
-        expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups).toEqual([defaultGroup]);
+        expect(presenter.vm.data.groups.length).toBe(1);
+        expect(presenter.vm.data.groups).toEqual([
+            {
+                title: "Filter group #1",
+                open: true,
+                operation: Operation.AND,
+                filters: [testFilter]
+            }
+        ]);
     });
 
     it("should be able to add and delete filters from a group", () => {
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
+        // let's load a queryObjectDTO
+        presenter.load(queryObject);
 
+        // let's load a new filter to the first group
         presenter.addNewFilterToGroup(0);
 
         // should have 2 filters inside the only existing group
-        expect(viewModel.queryObject.groups[0].filters.length).toBe(2);
-        expect(viewModel.queryObject.groups[0].filters).toEqual([testFilter, testFilter]);
+        expect(presenter.vm.data.groups[0].filters.length).toBe(2);
+        expect(presenter.vm.data.groups[0].filters).toEqual([testFilter, testFilter]);
 
-        const resultFilter = viewModel.queryObject.groups[0].filters[1];
+        const resultFilter = presenter.vm.data.groups[0].filters[1];
 
         // let's delete the first filter
         presenter.deleteFilterFromGroup(0, 0);
 
         // should have 1 group only
-        expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups[0].filters).toEqual([resultFilter]);
+        expect(presenter.vm.data.groups.length).toBe(1);
+        expect(presenter.vm.data.groups[0].filters).toEqual([resultFilter]);
 
         // let's delete the remaining filter
         presenter.deleteFilterFromGroup(0, 0);
 
         // should still have 1 default filter
-        expect(viewModel.queryObject.groups.length).toBe(1);
-        expect(viewModel.queryObject.groups[0].filters).toEqual([defaultFilter]);
+        expect(presenter.vm.data.groups.length).toBe(1);
+        expect(presenter.vm.data.groups[0].filters).toEqual([defaultFilter]);
     });
 
-    it("should be able to set the queryObject", () => {
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
+    it("should be able to set data back to the queryObject", () => {
+        // let's load a queryObjectDTO
+        presenter.load(queryObject);
 
         {
-            // should be able to set the `queryObject` operation
+            // should be able to set the `data` operation
             presenter.setQueryObject({
-                ...viewModel.queryObject,
-                operation: Operation.OR
-            });
-
-            expect(viewModel.queryObject.operation).toEqual(Operation.OR);
-        }
-
-        {
-            // should be able to set the `queryObject` group
-            presenter.setQueryObject({
-                ...viewModel.queryObject,
+                operation: Operation.OR,
                 groups: [
                     {
-                        ...viewModel.queryObject.groups[0],
-                        operation: Operation.OR
+                        title: "Filter group #1",
+                        open: true,
+                        operation: Operation.AND,
+                        filters: [testFilter]
                     }
                 ]
             });
 
-            expect(viewModel.queryObject.groups[0].operation).toEqual(Operation.OR);
+            expect(presenter.vm.data.operation).toEqual(Operation.OR);
         }
 
         {
-            // should be able to change the `queryObject` filter definition
+            // should be able to set the `data` group
             presenter.setQueryObject({
-                ...viewModel.queryObject,
+                operation: Operation.OR,
                 groups: [
                     {
-                        ...viewModel.queryObject.groups[0],
+                        title: "Filter group #1",
+                        open: true,
+                        operation: Operation.OR,
+                        filters: [testFilter]
+                    }
+                ]
+            });
+
+            expect(presenter.vm.data.groups[0].operation).toEqual(Operation.OR);
+        }
+
+        {
+            // should be able to change the `data` filter definition
+            presenter.setQueryObject({
+                operation: Operation.OR,
+                groups: [
+                    {
+                        title: "Filter group #1",
+                        open: true,
+                        operation: Operation.OR,
                         filters: [
                             {
                                 ...testFilter,
@@ -211,23 +233,24 @@ describe("QueryBuilderPresenter", () => {
                 ]
             });
 
-            expect(viewModel.queryObject.groups[0].filters[0].field).toEqual("any-field");
+            expect(presenter.vm.data.groups[0].filters[0].field).toEqual("any-field");
         }
     });
 
     it("should perform validation and call provided callbacks `onSubmit`", () => {
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
-        });
+        // let's load a queryObjectDTO
+        presenter.load(queryObject);
 
         const onSuccess = jest.fn();
         const onError = jest.fn();
 
         presenter.setQueryObject({
-            ...viewModel.queryObject,
+            operation: Operation.OR,
             groups: [
                 {
-                    ...viewModel.queryObject.groups[0],
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.OR,
                     filters: [
                         {
                             field: "any-field",
@@ -239,16 +262,19 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
+        presenter.onSubmit(onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
-        expect(Object.keys(viewModel.invalidFields).length).toBe(1);
+        expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
+        expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
 
         presenter.setQueryObject({
-            ...viewModel.queryObject,
+            operation: Operation.OR,
             groups: [
                 {
-                    ...viewModel.queryObject.groups[0],
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.OR,
                     filters: [
                         {
                             field: "any-field",
@@ -260,27 +286,86 @@ describe("QueryBuilderPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(viewModel.queryObject, onSuccess, onError);
+        presenter.onSubmit(onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
-        expect(viewModel.invalidFields).toEqual({});
+        expect(presenter.vm.invalidFields).toEqual({});
+        expect(presenter.vm.invalidMessage.length).toBe(0);
     });
 
-    it("should able to empty a filter from a group", () => {
-        presenter.load(generatedViewModel => {
-            viewModel = generatedViewModel;
+    it("should perform validation and call provided callbacks `onSave`", () => {
+        // let's load a queryObjectDTO
+        presenter.load(queryObject);
+
+        const onSuccess = jest.fn();
+        const onError = jest.fn();
+
+        presenter.setQueryObject({
+            operation: Operation.OR,
+            groups: [
+                {
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.OR,
+                    filters: [
+                        {
+                            field: "any-field",
+                            condition: "any-condition",
+                            value: "" // empty value -> this should trigger the error
+                        }
+                    ]
+                }
+            ]
         });
+
+        presenter.onSave(onSuccess, onError);
+
+        expect(onError).toBeCalledTimes(1);
+        expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
+        expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
+
+        presenter.setQueryObject({
+            operation: Operation.OR,
+            groups: [
+                {
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.OR,
+                    filters: [
+                        {
+                            field: "any-field",
+                            condition: "any-condition",
+                            value: "any-value"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        presenter.onSave(onSuccess, onError);
+
+        expect(onSuccess).toBeCalledTimes(1);
+        expect(presenter.vm.invalidFields).toEqual({});
+        expect(presenter.vm.invalidMessage.length).toBe(0);
+    });
+
+    it("should able to set the filter `field` data", () => {
+        // let's load a queryObjectDTO
+        presenter.load(queryObject);
 
         // Let's change the queryObject and change the only exising filter
         presenter.setQueryObject({
-            ...viewModel.queryObject,
+            operation: Operation.OR,
             groups: [
                 {
-                    ...viewModel.queryObject.groups[0],
+                    title: "Filter group #1",
+                    open: true,
+                    operation: Operation.AND,
                     filters: [
                         {
-                            ...testFilter,
-                            field: "any-field"
+                            field: "any-field",
+                            condition: "any-condition",
+                            value: "any-value"
                         }
                     ]
                 }
@@ -288,15 +373,36 @@ describe("QueryBuilderPresenter", () => {
         });
 
         // let's empty the filter
-        presenter.emptyFilterIntoGroup(0, 0);
+        presenter.setFilterFieldData(0, 0, "new-field");
 
-        // should have a filter with default definition
-        expect(viewModel.queryObject.groups[0].filters).toEqual([defaultFilter]);
+        // should have a filter with default definition and new field value
+        expect(presenter.vm.data.groups[0].filters).toEqual([
+            { ...defaultFilter, field: "new-field" }
+        ]);
     });
 });
 
 describe("FieldDTO definition", () => {
-    const modelId = "modelId-id";
+    const testFilter = {
+        field: "",
+        condition: "",
+        value: ""
+    };
+
+    const testGroup = {
+        operation: Operation.AND,
+        filters: [testFilter]
+    };
+
+    const queryObject: QueryObjectDTO = {
+        id: "",
+        name: "QueryObject name",
+        description: "QueryObject description",
+        modelId: "modelId",
+        operation: Operation.AND,
+        groups: [testGroup]
+    };
+
     const fields: [FieldRaw, FieldDTO][] = [
         [
             {
@@ -520,17 +626,14 @@ describe("FieldDTO definition", () => {
     ];
 
     fields.forEach(([fieldRaw, fieldDTO]) => {
-        let viewModel: QueryBuilderViewModel;
+        let presenter: QueryBuilderDrawerPresenter;
 
         beforeEach(() => {
-            const presenter = new QueryBuilderPresenter(modelId, [fieldRaw]);
-            presenter.load(generatedViewModel => {
-                viewModel = generatedViewModel;
-            });
+            presenter = new QueryBuilderDrawerPresenter(queryObject, [fieldRaw]);
         });
 
         it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {
-            expect(viewModel.fields).toEqual([fieldDTO]);
+            expect(presenter.vm.fields).toEqual([fieldDTO]);
         });
     });
 });

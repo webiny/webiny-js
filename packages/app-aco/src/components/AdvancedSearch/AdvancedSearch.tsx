@@ -100,12 +100,12 @@ export const AdvancedSearch = observer(
                             onSubmit={applyQueryObject}
                             onValidationError={message => presenter.showFeedback(message)}
                             queryObject={presenter.currentFilter}
-                            open={presenter.vm.builderVm.open}
+                            open={presenter.vm.builderVm.isOpen}
                         />
                         <QuerySaverDialog
                             onSubmit={saveFilterAndApply}
                             onClose={() => presenter.closeSaver()}
-                            open={presenter.vm.saverVm.open}
+                            open={presenter.vm.saverVm.isOpen}
                             isLoading={presenter.vm.saverVm.isLoading}
                             loadingLabel={presenter.vm.saverVm.loadingLabel}
                             queryObject={presenter.currentFilter}

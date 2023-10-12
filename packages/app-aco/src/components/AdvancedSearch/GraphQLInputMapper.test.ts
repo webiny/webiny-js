@@ -1,4 +1,4 @@
-import { GraphQLInputMapper } from "~/components/AdvancedSearch/GraphQLInputMapper";
+import { GraphQLInputMapper } from "./GraphQLInputMapper";
 import { Operation, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
 
 describe("GraphQLInputMapper", () => {
