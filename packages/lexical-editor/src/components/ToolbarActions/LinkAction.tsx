@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isLinkNode } from "@lexical/link";
+import { $isLinkNode as $baseLinkNode } from "@lexical/link";
 import { $getSelection, $isRangeSelection } from "lexical";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { TOGGLE_LINK_NODE_COMMAND } from "~/commands/link";
+import { $isLinkNode } from "~/nodes/LinkNode";
 
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
@@ -29,7 +30,7 @@ export const LinkAction = () => {
             const node = getSelectedNode(selection);
             // Update links
             const parent = node.getParent();
-            if ($isLinkNode(parent) || $isLinkNode(node)) {
+            if ($baseLinkNode(parent) || $isLinkNode(node)) {
                 setIsLink(true);
             } else {
                 setIsLink(false);
