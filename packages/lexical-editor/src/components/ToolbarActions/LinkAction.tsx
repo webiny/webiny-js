@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { $isLinkNode } from "@lexical/link";
 import { $getSelection, $isRangeSelection } from "lexical";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { TOGGLE_LINK_NODE_COMMAND } from "~/commands/link";
 
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
@@ -12,10 +13,10 @@ export const LinkAction = () => {
 
     const insertLink = useCallback(() => {
         if (!isLink) {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+            editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, "https://");
             setNodeIsText(false);
         } else {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+            editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, null);
         }
     }, [editor, isLink]);
 

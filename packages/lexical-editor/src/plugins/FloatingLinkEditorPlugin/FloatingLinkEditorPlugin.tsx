@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./FloatingLinkEditorPlugin.css";
-import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { $isAutoLinkNode, $isLinkNode as $isBaseLinkNode } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
@@ -16,11 +16,13 @@ import {
 } from "lexical";
 
 import { createPortal } from "react-dom";
-import { LinkPreview } from "../../ui/LinkPreview";
-import { getSelectedNode } from "../../utils/getSelectedNode";
-import { sanitizeUrl } from "../../utils/sanitizeUrl";
-import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { LinkPreview } from "~/ui/LinkPreview";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { sanitizeUrl } from "~/utils/sanitizeUrl";
+import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
+import { TOGGLE_LINK_NODE_COMMAND } from "~/commands/link";
+import { $isLinkNode } from "~/nodes/LinkNode";
 
 function FloatingLinkEditor({
     editor,
@@ -31,9 +33,14 @@ function FloatingLinkEditor({
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [linkUrl, setLinkUrl] = useState<{ url: string; target: string | null }>({
+    const [linkUrl, setLinkUrl] = useState<{
+        url: string;
+        target: string | null;
+        alt?: string;
+    }>({
         url: "",
-        target: null
+        target: null,
+        alt: undefined
     });
     const [isEditMode, setEditMode] = useState(false);
     const [lastSelection, setLastSelection] = useState<
@@ -45,12 +52,21 @@ function FloatingLinkEditor({
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
-            if ($isLinkNode(parent)) {
-                setLinkUrl({ url: parent.getURL(), target: parent.getTarget() });
-            } else if ($isLinkNode(node)) {
-                setLinkUrl({ url: node.getURL(), target: node.getTarget() });
+
+            if ($isBaseLinkNode(parent) || $isLinkNode(parent)) {
+                setLinkUrl({
+                    url: parent.getURL(),
+                    target: parent.getTarget(),
+                    alt: $isLinkNode(parent) ? parent.getAlt() : undefined
+                });
+            } else if ($isBaseLinkNode(node) || $isLinkNode(node)) {
+                setLinkUrl({
+                    url: node.getURL(),
+                    target: node.getTarget(),
+                    alt: $isLinkNode(node) ? node.getAlt() : undefined
+                });
             } else {
-                setLinkUrl({ url: "", target: null });
+                setLinkUrl({ url: "", target: null, alt: undefined });
             }
         }
         const editorElem = editorRef.current;
@@ -89,14 +105,14 @@ function FloatingLinkEditor({
             }
             setLastSelection(null);
             setEditMode(false);
-            setLinkUrl({ url: "", target: null });
+            setLinkUrl({ url: "", target: null, alt: undefined });
         }
 
         return true;
     }, [anchorElem, editor]);
 
     const removeLink = () => {
-        editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+        editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, null);
         setEditMode(false);
     };
 
@@ -167,24 +183,34 @@ function FloatingLinkEditor({
                             onChange={() =>
                                 setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
                             }
-                        />{" "}
+                        />
                         <span>New tab</span>
+                    </div>
+                    <br />
+                    <div className={"link-editor-target-checkbox"}>
+                        <label>Text</label>
+                        <input
+                            type={"text"}
+                            value={linkUrl.alt}
+                            onChange={e => setLinkUrl({ ...linkUrl, alt: e.target.value })}
+                        />
                     </div>
                     <input
                         ref={inputRef}
                         className="link-input"
                         value={linkUrl.url}
                         onChange={event => {
-                            setLinkUrl({ url: event.target.value, target: null });
+                            setLinkUrl({ url: event.target.value, target: null, alt: linkUrl.alt });
                         }}
                         onKeyDown={event => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
                                 if (lastSelection !== null) {
                                     if (linkUrl.url !== "") {
-                                        editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+                                        editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, {
                                             url: sanitizeUrl(linkUrl.url),
-                                            target: linkUrl.target
+                                            target: linkUrl.target,
+                                            alt: linkUrl.alt
                                         });
                                     }
                                     setEditMode(false);
@@ -199,9 +225,20 @@ function FloatingLinkEditor({
             ) : (
                 <>
                     <div className={"link-editor-target-checkbox"}>
-                        <input type={"checkbox"} checked={linkUrl.target === "_blank"} readOnly />{" "}
-                        <span>New tab</span>
+                        <div>
+                            <input
+                                type={"checkbox"}
+                                checked={linkUrl.target === "_blank"}
+                                readOnly
+                            />
+                            <span>New tab</span>
+                        </div>
                     </div>
+                    <br />
+                    <div className={"link-editor-target-checkbox"}>
+                        <label>Alt Text: {linkUrl.alt}</label>
+                    </div>
+
                     <div className="link-input">
                         <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
                             {linkUrl.url}
@@ -243,7 +280,7 @@ function useFloatingLinkEditorToolbar(
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
-            const linkParent = $findMatchingParent(node, $isLinkNode);
+            const linkParent = $findMatchingParent(node, $isBaseLinkNode);
             const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
 
             // We don't want this menu to open for auto links.
