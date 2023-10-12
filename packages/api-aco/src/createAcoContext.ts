@@ -143,11 +143,14 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         }
     };
 
-    // Decorating CRUD methods.
-    new FileManagerCrudDecorators({ context }).decorate();
+    if (context.wcp.canUseFolderLevelPermissions()) {
+        // Decorating CRUD methods.
+        // new FileManagerCrudDecorators({ context }).decorate();
+        new CmsEntriesCrudDecorators({ context }).decorate();
 
-    // new HeadlessCmsCrudDecorators({ context }).decorate();
-    // new PageBuilderCrudDecorators({ context }).decorate();
+        // This is registered here: packages/api-page-builder-aco/src/index.ts
+        // new PageBuilderCrudDecorators({ context }).decorate();
+    }
 };
 
 export const createAcoContext = () => {
