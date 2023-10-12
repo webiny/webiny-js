@@ -74,6 +74,20 @@ export class FolderLevelPermissions {
         return this.allFolders[folderType];
     }
 
+    async listAllFoldersWithPermissions(folderType: string) {
+        const folders = await this.listAllFolders(folderType);
+
+        // Filter folders based on permissions and assign permissions to each folder.
+        const filteredFoldersWithPermissions = await this.filterFolders({
+            folders,
+            rwd: "r"
+        });
+
+        await this.assignFolderPermissions(filteredFoldersWithPermissions);
+
+        return filteredFoldersWithPermissions;
+    }
+
     invalidateCache(folderType?: string) {
         if (folderType) {
             if (folderType in this.allFolders) {
