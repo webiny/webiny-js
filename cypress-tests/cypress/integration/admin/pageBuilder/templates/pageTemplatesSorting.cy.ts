@@ -11,7 +11,7 @@ context("Page Builder - Blocks", () => {
 
     const pageTemplateData1 = {
         title: titleString1,
-        slug: titleSlug,
+        slug: nanoid(6),
         description: nanoid(6),
         tags: [],
         layout: "static",
@@ -19,7 +19,7 @@ context("Page Builder - Blocks", () => {
     };
     const pageTemplateData2 = {
         title: titleString2,
-        slug: titleSlug,
+        slug: nanoid(6),
         description: nanoid(6),
         tags: [],
         layout: "static",
@@ -27,7 +27,7 @@ context("Page Builder - Blocks", () => {
     };
     const pageTemplateData3 = {
         title: titleString3,
-        slug: titleSlug,
+        slug: nanoid(6),
         description: nanoid(6),
         tags: [],
         layout: "static",
@@ -35,7 +35,7 @@ context("Page Builder - Blocks", () => {
     };
     const pageTemplateData4 = {
         title: titleString4,
-        slug: titleSlug,
+        slug: nanoid(6),
         description: nanoid(6),
         tags: [],
         layout: "static",
@@ -45,6 +45,7 @@ context("Page Builder - Blocks", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
+        cy.wait(1000); 
         cy.pbCreatePageTemplate(pageTemplateData1);
         cy.pbCreatePageTemplate(pageTemplateData2);
         cy.pbCreatePageTemplate(pageTemplateData3);
@@ -52,18 +53,47 @@ context("Page Builder - Blocks", () => {
     });
 
     it("Should be able to create templates and then sort them correctly", () => {
+        cy.visit("/page-builder/page-templates"); 
 
-        cy.visit("/page-builder/page-templates");
-
+        cy.findByTestId("default-data-list.filter").click();
+        cy.get(".webiny-ui-select select").select("Newest to oldest");
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li .mdc-list-item__text").each(($span) => {
-                cy.wrap($span).invoke('text').then((text) => {
-                    const extractedText = text.split(titleSlug)[0].trim();
-                    console.log(extractedText);
-                });
+            cy.get("li .mdc-list-item__text").first().each($span => {
+                cy.wrap($span)
+                    .invoke("text")
+                    .should("include", titleString4);
             });
         });
-        
+        cy.visit("/page-builder/page-templates");     
+        cy.findByTestId("default-data-list.filter").click();
+        cy.get(".webiny-ui-select select").select("Oldest to newest");
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("li .mdc-list-item__text").first().each($span => {
+                cy.wrap($span)
+                    .invoke("text")
+                    .should("include", titleString1);
+            });
+        });    
+        cy.visit("/page-builder/page-templates");     
+        cy.findByTestId("default-data-list.filter").click();
+        cy.get(".webiny-ui-select select").select("Title A-Z");
+        cy.findByTestId("default-data-list").first().within(() => {
+            cy.get("li .mdc-list-item__text").first().each($span => {
+                cy.wrap($span)
+                    .invoke("text")
+                    .should("include", titleString4);
+            });
+        });
 
+        cy.visit("/page-builder/page-templates");     
+        cy.findByTestId("default-data-list.filter").click();
+        cy.get(".webiny-ui-select select").select("Title Z-A");
+        cy.findByTestId("default-data-list").first().within(() => {
+            cy.get("li .mdc-list-item__text").first().each($span => {
+                cy.wrap($span)
+                    .invoke("text")
+                    .should("include", titleString3);
+            });
+        });
     });
 });

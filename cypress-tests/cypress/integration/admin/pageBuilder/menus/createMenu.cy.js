@@ -35,11 +35,9 @@ context("Menus Module", () => {
                 });
         });
 
-        cy.get('[role="alertdialog"] :visible').within(() => {
-            cy.contains("Are you sure you want to continue?")
-                .next()
-                .within(() => cy.findAllByTestId("dialog-accept").next().click());
-        });
+        cy.contains("Are you sure you want to continue?").should("exist");
+        cy.findAllByTestId("confirmationdialog-confirm-action").click();
+        
 
         cy.findByText(/Menu ".*" deleted\./).should("exist");
         cy.wait(500);
@@ -79,11 +77,9 @@ context("Menus Module", () => {
                 });
         });
 
-        cy.get('[role="alertdialog"] :visible').within(() => {
-            cy.contains("Are you sure you want to continue?")
-                .next()
-                .within(() => cy.findAllByTestId("dialog-accept").next().click());
-        });
+        cy.contains("Are you sure you want to continue?").should("exist");
+        cy.findAllByTestId("confirmationdialog-confirm-action").click();
+        
 
         cy.findByText(/Menu ".*" deleted\./).should("exist");
         cy.wait(500);

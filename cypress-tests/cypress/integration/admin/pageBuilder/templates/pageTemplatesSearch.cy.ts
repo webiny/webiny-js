@@ -49,7 +49,6 @@ context("Page Builder - Blocks", () => {
     });
 
     it("Should be able to create templates and then search for them", () => {
-
         cy.visit("/page-builder/page-templates");
         cy.findByPlaceholderText("Search templates").should("exist");
         cy.contains(pageTemplateData1.title).should("exist");
@@ -81,7 +80,9 @@ context("Page Builder - Blocks", () => {
         cy.contains(pageTemplateData3.title).should("not.exist");
         cy.contains(pageTemplateData4.title).should("exist");
 
-        cy.findByPlaceholderText("Search templates").clear().type("This String should not return anything");
+        cy.findByPlaceholderText("Search templates")
+            .clear()
+            .type("This String should not return anything");
         cy.contains(pageTemplateData1.title).should("not.exist");
         cy.contains(pageTemplateData2.title).should("not.exist");
         cy.contains(pageTemplateData3.title).should("not.exist");

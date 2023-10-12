@@ -2,22 +2,6 @@ import { customAlphabet } from "nanoid";
 
 context("Page Builder - Blocks", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const pageTemplateData1 = {
-        title: nanoid(6),
-        slug: nanoid(6),
-        description: nanoid(6),
-        tags: [],
-        layout: "static",
-        pageCategory: "static"
-    };
-    const pageTemplateData2 = {
-        title: nanoid(6),
-        slug: nanoid(6),
-        description: nanoid(6),
-        tags: [],
-        layout: "static",
-        pageCategory: "static"
-    };
 
     beforeEach(() => {
         cy.login();
@@ -27,8 +11,7 @@ context("Page Builder - Blocks", () => {
     it("Should be able to create a template and then edit and delete it", () => {
         cy.visit("/page-builder/page-templates");
         //Creates a template using the UI.
-        cy.get(".webiny-ui-button--secondary").click();
-        //cy.findByTestId("new-record-button").click();
+        cy.findAllByTestId("pb-templates-list-new-template-btn").eq(0).click();
         cy.findByRole("textbox", { name: "Title" }).type("testingfunctionality");
         cy.findByRole("textbox", { name: "Slug" }).type("testingfunctionality");
         cy.findByRole("textbox", { name: "Description" }).type("testingfunctionality");
@@ -39,14 +22,14 @@ context("Page Builder - Blocks", () => {
 
         //Edits the template name using the UI.
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li").first().click();
+            cy.get("li")
+                .first()
+                .within(() => {
+                    cy.findByTestId("pb-templates-list-edit-template-btn").click({
+                        force: true
+                    });
+                });
         });
-        cy.get(
-            "div.css-4d76fo-HeaderActions.e1masl564 button.rmwc-icon.rmwc-icon--component.material-icons.mdc-icon-button"
-        )
-            .first()
-            .click();
-
         cy.wait(1500).findByTestId("pb-editor-page-title").click();
         cy.get(`input[value="testingfunctionality"]`).clear().type("testingfunctionality1").blur();
         cy.findByRole("button", { name: "Save Changes" }).should("exist").click();
@@ -54,13 +37,14 @@ context("Page Builder - Blocks", () => {
 
         //Deletes the template using the UI.
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li").first().click();
+            cy.get("li")
+                .first()
+                .within(() => {
+                    cy.findByTestId("pb-templates-list-delete-template-btn").click({
+                        force: true
+                    });
+                });
         });
-        cy.get(
-            "div.css-4d76fo-HeaderActions.e1masl564 button.rmwc-icon.rmwc-icon--component.material-icons.mdc-icon-button"
-        )
-            .eq(1)
-            .click();
         cy.findByTestId("confirmationdialog-confirm-action").click();
 
         cy.visit("/page-builder/page-templates");
