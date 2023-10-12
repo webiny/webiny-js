@@ -16,13 +16,12 @@ import {
 } from "lexical";
 
 import { createPortal } from "react-dom";
-import { LinkPreview } from "~/ui/LinkPreview";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import { sanitizeUrl } from "~/utils/sanitizeUrl";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
 import { TOGGLE_LINK_NODE_COMMAND } from "~/commands/link";
 import { $isLinkNode } from "~/nodes/LinkNode";
+import { LinkPreviewForm } from "~/plugins/FloatingLinkEditorPlugin/LinkPreviewForm";
+import { LinkEditForm } from "~/plugins/FloatingLinkEditorPlugin/LinkEditForm";
 
 function FloatingLinkEditor({
     editor,
@@ -174,96 +173,20 @@ function FloatingLinkEditor({
     return (
         <div ref={editorRef} className="link-editor">
             {isEditMode ? (
-                <>
-                    <div className={"link-editor-target-checkbox"}>
-                        <input
-                            type={"checkbox"}
-                            checked={linkUrl.target === "_blank"}
-                            disabled={isUrlLinkReference(linkUrl.url)}
-                            onChange={() =>
-                                setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
-                            }
-                        />
-                        <span>New tab</span>
-                    </div>
-                    <br />
-                    <div className={"link-editor-target-checkbox"}>
-                        <label>Text</label>
-                        <input
-                            type={"text"}
-                            value={linkUrl.alt}
-                            onChange={e => setLinkUrl({ ...linkUrl, alt: e.target.value })}
-                        />
-                    </div>
-                    <input
-                        ref={inputRef}
-                        className="link-input"
-                        value={linkUrl.url}
-                        onChange={event => {
-                            setLinkUrl({ url: event.target.value, target: null, alt: linkUrl.alt });
-                        }}
-                        onKeyDown={event => {
-                            if (event.key === "Enter") {
-                                event.preventDefault();
-                                if (lastSelection !== null) {
-                                    if (linkUrl.url !== "") {
-                                        editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, {
-                                            url: sanitizeUrl(linkUrl.url),
-                                            target: linkUrl.target,
-                                            alt: linkUrl.alt
-                                        });
-                                    }
-                                    setEditMode(false);
-                                }
-                            } else if (event.key === "Escape") {
-                                event.preventDefault();
-                                setEditMode(false);
-                            }
-                        }}
-                    />
-                </>
+                <LinkEditForm
+                    editor={editor}
+                    linkUrl={linkUrl}
+                    setEditMode={setEditMode}
+                    inputRef={inputRef}
+                    setLinkUrl={setLinkUrl}
+                    lastSelection={lastSelection}
+                />
             ) : (
-                <>
-                    <div className={"link-editor-target-checkbox"}>
-                        <div>
-                            <input
-                                type={"checkbox"}
-                                checked={linkUrl.target === "_blank"}
-                                readOnly
-                            />
-                            <span>New tab</span>
-                        </div>
-                    </div>
-                    <br />
-                    <div className={"link-editor-target-checkbox"}>
-                        <label>Alt Text: {linkUrl.alt}</label>
-                    </div>
-
-                    <div className="link-input">
-                        <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
-                            {linkUrl.url}
-                        </a>
-                        <div
-                            className="link-edit"
-                            role="button"
-                            tabIndex={0}
-                            onMouseDown={event => event.preventDefault()}
-                            onClick={() => {
-                                setEditMode(true);
-                            }}
-                        />
-                        <div
-                            className="link-unlink"
-                            role="button"
-                            tabIndex={0}
-                            onMouseDown={event => event.preventDefault()}
-                            onClick={() => {
-                                removeLink();
-                            }}
-                        />
-                    </div>
-                    <LinkPreview url={linkUrl.url} />
-                </>
+                <LinkPreviewForm
+                    linkUrl={linkUrl}
+                    removeLink={removeLink}
+                    setEditMode={setEditMode}
+                />
             )}
         </div>
     );
