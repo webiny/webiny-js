@@ -54,8 +54,6 @@ export class QueryBuilderDrawerPresenter {
     }
 
     get vm() {
-        console.log("vm", JSON.stringify(this.queryObject));
-
         return {
             name: this.queryObject.name,
             description: this.queryObject.description,

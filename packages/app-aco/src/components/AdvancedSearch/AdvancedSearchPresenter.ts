@@ -2,7 +2,6 @@ import { makeAutoObservable, runInAction } from "mobx";
 import {
     Feedback,
     Loading,
-    Mode,
     QueryObject,
     QueryObjectDTO,
     QueryObjectMapper,
@@ -13,7 +12,7 @@ export interface IAdvancedSearchPresenter {
     closeBuilder: () => void;
     closeManager: () => void;
     closeSaver: () => void;
-    load: (callback: (viewModel: AdvancedSearchViewModel) => void) => void;
+    load: () => Promise<void>;
     onBuilderPersist: (filterId: string) => Promise<void>;
     onBuilderSubmit: (filterId: string) => Promise<void>;
     onChipDelete: () => void;
@@ -28,14 +27,6 @@ export interface IAdvancedSearchPresenter {
     updateViewModel: () => void;
 }
 
-export interface AdvancedSearchViewModel {
-    queryObject: QueryObjectDTO | null;
-    mode: Mode;
-    showBuilder: boolean;
-    showManager: boolean;
-    showSaver: boolean;
-}
-
 export class AdvancedSearchPresenter {
     private repository: QueryObjectRepository;
 
@@ -48,7 +39,6 @@ export class AdvancedSearchPresenter {
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
-    private mode: Mode = Mode.CREATE;
 
     currentFilter: QueryObjectDTO | null = null;
     appliedFilter: QueryObjectDTO | null = null;
@@ -180,7 +170,6 @@ export class AdvancedSearchPresenter {
 
     editAppliedFilter() {
         this.currentFilter = this.appliedFilter;
-        this.mode = Mode.UPDATE;
         this.openBuilder();
     }
 
@@ -188,7 +177,6 @@ export class AdvancedSearchPresenter {
         this.currentFilter = QueryObjectMapper.toDTO(
             QueryObject.createEmpty(this.repository.modelId)
         );
-        this.mode = Mode.CREATE;
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
@@ -199,7 +187,6 @@ export class AdvancedSearchPresenter {
 
         runInAction(() => {
             this.currentFilter = filter;
-            this.mode = Mode.UPDATE;
             this.closeManager();
             this.openBuilder();
             this.closeSaver();
@@ -228,10 +215,10 @@ export class AdvancedSearchPresenter {
     }
 
     async saveFilter(filter: QueryObjectDTO) {
-        if (this.mode === Mode.CREATE) {
-            await this.createFilterIntoRepository(filter);
-        } else {
+        if (filter.id) {
             await this.updateFilterIntoRepository(filter);
+        } else {
+            await this.createFilterIntoRepository(filter);
         }
 
         runInAction(() => {

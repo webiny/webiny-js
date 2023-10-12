@@ -1,5 +1,4 @@
 import zod from "zod";
-import { generateId } from "@webiny/utils";
 import { Operation } from "./Operation";
 
 export interface QueryObjectRaw {
@@ -93,7 +92,7 @@ export class QueryObject {
         name?: string,
         description?: string
     ) {
-        this.id = id ?? generateId();
+        this.id = id ?? "";
         this.modelId = modelId;
         this.name = name ?? "Draft filter";
         this.description = description ?? "";
