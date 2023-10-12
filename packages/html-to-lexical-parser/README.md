@@ -126,11 +126,11 @@ Configuration uses the `ParserConfigurationOptions` interface to define the conf
 
 By default, this parser configuration includes all lexical nodes from the @webiny/lexical-editor package.
 
-| Prop               | Type                                                       | Default value               | Description                                                                                                                                                       |
-|--------------------|------------------------------------------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| editorConfig       | CreateEditorArgs                                           | { nodes: [allWebinyNodes] } | Configure the Lexical editor by providing the native editor configuration options ([link to docs](https://lexical.dev/docs/api/modules/lexical#createeditorargs)) |
-| nodeMapper         | (node: LexicalNode, editor?: LexicalEditor) => LexicalNode |                             | Define custom mapper function to map the Lexical nodes.                                                                                                           |
-| normalizeTextNodes | boolean                                                    | true                        | By default, parser will normalize the nodes and prevent unsupported nodes to be inserted in the Lexical state.                                                    |
+| Prop               | Type                               | Default value               | Description                                                                                                                                                       |
+|--------------------|------------------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| editorConfig       | CreateEditorArgs                   | { nodes: [allWebinyNodes] } | Configure the Lexical editor by providing the native editor configuration options ([link to docs](https://lexical.dev/docs/api/modules/lexical#createeditorargs)) |
+| nodeMapper         | (node: LexicalNode) => LexicalNode |                             | Define custom mapper function to map the Lexical nodes.                                                                                                           |
+| normalizeTextNodes | boolean                            | true                        | By default, parser will normalize the nodes and prevent unsupported nodes to be inserted in the Lexical state.                                                    |
 
 
 
