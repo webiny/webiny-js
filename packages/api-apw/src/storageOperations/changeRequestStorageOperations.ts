@@ -90,7 +90,7 @@ export const createChangeRequestStorageOperations = (
             /**
              * Only creator can update the change request
              */
-            if (existingEntry.createdBy.id !== security?.getIdentity()?.id) {
+            if (existingEntry.createdBy.id !== security.getIdentity().id) {
                 throw new WebinyError(
                     "A change request can only be updated by its creator.",
                     "ONLY_CREATOR_CAN_UPDATE_CHANGE_REQUEST"
@@ -112,26 +112,26 @@ export const createChangeRequestStorageOperations = (
         },
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();
-            if (security.getIdentity()) {
-                /**
-                 * We're fetching the existing entry
-                 */
-                const existingEntry = await getChangeRequest({ id: params.id });
 
-                /**
-                 * Only creator can delete the change request
-                 */
-                if (existingEntry.createdBy.id !== security.getIdentity().id) {
-                    throw new WebinyError(
-                        "A change request can only be deleted by its creator.",
-                        "ONLY_CREATOR_CAN_DELETE_CHANGE_REQUEST"
-                    );
-                }
+            /**
+             * We're fetching the existing entry
+             */
+            const existingEntry = await getChangeRequest({ id: params.id });
 
-                await security.withoutAuthorization(async () => {
-                    return cms.deleteEntry(model, params.id);
-                });
+            /**
+             * Only creator can delete the change request
+             */
+            if (existingEntry.createdBy.id !== security.getIdentity().id) {
+                throw new WebinyError(
+                    "A change request can only be deleted by its creator.",
+                    "ONLY_CREATOR_CAN_DELETE_CHANGE_REQUEST"
+                );
             }
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
+
             return true;
         }
     };
