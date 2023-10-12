@@ -9,6 +9,7 @@ import apiInformation from "./admin/plugins/apiInformation";
 import { ContentEntriesModule } from "~/admin/views/contentEntries/ContentEntriesModule";
 import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
+import { DefaultOnEntryUnpublish } from "~/admin/plugins/entry/DefaultOnEntryUnpublish";
 import allPlugins from "./allPlugins";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin";
 
@@ -66,6 +67,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <CmsMenuLoader />
                 <DefaultOnEntryDelete />
                 <DefaultOnEntryPublish />
+                <DefaultOnEntryUnpublish />
             </Plugins>
             <LexicalEditorCmsPlugin />
         </Fragment>

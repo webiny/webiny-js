@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
+import { FbFormStep } from "~/types";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -11,11 +12,12 @@ export type DraggableChildrenFunction = (params: {
 }) => ReactElement;
 
 interface BeginDragProps {
-    ui?: "row" | "field";
+    ui?: "row" | "field" | "step";
     pos?: {
         row: number;
         index?: number;
     };
+    formStep?: FbFormStep;
     name?: string;
 }
 
