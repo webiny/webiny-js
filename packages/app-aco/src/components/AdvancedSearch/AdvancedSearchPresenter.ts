@@ -30,7 +30,7 @@ export interface IAdvancedSearchPresenter {
 export class AdvancedSearchPresenter {
     private repository: QueryObjectRepository;
 
-    private feedback: Feedback;
+    private readonly feedback: Feedback;
     private listLoading: Loading;
     private createLoading: Loading;
     private updateLoading: Loading;
