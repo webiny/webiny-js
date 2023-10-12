@@ -109,7 +109,25 @@ export interface FbFormStep {
     id: string;
     title: string;
     layout: FbFormModelFieldsLayout;
+    rules: FbFormRule[];
+    index: number;
 }
+
+export type FbFormRule = {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FbFormCondition[];
+    isValid: boolean;
+};
+
+export type FbFormCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
 
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
@@ -297,8 +315,10 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldByFieldId: Function;
     getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
-    goToNextStep: () => void;
+    goToNextStep: (formData: Record<string, any>) => void;
     goToPreviousStep: () => void;
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
+    resolvedSteps: FbFormStep[];
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;

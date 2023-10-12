@@ -5,3 +5,4 @@ export { default as moveRow } from "./moveRow";
 export { default as moveStep } from "./moveStep";
 export { default as moveFieldBetweenSteps } from "./moveFieldBetweenSteps";
 export { default as moveRowBetweenSteps } from "./moveRowBetweenSteps";
+export { default as validateStepRule } from "./validateStepRule";

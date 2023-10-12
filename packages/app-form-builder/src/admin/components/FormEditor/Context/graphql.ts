@@ -82,6 +82,7 @@ export const GET_FORM = gql`
                     steps {
                         title
                         layout
+                        rules
                     }
                     settings ${SETTINGS_FIELDS}
                     triggers
@@ -124,6 +125,7 @@ export const UPDATE_REVISION = gql`
                     steps {
                         title
                         layout
+                        rules
                     }
                     settings ${SETTINGS_FIELDS}
                     triggers

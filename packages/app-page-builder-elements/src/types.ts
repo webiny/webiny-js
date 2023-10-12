@@ -142,6 +142,22 @@ export type ElementStylesModifier = (args: {
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;
 
+export type FbFormRule = {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FbFormCondition[];
+    isValid: boolean;
+};
+
+export type FbFormCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
+
 declare global {
     // eslint-disable-next-line
     namespace JSX {

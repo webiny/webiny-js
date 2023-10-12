@@ -17,7 +17,8 @@ import {
     moveRow,
     deleteField,
     moveStep,
-    moveRowBetweenSteps
+    moveRowBetweenSteps,
+    validateStepRule
 } from "./functions";
 import { plugins } from "@webiny/plugins";
 
@@ -30,7 +31,8 @@ import {
     FbUpdateFormInput,
     FbErrorResponse,
     FbFormStep,
-    MoveFieldParams
+    MoveFieldParams,
+    FbFormRule
 } from "~/types";
 import { ApolloClient } from "apollo-client";
 import {
@@ -59,7 +61,10 @@ export interface FormEditor {
     state: State;
     addStep: () => void;
     deleteStep: (id: string) => void;
-    updateStep: (title: string, id: string | null) => void;
+    updateStep: (
+        { title, rules }: { title: string; rules: FbFormRule[] },
+        id: string | null
+    ) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (
         data: FbFormModel | null
@@ -90,6 +95,7 @@ export interface FormEditor {
         field: FieldIdType | FbFormModelField,
         data: FbFormStep
     ) => FieldLayoutPositionType | null;
+    validateStepRules: (data: FbFormModel) => FbFormModel;
 }
 
 const extractFieldErrors = (error: FbErrorResponse, form: FbFormModel): FormEditorFieldError[] => {
@@ -171,9 +177,10 @@ export const useFormEditorFactory = (
                 // Or when we need to delete corresponding step.
                 const modifiedData = {
                     ...data,
-                    steps: data?.steps.map(formStep => ({
+                    steps: data?.steps.map((formStep, index) => ({
                         ...formStep,
-                        id: mdbid()
+                        id: mdbid(),
+                        index
                     }))
                 };
 
@@ -194,7 +201,7 @@ export const useFormEditorFactory = (
                 data = {
                     ...data,
                     steps: data.steps.map(formStep =>
-                        pick(formStep, ["title", "layout"])
+                        pick(formStep, ["title", "layout", "rules"])
                     ) as unknown as FbFormStep[]
                 };
                 if (!data) {
@@ -349,10 +356,14 @@ export const useFormEditorFactory = (
                     data.steps.push({
                         id: mdbid(),
                         title: `Step ${data.steps.length + 1}`,
-                        layout: []
+                        layout: [],
+                        rules: [],
+                        index: data.steps.length
                     });
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
             deleteStep: (targetStepId: string) => {
@@ -370,17 +381,23 @@ export const useFormEditorFactory = (
                     deleteStepFields(data);
                     data.steps.splice(deleteStepIndex, 1);
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
-            updateStep: (stepTitle, id) => {
-                if (!stepTitle) {
+            updateStep: ({ title, rules }, id) => {
+                if (!title) {
                     showSnackbar("Step title cannot be empty");
                 } else {
                     self.setData(data => {
                         const stepIndex = data.steps.findIndex(step => step.id === id);
-                        data.steps[stepIndex].title = stepTitle;
-                        return data;
+                        data.steps[stepIndex].title = title;
+                        data.steps[stepIndex].rules = rules;
+
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 }
             },
@@ -437,7 +454,9 @@ export const useFormEditorFactory = (
                             data,
                             targetStepId
                         });
-                        return data;
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 } else {
                     self.setData(data => {
@@ -448,7 +467,9 @@ export const useFormEditorFactory = (
                             targetStepId,
                             sourceStepId
                         });
-                        return data;
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 }
             },
@@ -460,7 +481,9 @@ export const useFormEditorFactory = (
                         data: data.steps
                     });
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
             /**
@@ -474,7 +497,9 @@ export const useFormEditorFactory = (
                             source,
                             destination
                         });
-                        return data;
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 } else {
                     self.setData(data => {
@@ -485,7 +510,9 @@ export const useFormEditorFactory = (
                             targetStepId,
                             sourceStep
                         });
-                        return data;
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 }
             },
@@ -505,14 +532,44 @@ export const useFormEditorFactory = (
                     return data;
                 });
             },
+            validateStepRules: data => {
+                const steps = data.steps.map((step, index) => {
+                    // We need this check in case we moved step with rules to the bottom of the steps list,
+                    // because last step cannot have rules, and if it has then we need to mark it as broken.
+                    if (data.steps[data.steps.length - 1].id === step.id && step.rules.length) {
+                        const rules = step.rules.map(rule => {
+                            return { ...rule, isValid: false };
+                        });
 
+                        return { ...step, rules };
+                    } else if (step.rules.length) {
+                        const rules = step.rules.map(rule => {
+                            const isValid = validateStepRule({
+                                rule,
+                                fields: data.fields,
+                                stepIndex: index,
+                                steps: data.steps
+                            });
+
+                            return { ...rule, isValid };
+                        });
+
+                        return { ...step, rules };
+                    } else {
+                        return step;
+                    }
+                });
+                return { ...data, steps };
+            },
             /**
              * Deletes a field (both from the list of field and the layout).
              */
             deleteField: (field, targetStepId) => {
                 self.setData(data => {
                     deleteField({ field, data, targetStepId });
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
 

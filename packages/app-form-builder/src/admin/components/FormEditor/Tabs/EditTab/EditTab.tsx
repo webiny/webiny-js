@@ -11,7 +11,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/outlined/add_circle_outline.svg";
 
 import { FormStep } from "./FormStep/FormStep";
-import { EditFormStepDialog } from "./FormStep/EditFormStepDialog";
+import { EditFormStepDialog } from "./FormStep/EditFormStepDialog/EditFormStepDialog";
 
 const Block = styled("span")({
     display: "block"
@@ -94,12 +94,15 @@ export const EditTab: React.FC = () => {
         moveStep
     } = useFormEditor();
 
-    const [isEditStep, setIsEditStep] = useState<{ isOpened: boolean; id: string | null }>({
+    const [editStep, setEditStep] = useState<{
+        isOpened: boolean;
+        step: FbFormStep;
+    }>({
         isOpened: false,
-        id: null
+        step: {} as FbFormStep
     });
 
-    const stepTitle = data.steps.find(step => step.id === isEditStep.id)?.title || "";
+    const stepTitle = data.steps.find(step => step.id === editStep.step.id)?.title || "";
 
     const handleStepMove = (source: any, step: FbFormStep): void => {
         const { pos, formStep } = source;
@@ -170,9 +173,9 @@ export const EditTab: React.FC = () => {
                                         title={formStep.title}
                                         onDelete={() => deleteStep(formStep.id)}
                                         onEdit={() => {
-                                            setIsEditStep({
+                                            setEditStep({
                                                 isOpened: true,
-                                                id: formStep.id
+                                                step: formStep
                                             });
                                         }}
                                         deleteStepDisabled={data.steps.length <= 1}
@@ -222,12 +225,15 @@ export const EditTab: React.FC = () => {
                     )}
                 </Draggable>
             ))}
-            <EditFormStepDialog
-                isEditStep={isEditStep}
-                setIsEditStep={setIsEditStep}
-                updateStep={updateStep}
-                stepTitle={stepTitle}
-            />
+            {editStep.isOpened && (
+                <EditFormStepDialog
+                    editStep={editStep}
+                    setEditStep={setEditStep}
+                    updateStep={updateStep}
+                    stepTitle={stepTitle}
+                    formData={data}
+                />
+            )}
         </EditContainer>
     );
 };

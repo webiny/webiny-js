@@ -47,6 +47,23 @@ export interface FormDataStep {
     id: string;
     title: string;
     layout: string[][];
+    rules: FormRule[];
+}
+
+export interface FormRule {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FormCondition[];
+    isValid: boolean;
+}
+
+export interface FormCondition {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
 }
 
 export interface FormData {
@@ -85,8 +102,10 @@ export type FormLayoutComponentProps<T = any> = {
     getFieldByFieldId: Function;
     getFields: (stepIndex?: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
-    goToNextStep: () => void;
+    goToNextStep: (formData: Record<string, any>) => void;
     goToPreviousStep: () => void;
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
+    resolvedSteps: FormDataStep[];
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;

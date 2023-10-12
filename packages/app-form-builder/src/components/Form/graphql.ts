@@ -28,6 +28,7 @@ export const DATA_FIELDS = `
     steps {
         title
         layout
+        rules
     }
     triggers
     settings {

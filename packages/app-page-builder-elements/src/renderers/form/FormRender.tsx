@@ -4,6 +4,7 @@ import {
     createFormSubmission,
     handleFormTriggers,
     reCaptchaEnabled,
+    getNextStepIndex,
     termsOfServiceEnabled,
     onFormMounted
 } from "./FormRender/functions";
@@ -41,8 +42,12 @@ const FormRender: React.FC<FormRenderProps> = props => {
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
 
-    const goToNextStep = () => {
-        setCurrentStepIndex(prevStep => (prevStep += 1));
+    const goToNextStep = (formData: Record<string, any>) => {
+        setCurrentStepIndex(prevStep => {
+            const nextStep = prevStep + 1;
+            validateStepConditions(formData, nextStep);
+            return nextStep;
+        });
     };
 
     const goToPreviousStep = () => {
@@ -52,10 +57,23 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const isFirstStep = isMultiStepForm && currentStepIndex === 0;
     const isLastStep = isMultiStepForm && currentStepIndex === formData.steps.length - 1;
 
+    // We need to add indexes to the steps,
+    // so we can get propper steps in case rules conditions are met.
+    const stepsWithIndex = formData.steps.map((step, index) => ({
+        ...step,
+        index
+    }));
+
+    const [modifiedSteps, setModifiedSteps] = useState(stepsWithIndex);
+
+    const resolvedSteps = React.useMemo(() => {
+        return modifiedSteps || stepsWithIndex;
+    }, [stepsWithIndex, modifiedSteps]);
+
     const currentStep =
-        formData.steps[currentStepIndex] === undefined
-            ? formData.steps[formData.steps.length - 1]
-            : formData.steps[currentStepIndex];
+        resolvedSteps[currentStepIndex] === undefined
+            ? resolvedSteps[resolvedSteps.length - 1]
+            : resolvedSteps[currentStepIndex];
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
         let validators: CreateFormParamsValidator[] = [];
@@ -69,6 +87,25 @@ const FormRender: React.FC<FormRenderProps> = props => {
 
         return validators;
     }, []);
+
+    const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
+        const currentStep = resolvedSteps[stepIndex];
+        const nextStepIndex = getNextStepIndex({ formData, rules: currentStep.rules });
+        const initialStepIndex = stepsWithIndex.findIndex(step => step.index === currentStep.index);
+        if (nextStepIndex === "submit") {
+            setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+        } else if (nextStepIndex !== "") {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...stepsWithIndex.slice(+nextStepIndex)
+            ]);
+        } else {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...stepsWithIndex.slice(initialStepIndex + 1)
+            ]);
+        }
+    };
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
@@ -95,7 +132,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return <div>Selected form component not found.</div>;
     }
 
-    const { fields, settings, steps } = formData;
+    const { fields, settings } = formData;
 
     const getFieldById = (id: string): FormDataField | null => {
         return fields.find(field => field._id === id) || null;
@@ -106,7 +143,9 @@ const FormRender: React.FC<FormRenderProps> = props => {
     };
 
     const getFields = (stepIndex = 0): FormRenderComponentDataField[][] => {
-        const fieldLayout = structuredClone(steps[stepIndex].layout) as FormDataFieldsLayout;
+        const fieldLayout = structuredClone(
+            resolvedSteps[stepIndex].layout
+        ) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
             return row.map(id => {
@@ -221,6 +260,8 @@ const FormRender: React.FC<FormRenderProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        validateStepConditions,
+        resolvedSteps,
         isFirstStep,
         isLastStep,
         isMultiStepForm,
