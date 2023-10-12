@@ -16,17 +16,17 @@ interface FilterProps {
     filter: FilterDTO;
     fields: FieldDTO[];
     onDelete: () => void;
-    onEmpty: () => void;
+    onFieldSelectChange: (data: string) => void;
 }
 
-export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps) => {
+export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: FilterProps) => {
     return (
         <FilterContainer>
             <Grid>
                 <Cell span={4}>
                     <CellInner align={"left"}>
                         <Bind name={`${name}.field`}>
-                            {({ value, onChange, validation }) => (
+                            {({ value, validation }) => (
                                 <Select
                                     label={"Field"}
                                     options={fields.map(field => ({
@@ -34,12 +34,7 @@ export const Filter = ({ name, onDelete, onEmpty, fields, filter }: FilterProps)
                                         value: field.value
                                     }))}
                                     value={value}
-                                    onChange={data => {
-                                        // We need to empty previously entered data into other fields
-                                        onEmpty();
-                                        // Setting the right data into `field`
-                                        onChange(data);
-                                    }}
+                                    onChange={data => onFieldSelectChange(data)}
                                     validation={validation}
                                 />
                             )}

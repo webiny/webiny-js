@@ -49,7 +49,13 @@ export class QueryBuilderDrawerPresenter {
         makeAutoObservable(this);
     }
 
+    load(queryObject: QueryObjectDTO) {
+        this.queryObject = queryObject;
+    }
+
     get vm() {
+        console.log("vm", JSON.stringify(this.queryObject));
+
         return {
             name: this.queryObject.name,
             description: this.queryObject.description,
@@ -87,10 +93,7 @@ export class QueryBuilderDrawerPresenter {
 
         // Make sure we always have at least 1 group!
         if (this.queryObject.groups.length === 0) {
-            this.queryObject.groups.push({
-                operation: Operation.AND,
-                filters: [{ field: "", value: "", condition: "" }]
-            });
+            this.addGroup();
         }
     }
 
@@ -118,11 +121,11 @@ export class QueryBuilderDrawerPresenter {
         }
     }
 
-    emptyFilterIntoGroup(groupIndex: number, filterIndex: number) {
+    setFilterFieldData(groupIndex: number, filterIndex: number, data: string) {
         this.queryObject.groups[groupIndex].filters = [
             ...this.queryObject.groups[groupIndex].filters.slice(0, filterIndex),
             {
-                field: "",
+                field: data,
                 value: "",
                 condition: ""
             },

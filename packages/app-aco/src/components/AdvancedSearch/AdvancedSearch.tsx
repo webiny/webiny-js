@@ -68,7 +68,6 @@ export const AdvancedSearch = observer(
 
         const saveFilterAndApply = async (filter: QueryObjectDTO) => {
             await presenter.saveFilter(filter);
-
             onApplyFilter(filter);
         };
 
@@ -96,7 +95,6 @@ export const AdvancedSearch = observer(
                     <>
                         <QueryBuilderDrawer
                             fields={fields}
-                            modelId={modelId}
                             onClose={() => presenter.closeBuilder()}
                             onPersist={filter => presenter.persistFilter(filter)}
                             onSubmit={applyQueryObject}

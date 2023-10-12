@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useBind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -10,16 +10,19 @@ interface DateWithoutTimezoneProps {
 export const DateWithoutTimezone = ({ name }: DateWithoutTimezoneProps) => {
     const [dateTime, setDateTime] = useState("");
 
-    const { onChange } = useBind({
+    const { onChange, value } = useBind({
         name
     });
+
+    useEffect(() => {
+        setDateTime(value.slice(0, -5));
+    }, [value]);
 
     const handleOnChange = (value: string) => {
         const dateWithTimeZone = value + "Z";
         const date = new Date(dateWithTimeZone);
         const dateTimeToISOString = date.toISOString();
 
-        setDateTime(dateTimeToISOString.slice(0, -5));
         onChange(dateTimeToISOString);
     };
 

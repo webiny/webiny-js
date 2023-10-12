@@ -36,7 +36,7 @@ export const FilterList = (props: FilterListProps) => {
                     </ListItemText>
                     <ListItemMeta>
                         <ListActions>
-                            <Tooltip content={"Apply filter"}>
+                            <Tooltip content={"Apply filter"} placement={"left"}>
                                 <IconButton
                                     icon={<SavedSearchIcon />}
                                     label={"Apply filter"}

@@ -31,6 +31,8 @@ export interface QueryBuilderProps {
 export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuilderProps) => {
     const formRef = React.createRef<FormAPI>();
 
+    // const [open, setOpen] = useState(false);
+
     useEffect(() => {
         if (formRef.current) {
             onForm(formRef.current);
@@ -59,6 +61,18 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                 <Content>
                     <Content.Panel>
                         <Details name={presenter.vm.name} description={presenter.vm.description} />
+                        {/*<button onClick={() => setOpen(!open)}>Open</button>*/}
+                        {/*<Accordion>*/}
+                        {/*    <AccordionItem title={"Item 1"} open={open}>*/}
+                        {/*        {"Content 1"}*/}
+                        {/*    </AccordionItem>*/}
+                        {/*    <AccordionItem title={"Item 2"} open={open}>*/}
+                        {/*        {"Content 2"}*/}
+                        {/*    </AccordionItem>*/}
+                        {/*    <AccordionItem title={"Item 3"} open={open}>*/}
+                        {/*        {"Content 3"}*/}
+                        {/*    </AccordionItem>*/}
+                        {/*</Accordion>*/}
                         <Accordion elevation={1}>
                             {presenter.vm.data.groups.map((group, groupIndex, groups) => (
                                 <AccordionItemInner key={`group-${groupIndex}`}>
@@ -92,12 +106,13 @@ export const QueryBuilder = observer(({ presenter, onForm, onSubmit }: QueryBuil
                                                     name={`groups.${groupIndex}.filters.${filterIndex}`}
                                                     filter={filter}
                                                     fields={presenter.vm.fields}
-                                                    onEmpty={() => {
-                                                        presenter.emptyFilterIntoGroup(
+                                                    onFieldSelectChange={data =>
+                                                        presenter.setFilterFieldData(
                                                             groupIndex,
-                                                            filterIndex
-                                                        );
-                                                    }}
+                                                            filterIndex,
+                                                            data
+                                                        )
+                                                    }
                                                     onDelete={() => {
                                                         presenter.deleteFilterFromGroup(
                                                             groupIndex,

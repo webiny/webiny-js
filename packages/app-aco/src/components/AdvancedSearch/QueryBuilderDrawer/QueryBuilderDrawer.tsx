@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
@@ -16,7 +16,6 @@ import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
-    modelId: string;
     onClose: () => void;
     onPersist: (data: QueryObjectDTO) => void;
     onSubmit: (data: QueryObjectDTO) => void;
@@ -28,6 +27,10 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
     const [presenter] = useState<QueryBuilderDrawerPresenter>(
         new QueryBuilderDrawerPresenter(props.queryObject, props.fields)
     );
+
+    useEffect(() => {
+        presenter.load(props.queryObject);
+    }, [props.queryObject]);
 
     useHotkeys({
         zIndex: 55,
