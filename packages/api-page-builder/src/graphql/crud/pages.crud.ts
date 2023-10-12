@@ -943,10 +943,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 });
 
                 const newPublishedPageRaw = await storageOperations.pages.publish({
-                    original: await compressPage(original),
-                    page: await compressPage(page),
-                    latestPage: await compressPage(latestPage),
-                    publishedPage: publishedPage ? await compressPage(publishedPage) : null,
+                    original,
+                    page,
+                    latestPage,
+                    publishedPage,
                     publishedPathPage
                 });
 

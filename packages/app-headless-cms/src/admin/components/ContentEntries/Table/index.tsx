@@ -24,22 +24,18 @@ import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
-import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
-export interface TableProps {
+interface Props {
+    records: RecordEntry[];
     folders: FolderEntry[];
     loading?: boolean;
-    onSelectRow: (rows: Entry[] | []) => void;
-    onSortingChange: OnSortingChange;
-    records: RecordEntry[];
-    selectedRows: CmsContentEntry[];
     sorting: Sorting;
+    onSortingChange: OnSortingChange;
 }
 
-export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
+export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const { currentFolderId } = useNavigateFolder();
-    const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
-        props;
+    const { folders, records, loading, sorting, onSortingChange } = props;
     const { model } = useModel();
 
     const { history } = useRouter();
@@ -79,10 +75,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     );
 
     const columns: Columns<Entry> = useMemo(() => {
-        const titleColumnId = model.titleFieldId || "id";
-
         return {
-            [titleColumnId]: {
+            title: {
                 header: "Name",
                 className: "cms-aco-list-title",
                 cell: (record: Entry) => {
@@ -93,24 +87,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return <FolderName record={record} />;
                 },
-                enableSorting: true,
-                size: 400
+                enableSorting: true
             },
-            createdOn: {
-                header: "Created",
-                className: "cms-aco-list-createdOn",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
+            savedOn: {
+                header: "Last modified",
+                className: "cms-aco-list-savedOn",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author",
                 className: "cms-aco-list-createdBy"
-            },
-            savedOn: {
-                header: "Modified",
-                className: "cms-aco-list-savedOn",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-                enableSorting: true
             },
             status: {
                 header: "Status",
@@ -128,8 +115,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
-                size: 60,
-                enableResizing: false,
                 cell: (record: Entry) => {
                     if (isRecordEntry(record)) {
                         return (
@@ -170,24 +155,27 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         };
     }, []);
 
+    const tableSorting = useMemo(() => {
+        if (!Array.isArray(sorting) || sorting.length === 0) {
+            return [
+                {
+                    id: "savedOn",
+                    desc: true
+                }
+            ];
+        }
+        return sorting;
+    }, [sorting]);
+
     return (
         <div ref={ref}>
             <DataTable<Entry>
                 columns={columns}
                 data={data}
-                isRowSelectable={row => row.original.$selectable}
                 loadingInitial={loading}
                 stickyRows={1}
-                sorting={sorting}
-                initialSorting={[
-                    {
-                        id: "createdOn",
-                        desc: true
-                    }
-                ]}
-                onSelectRow={onSelectRow}
+                sorting={tableSorting}
                 onSortingChange={onSortingChange}
-                selectedRows={data.filter(record => selectedRows.find(row => row.id === record.id))}
             />
             {selectedFolder && (
                 <>

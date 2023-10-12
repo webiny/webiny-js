@@ -12,10 +12,10 @@ import {
     CmsEntryUpdateMutationVariables,
     createCreateFromMutation,
     createCreateMutation,
-    createUpdateMutation,
-    prepareFormData
+    createUpdateMutation
 } from "@webiny/app-headless-cms-common";
 import { useCms, useModel, useMutation } from "~/admin/hooks";
+import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import { CmsContentEntry, CmsModelFieldRendererPlugin, CmsModelField } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";

@@ -11,7 +11,6 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
-import { LAMBDA_RUNTIME } from "~/constants";
 
 export interface ElasticSearchParams {
     protect: boolean;
@@ -208,7 +207,7 @@ export const ElasticSearch = createAppModule({
             name: "dynamo-to-elastic",
             config: {
                 role: role.output.arn,
-                runtime: LAMBDA_RUNTIME,
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
                 timeout: 600,
                 memorySize: 512,

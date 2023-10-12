@@ -8,10 +8,7 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
         publishedOn
         version
         name
-        steps {
-            title
-            layout
-        }
+        layout
         fields {
             fieldId
             type

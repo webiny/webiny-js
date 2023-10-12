@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./FormRender/components";
 import {
     createFormSubmission,
@@ -36,26 +36,6 @@ export interface FormRenderProps {
 const FormRender: React.FC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
-    const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
-
-    // Check if the form is a multi step.
-    const isMultiStepForm = formData.steps.length > 1;
-
-    const goToNextStep = () => {
-        setCurrentStepIndex(prevStep => (prevStep += 1));
-    };
-
-    const goToPreviousStep = () => {
-        setCurrentStepIndex(prevStep => (prevStep -= 1));
-    };
-
-    const isFirstStep = isMultiStepForm && currentStepIndex === 0;
-    const isLastStep = isMultiStepForm && currentStepIndex === formData.steps.length - 1;
-
-    const currentStep =
-        formData.steps[currentStepIndex] === undefined
-            ? formData.steps[formData.steps.length - 1]
-            : formData.steps[currentStepIndex];
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
         let validators: CreateFormParamsValidator[] = [];
@@ -95,7 +75,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return <div>Selected form component not found.</div>;
     }
 
-    const { fields, settings, steps } = formData;
+    const { layout, fields, settings } = formData;
 
     const getFieldById = (id: string): FormDataField | null => {
         return fields.find(field => field._id === id) || null;
@@ -105,8 +85,8 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (stepIndex = 0): FormRenderComponentDataField[][] => {
-        const fieldLayout = structuredClone(steps[stepIndex].layout) as FormDataFieldsLayout;
+    const getFields = (): FormRenderComponentDataField[][] => {
+        const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
             return row.map(id => {
@@ -191,6 +171,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
                 }
             };
         }
+
         const formSubmission = await createFormSubmission({
             props,
             formSubmissionFieldValues,
@@ -219,13 +200,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
         getDefaultValues,
         getFields,
         submit,
-        goToNextStep,
-        goToPreviousStep,
-        isFirstStep,
-        isLastStep,
-        isMultiStepForm,
-        currentStepIndex,
-        currentStep,
         formData,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),
@@ -237,7 +211,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
         <>
             <FormLayoutComponent {...layoutProps} />
             <ps-tag data-key="fb-form" data-value={formData.formId} />
-            <ps-tag data-key="fb-form-revision" data-value={formData.id} />
         </>
     );
 };

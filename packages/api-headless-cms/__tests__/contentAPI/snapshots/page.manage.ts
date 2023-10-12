@@ -17,9 +17,7 @@ export default /* GraphQL */ `
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
-        references1: PageModelApiName_References1
-        references2: [PageModelApiName_References2!]
-        ghostObject: PageModelApiName_GhostObject
+        references: [PageModelApiName_References!]
         # Advanced Content Organization - make required in 5.38.0
         wbyAco_location: WbyAcoLocation
     }
@@ -43,7 +41,6 @@ export default /* GraphQL */ `
           PageModelApiName_Content_Hero
         | PageModelApiName_Content_SimpleText
         | PageModelApiName_Content_Objecting
-        | PageModelApiName_Content_Author
 
     type PageModelApiName_Content_Hero {
         title: String
@@ -56,7 +53,7 @@ export default /* GraphQL */ `
     type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-
+    
     input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
@@ -72,7 +69,7 @@ export default /* GraphQL */ `
         objectTitle: String
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
-
+    
     input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -86,25 +83,8 @@ export default /* GraphQL */ `
         objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
 
-    union PageModelApiName_Content_Objecting_DynamicZone =
-          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
-
-    type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
-        authors: [RefField!]
-    }
-
-    extend type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
-        _templateId: ID!
-    }
-
     type PageModelApiName_Content_Objecting {
         nestedObject: PageModelApiName_Content_Objecting_NestedObject
-        dynamicZone: PageModelApiName_Content_Objecting_DynamicZone
-    }
-
-    type PageModelApiName_Content_Author {
-        author: RefField
-        authors: [RefField!]
     }
 
     extend type PageModelApiName_Content_Hero {
@@ -116,10 +96,6 @@ export default /* GraphQL */ `
     }
 
     extend type PageModelApiName_Content_Objecting {
-        _templateId: ID!
-    }
-
-    extend type PageModelApiName_Content_Author {
         _templateId: ID!
     }
 
@@ -149,7 +125,7 @@ export default /* GraphQL */ `
     type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-
+    
     input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
@@ -166,7 +142,7 @@ export default /* GraphQL */ `
         objectBody: JSON
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
-
+    
     input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -189,42 +165,25 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Reference = PageModelApiName_Reference_Author
-
+    
     type PageModelApiName_Reference_Author {
         author: RefField
     }
-
+    
     extend type PageModelApiName_Reference_Author {
         _templateId: ID!
     }
 
-    union PageModelApiName_References1 = PageModelApiName_References1_Authors
-
-    type PageModelApiName_References1_Authors {
-        authors: [RefField!]
+    union PageModelApiName_References = PageModelApiName_References_Author
+    
+    type PageModelApiName_References_Author {
+      author: RefField
+    }
+    
+    extend type PageModelApiName_References_Author {
+      _templateId: ID!
     }
 
-    extend type PageModelApiName_References1_Authors {
-        _templateId: ID!
-    }
-
-    union PageModelApiName_References2 = PageModelApiName_References2_Author
-
-    type PageModelApiName_References2_Author {
-        author: RefField
-    }
-
-    extend type PageModelApiName_References2_Author {
-        _templateId: ID!
-    }
-
-    type PageModelApiName_GhostObject {
-        _empty: String
-    }
-
-    input PageModelApiName_GhostObjectWhereInput {
-        _empty: String
-    }
 
     input PageModelApiName_Content_HeroInput {
         title: String!
@@ -243,29 +202,14 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
     }
 
-    input PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObjectInput {
-        authors: [RefFieldInput]
-    }
-
-    input PageModelApiName_Content_Objecting_DynamicZoneInput {
-        SuperNestedObject: PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObjectInput
-    }
-
     input PageModelApiName_Content_ObjectingInput {
         nestedObject: PageModelApiName_Content_Objecting_NestedObjectInput
-        dynamicZone: PageModelApiName_Content_Objecting_DynamicZoneInput
-    }
-
-    input PageModelApiName_Content_AuthorInput {
-        author: RefFieldInput!
-        authors: [RefFieldInput!]
     }
 
     input PageModelApiName_ContentInput {
         Hero: PageModelApiName_Content_HeroInput
         SimpleText: PageModelApiName_Content_SimpleTextInput
         Objecting: PageModelApiName_Content_ObjectingInput
-        Author: PageModelApiName_Content_AuthorInput
     }
 
     input PageModelApiName_Header_TextHeaderInput {
@@ -303,30 +247,19 @@ export default /* GraphQL */ `
     input PageModelApiName_Reference_AuthorInput {
         author: RefFieldInput
     }
-
+    
     input PageModelApiName_ReferenceInput {
         Author: PageModelApiName_Reference_AuthorInput
     }
 
-    input PageModelApiName_References1_AuthorsInput {
-        authors: [RefFieldInput]
-    }
-
-    input PageModelApiName_References1Input {
-        Authors: PageModelApiName_References1_AuthorsInput
-    }
-
-    input PageModelApiName_References2_AuthorInput {
+    input PageModelApiName_References_AuthorInput {
         author: RefFieldInput
     }
-
-    input PageModelApiName_References2Input {
-        Author: PageModelApiName_References2_AuthorInput
+    
+    input PageModelApiName_ReferencesInput {
+        Author: PageModelApiName_References_AuthorInput
     }
 
-    input PageModelApiName_GhostObjectInput {
-        _empty: String
-    }
 
     input PageModelApiNameInput {
         id: ID
@@ -335,9 +268,7 @@ export default /* GraphQL */ `
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
         reference: PageModelApiName_ReferenceInput
-        references1: PageModelApiName_References1Input
-        references2: [PageModelApiName_References2Input]
-        ghostObject: PageModelApiName_GhostObjectInput
+        references: [PageModelApiName_ReferencesInput]
     }
 
     input PageModelApiNameGetWhereInput {
@@ -381,7 +312,6 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
-        ghostObject: PageModelApiName_GhostObjectWhereInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }
@@ -390,7 +320,7 @@ export default /* GraphQL */ `
         data: PageModelApiName
         error: CmsError
     }
-
+    
     type PageModelApiNameMoveResponse {
         data: Boolean
         error: CmsError
@@ -448,10 +378,13 @@ export default /* GraphQL */ `
             revision: ID!
             data: PageModelApiNameInput!
         ): PageModelApiNameResponse
-
+    
         movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
-
-        deletePageModelApiName(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+    
+        deletePageModelApiName(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         deleteMultiplePagesModelApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
 

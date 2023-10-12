@@ -38,7 +38,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 enableActions={true}
                 enableCreate={true}
             />
-            {children ? <Divider /> : null}
+            <Divider />
             {children}
         </LeftSidebarContainer>
     );

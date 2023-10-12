@@ -25,7 +25,6 @@ export * from "./shared";
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
-    graphQLTypePrefix: string;
 }
 
 interface Position {
@@ -212,7 +211,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
              * }
              * ```
              */
-            queryField?: string | ((params: QueryFieldParams) => string | null);
+            queryField?: string | ((params: QueryFieldParams) => string);
         };
         render?(params: any): React.ReactElement;
         tags?: string[];

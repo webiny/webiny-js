@@ -1,5 +1,5 @@
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
-import { normalizeValueWithAsterisk } from "~/normalize";
+import { normalizeValue } from "~/normalize";
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorContainsPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
@@ -18,7 +18,7 @@ export class ElasticsearchQueryBuilderOperatorContainsPlugin extends Elasticsear
             query_string: {
                 allow_leading_wildcard: true,
                 fields: [basePath],
-                query: normalizeValueWithAsterisk(value),
+                query: `*${normalizeValue(value)}*`,
                 default_operator: "and"
             }
         });

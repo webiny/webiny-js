@@ -5,7 +5,7 @@ import { File } from "@webiny/api-file-manager/types";
 export interface ExportedFormData {
     form: Pick<
         FbForm,
-        "name" | "status" | "version" | "fields" | "steps" | "settings" | "triggers"
+        "name" | "status" | "version" | "fields" | "layout" | "settings" | "triggers"
     >;
     files: File[];
 }
@@ -18,7 +18,7 @@ export class FormExporter {
                 status: form.status,
                 version: form.version,
                 fields: form.fields,
-                steps: form.steps,
+                layout: form.layout,
                 settings: form.settings,
                 triggers: form.triggers
             }

@@ -16,11 +16,6 @@ interface FbSubmissionMeta {
     [key: string]: any;
 }
 
-interface FbFormStep {
-    title: string;
-    layout: string[][];
-}
-
 interface FbFormFieldValidator {
     name: string;
     message: any;
@@ -110,7 +105,7 @@ export interface FbForm {
     publishedOn: string | null;
     status: string;
     fields: FbFormField[];
-    steps: FbFormStep[];
+    layout: string[][];
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
@@ -133,7 +128,7 @@ interface FormCreateInput {
 interface FormUpdateInput {
     name: string;
     fields: Record<string, any>[];
-    steps: FbFormStep[];
+    layout: string[][];
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
 }
@@ -347,7 +342,6 @@ export interface FbSubmission {
         version: number;
         fields: Record<string, any>[];
         layout: string[][];
-        steps: FbFormStep[];
     };
     logs: Record<string, any>[];
     createdOn: string;

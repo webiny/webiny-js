@@ -7,7 +7,6 @@ import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
 
 import { Container, Divider, WrapperActions } from "./styled";
-import { PbPageDataItem } from "~/types";
 
 export interface HeaderProps {
     title?: string;
@@ -15,7 +14,7 @@ export interface HeaderProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
-    selected: PbPageDataItem[];
+    selected: string[];
     searchValue: string;
     onSearchChange: (value: string) => void;
 }

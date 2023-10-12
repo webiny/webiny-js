@@ -1,5 +1,5 @@
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
-import { normalizeValueWithAsterisk } from "~/normalize";
+import { normalizeValue } from "~/normalize";
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
@@ -22,17 +22,17 @@ export class ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin extends Ela
     ): void {
         const { value: initialValue, basePath } = params;
 
-        const value = normalizeValueWithAsterisk(initialValue);
+        const value = normalizeValue(initialValue);
         query.must.push({
             multi_match: {
-                query: value,
+                query: `*${value}*`,
                 type: "phrase",
                 fields: [`${basePath}.ngram`]
             }
         });
         query.should.push({
             multi_match: {
-                query: value,
+                query: `*${value}*`,
                 type: "phrase",
                 fields: [`${basePath}`]
             }

@@ -7,7 +7,6 @@ interface BaseEntry {
     description?: string;
     image?: string;
     createdBy: string;
-    createdOn: string;
     savedOn: string;
     version?: number;
     $selectable: boolean;

@@ -2,7 +2,7 @@ const createBuildFunction = require("../../../../createBuildFunction");
 const createWatchFunction = require("../../../../createWatchFunction");
 
 const webpack = config => {
-    config.externals.push("@sparticuz/chromium");
+    config.externals.push("chrome-aws-lambda");
     return config;
 };
 

@@ -137,45 +137,41 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
 
                     <DialogContent>
                         <div>
-                            {formSubmission.form.steps.map(step => {
-                                return step.layout.map(row => {
-                                    return row.map(id => {
-                                        const field = formSubmission.form.fields.find(
-                                            field => field._id === id
-                                        );
-                                        if (!field) {
-                                            return null;
-                                        }
+                            {formSubmission.form.layout.map(row => {
+                                return row.map(id => {
+                                    const field = formSubmission.form.fields.find(
+                                        field => field._id === id
+                                    );
+                                    if (!field) {
+                                        return null;
+                                    }
 
-                                        return (
-                                            <div
-                                                key={id}
-                                                style={{
-                                                    display: "inline-block",
-                                                    width: `calc(100% / ${row.length})`
-                                                }}
-                                            >
-                                                <Typography use="overline">
-                                                    {field.label}:{" "}
-                                                </Typography>
-                                                <Typography use="body1">
-                                                    {field.type === "textarea" ? (
-                                                        <pre>
-                                                            {renderFieldValueLabel(
-                                                                field,
-                                                                formSubmission.data[field.fieldId]
-                                                            )}
-                                                        </pre>
-                                                    ) : (
-                                                        renderFieldValueLabel(
+                                    return (
+                                        <div
+                                            key={id}
+                                            style={{
+                                                display: "inline-block",
+                                                width: `calc(100% / ${row.length})`
+                                            }}
+                                        >
+                                            <Typography use="overline">{field.label}: </Typography>
+                                            <Typography use="body1">
+                                                {field.type === "textarea" ? (
+                                                    <pre>
+                                                        {renderFieldValueLabel(
                                                             field,
                                                             formSubmission.data[field.fieldId]
-                                                        )
-                                                    )}
-                                                </Typography>
-                                            </div>
-                                        );
-                                    });
+                                                        )}
+                                                    </pre>
+                                                ) : (
+                                                    renderFieldValueLabel(
+                                                        field,
+                                                        formSubmission.data[field.fieldId]
+                                                    )
+                                                )}
+                                            </Typography>
+                                        </div>
+                                    );
                                 });
                             })}
                         </div>

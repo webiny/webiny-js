@@ -20,7 +20,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { outputFileSelectionError } from "./outputFileSelectionError";
 import { LeftSidebar } from "./LeftSidebar";
-import { useFileManagerApi, useFileManagerViewConfig } from "~/index";
+import { useFileManagerApi } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { DropFilesHere } from "~/components/DropFilesHere";
@@ -73,7 +73,6 @@ const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
 const FileManagerView = () => {
     const view = useFileManagerView();
     const fileManager = useFileManagerApi();
-    const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
 
     const uploader = useMemo<BatchFileUploader>(
@@ -242,7 +241,7 @@ const FileManagerView = () => {
                 view.loadMoreFiles();
             }
         }, 200),
-        [view.meta, view.loadMoreFiles]
+        [view.meta]
     );
 
     return (
@@ -318,14 +317,12 @@ const FileManagerView = () => {
                                 currentFolder={view.folderId}
                                 onFolderClick={view.setFolderId}
                             >
-                                {browser.filterByTags ? (
-                                    <TagsList
-                                        loading={view.tags.loading}
-                                        activeTags={view.tags.activeTags}
-                                        tags={view.tags.allTags}
-                                        onActivatedTagsChange={view.tags.setActiveTags}
-                                    />
-                                ) : null}
+                                <TagsList
+                                    loading={view.tags.loading}
+                                    activeTags={view.tags.activeTags}
+                                    tags={view.tags.allTags}
+                                    onActivatedTagsChange={view.tags.setActiveTags}
+                                />
                             </LeftSidebar>
                             <FileListWrapper
                                 {...getDropZoneProps({

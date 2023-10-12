@@ -84,31 +84,9 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
-export interface MoveFieldParams {
-    field: FieldIdType | FbFormModelField;
-    position: FieldLayoutPositionType;
-    targetStepId: string;
-    sourceStepId: string;
-}
-
 export interface FieldLayoutPositionType {
     row: number;
     index: number | null;
-}
-export interface StepLayoutPositionType {
-    row: {
-        title: string;
-        id: string;
-        layout: string[][];
-    };
-    formStep: FbFormStep;
-    index: number | null;
-}
-
-export interface FbFormStep {
-    id: string;
-    title: string;
-    layout: FbFormModelFieldsLayout;
 }
 
 export type FbBuilderFieldPlugin = Plugin & {
@@ -170,8 +148,8 @@ export interface FbFormModel {
     id: FieldIdType;
     formId: string;
     version: number;
+    layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
-    steps: FbFormStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -226,7 +204,7 @@ export interface FbFormSubmissionData {
         name: string;
         version: number;
         fields: FbFormModelField[];
-        steps: FbFormStep[];
+        layout: string[][];
     };
 }
 
@@ -295,15 +273,8 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
+    getFields: () => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
-    goToNextStep: () => void;
-    goToPreviousStep: () => void;
-    isLastStep: boolean;
-    isFirstStep: boolean;
-    isMultiStepForm: boolean;
-    currentStepIndex: number;
-    currentStep: FbFormStep;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
@@ -423,7 +394,7 @@ export interface FbReCaptchaInput {
 }
 
 export interface FbFormSettingsInput {
-    steps: FbFormStep[];
+    layout: FbFormSettingsLayoutInput;
     submitButtonLabel: string;
     fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
@@ -434,7 +405,7 @@ export interface FbFormSettingsInput {
 export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];
-    steps?: FbFormStep[];
+    layout?: FbFormModelFieldsLayout;
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;
 }

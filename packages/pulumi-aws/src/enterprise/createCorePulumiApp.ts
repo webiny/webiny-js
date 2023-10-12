@@ -76,10 +76,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
 
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.lambda.Function)) {
-                        const canUseVpc = resource.meta.canUseVpc !== false;
-                        if (canUseVpc) {
-                            resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
-                        }
+                        resource.config.vpcConfig(useExistingVpc!.lambdaFunctionsVpcConfig);
                     }
 
                     if (isResourceOfType(resource, aws.iam.Role)) {

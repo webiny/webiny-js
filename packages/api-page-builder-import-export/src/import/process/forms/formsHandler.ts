@@ -77,7 +77,7 @@ export const formsHandler = async (
         fbForm = await formBuilder.updateForm(fbForm.id, {
             name: form.name,
             fields: form.fields,
-            steps: form.steps,
+            layout: form.layout,
             settings: form.settings,
             triggers: form.triggers
         });

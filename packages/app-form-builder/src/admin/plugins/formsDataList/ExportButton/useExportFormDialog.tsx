@@ -89,11 +89,7 @@ const ExportFormDialogMessage: React.FC<ExportFormDialogProps> = ({ exportUrl })
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography
-                            use={"body2"}
-                            className={"link-text"}
-                            data-testid={"fb-forms-export-dialog-export-url"}
-                        >
+                        <Typography use={"body2"} className={"link-text"}>
                             {exportUrl}
                         </Typography>
                         <span>
@@ -132,7 +128,6 @@ interface UseExportFormDialog {
     showExportFormInitializeDialog: (props: ExportFormsDialogProps) => void;
     hideDialog: () => void;
 }
-
 const useExportFormDialog = (): UseExportFormDialog => {
     const { showDialog, hideDialog } = useDialog();
 

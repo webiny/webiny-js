@@ -34,7 +34,6 @@ export { AppInstaller } from "./components/AppInstaller";
 export * from "./components/Buttons";
 export * from "./components/OptionsMenu";
 export * from "./components/Filters";
-export * from "./components/BulkActions";
 export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
 export {
     default as SingleImageUpload,
@@ -51,7 +50,9 @@ export type {
 } from "./base/ui/FileManager";
 
 // Hooks
-export * from "./hooks";
+export * from "./hooks/useSnackbar";
+export * from "./hooks/useConfirmationDialog";
+export * from "./hooks/useDialog";
 export { useWcp } from "@webiny/app-wcp";
 export { AaclPermission } from "@webiny/app-wcp/types";
 

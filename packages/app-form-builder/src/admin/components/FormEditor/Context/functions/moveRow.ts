@@ -1,9 +1,9 @@
-import { FbFormStep } from "~/types";
+import { FbFormModel } from "~/types";
 
 interface MoveRowParams {
     source: number;
     destination: number;
-    data: FbFormStep;
+    data: FbFormModel;
 }
 export default ({ data, source, destination }: MoveRowParams): void => {
     data.layout =

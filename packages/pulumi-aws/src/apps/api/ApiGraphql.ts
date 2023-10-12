@@ -7,7 +7,6 @@ import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
-import { LAMBDA_RUNTIME } from "~/constants";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -40,7 +39,7 @@ export const ApiGraphql = createAppModule({
         const graphql = app.addResource(aws.lambda.Function, {
             name: "graphql",
             config: {
-                runtime: LAMBDA_RUNTIME,
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
                 role: role.output.arn,
                 timeout: 30,

@@ -10,10 +10,6 @@ interface CmsRefEntry {
     modelId: string;
 }
 
-type RefValue = Pick<CmsRefEntry, "id" | "modelId"> & {
-    entryId?: string;
-};
-
 interface ReferenceObject {
     id: string;
     modelId: string;
@@ -50,10 +46,9 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                 const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
                 if (field.multipleValues) {
                     const inputValue = dotProp.get(input, `${field.fieldId}`, []);
-                    if (!Array.isArray(inputValue)) {
+                    if (Array.isArray(inputValue) === false) {
                         return collection;
                     }
-
                     for (const key in inputValue) {
                         const path = `${parentPathsValue}${field.fieldId}.${key}`;
                         collection.push(path);
@@ -76,54 +71,35 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
             if (baseType === "dynamicZone") {
                 const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
-
-                if (field.multipleValues) {
-                    const values = dotProp.get(input, field.fieldId, []);
-                    if (!Array.isArray(values)) {
-                        return collection;
-                    }
-
-                    values.forEach((value, index) => {
-                        const valueTemplate = Object.keys(value)[0];
-                        const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
-                        if (!template) {
-                            return;
+                for (const template of templates) {
+                    if (field.multipleValues) {
+                        const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+                        if (Array.isArray(inputValue) === false) {
+                            return collection;
                         }
 
-                        const result = buildReferenceFieldPaths({
-                            fields: template.fields,
-                            input: value[valueTemplate],
-                            parentPaths: parentPaths.concat([
-                                field.fieldId,
-                                String(index),
-                                template.gqlTypeName
-                            ])
-                        });
+                        for (const key in inputValue) {
+                            const result = buildReferenceFieldPaths({
+                                fields: template.fields,
+                                input: inputValue[key],
+                                parentPaths: parentPaths.concat([
+                                    field.fieldId,
+                                    key,
+                                    template.gqlTypeName
+                                ])
+                            });
+                            collection.push(...result);
+                        }
+                        continue;
+                    }
 
-                        collection.push(...result);
+                    const result = buildReferenceFieldPaths({
+                        fields: template.fields,
+                        input,
+                        parentPaths: parentPaths.concat([field.fieldId, template.gqlTypeName])
                     });
-
-                    return collection;
+                    collection.push(...result);
                 }
-
-                const value = dotProp.get(input, field.fieldId, {});
-                if (!value) {
-                    return collection;
-                }
-
-                const valueTemplate = Object.keys(value)[0];
-                const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
-
-                if (!template) {
-                    return collection;
-                }
-
-                const result = buildReferenceFieldPaths({
-                    fields: template.fields,
-                    input: dotProp.get(value, valueTemplate, {}),
-                    parentPaths: parentPaths.concat([field.fieldId, template.gqlTypeName])
-                });
-                collection.push(...result);
 
                 return collection;
             }
@@ -191,12 +167,6 @@ const getReferenceFieldValue = (ref: any): { id: string | null; modelId: string 
     };
 };
 
-/**
- * This function traverses the content entry input value, extracts all occurrences of the `ref` field,
- * optionally verifies that those referenced entries exist (by loading them), and normalizes the `ref` value to
- * always contain `{ id, modelId, entryId }`. `entryId` is important when data is being loaded via
- * the `read` and `preview` endpoint.
- */
 export const referenceFieldsMapping = async (params: Params): Promise<Record<string, any>> => {
     const { context, model, input, validateEntries = false } = params;
 
@@ -209,61 +179,13 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
         input,
         parentPaths: []
     });
-
-    if (!referenceFieldPaths.length) {
+    if (referenceFieldPaths.length === 0) {
         return output;
     }
 
-    if (validateEntries) {
-        await validateReferencedEntries({ output, context, referenceFieldPaths });
-    }
+    const referencesByModel: Record<string, string[]> = {};
+    const pathsByReferenceId: Record<string, string[]> = {};
 
-    /**
-     * Assign the entryId, id and model values to the output.
-     */
-    for (const path of referenceFieldPaths) {
-        // It is safe to cast here, because `referenceFieldPaths` array is generated from the `input`.
-        const refValue: RefValue | undefined = dotProp.get(input, path);
-        if (!refValue) {
-            continue;
-        }
-
-        /**
-         * Over time, the structure of `RefInput` was changing, and we need to handle different cases for backwards
-         * compatibility. The latest valid structure of a `ref` field value is { id, modelId }, but we also need
-         * to make sure that the legacy structure { entryId, modelId } is supported.
-         */
-        const { id, modelId, entryId: maybeEntryId } = refValue;
-
-        const { id: entryId } = parseIdentifier(maybeEntryId || id);
-
-        output = dotProp.set(output, path, {
-            // If `id` is not set, we're dealing with the legacy structure.
-            id: id ?? maybeEntryId,
-            entryId,
-            modelId
-        });
-    }
-
-    return output;
-};
-
-interface ValidateReferencedEntriesParams {
-    output: Record<string, any>;
-    context: CmsContext;
-    referenceFieldPaths: string[];
-}
-
-async function validateReferencedEntries({
-    output,
-    context,
-    referenceFieldPaths
-}: ValidateReferencedEntriesParams) {
-    const referencesByModel = new Map<string, string[]>();
-
-    /**
-     * Group references by modelId.
-     */
     for (const path of referenceFieldPaths) {
         const ref = dotProp.get(output, path) as ReferenceObject | any;
 
@@ -272,56 +194,67 @@ async function validateReferencedEntries({
         if (!id || !modelId) {
             continue;
         }
-
-        if (!referencesByModel.has(modelId)) {
-            referencesByModel.set(modelId, []);
+        if (!referencesByModel[modelId]) {
+            referencesByModel[modelId] = [];
         }
-
-        referencesByModel.get(modelId)?.push(id);
+        referencesByModel[modelId].push(id);
+        if (!pathsByReferenceId[id]) {
+            pathsByReferenceId[id] = [];
+        }
+        pathsByReferenceId[id].push(path);
     }
 
-    if (!referencesByModel.size) {
-        return;
+    /**
+     * Again, no point in going further.
+     */
+    if (Object.keys(referencesByModel).length === 0) {
+        return output;
     }
-
     /**
      * Load all models and use only those that are used in reference.
      */
-    const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter(model => {
-            const entries = referencesByModel.get(model.modelId);
-            if (!Array.isArray(entries) || entries.length === 0) {
-                return false;
-            }
-            return true;
-        });
+    const models = (await context.cms.listModels()).filter(model => {
+        const entries = referencesByModel[model.modelId];
+        if (!Array.isArray(entries) || entries.length === 0) {
+            return false;
+        }
+        return true;
     });
-
-    if (!models.length) {
-        return;
+    /**
+     * Check for any model existence, just in case.
+     */
+    if (models.length === 0) {
+        return output;
     }
 
     /**
-     * Load all the entries by their IDs.
+     * Load all the entries by their ID
      */
-    const promises = await context.security.withoutAuthorization(async () => {
-        return models.map(model => {
-            return context.cms.getEntriesByIds(model, referencesByModel.get(model.modelId) || []);
-        });
+    const promises = models.map(model => {
+        return context.cms.getEntriesByIds(model, referencesByModel[model.modelId]);
     });
 
-    const allEntries = await Promise.all(promises).then(res => res.flat());
-    const entriesByModel = allEntries.reduce<Record<string, string[]>>((acc, entry) => {
-        return { ...acc, [entry.modelId]: [...(acc[entry.modelId] || []), entry.id] };
-    }, {});
+    const results = await Promise.all(promises);
 
+    const records: Record<string, CmsRefEntry> = results.reduce((collection, entries) => {
+        for (const entry of entries) {
+            collection[entry.id] = {
+                id: entry.id,
+                entryId: entry.entryId,
+                modelId: entry.modelId
+            };
+        }
+        return collection;
+    }, {} as Record<string, CmsRefEntry>);
     /**
-     * Verify that all entries exist.
+     * Verify that all referenced entries actually exist.
      */
-    referencesByModel.forEach((ids, modelId) => {
-        const modelEntriesInDb = entriesByModel[modelId];
-        for (const id of ids) {
-            if (!modelEntriesInDb.includes(id)) {
+    for (const modelId in referencesByModel) {
+        const entries = referencesByModel[modelId];
+        for (const id of entries) {
+            if (records[id]) {
+                continue;
+            } else if (validateEntries) {
                 throw new WebinyError(
                     `Missing referenced entry with id "${id}" in model "${modelId}".`,
                     "ENTRY_NOT_FOUND",
@@ -331,6 +264,38 @@ async function validateReferencedEntries({
                     }
                 );
             }
+            const { id: entryId } = parseIdentifier(id);
+            records[id] = {
+                id,
+                entryId,
+                modelId
+            };
         }
-    });
-}
+    }
+
+    /**
+     * In the end, assign the entryId, id and model values to the output.
+     */
+    for (const id in pathsByReferenceId) {
+        const entry = records[id];
+        const paths = pathsByReferenceId[id];
+        if (!entry) {
+            if (validateEntries) {
+                throw new WebinyError("Missing entry in records.", "ENTRY_ERROR", {
+                    id,
+                    paths
+                });
+            }
+            continue;
+        }
+        for (const path of paths) {
+            output = dotProp.set(output, path, {
+                id: entry.id,
+                entryId: entry.entryId,
+                modelId: entry.modelId
+            });
+        }
+    }
+
+    return output;
+};

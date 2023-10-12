@@ -77,7 +77,7 @@ export async function importBlock({
     if (category) {
         loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
         if (!loadedCategory) {
-            loadedCategory = await context.pageBuilder.createBlockCategory({
+            await context.pageBuilder.createBlockCategory({
                 name: category.name,
                 slug: category.slug,
                 icon: category.icon,

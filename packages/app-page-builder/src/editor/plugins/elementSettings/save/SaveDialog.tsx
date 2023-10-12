@@ -62,12 +62,11 @@ const SaveDialog = (props: Props) => {
     const [pbElement, setPbElement] = useState<PbElement>();
     const { getElementTree } = useEventActionHandler();
 
-    // We need to get element children to show on preview.
     useEffect(() => {
         setTimeout(async () => {
             setPbElement((await getElementTree({ element })) as PbElement);
         });
-    }, [element.id]);
+    });
 
     const blockCategoriesOptions = plugins
         .byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")

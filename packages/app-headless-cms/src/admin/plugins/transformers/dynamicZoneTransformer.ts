@@ -1,5 +1,4 @@
 import { CmsDynamicZoneTemplate, CmsFieldValueTransformer } from "~/types";
-import { prepareFormData } from "@webiny/app-headless-cms-common";
 
 interface TemplateValueFromForm {
     _templateId: string;
@@ -15,9 +14,8 @@ const convertToGraphQLInput = (
         return undefined;
     }
 
-    return {
-        [template.gqlTypeName]: prepareFormData(value, template.fields)
-    };
+    // We keep the `_templateId` property, to simplify further processing.
+    return { [template.gqlTypeName]: value };
 };
 
 export const createDynamicZoneTransformer = (): CmsFieldValueTransformer => ({
@@ -27,6 +25,6 @@ export const createDynamicZoneTransformer = (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         const templates = field.settings?.templates || [];
 
-        return value ? convertToGraphQLInput(value, templates) : undefined;
+        return value ? convertToGraphQLInput(value, templates) : null;
     }
 });

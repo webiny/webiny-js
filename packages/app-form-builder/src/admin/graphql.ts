@@ -203,6 +203,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
                         id
                         name
                         version
+                        layout
                         fields {
                             _id
                             fieldId
@@ -212,10 +213,6 @@ export const LIST_FORM_SUBMISSIONS = gql`
                                 label
                                 value
                             }
-                        }
-                        steps {
-                            title
-                            layout
                         }
                     }
                 }

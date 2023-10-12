@@ -70,7 +70,7 @@ export const createFormEntity = (params: Params): Entity<any> => {
             fields: {
                 type: "list"
             },
-            steps: {
+            layout: {
                 type: "list"
             },
             stats: {

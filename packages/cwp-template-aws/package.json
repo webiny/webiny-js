@@ -21,6 +21,7 @@
     "inquirer": "7.3.3",
     "load-json-file": "6.2.0",
     "lodash": "^4.17.20",
+    "ora": "4.1.1",
     "write-json-file": "4.3.0"
   },
   "devDependencies": {

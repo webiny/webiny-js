@@ -44,7 +44,6 @@ import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { FormBuilderStorageOperations } from "~/types";
-import { createPageBuilderContext } from "@webiny/api-page-builder";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -65,7 +64,6 @@ export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
     const i18nStorage = getStorageOps("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const pageBuilderStorage = getStorageOps<FileManagerStorageOperations>("pageBuilder");
     const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -87,13 +85,9 @@ export default (params: UseGqlHandlerParams = {}) => {
                 };
             }),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
-            createPageBuilderContext({
-                storageOperations: pageBuilderStorage.storageOperations
-            }),
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
             }),
-
             createFileManagerGraphQL(),
             createFormBuilder({
                 storageOperations: formBuilderStorage.storageOperations

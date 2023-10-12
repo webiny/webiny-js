@@ -28,8 +28,6 @@ export interface PulumiAppResourceConfigSetter<T> {
 
 export type PulumiAppResourceConfigProxy<T extends object> = {
     readonly [K in keyof T]-?: PulumiAppResourceConfigSetter<T[K]>;
-} & {
-    clone(): T;
 };
 
 export interface PulumiAppResource<T extends PulumiAppResourceConstructor> {

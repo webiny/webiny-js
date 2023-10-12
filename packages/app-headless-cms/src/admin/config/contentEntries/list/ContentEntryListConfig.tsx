@@ -20,7 +20,6 @@ export function useContentEntryListConfig() {
         () => ({
             browser: {
                 ...browser,
-                bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]
             }

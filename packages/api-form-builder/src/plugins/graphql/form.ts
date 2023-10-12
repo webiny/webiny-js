@@ -39,7 +39,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
                 slug: String!
                 fields: [FbFormFieldType!]!
-                steps: [FbFormStepType!]!
+                layout: [[String]]!
                 settings: FbFormSettingsType!
                 triggers: JSON
                 published: Boolean!
@@ -52,11 +52,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbFieldOptionsType {
                 label: String
                 value: String
-            }
-
-            input FbFormStepInput {
-                title: String
-                layout: [[String]]
             }
 
             input FbFieldOptionsInput {
@@ -74,11 +69,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
                 message: String
                 settings: JSON
-            }
-
-            type FbFormStepType {
-                title: String
-                layout: [[String]]
             }
 
             type FbFormFieldType {
@@ -178,7 +168,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             input FbUpdateFormInput {
                 name: String
                 fields: [FbFormFieldInput]
-                steps: [FbFormStepInput]
+                layout: [[String]]
                 settings: FbFormSettingsInput
                 triggers: JSON
             }
@@ -211,8 +201,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 parent: ID
                 name: String
                 version: Int
+                layout: [[String]]
                 fields: [FbFormFieldType]
-                steps: [FbFormStepType]
             }
 
             type FbFormSubmission {
@@ -454,6 +444,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 createRevisionFrom: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createFormRevision(args.revision);
+
                         return new Response(form);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -465,6 +456,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 updateRevision: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.updateForm(args.revision, args.data);
+
                         return new Response(form);
                     } catch (e) {
                         return new ErrorResponse(e);

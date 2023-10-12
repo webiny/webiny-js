@@ -11,10 +11,7 @@ export const DATA_FIELD = /* GraphQL */ `
             parent
             name
             version
-            steps {
-                title
-                layout
-            }
+            layout
             fields {
                 _id
                 fieldId

@@ -72,6 +72,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-standard": "^5.0.0",
+    "eslint-plugin-webiny-i18n": "link:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "folder-hash": "^4.0.0",
@@ -121,14 +122,12 @@
     "add-webiny-package": "node scripts/addWebinyPackage.js",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
-    "deploy": "yarn webiny deploy",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "node scripts/buildPackages",
     "build:quick": "node scripts/buildPackages --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":true}}}'",
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
-    "watch": "yarn webiny watch",
     "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
@@ -229,5 +228,5 @@
     "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
     "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@3.2.1"
 }

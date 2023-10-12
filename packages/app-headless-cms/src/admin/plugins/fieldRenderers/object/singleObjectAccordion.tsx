@@ -1,13 +1,12 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { CmsModelFieldRendererPlugin } from "~/types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { FieldSettings } from "./FieldSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
-const plugin: CmsModelFieldRendererPlugin = {
+const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-object-accordion",
     renderer: {
@@ -20,14 +19,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         render({ field, getBind, contentModel }) {
             const Bind = getBind();
 
-            const fieldSettings = FieldSettings.createFrom(field);
-
-            if (!fieldSettings.hasFields()) {
-                fieldSettings.logMissingFields();
-                return null;
-            }
-
-            const settings = fieldSettings.getSettings();
+            const settings = field.settings || {};
 
             return (
                 <Accordion>

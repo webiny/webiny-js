@@ -2,7 +2,12 @@ import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { PublishRevision, EditRevision, DeleteForm, RevisionSelector } from "./HeaderComponents";
+import {
+    PublishRevision,
+    DeleteRevision,
+    EditRevision,
+    RevisionSelector
+} from "./HeaderComponents";
 import { FbFormDetailsPluginRenderParams, FbRevisionModel } from "~/types";
 
 const headerTitle = css({
@@ -49,7 +54,7 @@ const Header: React.FC<HeaderProps> = props => {
                         <RevisionSelector {...props} />
                         <EditRevision {...props} />
                         <PublishRevision {...props} />
-                        <DeleteForm {...props} />
+                        <DeleteRevision {...props} />
                     </Cell>
                 </Grid>
             )}

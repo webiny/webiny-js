@@ -89,11 +89,7 @@ const ExportTemplateDialogMessage: React.FC<ExportTemplateDialogProps> = ({ expo
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography
-                            use={"body2"}
-                            className={"link-text"}
-                            data-testid={"pb-templates-export-dialog-export-url"}
-                        >
+                        <Typography use={"body2"} className={"link-text"}>
                             {exportUrl}
                         </Typography>
                         <span>
@@ -132,7 +128,6 @@ interface UseExportTemplateDialog {
     showExportTemplateInitializeDialog: (props: ExportTemplatesDialogProps) => void;
     hideDialog: () => void;
 }
-
 const useExportTemplateDialog = (): UseExportTemplateDialog => {
     const { showDialog, hideDialog } = useDialog();
 

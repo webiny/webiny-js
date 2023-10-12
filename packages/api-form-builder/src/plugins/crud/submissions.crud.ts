@@ -184,8 +184,10 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     "https://www.google.com/recaptcha/api/siteverify",
                     {
                         method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: `secret=${secretKey}&response=${reCaptchaResponseToken}`
+                        body: JSON.stringify({
+                            secret: secretKey,
+                            response: reCaptchaResponseToken
+                        })
                     }
                 );
 
@@ -270,7 +272,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     name: form.name,
                     version: form.version,
                     fields: form.fields,
-                    steps: form.steps
+                    layout: form.layout
                 }
             });
 

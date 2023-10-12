@@ -5,7 +5,7 @@ import { Cell } from "@webiny/ui/Grid";
 import { Accordion as RootAccordion, AccordionItem } from "@webiny/ui/Accordion";
 import {
     BindComponentRenderProp,
-    CmsModelFieldRendererPlugin,
+    CmsEditorFieldRendererPlugin,
     CmsModelFieldRendererProps
 } from "~/types";
 import DynamicSection from "../DynamicSection";
@@ -22,7 +22,6 @@ import {
     ObjectItem
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
-import { FieldSettings } from "./FieldSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -75,15 +74,6 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
 
-    const fieldSettings = FieldSettings.createFrom(field);
-
-    if (!fieldSettings.hasFields()) {
-        fieldSettings.logMissingFields();
-        return null;
-    }
-
-    const settings = fieldSettings.getSettings();
-
     return (
         <RootAccordion>
             <AccordionItem title={field.label} description={field.helpText}>
@@ -115,8 +105,8 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
                                         Bind={Bind}
                                         {...bind.index}
                                         contentModel={contentModel}
-                                        fields={settings.fields}
-                                        layout={settings.layout}
+                                        fields={(field.settings || {}).fields || []}
+                                        layout={(field.settings || {}).layout || []}
                                         gridClassName={fieldsGridStyle}
                                     />
                                 </Cell>
@@ -129,7 +119,7 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
     );
 };
 
-const plugin: CmsModelFieldRendererPlugin = {
+const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-objects-accordion",
     renderer: {

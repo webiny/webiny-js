@@ -17,36 +17,10 @@ const pageFields = `
         }
         ...on ${singularPageApiName}_Content_Objecting {
             nestedObject {
-                __typename
                 objectTitle
                 objectNestedObject {
                     nestedObjectNestedTitle
                 }
-            }
-            dynamicZone {
-                ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
-                    authors {
-                        id
-                        modelId
-                        entryId
-                        fullName
-                    }
-                }
-            }
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_Author {
-            author(populate: true) {
-                id
-                entryId
-                modelId
-                fullName
-            }
-            authors(populate: true) {
-                id
-                entryId
-                modelId
-                fullName
             }
             __typename
         }
@@ -84,18 +58,8 @@ const pageFields = `
             }
         }
     }
-    references1 {
-        ...on ${singularPageApiName}_References1_Authors {
-            authors(populate: true) {
-                id
-                entryId
-                modelId
-                fullName
-            }
-        }
-    }
-    references2 {
-        ...on ${singularPageApiName}_References2_Author {
+    references {
+        ...on ${singularPageApiName}_References_Author {
             author(populate: true) {
                 id
                 entryId

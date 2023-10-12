@@ -6,7 +6,6 @@ import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "../common";
 import { ApiGraphql } from "~/apps";
-import { LAMBDA_RUNTIME } from "~/constants";
 
 export type ApiMigration = PulumiAppModule<typeof ApiMigration>;
 
@@ -26,7 +25,7 @@ export const ApiMigration = createAppModule({
             config: {
                 handler: "handler.handler",
                 timeout: 900,
-                runtime: LAMBDA_RUNTIME,
+                runtime: "nodejs14.x",
                 memorySize: 3008,
                 role: role.output.arn,
                 description: "Performs data migrations.",

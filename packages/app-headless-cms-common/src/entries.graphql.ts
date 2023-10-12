@@ -210,14 +210,12 @@ export interface CmsEntryCreateMutationVariables {
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
-    const createFields = createFieldsList({ model, fields: model.fields });
-
     return gql`
         mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!) {
             content: create${model.singularApiName}(data: $data) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                    ${createFields}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }

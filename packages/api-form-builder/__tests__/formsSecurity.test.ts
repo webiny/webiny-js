@@ -274,30 +274,14 @@ describe("Forms Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { updateRevision } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`new-updated-form-`);
-            const [response] = await updateRevision({
-                revision: formId,
-                data: {
-                    ...mock,
-                    steps: [
-                        {
-                            title: "",
-                            layout: []
-                        }
-                    ]
-                }
-            });
+            const [response] = await updateRevision({ revision: formId, data: mock });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
                         updateRevision: {
                             data: {
                                 ...new MockResponse({ prefix: `new-updated-form-`, id: formId }),
-                                steps: [
-                                    {
-                                        title: "",
-                                        layout: []
-                                    }
-                                ]
+                                layout: []
                             },
                             error: null
                         }

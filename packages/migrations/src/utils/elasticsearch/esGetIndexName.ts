@@ -28,7 +28,7 @@ export const esGetIndexName = (params: EsGetIndexNameParams) => {
 
     const tenantId = sharedIndex ? "root" : tenant;
     let localeCode: string | null = null;
-    if (isHeadlessCmsModel || process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE === "true") {
+    if (process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE === "true") {
         if (!locale) {
             throw new WebinyError(
                 `Missing "locale" parameter when trying to create Elasticsearch index name.`,

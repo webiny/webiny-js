@@ -27,22 +27,6 @@ describe("File Model Modifier test", () => {
                         label: "Year of manufacturing",
                         type: "number"
                     });
-                    modifier.addField({
-                        id: "article",
-                        fieldId: "article",
-                        label: "Article",
-                        type: "ref",
-                        renderer: {
-                            name: "ref-advanced-single"
-                        },
-                        settings: {
-                            models: [
-                                {
-                                    modelId: "article"
-                                }
-                            ]
-                        }
-                    });
                 })
             ]
         });

@@ -370,16 +370,7 @@ export interface PbPageRevision {
 
 export type PbPageDataItem = Pick<
     PbPageData,
-    | "id"
-    | "pid"
-    | "title"
-    | "createdBy"
-    | "createdOn"
-    | "savedOn"
-    | "status"
-    | "version"
-    | "locked"
-    | "path"
+    "id" | "pid" | "title" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
 >;
 
 export interface PbRenderElementPluginRenderParams {

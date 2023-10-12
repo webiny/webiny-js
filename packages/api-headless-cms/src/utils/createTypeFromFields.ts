@@ -50,10 +50,6 @@ export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromField
         }
     }
 
-    if (!typeFields.length) {
-        typeFields.push("_empty: String");
-    }
-
     return {
         fieldType: `${typeNamePrefix}${typeSuffix}`,
         typeDefs: /* GraphQL */ `

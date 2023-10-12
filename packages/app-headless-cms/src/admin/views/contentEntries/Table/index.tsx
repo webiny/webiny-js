@@ -5,7 +5,6 @@ import { Main } from "./Main";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient, useModel } from "~/admin/hooks";
-import { ContentEntriesListProvider } from "~/admin/views/contentEntries/hooks";
 import { CMS_ENTRY_LIST_LINK, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/admin/constants";
 
 const View: React.VFC = () => {
@@ -45,9 +44,7 @@ export const Table: React.VFC = () => {
             createNavigateFolderListLink={createNavigateFolderListLink}
             createNavigateFolderStorageKey={createNavigateFolderStorageKey}
         >
-            <ContentEntriesListProvider>
-                <View />
-            </ContentEntriesListProvider>
+            <View />
         </AcoProvider>
     );
 };

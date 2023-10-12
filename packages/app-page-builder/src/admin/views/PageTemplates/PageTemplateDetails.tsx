@@ -80,10 +80,7 @@ const EmptyTemplateDetails: React.FC<EmptyTemplateDetailsProps> = ({ onCreate, c
             })}
             action={
                 canCreate ? (
-                    <ButtonDefault
-                        data-testid="pb-templates-form-new-template-btn"
-                        onClick={onCreate}
-                    >
+                    <ButtonDefault data-testid="new-record-button" onClick={onCreate}>
                         <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
                     </ButtonDefault>
                 ) : (

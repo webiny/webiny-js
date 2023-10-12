@@ -367,4 +367,36 @@ Field "TestListWhereInput.status_not_in" can only be defined once.`
             stack: expect.any(String)
         });
     });
+
+    it("should throw an error if schema cannot be generated for a model - faulty object field", async () => {
+        const field = createObjectField({
+            settings: {
+                fields: [],
+                layout: []
+            }
+        });
+        let error: ErrorObject | undefined;
+        try {
+            await validateModelFields({
+                context,
+                model: createModel({
+                    fields: [field],
+                    layout: [[field.id]]
+                })
+            });
+        } catch (ex) {
+            error = extractError(ex);
+        }
+
+        expect(error).toEqual({
+            message: `Model "test" was not saved!\nPlease review the definition of "objectField" field.`,
+            code: "INVALID_MODEL_DEFINITION",
+            data: {
+                modelId: "test",
+                invalidField: "objectField",
+                sdl: expect.any(String)
+            },
+            stack: expect.any(String)
+        });
+    });
 });

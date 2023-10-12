@@ -26,11 +26,9 @@ export interface AcoListContextData<T> {
     listTitle?: string;
     meta: ListMeta;
     records: SearchRecordItem<T>[];
-    selected: T[];
     setFilters: (data: Record<string, any>) => void;
     setListSort: (state: ListSearchRecordsSort) => void;
     setSearchQuery: (query: string) => void;
-    setSelected: (selected: T[]) => void;
     showFilters: () => void;
     showingFilters: boolean;
 }
@@ -39,7 +37,7 @@ export const AcoListContext = React.createContext<
     AcoListContextData<GenericSearchData> | undefined
 >(undefined);
 
-export interface State<T> {
+export interface State {
     after?: string;
     filters?: Record<string, any>;
     folderId?: string;
@@ -47,11 +45,10 @@ export interface State<T> {
     limit: number;
     listSort: ListSearchRecordsSort;
     searchQuery: string;
-    selected: T[];
     showingFilters: boolean;
 }
 
-const initializeAcoListState = (): State<GenericSearchData> => {
+const initializeAcoListState = (): State => {
     return {
         after: undefined,
         filters: undefined,
@@ -60,7 +57,6 @@ const initializeAcoListState = (): State<GenericSearchData> => {
         limit: 50,
         listSort: [],
         searchQuery: "",
-        selected: [],
         showingFilters: false
     };
 };
@@ -102,7 +98,6 @@ const getCurrentRecordList = <T = GenericSearchData,>(
 export interface AcoListProviderProps {
     children: React.ReactNode;
     own?: boolean;
-    titleFieldId: string | null;
 }
 
 export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...props }) => {
@@ -120,7 +115,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
     const [state, setState] = useReducer(
-        (state: State<GenericSearchData>, newState: Partial<State<GenericSearchData>>) => ({
+        (state: State, newState: Partial<State>) => ({
             ...state,
             ...newState
         }),
@@ -160,7 +155,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
             folderId: currentFolderId,
             isSearch: false,
             searchQuery: "",
-            selected: [],
             showingFilters: false
         });
     }, [currentFolderId]);
@@ -214,10 +208,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
      */
     useEffect(() => {
         setFolders(prev => {
-            const titleField = props?.titleFieldId || "id";
-            return sortTableItems(prev, state.listSort, {
-                [titleField]: "title"
-            });
+            return sortTableItems(prev, state.listSort);
         });
     }, [state.listSort]);
 
@@ -280,7 +271,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
 
     const context: AcoListContextData<GenericSearchData> = {
-        ...pick(state, ["isSearch", "selected", "showingFilters"]),
+        ...pick(state, ["isSearch", "showingFilters"]),
         folders,
         records,
         listTitle,
@@ -297,9 +288,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
         },
         setListSort(sort: ListSearchRecordsSort) {
             setState({ listSort: sort, after: undefined });
-        },
-        setSelected(selected) {
-            setState({ selected });
         },
         hideFilters() {
             setState({ filters: undefined, showingFilters: false, after: undefined });

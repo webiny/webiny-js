@@ -41,16 +41,6 @@ export const FormFieldsModel = withFields({
     settings: object({ value: {} })
 })();
 
-export const FormStepsModel = withFields({
-    steps: fields({
-        value: {},
-        instanceOf: withFields({
-            title: string(),
-            layout: object({ value: [] })
-        })()
-    })
-})();
-
 export const FormSettingsModel = withFields({
     layout: fields({
         value: {},
@@ -99,7 +89,7 @@ export const FormUpdateDataModel = withFields({
         value: [],
         instanceOf: FormFieldsModel
     }),
-    steps: object({ instanceOf: FormStepsModel, value: {} }),
+    layout: object({ value: [] }),
     settings: fields({ instanceOf: FormSettingsModel, value: {} }),
     triggers: object()
 })();
@@ -128,7 +118,7 @@ export const FormSubmissionCreateDataModel = withFields({
             parent: string({ validation: validation.create("required") }),
             name: string({ validation: validation.create("required") }),
             version: number({ validation: validation.create("required") }),
-            steps: object({ instanceOf: FormStepsModel, value: {} }),
+            layout: object({ value: [] }),
             fields: fields({
                 list: true,
                 value: [],

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import camelCase from "lodash/camelCase";
@@ -156,12 +156,15 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }
                     value: optionsValue,
                     onChange: setOptionsValue
                 } = bind;
-                const onSubmit = (data: FieldOption): void => {
-                    const newValue = [...optionsValue];
-                    newValue.splice(editOption.index as number, 1, data);
-                    setOptionsValue(newValue);
-                    clearEditOption();
-                };
+                const onSubmit = useCallback(
+                    (data: FieldOption): void => {
+                        const newValue = [...optionsValue];
+                        newValue.splice(editOption.index as number, 1, data);
+                        setOptionsValue(newValue);
+                        clearEditOption();
+                    },
+                    [optionsValue, setOptionsValue]
+                );
                 return (
                     <>
                         <div>Options</div>

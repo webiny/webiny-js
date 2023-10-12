@@ -219,6 +219,11 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 }
 
                 setRecords(prev => {
+                    // If no data received, return the previous state
+                    if (!data.length) {
+                        return prev;
+                    }
+
                     // If there's no cursor, it means we're receiving a new list of records from scratch.
                     if (!after) {
                         return data;
@@ -243,20 +248,18 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Record `id` is mandatory");
                 }
 
-                const { id: recordId } = parseIdentifier(id);
-
                 const { data: response } = await apolloFetchingHandler<GetSearchRecordResponse>(
                     loadingHandler("GET", setLoading),
                     () =>
                         client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                             query: GET_RECORD,
-                            variables: { id: recordId },
+                            variables: { id },
                             fetchPolicy: "network-only"
                         })
                 );
 
                 if (!response) {
-                    throw new Error(`Could not fetch record "${recordId}" - no response.`);
+                    throw new Error(`Could not fetch record "${id}" - no response.`);
                 }
 
                 const { data, error } = getResponseData(response, mode);
@@ -268,12 +271,12 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 if (!data) {
                     // No record found - must be deleted by previous operation
                     setRecords(prev => {
-                        return prev.filter(record => record.id !== recordId);
+                        return prev.filter(record => record.id !== id);
                     });
                     return data;
                 }
                 setRecords(prev => {
-                    const index = prev.findIndex(record => record.id === recordId);
+                    const index = prev.findIndex(record => record.id === id);
 
                     // No record found in the list - must be added by previous operation
                     if (index === -1) {

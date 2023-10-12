@@ -1,7 +1,7 @@
 import renderUrl, { File } from "./renderUrl";
 import { join } from "path";
 import S3 from "aws-sdk/clients/s3";
-import { getStorageFolder, getRenderUrl, getIsNotFoundPage, isMultiTenancyEnabled } from "~/utils";
+import { getStorageFolder, getRenderUrl, getIsNotFoundPage } from "~/utils";
 import { HandlerPayload, RenderHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
 import omit from "lodash/omit";
@@ -17,7 +17,6 @@ interface StoreFileParams {
     body: string;
     storageName: string;
 }
-
 const storeFile = (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
     const object: S3.Types.PutObjectRequest = {
@@ -40,6 +39,16 @@ export interface RenderParams {
 }
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
+
+function isMultiTenancyEnabled() {
+    // This check is for backwards compatibility with pre-5.29.0 projects.
+    if (process.env.WEBINY_MULTI_TENANCY === "true") {
+        return true;
+    }
+
+    // For >=5.29.0 projects, check for `WCP_PROJECT_ENVIRONMENT` variable.
+    return process.env.hasOwnProperty("WCP_PROJECT_ENVIRONMENT");
+}
 
 export default (params: RenderParams) => {
     const { storageOperations } = params;

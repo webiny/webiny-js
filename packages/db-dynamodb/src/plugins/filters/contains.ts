@@ -1,39 +1,19 @@
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
-const createValues = (initialValue: string | string[]) => {
-    return Array.isArray(initialValue) ? initialValue : [initialValue];
-};
-
-const createCompareValues = (value: string) => {
-    return value
-        .replace(/\s+/g, " ")
-        .trim()
-        .replace(/\?/g, `\\?`)
-        .replace(/\//g, `\\/`)
-        .replace(/:/g, ``)
-        .replace(/\-/g, `\\-`)
-        .split(" ")
-        .filter(val => {
-            return val.length > 0;
-        });
-};
-
 const plugin = new ValueFilterPlugin({
     operation: "contains",
-    matches: ({ value: initialValue, compareValue: initialCompareValue }) => {
-        if (!initialValue || (Array.isArray(initialValue) && initialValue.length === 0)) {
+    matches: ({ value, compareValue }) => {
+        if (typeof value !== "string") {
+            if (Array.isArray(value) === true) {
+                const re = new RegExp(compareValue, "i");
+                return value.some((v: string) => {
+                    return v.match(re) !== null;
+                });
+            }
             return false;
-        } else if (initialCompareValue === undefined || initialCompareValue === null) {
-            return true;
         }
-        const values = createValues(initialValue);
-        const compareValues = createCompareValues(initialCompareValue);
-        return values.some(target => {
-            // return target.match(compareValues) !== null;
-            return compareValues.every(compareValue => {
-                return target.match(new RegExp(compareValue, "gi")) !== null;
-            });
-        });
+        const re = new RegExp(compareValue, "i");
+        return value.match(re) !== null;
     }
 });
 

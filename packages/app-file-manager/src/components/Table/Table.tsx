@@ -18,7 +18,7 @@ import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
 import { RecordActionMove } from "./RecordActionMove";
-import { menuStyles } from "./styled";
+import { actionsColumnStyles, menuStyles } from "./styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 import { FileProvider } from "~/contexts/FileProvider";
@@ -38,29 +38,28 @@ export interface TableProps {
     canSelectAllRows: boolean;
 }
 
-interface BaseEntry {
+type FileEntry = {
+    $type: "RECORD";
     $selectable: boolean;
     id: string;
-    createdBy: string;
-    createdOn: string;
-    savedOn: string;
-}
-
-interface FileEntry extends BaseEntry {
-    $type: "RECORD";
     name: string;
+    createdBy: string;
+    savedOn: string;
     type: string;
     size: number;
     original: FileItem;
     location: Location;
-}
+};
 
-interface FolderEntry extends BaseEntry {
+type FolderEntry = {
     $type: "FOLDER";
     $selectable: boolean;
+    id: string;
     title: string;
+    createdBy: string;
+    savedOn: string;
     original: FolderItem;
-}
+};
 
 type Entry = FolderEntry | FileEntry;
 
@@ -72,7 +71,6 @@ const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] 
             id: data.id,
             name: data.name,
             createdBy: data.createdBy?.displayName || "-",
-            createdOn: data.createdOn,
             savedOn: data.savedOn,
             type: data.type,
             size: data.size,
@@ -89,7 +87,6 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
         id: item.id,
         title: item.title,
         createdBy: item.createdBy?.displayName || "-",
-        createdOn: item.createdOn,
         savedOn: item.savedOn,
         original: item
     }));
@@ -127,7 +124,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             name: {
                 header: "Name",
                 enableSorting: true,
-                size: 400,
                 cell: (item: Entry) => {
                     if (isFileEntry(item)) {
                         return (
@@ -161,26 +157,20 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     return "-";
                 }
             },
-            createdOn: {
-                header: "Created",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
+            savedOn: {
+                header: "Last modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author"
-            },
-            savedOn: {
-                header: "Modified",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-                enableSorting: true
             },
             original: {
                 header: "",
                 meta: {
                     alignEnd: true
                 },
-                size: 60,
-                enableResizing: false,
+                className: actionsColumnStyles,
                 cell: (item: Entry) => {
                     if (!item.original) {
                         return <></>;
@@ -235,12 +225,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onSelectRow={onSelectRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
-                initialSorting={[
-                    {
-                        id: "createdOn",
-                        desc: true
-                    }
-                ]}
                 onSortingChange={onSortingChange}
                 selectedRows={createRecordsData(selectedRecords, true)}
             />

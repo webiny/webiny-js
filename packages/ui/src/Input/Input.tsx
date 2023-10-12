@@ -148,7 +148,7 @@ export const Input: React.FC<InputProps> = props => {
                 onBlur={onBlur}
                 label={label}
                 icon={icon}
-                placeholder={placeholder}
+                placeholder={(!label && placeholder) || undefined}
                 trailingIcon={trailingIcon}
                 rows={rows}
                 className={classNames(

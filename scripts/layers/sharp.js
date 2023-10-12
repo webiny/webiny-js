@@ -27,7 +27,8 @@ const LAYER_NAME = "sharp";
                     "--zip-file",
                     "fileb://" + path.join(__dirname, "sharp", "layer-node-latest.zip"),
                     "--compatible-runtimes",
-                    "nodejs16.x",
+                    //"nodejs12.x",// removed when defaulted to node 14
+                    "nodejs14.x",
                     "--region",
                     region,
                     "--cli-read-timeout",

@@ -1,12 +1,14 @@
+const readline = require("readline");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const { getStackOutput } = require("../utils");
-const {
-    MigrationRunner,
-    InteractiveCliStatusReporter,
-    NonInteractiveCliStatusReporter,
-    LogReporter,
-    CliMigrationRunReporter
-} = require("@webiny/data-migration/cli");
+const { runMigration, printReport, getDuration } = require("@webiny/data-migration/cli");
+
+const clearLine = () => {
+    if (process.stdout.isTTY) {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+    }
+};
 
 module.exports = async (params, context) => {
     const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
@@ -18,29 +20,35 @@ module.exports = async (params, context) => {
             region: apiOutput.region
         });
 
-        const functionName = apiOutput["migrationLambdaArn"];
-
-        const logReporter = new LogReporter(functionName);
-        const statusReporter =
-            !process.stdout.isTTY || "CI" in process.env
-                ? new NonInteractiveCliStatusReporter(logReporter)
-                : new InteractiveCliStatusReporter(logReporter);
-
-        const runner = MigrationRunner.create({
+        const response = await runMigration({
             lambdaClient,
-            functionName,
-            statusReporter
+            functionName: apiOutput["migrationLambdaArn"],
+            payload: {
+                version: process.env.WEBINY_VERSION || context.version,
+                pattern: params.pattern
+            },
+            statusCallback: ({ status, migrations }) => {
+                clearLine();
+                if (status === "running") {
+                    const currentMigration = migrations.find(mig => mig.status === "running");
+                    if (currentMigration) {
+                        const duration = getDuration(currentMigration.startedOn);
+                        process.stdout.write(
+                            `Running data migration ${currentMigration.id} (${duration})...`
+                        );
+                    }
+                    return;
+                }
+
+                if (status === "init") {
+                    process.stdout.write(`Checking data migrations...`);
+                }
+            }
         });
 
-        const result = await runner.runMigration({
-            version: process.env.WEBINY_VERSION || context.version,
-            pattern: params.pattern
-        });
+        clearLine();
 
-        if (result) {
-            const reporter = new CliMigrationRunReporter(logReporter, context);
-            await reporter.report(result);
-        }
+        printReport({ response, context, migrationLambdaArn: apiOutput["migrationLambdaArn"] });
     } catch (e) {
         context.error(`An error occurred while trying to execute data migration Lambda function!`);
         console.log(e);

@@ -1,7 +1,6 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { LAMBDA_RUNTIME } from "~/constants";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { CoreOutput } from "../common";
 import { getCommonLambdaEnvVariables } from "../lambdaUtils";
@@ -105,7 +104,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
         name: EXECUTE_ACTION_LAMBDA,
         config: {
             role: role.output.arn,
-            runtime: LAMBDA_RUNTIME,
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -208,7 +207,7 @@ function createScheduleActionLambda(
         name: CREATE_RULE_LAMBDA,
         config: {
             role: role.output.arn,
-            runtime: LAMBDA_RUNTIME,
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,

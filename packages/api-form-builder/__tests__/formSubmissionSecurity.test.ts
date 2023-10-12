@@ -92,6 +92,7 @@ describe("Forms Submission Security Test", () => {
                             version: 1,
                             createdOn: expect.stringMatching(/^20/),
                             savedOn: expect.stringMatching(/^20/),
+                            layout: [],
                             fields: [],
                             locked: false,
                             published: false,
@@ -107,12 +108,6 @@ describe("Forms Submission Security Test", () => {
                                 views: 0
                             },
                             status: "draft",
-                            steps: [
-                                {
-                                    title: "Step 1",
-                                    layout: []
-                                }
-                            ],
                             triggers: null,
                             settings: {
                                 reCaptcha: {
@@ -145,13 +140,7 @@ describe("Forms Submission Security Test", () => {
         const [updateFormRevisionResponse] = await handlerA.updateRevision({
             revision: formA.id,
             data: {
-                fields: mocks.fields,
-                steps: [
-                    {
-                        title: "Test Step",
-                        layout: []
-                    }
-                ]
+                fields: mocks.fields
             }
         });
         expect(updateFormRevisionResponse).toEqual({
@@ -161,13 +150,7 @@ describe("Forms Submission Security Test", () => {
                         data: {
                             ...formA,
                             savedOn: expect.stringMatching(/^20/),
-                            fields: expect.any(Array),
-                            steps: [
-                                {
-                                    title: "Test Step",
-                                    layout: []
-                                }
-                            ]
+                            fields: expect.any(Array)
                         },
 
                         error: null
@@ -187,12 +170,6 @@ describe("Forms Submission Security Test", () => {
                             ...formA,
                             savedOn: expect.stringMatching(/^20/),
                             fields: expect.any(Array),
-                            steps: [
-                                {
-                                    title: "Test Step",
-                                    layout: []
-                                }
-                            ],
                             status: "published",
                             published: true,
                             publishedOn: expect.stringMatching(/^20/),
@@ -217,13 +194,7 @@ describe("Forms Submission Security Test", () => {
         await handlerB.updateRevision({
             revision: formB.id,
             data: {
-                fields: mocks.fields,
-                steps: [
-                    {
-                        title: "Test Step",
-                        layout: []
-                    }
-                ]
+                fields: mocks.fields
             }
         });
 

@@ -11,7 +11,6 @@ export const transformCmsContentEntryToRecordEntry = (item: CmsContentEntry): Re
         description: item.meta.description,
         image: item.meta.image,
         createdBy: item.createdBy.displayName,
-        createdOn: item.createdOn,
         savedOn: item.savedOn,
         status: item.meta.status,
         version: item.meta.version,
@@ -34,7 +33,6 @@ export const transformFolderItemToFolderEntry = (item: FolderItem): FolderEntry 
         $selectable: false,
         title: item.title,
         createdBy: item.createdBy.displayName || "-",
-        createdOn: item.createdOn,
         savedOn: item.createdOn,
         original: item
     };

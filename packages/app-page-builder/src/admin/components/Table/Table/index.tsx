@@ -19,8 +19,8 @@ import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants";
-import { PbPageDataItem, PbPageDataStatus } from "~/types";
-import { menuStyles } from "./styled";
+import { PbPageDataItem } from "~/types";
+import { actionsColumnStyles, menuStyles } from "./styled";
 
 export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -28,30 +28,33 @@ export interface TableProps {
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
-    selectedRows: PbPageDataItem[];
+    selectedRows: string[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-interface BaseEntry {
+export interface PageEntry {
+    $type: "RECORD";
     $selectable: boolean;
     id: string;
     title: string;
     createdBy: string;
-    createdOn: string;
     savedOn: string;
-}
-
-export interface PageEntry extends BaseEntry {
-    $type: "RECORD";
-    original: PbPageDataItem;
-    status: PbPageDataStatus;
-    location: Location;
+    status?: string;
     version?: number;
+    location: Location;
+    original: PbPageDataItem;
 }
 
-interface FolderEntry extends BaseEntry {
+interface FolderEntry {
     $type: "FOLDER";
+    $selectable: boolean;
+    id: string;
+    title: string;
+    createdBy: string;
+    savedOn: string;
+    status?: string;
+    version?: number;
     original: FolderItem;
 }
 
@@ -65,7 +68,6 @@ const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry
             id: data.pid,
             title: data.title,
             createdBy: data.createdBy?.displayName || "-",
-            createdOn: data.createdOn,
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
@@ -83,16 +85,15 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
             id: item.id,
             title: item.title,
             createdBy: item.createdBy?.displayName || "-",
-            createdOn: item.createdOn,
             savedOn: item.createdOn,
             original: item
         };
     });
 };
 
-export const isPageEntry = (entry: Entry): entry is PageEntry => {
+function isPageEntry(entry: Entry): entry is PageEntry {
     return entry.$type === "RECORD";
-};
+}
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
@@ -129,28 +130,21 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return <FolderName name={entry.title} id={entry.id} />;
                 },
-                enableSorting: true,
-                size: 400
+                enableSorting: true
             },
-            createdOn: {
-                header: "Created",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
+            savedOn: {
+                header: "Last modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author"
             },
-            savedOn: {
-                header: "Modified",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-                enableSorting: true
-            },
             status: {
                 header: "Status",
-                cell: (entry: Entry) => {
-                    if (isPageEntry(entry)) {
-                        const { status, version } = entry;
-                        return `${statusLabels[status]}${version ? ` (v${version})` : ""}`;
+                cell: ({ status, version }: Entry) => {
+                    if (status && version) {
+                        return `${statusLabels[status]} (v${version})`;
                     }
                     return "-";
                 }
@@ -160,8 +154,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
-                size: 60,
-                enableResizing: false,
+                className: actionsColumnStyles,
                 cell: (entry: Entry) => {
                     if (isPageEntry(entry)) {
                         return (
@@ -205,17 +198,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
-                selectedRows={data.filter(record =>
-                    selectedRows.find(row => row.pid === record.id)
-                )}
+                selectedRows={data.filter(record => selectedRows.includes(record.id))}
                 isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
-                initialSorting={[
-                    {
-                        id: "createdOn",
-                        desc: true
-                    }
-                ]}
             />
             {selectedFolder && (
                 <>

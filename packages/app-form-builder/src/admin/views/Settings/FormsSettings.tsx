@@ -32,7 +32,7 @@ const FormsSettings: React.FC = () => {
     const [updateSettings, updateSettingsMutation] = useMutation<
         UpdateFormSettingsMutationResponse,
         UpdateFormSettingsMutationVariables
-    >(graphql.mutation, { refetchQueries: [{ query: graphql.query }] });
+    >(graphql.mutation);
     const mutationInProgress = updateSettingsMutation?.loading;
 
     return (

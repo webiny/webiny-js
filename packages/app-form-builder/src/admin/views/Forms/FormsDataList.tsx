@@ -290,11 +290,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                     {data.map(form => {
                         const name = form.createdBy.displayName;
                         return (
-                            <ListItem
-                                key={form.id}
-                                className={listItemMinHeight}
-                                data-testid="default-data-list-element"
-                            >
+                            <ListItem key={form.id} className={listItemMinHeight}>
                                 <ListSelectBox>
                                     <Checkbox
                                         onChange={() => multiSelectProps.multiSelect(form)}
@@ -323,19 +319,13 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                         {upperFirst(form.status)} (v{form.version})
                                     </Typography>
                                     <ListActions>
-                                        {canUpdate(form) && (
-                                            <EditIcon
-                                                onClick={editRecord(form)}
-                                                data-testid="edit-form-action"
-                                            />
-                                        )}
+                                        {canUpdate(form) && <EditIcon onClick={editRecord(form)} />}
                                         {canDelete(form) && (
                                             <ConfirmationDialog
                                                 title={"Confirmation required!"}
                                                 message={
                                                     "This will delete the form and all of its revisions. Are you sure you want to continue?"
                                                 }
-                                                data-testid="form-deletion-confirmation-dialog"
                                             >
                                                 {({ showConfirmation }) => (
                                                     <DeleteIcon
@@ -345,7 +335,6 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                                                 history.push("/form-builder/forms");
                                                             })
                                                         }
-                                                        data-testid="delete-form-action"
                                                     />
                                                 )}
                                             </ConfirmationDialog>
