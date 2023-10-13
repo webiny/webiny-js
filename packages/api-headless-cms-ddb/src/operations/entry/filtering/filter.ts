@@ -16,6 +16,18 @@ interface ExecuteFilterParams {
 const executeFilter = (params: ExecuteFilterParams) => {
     const { value, filter } = params;
 
+    /**
+     * We need to check if the filter can be used.
+     * If it cannot, we will just return true.
+     */
+    const canUse = filter.plugin.canUse({
+        value,
+        compareValue: filter.compareValue
+    });
+    if (!canUse) {
+        return true;
+    }
+
     const matched = filter.plugin.matches({
         value,
         compareValue: filter.compareValue
