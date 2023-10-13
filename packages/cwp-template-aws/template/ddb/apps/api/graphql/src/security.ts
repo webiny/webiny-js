@@ -9,6 +9,7 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
 import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
+import createAdminUsersApp from "@webiny/api-admin-users";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [

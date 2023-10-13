@@ -28,6 +28,7 @@
     "@webiny/api-security": "latest",
     "@webiny/api-security-cognito": "latest",
     "@webiny/api-security-so-ddb": "latest",
+    "@webiny/api-admin-users": "latest",
     "@webiny/api-admin-users-so-ddb": "latest",
     "@webiny/api-tenancy": "latest",
     "@webiny/api-tenancy-so-ddb": "latest",

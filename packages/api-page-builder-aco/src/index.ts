@@ -30,7 +30,9 @@ const setupContext = async (context: PbAcoContext): Promise<void> => {
 };
 
 const decoratePageBuilderCrud = async (context: PbAcoContext): Promise<void> => {
-    new PageBuilderCrudDecorators({ context }).decorate();
+    if (context.wcp.canUseFolderLevelPermissions()) {
+        new PageBuilderCrudDecorators({ context }).decorate();
+    }
 };
 
 export const createAcoPageBuilderContext = () => {
