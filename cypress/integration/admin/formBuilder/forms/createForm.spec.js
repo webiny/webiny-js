@@ -3,147 +3,97 @@ import uniqid from "uniqid";
 context("Forms Creation", () => {
     beforeEach(() => cy.login());
 
-    it("should be able to create, publish, create new revision, and immediately delete everything", () => {
-        const newFormTitle = `Test form ${uniqid()}`;
-        const newFormTitle2 = `Test form ${uniqid()}`;
+    describe("Create Form", () => {
+        const newFormTitle = `Test form 1 ${uniqid()}`;
+        const newFormTitle2 = `Test form 2 ${uniqid()}`;
 
-        cy.visit("/form-builder/forms");
-        cy.findAllByTestId("new-record-button").first().click();
-        cy.findByTestId("fb-new-form-modal").within(() => {
-            cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
-            cy.findByTestId("fb.form.create").click();
-        });
-        cy.wait(1000);
-        cy.findByTestId("fb-editor-form-title").click();
-        cy.get(`input[value="${newFormTitle}"]`).clear().type(`${newFormTitle2} {enter}`);
-        cy.wait(333);
-        // Add "Email" field to the form
-        cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(`[data-testid="fb.editor.fields.field.email"]`).drag(
-            `[data-testid="fb.editor.dropzone.center"]`,
-            {
-                force: true
-            }
-        );
-        cy.wait(1000);
+        it("should be able to create form, rename it, publish it, create new revision and delete it", () => {
+            cy.visit("/form-builder/forms");
 
-        cy.findByTestId("fb-editor-back-button").click();
-        cy.wait(1000);
+            // Creating new form.
+            // After creating new form we should be redirected to the form editing page.
+            cy.findAllByTestId("new-record-button").first().click();
+            cy.findByTestId("fb-new-form-modal").within(() => {
+                cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
+                cy.findByTestId("fb.form.create").click();
+            });
 
-        cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
+            // Check if we got redirected on form editor page.
+            cy.findByTestId("add-step-action", { timeout: 15000 });
+
+            // Renaming Form.
+            cy.findByTestId("fb-editor-form-title").click({ force: true });
+            cy.get(`input[value="${newFormTitle}"]`).clear().type(newFormTitle2).blur();
+
+            // Publishing form after we changed name of it.
+            cy.findByTestId("fb.editor.default-bar.publish").click({ force: true });
+            // Confirming publishing operation in the confirmation dialog.
+            cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
+                cy.findByTestId("confirmationdialog-confirm-action").click();
+            });
+            // Should see this text if publishing operation was successfull.
+            cy.findByText("Your form was published successfully!");
+
+            // Check if we have renamed form in the list of forms.
+            cy.findByTestId("default-data-list").within(() => {
+                cy.findAllByTestId("default-data-list-element")
+                    .first()
+                    .within(() => {
+                        cy.findByText(newFormTitle2);
+                    });
+            });
+
+            // Should open form edit page for the form with title "newFormTitle2".
+            cy.findByTestId("default-data-list").within(() => {
+                cy.findAllByTestId("default-data-list-element")
+                    .first()
+                    .within(() => {
+                        cy.findByText(newFormTitle2).should("be.visible");
+                        cy.findByTestId("edit-form-action").click({ force: true });
+                    });
+            });
+
+            // Check if we got redirected on form editor page.
+            cy.findByTestId("add-step-action", { timeout: 15000 }).click({ force: true });
+
+            // Confirm that we have added a new step.
+            cy.findAllByTestId("form-step-element").should("have.length", "2");
+
+            // Publishing form after we added a new step.
+            cy.findByTestId("fb.editor.default-bar.publish").click({ force: true });
+            // Confirming publishing operation in the confirmation dialog.
+            cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
+                cy.findByTestId("confirmationdialog-confirm-action").click();
+            });
+            // Should see this text if publishing operation was successfull.
+            cy.findByText("Your form was published successfully!");
+
+            // Check that revision version is 2.
+            cy.findByTestId("default-data-list").within(() => {
+                cy.findAllByTestId("default-data-list-element")
+                    .first()
+                    .within(() => {
+                        cy.findByText(newFormTitle2).should("be.visible");
+                        cy.findByTestId("fb.form.status").within(() => {
+                            cy.findByText("Published (v2)");
+                        });
+                    });
+            });
+
+            // Deleting form.
+            cy.findByTestId("default-data-list").within(() => {
+                cy.findAllByTestId("default-data-list-element")
+                    .first()
+                    .within(() => {
+                        cy.findByTestId("delete-form-action").click({ force: true });
+                    });
+            });
+
+            cy.findAllByTestId("form-deletion-confirmation-dialog", { timeout: 15000 })
                 .first()
                 .within(() => {
-                    cy.findByText(newFormTitle2);
-                    cy.should("exist");
-                    cy.findByText(/Draft/i);
-                    cy.should("exist");
-                    cy.findByText(/\(v1\)/i);
-                    cy.should("exist");
+                    cy.findByTestId("confirmationdialog-confirm-action").click({ force: true });
                 });
         });
-
-        // Should only have one revision in form preview revision selector
-        cy.findByTestId("fb.form-preview.header.revision-selector").click();
-        cy.findByTestId("fb.form-preview.header.revision-v1").within(() => {
-            cy.findByText(/Draft/i);
-            cy.should("exist");
-            cy.findByText(/v1/i);
-            cy.should("exist");
-        });
-
-        // Publish the form and check it's status
-        cy.findByTestId("fb.form-preview.header.publish").click();
-        cy.findByTestId("fb.form-preview.header.publish-dialog").within(() => {
-            cy.findByTestId("confirmationdialog-confirm-action").click();
-        });
-        cy.findByText(/Successfully published revision/i).should("exist");
-        cy.wait(1000);
-        cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newFormTitle2);
-                    cy.should("exist");
-                    cy.findByText(/Published/i);
-                    cy.should("exist");
-                    cy.findByText(/\(v1\)/i);
-                    cy.should("exist");
-                });
-        });
-
-        // Create a new revision from the published form and check it status
-        cy.findByTestId("fb.form-preview.header.create-revision").click();
-        cy.wait(1000);
-        cy.findByText(/\(v2\)/i).should("exist");
-        cy.findByTestId("fb-editor-back-button").click();
-        cy.wait(1000);
-
-        cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newFormTitle2);
-                    cy.should("exist");
-                    cy.findByText(/Draft/i);
-                    cy.should("exist");
-                    cy.findByText(/\(v2\)/i);
-                    cy.should("exist");
-                });
-        });
-
-        // Edit form and publish it via the editor, then check the revision status
-        cy.findByTestId("fb.form-preview.header.edit-revision").click();
-        cy.wait(500);
-        // Add "LastName" field to the form
-        cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(`[data-testid="fb.editor.fields.field.lastName"]`).drag(
-            `[data-testid="fb.editor.dropzone.horizontal-last"]`,
-            { force: true }
-        );
-        cy.wait(500);
-        cy.findByTestId("fb.editor.default-bar.publish").click();
-        cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
-            cy.findByTestId("confirmationdialog-confirm-action").click();
-        });
-        cy.findByText(/Your form was published successfully/i).should("exist");
-        cy.wait(1000);
-        cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newFormTitle2);
-                    cy.should("exist");
-                    cy.findByText(/Published/i);
-                    cy.should("exist");
-                    cy.findByText(/\(v2\)/i);
-                    cy.should("exist");
-                });
-        });
-        // Latest revision should be selected in the revision selector inside form preview
-        cy.findByTestId("fb.form-preview.header.revision-selector").within(() => {
-            cy.findByText(/v2/i).should("exist");
-        });
-
-        // Finally, delete the form and it's all revisions
-        cy.findByTestId("fb.form-preview.header.delete").click();
-        cy.wait(500);
-        cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
-            cy.findByText("Confirmation required!").should("exist");
-            // cy.findByText(/Confirm/i).should("exist");
-            cy.findByTestId("confirmationdialog-confirm-action").click();
-        });
-        cy.findByText(/Revision was deleted successfully/i).should("exist");
-        cy.wait(500);
-
-        cy.findByTestId("fb.form-preview.header.delete").click();
-        cy.wait(500);
-        cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
-            cy.findByText("Confirmation required!").should("exist");
-            // cy.findByText(/Confirm/i).should("exist");
-            cy.findByTestId("confirmationdialog-confirm-action").click();
-        });
-        cy.findByText(/Form was deleted successfully/i).should("exist");
-        cy.wait(500);
     });
 });

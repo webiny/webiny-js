@@ -37,9 +37,10 @@ export const OptionsMenu = makeComposable<OptionsMenuProps>(
         return (
             <Menu
                 className={menuStyles}
-                handle={<IconButton icon={<MoreVerticalIcon />} />}
+                handle={
+                    <IconButton icon={<MoreVerticalIcon />} data-testid={props["data-testid"]} />
+                }
                 anchor={"topLeft"}
-                {...props}
             >
                 {items.map(item => (
                     <MenuItem
