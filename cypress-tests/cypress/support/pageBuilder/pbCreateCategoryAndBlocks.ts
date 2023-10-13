@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import { gqlClient } from "../utils";
 
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
@@ -67,14 +67,12 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
 
 Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }) => {
     cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
-        const createCategoryPromise = client
-            .request(CREATE_BLOCK_CATEGORY_MUTATION, { data: blockCategory })
+        const createCategoryPromise = gqlClient
+            .request({
+                query: CREATE_BLOCK_CATEGORY_MUTATION,
+                variables: { data: blockCategory },
+                authToken: user.idToken.jwtToken
+            })
             .then(response => response.pageBuilder.blockCategory.data);
 
         return createCategoryPromise.then(categoryData => {
@@ -83,17 +81,21 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }
             const createBlocksPromises: Array<Promise<{ id: string; name: string }>> = [];
             blockNames.forEach(blockName => {
                 createBlocksPromises.push(
-                    client.request(CRATE_BLOCK_MUTATION, {
-                        data: {
-                            name: blockName,
-                            blockCategory: categorySlug,
-                            content: {
-                                id: "xyz",
-                                type: "block",
-                                data: {},
-                                elements: []
+                    gqlClient.request({
+                        query: CRATE_BLOCK_MUTATION,
+                        variables: {
+                            data: {
+                                name: blockName,
+                                blockCategory: categorySlug,
+                                content: {
+                                    id: "xyz",
+                                    type: "block",
+                                    data: {},
+                                    elements: []
+                                }
                             }
-                        }
+                        },
+                        authToken: user.idToken.jwtToken
                     })
                 );
             });
