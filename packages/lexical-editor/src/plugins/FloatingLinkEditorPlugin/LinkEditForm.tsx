@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { GridSelection, LexicalEditor, NodeSelection, RangeSelection } from "lexical";
 import { sanitizeUrl } from "~/utils/sanitizeUrl";
@@ -30,23 +30,48 @@ export const LinkEditForm = ({
     setEditMode,
     setLinkUrl
 }: LinkFormProps) => {
-    const confirmLinkChanges = (editor: LexicalEditor) => {
+    const confirmLinkChanges = () => {
         const confirmedLinkData = {
             url: sanitizeUrl(linkUrl.url),
             target: linkUrl.target,
             alt: linkUrl.alt
         };
 
-        editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, confirmedLinkData);
-        savedLinkData.current = { ...confirmedLinkData };
+        if (lastSelection !== null) {
+            editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, confirmedLinkData);
+            savedLinkData.current = { ...confirmedLinkData };
+            setEditMode(false);
+        }
     };
+    const cancelChanges = useCallback(() => {
+        // get last saved data back
+        if (savedLinkData?.current) {
+            setLinkUrl({ ...savedLinkData.current });
+        }
+        setEditMode(false);
+    }, []);
+
+    useEffect(() => {
+        if (isUrlLinkReference(linkUrl.url)) {
+            // for internal urls, prevent opening the link in a new tab
+            setLinkUrl({ ...linkUrl, target: null });
+        }
+    }, [linkUrl.url]);
+
+    const onInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            confirmLinkChanges();
+        } else if (event.key === "Escape") {
+            event.preventDefault();
+            cancelChanges();
+        }
+    };
+
     return (
         <div>
             <h5 className={"link-editor-popup-title"}>Edit Link</h5>
             <div className={"link-editor-section"}>
-                <div className={"header"}>
-                    <div className={"header_title"}>Target</div>
-                </div>
                 <div className={"section-desc"}>
                     <input
                         type={"checkbox"}
@@ -56,7 +81,7 @@ export const LinkEditForm = ({
                             setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
                         }
                     />
-                    <span>Open page in a new window</span>
+                    <span>Open page in a new tab</span>
                 </div>
             </div>
             <div className={"link-editor-section"}>
@@ -70,6 +95,7 @@ export const LinkEditForm = ({
                         type={"text"}
                         value={linkUrl.alt}
                         onChange={e => setLinkUrl({ ...linkUrl, alt: e.target.value })}
+                        onKeyDown={event => onInputKeydown(event)}
                     />
                 </div>
             </div>
@@ -90,25 +116,21 @@ export const LinkEditForm = ({
                                 alt: linkUrl.alt
                             });
                         }}
-                        onKeyDown={event => {
-                            if (event.key === "Enter") {
-                                event.preventDefault();
-                                if (lastSelection !== null) {
-                                    if (linkUrl.url !== "") {
-                                        confirmLinkChanges(editor);
-                                    }
-                                    setEditMode(false);
-                                }
-                            } else if (event.key === "Escape") {
-                                event.preventDefault();
-                                // return old confirmed data back
-                                if (savedLinkData?.current) {
-                                    setLinkUrl({ ...savedLinkData.current });
-                                }
-                                setEditMode(false);
-                            }
-                        }}
+                        onKeyDown={event => onInputKeydown(event)}
                     />
+                </div>
+                <div className={"link-editor-section full-with edit-form-bottom-menu"}>
+                    <button className="webiny-ui-button mdc-button" onClick={() => cancelChanges()}>
+                        <div className="mdc-button__ripple"></div>
+                        <span className="mdc-button__label">Cancel</span>
+                    </button>
+                    <button
+                        className="webiny-ui-button webiny-ui-button--primary mdc-button mdc-button--raised"
+                        onClick={() => confirmLinkChanges()}
+                    >
+                        <div className="mdc-button__ripple"></div>
+                        <span className="mdc-button__label">Confirm</span>
+                    </button>
                 </div>
             </div>
         </div>

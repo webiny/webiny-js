@@ -16,7 +16,7 @@ export const LinkPreviewForm = ({ linkUrl, setEditMode, removeLink }: LinkFormPr
             <h5 className={"link-editor-popup-title"}>Preview Link</h5>
             {linkUrl.target && (
                 <div className={"link-editor-section link-target"}>
-                    Target: {linkUrl.target}(Open page in a new window)
+                    Target: {linkUrl.target} - Open page in a new tab.
                 </div>
             )}
             {linkUrl.alt && (

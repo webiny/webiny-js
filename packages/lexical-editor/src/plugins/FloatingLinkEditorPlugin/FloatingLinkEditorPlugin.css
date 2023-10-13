@@ -80,6 +80,13 @@
     color: #0a0a0a;
 }
 
+.link-editor .link-editor-section.edit-form-bottom-menu {
+    display: flex;
+    justify-content: right;
+    margin-top: 5px;
+    column-gap: 10px;
+}
+
 .link-editor .link-input {
     display: block;
     width: calc(100% - 24px);
