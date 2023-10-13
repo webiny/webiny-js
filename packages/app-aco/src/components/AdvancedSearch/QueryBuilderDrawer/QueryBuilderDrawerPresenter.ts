@@ -68,7 +68,7 @@ export class QueryBuilderDrawerPresenter {
                 groups: this.queryObject.groups.map((group: GroupDTO, groupIndex) => {
                     return {
                         title: `Filter group #${groupIndex + 1}`,
-                        open: groupIndex === 0,
+                        open: true,
                         operation: group.operation,
                         filters: group.filters.map(filter => ({
                             field: filter.field,
