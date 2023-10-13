@@ -390,15 +390,15 @@ export const createPageStorageOperations = (
     };
 
     /**
-     * We need to
-     * - update revision that it is published
-     * - if is latest update record that it is published
-     * - set status of previously published page to unpublished
-     * - create / update published record
-     * - create / update published path
+     * - update the revision record
+     * - if the revision being published is also the "latest" revision, update the "latest" record
+     * - set the status of the previously published revision to "unpublished"
+     * - create/update the "published" record
      */
     const publish = async (params: PageStorageOperationsPublishParams): Promise<Page> => {
         const { page, latestPage, publishedPage } = params;
+
+        page.status = "published";
 
         const revisionKeys = {
             PK: createRevisionPartitionKey(page),
@@ -433,10 +433,10 @@ export const createPageStorageOperations = (
             );
         }
         /**
-         * If we have already published revision of this page:
-         *  - set existing published page revision to unpublished
+         * If we already have a published revision, and it's not the revision being published:
+         *  - set the existing published revision to "unpublished"
          */
-        if (publishedPage) {
+        if (publishedPage && publishedPage.id !== page.id) {
             const publishedRevisionKeys = {
                 PK: createRevisionPartitionKey(publishedPage),
                 SK: createRevisionSortKey(publishedPage)
@@ -477,13 +477,14 @@ export const createPageStorageOperations = (
 
     /**
      * We need to
-     * - update revision record with new status
-     * - remove published record
-     * - remove published path record
-     * - update latest record with new status if is the latest
+     * - update the revision record
+     * - remove the "published" record
+     * - if the revision being unpublished is also the "latest" revision, update the "latest" record with the new status
      */
     const unpublish = async (params: PageStorageOperationsUnpublishParams): Promise<Page> => {
         const { page, latestPage } = params;
+
+        page.status = "unpublished";
 
         const revisionKeys = {
             PK: createRevisionPartitionKey(page),
