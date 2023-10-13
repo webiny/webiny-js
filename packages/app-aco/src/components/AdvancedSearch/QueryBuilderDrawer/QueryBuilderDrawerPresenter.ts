@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import cloneDeep from "lodash/cloneDeep";
 
 import {
     Field,
@@ -53,7 +52,7 @@ export class QueryBuilderDrawerPresenter {
     }
 
     load(queryObject: QueryObjectDTO) {
-        this.queryObject = cloneDeep(queryObject);
+        this.queryObject = queryObject;
     }
 
     get vm() {

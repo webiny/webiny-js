@@ -1,3 +1,4 @@
+import cloneDeep from "lodash/cloneDeep";
 import orderBy from "lodash/orderBy";
 import { makeAutoObservable, runInAction } from "mobx";
 
@@ -9,8 +10,8 @@ export class QueryObjectRepository {
     private gateway: GatewayInterface;
     private static instance: QueryObjectRepository;
     private readonly sort: ListSort;
-    modelId: string;
-    filters: QueryObjectDTO[] = [];
+    private _filters: QueryObjectDTO[] = [];
+    public readonly modelId: string;
 
     constructor(gateway: GatewayInterface, modelId: string) {
         this.gateway = gateway;
@@ -26,32 +27,32 @@ export class QueryObjectRepository {
         return QueryObjectRepository.instance;
     }
 
+    get filters() {
+        return cloneDeep(this._filters);
+    }
+
     async listFilters() {
-        try {
-            const rawFilters = await this.gateway.list(this.modelId);
-            runInAction(() => {
-                this.filters = rawFilters.map(filter => QueryObjectMapper.toDTO(filter));
-            });
-        } catch (e) {
-            throw new Error(e.message);
-        }
+        const rawFilters = await this.gateway.list(this.modelId);
+        runInAction(() => {
+            this._filters = rawFilters.map(filter => QueryObjectMapper.toDTO(filter));
+        });
     }
 
     async getFilterById(id: string) {
         const filterInCache = this.filters.find(filter => filter.id === id);
 
         if (filterInCache) {
-            return filterInCache;
+            return cloneDeep(filterInCache);
         }
 
         const response = await this.gateway.get(id);
         const filterDTO = QueryObjectMapper.toDTO(response);
 
         runInAction(() => {
-            this.filters = this.sortFilters([filterDTO, ...this.filters]);
+            this._filters = this.sortFilters([filterDTO, ...this.filters]);
         });
 
-        return filterDTO;
+        return cloneDeep(filterDTO);
     }
 
     async createFilter(filter: QueryObjectDTO) {
@@ -61,10 +62,10 @@ export class QueryObjectRepository {
 
         const filterDTO = QueryObjectMapper.toDTO(response);
         runInAction(() => {
-            this.filters = [filterDTO, ...this.filters];
+            this._filters = [filterDTO, ...this.filters];
         });
 
-        return filterDTO;
+        return cloneDeep(filterDTO);
     }
 
     async updateFilter(filter: QueryObjectDTO) {
@@ -78,7 +79,7 @@ export class QueryObjectRepository {
                 const filterDTO = QueryObjectMapper.toDTO(response);
 
                 runInAction(() => {
-                    this.filters = [
+                    this._filters = [
                         ...this.filters.slice(0, filterIndex),
                         {
                             ...this.filters[filterIndex],
@@ -96,7 +97,7 @@ export class QueryObjectRepository {
 
         if (response) {
             runInAction(() => {
-                this.filters = this.filters.filter(filter => filter.id !== id);
+                this._filters = this.filters.filter(filter => filter.id !== id);
             });
         }
     }
