@@ -32,7 +32,12 @@ function FloatingLinkEditor({
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [linkUrl, setLinkUrl] = useState<{
+    const savedLinkData = useRef<{
+        url: string;
+        target: string | null;
+        alt?: string;
+    }>();
+    const [tempLinkUrl, setTempLinkUrl] = useState<{
         url: string;
         target: string | null;
         alt?: string;
@@ -41,6 +46,7 @@ function FloatingLinkEditor({
         target: null,
         alt: undefined
     });
+
     const [isEditMode, setEditMode] = useState(false);
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
@@ -48,24 +54,30 @@ function FloatingLinkEditor({
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
+        const emptyLinkData = { url: "", target: null, alt: undefined };
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
 
             if ($isBaseLinkNode(parent) || $isLinkNode(parent)) {
-                setLinkUrl({
+                const linkData = {
                     url: parent.getURL(),
                     target: parent.getTarget(),
                     alt: $isLinkNode(parent) ? parent.getAlt() : undefined
-                });
+                };
+                setTempLinkUrl(linkData);
+                savedLinkData.current = linkData;
             } else if ($isBaseLinkNode(node) || $isLinkNode(node)) {
-                setLinkUrl({
+                const linkData = {
                     url: node.getURL(),
                     target: node.getTarget(),
                     alt: $isLinkNode(node) ? node.getAlt() : undefined
-                });
+                };
+                setTempLinkUrl(linkData);
+                savedLinkData.current = linkData;
             } else {
-                setLinkUrl({ url: "", target: null, alt: undefined });
+                setTempLinkUrl(emptyLinkData);
+                savedLinkData.current = emptyLinkData;
             }
         }
         const editorElem = editorRef.current;
@@ -104,7 +116,8 @@ function FloatingLinkEditor({
             }
             setLastSelection(null);
             setEditMode(false);
-            setLinkUrl({ url: "", target: null, alt: undefined });
+            setTempLinkUrl(emptyLinkData);
+            savedLinkData.current = emptyLinkData;
         }
 
         return true;
@@ -175,15 +188,16 @@ function FloatingLinkEditor({
             {isEditMode ? (
                 <LinkEditForm
                     editor={editor}
-                    linkUrl={linkUrl}
+                    linkUrl={tempLinkUrl}
                     setEditMode={setEditMode}
                     inputRef={inputRef}
-                    setLinkUrl={setLinkUrl}
+                    savedLinkData={savedLinkData}
+                    setLinkUrl={setTempLinkUrl}
                     lastSelection={lastSelection}
                 />
             ) : (
                 <LinkPreviewForm
-                    linkUrl={linkUrl}
+                    linkUrl={tempLinkUrl}
                     removeLink={removeLink}
                     setEditMode={setEditMode}
                 />
