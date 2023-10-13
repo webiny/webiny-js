@@ -62,14 +62,6 @@
     height: 16px;
 }
 
-.link-editor .box-arrow-up-right {
-    background-image: url(../../images/icons/box-arrow-up-right.svg);
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 16px;
-    height: 16px;
-}
-
 .link-editor .link-editor-section .header_title {
     font-size: 16px;
     font-width: bold;
