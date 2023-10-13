@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import {
     Feedback,
-    Loading,
     QueryObject,
     QueryObjectDTO,
     QueryObjectMapper,
@@ -31,38 +30,27 @@ export class AdvancedSearchPresenter {
     private repository: QueryObjectRepository;
 
     private readonly feedback: Feedback;
-    private loading: Loading;
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
-
-    currentFilter: QueryObjectDTO | null = null;
-    appliedFilter: QueryObjectDTO | null = null;
+    private currentFilter: QueryObjectDTO | null = null;
+    private appliedFilter: QueryObjectDTO | null = null;
 
     constructor(repository: QueryObjectRepository) {
         this.repository = repository;
         this.feedback = new Feedback();
-        this.loading = new Loading(this.feedback);
         makeAutoObservable(this);
     }
 
-    private async runWithLoading(
-        action: Promise<void>,
-        loadingLabel: string,
-        successMessage?: string
-    ): Promise<void> {
-        return await this.loading.runCallbackWithLoading(action, loadingLabel, successMessage);
-    }
-
     async load() {
-        await this.runWithLoading(this.repository.listFilters(), "Listing filters");
+        await this.repository.listFilters();
     }
 
     private get managerVm() {
         const vm = {
             isOpen: this.showManager,
             view: "EMPTY",
-            loadingLabel: this.loading.loadingLabel,
+            loadingLabel: this.repository.loading.loadingLabel,
             filters: this.repository.filters.map(filter => ({
                 id: filter.id,
                 name: filter.name,
@@ -74,7 +62,7 @@ export class AdvancedSearchPresenter {
             vm.view = "LIST";
         }
 
-        if (this.loading.isLoading) {
+        if (this.repository.loading.isLoading) {
             vm.view = "LOADING";
         }
 
@@ -83,8 +71,8 @@ export class AdvancedSearchPresenter {
 
     private get feedbackVm() {
         return {
-            isOpen: Boolean(this.feedback.message),
-            message: this.feedback.message
+            isOpen: Boolean(this.feedback.message || this.repository.loading.message),
+            message: this.feedback.message || this.repository.loading.message
         };
     }
 
@@ -97,8 +85,8 @@ export class AdvancedSearchPresenter {
     private get saverVm() {
         return {
             isOpen: this.showSaver,
-            isLoading: this.loading.isLoading,
-            loadingLabel: this.loading.loadingLabel,
+            isLoading: this.repository.loading.isLoading,
+            loadingLabel: this.repository.loading.loadingLabel,
             filter: this.currentFilter
         };
     }
@@ -146,6 +134,10 @@ export class AdvancedSearchPresenter {
     async applyFilter(filterId: string) {
         const filter = await this.repository.getFilterById(filterId);
 
+        if (!filter) {
+            return;
+        }
+
         runInAction(() => {
             this.appliedFilter = filter;
             this.currentFilter = null;
@@ -185,6 +177,10 @@ export class AdvancedSearchPresenter {
     async editFilter(filterId: string) {
         const filter = await this.repository.getFilterById(filterId);
 
+        if (!filter) {
+            return;
+        }
+
         runInAction(() => {
             this.currentFilter = filter;
             this.closeManager();
@@ -194,13 +190,7 @@ export class AdvancedSearchPresenter {
     }
 
     async deleteFilter(id: string) {
-        const filter = await this.repository.getFilterById(id);
-
-        await this.runWithLoading(
-            this.repository.deleteFilter(id),
-            "Deleting filters",
-            `Filter "${filter.name}" was successfully deleted.`
-        );
+        await this.repository.deleteFilter(id);
 
         runInAction(() => {
             this.currentFilter = null;
@@ -229,32 +219,24 @@ export class AdvancedSearchPresenter {
     }
 
     private async createFilterIntoRepository(filter: QueryObjectDTO) {
-        const createFilter = async () => {
-            const newFilter = await this.repository.createFilter(filter);
+        const newFilter = await this.repository.createFilter(filter);
 
-            /**
-             * repository.createFilter returns the storage generated filter id.
-             * We need to set it back as appliedFilter, otherwise further actions on the filter would fail (update/delete).
-             */
-            runInAction(() => {
-                this.appliedFilter = newFilter;
-                this.currentFilter = null;
-            });
-        };
+        if (!newFilter) {
+            return;
+        }
 
-        await this.runWithLoading(
-            createFilter(),
-            "Creating filter",
-            `Filter "${filter.name}" was successfully created.`
-        );
+        /**
+         * repository.createFilter returns the storage generated filter id.
+         * We need to set it back as appliedFilter, otherwise further actions on the filter would fail (update/delete).
+         */
+        runInAction(() => {
+            this.appliedFilter = newFilter;
+            this.currentFilter = null;
+        });
     }
 
     private async updateFilterIntoRepository(filter: QueryObjectDTO) {
-        await this.runWithLoading(
-            this.repository.updateFilter(filter),
-            "Updating filter",
-            `Filter "${filter.name}" was successfully updated.`
-        );
+        await this.repository.updateFilter(filter);
 
         runInAction(() => {
             this.appliedFilter = filter;

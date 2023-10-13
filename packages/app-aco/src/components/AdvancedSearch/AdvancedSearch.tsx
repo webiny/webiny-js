@@ -75,9 +75,9 @@ export const AdvancedSearch = observer(
             <>
                 <AdvancedSearchContainer>
                     <Button onClick={() => presenter.openManager()} />
-                    {presenter.appliedFilter ? (
+                    {presenter.vm.appliedFilter ? (
                         <SelectedFilter
-                            filter={presenter.appliedFilter}
+                            filter={presenter.vm.appliedFilter}
                             onEdit={() => presenter.editAppliedFilter()}
                             onDelete={unsetFilter}
                         />
@@ -91,7 +91,7 @@ export const AdvancedSearch = observer(
                     onSelect={applyFilter}
                     vm={presenter.vm.managerVm}
                 />
-                {presenter.currentFilter ? (
+                {presenter.vm.currentFilter ? (
                     <>
                         <QueryBuilderDrawer
                             fields={fields}
@@ -99,7 +99,7 @@ export const AdvancedSearch = observer(
                             onPersist={filter => presenter.persistFilter(filter)}
                             onSubmit={applyQueryObject}
                             onValidationError={message => presenter.showFeedback(message)}
-                            queryObject={presenter.currentFilter}
+                            queryObject={presenter.vm.currentFilter}
                             open={presenter.vm.builderVm.isOpen}
                         />
                         <QuerySaverDialog
@@ -108,7 +108,7 @@ export const AdvancedSearch = observer(
                             open={presenter.vm.saverVm.isOpen}
                             isLoading={presenter.vm.saverVm.isLoading}
                             loadingLabel={presenter.vm.saverVm.loadingLabel}
-                            queryObject={presenter.currentFilter}
+                            queryObject={presenter.vm.currentFilter}
                         />
                     </>
                 ) : null}

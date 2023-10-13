@@ -1,39 +1,38 @@
 import { makeAutoObservable } from "mobx";
-import { Feedback } from "./Feedback";
 
 export class Loading {
-    private feedback: Feedback;
     private _isLoading: boolean;
     private _loadingLabel: string;
-    private success: boolean;
+    private _feedback: string;
+    private _success: boolean;
 
-    constructor(feedback: Feedback) {
-        this.feedback = feedback;
+    constructor() {
         this._isLoading = false;
         this._loadingLabel = "";
-        this.success = false;
+        this._feedback = "";
+        this._success = false;
         makeAutoObservable(this);
     }
 
-    setLoading(label?: string) {
+    startLoading(label?: string) {
         this._isLoading = true;
         this._loadingLabel = label || "";
-        this.success = false;
-        this.feedback.message = "";
+        this._feedback = "";
+        this._success = false;
     }
 
-    setLoadSuccess(message?: string) {
+    stopLoadingWithSuccess(message?: string) {
         this._isLoading = false;
         this._loadingLabel = "";
-        this.success = true;
-        this.feedback.message = message || "";
+        this._feedback = message || "";
+        this._success = true;
     }
 
-    setLoadError(message?: string) {
-        this._isLoading = true;
+    stopLoadingWithError(message?: string) {
+        this._isLoading = false;
         this._loadingLabel = "";
-        this.success = false;
-        this.feedback.message = message || "";
+        this._feedback = message || "";
+        this._success = false;
     }
 
     get isLoading() {
@@ -44,18 +43,24 @@ export class Loading {
         return this._loadingLabel;
     }
 
-    async runCallbackWithLoading(
-        callback: Promise<void>,
+    get feedback() {
+        return this._feedback;
+    }
+
+    async runCallbackWithLoading<T>(
+        callback: Promise<T>,
         loadingLabel?: string,
         successMessage?: string,
         failureMessage?: string
-    ) {
+    ): Promise<T | undefined> {
         try {
-            this.setLoading(loadingLabel);
-            await callback;
-            this.setLoadSuccess(successMessage);
+            this.startLoading(loadingLabel);
+            const result = await callback;
+            this.stopLoadingWithSuccess(successMessage);
+            return result;
         } catch (e) {
-            this.setLoadError(e.message || failureMessage);
+            this.stopLoadingWithError(e.message || failureMessage);
+            return;
         }
     }
 }
