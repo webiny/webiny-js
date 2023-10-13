@@ -45,7 +45,6 @@ const moveField = (params: MoveField) => {
     const fieldId = typeof field === "string" ? field : field._id;
     if (!fieldId) {
         console.log("Missing data when moving field.");
-        console.log(params);
         return;
     }
     if (destination.containerType === "conditionGroup") {
