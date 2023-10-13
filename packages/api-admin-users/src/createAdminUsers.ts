@@ -114,13 +114,24 @@ export const createAdminUsers = ({
                 };
             }
 
+            const id = data.id || mdbid();
+            const createdOn = new Date().toISOString();
+
+            let displayName = data.displayName || data.firstName + " " + data.lastName;
+            if (!displayName.trim()) {
+                displayName = "Missing display name";
+            }
+
+            const webinyVersion = process.env.WEBINY_VERSION as string;
+
             const user: AdminUser = {
                 ...data,
-                id: data.id || mdbid(),
-                createdOn: new Date().toISOString(),
+                id,
+                displayName,
+                createdOn,
                 createdBy,
                 tenant,
-                webinyVersion: process.env.WEBINY_VERSION as string
+                webinyVersion
             };
 
             let result;
