@@ -92,7 +92,7 @@ describe("AdvancedSearchPresenter", () => {
         presenter = new AdvancedSearchPresenter(repository);
     });
 
-    it("should create AdvancedSearchPresenter and list filters from the gateway", async () => {
+    it("should create a presenter and list filters from the gateway", async () => {
         // let's load some filters
         await presenter.load();
 
@@ -421,7 +421,7 @@ describe("AdvancedSearchPresenter", () => {
         });
     });
 
-    it("should be delete a filter", async () => {
+    it("should be able to delete a filter", async () => {
         // let's load some filters
         await presenter.load();
 
@@ -453,6 +453,128 @@ describe("AdvancedSearchPresenter", () => {
             id: "filter-2",
             name: "Filter 2",
             description: ""
+        });
+    });
+
+    it("should be able to handle an empty list - error from the gateway", async () => {
+        const message = "Gateway error while listing filters";
+        const gateway = createMockGateway({
+            list: jest.fn().mockRejectedValue(new Error(message))
+        });
+
+        const repository = new QueryObjectRepository(gateway, modelId);
+        const presenter = new AdvancedSearchPresenter(repository);
+
+        // Let's load the app, without filters
+        await presenter.load();
+
+        expect(presenter.vm).toMatchObject({
+            managerVm: {
+                isOpen: false,
+                view: "EMPTY",
+                loadingLabel: "",
+                filters: []
+            },
+            feedbackVm: {
+                isOpen: true,
+                message
+            }
+        });
+    });
+
+    it("should be able to handle error while creating the filter", async () => {
+        const message = "Gateway error while creating filter";
+        const createGateway = createMockGateway({
+            ...gateway,
+            create: jest.fn().mockRejectedValue(new Error(message))
+        });
+
+        const repository = new QueryObjectRepository(createGateway, modelId);
+        const presenter = new AdvancedSearchPresenter(repository);
+
+        // Let's load some filters
+        await presenter.load();
+
+        // Let's try to save a QueryObject
+        const queryObject = {
+            id: "",
+            name: "Draft filter",
+            description: "",
+            modelId,
+            operation: Operation.AND,
+            groups: [
+                {
+                    operation: Operation.OR,
+                    filters: [
+                        {
+                            field: "Field value",
+                            condition: "field_condition",
+                            value: "Any value"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        await presenter.saveFilter(queryObject);
+
+        expect(presenter.vm).toMatchObject({
+            feedbackVm: {
+                isOpen: true,
+                message
+            }
+        });
+    });
+
+    it("should be able to handle error while updating a filter", async () => {
+        const message = "Gateway error while updating filter";
+        const updateGateway = createMockGateway({
+            ...gateway,
+            update: jest.fn().mockRejectedValue(new Error(message))
+        });
+
+        const repository = new QueryObjectRepository(updateGateway, modelId);
+        const presenter = new AdvancedSearchPresenter(repository);
+
+        // Let's load some filters
+        await presenter.load();
+
+        // Let's try to save a QueryObject
+        const queryObject = {
+            ...filter1,
+            name: filter1 + " - Edit"
+        };
+
+        await presenter.saveFilter(queryObject);
+
+        expect(presenter.vm).toMatchObject({
+            feedbackVm: {
+                isOpen: true,
+                message
+            }
+        });
+    });
+
+    it("should be able to handle error while deleting a filter", async () => {
+        const message = "Gateway error while deleting filter";
+        const updateGateway = createMockGateway({
+            ...gateway,
+            delete: jest.fn().mockRejectedValue(new Error(message))
+        });
+
+        const repository = new QueryObjectRepository(updateGateway, modelId);
+        const presenter = new AdvancedSearchPresenter(repository);
+
+        // Let's load some filters
+        await presenter.load();
+
+        await presenter.deleteFilter(filter1.id);
+
+        expect(presenter.vm).toMatchObject({
+            feedbackVm: {
+                isOpen: true,
+                message
+            }
         });
     });
 
