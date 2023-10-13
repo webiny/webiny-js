@@ -190,10 +190,11 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 );
             }
         },
-        async deleteSettings(this: FormBuilder) {
+        async deleteSettings(this: FormBuilder, params) {
+            const { locale } = params || {};
             await settingsPermissions.ensure();
 
-            const settings = await this.getSettings();
+            const settings = await this.getSettings({ locale });
             if (!settings) {
                 return;
             }

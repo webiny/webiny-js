@@ -1,3 +1,4 @@
 import { createSettingsForNewLocale } from "./createSettingsForNewLocale";
+import { deleteSettingsForDeletedLocale } from "./deleteSettingsForDeletedLocale";
 
-export default [createSettingsForNewLocale];
+export default [createSettingsForNewLocale, deleteSettingsForDeletedLocale];

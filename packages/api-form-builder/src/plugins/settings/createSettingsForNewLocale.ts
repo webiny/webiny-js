@@ -3,13 +3,10 @@ import { FormBuilderContext } from "~/types";
 
 export const createSettingsForNewLocale = new ContextPlugin<FormBuilderContext>(context => {
     context.i18n.locales.onLocaleAfterCreate.subscribe(async ({ locale }) => {
-        const existingSettings = await context.formBuilder.getSettings({
-            auth: false,
-            locale: locale.code
+        const currentSettings = await context.formBuilder.getSettings({
+            auth: false
         });
 
-        if (!existingSettings) {
-            await context.formBuilder.createSettings({ locale: locale.code });
-        }
+        await context.formBuilder.createSettings({ ...currentSettings, locale: locale.code });
     });
 });
