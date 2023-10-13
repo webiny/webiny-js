@@ -3,7 +3,7 @@ import { Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import { EditContainer, RowContainer } from "./Styled";
 import { FormEditorFieldError, useFormEditor } from "../../Context";
-import { FbFormStep } from "~/types";
+import { FbFormStep, MoveStepParams } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import styled from "@emotion/styled";
 
@@ -104,18 +104,15 @@ export const EditTab: React.FC = () => {
 
     const stepTitle = data.steps.find(step => step.id === editStep.step.id)?.title || "";
 
-    const handleStepMove = (source: any, step: FbFormStep): void => {
-        const { pos, formStep } = source;
-
-        if (pos) {
-            if (pos.index === null) {
+    const handleStepMove = ({ target, destination }: MoveStepParams): void => {
+        if (target.position) {
+            if (target.position.index === null) {
                 return;
             }
         }
-
         moveStep({
-            step,
-            formStep
+            target,
+            destination
         });
     };
 
@@ -152,7 +149,15 @@ export const EditTab: React.FC = () => {
             <FieldErrors errors={errors} />
             {data.steps.map((formStep: FbFormStep, index: number) => (
                 <Draggable
-                    beginDrag={{ ui: "step", name: "step", pos: { row: index, index }, formStep }}
+                    beginDrag={{
+                        ui: "step",
+                        name: "step",
+                        pos: { row: index, index },
+                        container: {
+                            type: "step",
+                            id: formStep.id
+                        }
+                    }}
                     key={`step-${index}`}
                 >
                     {({ drag, isDragging }) => (
@@ -191,26 +196,42 @@ export const EditTab: React.FC = () => {
                                 </div>
                                 <Horizontal
                                     onDrop={item => {
-                                        handleStepMove(item, formStep);
+                                        handleStepMove({
+                                            target: {
+                                                containerId: item?.container?.id || "",
+                                                position: item.pos
+                                            },
+                                            destination: {
+                                                containerId: formStep.id
+                                            }
+                                        });
                                         return undefined;
                                     }}
                                     isVisible={item => {
                                         return (
                                             item.ui === "step" &&
-                                            renderTopDropZone(item?.formStep?.id, formStep.id)
+                                            renderTopDropZone(item?.container?.id, formStep.id)
                                         );
                                     }}
                                 />
                                 <Horizontal
                                     last
                                     onDrop={item => {
-                                        handleStepMove(item, formStep);
+                                        handleStepMove({
+                                            target: {
+                                                containerId: item?.container?.id || "",
+                                                position: item.pos
+                                            },
+                                            destination: {
+                                                containerId: formStep.id
+                                            }
+                                        });
                                         return undefined;
                                     }}
                                     isVisible={item => {
                                         return (
                                             item.ui === "step" &&
-                                            renderBottomDropZone(item?.formStep?.id, formStep.id)
+                                            renderBottomDropZone(item?.container?.id, formStep.id)
                                         );
                                     }}
                                 />

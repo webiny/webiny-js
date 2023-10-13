@@ -13,11 +13,10 @@ import {
 import {
     getFieldPosition,
     moveField,
-    moveFieldBetweenSteps,
-    moveRow,
     deleteField,
     moveStep,
-    moveRowBetweenSteps,
+    handleMoveRow,
+    handleMoveField,
     validateStepRule
 } from "./functions";
 import { plugins } from "@webiny/plugins";
@@ -31,8 +30,11 @@ import {
     FbUpdateFormInput,
     FbErrorResponse,
     FbFormStep,
-    MoveFieldParams,
-    FbFormRule
+    FbFormRule,
+    MoveStepParams,
+    DropTarget,
+    DropDestination,
+    DropSource
 } from "~/types";
 import { ApolloClient } from "apollo-client";
 import {
@@ -46,11 +48,6 @@ import { mdbid } from "@webiny/utils";
 
 interface SetDataCallable {
     (value: FbFormModel): FbFormModel;
-}
-
-interface MoveStepParams {
-    step: FbFormStep;
-    formStep: FbFormStep;
 }
 
 type State = FormEditorProviderContextState;
@@ -76,17 +73,31 @@ export interface FormEditor {
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
-    insertField: (
-        field: FbFormModelField,
-        position: FieldLayoutPositionType,
-        targetStepId: string
-    ) => void;
-    moveField: (params: MoveFieldParams) => void;
+    insertField: ({
+        data,
+        target,
+        destination
+    }: {
+        data: FbFormModelField;
+        target: DropTarget;
+        destination: DropDestination;
+    }) => void;
+    moveField: ({
+        target,
+        field,
+        source,
+        destination
+    }: {
+        target: DropTarget;
+        field: FbFormModelField | string;
+        source: DropSource;
+        destination: DropDestination;
+    }) => void;
     moveRow: (
-        source: number,
-        destination: number,
-        targetStepId: string,
-        sourceStepId?: any
+        sourceRow: number,
+        destinationRow: number,
+        source: DropSource,
+        destination: DropDestination
     ) => void;
     moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
@@ -404,7 +415,7 @@ export const useFormEditorFactory = (
             /**
              * Inserts a new field into the target position.
              */
-            insertField: (data, position, targetStepId) => {
+            insertField: ({ data, destination, target }) => {
                 const field = cloneDeep(data);
                 if (!field._id) {
                     field._id = shortid.generate();
@@ -428,10 +439,10 @@ export const useFormEditorFactory = (
                     data.fields.push(field);
 
                     moveField({
-                        field,
-                        position,
                         data,
-                        targetStepId
+                        field,
+                        target,
+                        destination
                     });
 
                     // We are dropping a new field at the specified index.
@@ -442,42 +453,23 @@ export const useFormEditorFactory = (
             /**
              * Moves field to the given target position.
              */
-            moveField: ({ field, position, targetStepId, sourceStepId }) => {
-                // If sourceStepId ("source step" is the step from which we take a field) is different,
-                // to a targetStepId ("target step" is the step in which we want to move a field) then we need to use function "moveFieldBetweenRows",
-                // if targetStepId equals to sourceStepId then it means that we are moving field inside of the same step.
-                if (targetStepId === sourceStepId) {
-                    self.setData(data => {
-                        moveField({
-                            field,
-                            position,
-                            data,
-                            targetStepId
-                        });
-                        return {
-                            ...self.validateStepRules(data)
-                        };
+            moveField: ({ field, target, source, destination }) => {
+                self.setData(data => {
+                    handleMoveField({
+                        data,
+                        field,
+                        target,
+                        source,
+                        destination
                     });
-                } else {
-                    self.setData(data => {
-                        moveFieldBetweenSteps({
-                            field,
-                            position,
-                            data,
-                            targetStepId,
-                            sourceStepId
-                        });
-                        return {
-                            ...self.validateStepRules(data)
-                        };
-                    });
-                }
+                    return data;
+                });
             },
-            moveStep: ({ step, formStep }) => {
+            moveStep: ({ target, destination }) => {
                 self.setData(data => {
                     moveStep({
-                        step,
-                        formStep,
+                        target,
+                        destination,
                         data: data.steps
                     });
 
@@ -489,32 +481,17 @@ export const useFormEditorFactory = (
             /**
              * Moves row to a destination row.
              */
-            moveRow: (source, destination, targetStepId, sourceStep) => {
-                if (targetStepId === sourceStep.id) {
-                    self.setData(data => {
-                        moveRow({
-                            data: data.steps.find(v => v.id === targetStepId) as FbFormStep,
-                            source,
-                            destination
-                        });
-                        return {
-                            ...self.validateStepRules(data)
-                        };
+            moveRow: (sourceRow, destinationRow, source, destination) => {
+                self.setData(data => {
+                    handleMoveRow({
+                        data,
+                        sourceRow,
+                        destinationRow,
+                        source,
+                        destination
                     });
-                } else {
-                    self.setData(data => {
-                        moveRowBetweenSteps({
-                            data,
-                            source,
-                            destination,
-                            targetStepId,
-                            sourceStep
-                        });
-                        return {
-                            ...self.validateStepRules(data)
-                        };
-                    });
-                }
+                    return data;
+                });
             },
 
             /**
