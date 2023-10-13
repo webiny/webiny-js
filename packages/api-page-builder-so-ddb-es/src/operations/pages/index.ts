@@ -438,6 +438,8 @@ export const createPageStorageOperations = (
     const publish = async (params: PageStorageOperationsPublishParams): Promise<Page> => {
         const { page, latestPage, publishedPage } = params;
 
+        page.status = "published";
+
         /**
          * Update the given revision of the page.
          */
@@ -451,9 +453,8 @@ export const createPageStorageOperations = (
         ];
         const esItems = [];
         /**
-         * If we are publishing the latest revision, let's also update the latest revision entry's
-         * status in ES. Also, if we are publishing the latest revision, we need to update the latest
-         * page revision entry in ES.
+         * If we are publishing the latest revision, update the latest revision
+         * status in ES. We also need to update the latest page revision entry in ES.
          */
         if (latestPage.id === page.id) {
             items.push(
@@ -475,11 +476,10 @@ export const createPageStorageOperations = (
             );
         }
         /**
-         * If we have already published revision of this page:
-         *  - set existing published page revision to unpublished
-         *  - remove old published path if paths are different
+         * If we already have a published revision, and it's not the revision being published:
+         *  - set the existing published revision to "unpublished"
          */
-        if (publishedPage) {
+        if (publishedPage && publishedPage.id !== page.id) {
             items.push(
                 entity.putBatch({
                     ...publishedPage,
@@ -567,6 +567,8 @@ export const createPageStorageOperations = (
 
     const unpublish = async (params: PageStorageOperationsUnpublishParams): Promise<Page> => {
         const { page, latestPage } = params;
+
+        page.status = "unpublished";
 
         const items = [
             entity.deleteBatch({
