@@ -144,11 +144,9 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
-        // Decorating CRUD methods.
-        // new FileManagerCrudDecorators({ context }).decorate();
         new CmsEntriesCrudDecorators({ context }).decorate();
 
-        // This is registered here: packages/api-page-builder-aco/src/index.ts
+        // PB decorators registered here: packages/api-page-builder-aco/src/index.ts
         // new PageBuilderCrudDecorators({ context }).decorate();
     }
 };

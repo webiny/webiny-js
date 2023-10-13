@@ -6,7 +6,7 @@ const FOLDER_TYPE = "test-folders";
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 
-describe("Folder Level Permissions", () => {
+describe("Folder Level Permissions - Security Checks", () => {
     const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
     const { aco: acoIdentityB } = useGraphQlHandler({
         identity: identityB,

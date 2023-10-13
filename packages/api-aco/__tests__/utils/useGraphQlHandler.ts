@@ -96,6 +96,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
+            createHeadlessCmsGraphQL(),
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
             }),
@@ -208,6 +209,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             return invoke({ body: { query: LIST_FILE_TAGS, variables } });
         }
     };
+
     return {
         params,
         handler,
