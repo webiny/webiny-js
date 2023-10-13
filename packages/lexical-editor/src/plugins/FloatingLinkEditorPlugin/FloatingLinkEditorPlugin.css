@@ -87,6 +87,15 @@
     column-gap: 10px;
 }
 
+.link-editor .link-editor-section ul {
+    list-style: initial;
+    padding: 0 20px;
+}
+
+.link-editor .link-editor-section ul li {
+    padding: 3px 0;
+}
+
 .link-editor .link-input {
     display: block;
     width: calc(100% - 24px);

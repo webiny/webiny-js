@@ -14,16 +14,6 @@ export const LinkPreviewForm = ({ linkUrl, setEditMode, removeLink }: LinkFormPr
     return (
         <div className={"link-preview-form"}>
             <h5 className={"link-editor-popup-title"}>Preview Link</h5>
-            {linkUrl.target && (
-                <div className={"link-editor-section link-target"}>
-                    Target: {linkUrl.target} - Open page in a new tab.
-                </div>
-            )}
-            {linkUrl.alt && (
-                <div className={"link-editor-section link-alt"}>
-                    Alt text: <span>{linkUrl.alt}</span>
-                </div>
-            )}
             <div className="link-input">
                 <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
                     {linkUrl.url}
@@ -46,6 +36,24 @@ export const LinkPreviewForm = ({ linkUrl, setEditMode, removeLink }: LinkFormPr
                         removeLink();
                     }}
                 />
+            </div>
+            <div className={"link-editor-section"}>
+                <ul>
+                    <li>
+                        {linkUrl.target === "_blank" ? (
+                            <span>Open page in a new tab</span>
+                        ) : (
+                            <span>Open page in the same tab</span>
+                        )}
+                    </li>
+                    {linkUrl.alt && (
+                        <li>
+                            <span>
+                                Alt text: <span>{linkUrl.alt}</span>
+                            </span>
+                        </li>
+                    )}
+                </ul>
             </div>
         </div>
     );
