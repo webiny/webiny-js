@@ -137,19 +137,9 @@ context("Forms Creation", () => {
                     cy.findByText(/\(v3\)/i).should("exist");
                 });
         });
-
         // Finally, delete the form and it's all revisions
-        for (let i = 0; i < 2; i++) {
-            cy.findByTestId("fb.form-preview.header.delete").click();
-            cy.wait(500);
-            cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
-                cy.findByText("Confirmation required!").should("exist");
-                cy.findByTestId("confirmationdialog-confirm-action").click();
-            });
-            cy.findByText(/Revision was deleted successfully/i).should("exist");
-            cy.wait(500);
-        }
-
+        //Delete form
+        cy.findByTestId("fb.form-details.tab.form-preview").click();
         cy.findByTestId("fb.form-preview.header.delete").click();
         cy.wait(500);
         cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
