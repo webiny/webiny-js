@@ -71,7 +71,9 @@ export class LinkNode extends BaseLinkNode {
     }
 
     override updateDOM(prevNode: LinkNode, dom: HTMLElement): boolean {
-        dom.setAttribute("alt", this.__alt ?? "something");
+        if (this.__alt) {
+            dom.setAttribute("alt", this.__alt);
+        }
         // Returning false tells Lexical that this node does not need its
         // DOM element replacing with a new copy from createDOM.
         return false;
