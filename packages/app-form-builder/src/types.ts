@@ -187,19 +187,6 @@ export interface MoveStepParams {
     };
 }
 
-export interface MoveStepParams {
-    target: {
-        containerId: string;
-        position: {
-            row: number;
-            index: number | null;
-        };
-    };
-    destination: {
-        containerId: string;
-    };
-}
-
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
     field: {
