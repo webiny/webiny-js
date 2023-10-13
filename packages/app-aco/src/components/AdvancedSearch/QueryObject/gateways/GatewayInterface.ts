@@ -4,7 +4,7 @@ export interface GatewayInterface {
     list: (modelId: string) => Promise<QueryObjectRaw[]>;
     get: (id: string) => Promise<QueryObjectRaw>;
     create: (
-        filter: Omit<QueryObjectRaw, "id" | "createdOn" | "createdBy" | "savedOn">
+        filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">
     ) => Promise<QueryObjectRaw>;
     update: (
         filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">

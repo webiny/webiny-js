@@ -7,13 +7,13 @@ import { Select } from "@webiny/ui/Select";
 import { InputField } from "./InputField";
 import { RemoveFilter } from "./controls";
 
-import { FieldDTO, FilterDTO } from "../../../QueryObject";
+import { FieldDTO, QueryObjectFilterDTO } from "../../../QueryObject";
 
 import { CellInner, FilterContainer } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;
-    filter: FilterDTO;
+    filter: QueryObjectFilterDTO;
     fields: FieldDTO[];
     onDelete: () => void;
     onFieldSelectChange: (data: string) => void;

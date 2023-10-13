@@ -9,15 +9,15 @@ export interface QueryObjectRaw {
     operation: Operation;
     groups: string[];
 }
-export interface FilterDTO {
+export interface QueryObjectFilterDTO {
     field: string;
     condition: string;
     value: string;
 }
 
-export interface GroupDTO {
+export interface QueryObjectGroupDTO {
     operation: Operation;
-    filters: FilterDTO[];
+    filters: QueryObjectFilterDTO[];
 }
 
 export interface QueryObjectDTO {
@@ -26,7 +26,7 @@ export interface QueryObjectDTO {
     description?: string;
     modelId: string;
     operation: Operation;
-    groups: GroupDTO[];
+    groups: QueryObjectGroupDTO[];
 }
 
 const operationValidator = zod.enum([Operation.AND, Operation.OR]);

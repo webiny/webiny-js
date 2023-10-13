@@ -1,6 +1,6 @@
 import {
-    FilterDTO,
-    GroupDTO,
+    QueryObjectFilterDTO,
+    QueryObjectGroupDTO,
     Operation,
     QueryObjectDTO
 } from "~/components/AdvancedSearch/QueryObject";
@@ -9,12 +9,12 @@ import { QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 describe("QuerySaverDialogPresenter", () => {
     const modelId = "model-id";
 
-    const demoFilter: FilterDTO = {
+    const demoFilter: QueryObjectFilterDTO = {
         field: "any-field",
         value: "any-value",
         condition: "any-condition"
     };
-    const demoGroup: GroupDTO = {
+    const demoGroup: QueryObjectGroupDTO = {
         operation: Operation.AND,
         filters: [demoFilter]
     };

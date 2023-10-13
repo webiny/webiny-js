@@ -1,7 +1,7 @@
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
-    FilterDTO,
-    GroupDTO,
+    QueryObjectFilterDTO,
+    QueryObjectGroupDTO,
     Operation,
     QueryObjectDTO,
     QueryObjectRepository
@@ -11,12 +11,12 @@ import { createMockGateway } from "./utils/MockGateway";
 describe("AdvancedSearchPresenter", () => {
     const modelId = "model-id";
 
-    const demoFilter: FilterDTO = {
+    const demoFilter: QueryObjectFilterDTO = {
         field: "any-field",
         value: "any-value",
         condition: "any-condition"
     };
-    const demoGroup: GroupDTO = {
+    const demoGroup: QueryObjectGroupDTO = {
         operation: Operation.AND,
         filters: [demoFilter]
     };
@@ -292,6 +292,7 @@ describe("AdvancedSearchPresenter", () => {
 
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
+            id: expect.any(String),
             name: "Draft filter",
             description: "",
             modelId,

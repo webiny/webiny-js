@@ -1,6 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 import orderBy from "lodash/orderBy";
 import { makeAutoObservable, runInAction } from "mobx";
+import { mdbid } from "@webiny/utils";
 
 import { QueryObjectMapper, QueryObjectDTO, Loading, QueryObjectRaw } from "./domain";
 import { GatewayInterface } from "./gateways";
@@ -92,11 +93,11 @@ export class QueryObjectRepository {
     }
 
     async createFilter(filter: QueryObjectDTO) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id: _, ...rawFilter } = QueryObjectMapper.toRaw(filter);
+        const rawFilter = QueryObjectMapper.toRaw(filter);
+        const id = mdbid();
 
         const response = await this.runWithLoading<QueryObjectRaw>(
-            this.gateway.create(rawFilter),
+            this.gateway.create({ ...rawFilter, id }),
             "Creating filter",
             `Filter "${rawFilter.name}" was successfully created.`
         );

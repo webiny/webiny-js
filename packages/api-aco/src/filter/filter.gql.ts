@@ -26,6 +26,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         input FilterCreateInput {
+            id: ID!
             name: String!
             description: String
             modelId: String!

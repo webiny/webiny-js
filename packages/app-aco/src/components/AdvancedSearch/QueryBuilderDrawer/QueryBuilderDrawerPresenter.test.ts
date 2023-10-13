@@ -113,7 +113,7 @@ describe("QueryBuilderDrawerPresenter", () => {
             },
             {
                 title: "Filter group #2",
-                open: false,
+                open: true,
                 operation: Operation.AND,
                 filters: [testFilter]
             }

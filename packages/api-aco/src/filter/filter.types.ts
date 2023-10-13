@@ -38,7 +38,7 @@ export interface ListFiltersParams {
 
 export type CreateFilterParams = Pick<
     Filter,
-    "name" | "description" | "modelId" | "operation" | "groups"
+    "id" | "name" | "description" | "modelId" | "operation" | "groups"
 >;
 
 export interface UpdateFilterParams {

@@ -145,7 +145,7 @@ export class FiltersGraphQLGateway implements GatewayInterface {
         return data;
     }
 
-    async create(filter: Omit<QueryObjectRaw, "id" | "createdOn" | "createdBy" | "savedOn">) {
+    async create(filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">) {
         const { data: response } = await this.client.mutate<
             CreateFilterResponse,
             CreateFilterVariables

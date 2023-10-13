@@ -5,7 +5,7 @@ import {
     FieldDTO,
     FieldMapper,
     FieldRaw,
-    GroupDTO,
+    QueryObjectGroupDTO,
     Operation,
     QueryObject,
     QueryObjectDTO
@@ -35,7 +35,7 @@ export interface QueryBuilderViewModel {
 
 export interface QueryBuilderFormData {
     operation: Operation;
-    groups: (GroupDTO & { title: string; open: boolean })[];
+    groups: (QueryObjectGroupDTO & { title: string; open: boolean })[];
 }
 
 export class QueryBuilderDrawerPresenter {
@@ -64,7 +64,7 @@ export class QueryBuilderDrawerPresenter {
             invalidMessage: this.invalidMessage,
             data: {
                 operation: this.queryObject.operation,
-                groups: this.queryObject.groups.map((group: GroupDTO, groupIndex) => {
+                groups: this.queryObject.groups.map((group: QueryObjectGroupDTO, groupIndex) => {
                     return {
                         title: `Filter group #${groupIndex + 1}`,
                         open: true,

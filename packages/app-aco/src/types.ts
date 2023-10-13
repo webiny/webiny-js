@@ -209,7 +209,7 @@ export interface GetFilterQueryVariables {
 }
 
 export interface CreateFilterVariables {
-    data: Omit<QueryObjectRaw, "id">;
+    data: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">;
 }
 
 export interface CreateFilterResponse {
