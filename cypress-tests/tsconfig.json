@@ -6,5 +6,5 @@
     "lib": ["es5", "dom", "es2015"],
     "types": ["cypress", "@testing-library/cypress"]
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "cypress/e2e/admin/formBuilder/forms/publishAndUnpublishForm.cy.js"]
 }

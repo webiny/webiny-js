@@ -1,9 +1,13 @@
 import uniqid from "uniqid";
 
 context("Forms Creation", () => {
-    beforeEach(() => cy.login());
+    beforeEach(() => 
+        cy.login(),
 
+    );
+    
     it("should be able to create, publish, unpublish, re-publish, and immediately delete everything", () => {
+        cy.fbListAndDeleteAllForms()
         const newFormTitle = `Test form ${uniqid()}`;
         // 1. Create form
         cy.visit("/form-builder/forms");
