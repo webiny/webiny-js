@@ -51,7 +51,6 @@ export interface AdvancedSearchPresenterInterface {
             isOpen: boolean;
             isLoading: boolean;
             loadingLabel: string;
-            queryObject: QueryObjectDTO | null;
         };
     };
 }
@@ -116,8 +115,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         return {
             isOpen: this.showSaver,
             isLoading: this.repository.loading.isLoading,
-            loadingLabel: this.repository.loading.loadingLabel,
-            queryObject: this.currentQueryObject
+            loadingLabel: this.repository.loading.loadingLabel
         };
     }
 

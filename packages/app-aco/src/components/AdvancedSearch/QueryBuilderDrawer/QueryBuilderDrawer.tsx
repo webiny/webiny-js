@@ -21,7 +21,9 @@ interface QueryBuilderDrawerProps {
     onSubmit: (data: QueryObjectDTO) => void;
     onValidationError: (message: string) => void;
     queryObject: QueryObjectDTO;
-    open: boolean;
+    vm: {
+        isOpen: boolean;
+    };
 }
 
 export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
@@ -48,7 +50,7 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
     const ref = useRef<FormAPI | null>(null);
 
     return (
-        <DrawerContainer modal open={props.open} onClose={props.onClose} dir="rtl">
+        <DrawerContainer modal open={props.vm.isOpen} onClose={props.onClose} dir="rtl">
             <DrawerContent dir="ltr">
                 <Header onClose={props.onClose} />
                 <QueryBuilder

@@ -177,9 +177,27 @@ describe("AdvancedSearchPresenter", () => {
             saverVm: {
                 isOpen: false,
                 isLoading: false,
-                loadingLabel: "",
-                queryObject: null
+                loadingLabel: ""
             }
+        });
+    });
+
+    it("should transition to loading state and then to list state", async () => {
+        const loadPromise = presenter.load();
+
+        expect(presenter.vm.managerVm).toMatchObject({
+            isOpen: false,
+            loadingLabel: "Listing filters",
+            view: "LOADING",
+            filters: []
+        });
+
+        await loadPromise;
+
+        expect(presenter.vm.managerVm).toMatchObject({
+            isOpen: false,
+            loadingLabel: "",
+            view: "LIST"
         });
     });
 
@@ -337,7 +355,16 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        await presenter.persistQueryObject(queryObject);
+        const persistPromise = presenter.persistQueryObject(queryObject);
+
+        // Let's check the transition to loading state
+        expect(presenter.vm.saverVm).toMatchObject({
+            isOpen: true,
+            isLoading: true,
+            loadingLabel: "Creating filter"
+        });
+
+        await persistPromise;
 
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
@@ -434,7 +461,16 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        await presenter.persistQueryObject(queryObject);
+        const persistPromise = presenter.persistQueryObject(queryObject);
+
+        // Let's check the transition to loading state
+        expect(presenter.vm.saverVm).toMatchObject({
+            isOpen: true,
+            isLoading: true,
+            loadingLabel: "Updating filter"
+        });
+
+        await persistPromise;
 
         expect(gateway.update).toBeCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({

@@ -17,10 +17,12 @@ import { DialogContainer } from "./QuerySaverDialog.styled";
 interface QuerySaverDialogProps {
     onClose: () => void;
     onSubmit: (data: QueryObjectDTO) => void;
-    open: boolean;
-    isLoading: boolean;
-    loadingLabel: string;
     queryObject: QueryObjectDTO;
+    vm: {
+        isOpen: boolean;
+        isLoading: boolean;
+        loadingLabel: string;
+    };
 }
 
 export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverDialogProps) => {
@@ -43,8 +45,8 @@ export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverD
     };
 
     return (
-        <DialogContainer open={props.open} onClose={props.onClose}>
-            {props.open ? (
+        <DialogContainer open={props.vm.isOpen} onClose={props.onClose}>
+            {props.vm.isOpen ? (
                 <Form
                     data={presenter.vm.data}
                     onChange={onChange}
@@ -54,7 +56,9 @@ export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverD
                     {({ Bind, form }) => (
                         <>
                             <DialogTitle>{"Save search filter"}</DialogTitle>
-                            {props.isLoading && <CircularProgress label={props.loadingLabel} />}
+                            {props.vm.isLoading && (
+                                <CircularProgress label={props.vm.loadingLabel} />
+                            )}
                             <DialogContent>
                                 <Grid>
                                     <Cell span={12} align={"middle"}>
