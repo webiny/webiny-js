@@ -133,6 +133,15 @@ export class UsersFormView extends UIView {
         simpleForm.getFormContentElement().addElement(accordion);
 
         const bioAccordion = accordion.getAccordionItemElement("bio");
+
+        bioAccordion.addElement(
+            new InputElement("displayName", {
+                name: "displayName",
+                label: "Display Name",
+                validators: () => validation.create("required")
+            })
+        );
+
         bioAccordion.addElement(
             new InputElement("firstName", {
                 name: "firstName",

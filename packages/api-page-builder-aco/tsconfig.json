@@ -6,6 +6,7 @@
     { "path": "../api-admin-users" },
     { "path": "../api-aco" },
     { "path": "../api-page-builder" },
+    { "path": "../api-wcp" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../api-headless-cms" },
@@ -15,7 +16,7 @@
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
-    { "path": "../wcp" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,6 +33,8 @@
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],

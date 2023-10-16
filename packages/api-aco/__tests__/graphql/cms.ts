@@ -71,7 +71,6 @@ export const UPDATE_ENTRY = (model: CmsModel) => {
     `;
 };
 
-
 export const DELETE_ENTRY = (model: CmsModel) => {
     const Entry = model.singularApiName;
 
@@ -85,11 +84,10 @@ export const DELETE_ENTRY = (model: CmsModel) => {
     `;
 };
 
-
 export const LIST_ENTRIES = (model: CmsModel) => {
     const Entry = model.singularApiName;
     const Entries = model.pluralApiName;
-    
+
     return /* GraphQL */ `
         query List${Entries}(
         $where: ${Entry}ListWhereInput

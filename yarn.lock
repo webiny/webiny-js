@@ -13624,11 +13624,13 @@ __metadata:
     "@babel/runtime": ^7.22.6
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
+    "@webiny/api-admin-users": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
@@ -13636,6 +13638,7 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/wcp": 0.0.0
     graphql: ^15.8.0
     lodash: ^4.17.11
     ttypescript: ^1.5.13

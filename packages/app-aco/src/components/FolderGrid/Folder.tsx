@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { ReactComponent as FolderIcon } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";

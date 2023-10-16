@@ -1,7 +1,7 @@
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { SecurityContext, Team } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";

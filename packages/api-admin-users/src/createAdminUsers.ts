@@ -79,6 +79,10 @@ export const createAdminUsers = ({
         getStorageOperations() {
             return storageOperations;
         },
+
+        // Note that, by default, e-mail is only stored when the default Cognito setup is being used.
+        // With other IdPs, e.g. Okta, the e-mail field contains the ID of the user in the IdP.
+        // So, in the future, we might want to rename the `email` field to `idpId` or something similar.
         async isEmailTaken(email) {
             const exists = await storageOperations.getUser({
                 where: { tenant: getTenant(), email }
@@ -100,8 +104,10 @@ export const createAdminUsers = ({
             await checkPermission();
             const tenant = getTenant();
 
-            // TODO: only cognito
-            // await this.isEmailTaken(data.email);
+            // Note that, by default, e-mail is only stored when the default Cognito setup is being used.
+            // With other IdPs, e.g. Okta, the e-mail field contains the ID of the user in the IdP.
+            // So, in the future, we might want to rename the `email` field to `idpId` or something similar.
+            await this.isEmailTaken(data.email);
 
             const identity = getIdentity();
 

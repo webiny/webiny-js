@@ -165,7 +165,8 @@ export const createAdminUsersHooks = () => {
                 ...user,
                 displayName: user.firstName + " " + user.lastName
             };
-            const createdUser = await adminUsers.createUser(userWithDisplayName);
+
+            await adminUsers.createUser(userWithDisplayName);
         });
     });
 };

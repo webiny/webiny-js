@@ -307,6 +307,5 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
                 totalCount: 1
             }
         });
-
     });
 });
