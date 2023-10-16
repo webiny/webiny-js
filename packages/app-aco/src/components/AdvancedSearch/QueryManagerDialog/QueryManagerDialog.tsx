@@ -12,6 +12,7 @@ interface QueryBuilderProps {
     onClose: () => void;
     onCreate: () => void;
     onEdit: (filterId: string) => void;
+    onRename: (filterId: string) => void;
     onDelete: (filterId: string) => void;
     onSelect: (filterId: string) => void;
     vm: {
@@ -40,6 +41,7 @@ export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
                     <FilterList
                         filters={vm.filters}
                         onEdit={props.onEdit}
+                        onRename={props.onRename}
                         onDelete={props.onDelete}
                         onSelect={props.onSelect}
                     />

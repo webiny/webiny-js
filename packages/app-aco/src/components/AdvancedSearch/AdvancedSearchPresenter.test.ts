@@ -509,6 +509,86 @@ describe("AdvancedSearchPresenter", () => {
         });
     });
 
+    it("should be able to rename a filter", async () => {
+        // let's load some filters
+        await presenter.load();
+
+        // Let's open the filter manager
+        presenter.openManager();
+        expect(presenter.vm).toMatchObject({
+            managerVm: {
+                isOpen: true
+            }
+        });
+
+        // Let's rename a filter
+        await presenter.renameFilter("filter-1");
+
+        expect(presenter.vm).toMatchObject({
+            currentQueryObject: queryObject1,
+            managerVm: {
+                isOpen: false
+            },
+            builderVm: {
+                isOpen: false
+            },
+            saverVm: {
+                isOpen: true
+            }
+        });
+
+        // Let's save it via the gateway
+        const persistPromise = presenter.persistQueryObject({
+            ...queryObject1,
+            name: `${queryObject1.name} - Edit`
+        });
+
+        // Let's check the transition to loading state
+        expect(presenter.vm.saverVm).toMatchObject({
+            isOpen: true,
+            isLoading: true,
+            loadingLabel: "Updating filter"
+        });
+
+        await persistPromise;
+
+        expect(gateway.update).toBeCalledTimes(1);
+        expect(gateway.update).toHaveBeenCalledWith({
+            id: "filter-1",
+            name: `${filter1.name} - Edit`,
+            description: "Filter description",
+            modelId,
+            operation: Operation.AND,
+            groups: [JSON.stringify(queryObject1.groups[0])]
+        });
+        expect(presenter.vm).toMatchObject({
+            managerVm: {
+                isOpen: false
+            },
+            builderVm: {
+                isOpen: false
+            },
+            saverVm: {
+                isOpen: false
+            },
+            feedbackVm: {
+                isOpen: true,
+                message: `Filter "${queryObject1.name} - Edit" was successfully updated.`
+            }
+        });
+
+        // Let's open the manager again and check if the new data is there.
+        // Be aware: data comes from the mocked gateway
+        presenter.openManager();
+        expect(presenter.vm.managerVm.filters.length).toBe(2);
+        expect(presenter.vm.managerVm.filters[0]).toEqual({
+            id: filter1.id,
+            name: `${filter1.name} - Edit`,
+            description: filter1.description,
+            createdOn: filter1.createdOn
+        });
+    });
+
     it("should be able to delete a filter", async () => {
         // let's load some filters
         await presenter.load();

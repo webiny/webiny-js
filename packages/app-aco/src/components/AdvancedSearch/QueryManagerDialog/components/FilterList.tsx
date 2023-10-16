@@ -14,6 +14,7 @@ import { Description } from "~/components/AdvancedSearch/QueryManagerDialog/comp
 
 interface FilterListProps {
     onEdit: (filterId: string) => void;
+    onRename: (filterId: string) => void;
     onDelete: (filterId: string) => void;
     onSelect: (filterId: string) => void;
     filters: QueryManagerFilter[];
@@ -39,6 +40,9 @@ export const FilterList = (props: FilterListProps) => {
                             </Tooltip>
                             <Menu handle={<IconButton icon={<MoreIcon />} label={"Open menu"} />}>
                                 <MenuItem onClick={() => props.onEdit(filter.id)}>Edit</MenuItem>
+                                <MenuItem onClick={() => props.onRename(filter.id)}>
+                                    Rename
+                                </MenuItem>
                                 <MenuItem onClick={() => props.onDelete(filter.id)}>
                                     Delete
                                 </MenuItem>

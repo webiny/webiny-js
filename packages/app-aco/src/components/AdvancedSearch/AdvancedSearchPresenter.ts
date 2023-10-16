@@ -24,6 +24,7 @@ export interface AdvancedSearchPresenterInterface {
     editFilter(filterId: string): Promise<void>;
     deleteFilter(id: string): Promise<void>;
     saveQueryObject(queryObject: QueryObjectDTO): void;
+    renameFilter(filterId: string): Promise<void>;
     persistQueryObject(queryObject: QueryObjectDTO): Promise<void>;
 
     get vm(): {
@@ -144,7 +145,6 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
 
     closeBuilder() {
         this.showBuilder = false;
-        this.currentQueryObject = null;
     }
 
     openSaver() {
@@ -193,6 +193,21 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         this.openBuilder();
     }
 
+    async renameFilter(filterId: string) {
+        const filter = await this.repository.getFilterById(filterId);
+
+        if (!filter) {
+            return;
+        }
+
+        runInAction(() => {
+            this.currentQueryObject = QueryObjectMapper.toDTO(filter);
+            this.closeManager();
+            this.closeBuilder();
+            this.openSaver();
+        });
+    }
+
     createFilter() {
         this.currentQueryObject = QueryObjectMapper.toDTO(
             QueryObject.createEmpty(this.repository.modelId)
@@ -217,8 +232,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         });
     }
 
-    async deleteFilter(id: string) {
-        await this.repository.deleteFilter(id);
+    async deleteFilter(filterId: string) {
+        await this.repository.deleteFilter(filterId);
 
         runInAction(() => {
             this.currentQueryObject = null;
