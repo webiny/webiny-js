@@ -68,8 +68,6 @@ export const AdvancedSearch = observer(
             onApplyFilter(queryObject);
         };
 
-        console.log("presenter", presenter);
-
         return (
             <>
                 <AdvancedSearchContainer>
@@ -87,6 +85,7 @@ export const AdvancedSearch = observer(
                     onCreate={() => presenter.createFilter()}
                     onEdit={filterId => presenter.editFilter(filterId)}
                     onRename={filterId => presenter.renameFilter(filterId)}
+                    onClone={filterId => presenter.cloneFilter(filterId)}
                     onDelete={deleteFilter}
                     onSelect={applyFilter}
                     vm={presenter.vm.managerVm}

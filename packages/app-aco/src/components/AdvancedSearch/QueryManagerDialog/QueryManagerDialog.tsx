@@ -13,6 +13,7 @@ interface QueryBuilderProps {
     onCreate: () => void;
     onEdit: (filterId: string) => void;
     onRename: (filterId: string) => void;
+    onClone: (filterId: string) => void;
     onDelete: (filterId: string) => void;
     onSelect: (filterId: string) => void;
     vm: {
@@ -42,6 +43,7 @@ export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
                         filters={vm.filters}
                         onEdit={props.onEdit}
                         onRename={props.onRename}
+                        onClone={props.onClone}
                         onDelete={props.onDelete}
                         onSelect={props.onSelect}
                     />

@@ -589,6 +589,96 @@ describe("AdvancedSearchPresenter", () => {
         });
     });
 
+    it("should be able to clone a filter", async () => {
+        // let's load some filters
+        await presenter.load();
+
+        // Let's open the filter manager
+        presenter.openManager();
+        expect(presenter.vm).toMatchObject({
+            managerVm: {
+                isOpen: true
+            }
+        });
+
+        // Let's clone a filter
+        await presenter.cloneFilter("filter-1");
+
+        const clonedQueryObject = {
+            ...queryObject1,
+            id: "",
+            name: `Clone of ${queryObject1.name}`
+        };
+
+        expect(presenter.vm).toMatchObject({
+            currentQueryObject: clonedQueryObject,
+            managerVm: {
+                isOpen: false
+            },
+            builderVm: {
+                isOpen: true
+            },
+            saverVm: {
+                isOpen: false
+            }
+        });
+
+        presenter.saveQueryObject(clonedQueryObject);
+        expect(presenter.vm).toMatchObject({
+            currentQueryObject: clonedQueryObject,
+            managerVm: {
+                isOpen: false
+            },
+            builderVm: {
+                isOpen: true
+            },
+            saverVm: {
+                isOpen: true
+            }
+        });
+
+        // Let's save it via the gateway
+        const persistPromise = presenter.persistQueryObject(clonedQueryObject);
+
+        // Let's check the transition to loading state
+        expect(presenter.vm.saverVm).toMatchObject({
+            isOpen: true,
+            isLoading: true,
+            loadingLabel: "Creating filter"
+        });
+
+        await persistPromise;
+
+        expect(gateway.create).toBeCalledTimes(1);
+        expect(gateway.create).toHaveBeenCalledWith({
+            id: expect.any(String),
+            name: `Clone of ${filter1.name}`,
+            description: "Filter description",
+            modelId,
+            operation: Operation.AND,
+            groups: [JSON.stringify(queryObject1.groups[0])]
+        });
+        expect(presenter.vm).toMatchObject({
+            managerVm: {
+                isOpen: false
+            },
+            builderVm: {
+                isOpen: false
+            },
+            saverVm: {
+                isOpen: false
+            },
+            feedbackVm: {
+                isOpen: true,
+                message: `Filter "Clone of ${filter1.name}" was successfully created.`
+            }
+        });
+
+        // Let's open the manager again and check if the new data is there
+        presenter.openManager();
+        expect(presenter.vm.managerVm.filters.length).toBe(3);
+    });
+
     it("should be able to delete a filter", async () => {
         // let's load some filters
         await presenter.load();

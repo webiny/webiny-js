@@ -25,6 +25,7 @@ export interface AdvancedSearchPresenterInterface {
     deleteFilter(id: string): Promise<void>;
     saveQueryObject(queryObject: QueryObjectDTO): void;
     renameFilter(filterId: string): Promise<void>;
+    cloneFilter(filterId: string): Promise<void>;
     persistQueryObject(queryObject: QueryObjectDTO): Promise<void>;
 
     get vm(): {
@@ -215,6 +216,23 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
+    }
+
+    async cloneFilter(filterId: string) {
+        const filter = await this.repository.getFilterById(filterId);
+
+        if (!filter) {
+            return;
+        }
+
+        runInAction(() => {
+            this.currentQueryObject = QueryObjectMapper.toDTO(
+                QueryObject.create({ ...filter, id: "", name: `Clone of ${filter.name}` })
+            );
+            this.closeManager();
+            this.openBuilder();
+            this.closeSaver();
+        });
     }
 
     async editFilter(filterId: string) {

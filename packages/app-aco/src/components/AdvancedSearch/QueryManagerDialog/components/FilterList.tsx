@@ -17,6 +17,7 @@ interface FilterListProps {
     onRename: (filterId: string) => void;
     onDelete: (filterId: string) => void;
     onSelect: (filterId: string) => void;
+    onClone: (filterId: string) => void;
     filters: QueryManagerFilter[];
 }
 
@@ -43,6 +44,7 @@ export const FilterList = (props: FilterListProps) => {
                                 <MenuItem onClick={() => props.onRename(filter.id)}>
                                     Rename
                                 </MenuItem>
+                                <MenuItem onClick={() => props.onClone(filter.id)}>Clone</MenuItem>
                                 <MenuItem onClick={() => props.onDelete(filter.id)}>
                                     Delete
                                 </MenuItem>
