@@ -156,7 +156,7 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
                     ))}
                     <MenuDivider />
                     <MenuItem onClick={() => onRemoveAccess({ permission })}>
-                        Remove access
+                        Remove
                     </MenuItem>
                 </Menu>
             </ListActions>

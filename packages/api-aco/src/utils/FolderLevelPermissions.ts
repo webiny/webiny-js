@@ -1,6 +1,7 @@
 import { Authentication } from "@webiny/api-authentication/types";
 import { SecurityPermission, Team } from "@webiny/api-security/types";
 import { Folder } from "~/folder/folder.types";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor";
 
@@ -317,6 +318,13 @@ export class FolderLevelPermissions {
         return false;
     }
 
+    async ensureCanAccessFolder(params: CanAccessFolderParams) {
+        const canAccessFolder = await this.canAccessFolder(params);
+        if (!canAccessFolder) {
+            throw new NotAuthorizedError();
+        }
+    }
+
     canManageFolderPermissions(folder: Folder) {
         if (!this.canUseFolderLevelPermissions()) {
             return false;
@@ -384,6 +392,13 @@ export class FolderLevelPermissions {
 
         // No conditions were met, so we can return false.
         return false;
+    }
+
+    async ensureCanAccessFolderContent(params: CanAccessFolderParams) {
+        const canAccessFolderContent = await this.canAccessFolderContent(params);
+        if (!canAccessFolderContent) {
+            throw new NotAuthorizedError();
+        }
     }
 
     async canCreateFolderInRoot() {

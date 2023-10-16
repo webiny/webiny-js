@@ -19,7 +19,7 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
-            const hasLocationField = model.modelId !== 'apwReviewerModelDefinition'
+            const hasLocationField = model.modelId !== "apwReviewerModelDefinition";
             if (!hasLocationField) {
                 return originalCmsListEntries(model, params);
             }
@@ -61,7 +61,7 @@ export class CmsEntriesCrudDecorators {
 
             return entry;
         };
-        
+
         const originalCmsGetEntryById = context.cms.getEntryById.bind(context.cms);
         context.cms.getEntryById = async (model, params) => {
             const entry = await originalCmsGetEntryById(model, params);
@@ -80,6 +80,70 @@ export class CmsEntriesCrudDecorators {
             }
 
             return entry;
+        };
+
+        const originalGetLatestEntriesByIds = context.cms.getLatestEntriesByIds.bind(context.cms);
+        context.cms.getLatestEntriesByIds = async (model, ids) => {
+            const entriesByIds = await originalGetLatestEntriesByIds(model, ids);
+            const returnEntriesByIds: typeof entriesByIds = [];
+
+            for (let i = 0; i < entriesByIds.length; i++) {
+                const entry = entriesByIds[i];
+
+                const folderId = entry?.location?.folderId;
+                if (folderId && folderId !== "root") {
+                    try {
+                        // Getting the folder can also throw an error if user does not have access.
+                        const folder = await context.aco.folder.get(folderId);
+                        await folderLevelPermissions.ensureCanAccessFolderContent({
+                            folder,
+                            rwd: "r"
+                        });
+
+                        returnEntriesByIds.push(entry);
+                    } catch (e) {
+                        if (e instanceof NotAuthorizedError) {
+                            continue;
+                        }
+                        throw e;
+                    }
+                }
+            }
+
+            return returnEntriesByIds;
+        };
+
+        const originalGetPublishedEntriesByIds = context.cms.getPublishedEntriesByIds.bind(
+            context.cms
+        );
+        context.cms.getPublishedEntriesByIds = async (model, ids) => {
+            const entriesByIds = await originalGetPublishedEntriesByIds(model, ids);
+            const returnEntriesByIds: typeof entriesByIds = [];
+
+            for (let i = 0; i < entriesByIds.length; i++) {
+                const entry = entriesByIds[i];
+
+                const folderId = entry?.location?.folderId;
+                if (folderId && folderId !== "root") {
+                    try {
+                        // Getting the folder can also throw an error if user does not have access.
+                        const folder = await context.aco.folder.get(folderId);
+                        await folderLevelPermissions.ensureCanAccessFolderContent({
+                            folder,
+                            rwd: "r"
+                        });
+
+                        returnEntriesByIds.push(entry);
+                    } catch (e) {
+                        if (e instanceof NotAuthorizedError) {
+                            continue;
+                        }
+                        throw e;
+                    }
+                }
+            }
+
+            return returnEntriesByIds;
         };
 
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
