@@ -16,8 +16,8 @@ import WebinyError from "@webiny/error";
  * it in consideration and create the partition key for the global settings.
  */
 interface PartitionKeyParams {
-    tenant: string | boolean | undefined;
-    locale: string | boolean | undefined;
+    tenant?: string | boolean;
+    locale?: string | boolean;
 }
 
 const createPartitionKey = (params: PartitionKeyParams): string => {
