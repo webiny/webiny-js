@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
+    { "path": "../api-admin-users" },
     { "path": "../api-aco" },
     { "path": "../api-page-builder" },
     { "path": "../error" },
@@ -13,7 +14,8 @@
     { "path": "../api-tenancy" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../wcp" },
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,6 +26,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
@@ -45,7 +49,9 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

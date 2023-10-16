@@ -7,7 +7,7 @@ export interface CreateWcpContextParams {
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-export const createWcpContext = (params: CreateWcpContextParams) => {
+export const createWcpContext = (params: CreateWcpContextParams = {}) => {
     const plugin = new ContextPlugin<WcpContext>(async context => {
         context.wcp = await createWcp(params);
     });

@@ -202,14 +202,9 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < createdFiles.length; i++) {
             const createdFile = createdFiles[i];
             await expectNotAuthorized(
-                gqlIdentityC.fm
-                    .deleteFile({
-                        id: createdFile.id,
-                        data: { name: createdFile.name + "-update" }
-                    })
-                    .then(([response]) => {
-                        return response.data.fileManager.deleteFile;
-                    })
+                gqlIdentityC.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
+                    return response.data.fileManager.deleteFile;
+                })
             );
         }
 
@@ -295,14 +290,9 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < createdFiles.length; i++) {
             const createdFile = createdFiles[i];
             await expect(
-                gqlIdentityC.fm
-                    .deleteFile({
-                        id: createdFile.id,
-                        data: { name: createdFile.name + "-update" }
-                    })
-                    .then(([response]) => {
-                        return response.data.fileManager.deleteFile;
-                    })
+                gqlIdentityC.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
+                    return response.data.fileManager.deleteFile;
+                })
             ).resolves.toMatchObject({ data: true, error: null });
         }
     });

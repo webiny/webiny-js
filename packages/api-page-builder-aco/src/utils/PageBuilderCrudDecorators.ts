@@ -1,4 +1,3 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import { PbAcoContext } from "~/types";
 import { Page } from "@webiny/api-page-builder/types";
 
@@ -42,14 +41,10 @@ export class PageBuilderCrudDecorators {
             const pageSearchRecord = await context.pageBuilderAco.app.search.get(page.pid);
             if (pageSearchRecord && pageSearchRecord.location.folderId !== "root") {
                 const folder = await context.aco.folder.get(pageSearchRecord.location.folderId);
-                const canAccessPageFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "r"
                 });
-
-                if (!canAccessPageFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return page as Page;
@@ -59,17 +54,13 @@ export class PageBuilderCrudDecorators {
         context.pageBuilder.createPage = async (category, meta) => {
             if (meta?.location?.folderId && meta.location.folderId !== "root") {
                 const folder = await context.aco.folder.get(meta.location.folderId);
-                const canAccessPageFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "w"
                 });
-
-                if (!canAccessPageFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
-            return originalPbCreatePage(category);
+            return originalPbCreatePage(category, meta);
         };
 
         const originalPbUpdatePage = context.pageBuilder.updatePage.bind(context.pageBuilder);
@@ -78,14 +69,10 @@ export class PageBuilderCrudDecorators {
             const pageSearchRecord = await context.pageBuilderAco.app.search.get(page.pid);
             if (pageSearchRecord && pageSearchRecord.location.folderId !== "root") {
                 const folder = await context.aco.folder.get(pageSearchRecord.location.folderId);
-                const canAccessPageFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "w"
                 });
-
-                if (!canAccessPageFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalPbUpdatePage(pageId, data);
@@ -98,15 +85,10 @@ export class PageBuilderCrudDecorators {
             const pageSearchRecord = await context.pageBuilderAco.app.search.get(page.pid);
             if (pageSearchRecord && pageSearchRecord.location.folderId !== "root") {
                 const folder = await context.aco.folder.get(pageSearchRecord.location.folderId);
-
-                const canAccessPageFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "d"
                 });
-
-                if (!canAccessPageFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalPbDeletePage(pageId);
