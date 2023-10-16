@@ -213,9 +213,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             const createdEntry = entries[i];
             await expectNotAuthorized(
                 cmsGqlIdentityC
-                    .deleteEntry(model, {
-                        revision: createdEntry.id,
-                    })
+                    .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
                     })
@@ -280,11 +278,9 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
 
         // Creating content in the folder should be now allowed for identity C.
         await expect(
-             cmsGqlIdentityC
-                .createEntry(model, { data: { title: `Test-5` } })
-                .then(([response]) => {
-                    return response.data.createBasicTestModel;
-                })
+            cmsGqlIdentityC.createEntry(model, { data: { title: `Test-5` } }).then(([response]) => {
+                return response.data.createBasicTestModel;
+            })
         ).resolves.toMatchObject({
             data: { id: expect.any(String) }
         });
@@ -311,9 +307,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             const createdEntry = entries[i];
             await expect(
                 cmsGqlIdentityC
-                    .deleteEntry(model, {
-                        revision: createdEntry.id,
-                    })
+                    .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
                     })
