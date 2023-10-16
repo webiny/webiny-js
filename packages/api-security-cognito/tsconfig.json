@@ -13,7 +13,8 @@
     },
     {
       "path": "../api-security"
-    } ,  {
+    },
+    {
       "path": "../error"
     }
   ],
