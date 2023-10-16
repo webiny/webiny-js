@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useApolloClient } from "@apollo/react-hooks";
 
-import { FieldRaw, QueryObjectDTO, FilterDTO, FilterRepository } from "./domain";
+import { FieldRaw, QueryObjectDTO, FilterRepository } from "./domain";
 import { FiltersGraphQLGateway } from "./gateways";
 
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
@@ -39,13 +39,13 @@ export const AdvancedSearch = observer(
 
         const applyFilter = async (filterId: string) => {
             await presenter.applyFilter(filterId);
-            if (presenter.vm.appliedFilter) {
-                onApplyFilter(presenter.vm.appliedFilter);
+            if (presenter.vm.appliedQueryObject) {
+                onApplyFilter(presenter.vm.appliedQueryObject);
             }
         };
 
         const unsetFilter = () => {
-            if (presenter.vm.appliedFilter) {
+            if (presenter.vm.appliedQueryObject) {
                 presenter.unsetFilter();
                 onApplyFilter(null);
             }
@@ -58,24 +58,24 @@ export const AdvancedSearch = observer(
 
         const applyQueryObject = async (queryObject: QueryObjectDTO) => {
             await presenter.applyQueryObject(queryObject);
-            if (presenter.vm.appliedFilter) {
-                onApplyFilter(presenter.vm.appliedFilter);
+            if (presenter.vm.appliedQueryObject) {
+                onApplyFilter(presenter.vm.appliedQueryObject);
             }
         };
 
-        const saveFilterAndApply = async (filter: FilterDTO) => {
-            await presenter.saveFilter(filter);
-            onApplyFilter(filter);
+        const persistQueryObjectAndApply = async (queryObject: QueryObjectDTO) => {
+            await presenter.persistQueryObject(queryObject);
+            onApplyFilter(queryObject);
         };
 
         return (
             <>
                 <AdvancedSearchContainer>
                     <Button onClick={() => presenter.openManager()} />
-                    {presenter.vm.appliedFilter ? (
+                    {presenter.vm.appliedQueryObject ? (
                         <SelectedFilter
-                            filter={presenter.vm.appliedFilter}
-                            onEdit={() => presenter.editAppliedFilter()}
+                            queryObject={presenter.vm.appliedQueryObject}
+                            onEdit={() => presenter.editAppliedQueryObject()}
                             onDelete={unsetFilter}
                         />
                     ) : null}
@@ -88,24 +88,24 @@ export const AdvancedSearch = observer(
                     onSelect={applyFilter}
                     vm={presenter.vm.managerVm}
                 />
-                {presenter.vm.currentFilter ? (
+                {presenter.vm.currentQueryObject ? (
                     <>
                         <QueryBuilderDrawer
                             fields={fields}
                             onClose={() => presenter.closeBuilder()}
-                            onPersist={filter => presenter.persistFilter(filter)}
+                            onSave={queryObject => presenter.saveQueryObject(queryObject)}
                             onSubmit={applyQueryObject}
                             onValidationError={message => presenter.showFeedback(message)}
-                            queryObject={presenter.vm.currentFilter}
+                            queryObject={presenter.vm.currentQueryObject}
                             open={presenter.vm.builderVm.isOpen}
                         />
                         <QuerySaverDialog
-                            onSubmit={saveFilterAndApply}
+                            onSubmit={persistQueryObjectAndApply}
                             onClose={() => presenter.closeSaver()}
                             open={presenter.vm.saverVm.isOpen}
                             isLoading={presenter.vm.saverVm.isLoading}
                             loadingLabel={presenter.vm.saverVm.loadingLabel}
-                            queryObject={presenter.vm.currentFilter}
+                            queryObject={presenter.vm.currentQueryObject}
                         />
                     </>
                 ) : null}

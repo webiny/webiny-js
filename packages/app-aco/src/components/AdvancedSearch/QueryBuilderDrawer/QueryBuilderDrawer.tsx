@@ -17,7 +17,7 @@ import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
     onClose: () => void;
-    onPersist: (data: QueryObjectDTO) => void;
+    onSave: (data: QueryObjectDTO) => void;
     onSubmit: (data: QueryObjectDTO) => void;
     onValidationError: (message: string) => void;
     queryObject: QueryObjectDTO;
@@ -60,7 +60,7 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
                 <Footer
                     formRef={ref}
                     onClose={props.onClose}
-                    onPersist={props.onPersist}
+                    onPersist={props.onSave}
                     onValidationError={onValidationError}
                     presenter={presenter}
                 />

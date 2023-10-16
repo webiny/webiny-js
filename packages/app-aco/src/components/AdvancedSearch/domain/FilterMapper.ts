@@ -29,7 +29,7 @@ export class FilterMapper {
                 displayName: "",
                 type: ""
             },
-            createdOn: configuration.createdOn || "",
+            createdOn: configuration?.createdOn || "",
             savedOn: configuration.savedOn || ""
         };
     }

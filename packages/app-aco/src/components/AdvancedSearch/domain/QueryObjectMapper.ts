@@ -1,7 +1,14 @@
-import { QueryObjectGroup, QueryObject, QueryObjectDTO, FilterRaw, Filter } from "../domain";
+import {
+    QueryObjectGroup,
+    QueryObject,
+    QueryObjectDTO,
+    FilterRaw,
+    Filter,
+    FilterDTO
+} from "../domain";
 
 export class QueryObjectMapper {
-    static toDTO(configuration: QueryObject | Filter | FilterRaw): QueryObjectDTO {
+    static toDTO(configuration: QueryObject | Filter | FilterDTO | FilterRaw): QueryObjectDTO {
         const groups: QueryObjectGroup[] = configuration.groups.map(group => {
             if (typeof group === "string") {
                 return JSON.parse(group);

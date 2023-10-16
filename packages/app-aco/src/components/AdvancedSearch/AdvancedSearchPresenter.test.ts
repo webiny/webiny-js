@@ -1,12 +1,52 @@
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
+    FilterDTO,
     FilterRepository,
     Operation,
     QueryObjectDTO,
     QueryObjectFilterDTO,
-    QueryObjectGroupDTO
+    QueryObjectGroupDTO,
+    User
 } from "./domain";
-import { createMockGateway } from "./gateways";
+import { GatewayInterface } from "./gateways";
+
+const mockGateway: GatewayInterface = {
+    list: jest.fn(),
+    get: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn()
+};
+
+const createMockGateway = ({
+    list,
+    get,
+    create,
+    update,
+    delete: deleteFn
+}: Partial<GatewayInterface>): GatewayInterface => ({
+    ...mockGateway,
+    ...(list && { list }),
+    ...(get && { get }),
+    ...(create && { create }),
+    ...(update && { update }),
+    ...(deleteFn && { delete: deleteFn })
+});
+
+const wrapQueryObjectIntoFilter = (queryObject: QueryObjectDTO): FilterDTO => {
+    const DemoUser: User = {
+        id: "any-id",
+        displayName: "John Doe",
+        type: "editor"
+    };
+
+    return {
+        ...queryObject,
+        createdOn: new Date().toString(),
+        savedOn: new Date().toString(),
+        createdBy: DemoUser
+    };
+};
 
 describe("AdvancedSearchPresenter", () => {
     const modelId = "model-id";
@@ -16,12 +56,13 @@ describe("AdvancedSearchPresenter", () => {
         value: "any-value",
         condition: "any-condition"
     };
+
     const demoGroup: QueryObjectGroupDTO = {
         operation: Operation.AND,
         filters: [demoFilter]
     };
 
-    const filter1: QueryObjectDTO = {
+    const queryObject1: QueryObjectDTO = {
         id: "filter-1",
         name: "Filter 1",
         description: "Filter description",
@@ -30,7 +71,9 @@ describe("AdvancedSearchPresenter", () => {
         groups: [demoGroup]
     };
 
-    const filter2: QueryObjectDTO = {
+    const filter1 = wrapQueryObjectIntoFilter(queryObject1);
+
+    const queryObject2: QueryObjectDTO = {
         id: "filter-2",
         name: "Filter 2",
         modelId,
@@ -38,13 +81,17 @@ describe("AdvancedSearchPresenter", () => {
         groups: [demoGroup]
     };
 
-    const filter3: QueryObjectDTO = {
+    const filter2 = wrapQueryObjectIntoFilter(queryObject2);
+
+    const queryObject3: QueryObjectDTO = {
         id: "filter-3",
         name: "Filter 3",
         modelId,
         operation: Operation.AND,
         groups: [demoGroup]
     };
+
+    const filter3 = wrapQueryObjectIntoFilter(queryObject3);
 
     const gateway = createMockGateway({
         list: jest.fn().mockImplementation(() => {
@@ -99,8 +146,8 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.list).toBeCalledTimes(1);
 
         expect(presenter.vm).toEqual({
-            appliedFilter: null,
-            currentFilter: null,
+            appliedQueryObject: null,
+            currentQueryObject: null,
             feedbackVm: {
                 isOpen: false,
                 message: ""
@@ -113,12 +160,14 @@ describe("AdvancedSearchPresenter", () => {
                     {
                         id: filter1.id,
                         name: filter1.name,
-                        description: filter1.description
+                        description: filter1.description,
+                        createdOn: filter1.createdOn
                     },
                     {
                         id: filter2.id,
                         name: filter2.name,
-                        description: ""
+                        description: "",
+                        createdOn: filter2.createdOn
                     }
                 ]
             },
@@ -129,7 +178,7 @@ describe("AdvancedSearchPresenter", () => {
                 isOpen: false,
                 isLoading: false,
                 loadingLabel: "",
-                filter: null
+                queryObject: null
             }
         });
     });
@@ -142,8 +191,8 @@ describe("AdvancedSearchPresenter", () => {
         await presenter.applyFilter("filter-1");
 
         expect(presenter.vm).toMatchObject({
-            appliedFilter: filter1,
-            currentFilter: null,
+            appliedQueryObject: queryObject1,
+            currentQueryObject: null,
             managerVm: {
                 isOpen: false
             },
@@ -161,10 +210,10 @@ describe("AdvancedSearchPresenter", () => {
         await presenter.load();
 
         // Let's apply a queryObject
-        presenter.applyQueryObject(filter2);
+        presenter.applyQueryObject(queryObject2);
 
         expect(presenter.vm).toMatchObject({
-            appliedFilter: filter2,
+            appliedQueryObject: queryObject2,
             managerVm: {
                 isOpen: false
             },
@@ -186,22 +235,22 @@ describe("AdvancedSearchPresenter", () => {
         presenter.unsetFilter();
 
         expect(presenter.vm).toMatchObject({
-            appliedFilter: null,
-            currentFilter: null
+            appliedQueryObject: null,
+            currentQueryObject: null
         });
     });
 
-    it("should be able to edit an already applied filter", async () => {
+    it("should be able to edit an already applied query object", async () => {
         // let's load some filters
         await presenter.load();
 
         // Let's apply and unset the filter
         await presenter.applyFilter("filter-1");
-        presenter.editAppliedFilter();
+        presenter.editAppliedQueryObject();
 
         expect(presenter.vm).toMatchObject({
-            appliedFilter: filter1,
-            currentFilter: filter1,
+            appliedQueryObject: queryObject1,
+            currentQueryObject: queryObject1,
             builderVm: {
                 isOpen: true
             }
@@ -223,7 +272,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's create a new filter via builder
         presenter.createFilter();
         expect(presenter.vm).toMatchObject({
-            currentFilter: {
+            currentQueryObject: {
                 id: "",
                 name: "Draft filter",
                 description: "",
@@ -273,9 +322,9 @@ describe("AdvancedSearchPresenter", () => {
                 }
             ]
         };
-        presenter.persistFilter(queryObject);
+        presenter.saveQueryObject(queryObject);
         expect(presenter.vm).toMatchObject({
-            currentFilter: queryObject,
+            currentQueryObject: queryObject,
             managerVm: {
                 isOpen: false
             },
@@ -288,7 +337,7 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        await presenter.saveFilter(queryObject);
+        await presenter.persistQueryObject(queryObject);
 
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
@@ -320,9 +369,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(3);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: "filter-1",
-            name: "Filter 1",
-            description: "Filter description"
+            id: filter1.id,
+            name: filter1.name,
+            description: filter1.description,
+            createdOn: filter1.createdOn
         });
     });
 
@@ -341,7 +391,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's select a filter to edit in the builder
         await presenter.editFilter("filter-1");
         expect(presenter.vm).toMatchObject({
-            currentFilter: filter1,
+            currentQueryObject: queryObject1,
             managerVm: {
                 isOpen: false
             },
@@ -355,7 +405,7 @@ describe("AdvancedSearchPresenter", () => {
 
         // Let's change the QueryObject and open the saver
         const queryObject = {
-            ...filter1,
+            ...queryObject1,
             groups: [
                 {
                     operation: Operation.OR,
@@ -369,9 +419,9 @@ describe("AdvancedSearchPresenter", () => {
                 }
             ]
         };
-        presenter.persistFilter(queryObject);
+        presenter.saveQueryObject(queryObject);
         expect(presenter.vm).toMatchObject({
-            currentFilter: queryObject,
+            currentQueryObject: queryObject,
             managerVm: {
                 isOpen: false
             },
@@ -384,7 +434,7 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        await presenter.saveFilter(queryObject);
+        await presenter.persistQueryObject(queryObject);
 
         expect(gateway.update).toBeCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({
@@ -416,9 +466,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(2);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: "filter-1",
+            id: filter1.id,
             name: "Filter 1 - Edit",
-            description: "Filter description"
+            description: filter1.description,
+            createdOn: filter1.createdOn
         });
     });
 
@@ -439,7 +490,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.delete).toBeCalledTimes(1);
         expect(gateway.delete).toHaveBeenCalledWith("filter-1");
         expect(presenter.vm).toMatchObject({
-            currentFilter: null,
+            currentQueryObject: null,
             feedbackVm: {
                 isOpen: true,
                 message: 'Filter "Filter 1" was successfully deleted.'
@@ -451,9 +502,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(1);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: "filter-2",
-            name: "Filter 2",
-            description: ""
+            id: filter2.id,
+            name: filter2.name,
+            description: "",
+            createdOn: filter2.createdOn
         });
     });
 
@@ -517,7 +569,7 @@ describe("AdvancedSearchPresenter", () => {
             ]
         };
 
-        await presenter.saveFilter(queryObject);
+        await presenter.persistQueryObject(queryObject);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -542,11 +594,11 @@ describe("AdvancedSearchPresenter", () => {
 
         // Let's try to save a QueryObject
         const queryObject = {
-            ...filter1,
-            name: filter1 + " - Edit"
+            ...queryObject1,
+            name: queryObject1 + " - Edit"
         };
 
-        await presenter.saveFilter(queryObject);
+        await presenter.persistQueryObject(queryObject);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -569,7 +621,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's load some filters
         await presenter.load();
 
-        await presenter.deleteFilter(filter1.id);
+        await presenter.deleteFilter(queryObject1.id);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -586,7 +638,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's show any random feedback message
         presenter.showFeedback("Any message");
         expect(presenter.vm).toMatchObject({
-            currentFilter: null,
+            currentQueryObject: null,
             feedbackVm: {
                 isOpen: true,
                 message: "Any message"
