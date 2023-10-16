@@ -3,7 +3,7 @@ import React from "react";
 import { Bind } from "@webiny/form";
 import { Input as BaseInput } from "@webiny/ui/Input";
 
-import { FieldType } from "~/components/AdvancedSearch/QueryObject";
+import { FieldType } from "~/components/AdvancedSearch/domain";
 
 interface InputProps {
     type: FieldType;

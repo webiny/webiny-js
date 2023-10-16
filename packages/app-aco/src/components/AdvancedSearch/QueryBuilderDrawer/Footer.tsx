@@ -3,7 +3,7 @@ import React from "react";
 import { FormAPI } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 
 import { SimpleFormFooter } from "./QueryBuilderDrawer.styled";

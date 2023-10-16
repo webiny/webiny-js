@@ -1,12 +1,12 @@
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
-    QueryObjectFilterDTO,
-    QueryObjectGroupDTO,
+    FilterRepository,
     Operation,
     QueryObjectDTO,
-    QueryObjectRepository
-} from "./QueryObject";
-import { createMockGateway } from "./utils/MockGateway";
+    QueryObjectFilterDTO,
+    QueryObjectGroupDTO
+} from "./domain";
+import { createMockGateway } from "./gateways";
 
 describe("AdvancedSearchPresenter", () => {
     const modelId = "model-id";
@@ -88,7 +88,7 @@ describe("AdvancedSearchPresenter", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const repository = new QueryObjectRepository(gateway, modelId);
+        const repository = new FilterRepository(gateway, modelId);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -463,7 +463,7 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new QueryObjectRepository(gateway, modelId);
+        const repository = new FilterRepository(gateway, modelId);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -490,7 +490,7 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new QueryObjectRepository(createGateway, modelId);
+        const repository = new FilterRepository(createGateway, modelId);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -534,7 +534,7 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new QueryObjectRepository(updateGateway, modelId);
+        const repository = new FilterRepository(updateGateway, modelId);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -563,7 +563,7 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new QueryObjectRepository(updateGateway, modelId);
+        const repository = new FilterRepository(updateGateway, modelId);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters

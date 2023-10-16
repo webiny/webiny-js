@@ -1,5 +1,5 @@
 import { GraphQLInputMapper } from "./GraphQLInputMapper";
-import { Operation, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { Operation, QueryObjectDTO } from "./domain";
 
 describe("GraphQLInputMapper", () => {
     it("should return a GraphQL formatted output based on the received queryObject", () => {

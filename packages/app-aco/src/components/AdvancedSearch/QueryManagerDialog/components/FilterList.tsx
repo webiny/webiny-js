@@ -4,19 +4,13 @@ import { ReactComponent as SavedSearchIcon } from "@material-design-icons/svg/ou
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/outlined/more_vert.svg";
 
 import { IconButton } from "@webiny/ui/Button";
-import {
-    List,
-    ListItem,
-    ListItemMeta,
-    ListItemText,
-    ListItemTextPrimary,
-    ListItemTextSecondary
-} from "@webiny/ui/List";
+import { List, ListItem, ListItemMeta, ListItemText, ListItemTextPrimary } from "@webiny/ui/List";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 
 import { ListActions } from "../QueryManagerDialog.styled";
 import { QueryManagerFilter } from "../QueryManagerDialog";
+import { Description } from "~/components/AdvancedSearch/QueryManagerDialog/components/Description";
 
 interface FilterListProps {
     onEdit: (filterId: string) => void;
@@ -32,7 +26,7 @@ export const FilterList = (props: FilterListProps) => {
                 <ListItem key={filter.id}>
                     <ListItemText>
                         <ListItemTextPrimary>{filter.name}</ListItemTextPrimary>
-                        <ListItemTextSecondary>{filter.description}</ListItemTextSecondary>
+                        <Description createdOn={filter.createdOn}>{filter.description}</Description>
                     </ListItemText>
                     <ListItemMeta>
                         <ListActions>

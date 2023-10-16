@@ -13,7 +13,8 @@ import {
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { GatewayInterface, QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
+import { GatewayInterface } from "./GatewayInterface";
+import { FilterRaw } from "../domain";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -145,7 +146,7 @@ export class FiltersGraphQLGateway implements GatewayInterface {
         return data;
     }
 
-    async create(filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">) {
+    async create(filter: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">) {
         const { data: response } = await this.client.mutate<
             CreateFilterResponse,
             CreateFilterVariables
@@ -169,7 +170,7 @@ export class FiltersGraphQLGateway implements GatewayInterface {
         return data;
     }
 
-    async update(filter: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">) {
+    async update(filter: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">) {
         const { id, name, description, operation, groups } = filter;
 
         const { data: response } = await this.client.mutate<

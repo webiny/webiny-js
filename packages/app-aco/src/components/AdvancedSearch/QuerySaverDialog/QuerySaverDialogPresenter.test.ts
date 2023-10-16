@@ -3,7 +3,7 @@ import {
     QueryObjectGroupDTO,
     Operation,
     QueryObjectDTO
-} from "~/components/AdvancedSearch/QueryObject";
+} from "~/components/AdvancedSearch/domain";
 import { QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
 describe("QuerySaverDialogPresenter", () => {

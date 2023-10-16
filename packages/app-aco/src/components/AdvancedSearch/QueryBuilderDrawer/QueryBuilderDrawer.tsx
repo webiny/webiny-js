@@ -9,7 +9,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";

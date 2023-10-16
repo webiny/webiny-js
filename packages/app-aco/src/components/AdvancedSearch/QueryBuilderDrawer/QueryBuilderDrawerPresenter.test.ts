@@ -5,7 +5,7 @@ import {
     FieldType,
     Operation,
     QueryObjectDTO
-} from "~/components/AdvancedSearch/QueryObject";
+} from "~/components/AdvancedSearch/domain";
 
 describe("QueryBuilderDrawerPresenter", () => {
     const modelId = "model-id";

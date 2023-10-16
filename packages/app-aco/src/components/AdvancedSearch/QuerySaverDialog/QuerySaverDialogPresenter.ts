@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-import { QueryObject, QueryObjectDTO } from "../QueryObject";
+import { QueryObject, QueryObjectDTO } from "../domain";
 
 interface IQuerySaverDialogPresenter {
     load: (queryObject: QueryObjectDTO) => void;

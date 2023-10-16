@@ -3,7 +3,7 @@ import React from "react";
 import { Bind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 
-import { Predefined } from "~/components/AdvancedSearch/QueryObject";
+import { Predefined } from "~/components/AdvancedSearch/domain";
 
 interface MultipleValuesProps {
     predefined: Predefined[];

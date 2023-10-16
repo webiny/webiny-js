@@ -1,4 +1,4 @@
-import { GatewayInterface } from "~/components/AdvancedSearch/QueryObject";
+import { GatewayInterface } from "./GatewayInterface";
 
 const mockGateway: GatewayInterface = {
     list: jest.fn(),

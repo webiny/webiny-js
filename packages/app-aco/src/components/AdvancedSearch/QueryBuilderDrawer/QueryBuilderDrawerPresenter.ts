@@ -9,7 +9,7 @@ import {
     Operation,
     QueryObject,
     QueryObjectDTO
-} from "../QueryObject";
+} from "../domain";
 
 export interface IQueryBuilderDrawerPresenter {
     addGroup: () => void;

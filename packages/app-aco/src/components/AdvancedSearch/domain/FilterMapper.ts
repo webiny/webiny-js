@@ -1,9 +1,8 @@
-import { QueryObject, QueryObjectDTO } from "./QueryObject";
-import { Group, QueryObjectRaw } from "../domain";
+import { QueryObjectGroup, Filter, FilterRaw, FilterDTO } from "../domain";
 
-export class QueryObjectMapper {
-    static toDTO(configuration: QueryObject | QueryObjectRaw): QueryObjectDTO {
-        const groups: Group[] = configuration.groups.map(group => {
+export class FilterMapper {
+    static toDTO(configuration: Filter | FilterRaw): FilterDTO {
+        const groups: QueryObjectGroup[] = configuration.groups.map(group => {
             if (typeof group === "string") {
                 return JSON.parse(group);
             }
@@ -24,11 +23,18 @@ export class QueryObjectMapper {
                     value: filter.value || "",
                     condition: filter.condition || ""
                 }))
-            }))
+            })),
+            createdBy: configuration.createdBy || {
+                id: "",
+                displayName: "",
+                type: ""
+            },
+            createdOn: configuration.createdOn || "",
+            savedOn: configuration.savedOn || ""
         };
     }
 
-    static toRaw(configuration: QueryObject | QueryObjectDTO): QueryObjectRaw {
+    static toRaw(configuration: Filter | FilterDTO): FilterRaw {
         return {
             id: configuration.id,
             name: configuration.name,

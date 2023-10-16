@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useApolloClient } from "@apollo/react-hooks";
 
-import {
-    FieldRaw,
-    FiltersGraphQLGateway,
-    QueryObjectDTO,
-    QueryObjectRepository
-} from "./QueryObject";
+import { FieldRaw, QueryObjectDTO, FilterDTO, FilterRepository } from "./domain";
+import { FiltersGraphQLGateway } from "./gateways";
+
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
 import { Button } from "./Button";
@@ -30,7 +27,7 @@ export const AdvancedSearch = observer(
         const client = useApolloClient();
 
         const [repository] = useState(
-            QueryObjectRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
+            FilterRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
         );
         const [presenter] = useState<AdvancedSearchPresenter>(
             new AdvancedSearchPresenter(repository)
@@ -66,7 +63,7 @@ export const AdvancedSearch = observer(
             }
         };
 
-        const saveFilterAndApply = async (filter: QueryObjectDTO) => {
+        const saveFilterAndApply = async (filter: FilterDTO) => {
             await presenter.saveFilter(filter);
             onApplyFilter(filter);
         };

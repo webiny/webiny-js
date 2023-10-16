@@ -3,16 +3,16 @@ import orderBy from "lodash/orderBy";
 import { makeAutoObservable, runInAction } from "mobx";
 import { mdbid } from "@webiny/utils";
 
-import { QueryObjectMapper, QueryObjectDTO, Loading, QueryObjectRaw } from "./domain";
-import { GatewayInterface } from "./gateways";
+import { FilterDTO, FilterMapper, FilterRaw, Loading } from "../domain";
+import { GatewayInterface } from "../gateways";
 import { ListSort } from "~/types";
 
-export class QueryObjectRepository {
+export class FilterRepository {
     private gateway: GatewayInterface;
     private _loading: Loading;
-    private static instance: QueryObjectRepository;
+    private static instance: FilterRepository;
     private readonly sort: ListSort;
-    private _filters: QueryObjectDTO[] = [];
+    private _filters: FilterDTO[] = [];
     public readonly modelId: string;
 
     constructor(gateway: GatewayInterface, modelId: string) {
@@ -24,10 +24,10 @@ export class QueryObjectRepository {
     }
 
     static getInstance(gateway: GatewayInterface, modelId: string) {
-        if (!QueryObjectRepository.instance) {
-            QueryObjectRepository.instance = new QueryObjectRepository(gateway, modelId);
+        if (!FilterRepository.instance) {
+            FilterRepository.instance = new FilterRepository(gateway, modelId);
         }
-        return QueryObjectRepository.instance;
+        return FilterRepository.instance;
     }
 
     get filters() {
@@ -57,7 +57,7 @@ export class QueryObjectRepository {
     }
 
     async listFilters() {
-        const response = await this.runWithLoading<QueryObjectRaw[]>(
+        const response = await this.runWithLoading<FilterRaw[]>(
             this.gateway.list(this.modelId),
             "Listing filters"
         );
@@ -67,7 +67,7 @@ export class QueryObjectRepository {
         }
 
         runInAction(() => {
-            this._filters = response.map(filter => QueryObjectMapper.toDTO(filter));
+            this._filters = response.map(filter => FilterMapper.toDTO(filter));
         });
     }
 
@@ -78,13 +78,13 @@ export class QueryObjectRepository {
             return cloneDeep(filterInCache);
         }
 
-        const response = await this.runWithLoading<QueryObjectRaw>(this.gateway.get(id));
+        const response = await this.runWithLoading<FilterRaw>(this.gateway.get(id));
 
         if (!response) {
             return;
         }
 
-        const filterDTO = QueryObjectMapper.toDTO(response);
+        const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
             this._filters = this.sortFilters([filterDTO, ...this.filters]);
         });
@@ -92,11 +92,11 @@ export class QueryObjectRepository {
         return cloneDeep(filterDTO);
     }
 
-    async createFilter(filter: QueryObjectDTO) {
-        const rawFilter = QueryObjectMapper.toRaw(filter);
+    async createFilter(filter: FilterDTO) {
+        const rawFilter = FilterMapper.toRaw(filter);
         const id = mdbid();
 
-        const response = await this.runWithLoading<QueryObjectRaw>(
+        const response = await this.runWithLoading<FilterRaw>(
             this.gateway.create({ ...rawFilter, id }),
             "Creating filter",
             `Filter "${rawFilter.name}" was successfully created.`
@@ -106,7 +106,7 @@ export class QueryObjectRepository {
             return;
         }
 
-        const filterDTO = QueryObjectMapper.toDTO(response);
+        const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
             this._filters = this.sortFilters([filterDTO, ...this.filters]);
         });
@@ -114,9 +114,9 @@ export class QueryObjectRepository {
         return cloneDeep(filterDTO);
     }
 
-    async updateFilter(filter: QueryObjectDTO) {
-        const rawFilter = QueryObjectMapper.toRaw(filter);
-        const response = await this.runWithLoading<QueryObjectRaw>(
+    async updateFilter(filter: FilterDTO) {
+        const rawFilter = FilterMapper.toRaw(filter);
+        const response = await this.runWithLoading<FilterRaw>(
             this.gateway.update(rawFilter),
             "Updating filter",
             `Filter "${rawFilter.name}" was successfully updated.`
@@ -128,7 +128,7 @@ export class QueryObjectRepository {
 
         const filterIndex = this.filters.findIndex(f => f.id === filter.id);
         if (filterIndex > -1) {
-            const filterDTO = QueryObjectMapper.toDTO(response);
+            const filterDTO = FilterMapper.toDTO(response);
 
             runInAction(() => {
                 this._filters = this.sortFilters([
@@ -163,7 +163,7 @@ export class QueryObjectRepository {
         }
     }
 
-    private sortFilters(filters: QueryObjectDTO[]) {
+    private sortFilters(filters: FilterDTO[]) {
         const sortByFields = this.sort.map(sort => {
             const [field, order] = sort.split("_");
             return { field, order: order.toLowerCase() as "asc" | "desc" };

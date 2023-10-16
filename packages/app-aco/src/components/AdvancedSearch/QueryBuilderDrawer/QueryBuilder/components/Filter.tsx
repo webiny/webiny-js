@@ -7,7 +7,7 @@ import { Select } from "@webiny/ui/Select";
 import { InputField } from "./InputField";
 import { RemoveFilter } from "./controls";
 
-import { FieldDTO, QueryObjectFilterDTO } from "../../../QueryObject";
+import { FieldDTO, QueryObjectFilterDTO } from "../../../domain";
 
 import { CellInner, FilterContainer } from "../Querybuilder.styled";
 

@@ -26,6 +26,7 @@ export interface QueryManagerFilter {
     id: string;
     name: string;
     description: string;
+    createdOn: string;
 }
 
 export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {

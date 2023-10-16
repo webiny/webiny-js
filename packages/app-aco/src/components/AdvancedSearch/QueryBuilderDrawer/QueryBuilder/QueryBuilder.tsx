@@ -6,7 +6,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outline
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
 
 import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "../QueryBuilderDrawerPresenter";
 

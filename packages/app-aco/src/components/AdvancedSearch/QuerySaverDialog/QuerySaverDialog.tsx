@@ -10,7 +10,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 
 import { QuerySaverDialogFormData, QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
-import { QueryObjectDTO } from "../QueryObject";
+import { QueryObjectDTO } from "../domain";
 
 import { DialogContainer } from "./QuerySaverDialog.styled";
 

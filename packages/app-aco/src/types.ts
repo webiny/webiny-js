@@ -3,7 +3,7 @@ import {
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
-import { QueryObjectRaw } from "~/components/AdvancedSearch/QueryObject";
+import { FilterRaw } from "~/components/AdvancedSearch/domain";
 
 export * from "~/graphql/records/types";
 
@@ -189,7 +189,7 @@ export interface ListFiltersQueryVariables {
 export interface ListFiltersResponse {
     aco: {
         listFilters: {
-            data: QueryObjectRaw[] | null;
+            data: FilterRaw[] | null;
             error: AcoError | null;
         };
     };
@@ -198,7 +198,7 @@ export interface ListFiltersResponse {
 export interface GetFilterResponse {
     aco: {
         getFilter: {
-            data: QueryObjectRaw | null;
+            data: FilterRaw | null;
             error: AcoError | null;
         };
     };
@@ -209,13 +209,13 @@ export interface GetFilterQueryVariables {
 }
 
 export interface CreateFilterVariables {
-    data: Omit<QueryObjectRaw, "createdOn" | "createdBy" | "savedOn">;
+    data: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">;
 }
 
 export interface CreateFilterResponse {
     aco: {
         createFilter: {
-            data: QueryObjectRaw;
+            data: FilterRaw;
             error: AcoError | null;
         };
     };
@@ -223,13 +223,13 @@ export interface CreateFilterResponse {
 
 export interface UpdateFilterVariables {
     id: string;
-    data: Partial<Omit<QueryObjectRaw, "id" | "createdOn" | "createdBy" | "savedOn">>;
+    data: Partial<Omit<FilterRaw, "id" | "createdOn" | "createdBy" | "savedOn">>;
 }
 
 export interface UpdateFilterResponse {
     aco: {
         updateFilter: {
-            data: QueryObjectRaw;
+            data: FilterRaw;
             error: AcoError | null;
         };
     };

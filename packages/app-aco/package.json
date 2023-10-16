@@ -39,6 +39,7 @@
     "react-hotkeyz": "^1.0.4",
     "slugify": "^1.2.9",
     "store": "^2.0.12",
+    "timeago-react": "^2.0.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { QueryObjectDTO } from "~/components/AdvancedSearch/QueryObject";
+import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
 
 export class GraphQLInputMapper {
     static toGraphQL(configuration: QueryObjectDTO) {

@@ -1,14 +1,6 @@
 import zod from "zod";
 import { Operation } from "./Operation";
 
-export interface QueryObjectRaw {
-    id: string;
-    name: string;
-    description?: string;
-    modelId: string;
-    operation: Operation;
-    groups: string[];
-}
 export interface QueryObjectFilterDTO {
     field: string;
     condition: string;
@@ -52,7 +44,7 @@ const groupValidationSchema = zod.object({
     filters: zod.array(filterValidationSchema).min(1)
 });
 
-const validationSchema = zod.object({
+export const queryObjectValidationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
     name: zod.string().trim().nonempty("Name is required."),
     description: zod.string().trim(),
@@ -68,10 +60,12 @@ export class QueryObject {
     public description;
     public modelId: string;
     public operation: Operation;
-    public groups: Group[];
+    public groups: QueryObjectGroup[];
 
     static createEmpty(modelId: string) {
-        return new QueryObject(modelId, Operation.AND, [new Group(Operation.AND, [new Filter()])]);
+        return new QueryObject(modelId, Operation.AND, [
+            new QueryObjectGroup(Operation.AND, [new QueryObjectFilter()])
+        ]);
     }
 
     static create(queryObjectDto: QueryObjectDTO) {
@@ -81,13 +75,13 @@ export class QueryObject {
     }
 
     static validate(data: QueryObjectDTO) {
-        return validationSchema.safeParse(data);
+        return queryObjectValidationSchema.safeParse(data);
     }
 
-    private constructor(
+    protected constructor(
         modelId: string,
         operation: Operation,
-        groups: Group[],
+        groups: QueryObjectGroup[],
         id?: string,
         name?: string,
         description?: string
@@ -101,17 +95,17 @@ export class QueryObject {
     }
 }
 
-export class Group {
+export class QueryObjectGroup {
     public readonly operation: Operation;
-    public readonly filters: Filter[];
+    public readonly filters: QueryObjectFilter[];
 
-    constructor(operation: Operation, filters: Filter[]) {
+    constructor(operation: Operation, filters: QueryObjectFilter[]) {
         this.operation = operation;
         this.filters = filters;
     }
 }
 
-export class Filter {
+export class QueryObjectFilter {
     public readonly field?: string;
     public readonly condition?: string;
     public readonly value?: string;
