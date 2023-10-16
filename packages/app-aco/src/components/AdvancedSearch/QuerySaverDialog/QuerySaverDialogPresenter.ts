@@ -2,21 +2,25 @@ import { makeAutoObservable } from "mobx";
 
 import { QueryObject, QueryObjectDTO } from "../domain";
 
-interface IQuerySaverDialogPresenter {
-    load: (queryObject: QueryObjectDTO) => void;
-    setQueryObject: (queryObject: QuerySaverDialogFormData) => void;
-    onSubmit: (
+export interface QuerySaverDialogPresenterInterface {
+    load(queryObject: QueryObjectDTO): void;
+    get vm(): {
+        invalidFields: QuerySaverDialogViewModel["invalidFields"];
+        data: QuerySaverDialogFormData;
+    };
+    setQueryObject(data: QuerySaverDialogFormData): void;
+    onSubmit(
         onSuccess?: (queryObject: QueryObjectDTO) => void,
         onError?: (
             queryObject: QueryObjectDTO,
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
-    ) => Promise<void>;
+    ): Promise<void>;
 }
 
 export interface QuerySaverDialogFormData {
     name: string;
-    description: string;
+    description?: string;
 }
 
 export interface QuerySaverDialogViewModel {
@@ -24,7 +28,7 @@ export interface QuerySaverDialogViewModel {
     invalidFields: Record<string, { isValid: boolean; message: string }>;
 }
 
-export class QuerySaverDialogPresenter implements IQuerySaverDialogPresenter {
+export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInterface {
     private queryObject: QuerySaverDialogViewModel["queryObject"];
     private invalidFields: QuerySaverDialogViewModel["invalidFields"] = {};
     private formWasSubmitted = false;

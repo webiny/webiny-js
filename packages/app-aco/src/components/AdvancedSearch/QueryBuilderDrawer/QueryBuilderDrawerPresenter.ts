@@ -11,18 +11,22 @@ import {
     QueryObjectDTO
 } from "../domain";
 
-export interface IQueryBuilderDrawerPresenter {
-    addGroup: () => void;
-    addNewFilterToGroup: (groupIndex: number) => void;
-    deleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
-    deleteGroup: (groupIndex: number) => void;
-    emptyFilterIntoGroup: (groupIndex: number, filterIndex: number) => void;
-    onSubmit: (
+export interface QueryBuilderDrawerPresenterInterface {
+    load(queryObject: QueryObjectDTO): void;
+    addGroup(): void;
+    deleteGroup(groupIndex: number): void;
+    addNewFilterToGroup(groupIndex: number): void;
+    deleteFilterFromGroup(groupIndex: number, filterIndex: number): void;
+    setFilterFieldData(groupIndex: number, filterIndex: number, data: string): void;
+    setQueryObject(data: QueryBuilderFormData): void;
+    onSubmit(
         onSuccess?: (queryObject: QueryObjectDTO) => void,
         onError?: (queryObject: QueryObjectDTO) => void
-    ) => void;
-    setQueryObject: (queryObject: QueryObjectDTO) => void;
-    updateViewModel: () => void;
+    ): void;
+    onSave(
+        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onError?: (queryObject: QueryObjectDTO) => void
+    ): void;
 }
 
 export interface QueryBuilderViewModel {
@@ -38,7 +42,7 @@ export interface QueryBuilderFormData {
     groups: (QueryObjectGroupDTO & { title: string; open: boolean })[];
 }
 
-export class QueryBuilderDrawerPresenter {
+export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterInterface {
     private readonly fields: QueryBuilderViewModel["fields"];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};

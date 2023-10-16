@@ -7,26 +7,56 @@ import {
     QueryObjectMapper
 } from "~/components/AdvancedSearch/domain";
 
-export interface IAdvancedSearchPresenter {
-    closeBuilder: () => void;
-    closeManager: () => void;
-    closeSaver: () => void;
-    load: () => Promise<void>;
-    onBuilderPersist: (filterId: string) => Promise<void>;
-    onBuilderSubmit: (filterId: string) => Promise<void>;
-    onChipDelete: () => void;
-    onChipEdit: () => void;
-    onManagerCreateFilter: () => void;
-    onManagerEditFilter: (filterId: string) => Promise<void>;
-    onManagerSelectFilter: (filterId: string) => Promise<void>;
-    onSaverSubmit: (filterId: string) => Promise<void>;
-    openBuilder: () => void;
-    openManager: () => void;
-    openSaver: () => void;
-    updateViewModel: () => void;
+export interface AdvancedSearchPresenterInterface {
+    load(): Promise<void>;
+    openManager(): void;
+    closeManager(): void;
+    openBuilder(): void;
+    closeBuilder(): void;
+    openSaver(): void;
+    closeSaver(): void;
+    showFeedback(message: string): void;
+    applyFilter(filterId: string): Promise<void>;
+    applyQueryObject(queryObject: QueryObjectDTO): void;
+    unsetFilter(): void;
+    editAppliedQueryObject(): void;
+    createFilter(): void;
+    editFilter(filterId: string): Promise<void>;
+    deleteFilter(id: string): Promise<void>;
+    saveQueryObject(queryObject: QueryObjectDTO): void;
+    persistQueryObject(queryObject: QueryObjectDTO): Promise<void>;
+
+    get vm(): {
+        appliedQueryObject: QueryObjectDTO | null;
+        currentQueryObject: QueryObjectDTO | null;
+        feedbackVm: {
+            isOpen: boolean;
+            message: string;
+        };
+        managerVm: {
+            isOpen: boolean;
+            view: string;
+            loadingLabel: string;
+            filters: Array<{
+                id: string;
+                name: string;
+                description: string;
+                createdOn: string;
+            }>;
+        };
+        builderVm: {
+            isOpen: boolean;
+        };
+        saverVm: {
+            isOpen: boolean;
+            isLoading: boolean;
+            loadingLabel: string;
+            queryObject: QueryObjectDTO | null;
+        };
+    };
 }
 
-export class AdvancedSearchPresenter {
+export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface {
     private repository: FilterRepository;
     private readonly feedback: Feedback;
     private showBuilder = false;
