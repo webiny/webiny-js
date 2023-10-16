@@ -47,8 +47,6 @@ class SimpleOutput {
         }
 
         // Here we're dealing with deployment logs.
-        this.deployment.logs.push(message);
-
         switch (true) {
             case message.includes("Updating..."): {
                 this.startDeploying();
@@ -62,9 +60,8 @@ class SimpleOutput {
                 this.stopDeploying({ error: true });
                 break;
             }
-            default: {
-                this.printToConsole();
-            }
+            default:
+                this.deployment.logs.push(message);
         }
     }
 
@@ -78,8 +75,10 @@ class SimpleOutput {
     }
 
     startDeploying() {
-        let dotsCount = 3;
+        this.deployment.logs = [];
         this.deployment.startedOn = Date.now();
+
+        let dotsCount = 3;
         this.deployment.statusUpdateInterval = setInterval(() => {
             if (dotsCount > 3) {
                 dotsCount = 0;
@@ -110,8 +109,13 @@ class SimpleOutput {
 
         if (error) {
             this.deployment.status = red("‣ " + duration + "s ‣ Deployment failed.");
-            this.logs.push(this.deployment.logs.join(EOL));
+            this.logs.push(
+                "",
+                red("Deployment failed with the following error(s)."),
+                ...this.deployment.logs,
+            );
         } else {
+            this.deployment.logs.push("Deployment finished.");
             this.deployment.status = green("‣ " + duration + "s ‣ Deployment successful.");
         }
 
