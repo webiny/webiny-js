@@ -65,7 +65,7 @@ export const useLocaleForm = (): UseLocaleForm => {
 
             !isUpdate && history.push(`/i18n/locales?code=${data.code}`);
             showSnackbar(t`Locale saved successfully.`);
-            refetchLocales();
+            await refetchLocales();
             // Reload page
             window.location.reload();
         },

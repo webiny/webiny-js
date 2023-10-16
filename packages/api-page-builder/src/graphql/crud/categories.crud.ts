@@ -85,13 +85,13 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
          * This method should return category or null. No error throwing on not found.
          */
         async getCategory(slug, options = { auth: true }) {
-            const { auth } = options;
+            const { auth, locale } = options;
 
             const params: CategoryStorageOperationsGetParams = {
                 where: {
                     slug,
                     tenant: getTenantId(),
-                    locale: getLocaleCode()
+                    locale: locale || getLocaleCode()
                 }
             };
 
@@ -177,7 +177,8 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             const existingCategory = await this.getCategory(input.slug, {
-                auth: false
+                auth: false,
+                locale: input.locale
             });
             if (existingCategory) {
                 throw new NotFoundError(`Category with slug "${input.slug}" already exists.`);
@@ -196,7 +197,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                     displayName: identity.displayName
                 },
                 tenant: getTenantId(),
-                locale: getLocaleCode()
+                locale: input.locale || getLocaleCode()
             };
 
             try {

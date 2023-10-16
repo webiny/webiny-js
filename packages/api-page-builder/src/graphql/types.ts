@@ -423,7 +423,10 @@ export interface OnCategoryAfterDeleteTopicParams {
  * @category Categories
  */
 export interface CategoriesCrud {
-    getCategory(slug: string, options?: { auth: boolean }): Promise<Category | null>;
+    getCategory(
+        slug: string,
+        options?: { auth: boolean; locale?: string }
+    ): Promise<Category | null>;
     listCategories(): Promise<Category[]>;
     createCategory(data: PbCategoryInput): Promise<Category>;
     updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
@@ -576,7 +579,7 @@ export interface MenusCrud {
  * The options passed into the crud methods
  */
 export interface DefaultSettingsCrudOptions {
-    tenant: string | false | undefined;
+    tenant?: string | false;
     locale: string | false;
 }
 
@@ -1051,6 +1054,7 @@ export interface PbCategoryInput {
     slug: string;
     url: string;
     layout: string;
+    locale?: string;
 }
 
 export interface PbUpdatePageInput {

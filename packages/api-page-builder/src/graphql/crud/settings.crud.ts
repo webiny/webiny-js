@@ -91,7 +91,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                 }
             });
         },
-        async getSettings(this: PageBuilderContextObject) {
+        async getSettings(this: PageBuilderContextObject, options) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
@@ -99,7 +99,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
 
             const key = {
                 tenant: getTenantId(),
-                locale: getLocaleCode()
+                locale: options?.locale || getLocaleCode()
             };
 
             try {
@@ -119,11 +119,11 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         async updateSettings(this: PageBuilderContextObject, input) {
             const params = {
                 tenant: getTenantId(),
-                locale: getLocaleCode(),
+                locale: input.locale || getLocaleCode(),
                 type: SETTINGS_TYPE.DEFAULT
             };
 
-            let original = await this.getSettings();
+            let original = await this.getSettings({ locale: params.locale });
             if (!original) {
                 const data: SettingsStorageOperationsCreateParams = {
                     input: input,
