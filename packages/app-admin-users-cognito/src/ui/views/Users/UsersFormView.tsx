@@ -134,13 +134,14 @@ export class UsersFormView extends UIView {
 
         const bioAccordion = accordion.getAccordionItemElement("bio");
 
-        bioAccordion.addElement(
-            new InputElement("displayName", {
-                name: "displayName",
-                label: "Display Name",
-                validators: () => validation.create("required")
-            })
-        );
+        // TODO: Let's only display this when dealing with 3rd party IdPs (Okta, Auth0, ...).
+        // bioAccordion.addElement(
+        //     new InputElement("displayName", {
+        //         name: "displayName",
+        //         label: "Display Name",
+        //         validators: () => validation.create("required")
+        //     })
+        // );
 
         bioAccordion.addElement(
             new InputElement("firstName", {
