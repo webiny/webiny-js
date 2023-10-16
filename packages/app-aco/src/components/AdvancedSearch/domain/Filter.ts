@@ -23,18 +23,20 @@ export interface FilterRaw extends Omit<FilterDTO, "groups"> {
     groups: string[];
 }
 
-// @ts-ignore
-export const filterValidationSchema = zod.union(queryObjectValidationSchema, {
-    createdOn: zod.date().optional(),
-    savedOn: zod.date().optional(),
-    createdBy: zod
-        .object({
-            id: zod.string().nonempty(),
-            type: zod.string().nonempty(),
-            displayName: zod.string().nullish()
-        })
-        .optional()
-});
+export const filterValidationSchema = zod.union([
+    queryObjectValidationSchema,
+    zod.object({
+        createdOn: zod.date().optional(),
+        savedOn: zod.date().optional(),
+        createdBy: zod
+            .object({
+                id: zod.string().nonempty(),
+                type: zod.string().nonempty(),
+                displayName: zod.string().nullish()
+            })
+            .optional()
+    })
+]);
 
 export class Filter extends QueryObject {
     public createdOn?: string;
@@ -78,7 +80,12 @@ export class Filter extends QueryObject {
     }
 
     static override validate(data: FilterDTO) {
-        return filterValidationSchema.safeParse(data);
+        const validation = filterValidationSchema.safeParse(data);
+        if (validation.success) {
+            return QueryObject.validate(data);
+        } else {
+            return validation;
+        }
     }
 
     protected constructor(

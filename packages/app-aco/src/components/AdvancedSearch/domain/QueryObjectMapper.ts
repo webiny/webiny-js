@@ -13,7 +13,6 @@ export class QueryObjectMapper {
             if (typeof group === "string") {
                 return JSON.parse(group);
             }
-
             return group;
         });
 

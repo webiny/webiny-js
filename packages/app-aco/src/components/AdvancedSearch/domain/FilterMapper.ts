@@ -6,7 +6,6 @@ export class FilterMapper {
             if (typeof group === "string") {
                 return JSON.parse(group);
             }
-
             return group;
         });
 
