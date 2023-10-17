@@ -14,22 +14,22 @@ export interface LinkNodeAttributes extends LinkAttributes {
 export type SerializedLinkNode = Spread<
     {
         alt?: string;
-        type: "link-node";
+        type: "link";
         version: 1;
     },
     Spread<LinkNodeAttributes, BaseSerializedLinkNode>
 >;
 
+/**
+ * NOTES: This class is extended to support custom URLs patterns.
+ * - We use custom 'sanitizeUrl' method to control what kind of ULRs we will support or prevent to be added.
+ */
 export class LinkNode extends BaseLinkNode {
     __alt?: string;
 
     constructor(url: string, attributes: LinkNodeAttributes, key?: NodeKey) {
         super(url, attributes, key);
         this.__alt = attributes.alt;
-    }
-
-    static override getType(): string {
-        return "link-node";
     }
 
     static override clone(node: LinkNode): LinkNode {
@@ -52,6 +52,9 @@ export class LinkNode extends BaseLinkNode {
 
     override createDOM(config: EditorConfig): HTMLAnchorElement {
         const element = document.createElement("a");
+        /**
+         * Use custom sanitization function for the URL.
+         */
         element.href = sanitizeUrl(this.__url);
         if (this.__target !== null) {
             element.target = this.__target;
@@ -109,7 +112,7 @@ export class LinkNode extends BaseLinkNode {
         return {
             ...super.exportJSON(),
             alt: this.__alt,
-            type: "link-node",
+            type: "link",
             version: 1
         };
     }
