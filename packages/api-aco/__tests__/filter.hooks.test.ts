@@ -3,6 +3,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignFilterLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { Operation } from "~/filter/filter.types";
 
+const id = "filter-id";
 const name = "Filter Lifecycle Events";
 const modelId = "demo-lifecycle-events";
 const operation = Operation.AND;
@@ -31,6 +32,7 @@ describe("Filter Lifecycle Events", () => {
     it("should trigger create lifecycle events", async () => {
         const [response] = await aco.createFilter({
             data: {
+                id,
                 name,
                 modelId,
                 operation,
@@ -43,6 +45,7 @@ describe("Filter Lifecycle Events", () => {
                 aco: {
                     createFilter: {
                         data: {
+                            id: expect.stringContaining(id),
                             name,
                             modelId,
                             operation,
@@ -65,6 +68,7 @@ describe("Filter Lifecycle Events", () => {
     it("should trigger update lifecycle events", async () => {
         const [createResponse] = await aco.createFilter({
             data: {
+                id,
                 name,
                 modelId,
                 operation,
@@ -105,6 +109,7 @@ describe("Filter Lifecycle Events", () => {
     it("should trigger delete lifecycle events", async () => {
         const [createResponse] = await aco.createFilter({
             data: {
+                id,
                 name,
                 modelId,
                 operation,
