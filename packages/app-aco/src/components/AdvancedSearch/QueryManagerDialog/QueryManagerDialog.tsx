@@ -18,6 +18,7 @@ interface QueryBuilderProps {
     onSelect: (filterId: string) => void;
     vm: {
         isOpen: boolean;
+        isLoading: boolean;
         view: string;
         loadingLabel: string;
         filters: QueryManagerFilter[];
@@ -35,7 +36,7 @@ export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
     return (
         <DialogContainer open={vm.isOpen} onClose={props.onClose}>
             <DialogTitle>{"Advanced search filter"}</DialogTitle>
-            {vm.view === "LOADING" && <CircularProgress label={vm.loadingLabel} />}
+            {vm.isLoading && <CircularProgress label={vm.loadingLabel} />}
             <DialogContent>
                 {vm.view === "EMPTY" && <Empty />}
                 {vm.view === "LIST" && (

@@ -155,6 +155,7 @@ describe("AdvancedSearchPresenter", () => {
             managerVm: {
                 isOpen: false,
                 view: "LIST",
+                isLoading: false,
                 loadingLabel: "",
                 filters: [
                     {
@@ -187,8 +188,9 @@ describe("AdvancedSearchPresenter", () => {
 
         expect(presenter.vm.managerVm).toMatchObject({
             isOpen: false,
+            isLoading: true,
             loadingLabel: "Listing filters",
-            view: "LOADING",
+            view: "EMPTY",
             filters: []
         });
 

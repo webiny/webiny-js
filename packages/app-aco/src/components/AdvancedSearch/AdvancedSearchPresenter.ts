@@ -38,6 +38,7 @@ export interface AdvancedSearchPresenterInterface {
         managerVm: {
             isOpen: boolean;
             view: string;
+            isLoading: boolean;
             loadingLabel: string;
             filters: Array<{
                 id: string;
@@ -80,6 +81,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         const vm = {
             isOpen: this.showManager,
             view: "EMPTY",
+            isLoading: this.repository.loading.isLoading,
             loadingLabel: this.repository.loading.loadingLabel,
             filters: this.repository.filters.map(filter => ({
                 id: filter.id,
@@ -91,10 +93,6 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
 
         if (this.repository.filters.length !== 0) {
             vm.view = "LIST";
-        }
-
-        if (this.repository.loading.isLoading) {
-            vm.view = "LOADING";
         }
 
         return vm;
