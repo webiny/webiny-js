@@ -140,7 +140,7 @@ describe("Search Record Lifecycle Events", () => {
                 title: `${title} updated`,
                 content: `${content} updated`,
                 location: {
-                    folderId: folder2.id,
+                    folderId: folder2.id
                 },
                 data: {
                     ...data,
@@ -157,7 +157,7 @@ describe("Search Record Lifecycle Events", () => {
                             title: `${title} updated`,
                             content: `${content} updated`,
                             location: {
-                                folderId: folder2.id,
+                                folderId: folder2.id
                             },
                             data: {
                                 ...data,
@@ -188,7 +188,7 @@ describe("Search Record Lifecycle Events", () => {
                 title,
                 content,
                 location: {
-                    folderId: folder1.id,
+                    folderId: folder1.id
                 },
                 data
             }
@@ -198,7 +198,7 @@ describe("Search Record Lifecycle Events", () => {
 
         const [moveResponse] = await search.moveRecord({
             id,
-            folderId: folder2.id,
+            folderId: folder2.id
         });
 
         expect(moveResponse).toMatchObject({

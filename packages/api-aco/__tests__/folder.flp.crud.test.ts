@@ -217,8 +217,7 @@ describe("Folder Level Permissions", () => {
                         target: "admin:12345678"
                     }
                 ]
-            },
-
+            }
         ]);
     });
 
@@ -351,8 +350,6 @@ describe("Folder Level Permissions", () => {
                 return result.data.aco.listFolders.data;
             })
         ).resolves.toMatchObject([
-
-
             {
                 id: folderA.id,
                 parentId: null,
@@ -424,8 +421,7 @@ describe("Folder Level Permissions", () => {
                     { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "admin:u1" },
                     { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "team:t1" }
                 ]
-            },
-
+            }
         ]);
     });
 
@@ -489,8 +485,7 @@ describe("Folder Level Permissions", () => {
                 ],
                 hasNonInheritedPermissions: false,
                 canManagePermissions: true
-            },
-
+            }
         ]);
 
         // 2. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show false
@@ -532,7 +527,6 @@ describe("Folder Level Permissions", () => {
 
             createdFolders.push(folder);
         }
-
 
         const listFolders = async (params: Record<string, any> = {}) => {
             return aco.listFolders({ ...params, where: { type: FOLDER_TYPE } }).then(([result]) => {
