@@ -66,28 +66,28 @@ describe("Folder Level Permissions - Security Checks", () => {
             })
         ).resolves.toMatchObject([
             {
-                id: createdFolders[3].id,
+                id: createdFolders[1].id,
                 parentId: null,
                 permissions: [],
-                slug: "folder-4"
+                slug: "folder-1"
             },
             {
                 id: createdFolders[2].id,
                 parentId: null,
                 permissions: [],
-                slug: "folder-3"
-            },
-            {
-                id: createdFolders[1].id,
-                parentId: null,
-                permissions: [],
                 slug: "folder-2"
             },
             {
-                id: createdFolders[0].id,
+                id: createdFolders[3].id,
                 parentId: null,
                 permissions: [],
-                slug: "folder-1"
+                slug: "folder-3"
+            },
+            {
+                id: createdFolders[4].id,
+                parentId: null,
+                permissions: [],
+                slug: "folder-4"
             }
         ]);
     });

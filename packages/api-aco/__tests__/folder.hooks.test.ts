@@ -137,7 +137,8 @@ describe("Folder Lifecycle Events", () => {
             data: {
                 title,
                 slug,
-                type
+                type,
+                parentId: folder1.id
             }
         });
 

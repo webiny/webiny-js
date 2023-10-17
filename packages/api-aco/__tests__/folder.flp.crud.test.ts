@@ -197,6 +197,17 @@ describe("Folder Level Permissions", () => {
             })
         ).resolves.toMatchObject([
             {
+                id: folderA.id,
+                parentId: null,
+                permissions: [
+                    {
+                        inheritedFrom: "role:full-access",
+                        level: "owner",
+                        target: "admin:12345678"
+                    }
+                ]
+            },
+            {
                 id: folderB.id,
                 parentId: folderA.id,
                 permissions: [
@@ -207,17 +218,7 @@ describe("Folder Level Permissions", () => {
                     }
                 ]
             },
-            {
-                id: folderA.id,
-                parentId: null,
-                permissions: [
-                    {
-                        inheritedFrom: "role:full-access",
-                        level: "owner",
-                        target: "admin:12345678"
-                    }
-                ]
-            }
+
         ]);
     });
 
@@ -350,57 +351,8 @@ describe("Folder Level Permissions", () => {
                 return result.data.aco.listFolders.data;
             })
         ).resolves.toMatchObject([
-            {
-                id: folderD.id,
-                parentId: folderC.id,
-                permissions: [
-                    {
-                        inheritedFrom: `parent:${folderC.id}`,
-                        level: "owner",
-                        target: "admin:12345678"
-                    },
-                    { inheritedFrom: null, level: "owner", target: "admin:u4" },
-                    { inheritedFrom: null, level: "owner", target: "team:t4" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "admin:u3" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "team:t3" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "admin:u2" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "admin:u1" },
-                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "team:t1" }
-                ]
-            },
-            {
-                id: folderC.id,
-                parentId: folderB.id,
-                permissions: [
-                    {
-                        inheritedFrom: `parent:${folderB.id}`,
-                        level: "owner",
-                        target: "admin:12345678"
-                    },
-                    { inheritedFrom: null, level: "viewer", target: "admin:u3" },
-                    { inheritedFrom: null, level: "viewer", target: "team:t3" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "admin:u2" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "admin:u1" },
-                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "team:t1" }
-                ]
-            },
-            {
-                id: folderB.id,
-                parentId: folderA.id,
-                permissions: [
-                    {
-                        inheritedFrom: `parent:${folderA.id}`,
-                        level: "owner",
-                        target: "admin:12345678"
-                    },
-                    { inheritedFrom: null, level: "editor", target: "admin:u2" },
-                    { inheritedFrom: null, level: "editor", target: "team:t2" },
-                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "admin:u1" },
-                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "team:t1" }
-                ]
-            },
+
+
             {
                 id: folderA.id,
                 parentId: null,
@@ -421,7 +373,59 @@ describe("Folder Level Permissions", () => {
                         target: "team:t1"
                     }
                 ]
-            }
+            },
+            {
+                id: folderB.id,
+                parentId: folderA.id,
+                permissions: [
+                    {
+                        inheritedFrom: `parent:${folderA.id}`,
+                        level: "owner",
+                        target: "admin:12345678"
+                    },
+                    { inheritedFrom: null, level: "editor", target: "admin:u2" },
+                    { inheritedFrom: null, level: "editor", target: "team:t2" },
+                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "admin:u1" },
+                    { inheritedFrom: `parent:${folderA.id}`, level: "owner", target: "team:t1" }
+                ]
+            },
+            {
+                id: folderC.id,
+                parentId: folderB.id,
+                permissions: [
+                    {
+                        inheritedFrom: `parent:${folderB.id}`,
+                        level: "owner",
+                        target: "admin:12345678"
+                    },
+                    { inheritedFrom: null, level: "viewer", target: "admin:u3" },
+                    { inheritedFrom: null, level: "viewer", target: "team:t3" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "admin:u2" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "editor", target: "team:t2" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "admin:u1" },
+                    { inheritedFrom: `parent:${folderB.id}`, level: "owner", target: "team:t1" }
+                ]
+            },
+            {
+                id: folderD.id,
+                parentId: folderC.id,
+                permissions: [
+                    {
+                        inheritedFrom: `parent:${folderC.id}`,
+                        level: "owner",
+                        target: "admin:12345678"
+                    },
+                    { inheritedFrom: null, level: "owner", target: "admin:u4" },
+                    { inheritedFrom: null, level: "owner", target: "team:t4" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "admin:u3" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "viewer", target: "team:t3" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "admin:u2" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "editor", target: "team:t2" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "admin:u1" },
+                    { inheritedFrom: `parent:${folderC.id}`, level: "owner", target: "team:t1" }
+                ]
+            },
+
         ]);
     });
 
@@ -461,6 +465,19 @@ describe("Folder Level Permissions", () => {
             })
         ).resolves.toMatchObject([
             {
+                id: folderA.id,
+                parentId: null,
+                permissions: [
+                    {
+                        inheritedFrom: "role:full-access",
+                        level: "owner",
+                        target: `admin:${identityA.id}`
+                    }
+                ],
+                hasNonInheritedPermissions: false,
+                canManagePermissions: true
+            },
+            {
                 id: folderB.id,
                 parentId: folderA.id,
                 permissions: [
@@ -473,19 +490,7 @@ describe("Folder Level Permissions", () => {
                 hasNonInheritedPermissions: false,
                 canManagePermissions: true
             },
-            {
-                id: folderA.id,
-                parentId: null,
-                permissions: [
-                    {
-                        inheritedFrom: "role:full-access",
-                        level: "owner",
-                        target: `admin:${identityA.id}`
-                    }
-                ],
-                hasNonInheritedPermissions: false,
-                canManagePermissions: true
-            }
+
         ]);
 
         // 2. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show false
@@ -496,15 +501,15 @@ describe("Folder Level Permissions", () => {
             })
         ).resolves.toMatchObject([
             {
-                id: folderB.id,
-                parentId: folderA.id,
+                id: folderA.id,
+                parentId: null,
                 permissions: [],
                 hasNonInheritedPermissions: false,
                 canManagePermissions: false
             },
             {
-                id: folderA.id,
-                parentId: null,
+                id: folderB.id,
+                parentId: folderA.id,
                 permissions: [],
                 hasNonInheritedPermissions: false,
                 canManagePermissions: false
@@ -528,7 +533,6 @@ describe("Folder Level Permissions", () => {
             createdFolders.push(folder);
         }
 
-        createdFolders.reverse();
 
         const listFolders = async (params: Record<string, any> = {}) => {
             return aco.listFolders({ ...params, where: { type: FOLDER_TYPE } }).then(([result]) => {
@@ -575,7 +579,7 @@ describe("Folder Level Permissions", () => {
         const lastPageResult = await listFolders({ limit: 6, after: createdFolders[17].id });
 
         expect(lastPageResult).toMatchObject({
-            data: [{ slug: "folder-1" }, { slug: "folder-0" }],
+            data: [{ slug: "folder-18" }, { slug: "folder-19" }],
             error: null,
             meta: {
                 cursor: null,
