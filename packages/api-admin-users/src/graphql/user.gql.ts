@@ -46,10 +46,10 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                 This input type is used by administrators to create other user's accounts within the same tenant.
                 """
                 input AdminUsersCreateInput {
-                    email: String!
-                    firstName: String!
-                    lastName: String!
-                    password: String!
+                    email: String
+                    firstName: String
+                    lastName: String
+                    password: String
                     avatar: JSON
                     ${params.teams ? "group: String" : "group: String!"}
                 }
@@ -103,7 +103,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                 extend type AdminUsersMutation {
                     updateCurrentUser(data: AdminUsersCurrentUserInput!): AdminUsersResponse
 
-                    createUser(data: AdminUsersCreateInput!): AdminUsersResponse
+                    createUser(data: AdminUsersCreateInput): AdminUsersResponse
 
                     updateUser(id: ID!, data: AdminUsersUpdateInput!): AdminUsersResponse
 
