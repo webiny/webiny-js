@@ -6,6 +6,52 @@ import {
     ElementNode,
     LexicalNode
 } from "lexical";
+import { $isLinkNode as $isBaseLinkNode, LinkNode as BaseLinkNode } from "@lexical/link";
+
+const updateLinkNode = (
+    linkNode: LexicalNode | LinkNode | null,
+    url: string,
+    attrs: LinkNodeAttributes
+): LexicalNode | null => {
+    if (linkNode === null) {
+        return null;
+    }
+
+    const { rel, target, alt, title } = attrs;
+
+    if ($isLinkNode(linkNode)) {
+        if (linkNode) {
+            linkNode.setURL(url);
+        }
+        if (target !== undefined) {
+            linkNode.setTarget(target);
+        }
+        if (rel) {
+            linkNode.setRel(rel);
+        }
+        if (title) {
+            linkNode.setTitle(title);
+        }
+        if (alt) {
+            linkNode.setAlt(alt);
+        }
+        return linkNode;
+    }
+
+    /**
+     * BACKWARDS COMPATIBILITY: replace legacy link node(native Lexical node) with our custom link node.
+     */
+    if (isLegacyLinkNode(linkNode)) {
+        const customLinkNode = $createLinkNode(url, { rel, target, alt, title });
+        (linkNode as BaseLinkNode).replace(customLinkNode, true);
+        return linkNode;
+    }
+    return null;
+};
+
+const isLegacyLinkNode = (node: LexicalNode): boolean => {
+    return $isBaseLinkNode(node);
+};
 
 /**
  * Generates or updates a LinkNode. It can also delete a LinkNode if the URL is null,
@@ -41,23 +87,17 @@ export function toggleLink(url: null | string, attributes: LinkNodeAttributes = 
         // Add or merge LinkNodes
         if (nodes.length === 1) {
             const firstNode = nodes[0];
+            const parent = firstNode.getParent();
             // if the first node is a LinkNode or if its
             // parent is a LinkNode, we update the URL, target and rel.
             const linkNode = $isLinkNode(firstNode) ? firstNode : $getLinkAncestor(firstNode);
-            if (linkNode !== null) {
-                linkNode.setURL(url);
-                if (target !== undefined) {
-                    linkNode.setTarget(target);
-                }
-                if (rel !== null) {
-                    linkNode.setRel(rel);
-                }
-                if (title !== undefined) {
-                    linkNode.setTitle(title);
-                }
-                if (alt !== undefined) {
-                    linkNode.setAlt(alt);
-                }
+            const updatedLinkNode = updateLinkNode(linkNode ?? parent, url, {
+                title,
+                alt,
+                target,
+                rel
+            });
+            if (updatedLinkNode) {
                 return;
             }
         }
@@ -76,21 +116,8 @@ export function toggleLink(url: null | string, attributes: LinkNodeAttributes = 
                 return;
             }
 
-            if ($isLinkNode(parent)) {
-                linkNode = parent;
-                parent.setURL(url);
-                if (target !== undefined) {
-                    parent.setTarget(target);
-                }
-                if (rel !== null) {
-                    linkNode.setRel(rel);
-                }
-                if (title !== undefined) {
-                    linkNode.setTitle(title);
-                }
-                if (alt !== undefined) {
-                    linkNode.setAlt(alt);
-                }
+            const updatedNode = updateLinkNode(parent, url, { rel, alt, target, title });
+            if (updatedNode !== null) {
                 return;
             }
 
