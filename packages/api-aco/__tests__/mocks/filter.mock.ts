@@ -2,6 +2,7 @@ import { Operation } from "~/filter/filter.types";
 
 export const filterMocks = {
     filterA: {
+        id: "filter-a",
         name: "Filter A",
         description: "Filter description A",
         modelId: "demo-1",
@@ -25,6 +26,7 @@ export const filterMocks = {
         ]
     },
     filterB: {
+        id: "filter-b",
         name: "Filter B",
         description: "Filter description B",
         modelId: "demo-1",
@@ -48,6 +50,7 @@ export const filterMocks = {
         ]
     },
     filterC: {
+        id: "filter-c",
         name: "Filter C",
         description: "Filter description C",
         modelId: "demo-2",

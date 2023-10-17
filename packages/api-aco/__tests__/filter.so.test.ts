@@ -11,25 +11,25 @@ describe("`filter` CRUD", () => {
         const [responseA] = await aco.createFilter({ data: filterMocks.filterA });
         const filterA = responseA.data.aco.createFilter.data;
         expect(filterA).toEqual({
+            ...filterMocks.filterA,
             id: filterA.id,
-            createdBy: userMock,
-            ...filterMocks.filterA
+            createdBy: userMock
         });
 
         const [responseB] = await aco.createFilter({ data: filterMocks.filterB });
         const filterB = responseB.data.aco.createFilter.data;
         expect(filterB).toEqual({
+            ...filterMocks.filterB,
             id: filterB.id,
-            createdBy: userMock,
-            ...filterMocks.filterB
+            createdBy: userMock
         });
 
         const [responseC] = await aco.createFilter({ data: filterMocks.filterC });
         const filterC = responseC.data.aco.createFilter.data;
         expect(filterC).toEqual({
+            ...filterMocks.filterC,
             id: filterC.id,
-            createdBy: userMock,
-            ...filterMocks.filterC
+            createdBy: userMock
         });
 
         // Let's check whether both of the filter exists, listing them by `modelId`.
@@ -37,15 +37,27 @@ describe("`filter` CRUD", () => {
             where: { modelId: "demo-1" }
         });
 
-        expect(listResponse1.data.aco.listFilters).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining(filterMocks.filterA),
-                    expect.objectContaining(filterMocks.filterB)
-                ]),
-                error: null
-            })
-        );
+        expect(listResponse1).toEqual({
+            data: {
+                aco: {
+                    listFilters: {
+                        data: [
+                            {
+                                ...filterMocks.filterB,
+                                createdBy: userMock,
+                                id: filterB.id
+                            },
+                            {
+                                ...filterMocks.filterA,
+                                createdBy: userMock,
+                                id: filterA.id
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
 
         const [listResponse2] = await aco.listFilters({
             where: { modelId: "demo-2" }
@@ -53,7 +65,9 @@ describe("`filter` CRUD", () => {
 
         expect(listResponse2.data.aco.listFilters).toEqual(
             expect.objectContaining({
-                data: expect.arrayContaining([expect.objectContaining(filterMocks.filterC)]),
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...filterMocks.filterC, id: filterC.id })
+                ]),
                 error: null
             })
         );
@@ -423,9 +437,9 @@ describe("`filter` CRUD", () => {
         const [responseA] = await aco.createFilter({ data: filterMocks.filterA });
         const filterA = responseA.data.aco.createFilter.data;
         expect(filterA).toEqual({
+            ...filterMocks.filterA,
             id: filterA.id,
-            createdBy: userMock,
-            ...filterMocks.filterA
+            createdBy: userMock
         });
 
         // List with anonymous identity
