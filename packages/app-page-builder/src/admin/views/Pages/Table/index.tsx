@@ -10,6 +10,8 @@ import {
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient } from "@apollo/react-hooks";
 import { usePagesPermissions } from "~/hooks/permissions";
+import { PagesListProvider } from "~/admin/views/Pages/hooks/usePagesList";
+import { PageListWithConfig } from "~/admin/config/pages";
 
 const View: React.VFC = () => {
     const { currentFolderId } = useNavigateFolder();
@@ -45,7 +47,11 @@ const Index: React.VFC = () => {
             createNavigateFolderStorageKey={createNavigateFolderStorageKey}
             own={canAccessOnlyOwn()}
         >
-            <View />
+            <PageListWithConfig>
+                <PagesListProvider>
+                    <View />
+                </PagesListProvider>
+            </PageListWithConfig>
         </AcoProvider>
     );
 };

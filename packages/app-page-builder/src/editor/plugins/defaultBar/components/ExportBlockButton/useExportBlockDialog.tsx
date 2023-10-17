@@ -77,7 +77,11 @@ const ExportBlockDialogMessage: React.FC<ExportBlockDialogProps> = ({ exportUrl 
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography use={"body2"} className={"link-text"}>
+                        <Typography
+                            use={"body2"}
+                            className={"link-text"}
+                            data-testid={"pb-blocks-export-dialog-export-url"}
+                        >
                             {exportUrl}
                         </Typography>
                         <span>
@@ -116,6 +120,7 @@ interface UseExportBlockDialog {
     showExportBlockInitializeDialog: (props: ExportBlockLoadingDialogProps) => void;
     hideDialog: () => void;
 }
+
 const useExportBlockDialog = (): UseExportBlockDialog => {
     const { showDialog, hideDialog } = useDialog();
 

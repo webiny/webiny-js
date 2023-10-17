@@ -102,6 +102,7 @@ const getCurrentRecordList = <T = GenericSearchData,>(
 export interface AcoListProviderProps {
     children: React.ReactNode;
     own?: boolean;
+    titleFieldId: string | null;
 }
 
 export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...props }) => {
@@ -213,7 +214,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
      */
     useEffect(() => {
         setFolders(prev => {
-            return sortTableItems(prev, state.listSort);
+            const titleField = props?.titleFieldId || "id";
+            return sortTableItems(prev, state.listSort, {
+                [titleField]: "title"
+            });
         });
     }, [state.listSort]);
 
