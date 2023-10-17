@@ -33,6 +33,10 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-tenant-manager --storage=ddb"];
     },
 
+    "api-admin-users": () => {
+        return ["packages/api-admin-users --storage=ddb"];
+    },
+
     "api-file-manager": () => {
         return [
             "packages/api-file-manager --storage=ddb",
