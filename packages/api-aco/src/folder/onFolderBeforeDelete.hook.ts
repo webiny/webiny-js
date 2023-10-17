@@ -25,6 +25,7 @@ export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
                 },
                 limit: 1
             });
+
             if (children.length > 0) {
                 throwDeleteError(folder);
             }

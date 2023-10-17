@@ -74,9 +74,19 @@ export const createFolderCrudMethods = ({
         async list(params) {
             // No matter what was the limit set in the params, initially, we always retrieve
             // all folders. The limit is then applied with the filtered folders list below.
-            const filteredFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                params.where.type
-            );
+            const filteredFolders = await folderLevelPermissions
+                .listAllFoldersWithPermissions(params.where.type)
+                .then(filteredFolders => {
+                    // If `parentId` was included in the `where` clause, we need to filter the folders.
+                    // TODO: we might want to incorporate this into the `listAllFoldersWithPermissions` method.
+                    if (params.where.parentId) {
+                        // Filter by parent ID.
+                        return filteredFolders.filter(
+                            folder => folder.parentId === params.where.parentId
+                        );
+                    }
+                    return filteredFolders;
+                });
 
             const totalCount = filteredFolders.length;
             let hasMoreItems = false;
@@ -218,14 +228,10 @@ export const createFolderCrudMethods = ({
         async delete(id: string) {
             const folder = await storageOperations.getFolder({ id });
 
-            const canDeleteFolder = await folderLevelPermissions.canAccessFolder({
+            await folderLevelPermissions.ensureCanAccessFolder({
                 folder,
                 rwd: "d"
             });
-
-            if (!canDeleteFolder) {
-                throw new NotAuthorizedError();
-            }
 
             await onFolderBeforeDelete.publish({ folder });
             await storageOperations.deleteFolder({ id });

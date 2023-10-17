@@ -112,7 +112,7 @@ class SimpleOutput {
             this.logs.push(
                 "",
                 red("Deployment failed with the following error(s)."),
-                ...this.deployment.logs,
+                ...this.deployment.logs
             );
         } else {
             this.deployment.logs.push("Deployment finished.");
