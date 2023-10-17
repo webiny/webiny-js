@@ -84,7 +84,8 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 
                         // Folders always work with latest entries. We never publish them.
                         latest: true
-                    }
+                    },
+                    sort: ["title_ASC"]
                 });
 
                 return results.items.map(entry => getFolderFieldValues(entry, baseFields));

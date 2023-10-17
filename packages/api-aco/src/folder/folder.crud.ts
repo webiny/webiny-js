@@ -86,10 +86,6 @@ export const createFolderCrudMethods = ({
                         );
                     }
                     return filteredFolders;
-                })
-                .then(filteredFolders => {
-                    // TODO: take params sort into consideration.
-                    return filteredFolders.reverse();
                 });
 
             const totalCount = filteredFolders.length;

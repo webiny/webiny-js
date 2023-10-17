@@ -2,6 +2,7 @@ import { Authentication } from "@webiny/api-authentication/types";
 import { SecurityPermission, Team } from "@webiny/api-security/types";
 import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
+import structuredClone from "@ungap/structured-clone";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor";
 
@@ -66,13 +67,13 @@ export class FolderLevelPermissions {
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
     }
 
-    async listAllFolders(folderType: string) {
+    async listAllFolders(folderType: string): Promise<Folder[]> {
         if (folderType in this.allFolders) {
-            return this.allFolders[folderType];
+            return structuredClone(this.allFolders[folderType]);
         }
 
         this.allFolders[folderType] = await this.listAllFoldersCallback(folderType);
-        return this.allFolders[folderType];
+        return structuredClone(this.allFolders[folderType]);
     }
 
     async listAllFoldersWithPermissions(folderType: string) {
