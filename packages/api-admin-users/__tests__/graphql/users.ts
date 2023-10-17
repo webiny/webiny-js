@@ -48,7 +48,7 @@ export const LOGIN = /* GraphQL */ `
 `;
 
 export const CREATE_USER = /* GraphQL */ `
-    mutation CreateUser($data: AdminUsersCreateInput!) {
+    mutation CreateUser($data: AdminUsersCreateInput) {
         adminUsers {
             createUser(data: $data) {
                 data ${DATA_FIELD}

@@ -51,7 +51,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         plugins: [
             createWcpContext(),
             createWcpGraphQL(),
-            ...createTenancyAndSecurity({ fullAccess: defaults.fullAccess }),
+            ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
             ...(i18nStorage.storageOperations as any),
             i18nContext(),
             mockLocalesPlugins(),
@@ -119,7 +119,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async isInstalled() {
             return invoke({ body: { query: IS_INSTALLED } });
         },
-        async install(variables: Record<string, any>) {
+        async install(variables: Record<string, any> = {}) {
             await this.installTenancy();
             await this.installSecurity();
             return invoke({ body: { query: INSTALL, variables } });

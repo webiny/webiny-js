@@ -14,7 +14,7 @@ export const IS_INSTALLED = /* GraphQL */ `
 `;
 
 export const INSTALL = /* GraphQL */ `
-    mutation Install($data: AdminUsersInstallInput!) {
+    mutation Install($data: AdminUsersInstallInput) {
         adminUsers {
             install(data: $data) {
                 data

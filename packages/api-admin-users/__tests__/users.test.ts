@@ -14,13 +14,21 @@ describe("Security User CRUD Test", () => {
         email: "admin@webiny.com"
     };
 
-    const setupTest = () => {
-        return install.install({
-            data: { ...adminData, password: "12345678" }
-        });
-    };
+    beforeEach(async () => {
+        await install.install();
 
-    beforeEach(setupTest);
+        const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
+        const fullAccessGroup = groupResponseA.data.security.getGroup.data;
+
+        // The `api-admin-users` package does not create a user in the installation process.
+        // Hence, we need to include the user here. This behavior was introduced in 5.38.0.
+        await adminUsers.create({
+            data: {
+                ...adminData,
+                group: fullAccessGroup.id
+            }
+        });
+    });
 
     test("should create, read, update and delete users", async () => {
         const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
