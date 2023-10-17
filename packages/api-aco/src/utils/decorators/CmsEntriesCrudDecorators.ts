@@ -49,14 +49,10 @@ export class CmsEntriesCrudDecorators {
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "r"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return entry;
@@ -69,14 +65,10 @@ export class CmsEntriesCrudDecorators {
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "r"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return entry;
@@ -148,17 +140,13 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
         context.cms.createEntry = async (model, params) => {
-            const folderId = params.wbyAco_location?.folderId;
+            const folderId = params.wbyAco_location?.folderId || params.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "w"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalCmsCreateEntry(model, params);
@@ -175,14 +163,10 @@ export class CmsEntriesCrudDecorators {
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "w"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalCmsUpdateEntry(model, id, input, meta);
@@ -197,14 +181,10 @@ export class CmsEntriesCrudDecorators {
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "d"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalCmsDeleteEntry(model, id);
@@ -219,14 +199,10 @@ export class CmsEntriesCrudDecorators {
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
-                const canAccessEntryFolder = await folderLevelPermissions.canAccessFolderContent({
+                await folderLevelPermissions.ensureCanAccessFolderContent({
                     folder,
                     rwd: "d"
                 });
-
-                if (!canAccessEntryFolder) {
-                    throw new NotAuthorizedError();
-                }
             }
 
             return originalCmsDeleteEntryRevision(model, id);

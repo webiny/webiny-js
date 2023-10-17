@@ -63,14 +63,10 @@ export const createFolderCrudMethods = ({
         async get(id) {
             const folder = await storageOperations.getFolder({ id });
 
-            const canGetFolder = await folderLevelPermissions.canAccessFolder({
+            await folderLevelPermissions.ensureCanAccessFolder({
                 folder,
                 rwd: "r"
             });
-
-            if (!canGetFolder) {
-                throw new NotAuthorizedError();
-            }
 
             await folderLevelPermissions.assignFolderPermissions(folder);
             return folder;
