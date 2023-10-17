@@ -4,7 +4,7 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 const FOLDER_TYPE = "test-folders";
 
 describe("Folder Level Permissions", () => {
-    const { aco } = useGraphQlHandler();
+    const { aco, until } = useGraphQlHandler();
 
     it("should return folders with permissions when creating folders", async () => {
         const folderA = await aco
@@ -191,11 +191,18 @@ describe("Folder Level Permissions", () => {
             })
             .then(([response]) => response.data.aco.createFolder.data);
 
-        await expect(
-            aco.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
-                return result.data.aco.listFolders.data;
-            })
-        ).resolves.toMatchObject([
+        const foldersList = await until(
+            () => {
+                return aco.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
+                    return result.data.aco.listFolders.data;
+                });
+            },
+            (data: any) => {
+                return data[0].id === folderA.id;
+            }
+        );
+
+        expect(foldersList).toMatchObject([
             {
                 id: folderA.id,
                 parentId: null,
@@ -345,11 +352,19 @@ describe("Folder Level Permissions", () => {
                 return response.data.aco.createFolder.data;
             });
 
-        await expect(
-            aco.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
-                return result.data.aco.listFolders.data;
-            })
-        ).resolves.toMatchObject([
+        const foldersList = await until(
+            () => {
+                return aco.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
+                    return result.data.aco.listFolders.data;
+                });
+            },
+            (data: any) => {
+                const lastItem = data[data.length - 1];
+                return lastItem.permissions.length === 9;
+            }
+        );
+
+        expect(foldersList).toMatchObject([
             {
                 id: folderA.id,
                 parentId: null,
@@ -455,11 +470,20 @@ describe("Folder Level Permissions", () => {
 
         // 1. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show true
         //    for both folders because the user has full-access security role attached.
-        await expect(
-            acoIdentityA.listFolders({ where: { type: FOLDER_TYPE } }).then(([result]) => {
-                return result.data.aco.listFolders.data;
-            })
-        ).resolves.toMatchObject([
+        const foldersList = await until(
+            () => {
+                return acoIdentityA
+                    .listFolders({ where: { type: FOLDER_TYPE } })
+                    .then(([result]) => {
+                        return result.data.aco.listFolders.data;
+                    });
+            },
+            (data: any[]) => {
+                return data[0].id === folderA.id;
+            }
+        );
+
+        expect(foldersList).toMatchObject([
             {
                 id: folderA.id,
                 parentId: null,
@@ -513,13 +537,14 @@ describe("Folder Level Permissions", () => {
     });
 
     test("when listing folders, meta should show correct information", async () => {
-        const createdFolders = [];
+        const createdFolders: any[] = [];
         for (let i = 0; i < 20; i++) {
+            const number = i > 9 ? i : `0${i}`;
             const folder = await aco
                 .createFolder({
                     data: {
-                        title: `Folder ${i}`,
-                        slug: `folder-${i}`,
+                        title: `Folder ${number}`,
+                        slug: `folder-${number}`,
                         type: FOLDER_TYPE
                     }
                 })
@@ -534,7 +559,13 @@ describe("Folder Level Permissions", () => {
             });
         };
 
-        await expect(listFolders()).resolves.toMatchObject({
+        const foldersList = await until(listFolders, (response: any) => {
+            const firstItemExists = response.data[0].id === createdFolders[0].id;
+            const lastItemExists = response.data[19].id === createdFolders[19].id;
+            return firstItemExists && lastItemExists;
+        });
+
+        expect(foldersList).toMatchObject({
             meta: {
                 cursor: null,
                 hasMoreItems: false,

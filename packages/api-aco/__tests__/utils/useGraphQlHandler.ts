@@ -6,6 +6,8 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { until } from "@webiny/project-utils/testing/helpers/until";
+
 import {
     CREATE_FOLDER,
     DELETE_FOLDER,
@@ -211,6 +213,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     };
 
     return {
+        until,
         params,
         handler,
         invoke,
