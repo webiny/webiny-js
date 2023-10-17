@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
-import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
+import { AuthOptions, CognitoHostedUIIdentityProvider } from "@aws-amplify/auth/lib-esm/types";
 import ApolloClient from "apollo-client";
 import { useApolloClient } from "@apollo/react-hooks";
 import { setContext } from "apollo-link-context";
@@ -55,7 +55,10 @@ export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
+export type CognitoFederatedProvider = keyof typeof CognitoHostedUIIdentityProvider;
+
 export interface AuthenticationFactoryConfig extends AuthOptions {
+    federatedProviders?: CognitoFederatedProvider[];
     onError?(error: Error): void;
     getIdentityData(params: {
         client: ApolloClient<any>;
@@ -125,7 +128,11 @@ export const createAuthentication: AuthenticationFactory = ({
 
         return (
             <Authenticator onToken={onToken}>
-                {loadingIdentity ? <LoggingIn /> : <SignIn />}
+                {loadingIdentity ? (
+                    <LoggingIn />
+                ) : (
+                    <SignIn federatedProviders={config.federatedProviders} />
+                )}
                 <RequireNewPassword />
                 <ForgotPassword />
                 <SetNewPassword />

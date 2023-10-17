@@ -14,7 +14,9 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-cognito-authenticator": "0.0.0",
-    "@webiny/api-security": "0.0.0"
+    "@webiny/api-i18n": "0.0.0",
+    "@webiny/api-security": "0.0.0",
+    "@webiny/api-tenancy": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
