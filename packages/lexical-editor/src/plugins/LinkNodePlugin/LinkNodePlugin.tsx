@@ -24,6 +24,12 @@ type Props = {
     validateUrl?: (url: string) => boolean;
 };
 
+/**
+ * This implementation of the LinkPlugin function is taken from the lexical's repository.
+ * Link: https://github.com/facebook/lexical/blob/main/packages/lexical-react/src/LexicalLinkPlugin.ts
+ *
+ * Changes: added a custom link command 'TOGGLE_LINK_NODE_COMMAND' and a new payload object to support custom implementation of the node.
+ * */
 export function LinkPlugin({ validateUrl }: Props): null {
     const [editor] = useLexicalComposerContext();
 

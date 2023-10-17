@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import { $createLinkNode, $isLinkNode, LinkNode, LinkNodeAttributes } from "~/nodes/LinkNode";
 import {
     $getSelection,
@@ -54,6 +62,12 @@ const isLegacyLinkNode = (node: LexicalNode): boolean => {
 };
 
 /**
+ * This implementation of the 'toggleLink' function is taken from the lexical's repository.
+ * Link: https://github.com/facebook/lexical/blob/main/packages/lexical-link/src/index.ts#L419
+ *
+ * Changes: added 'updateLinkNode' and 'isLegacyLinkNode' methods to replace the
+ * native Lexical link node type 'link', to our custom LinkNode type 'link-node'.
+ *
  * Generates or updates a LinkNode. It can also delete a LinkNode if the URL is null,
  * but saves any children and brings them up to the parent node.
  * @param url - The URL the link directs to.
