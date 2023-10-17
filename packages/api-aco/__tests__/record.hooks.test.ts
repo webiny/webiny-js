@@ -8,7 +8,6 @@ const id = "id-lifecycle-events";
 const type = "demo-lifecycle-events";
 const title = "Record Lifecycle Events Title";
 const content = "Record Lifecycle Events Content";
-const folderId = "folderId-lifecycle-events";
 
 const data = {
     someText: "Some strange title",
