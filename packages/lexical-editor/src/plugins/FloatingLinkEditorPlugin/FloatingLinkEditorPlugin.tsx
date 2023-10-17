@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./FloatingLinkEditorPlugin.css";
-import { $isAutoLinkNode, $isLinkNode as $isBaseLinkNode } from "@lexical/link";
+import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
@@ -16,12 +16,11 @@ import {
 } from "lexical";
 
 import { createPortal } from "react-dom";
-import { getSelectedNode } from "~/utils/getSelectedNode";
-import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { TOGGLE_LINK_NODE_COMMAND } from "~/commands/link";
-import { $isLinkNode } from "~/nodes/LinkNode";
-import { LinkPreviewForm } from "~/plugins/FloatingLinkEditorPlugin/LinkPreviewForm";
-import { LinkEditForm } from "~/plugins/FloatingLinkEditorPlugin/LinkEditForm";
+import { LinkPreview } from "../../ui/LinkPreview";
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import { sanitizeUrl } from "../../utils/sanitizeUrl";
+import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
 
 function FloatingLinkEditor({
     editor,
@@ -32,21 +31,10 @@ function FloatingLinkEditor({
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const savedLinkData = useRef<{
-        url: string;
-        target: string | null;
-        alt?: string;
-    }>();
-    const [tempLinkUrl, setTempLinkUrl] = useState<{
-        url: string;
-        target: string | null;
-        alt?: string;
-    }>({
+    const [linkUrl, setLinkUrl] = useState<{ url: string; target: string | null }>({
         url: "",
-        target: null,
-        alt: undefined
+        target: null
     });
-
     const [isEditMode, setEditMode] = useState(false);
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
@@ -54,30 +42,15 @@ function FloatingLinkEditor({
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
-        const emptyLinkData = { url: "", target: null, alt: undefined };
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
-
-            if ($isBaseLinkNode(parent) || $isLinkNode(parent)) {
-                const linkData = {
-                    url: parent.getURL(),
-                    target: parent.getTarget(),
-                    alt: $isLinkNode(parent) ? parent.getAlt() : undefined
-                };
-                setTempLinkUrl(linkData);
-                savedLinkData.current = linkData;
-            } else if ($isBaseLinkNode(node) || $isLinkNode(node)) {
-                const linkData = {
-                    url: node.getURL(),
-                    target: node.getTarget(),
-                    alt: $isLinkNode(node) ? node.getAlt() : undefined
-                };
-                setTempLinkUrl(linkData);
-                savedLinkData.current = linkData;
+            if ($isLinkNode(parent)) {
+                setLinkUrl({ url: parent.getURL(), target: parent.getTarget() });
+            } else if ($isLinkNode(node)) {
+                setLinkUrl({ url: node.getURL(), target: node.getTarget() });
             } else {
-                setTempLinkUrl(emptyLinkData);
-                savedLinkData.current = emptyLinkData;
+                setLinkUrl({ url: "", target: null });
             }
         }
         const editorElem = editorRef.current;
@@ -116,15 +89,14 @@ function FloatingLinkEditor({
             }
             setLastSelection(null);
             setEditMode(false);
-            setTempLinkUrl(emptyLinkData);
-            savedLinkData.current = emptyLinkData;
+            setLinkUrl({ url: "", target: null });
         }
 
         return true;
     }, [anchorElem, editor]);
 
     const removeLink = () => {
-        editor.dispatchCommand(TOGGLE_LINK_NODE_COMMAND, null);
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
         setEditMode(false);
     };
 
@@ -186,21 +158,75 @@ function FloatingLinkEditor({
     return (
         <div ref={editorRef} className="link-editor">
             {isEditMode ? (
-                <LinkEditForm
-                    editor={editor}
-                    linkUrl={tempLinkUrl}
-                    setEditMode={setEditMode}
-                    inputRef={inputRef}
-                    savedLinkData={savedLinkData}
-                    setLinkUrl={setTempLinkUrl}
-                    lastSelection={lastSelection}
-                />
+                <>
+                    <div className={"link-editor-target-checkbox"}>
+                        <input
+                            type={"checkbox"}
+                            checked={linkUrl.target === "_blank"}
+                            disabled={isUrlLinkReference(linkUrl.url)}
+                            onChange={() =>
+                                setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
+                            }
+                        />{" "}
+                        <span>New tab</span>
+                    </div>
+                    <input
+                        ref={inputRef}
+                        className="link-input"
+                        value={linkUrl.url}
+                        onChange={event => {
+                            setLinkUrl({ url: event.target.value, target: null });
+                        }}
+                        onKeyDown={event => {
+                            if (event.key === "Enter") {
+                                event.preventDefault();
+                                if (lastSelection !== null) {
+                                    if (linkUrl.url !== "") {
+                                        editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+                                            url: sanitizeUrl(linkUrl.url),
+                                            target: linkUrl.target
+                                        });
+                                    }
+                                    setEditMode(false);
+                                }
+                            } else if (event.key === "Escape") {
+                                event.preventDefault();
+                                setEditMode(false);
+                            }
+                        }}
+                    />
+                </>
             ) : (
-                <LinkPreviewForm
-                    linkUrl={tempLinkUrl}
-                    removeLink={removeLink}
-                    setEditMode={setEditMode}
-                />
+                <>
+                    <div className={"link-editor-target-checkbox"}>
+                        <input type={"checkbox"} checked={linkUrl.target === "_blank"} readOnly />{" "}
+                        <span>New tab</span>
+                    </div>
+                    <div className="link-input">
+                        <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
+                            {linkUrl.url}
+                        </a>
+                        <div
+                            className="link-edit"
+                            role="button"
+                            tabIndex={0}
+                            onMouseDown={event => event.preventDefault()}
+                            onClick={() => {
+                                setEditMode(true);
+                            }}
+                        />
+                        <div
+                            className="link-unlink"
+                            role="button"
+                            tabIndex={0}
+                            onMouseDown={event => event.preventDefault()}
+                            onClick={() => {
+                                removeLink();
+                            }}
+                        />
+                    </div>
+                    <LinkPreview url={linkUrl.url} />
+                </>
             )}
         </div>
     );
@@ -217,7 +243,7 @@ function useFloatingLinkEditorToolbar(
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
-            const linkParent = $findMatchingParent(node, $isBaseLinkNode);
+            const linkParent = $findMatchingParent(node, $isLinkNode);
             const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
 
             // We don't want this menu to open for auto links.

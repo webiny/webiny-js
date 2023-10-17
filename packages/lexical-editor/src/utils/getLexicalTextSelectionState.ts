@@ -1,4 +1,4 @@
-import { TextBlockSelection, TextFormatting, ToolbarState, TypographyValue } from "~/types";
+import { TextFormatting, TextBlockSelection, ToolbarState, TypographyValue } from "~/types";
 import {
     $isParagraphNode as $isBaseParagraphNode,
     $isRangeSelection,
@@ -20,7 +20,7 @@ import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
 import { $isQuoteNode } from "~/nodes/QuoteNode";
 import { $isParentElementRTL } from "@lexical/selection";
-import { $isLinkNode } from "~/nodes/LinkNode";
+import { $isLinkNode } from "~/nodes/link-node";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)

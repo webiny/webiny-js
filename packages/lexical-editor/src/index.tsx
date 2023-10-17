@@ -31,7 +31,7 @@ export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 // plugins
-export { LinkPlugin } from "~/plugins/LinkNodePlugin/LinkNodePlugin";
+export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
@@ -41,7 +41,6 @@ export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 export { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
 export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
-
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
