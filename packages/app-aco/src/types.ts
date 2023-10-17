@@ -65,8 +65,8 @@ export interface AcoError {
     data?: Record<string, any> | null;
 }
 
-export type ListSortItem = `${string}_ASC` | `${string}_DESC`;
-export type ListSort = ListSortItem[];
+export type ListSearchRecordsSortItem = `${string}_ASC` | `${string}_DESC`;
+export type ListSearchRecordsSort = ListSearchRecordsSortItem[];
 
 export interface ListMeta {
     cursor: string | null;

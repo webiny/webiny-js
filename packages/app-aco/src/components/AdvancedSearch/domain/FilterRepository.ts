@@ -1,17 +1,15 @@
 import cloneDeep from "lodash/cloneDeep";
-import orderBy from "lodash/orderBy";
 import { makeAutoObservable, runInAction } from "mobx";
 import { mdbid } from "@webiny/utils";
 
-import { FilterDTO, FilterMapper, FilterRaw, Loading } from "../domain";
+import { FilterDTO, FilterMapper, FilterRaw, Loading, Sorter } from "../domain";
 import { GatewayInterface } from "../gateways";
-import { ListSort } from "~/types";
 
 export class FilterRepository {
     private gateway: GatewayInterface;
+    private sorter: Sorter<FilterDTO>;
     private _loading: Loading;
     private static instance: FilterRepository;
-    private readonly sort: ListSort;
     private _filters: FilterDTO[] = [];
     public readonly modelId: string;
 
@@ -19,7 +17,7 @@ export class FilterRepository {
         this.gateway = gateway;
         this._loading = new Loading();
         this.modelId = modelId;
-        this.sort = ["createdOn_DESC"];
+        this.sorter = new Sorter(["createdOn_DESC"]);
         makeAutoObservable(this);
     }
 
@@ -67,7 +65,7 @@ export class FilterRepository {
         }
 
         runInAction(() => {
-            this._filters = response.map(filter => FilterMapper.toDTO(filter));
+            this._filters = this.sorter.sort(response.map(filter => FilterMapper.toDTO(filter)));
         });
     }
 
@@ -86,7 +84,7 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this._filters = this.sortFilters([filterDTO, ...this.filters]);
+            this._filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
         return cloneDeep(filterDTO);
@@ -108,7 +106,7 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this._filters = this.sortFilters([filterDTO, ...this.filters]);
+            this._filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
         return cloneDeep(filterDTO);
@@ -131,7 +129,7 @@ export class FilterRepository {
             const filterDTO = FilterMapper.toDTO(response);
 
             runInAction(() => {
-                this._filters = this.sortFilters([
+                this._filters = this.sorter.sort([
                     ...this.filters.slice(0, filterIndex),
                     {
                         ...this.filters[filterIndex],
@@ -158,21 +156,8 @@ export class FilterRepository {
 
         if (response) {
             runInAction(() => {
-                this._filters = this.sortFilters(this._filters.filter(filter => filter.id !== id));
+                this._filters = this.sorter.sort(this._filters.filter(filter => filter.id !== id));
             });
         }
-    }
-
-    private sortFilters(filters: FilterDTO[]) {
-        const sortByFields = this.sort.map(sort => {
-            const [field, order] = sort.split("_");
-            return { field, order: order.toLowerCase() as "asc" | "desc" };
-        });
-
-        return orderBy(
-            filters,
-            sortByFields.map(sort => sort.field),
-            sortByFields.map(sort => sort.order)
-        );
     }
 }
