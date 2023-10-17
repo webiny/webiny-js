@@ -1,6 +1,6 @@
 import sortBy from "lodash/sortBy";
 import { CmsModel } from "@webiny/app-headless-cms-common/types";
-import { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/QueryObject";
+import { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain";
 
 export class FieldsMapper {
     private static excluded: FieldRaw["type"][] = [
