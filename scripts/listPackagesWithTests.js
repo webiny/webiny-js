@@ -101,6 +101,9 @@ const CUSTOM_HANDLERS = {
             "packages/api-page-builder-aco --storage=ddb",
             "packages/api-page-builder-aco --storage=ddb-es,ddb"
         ];
+    },
+    "app-aco": () => {
+        return ["packages/app-aco"];
     }
 };
 
