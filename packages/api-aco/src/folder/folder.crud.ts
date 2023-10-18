@@ -1,4 +1,5 @@
 import { createTopic } from "@webiny/pubsub";
+import { validation } from "@webiny/validation";
 import { CreateAcoParams, Folder } from "~/types";
 import {
     AcoFolderCrud,
@@ -264,14 +265,26 @@ export const createFolderCrudMethods = ({
                     name = [user.firstName, user.lastName].filter(Boolean).join(" ");
                 }
 
+                // We're doing the validation because, with non-Cognito IdPs (Okta, Auth0), the email
+                // field might actually contain a non-email value: `id:${IdP_Identity_ID}`. In that case,
+                // let's not assign anything to the `email` field.
+                let email: string | null = user.email;
+                try {
+                    validation.validateSync(email, "email");
+                } catch {
+                    email = null;
+                }
+
+                const image = user.avatar?.src || null;
+
                 return {
                     id: user.id,
                     type: "admin",
                     target: `admin:${user.id}`,
                     name,
                     meta: {
-                        image: user.avatar?.src || null,
-                        email: user.email
+                        email,
+                        image
                     }
                 };
             });

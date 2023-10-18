@@ -21,7 +21,9 @@ export const ListItemText: React.FC<ListItemTextProps> = ({ target }) => {
                     {target.name}&nbsp;
                     {target.id === identity!.id && <em>(you)</em>}
                 </ListItemTextPrimary>
-                <ListItemTextSecondary>{target.meta.email}</ListItemTextSecondary>
+                <ListItemTextSecondary>
+                    {target.meta.email || "E-mail not available."}
+                </ListItemTextSecondary>
             </UiListItemText>
         );
     }
