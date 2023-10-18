@@ -109,17 +109,18 @@ class SimpleOutput {
 
         if (error) {
             this.deployment.status = red("‣ " + duration + "s ‣ Deployment failed.");
-            this.logs.push(
-                "",
-                red("Deployment failed with the following error(s)."),
-                ...this.deployment.logs
-            );
+            this.logs.push("", red("Deployment failed."), ...this.deployment.logs);
         } else {
             this.deployment.logs.push("Deployment finished.");
             this.deployment.status = green("‣ " + duration + "s ‣ Deployment successful.");
         }
 
         this.deployment.logs = [];
+        if (error) {
+            // In case of an error, we add a new line to separate the error message from the upcoming logs.
+            this.deployment.logs = [""];
+        }
+
         this.deployment.startedOn = null;
         clearInterval(this.deployment.statusUpdateInterval);
 

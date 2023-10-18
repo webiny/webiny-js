@@ -19,11 +19,6 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
-            const hasLocationField = model.modelId !== "apwReviewerModelDefinition";
-            if (!hasLocationField) {
-                return originalCmsListEntries(model, params);
-            }
-
             const folderType = model.modelId === "fmFile" ? "FmFile" : `cms:${model.modelId}`;
             const allFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
                 folderType
