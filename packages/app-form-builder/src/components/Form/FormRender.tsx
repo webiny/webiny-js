@@ -177,7 +177,6 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     };
 
     const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
-        console.log("ide");
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,

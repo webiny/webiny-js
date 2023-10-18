@@ -153,8 +153,6 @@ export class CmsEntriesCrudDecorators {
                 id
             });
 
-            // const entry = await originalCmsGetEntry(model, { where: { id } });
-
             const folderId = entry?.location?.folderId;
             if (folderId && folderId !== "root") {
                 const folder = await context.aco.folder.get(folderId);
