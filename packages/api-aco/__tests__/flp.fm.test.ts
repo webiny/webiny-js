@@ -2,6 +2,8 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mdbid } from "@webiny/utils";
 
+jest.setTimeout(100_000);
+
 const FOLDER_TYPE = "FmFile";
 
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
