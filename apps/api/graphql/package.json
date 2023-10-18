@@ -50,7 +50,6 @@
   "adio": {
     "ignore": {
       "dependencies": [
-        "@webiny/api-admin-users-so-ddb",
         "@webiny/api-security-cognito",
         "@webiny/api-security-okta"
       ],

@@ -13992,7 +13992,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-okta@workspace:^, @webiny/api-security-okta@workspace:packages/api-security-okta":
+"@webiny/api-security-okta@workspace:packages/api-security-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
   dependencies:
@@ -14325,7 +14325,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-okta@workspace:^, @webiny/app-admin-okta@workspace:packages/app-admin-okta":
+"@webiny/app-admin-okta@workspace:packages/app-admin-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-okta@workspace:packages/app-admin-okta"
   dependencies:
@@ -17285,7 +17285,6 @@ __metadata:
     "@editorjs/underline": ^1.0.0
     "@types/react": 17.0.39
     "@webiny/app-admin": 0.0.0
-    "@webiny/app-admin-okta": "workspace:^"
     "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
@@ -17821,7 +17820,6 @@ __metadata:
     "@webiny/api-prerendering-service-aws": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-cognito": 0.0.0
-    "@webiny/api-security-okta": "workspace:^"
     "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/api-tenancy-so-ddb": 0.0.0
