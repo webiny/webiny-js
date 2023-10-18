@@ -106,3 +106,7 @@ export const addButtonStyle = css`
         height: 40px;
     }
 `;
+
+export const placeholderIcon = css`
+    fill: #00000040;
+`;

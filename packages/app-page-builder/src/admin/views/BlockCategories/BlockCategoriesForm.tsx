@@ -208,11 +208,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind
-                                    name="icon"
-                                    validators={validation.create("required")}
-                                    defaultValue={"fas/star"}
-                                >
+                                <Bind name="icon" validators={validation.create("required")}>
                                     <IconPicker />
                                 </Bind>
                             </Cell>

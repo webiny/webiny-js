@@ -3,6 +3,7 @@ import groupBy from "lodash/groupBy";
 import { List } from "react-virtualized";
 import { useQuery } from "@apollo/react-hooks";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 import { Menu } from "@webiny/ui/Menu";
 import { ButtonSecondary } from "@webiny/ui/Button";
@@ -10,6 +11,7 @@ import { Tab, Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
+import { DelayedOnChangeProps } from "@webiny/ui/DelayedOnChange/DelayedOnChange";
 import { Input } from "@webiny/ui/Input";
 import { ColorPicker } from "@webiny/ui/ColorPicker";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -35,7 +37,8 @@ import {
     ListWrapper,
     NoResultsWrapper,
     InputsWrapper,
-    addButtonStyle
+    addButtonStyle,
+    placeholderIcon
 } from "./IconPicker.styles";
 
 const COLUMN_COUNT = 8;
@@ -51,6 +54,8 @@ type TabContentProps = {
     type: string;
     value: Icon;
     onChange: (value: Icon, closeMenu?: boolean) => void;
+    filter: string;
+    onFilterChange: DelayedOnChangeProps["onChange"];
     refetchCustomIcons?: () => void;
     isLoading?: boolean;
 };
@@ -60,23 +65,16 @@ const TabContent = ({
     type,
     value,
     onChange,
+    filter,
+    onFilterChange,
     refetchCustomIcons,
     isLoading
 }: TabContentProps) => {
-    const [filter, setFilter] = useState("");
     const [color, setColor] = useState(value.color || "#0000008a");
 
     const onColorChange = useCallback((newColor: string) => {
         setColor(newColor);
     }, []);
-
-    const onFilterChange = useCallback(
-        (value, cb) => {
-            setFilter(value);
-            cb();
-        },
-        [filter]
-    );
 
     useEffect(() => {
         if (value.type === "icon" && value.color !== color) {
@@ -85,7 +83,14 @@ const TabContent = ({
     }, [color]);
 
     const filteredIcons = useMemo(() => {
-        return icons.filter(icon => icon.name.includes(filter));
+        const hyphenUnderscoreRegex = /[-_]/g;
+
+        return icons.filter(icon =>
+            icon.name
+                .replace(hyphenUnderscoreRegex, " ")
+                .toLowerCase()
+                .includes(filter.toLowerCase())
+        );
     }, [filter, icons]);
 
     const rows = useMemo(() => {
@@ -238,11 +243,20 @@ export interface IconPickerProps extends FormComponentProps {
 const IconPicker = ({ value = {}, onChange, validation, label, description }: IconPickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
+    const [filter, setFilter] = useState("");
     const tabsRef = useRef<TabsImperativeApi>();
     const { icons, initialize, isLoading } = useIconPickerConfig();
     const { data, refetch: refetchCustomIcons } =
         useQuery<ListIconFilesQueryResponse>(LIST_ICON_FILES);
     const customIconsData = data?.fileManager.listFiles.data || [];
+
+    const onFilterChange = useCallback(
+        (value, cb) => {
+            setFilter(value);
+            cb();
+        },
+        [filter]
+    );
 
     useEffect(() => {
         initialize();
@@ -298,48 +312,58 @@ const IconPicker = ({ value = {}, onChange, validation, label, description }: Ic
             <Menu
                 handle={
                     <IconPickerInput>
-                        <IconRenderer icon={value} />
+                        {value?.value ? (
+                            <IconRenderer icon={value} />
+                        ) : (
+                            <SearchIcon width={32} height={32} className={placeholderIcon} />
+                        )}
                     </IconPickerInput>
                 }
                 onOpen={handleSwitchTab}
             >
-                {({ closeMenu }: { closeMenu: () => void }) => (
-                    <>
-                        <MenuHeader>
-                            <Typography use={"body1"}>Select an icon</Typography>
-                            <CloseIcon onClick={() => closeMenu()} />
-                        </MenuHeader>
-                        <Tabs ref={tabsRef}>
-                            <Tab label={"Icons"}>
-                                <TabContent
-                                    icons={defaultIcons}
-                                    type="icon"
-                                    value={value}
-                                    onChange={onIconChange}
-                                    isLoading={isLoading}
-                                />
-                            </Tab>
-                            <Tab label={"Emojis"}>
-                                <TabContent
-                                    icons={emojis}
-                                    type="emoji"
-                                    value={value}
-                                    onChange={onIconChange}
-                                    isLoading={isLoading}
-                                />
-                            </Tab>
-                            <Tab label={"Custom"}>
-                                <TabContent
-                                    icons={customIcons}
-                                    type="custom"
-                                    value={value}
-                                    onChange={onIconChange}
-                                    refetchCustomIcons={refetchCustomIcons}
-                                />
-                            </Tab>
-                        </Tabs>
-                    </>
-                )}
+                {({ closeMenu }: { closeMenu: () => void }) => {
+                    const commonTabProps = {
+                        value,
+                        onChange: (value: Icon, closeAfterChange = true) => {
+                            onIconChange(value);
+                            if (closeAfterChange) {
+                                closeMenu();
+                            }
+                        },
+                        filter,
+                        onFilterChange,
+                        isLoading
+                    };
+
+                    return (
+                        <>
+                            <MenuHeader>
+                                <Typography use={"body1"}>Select an icon</Typography>
+                                <CloseIcon onClick={() => closeMenu()} />
+                            </MenuHeader>
+                            <Tabs ref={tabsRef}>
+                                <Tab label={"Icons"}>
+                                    <TabContent
+                                        icons={defaultIcons}
+                                        type="icon"
+                                        {...commonTabProps}
+                                    />
+                                </Tab>
+                                <Tab label={"Emojis"}>
+                                    <TabContent icons={emojis} type="emoji" {...commonTabProps} />
+                                </Tab>
+                                <Tab label={"Custom"}>
+                                    <TabContent
+                                        icons={customIcons}
+                                        type="custom"
+                                        refetchCustomIcons={refetchCustomIcons}
+                                        {...commonTabProps}
+                                    />
+                                </Tab>
+                            </Tabs>
+                        </>
+                    );
+                }}
             </Menu>
 
             {validationIsValid === false && (
