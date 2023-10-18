@@ -6,6 +6,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { setContext } from "apollo-link-context";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
+import { SecurityPermission } from "@webiny/app-security/types";
 import { CognitoIdToken } from "@webiny/app-cognito-authenticator/types";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator";
 import SignIn from "~/views/SignIn";
@@ -42,6 +43,13 @@ const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     });
 };
 
+const validatePermissions = (permissions: SecurityPermission[]) => {
+    const appPermissions = permissions.filter(p => p.name !== "aacl");
+    if (appPermissions.length === 0) {
+        throw new Error("You have no permissions on this tenant!");
+    }
+};
+
 const defaultOptions = {
     region: appConfig.getKey("USER_POOL_REGION", process.env.REACT_APP_USER_POOL_REGION),
     userPoolId: appConfig.getKey("USER_POOL_ID", process.env.REACT_APP_USER_POOL_ID),
@@ -69,6 +77,7 @@ export interface AuthenticationFactoryConfig extends AuthOptions {
 interface AuthenticationFactory {
     (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
 }
+
 export const createAuthentication: AuthenticationFactory = ({
     getIdentityData,
     onError,
@@ -97,6 +106,8 @@ export const createAuthentication: AuthenticationFactory = ({
                     client,
                     payload
                 });
+
+                validatePermissions(permissions);
 
                 setIdentity({
                     id,
