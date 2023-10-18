@@ -87,7 +87,5 @@ export const configureAdminCognitoFederation = (
     appClient.config.allowedOauthFlows(["implicit", "code"]);
     appClient.config.allowedOauthFlowsUserPoolClient(true);
     appClient.config.callbackUrls(config.callbackUrls);
-    if (config.logoutUrls) {
-        appClient.config.logoutUrls(config.logoutUrls);
-    }
+    appClient.config.logoutUrls(config.logoutUrls ?? config.callbackUrls);
 };
