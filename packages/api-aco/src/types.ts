@@ -4,7 +4,6 @@ import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 import {
     AcoSearchRecordCrud,
     AcoSearchRecordCrudBase,
@@ -68,7 +67,6 @@ export interface AcoContext
         TenancyContext,
         SecurityContext,
         AdminUsersContext,
-        FileManagerContext,
         CmsContext {
     aco: AdvancedContentOrganisation;
 }
