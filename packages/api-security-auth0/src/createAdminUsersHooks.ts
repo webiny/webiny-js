@@ -6,13 +6,13 @@ export const createAdminUsersHooks = () => {
         const { security, adminUsers } = context;
 
         security.onLogin.subscribe(async ({ identity }) => {
-            const user = await adminUsers.getUser({ where: { id: identity.id } });
-
-            const id = identity.id;
-            const email = identity.email || `id:${id}`;
-            const displayName = identity.displayName || "Missing display name";
-
             await security.withoutAuthorization(async () => {
+                const user = await adminUsers.getUser({ where: { id: identity.id } });
+
+                const id = identity.id;
+                const email = identity.email || `id:${id}`;
+                const displayName = identity.displayName || "Missing display name";
+
                 let groupId: string | null = null;
                 let teamId: string | null = null;
 
