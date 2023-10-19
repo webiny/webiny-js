@@ -8,7 +8,7 @@ export const createObjectTransformer = (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         const childFields = field.settings?.fields || [];
 
-        if (!value) {
+        if (!value || childFields.length === 0) {
             return value;
         }
 
