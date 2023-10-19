@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { ListActions, ListItemMeta as UiListItemMeta } from "@webiny/ui/List";
 import { Menu, MenuDivider, MenuItem } from "@webiny/ui/Menu";
 import { ReactComponent as More } from "@material-design-icons/svg/outlined/arrow_drop_down.svg";
