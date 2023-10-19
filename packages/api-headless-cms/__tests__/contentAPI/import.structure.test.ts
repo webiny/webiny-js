@@ -2,21 +2,7 @@ import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin, CmsModelPlugin, createCmsGroup } from "~/plugins";
 import { createModels, exportedGroupsAndModels } from "./mocks/exportedGroupsAndModels";
 import { CmsImportAction } from "~/export/types";
-import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
-import camelCase from "lodash/camelCase";
-import upperFirst from "lodash/upperFirst";
-
-const createListFilters = ({ field }: any) => {
-    return `
-    ${field.fieldId}_contains: String
-  `;
-};
-
-const createTypeName = (fieldType: string) => {
-    // `taxonomy` -> `TaxonomyIdName`
-    // `car-ymm` -> `CarYmmIdName`
-    return upperFirst(camelCase(`${fieldType}IdName`));
-};
+import { CmsModel } from "~/types";
 
 describe("import cms structure", () => {
     const {
