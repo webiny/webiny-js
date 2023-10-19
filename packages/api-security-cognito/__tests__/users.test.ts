@@ -25,6 +25,7 @@ describe("Security User CRUD Test", () => {
         await adminUsers.create({
             data: {
                 ...adminData,
+                password: "12345678",
                 group: fullAccessGroup.id
             }
         });

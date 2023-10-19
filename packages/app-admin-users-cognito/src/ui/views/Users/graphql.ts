@@ -66,7 +66,7 @@ export const READ_USER: any = (params: { teams: boolean }) => gql`
 `;
 
 export const CREATE_USER: any = gql`
-    mutation CreateUser($data: AdminUsersCreateInput){
+    mutation CreateUser($data: AdminUsersCreateInput!){
         adminUsers {
             user: createUser(data: $data) {
                 data ${listUserFields}

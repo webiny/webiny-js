@@ -7,7 +7,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import adminUsersPlugins from "@webiny/api-admin-users";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
+import cognitoAuthentication from "~/index";
 
 // Graphql
 import {
@@ -52,15 +52,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
         plugins: [
             createWcpContext(),
             createWcpGraphQL(),
-            /**
-             * Cognito authentication plugin.
-             * This plugin will verify the JWT token against the provided User Pool.
-             */
-            cognitoAuthentication({
-                region: 'test',
-                userPoolId: 'test',
-                identityType: "admin"
-            }),
 
             ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
             ...(i18nStorage.storageOperations as any),
@@ -70,7 +61,15 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 storageOperations: adminUsersStorage.storageOperations
             }),
             graphqlHandler(),
+
+            cognitoAuthentication({
+                region: "test",
+                userPoolId: "test",
+                identityType: "admin"
+            }),
+
             authenticateUsingHttpHeader(),
+
             ...(opts.plugins || [])
         ]
     });
