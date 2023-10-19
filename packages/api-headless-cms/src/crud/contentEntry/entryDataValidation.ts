@@ -69,8 +69,14 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
         return null;
     } else if (Array.isArray(predefinedValues) === false || predefinedValues.length === 0) {
         return "Missing predefined values to validate against.";
+    } else if (value == "" || value == null || value == undefined) {
+        return null;
     }
     for (const predefinedValue of predefinedValues) {
+        /**
+         * No strict compare because the value sent can be 12345 (number) and predefinedValue can be "12345" (string),
+         * and we want it to match.
+         */
         if (predefinedValue.value == value) {
             return null;
         }

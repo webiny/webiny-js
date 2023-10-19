@@ -17,7 +17,12 @@ export const SaveContentButton: React.FC = () => {
         <ButtonSecondary
             data-testid={"cms-content-save-content-button"}
             onAction={ev => {
-                form.current.submit(ev);
+                form.current.submit(ev, {
+                    /**
+                     * We are skipping the required validator on purpose, because we want to allow partial saving of the entry.
+                     */
+                    skipValidators: ["required"]
+                });
             }}
         >
             {"Save"}
