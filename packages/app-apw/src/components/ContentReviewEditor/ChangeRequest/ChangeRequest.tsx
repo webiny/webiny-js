@@ -129,7 +129,6 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     <RichTextBox>
                         <TypographyBody use={"body2"}>
                             <RichTextEditor
-                                elementId={id}
                                 key={richTextEditorKey}
                                 className={cx(richTextWrapperStyles, textStyles)}
                                 readOnly={true}
