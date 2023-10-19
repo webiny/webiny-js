@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Bind } from "@webiny/form";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 
@@ -26,18 +27,22 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                 <Cell span={4}>
                     <CellInner align={"left"}>
                         <Bind name={`${name}.field`}>
-                            {({ value, validation }) => (
-                                <Select
-                                    label={"Field"}
-                                    options={fields.map(field => ({
-                                        label: field.label,
-                                        value: field.value
-                                    }))}
-                                    value={value}
-                                    onChange={data => onFieldSelectChange(data)}
-                                    validation={validation}
-                                />
-                            )}
+                            {({ value, validation }) => {
+                                const options = fields.map(field => ({
+                                    id: field.value,
+                                    name: field.label
+                                }));
+
+                                return (
+                                    <AutoComplete
+                                        label={"Field"}
+                                        options={options}
+                                        value={options.find(option => option.id === value)}
+                                        onChange={data => onFieldSelectChange(data)}
+                                        validation={validation}
+                                    />
+                                );
+                            }}
                         </Bind>
                     </CellInner>
                 </Cell>
