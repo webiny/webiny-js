@@ -359,7 +359,7 @@ export const useFormEditorFactory = (
                 self.setData(data => {
                     data.steps.push({
                         id: mdbid(),
-                        title: `Step ${data.steps.length + 1}`,
+                        title: `Step`,
                         layout: []
                     });
 
@@ -400,9 +400,7 @@ export const useFormEditorFactory = (
              */
             insertField: ({ data, destination, target }) => {
                 const field = cloneDeep(data);
-                if (!field._id) {
-                    field._id = shortid.generate();
-                }
+                field._id = shortid.generate();
 
                 if (!data.name) {
                     throw new Error(`Field "name" missing.`);

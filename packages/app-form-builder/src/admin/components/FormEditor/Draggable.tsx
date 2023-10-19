@@ -17,7 +17,7 @@ interface BeginDragProps {
         index?: number;
     };
     name?: string;
-    id?: String;
+    id?: string;
     /*
         "container" contains info about source element.
     */

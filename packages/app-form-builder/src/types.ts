@@ -250,7 +250,7 @@ export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
 }
 
 export interface FbFormModelField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;

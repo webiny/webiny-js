@@ -10,7 +10,8 @@ import {
     DropSource,
     DropDestination
 } from "~/types";
-import Draggable from "../../../Draggable";
+import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
+import Draggable from "~/admin/components/FormEditor/Draggable";
 import EditFieldDialog from "../EditFieldDialog";
 import Field from "../Field";
 import {
@@ -27,8 +28,8 @@ import { Icon } from "@webiny/ui/Icon";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
-import { ReactComponent as HandleIcon } from "../../../../../icons/round-drag_indicator-24px.svg";
-import { Center, Vertical, Horizontal } from "../../../DropZone";
+import { ReactComponent as HandleIcon } from "~/admin/components/FormEditor/icons/round-drag_indicator-24px.svg";
+import { Center, Vertical, Horizontal } from "~/admin/components/FormEditor/DropZone";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
@@ -154,6 +155,32 @@ export const FormStep = ({
         [data]
     );
 
+    const composeHandleDropParams = ({
+        item,
+        destinationPosition
+    }: {
+        item: DragObjectWithFieldInfo;
+        destinationPosition: DropDestination["position"];
+    }) => {
+        handleDrop({
+            target: {
+                type: item.ui,
+                id: item.id,
+                name: item.name
+            },
+            source: {
+                containerId: item?.container?.id,
+                containerType: item?.container?.type,
+                position: item.pos
+            },
+            destination: {
+                containerId: formStep.id,
+                containerType: "step",
+                position: destinationPosition
+            }
+        });
+    };
+
     const fields = getLayoutFields(formStep.id);
 
     return (
@@ -183,24 +210,11 @@ export const FormStep = ({
                                 if (item.ui === "step") {
                                     return undefined;
                                 }
-                                handleDrop({
-                                    target: {
-                                        type: item.ui,
-                                        id: item.id,
-                                        name: item.name
-                                    },
-                                    source: {
-                                        containerId: item?.container?.id,
-                                        containerType: item?.container?.type,
-                                        position: item.pos
-                                    },
-                                    destination: {
-                                        containerId: formStep.id,
-                                        containerType: "step",
-                                        position: {
-                                            row: 0,
-                                            index: 0
-                                        }
+                                composeHandleDropParams({
+                                    item,
+                                    destinationPosition: {
+                                        row: 0,
+                                        index: 0
                                     }
                                 });
                                 return undefined;
@@ -239,24 +253,11 @@ export const FormStep = ({
                                     </div>
                                     <Horizontal
                                         onDrop={item => {
-                                            handleDrop({
-                                                target: {
-                                                    type: item.ui,
-                                                    id: item.id,
-                                                    name: item.name
-                                                },
-                                                source: {
-                                                    containerId: item?.container?.id,
-                                                    containerType: item?.container?.type,
-                                                    position: item.pos
-                                                },
-                                                destination: {
-                                                    containerId: formStep.id,
-                                                    containerType: "step",
-                                                    position: {
-                                                        row: index,
-                                                        index: null
-                                                    }
+                                            composeHandleDropParams({
+                                                item,
+                                                destinationPosition: {
+                                                    row: index,
+                                                    index: null
                                                 }
                                             });
                                             return undefined;
@@ -286,26 +287,11 @@ export const FormStep = ({
                                                     <div className={fieldContainer} ref={drag}>
                                                         <Vertical
                                                             onDrop={item => {
-                                                                handleDrop({
-                                                                    target: {
-                                                                        type: item.ui,
-                                                                        id: item.id,
-                                                                        name: item.name
-                                                                    },
-                                                                    source: {
-                                                                        containerId:
-                                                                            item?.container?.id,
-                                                                        containerType:
-                                                                            item?.container?.type,
-                                                                        position: item.pos
-                                                                    },
-                                                                    destination: {
-                                                                        containerId: formStep.id,
-                                                                        containerType: "step",
-                                                                        position: {
-                                                                            row: index,
-                                                                            index: fieldIndex
-                                                                        }
+                                                                composeHandleDropParams({
+                                                                    item,
+                                                                    destinationPosition: {
+                                                                        row: index,
+                                                                        index: fieldIndex
                                                                     }
                                                                 });
                                                                 return undefined;
@@ -337,29 +323,11 @@ export const FormStep = ({
                                                                         item?.pos?.row === index)
                                                                 }
                                                                 onDrop={item => {
-                                                                    handleDrop({
-                                                                        target: {
-                                                                            type: item.ui,
-                                                                            id: item.id,
-                                                                            name: item.name
-                                                                        },
-                                                                        source: {
-                                                                            containerId:
-                                                                                item?.container?.id,
-                                                                            containerType:
-                                                                                item?.container
-                                                                                    ?.type,
-                                                                            position: item.pos
-                                                                        },
-                                                                        destination: {
-                                                                            containerId:
-                                                                                formStep.id,
-                                                                            containerType: "step",
-                                                                            position: {
-                                                                                row: index,
-                                                                                index:
-                                                                                    fieldIndex + 1
-                                                                            }
+                                                                    composeHandleDropParams({
+                                                                        item,
+                                                                        destinationPosition: {
+                                                                            row: index,
+                                                                            index: fieldIndex + 1
                                                                         }
                                                                     });
                                                                     return undefined;
@@ -376,24 +344,11 @@ export const FormStep = ({
                                         <Horizontal
                                             last
                                             onDrop={item => {
-                                                handleDrop({
-                                                    target: {
-                                                        type: item.ui,
-                                                        id: item.id,
-                                                        name: item.name
-                                                    },
-                                                    source: {
-                                                        containerId: item?.container?.id,
-                                                        containerType: item?.container?.type,
-                                                        position: item.pos
-                                                    },
-                                                    destination: {
-                                                        containerId: formStep.id,
-                                                        containerType: "step",
-                                                        position: {
-                                                            row: index + 1,
-                                                            index: null
-                                                        }
+                                                composeHandleDropParams({
+                                                    item,
+                                                    destinationPosition: {
+                                                        row: index + 1,
+                                                        index: null
                                                     }
                                                 });
                                                 return undefined;
