@@ -22,6 +22,7 @@ export function useFileManagerViewConfig() {
         () => ({
             browser: {
                 ...browser,
+                bulkActions: [...(browser.bulkActions || [])],
                 filterByTags: browser.filterByTags ?? false,
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]

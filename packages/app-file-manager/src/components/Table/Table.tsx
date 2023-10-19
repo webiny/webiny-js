@@ -34,8 +34,6 @@ export interface TableProps {
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
-    selectableItems: boolean;
-    canSelectAllRows: boolean;
 }
 
 interface BaseEntry {
@@ -57,18 +55,17 @@ interface FileEntry extends BaseEntry {
 
 interface FolderEntry extends BaseEntry {
     $type: "FOLDER";
-    $selectable: boolean;
     title: string;
     original: FolderItem;
 }
 
 type Entry = FolderEntry | FileEntry;
 
-const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] => {
+const createRecordsData = (items: FileItem[]): FileEntry[] => {
     return items.map(data => {
         return {
             $type: "RECORD",
-            $selectable: selectable,
+            $selectable: true,
             id: data.id,
             name: data.name,
             createdBy: data.createdBy?.displayName || "-",
@@ -109,9 +106,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         onRecordClick,
         onFolderClick,
         sorting,
-        onSortingChange,
-        selectableItems,
-        canSelectAllRows
+        onSortingChange
     } = props;
 
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -119,7 +114,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
-        return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
+        return [...createFoldersData(folders), ...createRecordsData(records)];
     }, [folders, records]);
 
     const columns: Columns<Entry> = useMemo(() => {
@@ -227,7 +222,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     return (
         <div ref={ref}>
             <DataTable<Entry>
-                canSelectAllRows={canSelectAllRows}
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
@@ -242,7 +236,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                 ]}
                 onSortingChange={onSortingChange}
-                selectedRows={createRecordsData(selectedRecords, true)}
+                selectedRows={createRecordsData(selectedRecords)}
             />
             {selectedFolder && (
                 <>
