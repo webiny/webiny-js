@@ -1,7 +1,12 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import { AdminUser, AdminUsersContext, BaseUserAttributes } from "@webiny/api-admin-users/types";
+import {
+    AdminUser,
+    AdminUsersContext,
+    BaseUserAttributes,
+    CreateUserInput
+} from "@webiny/api-admin-users/types";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 
@@ -19,16 +24,14 @@ interface CognitoConfigAutoVerify {
     email?: boolean;
 }
 
-export interface GetUsernameUser extends Omit<BaseUserAttributes, "id"> {
-    id?: string;
-}
-
 export interface CognitoConfig {
     region: string;
     userPoolId: string;
     updateAttributes?: Record<string, string | AttributeGetter>;
 
-    getUsername?<TUser extends GetUsernameUser = GetUsernameUser>(user: TUser): string;
+    getUsername?<TCreateUserInput extends CreateUserInput = CreateUserInput>(
+        user: TCreateUserInput
+    ): string;
 
     autoVerify?: CognitoConfigAutoVerify;
 }
@@ -140,7 +143,11 @@ export const syncWithCognito = ({
                 await cognito
                     .adminSetUserPassword({
                         Permanent: true,
+
+                        // With Cognito, we are sure the password will be included
+                        // in the user creation input data.
                         Password: inputData.password!,
+
                         Username: username,
                         UserPoolId: userPoolId
                     })
