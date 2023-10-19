@@ -29,8 +29,8 @@ export interface Identity {
     // the group and team information is retrieved from the IdP and the verified auth token. See:
     // - https://www.webiny.com/docs/enterprise/okta-integration#3-configure-okta-in-the-graph-ql-api
     // - https://www.webiny.com/docs/enterprise/auth0-integration#3-configure-auth0-in-the-graph-ql-api
-    group?: string | null;
-    team?: string | null;
+    group?: string;
+    team?: string;
 
     [key: string]: any;
 }
