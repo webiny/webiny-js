@@ -59,7 +59,7 @@ interface FolderEntry extends BaseEntry {
     original: FolderItem;
 }
 
-type Entry = FolderEntry | FileEntry;
+export type Entry = FolderEntry | FileEntry;
 
 const createRecordsData = (items: FileItem[]): FileEntry[] => {
     return items.map(data => {

@@ -8,26 +8,25 @@ import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
-import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
-import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
 import { i18n } from "@webiny/app/i18n";
 import { FolderDialogCreate } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { ButtonIcon, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-import { Tooltip } from "@webiny/ui/Tooltip";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { outputFileSelectionError } from "./outputFileSelectionError";
 import { LeftSidebar } from "./LeftSidebar";
 import { useFileManagerApi, useFileManagerViewConfig } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
+import { BulkActions } from "~/components/BulkActions";
 import { DropFilesHere } from "~/components/DropFilesHere";
 import { Empty } from "~/components/Empty";
 import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
-import { Table, TableProps } from "~/components/Table";
+import { LayoutSwitch } from "~/components/LayoutSwitch";
+import { Entry, Table, TableProps } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
@@ -188,11 +187,12 @@ const FileManagerView = () => {
         }
 
         if (view.listTable) {
-            const onSelectRow: TableProps["onSelectRow"] | undefined = view.areFilesSelectable
+            const getSelectableRow = (rows: Entry[]) =>
+                rows.filter(row => row.$type === "RECORD").map(row => row.original as FileItem);
+
+            const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback
                 ? rows => {
-                      const files = rows
-                          .filter(row => row.$type === "RECORD")
-                          .map(row => row.original as FileItem);
+                      const files = getSelectableRow(rows);
 
                       if (view.multiple) {
                           view.setSelected(files);
@@ -200,11 +200,13 @@ const FileManagerView = () => {
                           view.onChange(files[0]);
                       }
                   }
-                : undefined;
+                : rows => {
+                      const files = getSelectableRow(rows);
+                      view.setSelected(files);
+                  };
 
             return (
                 <Table
-                    canSelectAllRows={view.multiple}
                     folders={view.folders}
                     records={view.files}
                     selectedRecords={view.selected}
@@ -215,7 +217,6 @@ const FileManagerView = () => {
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
                     settings={view.settings}
-                    selectableItems={view.areFilesSelectable}
                 />
             );
         }
@@ -230,8 +231,9 @@ const FileManagerView = () => {
                 selected={view.selected}
                 multiple={view.multiple}
                 toggleSelected={view.toggleSelected}
-                onChange={view.areFilesSelectable ? view.onChange : undefined}
+                onChange={view.onChange}
                 onClose={view.onClose}
+                hasOnSelectCallback={view.hasOnSelectCallback}
             />
         );
     };
@@ -271,7 +273,7 @@ const FileManagerView = () => {
                         barMiddle={<SearchWidget />}
                         barRight={
                             <>
-                                {view.selected.length > 0 ? (
+                                {view.hasOnSelectCallback && view.selected.length > 0 ? (
                                     <ButtonPrimary
                                         flat={true}
                                         small={true}
@@ -291,23 +293,12 @@ const FileManagerView = () => {
                                     <ButtonIcon icon={<AddIcon />} />
                                     {t`New Folder`}
                                 </ButtonSecondary>
-                                <Tooltip
-                                    content={t`{mode} layout`({
-                                        mode: view.listTable ? "Grid" : "Table"
-                                    })}
-                                    placement={"bottom"}
-                                >
-                                    <IconButton
-                                        icon={view.listTable ? <GridIcon /> : <TableIcon />}
-                                        onClick={() => view.setListTable(!view.listTable)}
-                                    >
-                                        {t`Switch`}
-                                    </IconButton>
-                                </Tooltip>
+                                <LayoutSwitch />
                             </>
                         }
                     >
                         <>
+                            {!view.hasOnSelectCallback && <BulkActions />}
                             <FileDetails
                                 loading={view.loadingFileDetails}
                                 file={currentFile}
