@@ -233,6 +233,7 @@ Resources:
               # https://www.webiny.com/docs/architecture/introduction#different-database-setups
               - Effect: Allow
                 Action:
+                  - iam:GetRole
                   - iam:CreateServiceLinkedRole
                 Resource:
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService

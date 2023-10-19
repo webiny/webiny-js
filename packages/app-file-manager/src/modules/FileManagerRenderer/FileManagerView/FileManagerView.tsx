@@ -242,7 +242,7 @@ const FileManagerView = () => {
                 view.loadMoreFiles();
             }
         }, 200),
-        [view.meta]
+        [view.meta, view.loadMoreFiles]
     );
 
     return (
