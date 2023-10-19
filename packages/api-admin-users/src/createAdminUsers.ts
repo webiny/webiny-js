@@ -146,9 +146,7 @@ export const createAdminUsers = ({
 
             const id = data.id || mdbid();
             const createdOn = new Date().toISOString();
-
             const displayName = getDisplayName(data);
-
             const webinyVersion = process.env.WEBINY_VERSION as string;
 
             const user: AdminUser = {
