@@ -25,7 +25,7 @@ describe(`"Login" test`, () => {
         const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
         const fullAccessGroup = groupResponseA.data.security.getGroup.data;
 
-        const reza = await adminUsers.create({
+        await adminUsers.create({
             data: {
                 ...adminData,
                 password: "12345678",
