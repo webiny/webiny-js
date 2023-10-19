@@ -105,10 +105,6 @@ export const createAdminUsers = ({
             await checkPermission();
             const tenant = getTenant();
 
-            // Note that, by default, e-mail is only stored when the default Cognito setup is being used.
-            // With other IdPs, e.g. Okta, the e-mail field contains the ID of the user in the IdP.
-            // For example: packages/api-security-okta/src/createAdminUsersHooks.ts:13
-            // In the future, we might want to rename the `email` field to `idpId` or something similar.
             await this.isEmailTaken(data.email);
 
             const identity = getIdentity();
@@ -125,7 +121,20 @@ export const createAdminUsers = ({
             const id = data.id || mdbid();
             const createdOn = new Date().toISOString();
 
-            let displayName = data.displayName || data.firstName + " " + data.lastName;
+            // If display name is not set, try to get it from the first name and last name.
+            // If first name and last name are not set, use the e-mail address.
+            let displayName = data.displayName;
+            if (!displayName) {
+                if (data.firstName || data.lastName) {
+                    displayName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
+                }
+            }
+
+            if (!displayName) {
+                // If first name and last name are not set, use the e-mail address.
+                displayName = data.email;
+            }
+
             if (!displayName.trim()) {
                 displayName = "Missing display name";
             }
