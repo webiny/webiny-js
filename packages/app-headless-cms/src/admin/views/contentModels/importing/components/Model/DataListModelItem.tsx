@@ -19,6 +19,11 @@ const ContainerCreate = styled(ContainerBase)(() => {
         // backgroundColor: "var(--mdc-theme-secondary)"
     };
 });
+const ContainerImported = styled(ContainerBase)(() => {
+    return {
+        backgroundColor: "var(--mdc-theme-secondary)"
+    };
+});
 const ContainerUpdate = styled(ContainerBase)(() => {
     return {
         // backgroundColor: "var(--mdc-theme-background)"
@@ -55,8 +60,28 @@ const Button = styled("button")({
     fontSize: "10px",
     lineHeight: "12px",
     cursor: "pointer",
-    outline: "0 none"
+    outline: "0 none",
+    backgroundColor: "var(--mdc-theme-background)"
 });
+
+const ImportedText = styled("div")({
+    padding: "1px 5px",
+    textAlign: "right",
+    display: "inline-block",
+    border: "1px solid var(--mdc-theme-on-background)",
+    fontSize: "10px",
+    lineHeight: "12px",
+    outline: "0 none",
+    backgroundColor: "var(--mdc-theme-background)"
+});
+
+const Imported: React.VFC = () => {
+    return (
+        <CheckboxContainer>
+            <ImportedText>Imported.</ImportedText>
+        </CheckboxContainer>
+    );
+};
 
 interface CheckboxProps {
     model: Pick<ImportModelData, "id" | "name" | "error" | "related">;
@@ -81,7 +106,7 @@ const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
 };
 
 interface ContainerProps {
-    model: Pick<ImportModelData, "action" | "error">;
+    model: Pick<ImportModelData, "action" | "error" | "imported">;
     selected: boolean;
 }
 
@@ -90,7 +115,9 @@ const Container: React.VFC<React.PropsWithChildren<ContainerProps>> = ({
     selected,
     children
 }) => {
-    if (model.action === "create") {
+    if (model.imported) {
+        return <ContainerImported>{children}</ContainerImported>;
+    } else if (model.action === "create") {
         return <ContainerCreate selected={selected}>{children}</ContainerCreate>;
     } else if (model.action === "update") {
         return <ContainerUpdate selected={selected}>{children}</ContainerUpdate>;
@@ -111,7 +138,11 @@ export const DataListModelItem: React.VFC<Props> = ({ model, toggle, selected })
         <Container model={model} selected={selected}>
             <ModelContainer>
                 <Name>{model.name || model.id}</Name>
-                <Checkbox model={model} toggle={toggle} selected={selected} />
+                {model.imported ? (
+                    <Imported />
+                ) : (
+                    <Checkbox model={model} toggle={toggle} selected={selected} />
+                )}
             </ModelContainer>
             {model.error ? (
                 <DataListModelItemError error={model.error} />

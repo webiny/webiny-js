@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { CmsErrorResponse } from "@webiny/app-headless-cms-common/types";
-import { ValidatedCmsGroup, ValidatedCmsModel } from "./types";
+import { ImportAction, ValidatedCmsGroup, ValidatedCmsModel } from "./types";
 
 const ERROR = /* GraphQL */ `
     error {
@@ -57,6 +57,7 @@ export interface ImportStructureResponseDataGroup {
         id: string;
         name: string;
     };
+    action: ImportAction;
     error: CmsErrorResponse | null;
     imported: boolean;
 }
@@ -67,6 +68,7 @@ export interface ImportStructureResponseDataModel {
         name: string;
         group: string;
     };
+    action: ImportAction;
     related: string[] | null;
     error: CmsErrorResponse | null;
     imported: boolean;
@@ -85,14 +87,15 @@ export interface ImportStructureResponse {
 }
 
 export const IMPORT_STRUCTURE = gql`
-    mutation StructureImport($data: CmsImportStructureInput!, $models: [String!]!) {
-        importStructure(data: $data, models: $models) {
+    mutation StructureImport($data: CmsImportStructureInput!) {
+        importStructure(data: $data) {
             data {
                 groups {
                     group {
                         id
                         name
                     }
+                    imported
                     action
                     ${ERROR}
                 }
@@ -102,6 +105,7 @@ export const IMPORT_STRUCTURE = gql`
                         name
                         group
                     }
+                    imported
                     related
                     action
                     ${ERROR}

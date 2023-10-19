@@ -38,6 +38,7 @@ export interface InvalidField {
 export interface ImportGroupData {
     id: string;
     name: string;
+    action?: ImportAction;
     error: CmsErrorResponse | null;
     message?: string;
     imported?: boolean;

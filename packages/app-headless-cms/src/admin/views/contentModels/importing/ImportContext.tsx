@@ -7,7 +7,7 @@ import {
     ValidateImportStructureResponse
 } from "~/admin/views/contentModels/importing/graphql";
 import { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types";
-import { ImportGroupData, ImportModelData } from "./types";
+import { ImportAction, ImportGroupData, ImportModelData } from "./types";
 import { useSnackbar } from "@webiny/app-admin";
 
 const parseFileData = (input: string) => {
@@ -110,40 +110,9 @@ export interface ImportContextProperties {
     isModelRelated: IsModelRelatedCb;
 }
 
-interface GetRelatedParams {
-    models?: Pick<ImportModelData, "id" | "related">[];
-    related: string[];
-    existing?: string[];
-}
-
-const getRelated = (params: GetRelatedParams): string[] => {
-    const { models, related, existing = [] } = params;
-    if (!models) {
-        return [];
-    }
-    return related.reduce<string[]>((result, id) => {
-        if (result.includes(id) || existing.includes(id)) {
-            return result;
-        }
-        const model = models.find(model => model.id === id);
-        if (!model) {
-            return result;
-        }
-        result.push(id);
-        const modelRelated = getRelated({
-            models,
-            related: model.related || [],
-            existing: [...existing, ...result]
-        });
-        result.push(...modelRelated);
-
-        return result;
-    }, []);
-};
-
 interface CreateSelectedParams {
     previous: Selected;
-    models: Pick<ImportModelData, "id" | "related">[];
+    models: Pick<ImportModelData, "id" | "related" | "imported">[];
     item: Pick<ImportModelData, "id" | "related">;
 }
 
@@ -156,7 +125,7 @@ const createSelected = (params: CreateSelectedParams): Selected => {
         const model = models.find(model => model.id === id);
         if (!model) {
             continue;
-        } else if (selected.has(model.id)) {
+        } else if (selected.has(model.id) || model.imported) {
             continue;
         }
         const related = createSelected({
@@ -168,6 +137,50 @@ const createSelected = (params: CreateSelectedParams): Selected => {
     }
 
     return selected;
+};
+
+const getDataToImport = (state: State) => {
+    const selected = Array.from(state.selected.keys());
+
+    const groups: Map<string, CmsGroup> = new Map();
+    const models: Map<string, CmsModel> = new Map();
+    const noAction = [ImportAction.CODE, ImportAction.NONE];
+
+    for (const id of selected) {
+        const validatedModel = state.models?.find(model => model.id === id);
+        if (
+            !validatedModel?.action ||
+            validatedModel.error ||
+            noAction.includes(validatedModel.action)
+        ) {
+            continue;
+        }
+
+        const model = state.data?.models?.find(model => model.modelId === id);
+        if (!model) {
+            continue;
+        }
+        models.set(id, model);
+
+        const validatedGroup = state.groups?.find(group => group.id === validatedModel.group);
+        if (
+            !validatedGroup?.action ||
+            validatedGroup.error ||
+            noAction.includes(validatedGroup.action)
+        ) {
+            continue;
+        }
+        const group = state.data?.groups?.find(group => group.id === validatedModel.group);
+        if (!group) {
+            continue;
+        }
+        groups.set(group.id, group);
+    }
+
+    return {
+        groups: Array.from(groups.values()),
+        models: Array.from(models.values())
+    };
 };
 
 export const ImportContext = React.createContext<ImportContextProperties | undefined>(undefined);
@@ -277,11 +290,11 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
             };
         });
 
+        const dataToImport = getDataToImport(state);
         const result = await client.mutate<ImportStructureResponse>({
             mutation: IMPORT_STRUCTURE,
             variables: {
-                data: state.data,
-                models: state.selected
+                data: dataToImport
             }
         });
         const { data, error } = result.data?.importStructure || {};
@@ -307,22 +320,26 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
             return {
                 ...prev,
                 loading: false,
-                groups: data.groups.map(group => {
+                selected: new Map(),
+                groups: state.groups!.map(group => {
+                    const result = data.groups.find(item => item.group.id === group.id);
                     return {
-                        id: group.group.id,
-                        name: group.group.name,
-                        error: group.error,
-                        imported: group.imported
+                        id: result?.group.id || group.id,
+                        name: result?.group.name || group.name,
+                        error: result?.error || group.error,
+                        imported: result ? result.imported : group.imported
                     };
                 }),
-                models: data.models.map(model => {
+                models: state.models!.map(model => {
+                    const result = data.models.find(item => item.model.modelId === model.id);
                     return {
-                        id: model.model.modelId,
-                        name: model.model.name,
-                        group: model.model.group,
-                        related: model.related || [],
-                        error: model.error,
-                        imported: model.imported
+                        id: result?.model.modelId || model.id,
+                        name: result?.model.name || model.name,
+                        group: result?.model.group || model.group,
+                        related: result?.related || model.related || [],
+                        action: result?.action || model.action,
+                        error: result?.error || model.error,
+                        imported: result ? result.imported : model.imported
                     };
                 }),
                 validated: true
