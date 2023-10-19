@@ -1,14 +1,14 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { AdminUsersContext } from "~/types";
+import { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
 export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `
         input AdminUsersInstallInput {
-            firstName: String
-            lastName: String
-            email: String
-            password: String
+            firstName: String!
+            lastName: String!
+            email: String!
+            password: String!
         }
 
         extend type AdminUsersQuery {
@@ -18,7 +18,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
 
         extend type AdminUsersMutation {
             "Install Admin Users"
-            install(data: AdminUsersInstallInput): AdminUsersBooleanResponse
+            install(data: AdminUsersInstallInput!): AdminUsersBooleanResponse
         }
     `,
     resolvers: {

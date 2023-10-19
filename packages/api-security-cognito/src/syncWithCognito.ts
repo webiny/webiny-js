@@ -5,7 +5,6 @@ import {
     AdminUser,
     AdminUsersContext,
     BaseUserAttributes,
-    CreateUserInput
 } from "@webiny/api-admin-users/types";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;

@@ -2,8 +2,6 @@ import { ContextPlugin } from "@webiny/api";
 import { createAdminUsers } from "./createAdminUsers";
 import { AdminUsersContext, AdminUsersStorageOperations } from "./types";
 import baseGqlPlugins from "./graphql/base.gql";
-import adminUsersGqlPlugins from "./graphql/user.gql";
-import installGqlPlugins from "./graphql/install.gql";
 import { applyMultiTenancyPlugins } from "~/multiTenancy";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -55,11 +53,7 @@ export default ({ storageOperations }: Config) => {
             if (context.tenancy.isMultiTenant()) {
                 applyMultiTenancyPlugins(context);
             }
-
-            const teams = context.wcp.canUseTeams();
-            context.plugins.register(adminUsersGqlPlugins({ teams }));
         }),
-        installGqlPlugins,
         baseGqlPlugins
     ];
 };
