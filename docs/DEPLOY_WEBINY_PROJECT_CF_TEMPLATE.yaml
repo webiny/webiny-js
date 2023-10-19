@@ -449,7 +449,7 @@ Resources:
 
               # We need this to get logs from CloudWatch during data migrations.
               - Effect: Allow
-                Resource: "*:"
+                Resource: "*"
                 Action:
                   - logs:GetLogEvents
                   - logs:Unmask
