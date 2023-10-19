@@ -143,7 +143,7 @@ export const createAdminUsers = ({
             }
 
             const id = data.id || mdbid();
-            const email = data.email || `id:${id}`;
+            const email = data.email;
             const createdOn = new Date().toISOString();
             const displayName = getDisplayName(data);
             const webinyVersion = process.env.WEBINY_VERSION as string;

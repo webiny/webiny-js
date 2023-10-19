@@ -29,7 +29,12 @@ export interface CognitoConfig {
     userPoolId: string;
     updateAttributes?: Record<string, string | AttributeGetter>;
 
-    getUsername?<TBaseUserAttributes extends BaseUserAttributes = BaseUserAttributes>(
+    getUsername?<
+        TBaseUserAttributes extends Pick<BaseUserAttributes, "email"> = Pick<
+            BaseUserAttributes,
+            "email"
+        >
+    >(
         user: TBaseUserAttributes
     ): string;
 
@@ -66,7 +71,6 @@ export const syncWithCognito = ({
             // Casting as any because password does not exist on user, but we know it does
             delete (user as any)["password"];
 
-            // @ts-ignore E-mail is present here, but TS does not know that.
             const username = getUsername(inputData);
 
             try {

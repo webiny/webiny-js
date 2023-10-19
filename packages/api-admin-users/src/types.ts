@@ -30,7 +30,7 @@ export interface BaseUserAttributes {
     avatar?: Record<string, any>;
 }
 
-export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displayName" | "email"> {
+export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displayName"> {
     // ID can be provided, but it's not required. If not provided, it will be auto-generated.
     id?: string;
 
