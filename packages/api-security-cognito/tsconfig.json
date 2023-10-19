@@ -12,13 +12,31 @@
       "path": "../api-cognito-authenticator"
     },
     {
-      "path": "../handler-graphql"
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-tenancy"
     },
     {
       "path": "../api-security"
     },
     {
+      "path": "../api-wcp"
+    },
+    {
       "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {
@@ -34,12 +52,22 @@
       "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/api-cognito-authenticator/*": ["../api-cognito-authenticator/src/*"],
       "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"],
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/plugin/*": ["../plugin/src/*"],
+      "@webiny/plugin": ["../plugin/src"]
     },
     "baseUrl": "."
   }
