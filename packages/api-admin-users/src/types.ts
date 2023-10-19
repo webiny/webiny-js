@@ -13,6 +13,7 @@ export interface CreatedBy {
 }
 
 export interface BaseUserAttributes {
+    // Required fields.
     id: string;
     displayName: string;
 
@@ -21,7 +22,7 @@ export interface BaseUserAttributes {
     // Check `api-security-okta` package for an example.
     email: string;
 
-    // All optional attributes.
+    // Optional fields.
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any>;
@@ -30,8 +31,11 @@ export interface BaseUserAttributes {
 }
 
 export interface CreateUserInput extends Omit<BaseUserAttributes, "id"> {
+    // ID can be provided, but it's not required. If not required, it will be auto-generated.
     id?: string;
-    // TODO: Cognito only
+
+    // At the moment, this field is only used by the default Cognito IdP setup.
+    // Other IdPs (Auth0, Okta) do not require this field to be present.
     password?: string;
 }
 
