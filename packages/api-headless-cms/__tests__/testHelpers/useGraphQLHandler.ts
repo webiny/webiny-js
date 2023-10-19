@@ -44,7 +44,8 @@ import {
     CMS_IMPORT_STRUCTURE_MUTATION,
     CmsImportStructureMutationVariables,
     CMS_VALIDATE_STRUCTURE_MUTATION,
-    CmsValidateStructureMutationVariables
+    CmsValidateStructureMutationVariables,
+    CmsValidateStructureMutationResponse
 } from "~tests/testHelpers/graphql/structure";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
@@ -143,7 +144,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             });
         },
         async validateCmsStructureMutation(variables: CmsValidateStructureMutationVariables) {
-            return invoke({
+            return invoke<CmsValidateStructureMutationResponse>({
                 body: {
                     query: CMS_VALIDATE_STRUCTURE_MUTATION,
                     variables

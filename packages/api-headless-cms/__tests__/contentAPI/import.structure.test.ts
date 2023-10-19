@@ -1,8 +1,22 @@
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { createCmsGroup } from "~/plugins";
-import { exportedGroupsAndModels } from "~tests/contentAPI/mocks/exportedGroupsAndModels";
+import { CmsGroupPlugin, CmsModelPlugin, createCmsGroup } from "~/plugins";
+import { createModels, exportedGroupsAndModels } from "./mocks/exportedGroupsAndModels";
 import { CmsImportAction } from "~/export/types";
-import { CmsModel } from "~/types";
+import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
+
+const createListFilters = ({ field }: any) => {
+    return `
+    ${field.fieldId}_contains: String
+  `;
+};
+
+const createTypeName = (fieldType: string) => {
+    // `taxonomy` -> `TaxonomyIdName`
+    // `car-ymm` -> `CarYmmIdName`
+    return upperFirst(camelCase(`${fieldType}IdName`));
+};
 
 describe("import cms structure", () => {
     const {
@@ -532,8 +546,7 @@ describe("import cms structure", () => {
 
     it("should import valid groups and models - exported data", async () => {
         const [result] = await importCmsStructureMutation({
-            data: exportedGroupsAndModels,
-            models: exportedGroupsAndModels.models.map(model => model.modelId)
+            data: exportedGroupsAndModels
         });
 
         expect(result).toEqual({
@@ -609,10 +622,9 @@ describe("import cms structure", () => {
         expect(listedModels).toMatchObject(expectedModels);
     });
 
-    it("should show warnings when trying to import groups and models which already exist in the system", async () => {
+    it("should show errors when trying to import groups and models which already exist in the system", async () => {
         const [importResult] = await importCmsStructureMutation({
-            data: exportedGroupsAndModels,
-            models: exportedGroupsAndModels.models.map(model => model.modelId)
+            data: exportedGroupsAndModels
         });
         expect(importResult).toMatchObject({
             data: {
@@ -624,6 +636,46 @@ describe("import cms structure", () => {
                 }
             }
         });
+
+        const [listGroupsResponse] = await listContentModelGroupsQuery();
+        expect(listGroupsResponse).toMatchObject({
+            data: {
+                listContentModelGroups: {
+                    data: [
+                        {
+                            id: "64d4c105110b570008736515",
+                            name: "Blog"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+        expect(listGroupsResponse.data.listContentModelGroups.data).toHaveLength(1);
+
+        const [listModelsResponse] = await listContentModelsQuery();
+        expect(listModelsResponse).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
+                            modelId: "article",
+                            name: "Article"
+                        },
+                        {
+                            modelId: "author",
+                            name: "Author"
+                        },
+                        {
+                            modelId: "category",
+                            name: "Category"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+        expect(listModelsResponse.data.listContentModels.data).toHaveLength(3);
 
         const [validateResult] = await validateCmsStructureMutation({
             data: exportedGroupsAndModels
@@ -672,6 +724,292 @@ describe("import cms structure", () => {
                             }
                         ],
                         message: "Validation done."
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [secondImportResult] = await importCmsStructureMutation({
+            data: exportedGroupsAndModels
+        });
+        expect(secondImportResult).toMatchObject({
+            data: {
+                importStructure: {
+                    data: {
+                        groups: [
+                            {
+                                group: {
+                                    id: "64d4c105110b570008736515",
+                                    name: "Blog"
+                                },
+                                action: null,
+                                error: null
+                            }
+                        ],
+                        models: [
+                            {
+                                action: null,
+                                error: null,
+                                related: ["author", "category"],
+                                model: {
+                                    modelId: "article",
+                                    name: "Article"
+                                }
+                            },
+                            {
+                                action: null,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "author",
+                                    name: "Author"
+                                }
+                            },
+                            {
+                                action: null,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "category",
+                                    name: "Category"
+                                }
+                            }
+                        ],
+                        message: "Import done."
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should import extremely complex and large structure", async () => {
+        const structurePlugins = createModels();
+
+        const pluginGroups = (structurePlugins as CmsGroupPlugin[])
+            .filter(pl => {
+                return pl.type === CmsGroupPlugin.type;
+            })
+            .map(pl => {
+                return pl.contentModelGroup;
+            });
+        const pluginModels = (structurePlugins as unknown as CmsModelPlugin[])
+            .filter(pl => {
+                return pl.type === CmsModelPlugin.type;
+            })
+            .map(pl => {
+                return pl.contentModel;
+            });
+
+        const {
+            validateCmsStructureMutation,
+            importCmsStructureMutation,
+            listContentModelsQuery,
+            listContentModelGroupsQuery
+        } = useGraphQLHandler({
+            path: "manage/en-US",
+            plugins: [structurePlugins]
+        });
+
+        const [validationResult] = await validateCmsStructureMutation({
+            data: exportedGroupsAndModels
+        });
+
+        const codeGroups = (validationResult.data?.validateImportStructure?.data?.groups || [])
+            .filter(item => {
+                return item.action === CmsImportAction.CODE;
+            })
+            .map(item => {
+                return item.group.id;
+            });
+        const codeModels = (validationResult.data?.validateImportStructure?.data?.models || [])
+            .filter(item => {
+                return item.action === CmsImportAction.CODE;
+            })
+            .map(item => {
+                return item.model.modelId;
+            });
+
+        expect(validationResult).toEqual({
+            data: {
+                validateImportStructure: {
+                    data: {
+                        groups: exportedGroupsAndModels.groups.map(group => {
+                            const isCodeGroup = codeGroups.includes(group.id);
+                            return {
+                                action: isCodeGroup ? CmsImportAction.CODE : CmsImportAction.CREATE,
+                                error: isCodeGroup ? expect.any(Object) : null,
+                                group: {
+                                    id: group.id,
+                                    name: group.name
+                                }
+                            };
+                        }),
+                        models: exportedGroupsAndModels.models.map(model => {
+                            const isCodeModel = codeModels.includes(model.modelId);
+                            return {
+                                action: isCodeModel ? CmsImportAction.CODE : CmsImportAction.CREATE,
+                                error: isCodeModel ? expect.any(Object) : null,
+                                model: {
+                                    modelId: model.modelId,
+                                    name: model.name
+                                },
+                                related: isCodeModel ? null : expect.any(Array)
+                            };
+                        }),
+                        message: "Validation done."
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const importData = {
+            groups: exportedGroupsAndModels.groups.filter(group => {
+                return !codeGroups.includes(group.id);
+            }),
+            models: exportedGroupsAndModels.models.filter(model => {
+                return !codeModels.includes(model.modelId);
+            })
+        };
+        const [importResult] = await importCmsStructureMutation({
+            data: importData
+        });
+
+        expect(importResult).toEqual({
+            data: {
+                importStructure: {
+                    data: {
+                        groups: importData.groups.map(group => {
+                            return {
+                                action: CmsImportAction.CREATE,
+                                error: null,
+                                group: {
+                                    id: group.id,
+                                    name: group.name
+                                },
+                                imported: true
+                            };
+                        }),
+                        models: importData.models.map(model => {
+                            return {
+                                action: CmsImportAction.CREATE,
+                                error: null,
+                                model: {
+                                    modelId: model.modelId,
+                                    name: model.name
+                                },
+                                related: expect.any(Array),
+                                imported: true
+                            };
+                        }),
+                        message: "Import done."
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listGroupsResponse] = await listContentModelGroupsQuery();
+        expect(listGroupsResponse).toMatchObject({
+            data: {
+                listContentModelGroups: {
+                    data: importData.groups.concat(pluginGroups as any).map(group => {
+                        return {
+                            id: group.id
+                        };
+                    })
+                }
+            }
+        });
+        expect(listGroupsResponse.data.listContentModelGroups.data).toHaveLength(
+            pluginGroups.length + importData.groups.length
+        );
+
+        const [listModelsResponse] = await listContentModelsQuery();
+        expect(listModelsResponse).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: expect.any(Array),
+                    error: null
+                }
+            }
+        });
+        expect(listModelsResponse.data.listContentModels.data).toHaveLength(
+            pluginModels.length + importData.models.length
+        );
+
+        const [validationAfterImportResult] = await validateCmsStructureMutation({
+            data: exportedGroupsAndModels
+        });
+
+        expect(validationAfterImportResult).toEqual({
+            data: {
+                validateImportStructure: {
+                    data: {
+                        groups: exportedGroupsAndModels.groups.map(group => {
+                            const isCodeGroup = codeGroups.includes(group.id);
+                            return {
+                                action: isCodeGroup ? CmsImportAction.CODE : CmsImportAction.UPDATE,
+                                error: isCodeGroup ? expect.any(Object) : null,
+                                group: {
+                                    id: group.id,
+                                    name: group.name
+                                }
+                            };
+                        }),
+                        models: exportedGroupsAndModels.models.map(model => {
+                            const isCodeModel = codeModels.includes(model.modelId);
+                            return {
+                                action: isCodeModel ? CmsImportAction.CODE : CmsImportAction.UPDATE,
+                                error: isCodeModel ? expect.any(Object) : null,
+                                model: {
+                                    modelId: model.modelId,
+                                    name: model.name
+                                },
+                                related: isCodeModel ? null : expect.any(Array)
+                            };
+                        }),
+                        message: "Validation done."
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [importAfterImportResult] = await importCmsStructureMutation({
+            data: importData
+        });
+
+        expect(importAfterImportResult).toEqual({
+            data: {
+                importStructure: {
+                    data: {
+                        groups: importData.groups.map(group => {
+                            return {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                group: {
+                                    id: group.id,
+                                    name: group.name
+                                },
+                                imported: true
+                            };
+                        }),
+                        models: importData.models.map(model => {
+                            return {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                model: {
+                                    modelId: model.modelId,
+                                    name: model.name
+                                },
+                                related: expect.any(Array),
+                                imported: true
+                            };
+                        }),
+                        message: "Import done."
                     },
                     error: null
                 }

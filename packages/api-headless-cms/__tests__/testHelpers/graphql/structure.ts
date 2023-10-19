@@ -1,4 +1,5 @@
-import { CmsImportStructureParamsData } from "~/export/types";
+import { CmsImportStructureParamsData, HeadlessCmsImportValidateResponse } from "~/export/types";
+import { CmsError } from "~tests/contentAPI/aco/setup/graphql/contentEntry";
 
 export interface CmsExportStructureQueryVariables {
     models?: string[];
@@ -6,11 +7,19 @@ export interface CmsExportStructureQueryVariables {
 
 export interface CmsImportStructureMutationVariables {
     data: CmsImportStructureParamsData;
-    models: string[];
 }
 
 export interface CmsValidateStructureMutationVariables {
     data: CmsImportStructureParamsData;
+}
+
+export interface CmsValidateStructureMutationResponse {
+    data: {
+        validateImportStructure: {
+            data: HeadlessCmsImportValidateResponse | null;
+            error: CmsError | null;
+        };
+    };
 }
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -39,6 +48,30 @@ const MODELS_FIELD = /* GraphQL */ `
         }
         related
         action
+        ${ERROR_FIELD}
+    }
+`;
+
+const IMPORTED_GROUPS_FIELD = /* GraphQL */ `
+    groups {
+        group {
+            id
+            name
+        }
+        action
+        imported
+        ${ERROR_FIELD}
+    }
+`;
+const IMPORTED_MODELS_FIELD = /* GraphQL */ `
+    models {
+        model {
+            modelId
+            name
+        }
+        related
+        action
+        imported
         ${ERROR_FIELD}
     }
 `;
@@ -73,12 +106,11 @@ export const CMS_VALIDATE_STRUCTURE_MUTATION = /* GraphQL */ `
 export const CMS_IMPORT_STRUCTURE_MUTATION = /* GraphQL */ `
     mutation CmsImportStructureMutation(
         $data: CmsImportStructureInput!
-        $models: [String!]!
     ) {
-        importStructure(data: $data, models: $models) {
+        importStructure(data: $data) {
             data {
-                ${GROUPS_FIELD}
-                ${MODELS_FIELD}
+                ${IMPORTED_GROUPS_FIELD}
+                ${IMPORTED_MODELS_FIELD}
                 message
             }
             ${ERROR_FIELD}

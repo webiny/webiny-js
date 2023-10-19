@@ -1,3 +1,5 @@
+import { createCmsGroup, createCmsModel } from "~/plugins";
+
 export const exportedGroupsAndModels = {
     groups: [
         {
@@ -6,6 +8,13 @@ export const exportedGroupsAndModels = {
             slug: "blog",
             description: null,
             icon: "fab/blogger-b"
+        },
+        {
+            id: "64d4c105110b570008736516",
+            name: "Machines",
+            slug: "machines",
+            description: null,
+            icon: "fas/location-dot"
         }
     ],
     models: [
@@ -224,6 +233,81 @@ export const exportedGroupsAndModels = {
             ],
             layout: [["3oqcch5d"]],
             titleFieldId: "title"
+        },
+        {
+            modelId: "machines",
+            name: "Category",
+            group: "64d4c105110b570008736516",
+            icon: "fas/location-dot",
+            singularApiName: "Machine",
+            pluralApiName: "Machine",
+            fields: [
+                {
+                    multipleValues: false,
+                    listValidation: [],
+                    settings: {},
+                    renderer: { name: "text-input" },
+                    helpText: null,
+                    predefinedValues: { enabled: false, values: [] },
+                    label: "Title",
+                    type: "text",
+                    tags: [],
+                    placeholderText: null,
+                    id: "a13r8hgds",
+                    validation: [
+                        { name: "required", message: "Title is a required field.", settings: {} }
+                    ],
+                    storageId: "text@3oqcch5d",
+                    fieldId: "title"
+                }
+            ],
+            layout: [["a13r8hgds"]],
+            titleFieldId: "title"
         }
     ]
+};
+
+export const createModels = () => {
+    return [
+        createCmsGroup({
+            id: "64d4c105110b570008736516",
+            name: "Machines",
+            slug: "machines",
+            description: null,
+            icon: "fas/location-dot"
+        }),
+        createCmsModel({
+            modelId: "machines",
+            name: "Category",
+            group: {
+                id: "64d4c105110b570008736516",
+                name: "Machines"
+            },
+            icon: "fas/location-dot",
+            singularApiName: "Machine",
+            pluralApiName: "Machine",
+            description: "",
+            fields: [
+                {
+                    multipleValues: false,
+                    listValidation: [],
+                    settings: {},
+                    renderer: { name: "text-input" },
+                    helpText: null,
+                    predefinedValues: { enabled: false, values: [] },
+                    label: "Title",
+                    type: "text",
+                    tags: [],
+                    placeholderText: null,
+                    id: "a13r8hgds",
+                    validation: [
+                        { name: "required", message: "Title is a required field.", settings: {} }
+                    ],
+                    fieldId: "title"
+                }
+            ],
+            layout: [["a13r8hgds"]],
+            titleFieldId: "title"
+        })
+    ];
 };
