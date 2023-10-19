@@ -23,11 +23,11 @@ export interface BaseUserAttributes {
     email: string;
 
     // Optional fields.
+    group?: string | null;
+    team?: string | null;
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any>;
-    group?: string | null;
-    team?: string | null;
 }
 
 export interface CreateUserInput extends Omit<BaseUserAttributes, "id"> {
@@ -43,9 +43,6 @@ export type UpdateUserInput = Partial<CreateUserInput>;
 
 export interface AdminUser extends BaseUserAttributes {
     tenant: string;
-    group?: string | null;
-    team?: string | null;
-    avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy | null | undefined;
     webinyVersion: string;
