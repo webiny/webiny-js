@@ -1,11 +1,12 @@
 import { createModelImportValidation } from "~/crud/contentModel/validation";
 import {
+    CmsImportAction,
     CmsImportError,
     HeadlessCmsImportStructureParamsDataModel,
     ValidatedCmsModel,
     ValidatedCmsModelResult
 } from "~/export/types";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsDynamicZoneTemplate, CmsGroup, CmsModel, CmsModelField } from "~/types";
 import { createZodError } from "@webiny/utils";
 
 interface CreateModelValidationParams {
@@ -13,7 +14,31 @@ interface CreateModelValidationParams {
     models: CmsModel[];
 }
 
-const createModelValidation = (params: CreateModelValidationParams) => {
+interface AddCodeMessageParams {
+    action: CmsImportAction;
+}
+
+const addCodeMessage = (params: AddCodeMessageParams) => {
+    if (params.action !== CmsImportAction.CODE) {
+        return params;
+    }
+    return {
+        ...params,
+        errors: [
+            {
+                message: `The model is defined via plugin and it cannot be updated.`,
+                code: "MODEL_IS_A_PLUGIN"
+            }
+        ]
+    };
+};
+
+interface ValidationResult {
+    errors?: CmsImportError[];
+    action: CmsImportAction;
+}
+
+const validateModel = (params: CreateModelValidationParams): ValidationResult => {
     const { model, models } = params;
     /**
      * Let's check if model values that must be unique, already exist.
@@ -31,94 +56,103 @@ const createModelValidation = (params: CreateModelValidationParams) => {
             m.pluralApiName.toLowerCase() === model.pluralApiName.toLowerCase() ||
             m.pluralApiName.toLowerCase() === model.singularApiName.toString()
     );
-    const errors: CmsImportError[] = [];
+
+    const UPDATE_KEYWORD = existingModelId?.isPlugin
+        ? CmsImportAction.CODE
+        : CmsImportAction.UPDATE;
     /**
      * There are few cases that we must address:
+     *
+     * 1. modelId, singular and plural names do not exist in any of the models
+     * - this is OK, we can create the model
      */
-    const validate = (): "create" | "update" | false => {
-        /**
-         * 1. modelId, singular and plural names do not exist in any of the models
-         * - this is OK, we can create the model
-         */
-        if (!existingModelId && !existingSingularApiName && !existingPluralApiName) {
-            return "create";
-        }
-        /**
-         * 2. modelId, singular and plural names are a part of a single model
-         * - this is OK, we can update the model
-         */
-        if (
-            existingModelId &&
-            existingSingularApiName &&
-            existingPluralApiName &&
-            existingModelId.modelId === existingSingularApiName.modelId &&
-            existingModelId.modelId === existingPluralApiName.modelId
-        ) {
-            return "update";
-        }
-        /**
-         * 3. modelId already exists, but singular and plural names do not
-         *  - this is OK, we can update the model
-         */
-        if (existingModelId && !existingSingularApiName && !existingPluralApiName) {
-            return "update";
-        }
-        /**
-         * 4. modelId already exists, but only the singular name exists.
-         * - this is OK, we can update the model
-         */
-        if (
-            existingModelId &&
-            existingSingularApiName?.modelId === existingModelId.modelId &&
-            !existingPluralApiName
-        ) {
-            return "update";
-        }
-        /**
-         * 5. modelId already exists, but only the plural name exists.
-         * - this is OK, we can update the model
-         */
-        if (
-            existingModelId &&
-            existingPluralApiName?.modelId === existingModelId.modelId &&
-            !existingSingularApiName
-        ) {
-            return "update";
-        }
-        /**
-         * 6. modelId already exists, but singular and plural names are in different models.
-         */
-        if (
-            existingModelId &&
-            (existingSingularApiName?.modelId !== existingModelId.modelId ||
-                existingPluralApiName?.modelId !== existingModelId.modelId)
-        ) {
-            errors.push({
-                message: `The model with modelId "${model.modelId}" has singular or plural API names same as some other model.`,
-                code: "MODEL_API_NAMES_ERROR"
-            });
-            return false;
-        }
-        errors.push({
-            message: `The model with modelId "${model.modelId}" cannot be imported.`,
-            code: "MODEL_IMPORT_ERROR",
-            data: {
-                modelId: existingModelId?.modelId,
-                singularApiName: existingSingularApiName?.modelId,
-                pluralApiName: existingPluralApiName?.modelId
-            }
+    if (!existingModelId && !existingSingularApiName && !existingPluralApiName) {
+        return {
+            action: CmsImportAction.CREATE
+        };
+    }
+    /**
+     * 2. modelId, singular and plural names are a part of a single model
+     * - this is OK, we can update the model
+     */
+    if (
+        existingModelId &&
+        existingSingularApiName &&
+        existingPluralApiName &&
+        existingModelId.modelId === existingSingularApiName.modelId &&
+        existingModelId.modelId === existingPluralApiName.modelId
+    ) {
+        return addCodeMessage({
+            action: UPDATE_KEYWORD
         });
-        return false;
-    };
-
-    const result = validate();
+    }
+    /**
+     * 3. modelId already exists, but singular and plural names do not
+     *  - this is OK, we can update the model
+     */
+    if (existingModelId && !existingSingularApiName && !existingPluralApiName) {
+        return addCodeMessage({
+            action: UPDATE_KEYWORD
+        });
+    }
+    /**
+     * 4. modelId already exists, but only the singular name exists.
+     * - this is OK, we can update the model
+     */
+    if (
+        existingModelId &&
+        existingSingularApiName?.modelId === existingModelId.modelId &&
+        !existingPluralApiName
+    ) {
+        return addCodeMessage({
+            action: UPDATE_KEYWORD
+        });
+    }
+    /**
+     * 5. modelId already exists, but only the plural name exists.
+     * - this is OK, we can update the model
+     */
+    if (
+        existingModelId &&
+        existingPluralApiName?.modelId === existingModelId.modelId &&
+        !existingSingularApiName
+    ) {
+        return addCodeMessage({
+            action: UPDATE_KEYWORD
+        });
+    }
+    /**
+     * 6. modelId already exists, but singular and plural names are in different models.
+     */
+    if (
+        existingModelId &&
+        (existingSingularApiName?.modelId !== existingModelId.modelId ||
+            existingPluralApiName?.modelId !== existingModelId.modelId)
+    ) {
+        return {
+            action: CmsImportAction.NONE,
+            errors: [
+                {
+                    message: `The model has singular or plural API names same as some other model.`,
+                    code: "MODEL_API_NAMES_ERROR"
+                }
+            ]
+        };
+    }
 
     return {
-        isValid: () => {
-            return result !== false;
-        },
-        action: typeof result === "string" ? result : "unknown",
-        errors
+        action: CmsImportAction.NONE,
+        errors: [
+            {
+                message: `The model cannot be imported.`,
+                code: "MODEL_IMPORT_ERROR",
+                data: {
+                    modelId: existingModelId?.modelId,
+                    singularApiName: existingSingularApiName?.modelId,
+                    pluralApiName: existingPluralApiName?.modelId
+                }
+            }
+        ]
     };
 };
 
@@ -128,13 +162,66 @@ interface Params {
     input: HeadlessCmsImportStructureParamsDataModel[];
 }
 
+interface GetRelatedModelsParams {
+    fields: CmsModelField[];
+    models: CmsModel[];
+}
+
+const getRelatedModels = (params: GetRelatedModelsParams): string[] => {
+    const { fields, models } = params;
+
+    const result: string[] = [];
+    for (const field of fields) {
+        if (field.type === "ref") {
+            for (const model of field.settings?.models || []) {
+                result.push(model.modelId);
+            }
+        } else if (field.type === "object") {
+            result.push(...getRelatedModels({ fields: field.settings?.fields || [], models }));
+        } else if (field.type === "dynamicZone") {
+            const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
+            for (const tpl of templates) {
+                result.push(
+                    ...getRelatedModels({
+                        fields: tpl.fields || [],
+                        models
+                    })
+                );
+            }
+        }
+    }
+
+    return Array.from(new Set(result));
+};
+
 export const validateModels = async (params: Params): Promise<ValidatedCmsModelResult[]> => {
     const { groups, models, input } = params;
 
     const validation = createModelImportValidation();
 
+    // const getRelatedModels = (fields: CmsModelField[]): string[] => {
+    //     const results = fields.reduce<string[]>((related, field) => {
+    //         if (field.type === "ref") {
+    //             for (const model of field.settings?.models || []) {
+    //                 related.push(model.modelId);
+    //             }
+    //             return related;
+    //         } else if (field.type === "object") {
+    //             return [...related, ...getRelatedModels(field.settings?.fields || [])];
+    //         } else if (field.type === "dynamicZone") {
+    //             const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
+    //             for (const tpl of templates) {
+    //                 related.push(...getRelatedModels(tpl.fields || []));
+    //             }
+    //             return related;
+    //         }
+    //         return related;
+    //     }, []);
+    //     return Array.from(new Set(...results));
+    // };
+
     return await Promise.all(
-        input.map(async model => {
+        input.map(async (model): Promise<ValidatedCmsModelResult> => {
             const result = await validation.safeParseAsync(model);
             if (!result.success) {
                 const error = createZodError(result.error);
@@ -167,20 +254,24 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 };
             }
 
-            const modelValidation = createModelValidation({
+            const modelValidationResult = validateModel({
                 model: data,
                 models
             });
 
-            if (modelValidation.isValid()) {
+            if (!modelValidationResult.errors?.length) {
                 return {
                     model: data,
-                    action: modelValidation.action
+                    related: getRelatedModels({
+                        fields: data.fields,
+                        models
+                    }),
+                    action: modelValidationResult.action
                 };
             }
             return {
                 model: data,
-                error: modelValidation.errors[0]
+                error: modelValidationResult.errors[0]
             };
         })
     );

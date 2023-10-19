@@ -1,10 +1,10 @@
 import { CmsGroup } from "~/types";
 import { createGroupCreateValidation } from "~/crud/contentModelGroup/validation";
 import { createZodError } from "@webiny/utils";
-import { ValidatedCmsGroupResult } from "~/export/types";
+import { CmsImportAction, ValidatedCmsGroupResult } from "~/export/types";
 
 interface Params {
-    groups: Pick<CmsGroup, "id" | "slug">[];
+    groups: Pick<CmsGroup, "id" | "slug" | "isPlugin">[];
     input: Partial<CmsGroup>[];
 }
 
@@ -14,7 +14,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
     const validation = createGroupCreateValidation();
 
     return await Promise.all(
-        input.map(async group => {
+        input.map(async (group): Promise<ValidatedCmsGroupResult> => {
             const result = await validation.safeParseAsync(group);
             if (!result.success) {
                 const error = createZodError(result.error);
@@ -46,29 +46,59 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
                     }
                 };
             }
+
+            const isPluginGroup = groups.some(g => {
+                if (!g.isPlugin) {
+                    return false;
+                }
+                return g.id === data.id || g.slug === data.slug;
+            });
+            if (isPluginGroup) {
+                return {
+                    group: data,
+                    action: CmsImportAction.CODE,
+                    error: {
+                        message: `Group already exists, but it is a plugin group - cannot be updated.`,
+                        code: "GROUP_IS_PLUGIN"
+                    }
+                };
+            }
+
+            const canBeUpdated = groups.some(g => {
+                return g.id === data.id && g.slug === data.slug;
+            });
+            if (canBeUpdated) {
+                return {
+                    group: data,
+                    action: CmsImportAction.UPDATE
+                };
+            }
+
             const groupWithIdExists = groups.some(g => g.id === data.id);
             if (groupWithIdExists) {
                 return {
                     group: data,
                     error: {
-                        message: `Group with ID "${data.id}" already exists.`,
+                        message: `Group with ID "${data.id}" already exists. Cannot update it because the slug is different.`,
                         code: "GROUP_ID_EXISTS"
                     }
                 };
             }
+
             const groupWithSlugExists = groups.some(g => g.slug === data.slug);
             if (groupWithSlugExists) {
                 return {
                     group: data,
                     error: {
-                        message: `Group with slug "${data.slug}" already exists.`,
+                        message: `Group with slug "${data.slug}" already exists. Cannot update because the ID is different.`,
                         code: "GROUP_SLUG_EXISTS"
                     }
                 };
             }
 
             return {
-                group: data
+                group: data,
+                action: CmsImportAction.CREATE
             };
         })
     );

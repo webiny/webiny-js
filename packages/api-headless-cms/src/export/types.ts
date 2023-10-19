@@ -7,6 +7,12 @@ export interface CmsImportError {
     stack?: any;
 }
 
+export enum CmsImportAction {
+    CREATE = "create",
+    UPDATE = "update",
+    CODE = "code",
+    NONE = "none"
+}
 /**
  * Structure export - groups and models.
  */
@@ -88,11 +94,13 @@ export interface HeadlessCmsImportStructure {
 
 export interface ValidCmsGroupResult {
     group: CmsGroup;
+    action: CmsImportAction;
     error?: never;
 }
 
 export interface InvalidCmsGroupResult {
     group: CmsGroup;
+    action?: CmsImportAction;
     error: CmsImportError;
 }
 
@@ -101,13 +109,14 @@ export interface ValidatedCmsModel extends Omit<CmsModel, "group"> {
 }
 export interface ValidCmsModelResult {
     model: ValidatedCmsModel;
-    action: string;
+    related: string[];
+    action: CmsImportAction;
     error?: never;
 }
 
 export interface InvalidCmsModelResult {
     model: ValidatedCmsModel;
-    action?: never;
+    action?: CmsImportAction;
     error: CmsImportError;
 }
 

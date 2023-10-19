@@ -34,6 +34,19 @@ const plugin = new CmsGraphQLSchemaPlugin({
             tags: [String!]
         }
 
+        enum CmsImportGroupStructureAction {
+            create
+            update
+            code
+        }
+
+        enum CmsImportModelStructureAction {
+            create
+            update
+            code
+            none
+        }
+
         input CmsImportStructureInput {
             groups: [CmsImportStructureGroupInput!]!
             models: [CmsImportStructureModelInput!]!
@@ -47,16 +60,20 @@ const plugin = new CmsGraphQLSchemaPlugin({
         type CmsImportValidateResponseDataGroupResult {
             group: CmsImportValidateResponseDataGroupResultItem!
             error: CmsError
+            action: CmsImportGroupStructureAction
         }
 
         type CmsImportValidateResponseDataModelResultItem {
             modelId: String
             name: String
+            group: String
         }
 
         type CmsImportValidateResponseDataModelResult {
             model: CmsImportValidateResponseDataModelResultItem!
+            related: [String!]
             error: CmsError
+            action: CmsImportModelStructureAction
         }
 
         type CmsImportValidateResponseData {
@@ -77,21 +94,25 @@ const plugin = new CmsGraphQLSchemaPlugin({
         type CmsImportStructureResponseDataGroupResult {
             group: CmsImportStructureResponseDataGroupResultItem!
             error: CmsError
+            action: CmsImportGroupStructureAction
         }
 
         type CmsImportStructureResponseDataResultItem {
             modelId: String!
             name: String!
+            group: String!
         }
 
-        type CmsImportStructureResponseDataResult {
+        type CmsImportStructureResponseDataModelResult {
             model: CmsImportStructureResponseDataResultItem!
+            related: [String!]
             error: CmsError
+            action: CmsImportModelStructureAction
         }
 
         type CmsImportStructureResponseData {
             groups: [CmsImportStructureResponseDataGroupResult!]!
-            models: [CmsImportStructureResponseDataResult!]!
+            models: [CmsImportStructureResponseDataModelResult!]!
             message: String!
         }
 

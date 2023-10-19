@@ -196,7 +196,7 @@ export const createModelImportValidation = () => {
                 if (value.match(/^[a-zA-Z]/) === null) {
                     return false;
                 }
-                return camelCase(value) === value;
+                return true;
             },
             value => {
                 return {

@@ -4,16 +4,12 @@ import { importData } from "./imports/importData";
 import { validateInput } from "./imports/validateInput";
 
 const fetchGroupsAndModels = async (context: CmsContext) => {
-    const groups = await context.security.withoutAuthorization(async () => {
-        return await context.cms.listGroups();
+    return await context.security.withoutAuthorization(async () => {
+        return {
+            groups: await context.cms.listGroups(),
+            models: await context.cms.listModels()
+        };
     });
-    const models = await context.security.withoutAuthorization(async () => {
-        return await context.cms.listModels();
-    });
-    return {
-        groups,
-        models
-    };
 };
 
 export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {

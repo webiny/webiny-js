@@ -1,6 +1,8 @@
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { createCmsGroup } from "~/plugins";
 import { exportedGroupsAndModels } from "~tests/contentAPI/mocks/exportedGroupsAndModels";
+import { CmsImportAction } from "~/export/types";
+import { CmsModel } from "~/types";
 
 describe("import cms structure", () => {
     const {
@@ -58,6 +60,7 @@ describe("import cms structure", () => {
                                     id: group.id,
                                     name: group.name
                                 },
+                                action: CmsImportAction.CREATE,
                                 error: null
                             }
                         ],
@@ -96,6 +99,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
+                                action: null,
                                 group: {
                                     id: group1.id,
                                     name: group1.name
@@ -107,6 +111,7 @@ describe("import cms structure", () => {
                                 }
                             },
                             {
+                                action: null,
                                 group: {
                                     id: "",
                                     name: group2.name
@@ -179,28 +184,31 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
+                                action: "code",
                                 group: {
                                     id: group1.id,
                                     name: group1.name
                                 },
                                 error: {
-                                    code: "GROUP_SLUG_EXISTS",
+                                    code: "GROUP_IS_PLUGIN",
                                     data: null,
-                                    message: `Group with slug "group-1" already exists.`
+                                    message: `Group already exists, but it is a plugin group - cannot be updated.`
                                 }
                             },
                             {
+                                action: "code",
                                 group: {
                                     id: group2.id,
                                     name: group2.name
                                 },
                                 error: {
-                                    code: "GROUP_ID_EXISTS",
+                                    code: "GROUP_IS_PLUGIN",
                                     data: null,
-                                    message: `Group with ID "group-2" already exists.`
+                                    message: `Group already exists, but it is a plugin group - cannot be updated.`
                                 }
                             },
                             {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group3.id,
                                     name: group3.name
@@ -243,6 +251,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group1.id,
                                     name: group1.name
@@ -250,6 +259,7 @@ describe("import cms structure", () => {
                                 error: null
                             },
                             {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group2.id,
                                     name: group2.name
@@ -296,6 +306,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group.id,
                                     name: group.name
@@ -305,10 +316,12 @@ describe("import cms structure", () => {
                         ],
                         models: [
                             {
+                                action: null,
                                 model: {
                                     modelId: "",
                                     name: ""
                                 },
+                                related: null,
                                 error: {
                                     code: "VALIDATION_FAILED_INVALID_FIELDS",
                                     data: {
@@ -387,6 +400,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group.id,
                                     name: group.name
@@ -396,10 +410,12 @@ describe("import cms structure", () => {
                         ],
                         models: [
                             {
+                                action: null,
                                 model: {
                                     modelId: "1",
                                     name: "2"
                                 },
+                                related: null,
                                 error: {
                                     code: "VALIDATION_FAILED_INVALID_FIELDS",
                                     data: {
@@ -453,12 +469,23 @@ describe("import cms structure", () => {
             data: exportedGroupsAndModels
         });
 
+        const articleModel = exportedGroupsAndModels.models.find(
+            model => model.modelId === "article"
+        ) as unknown as CmsModel;
+        const authorModel = exportedGroupsAndModels.models.find(
+            model => model.modelId === "author"
+        ) as unknown as CmsModel;
+        const categoryModel = exportedGroupsAndModels.models.find(
+            model => model.modelId === "category"
+        ) as unknown as CmsModel;
+
         expect(result).toEqual({
             data: {
                 validateImportStructure: {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
                             return {
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group.id,
                                     name: group.name
@@ -466,15 +493,35 @@ describe("import cms structure", () => {
                                 error: null
                             };
                         }),
-                        models: exportedGroupsAndModels.models.map(model => {
-                            return {
+                        models: [
+                            {
+                                action: CmsImportAction.CREATE,
                                 model: {
-                                    modelId: model.modelId,
-                                    name: model.name
+                                    modelId: articleModel.modelId,
+                                    name: articleModel.name
                                 },
+                                related: ["author", "category"],
                                 error: null
-                            };
-                        }),
+                            },
+                            {
+                                action: CmsImportAction.CREATE,
+                                model: {
+                                    modelId: authorModel.modelId,
+                                    name: authorModel.name
+                                },
+                                related: [],
+                                error: null
+                            },
+                            {
+                                action: CmsImportAction.CREATE,
+                                model: {
+                                    modelId: categoryModel.modelId,
+                                    name: categoryModel.name
+                                },
+                                related: [],
+                                error: null
+                            }
+                        ],
                         message: "Validation done."
                     },
                     error: null
@@ -495,6 +542,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
                             return {
+                                action: null,
                                 group: {
                                     id: group.id,
                                     name: group.name
@@ -504,6 +552,8 @@ describe("import cms structure", () => {
                         }),
                         models: exportedGroupsAndModels.models.map(model => {
                             return {
+                                action: null,
+                                related: null,
                                 model: {
                                     modelId: model.modelId,
                                     name: model.name
@@ -557,5 +607,75 @@ describe("import cms structure", () => {
         const listedModels = listModelsResponse.data.listContentModels.data;
         expect(listedModels).toHaveLength(expectedModels.length);
         expect(listedModels).toMatchObject(expectedModels);
+    });
+
+    it("should show warnings when trying to import groups and models which already exist in the system", async () => {
+        const [importResult] = await importCmsStructureMutation({
+            data: exportedGroupsAndModels,
+            models: exportedGroupsAndModels.models.map(model => model.modelId)
+        });
+        expect(importResult).toMatchObject({
+            data: {
+                importStructure: {
+                    data: {
+                        message: "Import done."
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [validateResult] = await validateCmsStructureMutation({
+            data: exportedGroupsAndModels
+        });
+        expect(validateResult).toEqual({
+            data: {
+                validateImportStructure: {
+                    data: {
+                        groups: [
+                            {
+                                group: {
+                                    id: "64d4c105110b570008736515",
+                                    name: "Blog"
+                                },
+                                action: CmsImportAction.UPDATE,
+                                error: null
+                            }
+                        ],
+                        models: [
+                            {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                related: ["author", "category"],
+                                model: {
+                                    modelId: "article",
+                                    name: "Article"
+                                }
+                            },
+                            {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "author",
+                                    name: "Author"
+                                }
+                            },
+                            {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "category",
+                                    name: "Category"
+                                }
+                            }
+                        ],
+                        message: "Validation done."
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

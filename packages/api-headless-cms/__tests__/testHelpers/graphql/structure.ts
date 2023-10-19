@@ -27,6 +27,7 @@ const GROUPS_FIELD = /* GraphQL */ `
             id
             name
         }
+        action
         ${ERROR_FIELD}
     }
 `;
@@ -36,6 +37,8 @@ const MODELS_FIELD = /* GraphQL */ `
             modelId
             name
         }
+        related
+        action
         ${ERROR_FIELD}
     }
 `;

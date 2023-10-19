@@ -553,6 +553,10 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+    /**
+     * Is this model created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -1091,6 +1095,10 @@ export interface CmsGroup {
      * Only available for the plugin constructed groups.
      */
     isPrivate?: boolean;
+    /**
+     * Is this group created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
