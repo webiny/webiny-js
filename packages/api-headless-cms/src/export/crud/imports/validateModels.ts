@@ -199,27 +199,6 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
 
     const validation = createModelImportValidation();
 
-    // const getRelatedModels = (fields: CmsModelField[]): string[] => {
-    //     const results = fields.reduce<string[]>((related, field) => {
-    //         if (field.type === "ref") {
-    //             for (const model of field.settings?.models || []) {
-    //                 related.push(model.modelId);
-    //             }
-    //             return related;
-    //         } else if (field.type === "object") {
-    //             return [...related, ...getRelatedModels(field.settings?.fields || [])];
-    //         } else if (field.type === "dynamicZone") {
-    //             const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
-    //             for (const tpl of templates) {
-    //                 related.push(...getRelatedModels(tpl.fields || []));
-    //             }
-    //             return related;
-    //         }
-    //         return related;
-    //     }, []);
-    //     return Array.from(new Set(...results));
-    // };
-
     return await Promise.all(
         input.map(async (model): Promise<ValidatedCmsModelResult> => {
             const result = await validation.safeParseAsync(model);
