@@ -449,10 +449,10 @@ Resources:
 
               # We need this to get logs from CloudWatch during data migrations.
               - Effect: Allow
-                Resource: "*"
+                Resource: "arn:aws:logs:*:*:log-group:wby-data-migration-*"
                 Action:
-                  - logs:GetLogEvents
                   - logs:Unmask
+                  - logs:GetLogEvents
 
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition
