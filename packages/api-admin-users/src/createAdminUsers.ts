@@ -129,10 +129,8 @@ export const createAdminUsers = ({
         // @ts-ignore
         async createUser(this: AdminUsers, data) {
             await checkPermission();
+
             const tenant = getTenant();
-
-            await this.isEmailTaken(data.email);
-
             const identity = getIdentity();
 
             let createdBy: CreatedBy | null = null;
@@ -145,13 +143,18 @@ export const createAdminUsers = ({
             }
 
             const id = data.id || mdbid();
+            const email = data.email || `id:${id}`;
             const createdOn = new Date().toISOString();
             const displayName = getDisplayName(data);
             const webinyVersion = process.env.WEBINY_VERSION as string;
 
+            // Before proceeding, ensure that the e-mail is not already taken.
+            await this.isEmailTaken(email);
+
             const user: AdminUser = {
                 ...data,
                 id,
+                email,
                 displayName,
                 createdOn,
                 createdBy,

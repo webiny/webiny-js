@@ -20,7 +20,7 @@ const CreateUserDataModel = withFields({
     // admin users, they're actually passing the user's ID as the e-mail.
     // For example: packages/api-security-okta/src/createAdminUsersHooks.ts:13
     // In the future, we might want to rename this field to `idpId` or similar.
-    email: string({ validation: validation.create("required,minLength:2") }),
+    email: string({ validation: validation.create("minLength:2") }),
 
     firstName: string({ validation: validation.create("minLength:2") }),
     lastName: string({ validation: validation.create("minLength:2") }),

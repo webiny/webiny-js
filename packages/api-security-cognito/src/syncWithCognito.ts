@@ -29,8 +29,8 @@ export interface CognitoConfig {
     userPoolId: string;
     updateAttributes?: Record<string, string | AttributeGetter>;
 
-    getUsername?<TCreateUserInput extends CreateUserInput = CreateUserInput>(
-        user: TCreateUserInput
+    getUsername?<TBaseUserAttributes extends BaseUserAttributes = BaseUserAttributes>(
+        user: TBaseUserAttributes
     ): string;
 
     autoVerify?: CognitoConfigAutoVerify;
@@ -66,6 +66,7 @@ export const syncWithCognito = ({
             // Casting as any because password does not exist on user, but we know it does
             delete (user as any)["password"];
 
+            // @ts-ignore E-mail is present here, but TS does not know that.
             const username = getUsername(inputData);
 
             try {
