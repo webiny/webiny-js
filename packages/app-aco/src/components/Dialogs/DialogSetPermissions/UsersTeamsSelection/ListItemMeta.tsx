@@ -114,39 +114,30 @@ export const ListItemMeta: React.FC<ListItemMetaProps> = ({
         return handle;
     }, [disabledReason, currentLevel.label]);
 
-    const selectLevel = useCallback(e => {
-        const targetIndex = e.target.index!;
-
-        const level = TARGET_LEVELS[targetIndex];
-        if (!level) {
-            // If no level is selected, means that the "Remove access" option was selected.
-            onRemoveAccess({ permission });
-            return;
-        }
-
-        // Needed to do this with a short delay because of a visual glitch. Looks better this way.
-        setTimeout(() => {
-            onUpdatePermission({
-                permission: {
-                    ...permission,
-                    level: level.id as FolderAccessLevel
-                }
-            });
-        }, 75);
-    }, []);
-
     return (
         <UiListItemMeta>
             <ListActions>
                 <Menu
                     handle={handle}
                     disabled={!!disabledReason}
-                    onSelect={selectLevel}
                     // Should prevent first item from being autofocused, but it doesn't. 🤷‍
                     focusOnOpen={false}
                 >
                     {TARGET_LEVELS.map(level => (
-                        <StyledMenuItem key={level.id}>
+                        <StyledMenuItem
+                            key={level.id}
+                            onClick={() => {
+                                // Needed to do this with a short delay because of a visual glitch.
+                                setTimeout(() => {
+                                    onUpdatePermission({
+                                        permission: {
+                                            ...permission,
+                                            level: level.id as FolderAccessLevel
+                                        }
+                                    });
+                                }, 75);
+                            }}
+                        >
                             <div>{currentLevel.id === level.id && <Check />}</div>
                             <div>
                                 <Typography use="body1">{level.label}</Typography>
