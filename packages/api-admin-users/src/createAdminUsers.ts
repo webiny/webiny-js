@@ -230,7 +230,7 @@ export const createAdminUsers = ({
 
             // Majority of querying is happening via `id`, so let's use a DataLoader here.
             if (where.id) {
-                return await loaders.getUser.load({
+                return loaders.getUser.load({
                     ...where,
                     tenant: where.tenant || getTenant()
                 });
@@ -238,7 +238,7 @@ export const createAdminUsers = ({
 
             // Querying by email is very rare, so we don't need to bother with DataLoader for now.
             const tenant = getTenant();
-            return await storageOperations.getUser({ where: { tenant, ...where } });
+            return storageOperations.getUser({ where: { tenant, ...where } });
         },
         async listUsers(params = {}) {
             await checkPermission();
