@@ -125,9 +125,17 @@ Resources:
 
               - Effect: Allow
                 Action:
+                  - cognito-idp:CreateUserPoolDomain
+                  - cognito-idp:DeleteUserPoolDomain
+                  - cognito-idp:DescribeUserPoolDomain
+                  - cognito-idp:DescribeIdentityProvider
+                  - cognito-idp:CreateIdentityProvider
+                  - cognito-idp:UpdateIdentityProvider
+                  - cognito-idp:DeleteIdentityProvider
                   - cognito-idp:CreateUserPoolClient
                   - cognito-idp:DeleteUserPool
                   - cognito-idp:UpdateUserPool
+                  - cognito-idp:UpdateUserPoolClient
                   - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPool
                   - cognito-idp:DescribeUserPoolClient
