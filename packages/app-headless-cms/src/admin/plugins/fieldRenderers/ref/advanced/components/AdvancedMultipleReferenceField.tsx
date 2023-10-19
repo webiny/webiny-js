@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import * as GQL from "~/admin/viewsGraphql";
+import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
     CmsContentEntry,
-    CmsModelFieldRendererProps,
-    CmsModel
+    CmsModel,
+    CmsModelFieldRendererProps
 } from "~/types";
 import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
 import { useQuery } from "~/admin/hooks";
-import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { AbsoluteLoader as Loader } from "./Loader";
@@ -167,12 +167,11 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                 return;
             }
             const { id: entryId } = parseIdentifier(id);
-            bind.onChange(
-                values.filter(value => {
-                    const { id: valueEntryId } = parseIdentifier(value.id);
-                    return valueEntryId !== entryId;
-                })
-            );
+            const newValues = values.filter(value => {
+                const { id: valueEntryId } = parseIdentifier(value.id);
+                return valueEntryId !== entryId;
+            });
+            bind.onChange(newValues.length > 0 ? newValues : null);
         },
         [entries, values]
     );
@@ -195,7 +194,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const storeValues = useCallback(
         (values: CmsReferenceValue[]) => {
-            bind.onChange(values);
+            bind.onChange(values?.length ? values : null);
             return;
         },
         [values]
@@ -233,7 +232,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const onMoveUp = useCallback(
         (index: number, toTop?: boolean) => {
-            if (values.length === 0) {
+            if (!values?.length) {
                 return;
             } else if (toTop) {
                 const arr = values.splice(index, 1);
@@ -246,7 +245,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     );
     const onMoveDown = useCallback(
         (index: number, toBottom?: boolean) => {
-            if (values.length === 0) {
+            if (!values?.length) {
                 return;
             } else if (toBottom === true) {
                 const arr = values.splice(index, 1);
