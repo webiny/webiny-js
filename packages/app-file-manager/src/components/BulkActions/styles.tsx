@@ -6,10 +6,6 @@ export const BulkActionsContainer = styled.div`
     height: 64px;
     background-color: var(--mdc-theme-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 4;
 `;
 
 export const BulkActionsInner = styled.div`
@@ -17,7 +13,7 @@ export const BulkActionsInner = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 0 12px 0 16px;
 `;
 
 export const ButtonsContainer = styled.div`
@@ -27,9 +23,4 @@ export const ButtonsContainer = styled.div`
     ${ButtonContainer} {
         margin: 0;
     }
-`;
-
-export const ActionsContainer = styled.div`
-    display: flex;
-    align-items: center;
 `;

@@ -298,7 +298,6 @@ const FileManagerView = () => {
                         }
                     >
                         <>
-                            {!view.hasOnSelectCallback && <BulkActions />}
                             <FileDetails
                                 loading={view.loadingFileDetails}
                                 file={currentFile}
@@ -331,6 +330,7 @@ const FileManagerView = () => {
                                         onDrop={() => view.setDragging(false)}
                                     />
                                 )}
+                                <BulkActions />
                                 <Filters />
                                 <Scrollbar
                                     onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}

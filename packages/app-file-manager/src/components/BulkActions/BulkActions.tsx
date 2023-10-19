@@ -5,17 +5,10 @@ import { Buttons } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 
-import { LayoutSwitch } from "~/components/LayoutSwitch";
-
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
-import {
-    ActionsContainer,
-    BulkActionsContainer,
-    BulkActionsInner,
-    ButtonsContainer
-} from "./styles";
+import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./styles";
 
 const t = i18n.ns("app-file-manager/components/bulk-actions");
 
@@ -33,7 +26,7 @@ export const BulkActions = () => {
         });
     }, [view.selected]);
 
-    if (!view.selected.length) {
+    if (view.hasOnSelectCallback || !view.selected.length) {
         return null;
     }
 
@@ -44,10 +37,7 @@ export const BulkActions = () => {
                     <Typography use={"headline6"}>{headline}</Typography>
                     <Buttons actions={browser.bulkActions} />
                 </ButtonsContainer>
-                <ActionsContainer>
-                    <LayoutSwitch />
-                    <IconButton icon={<Close />} onClick={() => view.setSelected([])} />
-                </ActionsContainer>
+                <IconButton icon={<Close />} onClick={() => view.setSelected([])} />
             </BulkActionsInner>
         </BulkActionsContainer>
     );
