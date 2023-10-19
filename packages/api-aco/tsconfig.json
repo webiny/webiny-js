@@ -21,6 +21,7 @@
     { "path": "../api-wcp" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
+    { "path": "../validation" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -68,6 +69,8 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },
