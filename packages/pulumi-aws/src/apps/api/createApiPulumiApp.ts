@@ -225,7 +225,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
-                migrationLambdaArn: migration.function.output.arn
+                migrationLambdaArn: migration.function.output.arn,
+                graphqlLambdaName: graphql.functions.graphql.output.name
             });
 
             app.addHandler(() => {
