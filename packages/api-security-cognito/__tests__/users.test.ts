@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityUser";
 import md5 from "md5";
-import { AdminUser } from "~/types";
+import { AdminUser } from "@webiny/api-admin-users/types";
 
 const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
