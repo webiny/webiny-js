@@ -5,7 +5,14 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { NotAuthorizedError } from "@webiny/api-security";
 import { mdbid } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
+import {
+    AdminUser,
+    AdminUsers,
+    AdminUsersStorageOperations,
+    CreatedBy,
+    CreateUserInput,
+    System
+} from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
 
@@ -37,6 +44,24 @@ export const createAdminUsers = ({
         if (!permission) {
             throw new NotAuthorizedError();
         }
+    };
+
+    const getDisplayName = (data: CreateUserInput) => {
+        // If display name is not set, try to get it from the first name and last name.
+        // If first name and last name are not set, use the e-mail address.
+        if (data.displayName) {
+            return data.displayName;
+        }
+
+        if (data.firstName || data.lastName) {
+            return `${data.firstName || ""} ${data.lastName || ""}`.trim();
+        }
+
+        if (data.email) {
+            return data.email;
+        }
+
+        return "Missing display name";
     };
 
     const onUserAfterCreate = createTopic("adminUsers.onCreateAfter");
@@ -97,6 +122,7 @@ export const createAdminUsers = ({
                 });
             }
         },
+
         /**
          * TODO @ts-refactor figure out better way to type this
          */
@@ -121,23 +147,7 @@ export const createAdminUsers = ({
             const id = data.id || mdbid();
             const createdOn = new Date().toISOString();
 
-            // If display name is not set, try to get it from the first name and last name.
-            // If first name and last name are not set, use the e-mail address.
-            let displayName = data.displayName;
-            if (!displayName) {
-                if (data.firstName || data.lastName) {
-                    displayName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
-                }
-            }
-
-            if (!displayName) {
-                // If first name and last name are not set, use the e-mail address.
-                displayName = data.email;
-            }
-
-            if (!displayName.trim()) {
-                displayName = "Missing display name";
-            }
+            const displayName = getDisplayName(data);
 
             const webinyVersion = process.env.WEBINY_VERSION as string;
 

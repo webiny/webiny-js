@@ -30,9 +30,12 @@ export interface BaseUserAttributes {
     avatar?: Record<string, any>;
 }
 
-export interface CreateUserInput extends Omit<BaseUserAttributes, "id"> {
-    // ID can be provided, but it's not required. If not required, it will be auto-generated.
+export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displayName"> {
+    // ID can be provided, but it's not required. If not provided, it will be auto-generated.
     id?: string;
+
+    // Display name can be provided, but it's not required. If not provided, it will be auto-generated.
+    displayName?: string;
 
     // At the moment, this field is only used by the default Cognito IdP setup.
     // Other IdPs (Auth0, Okta) do not require this field to be present.
