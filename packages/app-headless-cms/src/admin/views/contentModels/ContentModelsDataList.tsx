@@ -36,6 +36,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { OptionsMenu } from "./OptionsMenu";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
+import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
 import { useModelExport } from "./exporting/useModelExport";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
@@ -83,6 +84,7 @@ interface ContentModelsDataListProps {
     canCreate: boolean;
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
+    showImportModelModal: () => void;
 }
 
 const Icon = styled("div")({
@@ -113,7 +115,8 @@ const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
-    onClone
+    onClone,
+    showImportModelModal
 }) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorters);
@@ -237,6 +240,11 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                 label: "Export all models",
                                 icon: <DownloadFileIcon />,
                                 onClick: handleModelsExport
+                            },
+                            {
+                                label: "Import models",
+                                icon: <UploadFileIcon />,
+                                onClick: showImportModelModal
                             }
                         ]}
                     />
