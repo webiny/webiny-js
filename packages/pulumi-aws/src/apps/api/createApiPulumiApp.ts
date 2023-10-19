@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
@@ -214,7 +215,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             }
 
             app.addOutputs({
-                region: process.env.AWS_REGION,
+                region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
