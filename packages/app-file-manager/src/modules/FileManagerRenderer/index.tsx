@@ -16,8 +16,8 @@ export const FileManagerRendererModule = () => {
             <FileManagerConfig>
                 <Browser.FilterByTags />
                 <Browser.Filter name={"type"} element={<FilterByType />} />
-                <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
+                <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
                 <FileDetails.Field name={"aliases"} element={<Aliases />} />
