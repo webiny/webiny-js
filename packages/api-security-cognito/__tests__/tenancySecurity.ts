@@ -8,7 +8,7 @@ import {
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
-import { AdminUsersContext } from "~/types";
+import { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTenantLinkAuthorizer } from "@webiny/api-security/plugins/tenantLinkAuthorization";
 

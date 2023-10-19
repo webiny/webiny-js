@@ -7,6 +7,8 @@ import {
 } from "@webiny/api-cognito-authenticator";
 import { syncWithCognito } from "~/syncWithCognito";
 import { createAdminUsersHooks } from "./createAdminUsersHooks";
+import adminUsersGqlPlugins from "./graphql/user.gql";
+import installGqlPlugins from "./graphql/install.gql";
 
 interface GetIdentityParams<TContext, TToken> {
     identityType: string;
@@ -81,7 +83,11 @@ export const createCognito = <
                     return getPermissions({ context });
                 });
             }
+
+            const teams = context.wcp.canUseTeams();
+            context.plugins.register(adminUsersGqlPlugins({ teams }));
         }),
+        installGqlPlugins,
         createAdminUsersHooks()
     ];
 };

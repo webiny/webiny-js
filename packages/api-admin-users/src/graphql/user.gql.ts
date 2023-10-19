@@ -33,48 +33,15 @@ export default (params: CreateUserGraphQlPluginsParams) => {
 
                 type AdminUser {
                     id: ID!
+                    displayName: String!
+                    email: String!
+
+                    group: SecurityGroup
                     firstName: String
                     lastName: String
-                    email: String
                     avatar: JSON
                     gravatar: String
-                    group: SecurityGroup
                     createdOn: DateTime
-                }
-
-                """
-                This input type is used by administrators to create other user's accounts within the same tenant.
-                """
-                input AdminUsersCreateInput {
-                    email: String
-                    firstName: String
-                    lastName: String
-                    password: String
-                    avatar: JSON
-                    ${params.teams ? "group: String" : "group: String!"}
-                }
-
-                """
-                This input type is used by administrators to update other user's accounts within the same tenant.
-                """
-                input AdminUsersUpdateInput {
-                    email: String
-                    firstName: String
-                    lastName: String
-                    password: String
-                    avatar: JSON
-                    group: String
-                }
-
-                """
-                This input type is used by the user who is updating his own account
-                """
-                input AdminUsersCurrentUserInput {
-                    email: String
-                    firstName: String
-                    lastName: String
-                    password: String
-                    avatar: JSON
                 }
 
                 type AdminUsersResponse {
@@ -99,52 +66,33 @@ export default (params: CreateUserGraphQlPluginsParams) => {
 
                     listUsers: AdminUsersListResponse
                 }
-
-                extend type AdminUsersMutation {
-                    updateCurrentUser(data: AdminUsersCurrentUserInput!): AdminUsersResponse
-
-                    createUser(data: AdminUsersCreateInput): AdminUsersResponse
-
-                    updateUser(id: ID!, data: AdminUsersUpdateInput!): AdminUsersResponse
-
-                    deleteUser(id: ID!): AdminUsersBooleanResponse
-                }
             `,
             resolvers: {
                 AdminUserIdentity: {
                     async profile(identity, _, context) {
-                        // We wrapped `getUser` call in `withoutAuthorization` because we don't need to
-                        // check for permissions here. This field will always return the information
-                        // related to the current identity, so we don't need to check for permissions.
-                        const profile = await context.security.withoutAuthorization(() => {
-                            return context.adminUsers.getUser({
-                                where: {
-                                    id: identity.id
-                                }
-                            });
+                        const adminUser = await context.adminUsers.getUser({
+                            where: { id: identity.id }
                         });
 
-                        if (profile) {
-                            return profile;
+                        if (adminUser) {
+                            return adminUser;
                         }
 
                         // We must also consider an option where we have multi-tenancy, and current identity is
                         // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                         const tenant = context.tenancy.getCurrentTenant();
 
-                        return context.security.withoutAuthorization(() => {
-                            return context.adminUsers.getUser({
-                                where: {
-                                    id: identity.id,
-                                    /**
-                                     * TODO @ts-refactor @pavel
-                                     * What happens if tenant has no parent?
-                                     * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
-                                     */
-                                    // @ts-ignore
-                                    tenant: tenant.parent
-                                }
-                            });
+                        return await context.adminUsers.getUser({
+                            where: {
+                                id: identity.id,
+                                /**
+                                 * TODO @ts-refactor @pavel
+                                 * What happens if tenant has no parent?
+                                 * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
+                                 */
+                                // @ts-ignore
+                                tenant: tenant.parent
+                            }
                         });
                     },
                     __isTypeOf(obj: SecurityIdentity) {
@@ -209,77 +157,12 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                             return new ListErrorResponse(e);
                         }
                     }
-                },
-                AdminUsersMutation: {
-                    updateCurrentUser: async (_, args: any, context) => {
-                        const { security, adminUsers } = context;
-                        const identity = security.getIdentity();
-                        if (!identity) {
-                            throw new Error("Not authorized!");
-                        }
-
-                        // Current user might not have permissions for `adminUsers`.
-
-                        return await context.security.withoutAuthorization(async () => {
-                            let user = await adminUsers.getUser({ where: { id: identity.id } });
-                            if (!user) {
-                                // TODO: check if current identity belongs to a different tenant.
-                                // TODO: If so, switch to that other tenant, and update his profile there.
-                                return new NotFoundResponse("User not found!");
-                            }
-
-                            try {
-                                user = await adminUsers.updateUser(user.id, args.data);
-
-                                // Now we can re-enable authorization.
-
-                                return new Response(user);
-                            } catch (ex) {
-                                return new ErrorResponse(ex);
-                            }
-                        });
-                    },
-                    createUser: async (_, { data }: any, context) => {
-                        try {
-                            const user = await context.adminUsers.createUser(data);
-
-                            return new Response(user);
-                        } catch (e) {
-                            return new ErrorResponse(e);
-                        }
-                    },
-                    updateUser: async (_, { data, id }: any, { adminUsers }) => {
-                        try {
-                            const user = await adminUsers.updateUser(id, data);
-
-                            return new Response(user);
-                        } catch (e) {
-                            return new ErrorResponse(e);
-                        }
-                    },
-                    deleteUser: async (_, { id }: any, context) => {
-                        try {
-                            await context.adminUsers.deleteUser(id);
-
-                            return new Response(true);
-                        } catch (e) {
-                            return new ErrorResponse(e);
-                        }
-                    }
                 }
             }
         }),
         params.teams &&
             new GraphQLSchemaPlugin<AdminUsersContext>({
                 typeDefs: /* GraphQL */ `
-                    extend input AdminUsersCreateInput {
-                        team: ID
-                    }
-
-                    extend input AdminUsersUpdateInput {
-                        team: ID
-                    }
-
                     extend type AdminUser {
                         team: SecurityTeam
                     }

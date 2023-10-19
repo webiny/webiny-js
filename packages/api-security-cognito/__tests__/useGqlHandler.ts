@@ -4,7 +4,7 @@ import graphqlHandler from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import adminUsersPlugins from "../src/index";
+import adminUsersPlugins from "@webiny/api-admin-users";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 
@@ -23,7 +23,8 @@ import {
 
 import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { AdminUsersStorageOperations } from "./types";
+import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
+import cognitoAuthentication from "~/index";
 
 interface UseGqlHandlerParams {
     fullAccess?: boolean;
@@ -57,6 +58,13 @@ export default (opts: UseGqlHandlerParams = {}) => {
             mockLocalesPlugins(),
             adminUsersPlugins({
                 storageOperations: adminUsersStorage.storageOperations
+            }),
+
+            // No interaction with actual Cognito is performed in tests. Passing "test" values is enough.
+            cognitoAuthentication({
+                region: "test",
+                userPoolId: "test",
+                identityType: "admin"
             }),
             graphqlHandler(),
             authenticateUsingHttpHeader(),

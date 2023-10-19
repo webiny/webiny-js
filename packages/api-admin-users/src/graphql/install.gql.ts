@@ -5,10 +5,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `
         input AdminUsersInstallInput {
-            firstName: String
-            lastName: String
-            email: String
-            password: String
+            _empty: String
         }
 
         extend type AdminUsersQuery {

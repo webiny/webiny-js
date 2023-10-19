@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityUser";
 import md5 from "md5";
-import { AdminUser } from "~/types";
+import { AdminUser } from "@webiny/api-admin-users/types";
 
 const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
@@ -15,7 +15,7 @@ describe("Security User CRUD Test", () => {
     };
 
     beforeEach(async () => {
-        await install.install();
+        await install.install({ data: { ...adminData, password: "12345678" } });
 
         const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
         const fullAccessGroup = groupResponseA.data.security.getGroup.data;
