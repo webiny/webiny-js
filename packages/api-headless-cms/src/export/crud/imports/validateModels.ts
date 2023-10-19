@@ -199,27 +199,6 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
 
     const validation = createModelImportValidation();
 
-    // const getRelatedModels = (fields: CmsModelField[]): string[] => {
-    //     const results = fields.reduce<string[]>((related, field) => {
-    //         if (field.type === "ref") {
-    //             for (const model of field.settings?.models || []) {
-    //                 related.push(model.modelId);
-    //             }
-    //             return related;
-    //         } else if (field.type === "object") {
-    //             return [...related, ...getRelatedModels(field.settings?.fields || [])];
-    //         } else if (field.type === "dynamicZone") {
-    //             const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
-    //             for (const tpl of templates) {
-    //                 related.push(...getRelatedModels(tpl.fields || []));
-    //             }
-    //             return related;
-    //         }
-    //         return related;
-    //     }, []);
-    //     return Array.from(new Set(...results));
-    // };
-
     return await Promise.all(
         input.map(async (model): Promise<ValidatedCmsModelResult> => {
             const result = await validation.safeParseAsync(model);
@@ -227,6 +206,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 const error = createZodError(result.error);
                 return {
                     model: model as ValidatedCmsModel,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: error.message,
                         code: error.code,
@@ -239,6 +219,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
             if (!group) {
                 return {
                     model: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `The model group "${data.group}" does not exist.`,
                         code: "MODEL_GROUP_NOT_FOUND"
@@ -247,6 +228,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
             } else if (!model.fields?.length) {
                 return {
                     model: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `Model is missing fields.`,
                         code: "MODEL_FIELDS_MISSING"
@@ -271,6 +253,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
             }
             return {
                 model: data,
+                action: modelValidationResult.action,
                 error: modelValidationResult.errors[0]
             };
         })

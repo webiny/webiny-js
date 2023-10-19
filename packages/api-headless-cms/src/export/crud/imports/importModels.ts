@@ -1,5 +1,5 @@
 import { CmsContext } from "~/types";
-import { CmsModelImportResult, ValidCmsModelResult } from "~/export/types";
+import { CmsImportAction, CmsModelImportResult, ValidCmsModelResult } from "~/export/types";
 
 interface Params {
     context: CmsContext;
@@ -10,9 +10,6 @@ export const importModels = async (params: Params) => {
     const { context, models } = params;
 
     const groups = await context.cms.listGroups();
-    const existingModels = await context.security.withoutAuthorization(async () => {
-        return context.cms.listModels();
-    });
 
     const results: CmsModelImportResult[] = [];
 
@@ -25,7 +22,9 @@ export const importModels = async (params: Params) => {
         });
         if (!group) {
             results.push({
+                action: model.action,
                 model: model.model,
+                related: model.related,
                 imported: false,
                 error: {
                     message: `Group "${model.model.group}" does not exist.`,
@@ -38,45 +37,88 @@ export const importModels = async (params: Params) => {
             continue;
         }
         /**
-         * There is a possibility that model with unique values already exists.
+         * No update action or there is a validation error.
          */
-        const existingModel = existingModels.find(m => {
-            return (
-                m.modelId === model.model.modelId ||
-                m.singularApiName === model.model.singularApiName ||
-                m.pluralApiName === model.model.pluralApiName
-            );
-        });
-        if (existingModel) {
+        if (model.action === CmsImportAction.NONE || model.error) {
             results.push({
+                action: model.action,
                 model: model.model,
+                related: model.related,
                 imported: false,
-                error: {
-                    message: `Model already exists.`,
-                    code: "MODEL_EXISTS",
-                    data: {
-                        existing: {
-                            modelId: existingModel.modelId,
-                            singularApiName: existingModel.singularApiName,
-                            pluralApiName: existingModel.pluralApiName
-                        }
-                    }
+                error: model.error || {
+                    message: "No action to be ran on the model.",
+                    code: "NO_ACTION"
                 }
             });
             continue;
         }
+        /**
+         * Cannot update a model if it is created via plugin.
+         */
+        if (model.action === CmsImportAction.CODE) {
+            results.push({
+                action: model.action,
+                model: model.model,
+                related: model.related,
+                imported: true
+            });
+            continue;
+        }
+
+        /**
+         * Update the model
+         */
+        //
+        if (model.action === CmsImportAction.UPDATE) {
+            try {
+                const result = await context.cms.updateModel(model.model.modelId, model.model);
+                results.push({
+                    action: model.action,
+                    model: {
+                        ...result,
+                        group: group.id
+                    },
+                    related: model.related,
+                    imported: true
+                });
+            } catch (ex) {
+                results.push({
+                    action: model.action,
+                    model: model.model,
+                    imported: false,
+                    related: model.related,
+                    error: {
+                        message: ex.message,
+                        code: ex.code || "UPDATE_MODEL_ERROR",
+                        data: {
+                            model: model.model,
+                            ...ex.data
+                        }
+                    }
+                });
+            }
+            continue;
+        }
+        /**
+         * Create a new model.
+         */
         try {
             const result = await context.cms.createModel(model.model);
             results.push({
+                action: model.action,
                 model: {
-                    ...result
+                    ...result,
+                    group: group.id
                 },
+                related: model.related,
                 imported: true
             });
         } catch (ex) {
             results.push({
+                action: model.action,
                 model: model.model,
                 imported: false,
+                related: model.related,
                 error: {
                     message: ex.message,
                     code: ex.code || "CREATE_MODEL_ERROR",

@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import { HeadlessCmsImport, ValidCmsGroupResult, ValidCmsModelResult } from "~/export/types";
 import { CmsContext } from "~/types";
 import { importData } from "./imports/importData";
@@ -39,7 +40,7 @@ export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {
             };
         },
         structure: async params => {
-            const { data, models: importModelsList } = params;
+            const { data } = params;
 
             const { groups, models } = await fetchGroupsAndModels(context);
 
@@ -49,38 +50,21 @@ export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {
                 data
             });
             if (validated.error) {
-                return {
-                    groups: validated.groups.map(result => {
-                        return {
-                            ...result,
-                            imported: false
-                        };
-                    }),
-                    models: validated.models.map(result => {
-                        return {
-                            ...result,
-                            imported: false
-                        };
-                    }),
-                    message: null,
-                    error: validated.error
-                };
+                throw new WebinyError(validated.error, "VALIDATION_ERROR");
             }
 
             const imported = await importData({
                 context,
                 groups: validated.groups as ValidCmsGroupResult[],
-                models: (validated.models as ValidCmsModelResult[]).filter(model => {
-                    if (!model.model.modelId) {
-                        return false;
-                    }
-                    return importModelsList.includes(model.model.modelId);
-                })
+                models: validated.models as ValidCmsModelResult[]
             });
+
+            const modelError = imported.models.find(model => !!model.error);
+            const error = imported.error || modelError;
 
             return {
                 ...imported,
-                message: imported.error ? null : "Import done."
+                message: error ? null : "Import done."
             };
         }
     };

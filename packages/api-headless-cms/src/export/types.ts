@@ -62,7 +62,6 @@ export interface CmsImportStructureParamsData {
 
 export interface HeadlessCmsImportStructureParams {
     data: CmsImportStructureParamsData;
-    models: string[];
 }
 
 export interface HeadlessCmsImportValidateParams {
@@ -70,13 +69,18 @@ export interface HeadlessCmsImportValidateParams {
 }
 
 export interface CmsGroupImportResult {
+    action: CmsImportAction;
     group: Partial<Pick<CmsGroup, "id" | "name">>;
     error?: CmsImportError;
     imported: boolean;
 }
 
 export interface CmsModelImportResult {
-    model: Partial<Pick<CmsModel, "modelId" | "name">>;
+    action: CmsImportAction;
+    model: Partial<Pick<CmsModel, "modelId" | "name">> & {
+        group: string;
+    };
+    related?: string[] | null;
     error?: CmsImportError;
     imported: boolean;
 }
@@ -100,7 +104,7 @@ export interface ValidCmsGroupResult {
 
 export interface InvalidCmsGroupResult {
     group: CmsGroup;
-    action?: CmsImportAction;
+    action: CmsImportAction;
     error: CmsImportError;
 }
 
@@ -116,7 +120,7 @@ export interface ValidCmsModelResult {
 
 export interface InvalidCmsModelResult {
     model: ValidatedCmsModel;
-    action?: CmsImportAction;
+    action: CmsImportAction;
     error: CmsImportError;
 }
 

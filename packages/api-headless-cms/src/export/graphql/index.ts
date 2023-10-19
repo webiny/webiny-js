@@ -95,6 +95,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             group: CmsImportStructureResponseDataGroupResultItem!
             error: CmsError
             action: CmsImportGroupStructureAction
+            imported: Boolean
         }
 
         type CmsImportStructureResponseDataResultItem {
@@ -108,12 +109,13 @@ const plugin = new CmsGraphQLSchemaPlugin({
             related: [String!]
             error: CmsError
             action: CmsImportModelStructureAction
+            imported: Boolean
         }
 
         type CmsImportStructureResponseData {
             groups: [CmsImportStructureResponseDataGroupResult!]!
             models: [CmsImportStructureResponseDataModelResult!]!
-            message: String!
+            message: String
         }
 
         type CmsImportStructureResponse {
@@ -127,10 +129,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
 
         extend type Mutation {
             validateImportStructure(data: CmsImportStructureInput!): CmsImportValidateResponse!
-            importStructure(
-                data: CmsImportStructureInput!
-                models: [String!]!
-            ): CmsImportStructureResponse!
+            importStructure(data: CmsImportStructureInput!): CmsImportStructureResponse!
         }
     `,
     resolvers: {
@@ -160,8 +159,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             importStructure: async (_, args, context) => {
                 try {
                     const result = await context.cms.importing.structure({
-                        data: args.data,
-                        models: args.models
+                        data: args.data
                     });
                     return new Response(result);
                 } catch (ex) {

@@ -20,6 +20,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
                 const error = createZodError(result.error);
                 return {
                     group: group as CmsGroup,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: error.message,
                         code: error.code,
@@ -31,6 +32,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
             if (!data.id) {
                 return {
                     group: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `Group is missing ID.`,
                         code: "GROUP_ID_MISSING"
@@ -40,6 +42,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
             if (!data.slug) {
                 return {
                     group: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `Group is missing slug.`,
                         code: "GROUP_SLUG_MISSING"
@@ -78,6 +81,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
             if (groupWithIdExists) {
                 return {
                     group: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `Group with ID "${data.id}" already exists. Cannot update it because the slug is different.`,
                         code: "GROUP_ID_EXISTS"
@@ -89,6 +93,7 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
             if (groupWithSlugExists) {
                 return {
                     group: data,
+                    action: CmsImportAction.NONE,
                     error: {
                         message: `Group with slug "${data.slug}" already exists. Cannot update because the ID is different.`,
                         code: "GROUP_SLUG_EXISTS"

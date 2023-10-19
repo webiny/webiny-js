@@ -25,21 +25,6 @@ export const importData = async (params: Params): Promise<Response> => {
 
     const groups = await importGroups(params);
 
-    const importedGroups = groups.filter(g => g.imported).map(g => g.group);
-
-    if (importedGroups.length === 0) {
-        return {
-            groups,
-            models: params.models.map(model => {
-                return {
-                    ...model,
-                    imported: false
-                };
-            }),
-            error: "No groups were imported. Aborting."
-        };
-    }
-
     const importModelResults = await importModels({
         context,
         models: params.models
