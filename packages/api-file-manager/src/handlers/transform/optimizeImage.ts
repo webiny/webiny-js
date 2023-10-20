@@ -1,7 +1,6 @@
 /**
  * Sharp is included in the AWS Lambda layer
  */
-// @ts-ignore
 import sharp from "sharp";
 import type { Readable } from "stream";
 

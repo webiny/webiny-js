@@ -1,12 +1,11 @@
 /**
  * Sharp is included in the AWS Lambda layer
  */
-// @ts-ignore
 import sharp from "sharp";
 import type { Readable } from "stream";
 
 interface Transformation {
-    width: string;
+    width: number;
 }
 
 export interface TransformOptions {
