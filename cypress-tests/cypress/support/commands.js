@@ -20,6 +20,7 @@ import "./pageBuilder/pbListBlockCategories";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
 import "./headlessCms/cmsCreateContentModel";
+import "./headlessCms/cmsDeleteAllContentModelGroups";
 import "./headlessCms/cmsUpdateContentModel";
 import "./headlessCms/cmsDeleteContentModel";
 import "./headlessCms/cmsListContentModelGroup";

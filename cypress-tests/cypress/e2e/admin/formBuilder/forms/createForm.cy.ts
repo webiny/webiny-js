@@ -1,11 +1,13 @@
-import uniqid from "uniqid";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
 
 context("Forms Creation", () => {
     beforeEach(() => cy.login());
 
     describe("Create Form", () => {
-        const newFormTitle = `Test form 1 ${uniqid()}`;
-        const newFormTitle2 = `Test form 2 ${uniqid()}`;
+        const newFormTitle = `Test form 1 ${nanoid(10)}`;
+        const newFormTitle2 = `Test form 2 ${nanoid(10)}`;
 
         it("should be able to create form, rename it, publish it, create new revision and delete it", () => {
             cy.visit("/form-builder/forms");
@@ -31,7 +33,8 @@ context("Forms Creation", () => {
             cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
                 cy.findByTestId("confirmationdialog-confirm-action").click();
             });
-            // Should see this text if publishing operation was successfull.
+
+            // Should see this text if publishing operation was successful.
             cy.findByText("Your form was published successfully!");
 
             // Check if we have renamed form in the list of forms.
