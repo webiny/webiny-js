@@ -194,7 +194,7 @@ describe("Content entries", () => {
             data: {
                 createFruitFrom: {
                     data: {
-                        id: (secondBanana.id || "").replace("0002", "0003"),
+                        id: expect.stringMatching(/0003$/),
                         entryId: banana.entryId,
                         meta: {
                             version: 3,

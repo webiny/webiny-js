@@ -4,7 +4,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import useExportTemplateDialog, { ExportTemplatesDialogProps } from "./useExportTemplateDialog";
 // assets
-import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
+import { ReactComponent as DownloadIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportTemplateButton");
 

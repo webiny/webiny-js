@@ -1,6 +1,4 @@
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { createContentModelGroup } from "./mocks/contentModelGroup";
-import { createCmsGroup } from "~/plugins";
 import { CmsGroup } from "~tests/types";
 import models from "./mocks/contentModels";
 import { CmsModel, CmsModelField } from "~/types";
@@ -25,7 +23,7 @@ const groups: Omit<CmsGroup, "id">[] = [
     }
 ];
 
-const fixFieldsNullTexts = (fields: CmsModelField[]): CmsModelField[] => {
+const fixFields = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
         const result = {
             ...field,
@@ -33,7 +31,18 @@ const fixFieldsNullTexts = (fields: CmsModelField[]): CmsModelField[] => {
             placeholderText: field.placeholderText || null
         };
         if (result.settings?.fields) {
-            result.settings.fields = fixFieldsNullTexts(result.settings.fields);
+            result.settings.fields = fixFields(result.settings.fields);
+        }
+        if (result.predefinedValues) {
+            result.predefinedValues = {
+                ...result.predefinedValues,
+                values: (result.predefinedValues.values || []).map(value => {
+                    return {
+                        ...value,
+                        selected: value.selected || false
+                    };
+                })
+            };
         }
         return result;
     });
@@ -51,14 +60,13 @@ describe("export cms structure", () => {
         return results;
     };
 
-    it("should export only database groups and models", async () => {
+    it("should export all groups and models", async () => {
         const {
-            exportCmsStructureQuery,
+            exportStructureQuery,
             createContentModelGroupMutation,
             createContentModelMutation
         } = useGraphQLHandler({
-            path: "manage/en-US",
-            plugins: [createCmsGroup(createContentModelGroup())]
+            path: "manage/en-US"
         });
 
         const createdGroups = await insertGroups(createContentModelGroupMutation);
@@ -90,19 +98,17 @@ describe("export cms structure", () => {
 
         expect(createdModels.length).toBe(models.length);
 
-        const [result] = await exportCmsStructureQuery({
-            code: false
-        });
+        const [result] = await exportStructureQuery();
 
         expect(result).toEqual({
             data: {
-                exportCmsStructure: {
+                exportStructure: {
                     data: expect.any(String),
                     error: null
                 }
             }
         });
-        const json = JSON.parse(result.data.exportCmsStructure.data) as JsonResult;
+        const json = JSON.parse(result.data.exportStructure.data) as JsonResult;
         expect(json.groups.length).toBe(groups.length);
         expect(json.models.length).toBe(models.length);
         expect(json).toMatchObject({
@@ -125,12 +131,8 @@ describe("export cms structure", () => {
                 description: model.description,
                 titleFieldId: model.titleFieldId,
                 icon: model.icon,
-                group: {
-                    id: group.id,
-                    slug: group.slug,
-                    name: group.name
-                },
-                fields: fixFieldsNullTexts(model.fields),
+                group: group.id,
+                fields: fixFields(model.fields),
                 layout: model.layout
             });
             expect(jsonModel.imageFieldId).toEqual(model.imageFieldId || undefined);

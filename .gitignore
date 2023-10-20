@@ -44,6 +44,7 @@ schema.graphql
 !.yarn/versions
 .pnp.*
 lerna.json
+.stormTests
 
 # TODO remove after moving traffic splitting config to WPC
 gateway.*.json

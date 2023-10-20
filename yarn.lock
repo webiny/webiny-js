@@ -14789,6 +14789,7 @@ __metadata:
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
     react: 17.0.2
+    react-butterfiles: ^1.3.3
     react-custom-scrollbars: ^4.2.1
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
@@ -37241,7 +37242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-butterfiles@npm:^1.3.0, react-butterfiles@npm:^1.3.1":
+"react-butterfiles@npm:^1.3.0, react-butterfiles@npm:^1.3.1, react-butterfiles@npm:^1.3.3":
   version: 1.3.3
   resolution: "react-butterfiles@npm:1.3.3"
   dependencies:
