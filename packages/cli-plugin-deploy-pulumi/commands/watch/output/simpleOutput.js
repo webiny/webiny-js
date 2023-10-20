@@ -8,6 +8,13 @@ const HL = EOL + bold(gray("—")).repeat(62) + EOL;
 const SECONDS_STILL_DEPLOYING_MESSAGE = 15;
 const SECONDS_LONGER_THAN_EXPECTED_MESSAGE = 40;
 
+class Log {
+    constructor(message = "", createdOn = new Date()) {
+        this.message = message;
+        this.createdOn = createdOn;
+    }
+}
+
 class SimpleOutput {
     constructor() {
         this.logs = [];
@@ -25,6 +32,7 @@ class SimpleOutput {
 
     initialize(args) {
         this.usesSingleLogType = !!args.build + !!args.deploy + !!args.remoteRuntimeLogs === 1;
+        this.showTimestamps = args.showTimestamps;
     }
 
     log({ message, type }) {
@@ -36,13 +44,16 @@ class SimpleOutput {
         // If only printing logs of a single log type, we don't need to do
         // anything special. Just printing them via `console.log` is enough.
         if (this.usesSingleLogType) {
+            if (this.showTimestamps) {
+                message = this.getTimestamp(new Date()) + " " + message;
+            }
             console.log(message);
             return;
         }
 
         if (type === "build" || type === "logs") {
-            this.logs.push(message);
-            this.printToConsole();
+            this.logs.push(new Log(message));
+            this.printLogs();
             return;
         }
 
@@ -61,13 +72,22 @@ class SimpleOutput {
                 break;
             }
             default:
-                this.deployment.logs.push(message);
+                this.deployment.logs.push(new Log(message));
         }
     }
 
-    printToConsole() {
-        let update = "";
-        update += this.logs.join(EOL);
+    printLogs() {
+        let update = this.logs
+            .map(log => {
+                let message = log.message;
+                if (this.showTimestamps) {
+                    let timestamp = this.getTimestamp(log.createdOn);
+                    message = `${gray(timestamp)} ${message}`;
+                }
+                return message;
+            })
+            .join(EOL);
+
         update += HL;
         update += this.deployment.status;
 
@@ -76,7 +96,7 @@ class SimpleOutput {
 
     startDeploying() {
         this.deployment.logs = [];
-        this.deployment.startedOn = Date.now();
+        this.deployment.startedOn = new Date();
 
         let dotsCount = 3;
         this.deployment.statusUpdateInterval = setInterval(() => {
@@ -85,6 +105,7 @@ class SimpleOutput {
             }
 
             const deployDuration = this.getDeploymentDuration();
+
             let message = "Deploying";
             if (deployDuration > SECONDS_STILL_DEPLOYING_MESSAGE) {
                 message = "Still deploying";
@@ -94,41 +115,68 @@ class SimpleOutput {
                 message = "Deployment taking longer than expected, hold on";
             }
 
-            this.deployment.status = yellow(
+            let deploymentStatus = yellow(
                 "‣ " + deployDuration + `s ‣ ${message}` + ".".repeat(dotsCount)
             );
 
-            this.printToConsole();
+            if (this.showTimestamps) {
+                deploymentStatus =
+                    gray(this.getTimestamp(this.deployment.startedOn)) + " " + deploymentStatus;
+            }
+
+            this.deployment.status = deploymentStatus;
+
+            this.printLogs();
 
             dotsCount++;
         }, 500);
     }
 
     stopDeploying({ error } = {}) {
-        const duration = this.getDeploymentDuration();
+        let duration = this.getDeploymentDuration();
+        let deploymentStatus = green("‣ " + duration + "s ‣ Deployment successful.");
+        if (error) {
+            deploymentStatus = red("‣ " + duration + "s ‣ Deployment failed.");
+        }
+
+        if (this.showTimestamps) {
+            deploymentStatus = gray(this.getTimestamp(new Date())) + " " + deploymentStatus;
+        }
+
+        this.deployment.status = deploymentStatus;
 
         if (error) {
-            this.deployment.status = red("‣ " + duration + "s ‣ Deployment failed.");
-            this.logs.push("", red("Deployment failed."), ...this.deployment.logs);
+            this.logs.push(
+                new Log("", null),
+                new Log(red("Deployment failed.")),
+                ...this.deployment.logs
+            );
         } else {
-            this.deployment.logs.push("Deployment finished.");
-            this.deployment.status = green("‣ " + duration + "s ‣ Deployment successful.");
+            this.deployment.logs.push(new Log("Deployment finished."));
         }
 
         this.deployment.logs = [];
         if (error) {
             // In case of an error, we add a new line to separate the error message from the upcoming logs.
-            this.deployment.logs = [""];
+            this.deployment.logs = [new Log()];
         }
 
         this.deployment.startedOn = null;
         clearInterval(this.deployment.statusUpdateInterval);
 
-        this.printToConsole();
+        this.printLogs();
     }
 
     getDeploymentDuration() {
-        return Math.round((Date.now() - this.deployment.startedOn) / 1000);
+        return Math.round((new Date() - this.deployment.startedOn) / 1000);
+    }
+
+    getTimestamp(date) {
+        return date ? date.toISOString().substr(11, 8) : this.getEmptyTimestampSpace();
+    }
+
+    getEmptyTimestampSpace() {
+        return " ".repeat(8);
     }
 }
 
