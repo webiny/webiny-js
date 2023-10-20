@@ -43,13 +43,6 @@ export const validateInput = async (params: Params): Promise<ValidResponse | Inv
             };
         })
         .filter(Boolean) as Pick<CmsGroup, "id">[];
-    // if (ids.length === 0) {
-    //     return {
-    //         groups: validatedGroups,
-    //         models: [],
-    //         error: "No groups to import."
-    //     };
-    // }
 
     const validatedModels = await validateModels({
         groups: groups.map(g => ({ id: g.id })).concat(ids),

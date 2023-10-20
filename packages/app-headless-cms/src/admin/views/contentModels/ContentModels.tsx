@@ -68,7 +68,7 @@ const ContentModels: React.FC = () => {
     );
     const onCloneClose = useCallback((): void => setCloneContentModel(null), []);
 
-    const [importModels, setImportModels] = useState(true);
+    const [importModels, setImportModels] = useState(false);
     const showImportModelModal = useCallback(() => {
         setImportModels(true);
     }, []);

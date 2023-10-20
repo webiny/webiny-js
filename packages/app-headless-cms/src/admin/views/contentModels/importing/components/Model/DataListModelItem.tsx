@@ -5,13 +5,12 @@ import { DataListModelItemError } from "~/admin/views/contentModels/importing/co
 import { DataListModelItemInfo } from "./DataListModelItemInfo";
 import { ToggleModelCb } from "~/admin/views/contentModels/importing/ImportContext";
 
-const ContainerBase = styled("div")(({ selected }: any) => {
+const ContainerBase = styled("div")(() => {
     return {
         width: "100%",
         padding: "2px 5px 0 5px",
         margin: "0",
-        boxSizing: "border-box",
-        backgroundColor: selected ? "yellow" : "transparent"
+        boxSizing: "border-box"
     };
 });
 const ContainerCreate = styled(ContainerBase)(() => {
@@ -20,19 +19,13 @@ const ContainerCreate = styled(ContainerBase)(() => {
     };
 });
 const ContainerImported = styled(ContainerBase)(() => {
-    return {
-        backgroundColor: "var(--mdc-theme-secondary)"
-    };
+    return {};
 });
 const ContainerUpdate = styled(ContainerBase)(() => {
-    return {
-        // backgroundColor: "var(--mdc-theme-background)"
-    };
+    return {};
 });
 const ContainerError = styled(ContainerBase)(() => {
-    return {
-        // backgroundColor: "red"
-    };
+    return {};
 });
 
 const ModelContainer = styled("div")({
@@ -72,7 +65,8 @@ const ImportedText = styled("div")({
     fontSize: "10px",
     lineHeight: "12px",
     outline: "0 none",
-    backgroundColor: "var(--mdc-theme-background)"
+    backgroundColor: "var(--mdc-theme-secondary)",
+    color: "#FFF"
 });
 
 const Imported: React.VFC = () => {
@@ -107,20 +101,15 @@ const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
 
 interface ContainerProps {
     model: Pick<ImportModelData, "action" | "error" | "imported">;
-    selected: boolean;
 }
 
-const Container: React.VFC<React.PropsWithChildren<ContainerProps>> = ({
-    model,
-    selected,
-    children
-}) => {
+const Container: React.VFC<React.PropsWithChildren<ContainerProps>> = ({ model, children }) => {
     if (model.imported) {
         return <ContainerImported>{children}</ContainerImported>;
     } else if (model.action === "create") {
-        return <ContainerCreate selected={selected}>{children}</ContainerCreate>;
+        return <ContainerCreate>{children}</ContainerCreate>;
     } else if (model.action === "update") {
-        return <ContainerUpdate selected={selected}>{children}</ContainerUpdate>;
+        return <ContainerUpdate>{children}</ContainerUpdate>;
     } else if (model.error) {
         return <ContainerError>{children}</ContainerError>;
     }
@@ -135,7 +124,7 @@ interface Props {
 
 export const DataListModelItem: React.VFC<Props> = ({ model, toggle, selected }) => {
     return (
-        <Container model={model} selected={selected}>
+        <Container model={model}>
             <ModelContainer>
                 <Name>{model.name || model.id}</Name>
                 {model.imported ? (

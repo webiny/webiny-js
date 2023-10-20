@@ -9,6 +9,7 @@ import {
 import { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { ImportAction, ImportGroupData, ImportModelData } from "./types";
 import { useSnackbar } from "@webiny/app-admin";
+import { FetchResult } from "apollo-link";
 
 const parseFileData = (input: string) => {
     let data: Record<string, any> = {};
@@ -218,17 +219,31 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
             };
         });
 
-        const result = await client.mutate<ValidateImportStructureResponse>({
-            mutation: VALIDATE_IMPORT_STRUCTURE,
-            variables: {
-                data: state.data
-            }
-        });
+        let result: FetchResult<ValidateImportStructureResponse> | undefined;
+        try {
+            result = await client.mutate<ValidateImportStructureResponse>({
+                mutation: VALIDATE_IMPORT_STRUCTURE,
+                variables: {
+                    data: state.data
+                }
+            });
+        } catch (ex) {
+            setState(prev => {
+                return {
+                    ...prev,
+                    loading: false,
+                    errors: [ex.message]
+                };
+            });
+            return;
+        }
+
         const { data, error } = result.data?.validateImportStructure || {};
         if (error) {
             setState(prev => {
                 return {
                     ...prev,
+                    loading: false,
                     errors: [error.message]
                 };
             });
@@ -237,6 +252,7 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
             setState(prev => {
                 return {
                     ...prev,
+                    loading: false,
                     errors: ["No validation data received."]
                 };
             });
@@ -291,17 +307,32 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
         });
 
         const dataToImport = getDataToImport(state);
-        const result = await client.mutate<ImportStructureResponse>({
-            mutation: IMPORT_STRUCTURE,
-            variables: {
-                data: dataToImport
-            }
-        });
+
+        let result: FetchResult<ImportStructureResponse> | undefined;
+        try {
+            result = await client.mutate<ImportStructureResponse>({
+                mutation: IMPORT_STRUCTURE,
+                variables: {
+                    data: dataToImport
+                },
+                errorPolicy: "all"
+            });
+        } catch (ex) {
+            setState(prev => {
+                return {
+                    ...prev,
+                    loading: false,
+                    errors: [ex.message]
+                };
+            });
+            return;
+        }
         const { data, error } = result.data?.importStructure || {};
         if (error) {
             setState(prev => {
                 return {
                     ...prev,
+                    loading: false,
                     errors: [error.message]
                 };
             });
@@ -310,6 +341,7 @@ export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ c
             setState(prev => {
                 return {
                     ...prev,
+                    loading: false,
                     validated: false,
                     errors: ["No structure import data received."]
                 };

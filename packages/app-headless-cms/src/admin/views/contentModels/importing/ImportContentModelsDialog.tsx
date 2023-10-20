@@ -19,6 +19,7 @@ export const ImportContentModelsDialog: React.VFC<ImportContentModelsDialogProps
     const { onClose } = props;
 
     const onCloseClick = useCallback(() => {
+        window.location.reload();
         onClose();
     }, [onClose]);
 
