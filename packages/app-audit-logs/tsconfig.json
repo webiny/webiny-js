@@ -8,6 +8,7 @@
     { "path": "../app-admin" },
     { "path": "../app-security" },
     { "path": "../form" },
+    { "path": "../plugins" },
     { "path": "../react-properties" },
     { "path": "../react-router" },
     { "path": "../ui" }
@@ -31,6 +32,8 @@
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],

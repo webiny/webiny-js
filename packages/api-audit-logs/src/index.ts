@@ -4,7 +4,7 @@ import { AuditLogsContext } from "~/types";
 
 export const createAuditLogs = () => {
     const subscriptionsPlugin = new ContextPlugin<AuditLogsContext>(async context => {
-        createSubscriptionHooks(context);
+        context.wcp.canUseFeature("auditLogs") && createSubscriptionHooks(context);
     });
 
     return [subscriptionsPlugin];
