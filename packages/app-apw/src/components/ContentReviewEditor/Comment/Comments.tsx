@@ -46,7 +46,6 @@ const Comment: React.FC<CommentProps> = props => {
             <CommentBox paddingX={3.5} paddingY={5}>
                 <TypographyBody use={"caption"}>
                     <RichTextEditor
-                        elementId={comment.id}
                         readOnly={true}
                         className={richTextWrapperStyles}
                         value={comment.body}

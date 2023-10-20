@@ -303,7 +303,7 @@ describe("access", () => {
         });
     });
 
-    it("should not able to update the change request, when user not the owner", async () => {
+    it("should not able to update the change request, when user is not the owner", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
         const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
@@ -365,7 +365,7 @@ describe("access", () => {
         });
     });
 
-    it("should not able to update the delete request, when user not the owner", async () => {
+    it("should not able to delete the change request, when user is not the owner", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
         const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;

@@ -113,6 +113,10 @@ export const createChangeRequestStorageOperations = (
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();
 
+            if (!security.getIdentity()) {
+                return true;
+            }
+
             /**
              * We're fetching the existing entry
              */
