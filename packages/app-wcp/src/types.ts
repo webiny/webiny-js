@@ -20,6 +20,9 @@ export type WcpProjectPackage = {
                 teams: boolean;
             };
         };
+        auditLogs: {
+            enabled: boolean;
+        };
     };
 };
 
