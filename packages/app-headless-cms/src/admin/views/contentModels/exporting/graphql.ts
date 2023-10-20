@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-export const EXPORT_MODELS_QUERY = gql`
-    query ExportCmsStructure($models: [String!]) {
-        exportCmsStructure(models: $models) {
+export const CMS_EXPORT_STRUCTURE_QUERY = gql`
+    query CmsExportStructure($models: [String!]) {
+        exportStructure(models: $models) {
             data
             error {
                 message

@@ -18,10 +18,7 @@ export const sanitizeModel = (
     return {
         modelId: model.modelId,
         name: model.name,
-        group: {
-            id: group.id,
-            name: group.name
-        },
+        group: group.id,
         icon: model.icon,
         description: model.description,
         singularApiName: model.singularApiName,

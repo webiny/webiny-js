@@ -86,7 +86,7 @@ describe("content model test", () => {
 
         expect(getTypeFields(ReadQuery)).toEqual(["getContentModel", "listContentModels"]);
         expect(getTypeFields(ManageQuery)).toEqual([
-            "exportCmsStructure",
+            "exportStructure",
             "getContentModel",
             "listContentModels",
             "searchContentEntries",
@@ -101,6 +101,8 @@ describe("content model test", () => {
         ]);
         expect(getTypeFields(ReadMutation)).toEqual([]);
         expect(getTypeFields(ManageMutation)).toEqual([
+            "validateImportStructure",
+            "importStructure",
             "createContentModel",
             "createContentModelFrom",
             "updateContentModel",
