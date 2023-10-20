@@ -79,15 +79,9 @@ describe("5.37.0-002", () => {
                 }
             });
         } catch (ex) {
-            console.log(
-                "Error inserting test entries: ",
-                JSON.stringify({
-                    message: ex.message,
-                    data: ex.data,
-                    stack: ex.stack,
-                    code: ex.code
-                })
-            );
+            for (const property of Object.getOwnPropertyNames(ex)) {
+                console.log(`${ex[property]}`);
+            }
             throw ex;
         }
 

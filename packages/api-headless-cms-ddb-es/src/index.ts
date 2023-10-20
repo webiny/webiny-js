@@ -36,6 +36,7 @@ import {
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import { createElasticsearchIndexesOnLocaleAfterCreate } from "~/operations/system/indexes";
 
 export * from "./plugins";
 
@@ -170,30 +171,36 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
+            await createElasticsearchIndexesOnLocaleAfterCreate({
+                context,
+                client: elasticsearch,
+                plugins
+            });
+
             context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
             });
             context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
             });
             context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model
                 });
             });
 
             context.cms.onModelInitialize.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
