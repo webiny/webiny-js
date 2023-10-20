@@ -38,6 +38,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             create
             update
             code
+            none
         }
 
         enum CmsImportModelStructureAction {

@@ -27,7 +27,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [],
                         models: [],
-                        message: "No groups to import."
+                        message: "No models to import."
                     },
                     error: null
                 }
@@ -99,7 +99,7 @@ describe("import cms structure", () => {
                     data: {
                         groups: [
                             {
-                                action: null,
+                                action: CmsImportAction.NONE,
                                 group: {
                                     id: group1.id,
                                     name: group1.name
@@ -111,7 +111,7 @@ describe("import cms structure", () => {
                                 }
                             },
                             {
-                                action: null,
+                                action: CmsImportAction.NONE,
                                 group: {
                                     id: "",
                                     name: group2.name
@@ -316,7 +316,7 @@ describe("import cms structure", () => {
                         ],
                         models: [
                             {
-                                action: null,
+                                action: CmsImportAction.NONE,
                                 model: {
                                     modelId: "",
                                     name: ""
@@ -327,7 +327,7 @@ describe("import cms structure", () => {
                                     data: {
                                         invalidFields: {
                                             modelId: {
-                                                code: "custom",
+                                                code: "too_small",
                                                 data: expect.any(Object),
                                                 message: expect.any(String)
                                             },
@@ -410,7 +410,7 @@ describe("import cms structure", () => {
                         ],
                         models: [
                             {
-                                action: null,
+                                action: CmsImportAction.NONE,
                                 model: {
                                     modelId: "1",
                                     name: "2"
@@ -520,6 +520,15 @@ describe("import cms structure", () => {
                                 },
                                 related: [],
                                 error: null
+                            },
+                            {
+                                action: "create",
+                                error: null,
+                                model: {
+                                    modelId: "machines",
+                                    name: "Machines"
+                                },
+                                related: []
                             }
                         ],
                         message: "Validation done."
@@ -541,22 +550,24 @@ describe("import cms structure", () => {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
                             return {
-                                action: null,
+                                action: CmsImportAction.CREATE,
                                 group: {
                                     id: group.id,
                                     name: group.name
                                 },
+                                imported: true,
                                 error: null
                             };
                         }),
                         models: exportedGroupsAndModels.models.map(model => {
                             return {
-                                action: null,
-                                related: null,
+                                action: CmsImportAction.CREATE,
+                                related: expect.any(Array),
                                 model: {
                                     modelId: model.modelId,
                                     name: model.name
                                 },
+                                imported: true,
                                 error: null
                             };
                         }),
@@ -631,13 +642,17 @@ describe("import cms structure", () => {
                         {
                             id: "64d4c105110b570008736515",
                             name: "Blog"
+                        },
+                        {
+                            id: "64d4c105110b570008736516",
+                            name: "Machines"
                         }
                     ],
                     error: null
                 }
             }
         });
-        expect(listGroupsResponse.data.listContentModelGroups.data).toHaveLength(1);
+        expect(listGroupsResponse.data.listContentModelGroups.data).toHaveLength(2);
 
         const [listModelsResponse] = await listContentModelsQuery();
         expect(listModelsResponse).toMatchObject({
@@ -655,13 +670,17 @@ describe("import cms structure", () => {
                         {
                             modelId: "category",
                             name: "Category"
+                        },
+                        {
+                            modelId: "machines",
+                            name: "Machines"
                         }
                     ],
                     error: null
                 }
             }
         });
-        expect(listModelsResponse.data.listContentModels.data).toHaveLength(3);
+        expect(listModelsResponse.data.listContentModels.data).toHaveLength(4);
 
         const [validateResult] = await validateCmsStructureMutation({
             data: exportedGroupsAndModels
@@ -675,6 +694,14 @@ describe("import cms structure", () => {
                                 group: {
                                     id: "64d4c105110b570008736515",
                                     name: "Blog"
+                                },
+                                action: CmsImportAction.UPDATE,
+                                error: null
+                            },
+                            {
+                                group: {
+                                    id: "64d4c105110b570008736516",
+                                    name: "Machines"
                                 },
                                 action: CmsImportAction.UPDATE,
                                 error: null
@@ -706,6 +733,15 @@ describe("import cms structure", () => {
                                 model: {
                                     modelId: "category",
                                     name: "Category"
+                                }
+                            },
+                            {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "machines",
+                                    name: "Machines"
                                 }
                             }
                         ],
@@ -729,13 +765,21 @@ describe("import cms structure", () => {
                                     id: "64d4c105110b570008736515",
                                     name: "Blog"
                                 },
-                                action: null,
+                                action: CmsImportAction.UPDATE,
+                                error: null
+                            },
+                            {
+                                group: {
+                                    id: "64d4c105110b570008736516",
+                                    name: "Machines"
+                                },
+                                action: CmsImportAction.UPDATE,
                                 error: null
                             }
                         ],
                         models: [
                             {
-                                action: null,
+                                action: CmsImportAction.UPDATE,
                                 error: null,
                                 related: ["author", "category"],
                                 model: {
@@ -744,7 +788,7 @@ describe("import cms structure", () => {
                                 }
                             },
                             {
-                                action: null,
+                                action: CmsImportAction.UPDATE,
                                 error: null,
                                 related: [],
                                 model: {
@@ -753,12 +797,21 @@ describe("import cms structure", () => {
                                 }
                             },
                             {
-                                action: null,
+                                action: CmsImportAction.UPDATE,
                                 error: null,
                                 related: [],
                                 model: {
                                     modelId: "category",
                                     name: "Category"
+                                }
+                            },
+                            {
+                                action: CmsImportAction.UPDATE,
+                                error: null,
+                                related: [],
+                                model: {
+                                    modelId: "machines",
+                                    name: "Machines"
                                 }
                             }
                         ],

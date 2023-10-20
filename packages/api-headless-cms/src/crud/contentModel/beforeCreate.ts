@@ -20,7 +20,11 @@ const getModelId = (model: CmsModel): string => {
     const { modelId, name } = model;
     const value = modelId ? modelId.trim() : null;
     if (value) {
-        return value;
+        const isModelIdValid = camelCase(value).toLowerCase() === value.toLowerCase();
+        if (isModelIdValid) {
+            return value;
+        }
+        return camelCase(value);
     } else if (name) {
         return camelCase(name.trim());
     }

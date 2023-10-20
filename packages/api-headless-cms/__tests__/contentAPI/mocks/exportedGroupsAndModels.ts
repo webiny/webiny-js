@@ -236,7 +236,7 @@ export const exportedGroupsAndModels = {
         },
         {
             modelId: "machines",
-            name: "Category",
+            name: "Machines",
             group: "64d4c105110b570008736516",
             icon: "fas/location-dot",
             singularApiName: "Machine",
@@ -278,14 +278,14 @@ export const createModels = () => {
         }),
         createCmsModel({
             modelId: "machines",
-            name: "Category",
+            name: "Machines",
             group: {
                 id: "64d4c105110b570008736516",
                 name: "Machines"
             },
             icon: "fas/location-dot",
             singularApiName: "Machine",
-            pluralApiName: "Machine",
+            pluralApiName: "Machines",
             description: "",
             fields: [
                 {
