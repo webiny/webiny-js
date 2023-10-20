@@ -4,6 +4,7 @@ import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -248,7 +249,7 @@ export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
 };
 
-export interface SecurityContext<TIdentity = SecurityIdentity> extends Context {
+export interface SecurityContext<TIdentity = SecurityIdentity> extends TenancyContext {
     security: Security<TIdentity>;
 }
 

@@ -7,11 +7,10 @@ import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authen
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito";
+import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users-cognito";
-import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+import createAdminUsersApp from "@webiny/api-admin-users";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
