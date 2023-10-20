@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
@@ -48,20 +48,23 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
 
 const useWorker = () => {
     const { selected, setSelected } = useFileManagerView();
-    const { current: worker } = useRef(new Worker<FileItem>());
+    const worker = new Worker<FileItem>();
+    const [items, setItems] = useState<FileItem[]>([]);
 
     useEffect(() => {
         worker.items = selected;
+        setItems(selected);
     }, [selected]);
 
-    // Reset selected items in both usePagesList and Worker
+    // Reset selected items in both useFileManagerView and Worker
     const resetItems = useCallback(() => {
         worker.items = [];
+        setItems([]);
         setSelected([]);
     }, []);
 
     return {
-        items: worker.items,
+        items,
         process: (callback: (items: FileItem[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<FileItem>) => Promise<void>,
