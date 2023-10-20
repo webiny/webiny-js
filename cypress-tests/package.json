@@ -6,7 +6,7 @@
   "author": "Webiny Ltd.",
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^1.4.0",
-    "@testing-library/cypress": "^8.0.2",
+    "@testing-library/cypress": "^10.0.0",
     "@webiny/project-utils": "0.0.0",
     "amazon-cognito-identity-js": "^4.5.3",
     "cypress": "^13.0.0",
@@ -21,6 +21,9 @@
     "uniqid": "^5.2.0"
   },
   "scripts": {
-    "cypress:open": "yarn cypress open"
+    "cypress:open": "yarn cypress open",
+    "cy:open": "yarn cypress:open",
+    "cypress:run": "yarn cypress run",
+    "cy:run": "yarn cypress:run"
   }
 }
