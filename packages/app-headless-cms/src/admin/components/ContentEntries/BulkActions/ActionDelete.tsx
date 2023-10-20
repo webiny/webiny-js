@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";

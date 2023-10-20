@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
@@ -48,7 +48,7 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
 
 const useWorker = () => {
     const { selected, setSelected } = useFileManagerView();
-    const worker = new Worker<FileItem>();
+    const { current: worker } = useRef(new Worker<FileItem>());
     const [items, setItems] = useState<FileItem[]>([]);
 
     useEffect(() => {
