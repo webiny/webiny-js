@@ -501,7 +501,7 @@ export interface CmsSecurityPermission extends SecurityPermission {
 export interface CmsErrorResponse {
     message: string;
     code: string;
-    data: Record<string, any> | Record<string, any>[];
+    data: Record<string, any>;
 }
 /**
  * @category GraphQL

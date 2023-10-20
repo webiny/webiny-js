@@ -12,17 +12,13 @@ export const sanitizeGroup = (group: CmsGroup): SanitizedCmsGroup => {
 };
 
 export const sanitizeModel = (
-    group: Pick<CmsGroup, "id" | "slug" | "name">,
+    group: Pick<CmsGroup, "id" | "name">,
     model: CmsModel
 ): SanitizedCmsModel => {
     return {
         modelId: model.modelId,
         name: model.name,
-        group: {
-            id: group.id,
-            slug: group.slug,
-            name: group.name
-        },
+        group: group.id,
         icon: model.icon,
         description: model.description,
         singularApiName: model.singularApiName,
