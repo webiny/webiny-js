@@ -102,7 +102,6 @@ context("Menus Module", () => {
 
         cy.contains("Are you sure you want to continue?").should("exist");
         cy.findAllByTestId("confirmationdialog-confirm-action").click();
-        
 
         cy.findByText(/Menu ".*" deleted\./).should("exist");
         cy.wait(500);

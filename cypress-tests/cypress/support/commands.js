@@ -40,7 +40,7 @@ import "./fileManager/fmDeleteFile";
 import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "./formBuilder/fbDeleteForm";
-import "./formBuilder/fbListAndDeleteAllForms";
+import "./formBuilder/fbDeleteAllForms";
 import "cypress-mailosaur";
 import "./aco/acoNavigateToFolder";
 

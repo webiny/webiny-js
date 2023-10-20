@@ -41,7 +41,6 @@ context("Categories Module", () => {
         });
         cy.contains("Are you sure you want to continue?").should("exist");
         cy.findAllByTestId("confirmationdialog-confirm-action").click();
-        
 
         cy.findByText(`Category "cool-category-${id}" deleted.`).should("exist");
         cy.findByTestId("default-data-list").within(() => {
