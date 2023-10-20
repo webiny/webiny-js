@@ -17,7 +17,9 @@ context("Headless CMS - Content Models CRUD", () => {
         // 2.3 Click save button
         cy.findByTestId("new-record-button").click();
         cy.findByTestId("cms-new-content-model-modal").within(() => {
-            cy.findByText("New Content Model").should("exist");
+            // Ensures we start typing once the content model group select is loaded.
+            // This is important because otherwise, typing into the first field would be partially lost.
+            cy.contains("Ungrouped").should("exist");
 
             cy.findByTestId("cms.newcontentmodeldialog.name")
                 .focus()
@@ -179,7 +181,9 @@ context("Headless CMS - Content Models CRUD", () => {
         // 2.3 Click save button
         cy.findByTestId("new-record-button").click();
         cy.findByTestId("cms-new-content-model-modal").within(() => {
-            cy.findByText("New Content Model").should("exist");
+            // Ensures we start typing once the content model group select is loaded.
+            // This is important because otherwise, typing into the first field would be partially lost.
+            cy.contains("Ungrouped").should("exist");
 
             cy.findByTestId("cms.newcontentmodeldialog.name")
                 .focus()
