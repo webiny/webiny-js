@@ -94,8 +94,8 @@ const output = [
 ];
 ```
 
-These parsed custom object, by default, contains the `order` of the lexical node occurrence, option to export parsed
-plain text or html in the `text` prop and to define custom `type` name.
+These parsed custom object, by default, contains the `order` of the lexical node occurrence, `text` property that
+contains the html or plain text (depends on the configuration) and to define custom `type` name.
 
 ## Configuration
 
@@ -114,7 +114,7 @@ output, html tag and text parsing option with following props:
 - With `type` prop you must define the lexical node type to match. Example: `paragraph-element`,
 - With `outputType` prop you can define the type you want to be set in the output `type` object. For example lexical
   node type is `paragraph-element`, but, after the parsing, for the output `type` prop we want type name to be
-  only `heading`.
+  only `paragraph`.
 - `tag` prop allows you to specify the html tag you want to have this element. If it's not specified, it will try to
   parse from the lexical node `tag` prop, if existing. For example for `headings` you don't need to specify the `tag`
   prop.
@@ -123,16 +123,18 @@ output, html tag and text parsing option with following props:
 
 You can specify transformer callback functions in the following props:
 
-- `textTransformer` prop allows you to specify a method where customize the already parsed plain text.
-- `htmlTransformer` prop allows you to specify a method where customize the parsed html content.
-- `outputTransformer` - prop allows you to specify a method where you can customize the output object.
+- `textTransformer` prop allows you to specify a method, where you can modify already parsed plain text.
+- `htmlTransformer` prop allows you to specify a method, where modify already parsed html content.
+- `outputTransformer` - prop allows you to specify a method, where you can customize the output object.
 
 > By default, the parser have configuration for following Webiny's lexical nodes:
 > `paragraph-element`, `paragraph`, `heading-element`, `heading`, `webiny-quote`, `quote`,
 > `webiny-list`, `webiny-listitem`, `link-node` and `link`.
->
-> Please check all available Webiny lexical nodes on
-> following [GitHub link](https://github.com/webiny/webiny-js/blob/next/packages/lexical-editor/src/nodes/webinyNodes.ts).
+
+Please check all available Webiny lexical nodes on
+following [GitHub link](https://github.com/webiny/webiny-js/blob/next/packages/lexical-editor/src/nodes/webinyNodes.ts).
+
+Here an example how you can configure the parser.
 
 ```ts
 import {parseLexicalObject, parseLexicalObject} from "@webiny/lexical-parser";
@@ -258,23 +260,21 @@ const output = [
 ### Create custom plain text content with `textTransformer` transformer
 
 ```ts
-export const mydDfaultConfig: LexicalParserConfig = {
-    processors: [
-        {
-            elementNode: {
-                type: "paragraph-element", // lexical node type
-                outputType: "paragraph", // output node type name
-                tag: "p"
-            },
-            textTransformer: (parsedElement: ParsedElementNode, linkNode) => {
-                if (parsedElement.text.trim().length === 0) {
-                    return `N/A`;
-                }
-                return parsedElement.text;
+export const mydDfaultConfig: LexicalParserConfig = [
+    {
+        elementNode: {
+            type: "paragraph-element", // lexical node type
+            outputType: "paragraph", // output node type name
+            tag: "p"
+        },
+        textTransformer: (parsedElement: ParsedElementNode, linkNode) => {
+            if (parsedElement.text.trim().length === 0) {
+                return `N/A`;
             }
+            return parsedElement.text;
         }
-    ]
-};
+    }
+];
 ```
 
 The output for the node will be:
@@ -295,32 +295,31 @@ const output = [
 You can customize the output of the parsed node in a following way:
 
 ```ts
-export const mydDfaultConfig: LexicalParserConfig = {
-    processors: [
-        {
-            elementNode: {
-                type: "paragraph-element",
-                outputType: "paragraph",
-                tag: "p",
-                outputTextAsHtml: true
-            },
-            outputTransformer: (
-                parsedElement: ParsedElementNode,
-                lexicalNode: Record<string, any>,
-                index: number,
-                config
-            ) => {
-                // create custom output when paragraph node is matched
-                return {
-                    order: index, // default
-                    type: config?.elementNode.outputType, // default
-                    text: `<div>${parsedElement.html}</div>`, // default
-                    customField: "custom text" // new field for this node
-                };
-            }
+export const mydDfaultConfig: LexicalParserConfig = [
+    {
+        elementNode: {
+            type: "paragraph-element",
+            outputType: "paragraph",
+            tag: "p",
+            outputTextAsHtml: true
+        },
+        outputTransformer: (
+            parsedElement: ParsedElementNode,
+            lexicalNode: Record<string, any>,
+            index: number,
+            config
+        ) => {
+            // create custom output when paragraph node is matched
+            return {
+                order: index, // default
+                type: config?.elementNode.outputType, // default
+                text: `<div>${parsedElement.html}</div>`, // default
+                customField: "custom text" // new field for this node
+            };
         }
-    ]
-};
+    }
+];
+;
 
 ```
 
