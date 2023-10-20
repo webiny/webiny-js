@@ -11,7 +11,7 @@ import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
-import { useQuery } from "~/admin/hooks";
+import { useModelFieldGraphqlContext, useQuery } from "~/admin/hooks";
 import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
@@ -94,6 +94,7 @@ interface Props extends CmsModelFieldRendererProps {
 export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
+    const requestContext = useModelFieldGraphqlContext();
 
     const values = useMemo(() => {
         return bind.value || [];
@@ -105,7 +106,10 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const [loadedModels, setLoadedModels] = useState<CmsModel[]>([]);
 
     const { data, loading: loadingModels } = useQuery<ListCmsModelsQueryResponse>(
-        GQL.LIST_CONTENT_MODELS
+        GQL.LIST_CONTENT_MODELS,
+        {
+            context: requestContext
+        }
     );
 
     useEffect(() => {
