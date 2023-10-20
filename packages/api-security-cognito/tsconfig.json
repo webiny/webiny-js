@@ -2,42 +2,18 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../api-admin-users"
-    },
-    {
-      "path": "../api-cognito-authenticator"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../api-wcp"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    }
+    { "path": "../api" },
+    { "path": "../api-admin-users" },
+    { "path": "../api-cognito-authenticator" },
+    { "path": "../api-i18n" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../error" },
+    { "path": "../handler-graphql" },
+    { "path": "../api-wcp" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -58,16 +34,16 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

@@ -64,7 +64,7 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    const app = createPulumiApp({
+    return createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
@@ -159,6 +159,4 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             };
         }
     });
-
-    return app;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useApolloClient } from "~/admin/hooks";
+import { useApolloClient, useModelFieldGraphqlContext } from "~/admin/hooks";
 import { CmsModelField, CmsModel } from "~/types";
 import {
     SEARCH_CONTENT_ENTRIES,
@@ -30,6 +30,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     const [entries, setEntries] = useState<OptionItemCollection>({});
     const [latestEntries, setLatestEntries] = useState<OptionItem[]>([]);
     const [valueEntries, setValueEntries] = useState<OptionItem[]>([]);
+    const requestContext = useModelFieldGraphqlContext();
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
         CmsModel,
@@ -52,7 +53,8 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
             variables: {
                 modelIds: models.map(m => m.modelId),
                 query: search
-            }
+            },
+            context: requestContext
         });
         setLoading(false);
 
@@ -88,7 +90,8 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                  * We cannot update this query response in cache after a reference entry being created/deleted,
                  * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
                  */
-                fetchPolicy: "network-only"
+                fetchPolicy: "network-only",
+                context: requestContext
             })
             .then(({ data }) => {
                 if (!isMounted.current) {
@@ -123,7 +126,8 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                             id: value.id
                         };
                     })
-                }
+                },
+                context: requestContext
             })
             .then(res => {
                 if (!isMounted.current) {
