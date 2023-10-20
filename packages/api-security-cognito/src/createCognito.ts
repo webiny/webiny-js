@@ -7,6 +7,9 @@ import {
 } from "@webiny/api-cognito-authenticator";
 import { createGroupAuthorizer } from "~/createGroupAuthorizer";
 import { CoreContext } from "~/types";
+import { createAdminUsersHooks } from "./createAdminUsersHooks";
+import adminUsersGqlPlugins from "./graphql/user.gql";
+import installGqlPlugins from "./graphql/install.gql";
 
 interface GetIdentityParams<TContext, TToken, TIdentity> {
     identity: TIdentity;
@@ -47,45 +50,52 @@ export const createCognito = <
 
     const { getIdentity, getPermissions } = config;
 
-    return new ContextPlugin<TContext>(context => {
-        context.security.addAuthenticator(async token => {
-            const tokenObj = await cognitoAuthenticator<TToken>(token);
+    return [
+        new ContextPlugin<TContext>(context => {
+            context.security.addAuthenticator(async token => {
+                const tokenObj = await cognitoAuthenticator<TToken>(token);
 
-            if (!tokenObj) {
-                return null;
-            }
-
-            const defaultIdentity = {
-                id: tokenObj["custom:id"] || tokenObj.sub,
-                type: config.identityType,
-                displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
-                email: tokenObj.email,
-                firstName: tokenObj.given_name,
-                lastName: tokenObj.family_name
-            } as unknown as TIdentity;
-
-            if (typeof getIdentity === "function") {
-                const customIdentity = getIdentity({
-                    identity: defaultIdentity,
-                    identityType: config.identityType,
-                    token: tokenObj,
-                    context
-                });
-
-                if (customIdentity.group) {
-                    context.security.addAuthorizer(
-                        createGroupAuthorizer(context, customIdentity.group)
-                    );
+                if (!tokenObj) {
+                    return null;
                 }
+
+                const defaultIdentity = {
+                    id: tokenObj["custom:id"] || tokenObj.sub,
+                    type: config.identityType,
+                    displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
+                    email: tokenObj.email,
+                    firstName: tokenObj.given_name,
+                    lastName: tokenObj.family_name
+                } as unknown as TIdentity;
+
+                if (typeof getIdentity === "function") {
+                    const customIdentity = getIdentity({
+                        identity: defaultIdentity,
+                        identityType: config.identityType,
+                        token: tokenObj,
+                        context
+                    });
+
+                    if (customIdentity.group) {
+                        context.security.addAuthorizer(
+                            createGroupAuthorizer(context, customIdentity.group)
+                        );
+                    }
+                }
+
+                return defaultIdentity;
+            });
+
+            if (getPermissions) {
+                context.security.addAuthorizer(async () => {
+                    return getPermissions({ context });
+                });
             }
 
-            return defaultIdentity;
-        });
-
-        if (getPermissions) {
-            context.security.addAuthorizer(async () => {
-                return getPermissions({ context });
-            });
-        }
-    });
+            const teams = context.wcp.canUseTeams();
+            context.plugins.register(adminUsersGqlPlugins({ teams }));
+        }),
+        installGqlPlugins,
+        createAdminUsersHooks()
+    ];
 };
