@@ -9,7 +9,11 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
@@ -40,6 +44,7 @@ export const List: React.VFC<ListProps> = ({
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [permissionsDialogOpen, setPermissionsDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
 
     useEffect(() => {
@@ -67,10 +72,14 @@ export const List: React.VFC<ListProps> = ({
             }
 
             setTreeData(newTree);
-            await updateFolder({
-                ...item,
-                parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
-            });
+
+            await updateFolder(
+                {
+                    ...item,
+                    parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
+                },
+                { refetchFoldersList: true }
+            );
         } catch (error) {
             return showSnackbar(error.message);
         }
@@ -112,6 +121,10 @@ export const List: React.VFC<ListProps> = ({
                                 setSelectedFolder(data);
                                 setUpdateDialogOpen(true);
                             }}
+                            onSetFolderPermissions={data => {
+                                setSelectedFolder(data);
+                                setPermissionsDialogOpen(true);
+                            }}
                             onDeleteFolder={data => {
                                 setSelectedFolder(data);
                                 setDeleteDialogOpen(true);
@@ -145,6 +158,14 @@ export const List: React.VFC<ListProps> = ({
                         open={deleteDialogOpen}
                         onClose={() => {
                             setDeleteDialogOpen(false);
+                            setSelectedFolder(undefined);
+                        }}
+                    />{" "}
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={permissionsDialogOpen}
+                        onClose={() => {
+                            setPermissionsDialogOpen(false);
                             setSelectedFolder(undefined);
                         }}
                     />

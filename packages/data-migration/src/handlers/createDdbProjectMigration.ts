@@ -72,13 +72,19 @@ export const createDdbProjectMigration = ({
             // Inject dependencies and execute.
             try {
                 const runner = await container.resolve(MigrationRunner);
+                runner.setContext({
+                    logGroupName: process.env.AWS_LAMBDA_LOG_GROUP_NAME,
+                    logStreamName: process.env.AWS_LAMBDA_LOG_STREAM_NAME
+                });
 
                 if (payload.command === "execute") {
                     await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
                     return;
                 }
 
-                return { data: await runner.getStatus() };
+                return {
+                    data: await runner.getStatus()
+                };
             } catch (err) {
                 return { error: { message: err.message } };
             }

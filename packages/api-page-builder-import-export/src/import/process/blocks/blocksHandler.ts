@@ -76,8 +76,7 @@ export const blocksHandler = async (
         const pbBlock = await context.pageBuilder.createPageBlock({
             name: block.name,
             blockCategory: block.blockCategory,
-            content: block.content,
-            preview: block.preview
+            content: block.content
         });
 
         // Update task record in DB

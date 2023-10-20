@@ -127,6 +127,7 @@ Resources:
                 Action:
                   - cognito-idp:CreateUserPoolClient
                   - cognito-idp:DeleteUserPool
+                  - cognito-idp:UpdateUserPool
                   - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPool
                   - cognito-idp:DescribeUserPoolClient
@@ -232,6 +233,7 @@ Resources:
               # https://www.webiny.com/docs/architecture/introduction#different-database-setups
               - Effect: Allow
                 Action:
+                  - iam:GetRole
                   - iam:CreateServiceLinkedRole
                 Resource:
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
@@ -444,6 +446,13 @@ Resources:
                   - ec2:DescribeRouteTables
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeSecurityGroupReferences
+
+              # We need this to get logs from CloudWatch during data migrations.
+              - Effect: Allow
+                Resource: "*:"
+                Action:
+                  - logs:GetLogEvents
+                  - logs:Unmask
 
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition

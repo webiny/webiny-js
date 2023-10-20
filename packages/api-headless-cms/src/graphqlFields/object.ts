@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import upperFirst from "lodash/upperFirst";
 import {
     CmsFieldTypePlugins,
@@ -97,25 +96,8 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         validateChildFields: params => {
             const { field, originalField, validate } = params;
 
-            const fields = field.settings?.fields || [];
-            /**
-             * At the moment we do not allow dynamic zone fields inside the object field.
-             */
-            const hasDynamicZone = fields.some(f => f.type === "dynamicZone");
-            if (hasDynamicZone) {
-                throw new WebinyError(
-                    "Dynamic zones cannot be used inside of an object field.",
-                    "DYNAMIC_ZONE_INSIDE_OBJECT",
-                    {
-                        id: field.id,
-                        fieldId: field.fieldId,
-                        fieldLabel: field.label
-                    }
-                );
-            }
-
             validate({
-                fields,
+                fields: field.settings?.fields ?? [],
                 originalFields: originalField?.settings?.fields || []
             });
         },

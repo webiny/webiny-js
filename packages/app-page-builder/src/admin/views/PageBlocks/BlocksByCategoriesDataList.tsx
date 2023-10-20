@@ -259,8 +259,7 @@ const BlocksByCategoriesDataList = ({
                                 path: ["sUK8viY2oz", "eM2Z1d9gfH"]
                             }
                         ]
-                    }),
-                    preview: {}
+                    })
                 }
             },
             refetchQueries: [

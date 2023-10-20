@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
-import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "~/components";
 
 import { Folder } from "~/components/FolderGrid/Folder";
 import { Grid } from "~/components/FolderGrid/styled";
@@ -16,6 +20,7 @@ export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick 
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     if (folders.length === 0) {
         return null;
@@ -37,6 +42,10 @@ export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick 
                             setDeleteDialogOpen(true);
                             setSelectedFolder(folder);
                         }}
+                        onMenuManagePermissionsClick={() => {
+                            setManagePermissionsDialogOpen(true);
+                            setSelectedFolder(folder);
+                        }}
                     />
                 ))}
             </Grid>
@@ -51,6 +60,11 @@ export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick 
                         folder={selectedFolder}
                         open={deleteDialogOpen}
                         onClose={() => setDeleteDialogOpen(false)}
+                    />
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={managePermissionsDialogOpen}
+                        onClose={() => setManagePermissionsDialogOpen(false)}
                     />
                 </>
             )}

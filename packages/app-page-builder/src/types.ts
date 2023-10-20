@@ -370,7 +370,16 @@ export interface PbPageRevision {
 
 export type PbPageDataItem = Pick<
     PbPageData,
-    "id" | "pid" | "title" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
+    | "id"
+    | "pid"
+    | "title"
+    | "createdBy"
+    | "createdOn"
+    | "savedOn"
+    | "status"
+    | "version"
+    | "locked"
+    | "path"
 >;
 
 export interface PbRenderElementPluginRenderParams {
@@ -632,8 +641,7 @@ export type PbEditorBlockPlugin = Plugin & {
     blockCategory: string;
     tags: string[];
     create(): PbEditorElement;
-    image?: Partial<File>;
-    preview?(): ReactElement;
+    preview(): ReactElement;
 };
 
 export type PbEditorBlockCategoryPlugin = Plugin & {
@@ -868,7 +876,6 @@ export interface PbPageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: File;
     createdOn: string;
     createdBy: PbIdentity;
 }

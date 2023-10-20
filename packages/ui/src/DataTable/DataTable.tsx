@@ -4,7 +4,6 @@ import {
     DataTableContent,
     DataTableHead,
     DataTableRow,
-    DataTableHeadCell,
     DataTableBody,
     DataTableCell,
     DataTableCellProps
@@ -27,7 +26,14 @@ import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
-import { ColumnDirectionIcon, ColumnDirectionWrapper, ColumnHeaderWrapper, Table } from "./styled";
+import {
+    ColumnDirectionIcon,
+    ColumnDirectionWrapper,
+    ColumnHeaderWrapper,
+    Resizer,
+    Table,
+    TableHeadCell
+} from "./styled";
 
 interface Column<T> {
     /*
@@ -43,6 +49,10 @@ interface Column<T> {
      */
     meta?: DataTableCellProps;
     /*
+     * Column size.
+     */
+    size?: number;
+    /*
      * Column class names.
      */
     className?: string;
@@ -50,6 +60,10 @@ interface Column<T> {
      * Enable column sorting.
      */
     enableSorting?: boolean;
+    /*
+     * Enable column resizing.
+     */
+    enableResizing?: boolean;
 }
 
 export type Columns<T> = {
@@ -110,6 +124,10 @@ interface Props<T> {
      */
     sorting?: Sorting;
     /**
+     * Initial sorting state.
+     */
+    initialSorting?: Sorting;
+    /**
      * The number of columns to affix to the side of the table when scrolling.
      */
     stickyColumns?: number;
@@ -142,7 +160,16 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell, enableSorting = false, className } = column;
+            const {
+                cell,
+                className,
+                enableResizing = true,
+                enableSorting = false,
+                header,
+                id,
+                meta,
+                size = 200
+            } = column;
 
             return {
                 accessorKey: id,
@@ -158,7 +185,9 @@ const defineColumns = <T,>(
                 meta: {
                     ...meta,
                     className
-                }
+                },
+                enableResizing,
+                size
             };
         });
 
@@ -194,10 +223,11 @@ const defineColumns = <T,>(
                           );
                       },
                       meta: {
-                          hasFormControl: true,
-                          className: "datatable-select-column"
+                          hasFormControl: true
                       },
-                      enableSorting: false
+                      enableSorting: false,
+                      enableResizing: false,
+                      size: 56
                   }
               ]
             : [];
@@ -246,7 +276,7 @@ interface TableCellProps<T> {
 }
 
 const TableCell = <T,>({ cell }: TableCellProps<T>) => (
-    <DataTableCell {...cell.column.columnDef.meta}>
+    <DataTableCell {...cell.column.columnDef.meta} style={{ width: cell.column.getSize() }}>
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
     </DataTableCell>
 );
@@ -282,7 +312,8 @@ export const DataTable = <T extends Object & DefaultData>({
     onSortingChange,
     isRowSelectable,
     canSelectAllRows = true,
-    selectedRows = []
+    selectedRows = [],
+    initialSorting
 }: Props<T>) => {
     const rowSelection = useMemo(() => {
         return selectedRows.reduce<RowSelectionState>((acc, item) => {
@@ -299,14 +330,23 @@ export const DataTable = <T extends Object & DefaultData>({
         }
     };
 
+    const tableSorting = useMemo(() => {
+        if (!Array.isArray(sorting) || !sorting.length) {
+            return initialSorting;
+        }
+        return sorting;
+    }, [sorting]);
+
     const table = useReactTable({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, { canSelectAllRows, onSelectRow, loadingInitial }),
+        enableColumnResizing: true,
+        columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         state: {
             rowSelection,
-            sorting
+            sorting: tableSorting
         },
         enableRowSelection: isRowSelectable,
         onRowSelectionChange,
@@ -322,8 +362,21 @@ export const DataTable = <T extends Object & DefaultData>({
                     {table.getHeaderGroups().map(headerGroup => (
                         <DataTableRow key={headerGroup.id}>
                             {headerGroup.headers.map(
-                                ({ id, isPlaceholder, column, getContext }) => (
-                                    <DataTableHeadCell key={id} {...column.columnDef.meta}>
+                                ({
+                                    id,
+                                    isPlaceholder,
+                                    column,
+                                    getContext,
+                                    colSpan,
+                                    getSize,
+                                    getResizeHandler
+                                }) => (
+                                    <TableHeadCell
+                                        key={id}
+                                        {...column.columnDef.meta}
+                                        colSpan={colSpan}
+                                        style={{ width: getSize() }}
+                                    >
                                         {isPlaceholder ? null : (
                                             <ColumnHeaderWrapper
                                                 onClick={column.getToggleSortingHandler()}
@@ -335,7 +388,14 @@ export const DataTable = <T extends Object & DefaultData>({
                                                 />
                                             </ColumnHeaderWrapper>
                                         )}
-                                    </DataTableHeadCell>
+                                        {column.getCanResize() && (
+                                            <Resizer
+                                                onMouseDown={getResizeHandler()}
+                                                onTouchStart={getResizeHandler()}
+                                                isResizing={column.getIsResizing()}
+                                            />
+                                        )}
+                                    </TableHeadCell>
                                 )
                             )}
                         </DataTableRow>

@@ -142,7 +142,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                             <ListItemGraphic>
                                 <Icon icon={<EditIcon />} />
                             </ListItemGraphic>
-                            {t` Edit`}
+                            {t`Edit`}
                         </MenuItem>
                     )}
 

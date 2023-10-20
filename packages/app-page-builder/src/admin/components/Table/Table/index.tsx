@@ -1,6 +1,10 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "@webiny/app-aco";
 import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -13,14 +17,15 @@ import TimeAgo from "timeago-react";
 import { FolderName, PageName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
+import { FolderActionManagePermissions } from "./Row/Folder/FolderActionManagePermissions";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants";
-import { PbPageDataItem } from "~/types";
-import { actionsColumnStyles, menuStyles } from "./styled";
+import { PbPageDataItem, PbPageDataStatus } from "~/types";
+import { menuStyles } from "./styled";
 
 export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -28,33 +33,30 @@ export interface TableProps {
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
-    selectedRows: string[];
+    selectedRows: PbPageDataItem[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-export interface PageEntry {
-    $type: "RECORD";
+interface BaseEntry {
     $selectable: boolean;
     id: string;
     title: string;
     createdBy: string;
+    createdOn: string;
     savedOn: string;
-    status?: string;
-    version?: number;
-    location: Location;
-    original: PbPageDataItem;
 }
 
-interface FolderEntry {
-    $type: "FOLDER";
-    $selectable: boolean;
-    id: string;
-    title: string;
-    createdBy: string;
-    savedOn: string;
-    status?: string;
+export interface PageEntry extends BaseEntry {
+    $type: "RECORD";
+    original: PbPageDataItem;
+    status: PbPageDataStatus;
+    location: Location;
     version?: number;
+}
+
+interface FolderEntry extends BaseEntry {
+    $type: "FOLDER";
     original: FolderItem;
 }
 
@@ -68,6 +70,7 @@ const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry
             id: data.pid,
             title: data.title,
             createdBy: data.createdBy?.displayName || "-",
+            createdOn: data.createdOn,
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
@@ -85,15 +88,16 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
             id: item.id,
             title: item.title,
             createdBy: item.createdBy?.displayName || "-",
+            createdOn: item.createdOn,
             savedOn: item.createdOn,
             original: item
         };
     });
 };
 
-function isPageEntry(entry: Entry): entry is PageEntry {
+export const isPageEntry = (entry: Entry): entry is PageEntry => {
     return entry.$type === "RECORD";
-}
+};
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
@@ -109,6 +113,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records)];
@@ -128,23 +133,38 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             />
                         );
                     }
-                    return <FolderName name={entry.title} id={entry.id} />;
+
+                    return (
+                        <FolderName
+                            name={entry.title}
+                            id={entry.id}
+                            canManagePermissions={entry.original.canManagePermissions}
+                            hasNonInheritedPermissions={entry.original.hasNonInheritedPermissions}
+                        />
+                    );
                 },
-                enableSorting: true
+                enableSorting: true,
+                size: 400
             },
-            savedOn: {
-                header: "Last modified",
-                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            createdOn: {
+                header: "Created",
+                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
                 enableSorting: true
             },
             createdBy: {
                 header: "Author"
             },
+            savedOn: {
+                header: "Modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
+            },
             status: {
                 header: "Status",
-                cell: ({ status, version }: Entry) => {
-                    if (status && version) {
-                        return `${statusLabels[status]} (v${version})`;
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        const { status, version } = entry;
+                        return `${statusLabels[status]}${version ? ` (v${version})` : ""}`;
                     }
                     return "-";
                 }
@@ -154,7 +174,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 meta: {
                     alignEnd: true
                 },
-                className: actionsColumnStyles,
+                size: 60,
+                enableResizing: false,
                 cell: (entry: Entry) => {
                     if (isPageEntry(entry)) {
                         return (
@@ -176,6 +197,16 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                     setSelectedFolder(entry.original);
                                 }}
                             />
+
+                            {entry.original.canManagePermissions && (
+                                <FolderActionManagePermissions
+                                    onClick={() => {
+                                        setManagePermissionsDialogOpen(true);
+                                        setSelectedFolder(entry.original);
+                                    }}
+                                />
+                            )}
+
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);
@@ -198,9 +229,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
-                selectedRows={data.filter(record => selectedRows.includes(record.id))}
+                selectedRows={data.filter(record =>
+                    selectedRows.find(row => row.pid === record.id)
+                )}
                 isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
             />
             {selectedFolder && (
                 <>
@@ -209,6 +248,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         open={updateDialogOpen}
                         onClose={() => setUpdateDialogOpen(false)}
                     />
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={managePermissionsDialogOpen}
+                        onClose={() => setManagePermissionsDialogOpen(false)}
+                    />{" "}
                     <FolderDialogDelete
                         folder={selectedFolder}
                         open={deleteDialogOpen}

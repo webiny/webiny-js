@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
@@ -237,7 +238,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             }
 
             app.addOutputs({
-                region: process.env.AWS_REGION,
+                region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -247,7 +248,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
-                migrationLambdaArn: migration.function.output.arn
+                migrationLambdaArn: migration.function.output.arn,
+                graphqlLambdaName: graphql.functions.graphql.output.name
             });
 
             app.addHandler(() => {
