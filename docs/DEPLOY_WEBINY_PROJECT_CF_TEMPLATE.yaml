@@ -117,6 +117,15 @@ Resources:
               - Effect: Allow
                 Action:
                   - cognito-idp:CreateUserPool
+                  - cognito-idp:TagResource
+                Resource: "*"
+                Condition:
+                  "Null":
+                    "aws:RequestTag/WbyProjectName": "false"
+
+              # Amazon Cognito
+              - Effect: Allow
+                Action:
                   - cognito-idp:UpdateUserPool
                   - cognito-idp:DeleteUserPool
                   - cognito-idp:DescribeUserPool
@@ -133,7 +142,6 @@ Resources:
                   - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPoolClient
                   - cognito-idp:GetUserPoolMfaConfig
-                  - cognito-idp:TagResource
                   - cognito-idp:UntagResource
                 Resource: arn:aws:cognito-idp:*:*:userpool/*
                 Condition:
