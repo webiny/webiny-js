@@ -458,6 +458,13 @@ export interface SettingsStorageOperationsUpdateParams {
  * @category StorageOperations
  * @category SettingsStorageOperations
  */
+export interface SettingsStorageOperationsDeleteParams {
+    settings: Settings;
+}
+/**
+ * @category StorageOperations
+ * @category SettingsStorageOperations
+ */
 export interface SettingsStorageOperations {
     /**
      * To identify different settings (global, default, per tenant, per locale) we must have some kind of identifier.
@@ -469,6 +476,7 @@ export interface SettingsStorageOperations {
     getDefaults: () => Promise<DefaultSettings | null>;
     create: (params: SettingsStorageOperationsCreateParams) => Promise<Settings>;
     update: (params: SettingsStorageOperationsUpdateParams) => Promise<Settings>;
+    delete: (params: SettingsStorageOperationsDeleteParams) => Promise<void>;
 }
 
 /**

@@ -580,7 +580,7 @@ export interface MenusCrud {
  */
 export interface DefaultSettingsCrudOptions {
     tenant?: string | false;
-    locale: string | false;
+    locale?: string | false;
 }
 
 export interface SettingsUpdateTopicMetaParams {
@@ -604,6 +604,18 @@ export interface OnSettingsAfterUpdateTopicParams {
     settings: Settings;
     meta: SettingsUpdateTopicMetaParams;
 }
+/**
+ * @category Lifecycle events
+ */
+export interface OnSettingsBeforeDeleteTopicParams {
+    settings: Settings;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnSettingsAfterDeleteTopicParams {
+    settings: Settings;
+}
 
 /**
  * @category Settings
@@ -618,6 +630,7 @@ export interface SettingsCrud {
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
+    deleteSettings(params?: DefaultSettingsCrudOptions): Promise<void>;
     /**
      * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
@@ -634,6 +647,8 @@ export interface SettingsCrud {
      */
     onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
     onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
+    onSettingsBeforeDelete: Topic<OnSettingsBeforeDeleteTopicParams>;
+    onSettingsAfterDelete: Topic<OnSettingsAfterDeleteTopicParams>;
 }
 
 /**
