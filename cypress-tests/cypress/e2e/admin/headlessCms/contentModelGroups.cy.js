@@ -68,7 +68,7 @@ context("Headless CMS - Content Model Groups", () => {
         });
     });
 
-    it.only("should able to create, search, sort, and immediately delete everything", () => {
+    it("should able to create, search, sort, and immediately delete everything", () => {
         cy.visit("/cms/content-model-groups");
         // Create few content model groups
         const newGroup1 = `A Group ${generateId()}`;
