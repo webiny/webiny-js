@@ -25,16 +25,16 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-security --storage=ddb"];
     },
 
+    "api-security-cognito": () => {
+        return ["packages/api-security-cognito --storage=ddb"];
+    },
+
     "api-i18n": () => {
         return ["packages/api-i18n --storage=ddb"];
     },
 
     "api-tenant-manager": () => {
         return ["packages/api-tenant-manager --storage=ddb"];
-    },
-
-    "api-admin-users-cognito": () => {
-        return ["packages/api-admin-users-cognito --storage=ddb"];
     },
 
     "api-file-manager": () => {

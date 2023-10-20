@@ -46,7 +46,15 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     return {
         handler: () => {
-            return handler({} as any, {} as any);
+            return handler(
+                {
+                    headers: {
+                        ["x-tenant"]: "root",
+                        ["Content-Type"]: "application/json"
+                    }
+                },
+                {} as any
+            );
         }
     };
 };

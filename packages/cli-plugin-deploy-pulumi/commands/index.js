@@ -141,7 +141,7 @@ module.exports = [
                     });
                     yargs.option("output", {
                         describe: `Specify the output destination to which all of the logs will be forwarded`,
-                        default: "terminal",
+                        default: "simple",
                         type: "string"
                     });
                     yargs.option("logs", {

@@ -1,17 +1,40 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
-import { checkPermissions } from "~/utils/checkPermissions";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
 
-import { AcoContext } from "~/types";
+import { AcoContext, Folder } from "~/types";
 
 export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
+        type FolderPermission {
+            target: String!
+            level: String!
+            inheritedFrom: ID
+        }
+
+        input FolderPermissionInput {
+            target: String!
+            level: String!
+            inheritedFrom: ID
+        }
+
         type Folder {
             id: ID!
             title: String!
             slug: String!
+            permissions: [FolderPermission]
+
+            # Tells us if the current user can manage folder structure.
+            canManageStructure: Boolean
+
+            # Tells us if the current user can manage folder permissions.
+            canManagePermissions: Boolean
+
+            # Tells us if the folder contains non-inherited permissions.
+            hasNonInheritedPermissions: Boolean
+
             type: String!
             parentId: ID
             savedOn: DateTime
@@ -22,6 +45,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         input FolderCreateInput {
             title: String!
             slug: String!
+            permissions: [FolderPermissionInput]
             type: String!
             parentId: ID
         }
@@ -29,6 +53,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         input FolderUpdateInput {
             title: String
             slug: String
+            permissions: [FolderPermissionInput]
             parentId: ID
         }
 
@@ -46,6 +71,25 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         type FoldersListResponse {
             data: [Folder]
             error: AcoError
+            meta: AcoMeta
+        }
+
+        type FolderLevelPermissionsTarget {
+            id: ID!
+            type: String!
+            target: ID!
+            name: String!
+            meta: JSON
+        }
+
+        type FolderLevelPermissionsTargetsListMeta {
+            totalCount: Int!
+        }
+
+        type FolderLevelPermissionsTargetsListResponse {
+            data: [FolderLevelPermissionsTarget]
+            meta: FolderLevelPermissionsTargetsListMeta
+            error: AcoError
         }
 
         extend type AcoQuery {
@@ -56,6 +100,8 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
                 after: String
                 sort: AcoSort
             ): FoldersListResponse
+
+            listFolderLevelPermissionsTargets: FolderLevelPermissionsTargetsListResponse
         }
 
         extend type AcoMutation {
@@ -65,17 +111,40 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
     `,
     resolvers: {
+        Folder: {
+            hasNonInheritedPermissions: (folder: Folder, _, context) => {
+                return context.aco.folderLevelPermissions.permissionsIncludeNonInheritedPermissions(
+                    folder.permissions
+                );
+            },
+            canManageStructure: (folder, _, context) => {
+                return context.aco.folderLevelPermissions.canManageFolderStructure(folder);
+            },
+            canManagePermissions: (folder, _, context) => {
+                return context.aco.folderLevelPermissions.canManageFolderPermissions(folder);
+            }
+        },
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.get(id);
                 });
             },
             listFolders: async (_, args: any, context) => {
                 try {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const [entries, meta] = await context.aco.folder.list(args);
+                    return new ListResponse(entries, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            listFolderLevelPermissionsTargets: async (_, args: any, context) => {
+                try {
+                    ensureAuthentication(context);
+                    const [entries, meta] =
+                        await context.aco.folder.listFolderLevelPermissionsTargets();
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -85,19 +154,19 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         AcoMutation: {
             createFolder: async (_, { data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.create(data);
                 });
             },
             updateFolder: async (_, { id, data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.update(id, data);
                 });
             },
             deleteFolder: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.folder.delete(id);
                 });
             }

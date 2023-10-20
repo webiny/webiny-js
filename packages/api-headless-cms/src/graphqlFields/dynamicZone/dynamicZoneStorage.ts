@@ -1,6 +1,13 @@
 import { CmsDynamicZoneTemplate, CmsModelDynamicZoneField } from "~/types";
 import { StorageTransformPlugin } from "~/plugins";
 
+function valueWithTemplateId(
+    value: Record<string, any>,
+    { id, gqlTypeName }: CmsDynamicZoneTemplate
+) {
+    return { [gqlTypeName]: { ...value[gqlTypeName], _templateId: id } };
+}
+
 const convertToStorage = (value: Record<string, any>, templates: CmsDynamicZoneTemplate[]) => {
     // Only one key is allowed in the input object.
     const inputType = Object.keys(value)[0];
@@ -33,25 +40,37 @@ const convertFromStorage = (
     value: TemplateValueFromStorage,
     templates: CmsDynamicZoneTemplate[]
 ) => {
-    if (value._templateId) {
-        const template = templates.find(tpl => value._templateId === tpl.id);
-        if (template) {
-            // We keep the `_templateId` property, to simplify further processing.
-            return { [template.gqlTypeName]: value };
-        }
+    const template = templates.find(tpl => value._templateId === tpl.id);
 
+    if (template) {
+        // We keep the `_templateId` property, to simplify further processing.
+        return { [template.gqlTypeName]: value };
+    }
+
+    /**
+     * When the `value` is in the original input format (during GraphQL mutations), `_templateId` will not be present
+     * in the `value` object (because this internal property is added by `toStorage` storage transform method, and since
+     * we simply return the input from the CRUD methods, this property will be missing).
+     * For that reason, we need to run some extra logic, to acquire the `_templateId`.
+     */
+
+    if (!value || typeof value !== "object") {
         return undefined;
     }
 
-    // Let's also check if `value` is already in the desired shape.
-    const template = templates.find(tpl => tpl.gqlTypeName in value);
-    if (template) {
-        return {
-            [template.gqlTypeName]: { ...value[template.gqlTypeName], _templateId: template.id }
-        };
+    /**
+     * `value` object must have exactly one none-empty key.
+     */
+    const keys = Object.keys(value);
+    if (keys.length !== 1 || !keys[0]) {
+        return undefined;
     }
 
-    return undefined;
+    /**
+     * Find a template that matches the first (and only) key of the `value` object by template's `gqlTypeName`.
+     */
+    const tpl = templates.find(tpl => tpl.gqlTypeName === keys[0]);
+    return tpl ? valueWithTemplateId(value, tpl) : undefined;
 };
 
 export const createDynamicZoneStorageTransform = () => {

@@ -50,10 +50,12 @@ const DataListActionsWrapper = styled.div`
     justify-content: flex-end;
     align-items: center;
 `;
+
 interface Sorter {
     label: string;
     sort: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -157,16 +159,20 @@ const PageTemplatesDataList = ({
         }
         return (
             <DataListActionsWrapper>
-                <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                <ButtonSecondary
+                    data-testid="pb-templates-list-new-template-btn"
+                    onClick={onCreate}
+                >
                     <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
                 </ButtonSecondary>
                 <OptionsMenu
+                    data-testid={"pb-templates-list-options-btn"}
                     items={[
                         {
                             label: "Import Templates",
                             icon: <FileUploadIcon />,
                             onClick: showImportDialog,
-                            "data-testid": "import-template-button"
+                            "data-testid": "pb-templates-list-options-import-template-btn"
                         }
                     ]}
                 />
@@ -260,6 +266,9 @@ const PageTemplatesDataList = ({
                                         <ListActions>
                                             {canEdit(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-edit-template-btn"
+                                                    }
                                                     icon={<EditIcon />}
                                                     onClick={() =>
                                                         history.push(
@@ -270,6 +279,9 @@ const PageTemplatesDataList = ({
                                             )}
                                             {canDelete(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-delete-template-btn"
+                                                    }
                                                     icon={<DeleteIcon />}
                                                     onClick={() => onDelete(template)}
                                                 />

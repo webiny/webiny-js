@@ -1,6 +1,7 @@
 import React from "react";
 
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
+import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 import { ReactComponent as Image } from "@material-design-icons/svg/outlined/insert_photo.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 
@@ -16,12 +17,25 @@ interface FileProps extends DefaultProps {
     type?: string;
 }
 
-export const FolderName: React.FC<DefaultProps> = ({ name, id, onClick }) => {
+interface FolderProps extends DefaultProps {
+    canManagePermissions: boolean;
+    hasNonInheritedPermissions: boolean;
+}
+
+export const FolderName: React.FC<FolderProps> = ({
+    name,
+    id,
+    onClick,
+    canManagePermissions,
+    hasNonInheritedPermissions
+}) => {
+    let icon = <Folder />;
+    if (hasNonInheritedPermissions && canManagePermissions) {
+        icon = <FolderShared />;
+    }
     return (
         <RowTitle onClick={() => onClick(id)}>
-            <RowIcon>
-                <Folder />
-            </RowIcon>
+            <RowIcon>{icon}</RowIcon>
             <RowText use={"subtitle2"}>{name}</RowText>
         </RowTitle>
     );

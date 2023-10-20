@@ -1,7 +1,8 @@
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import {
     AcoSearchRecordCrud,
@@ -9,6 +10,7 @@ import {
     AcoSearchRecordStorageOperations
 } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
+import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
 
 export * from "./folder/folder.types";
 export * from "./record/record.types";
@@ -43,6 +45,7 @@ export interface AcoBaseFields {
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
+    folderLevelPermissions: FolderLevelPermissions;
     apps: IAcoApps;
     registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
     getApp: (name: string) => IAcoApp;
@@ -50,10 +53,10 @@ export interface AdvancedContentOrganisation {
 }
 
 export interface CreateAcoParams {
-    getIdentity: () => SecurityIdentity;
     getLocale: () => I18NLocale;
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
+    folderLevelPermissions: FolderLevelPermissions;
 }
 
 export type AcoStorageOperations = AcoFolderStorageOperations & AcoSearchRecordStorageOperations;
@@ -63,6 +66,7 @@ export interface AcoContext
         I18NContext,
         TenancyContext,
         SecurityContext,
+        AdminUsersContext,
         CmsContext {
     aco: AdvancedContentOrganisation;
 }
