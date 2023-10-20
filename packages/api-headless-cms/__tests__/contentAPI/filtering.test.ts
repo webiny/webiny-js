@@ -1926,4 +1926,94 @@ describe("filtering", () => {
             }
         });
     });
+
+    it("should filter via startsWith", async () => {
+        const { apple, banana, strawberry } = await setupFruits();
+        const { listFruits } = useFruitReadHandler({
+            ...readOpts
+        });
+
+        const [filteredResponse] = await listFruits({
+            where: {
+                name_startsWith: "ap"
+            }
+        });
+        expect(filteredResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [apple],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [response] = await listFruits({
+            where: {
+                name_startsWith: ""
+            }
+        });
+        expect(response).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [banana, strawberry, apple],
+                    meta: {
+                        totalCount: 3,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should filter via not_startsWith", async () => {
+        const { apple, banana, strawberry } = await setupFruits();
+        const { listFruits } = useFruitReadHandler({
+            ...readOpts
+        });
+
+        const [filteredResponse] = await listFruits({
+            where: {
+                name_not_startsWith: "ap"
+            }
+        });
+        expect(filteredResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [banana, strawberry],
+                    meta: {
+                        totalCount: 2,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [response] = await listFruits({
+            where: {
+                name_not_startsWith: ""
+            }
+        });
+        expect(response).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [banana, strawberry, apple],
+                    meta: {
+                        totalCount: 3,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
