@@ -6,18 +6,19 @@ import { TypographyActionContext } from "~/context/TypographyActionContext";
 
 import { TypographyValue } from "~/types";
 import {
-    $isTypographyElementNode,
-    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
-    TypographyElementNode,
+    $isTypographyNode,
+    ADD_TYPOGRAPHY_COMMAND,
+    TypographyNode,
     TypographyPayload
-} from "~/nodes/TypographyElementNode";
+} from "~/nodes/TypographyNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
-    INSERT_ORDERED_WEBINY_LIST_COMMAND,
-    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
-    WebinyListCommandPayload
-} from "~/commands/webiny-list";
-import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
+    INSERT_ORDERED_LIST_COMMAND,
+    INSERT_UNORDERED_LIST_COMMAND,
+    ListCommandPayload,
+    INSERT_QUOTE_COMMAND,
+    QuoteCommandPayload
+} from "~/commands";
 import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
 import { $isQuoteNode } from "~/nodes/QuoteNode";
@@ -69,17 +70,14 @@ export const TypographyAction: TypographyAction = () => {
     const onTypographySelect = useCallback((value: TypographyValue) => {
         setTypographySelect(value);
         if (value.tag.includes("h") || value.tag.includes("p")) {
-            editor.dispatchCommand<LexicalCommand<TypographyPayload>>(
-                ADD_TYPOGRAPHY_ELEMENT_COMMAND,
-                {
-                    value
-                }
-            );
+            editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_COMMAND, {
+                value
+            });
         }
 
         if (value.tag === "ol") {
-            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
-                INSERT_ORDERED_WEBINY_LIST_COMMAND,
+            editor.dispatchCommand<LexicalCommand<ListCommandPayload>>(
+                INSERT_ORDERED_LIST_COMMAND,
                 {
                     themeStyleId: value.id
                 }
@@ -87,8 +85,8 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         if (value.tag === "ul") {
-            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
-                INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+            editor.dispatchCommand<LexicalCommand<ListCommandPayload>>(
+                INSERT_UNORDERED_LIST_COMMAND,
                 {
                     themeStyleId: value.id
                 }
@@ -96,20 +94,17 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         if (value.tag === "quoteblock") {
-            editor.dispatchCommand<LexicalCommand<WebinyQuoteCommandPayload>>(
-                INSERT_WEBINY_QUOTE_COMMAND,
-                {
-                    themeStyleId: value.id
-                }
-            );
+            editor.dispatchCommand<LexicalCommand<QuoteCommandPayload>>(INSERT_QUOTE_COMMAND, {
+                themeStyleId: value.id
+            });
         }
     }, []);
 
     useEffect(() => {
         if (textBlockSelection) {
             // header and paragraph elements inserted with typography node
-            if ($isTypographyElementNode(textBlockSelection?.element)) {
-                const el = textBlockSelection.element as TypographyElementNode;
+            if ($isTypographyNode(textBlockSelection?.element)) {
+                const el = textBlockSelection.element as TypographyNode;
                 setTypography(el.getTypographyValue());
                 return;
             }

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
-    REMOVE_WEBINY_LIST_COMMAND
-} from "~/commands/webiny-list";
+import { INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
@@ -24,10 +21,10 @@ export const BulletListAction = () => {
                 ? findTypographyStyleByHtmlTag("ul", themeEmotionMap)?.id
                 : undefined;
             // will update the active state in the useEffect
-            editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: styleId });
+            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, { themeStyleId: styleId });
             setIsActive(true);
         } else {
-            editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
+            editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
         }
     };
 

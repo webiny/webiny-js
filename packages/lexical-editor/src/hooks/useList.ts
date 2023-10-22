@@ -18,10 +18,10 @@ import {
     removeList
 } from "~/nodes/ListNode/formatList";
 import {
-    INSERT_ORDERED_WEBINY_LIST_COMMAND,
-    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
-    REMOVE_WEBINY_LIST_COMMAND
-} from "~/commands/webiny-list";
+    INSERT_ORDERED_LIST_COMMAND,
+    INSERT_UNORDERED_LIST_COMMAND,
+    REMOVE_LIST_COMMAND
+} from "~/commands";
 import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 export function useList(editor: LexicalEditor): void {
@@ -44,7 +44,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                INSERT_ORDERED_WEBINY_LIST_COMMAND,
+                INSERT_ORDERED_LIST_COMMAND,
                 ({ themeStyleId }) => {
                     insertList(editor, "number", themeStyleId);
                     return true;
@@ -52,7 +52,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+                INSERT_UNORDERED_LIST_COMMAND,
                 ({ themeStyleId }) => {
                     insertList(editor, "bullet", themeStyleId);
                     return true;
@@ -81,7 +81,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                REMOVE_WEBINY_LIST_COMMAND,
+                REMOVE_LIST_COMMAND,
                 () => {
                     removeList(editor);
                     return true;

@@ -127,7 +127,7 @@ export class ListNode extends ElementNode {
 
     static importDomConversionMap(): DOMConversion<HTMLElement> | null {
         return {
-            conversion: convertWebinyListNode,
+            conversion: convertListNode,
             priority: 0
         };
     }
@@ -272,7 +272,7 @@ function normalizeChildren(nodes: Array<ListNode>): Array<ListItemNode> {
     return normalizedListItems;
 }
 
-function convertWebinyListNode(domNode: Node): DOMConversionOutput {
+function convertListNode(domNode: Node): DOMConversionOutput {
     const nodeName = domNode.nodeName.toLowerCase();
     let node = null;
 

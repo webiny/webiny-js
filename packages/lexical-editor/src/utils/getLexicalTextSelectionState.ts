@@ -10,17 +10,20 @@ import {
     TextNode
 } from "lexical";
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
-import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode as $isBaseLinkNode } from "@lexical/link";
-import { $isListNode, ListNode } from "~/nodes/ListNode";
 import { $isHeadingNode as $isBaseHeadingNode } from "@lexical/rich-text";
-import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
-import { $isFontColorNode } from "~/nodes/FontColorNode";
-import { $isParagraphNode } from "~/nodes/ParagraphNode";
-import { $isHeadingNode } from "~/nodes/HeadingNode";
-import { $isQuoteNode } from "~/nodes/QuoteNode";
 import { $isParentElementRTL } from "@lexical/selection";
-import { $isLinkNode } from "~/nodes/link-node";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import {
+    ListNode,
+    $isListNode,
+    $isLinkNode,
+    $isTypographyNode,
+    $isQuoteNode,
+    $isFontColorNode,
+    $isParagraphNode,
+    $isHeadingNode
+} from "~/nodes";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -116,7 +119,7 @@ export const getToolbarState = (
         state.paragraph.isSelected = true;
     }
 
-    if ($isTypographyElementNode(element)) {
+    if ($isTypographyNode(element)) {
         state.typography.isSelected = true;
         const value = element?.getTypographyValue() as TypographyValue;
         if (value.tag.includes("h")) {
@@ -127,7 +130,7 @@ export const getToolbarState = (
         }
     }
 
-    if ($isTypographyElementNode(element)) {
+    if ($isTypographyNode(element)) {
         state.fontColor.isSelected = true;
     }
 

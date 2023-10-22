@@ -4,17 +4,28 @@ import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { HashtagNode } from "@lexical/hashtag";
 import { AutoLinkNode, LinkNode as BaseLinkNode } from "@lexical/link";
 import { MarkNode } from "@lexical/mark";
+import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { OverflowNode } from "@lexical/overflow";
+
 import { FontColorNode } from "~/nodes/FontColorNode";
-import { TypographyElementNode } from "~/nodes/TypographyElementNode";
+import { TypographyNode } from "~/nodes/TypographyNode";
 import { ListNode } from "~/nodes/ListNode";
 import { ListItemNode } from "~/nodes/ListItemNode";
 import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
-import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { QuoteNode } from "~/nodes/QuoteNode";
 import { ImageNode } from "~/nodes/ImageNode";
-import { LinkNode } from "~/nodes/link-node";
+import { LinkNode } from "~/nodes/LinkNode";
+
+export * from "~/nodes/FontColorNode";
+export * from "~/nodes/TypographyNode";
+export * from "~/nodes/ListNode";
+export * from "~/nodes/ListItemNode";
+export * from "~/nodes/HeadingNode";
+export * from "~/nodes/ParagraphNode";
+export * from "~/nodes/QuoteNode";
+export * from "~/nodes/ImageNode";
+export * from "~/nodes/LinkNode";
 
 // This is a list of all the nodes that our Lexical implementation supports OOTB.
 export const allNodes: ReadonlyArray<
@@ -41,7 +52,7 @@ export const allNodes: ReadonlyArray<
 
     // Our custom nodes.
     FontColorNode,
-    TypographyElementNode,
+    TypographyNode,
 
     // The following code replaces the built-in Lexical nodes with our custom ones.
     // https://lexical.dev/docs/concepts/node-replacement

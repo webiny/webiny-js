@@ -6,6 +6,7 @@
  *
  */
 
+import React, { Suspense } from "react";
 import type {
     DOMConversionMap,
     DOMExportOutput,
@@ -18,9 +19,7 @@ import type {
     Spread
 } from "lexical";
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
-import * as React from "react";
-import { Suspense } from "react";
-import { ImagePayload } from "~/commands/insertFiles";
+import { ImagePayload } from "~/commands";
 
 const ImageComponent = React.lazy(
     // @ts-ignore

@@ -4,7 +4,14 @@ import {
     SerializedAutoLinkNode,
     SerializedLinkNode as BaseSerializedLinkNode
 } from "@lexical/link";
-import { DOMConversionMap, DOMConversionOutput, EditorConfig, NodeKey, Spread } from "lexical";
+import {
+    DOMConversionMap,
+    DOMConversionOutput,
+    EditorConfig,
+    LexicalNode,
+    NodeKey,
+    Spread
+} from "lexical";
 import { addClassNamesToElement, isHTMLAnchorElement } from "@lexical/utils";
 import { sanitizeUrl } from "~/utils/sanitizeUrl";
 
@@ -96,7 +103,7 @@ function convertAnchorElement(domNode: Node): DOMConversionOutput {
     return { node };
 }
 
-export const $isLinkNode = (node: any): node is LinkNode => {
+export const $isLinkNode = (node: LexicalNode | null): node is LinkNode => {
     return node instanceof LinkNode;
 };
 

@@ -19,7 +19,7 @@ import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { allNodes } from "~/nodes/allNodes";
+import { allNodes } from "~/nodes";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";

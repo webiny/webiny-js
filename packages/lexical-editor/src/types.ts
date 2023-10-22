@@ -104,7 +104,7 @@ export type ThemeEmotionMap = {
 };
 
 /* Commands payload types */
-export { ImagePayload } from "~/commands/insertFiles";
+export { ImagePayload } from "~/commands";
 
 /* Lexical editor interfaces */
 export { RichTextEditorProps } from "~/components/Editor/RichTextEditor";

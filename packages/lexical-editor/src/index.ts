@@ -46,10 +46,10 @@ export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
 // Commands
-export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
+export * from "~/commands";
 // types
 export * as types from "./types";
-export * from "./nodes/allNodes";
+export * from "./nodes";
 // config
 export {
     LexicalEditorConfig,
