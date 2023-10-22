@@ -1,18 +1,16 @@
-// @ts-ignore "@types/jsdom" is disabled in the root package.json resolutions.
-import jsdom from "jsdom";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { $getRoot, $getSelection } from "lexical";
-import { allNodes } from "@webiny/lexical-editor/nodes/allNodes";
+import { allNodes } from "@webiny/lexical-editor";
 import { $createParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
 import { NodeMapper, ParserConfigurationOptions } from "~/types";
 
 /**
- * Text node alone, without parent element node (like "paragraph"), is not a valid node, and Lexical will throw an error.
- * To fix this issue, we wrap the text node with a paragraph node (create a parent element for it).
+ * By itself, "text" node without a parent node (like "paragraph"), is not a valid node. Lexical will simply ignore these elements.
+ * To fix this issue, we wrap the text node with a paragraph node.
  *
  * EXAMPLE:
- * When we parse the DOM, sometimes, 'span' html tag doesn't have parent elements that match the
+ * When we parse DOM, sometimes, 'span' html tag doesn't have parent elements that match the
  * lexical node elements (there's no Node class that can handle that HTML element), like paragraph or headings.
  * In this case, Lexical will parse the 'span' tag as a text node, but without a parent element.
  */
@@ -29,11 +27,7 @@ const passthroughMapper: NodeMapper = node => node;
  * Parse html string to lexical JSON object.
  */
 export const createHtmlToLexicalParser = (config: ParserConfigurationOptions = {}) => {
-    return (htmlString: string): Record<string, any> | null => {
-        if (!htmlString?.length) {
-            return null;
-        }
-
+    return (domDocument: Document): Record<string, any> | null => {
         const normalizeTextNodes = config.normalizeTextNodes ?? true;
         const textNodeNormalizer = normalizeTextNodes
             ? textNodeParentNormalizer
@@ -46,13 +40,12 @@ export const createHtmlToLexicalParser = (config: ParserConfigurationOptions = {
             nodes: [...allNodes, ...(config.editorConfig?.nodes || [])]
         });
 
+        let parsingError;
+
         editor.update(
             () => {
-                // Generate dom tree
-                const dom = new jsdom.JSDOM(htmlString);
-
                 // Convert to lexical node objects that can be stored in db.
-                const lexicalNodes = $generateNodesFromDOM(editor, dom.window.document)
+                const lexicalNodes = $generateNodesFromDOM(editor, domDocument)
                     .map(textNodeNormalizer)
                     .map(customNodeMapper);
 
@@ -62,7 +55,11 @@ export const createHtmlToLexicalParser = (config: ParserConfigurationOptions = {
                 // Insert the nodes at a selection.
                 const selection = $getSelection();
                 if (selection) {
-                    selection.insertNodes(lexicalNodes);
+                    try {
+                        selection.insertNodes(lexicalNodes);
+                    } catch (err) {
+                        parsingError = err;
+                    }
                 }
             },
             /**
@@ -70,6 +67,10 @@ export const createHtmlToLexicalParser = (config: ParserConfigurationOptions = {
              */
             { discrete: true }
         );
+
+        if (parsingError) {
+            throw parsingError;
+        }
 
         return editor.getEditorState().toJSON();
     };

@@ -1,17 +1,17 @@
 {
-  "name": "@webiny/html-to-lexical-parser",
+  "name": "@webiny/lexical-converter",
   "version": "0.0.0",
   "dependencies": {
     "@lexical/headless": "^0.11.3",
     "@lexical/html": "^0.11.3",
     "@webiny/lexical-editor": "0.0.0",
-    "jsdom": "22.1.0",
     "lexical": "^0.11.3"
   },
   "devDependencies": {
     "@types/jsdom": "21.1.3",
     "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/project-utils": "0.0.0",
+    "jsdom": "22.1.0"
   },
   "publishConfig": {
     "access": "public",
