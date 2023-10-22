@@ -16179,21 +16179,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/html-to-lexical-parser@workspace:packages/html-to-lexical-parser":
-  version: 0.0.0-use.local
-  resolution: "@webiny/html-to-lexical-parser@workspace:packages/html-to-lexical-parser"
-  dependencies:
-    "@lexical/headless": ^0.11.3
-    "@lexical/html": ^0.11.3
-    "@types/jsdom": 21.1.3
-    "@webiny/cli": 0.0.0
-    "@webiny/lexical-editor": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    jsdom: 22.1.0
-    lexical: ^0.11.3
-  languageName: unknown
-  linkType: soft
-
 "@webiny/i18n-react@0.0.0, @webiny/i18n-react@workspace:packages/i18n-react":
   version: 0.0.0-use.local
   resolution: "@webiny/i18n-react@workspace:packages/i18n-react"
@@ -16254,6 +16239,21 @@ __metadata:
     ttypescript: ^1.5.13
     typescript: 4.7.4
     zod: ^3.21.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/lexical-converter@workspace:packages/lexical-converter":
+  version: 0.0.0-use.local
+  resolution: "@webiny/lexical-converter@workspace:packages/lexical-converter"
+  dependencies:
+    "@lexical/headless": ^0.11.3
+    "@lexical/html": ^0.11.3
+    "@types/jsdom": 21.1.3
+    "@webiny/cli": 0.0.0
+    "@webiny/lexical-editor": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    jsdom: 22.1.0
+    lexical: ^0.11.3
   languageName: unknown
   linkType: soft
 
