@@ -7883,7 +7883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/utils@npm:0.11.3, @lexical/utils@npm:^0.11.3":
+"@lexical/utils@npm:0.11.3, @lexical/utils@npm:^0.11.2, @lexical/utils@npm:^0.11.3":
   version: 0.11.3
   resolution: "@lexical/utils@npm:0.11.3"
   dependencies:
@@ -14741,6 +14741,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": ^6.0.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
     "@fortawesome/react-fontawesome": ^0.1.17
+    "@lexical/utils": ^0.11.3
     "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
@@ -16188,6 +16189,7 @@ __metadata:
   resolution: "@webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions"
   dependencies:
     "@emotion/styled": ^11.10.6
+    "@lexical/selection": ^0.11.3
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
@@ -16205,6 +16207,7 @@ __metadata:
   resolution: "@webiny/lexical-editor-pb-element@workspace:packages/lexical-editor-pb-element"
   dependencies:
     "@emotion/styled": ^11.10.6
+    "@lexical/utils": ^0.11.2
     "@material-design-icons/svg": ^0.14.2
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
