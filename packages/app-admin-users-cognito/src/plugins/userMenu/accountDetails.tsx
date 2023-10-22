@@ -36,6 +36,10 @@ export const AccountDetails: React.FC = () => {
         );
     }
 
+    if (!security.identity.profile) {
+        return null;
+    }
+
     return (
         <Link to={"/account"} className={linkStyles}>
             <ListItem>

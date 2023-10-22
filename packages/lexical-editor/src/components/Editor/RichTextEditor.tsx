@@ -29,44 +29,26 @@ import {
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 
 export interface RichTextEditorProps {
-    toolbar?: React.ReactNode;
-    staticToolbar?: React.ReactNode;
-    toolbarActionPlugins?: ToolbarActionPlugin[];
-    tag?: string;
-    onChange?: (json: LexicalValue) => void;
-    value: LexicalValue | null;
-    focus?: boolean;
-    placeholder?: string;
-    nodes?: Klass<LexicalNode>[];
-    /**
-     * @description Lexical plugins
-     */
     children?: React.ReactNode | React.ReactNode[];
-    onBlur?: (editorState: LexicalValue) => void;
-    height?: number | string;
-    width?: number | string;
-    /*
-     * @description Theme to be injected into lexical editor
-     */
-    theme: WebinyTheme;
-    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
-    themeEmotionMap?: ThemeEmotionMap;
-
-    placeholderStyles?: React.CSSProperties;
-    /*
-     * Set inline styles to lexical editor container
-     * */
-    styles?: React.CSSProperties;
-
-    /*
-     * Set inline styles to lexical editor editable content
-     * */
-    contentEditableStyles?: React.CSSProperties;
-
-    /*
-     * Set classes to lexical input container
-     * */
     classes?: string;
+    contentEditableStyles?: React.CSSProperties;
+    focus?: boolean;
+    height?: number | string;
+    nodes?: Klass<LexicalNode>[];
+    onBlur?: (editorState: LexicalValue) => void;
+    onChange?: (json: LexicalValue) => void;
+    placeholder?: string;
+    placeholderStyles?: React.CSSProperties;
+    staticToolbar?: React.ReactNode;
+    styles?: React.CSSProperties;
+    tag?: string;
+    theme: WebinyTheme;
+    themeEmotionMap?: ThemeEmotionMap;
+    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
+    toolbar?: React.ReactNode;
+    toolbarActionPlugins?: ToolbarActionPlugin[];
+    value: LexicalValue | null;
+    width?: number | string;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -146,7 +128,14 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     }
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
+        /**
+         * Once the LexicalComposer is mounted, it caches the `initialConfig` internally, and all future
+         * updates to the config will be ignored. This is a problem because we pull in Nodes from our config,
+         * and initially, there can be multiple re-renders, while the config object is settled.
+         *
+         * To bypass this issue, we generate a naive `key` based on the number of Nodes.
+         */
+        <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
             <>
                 {staticToolbar && staticToolbar}
                 <div
