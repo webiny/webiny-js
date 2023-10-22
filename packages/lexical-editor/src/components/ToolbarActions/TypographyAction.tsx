@@ -1,27 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LexicalCommand } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
-
 import { TypographyValue } from "~/types";
 import {
+    $isHeadingNode,
+    $isParagraphNode,
+    $isQuoteNode,
     $isTypographyNode,
     ADD_TYPOGRAPHY_COMMAND,
     TypographyNode,
     TypographyPayload
-} from "~/nodes/TypographyNode";
+} from "~/nodes";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
     INSERT_ORDERED_LIST_COMMAND,
     INSERT_UNORDERED_LIST_COMMAND,
-    ListCommandPayload,
     INSERT_QUOTE_COMMAND,
+    ListCommandPayload,
     QuoteCommandPayload
 } from "~/commands";
-import { $isParagraphNode } from "~/nodes/ParagraphNode";
-import { $isHeadingNode } from "~/nodes/HeadingNode";
-import { $isQuoteNode } from "~/nodes/QuoteNode";
+import { useCurrentElement } from "~/hooks/useCurrentElement";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -54,12 +54,13 @@ export interface TypographyAction extends React.FC<unknown> {
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
-    const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
-    const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
-    const isHeadingSelected = textBlockSelection?.state?.heading.isSelected || false;
-    const textType = textBlockSelection?.state?.textType;
-    const isQuoteSelected = textBlockSelection?.state?.quote.isSelected || false;
+    const { themeEmotionMap } = useRichTextEditor();
+    const { element } = useCurrentElement();
+    const isTypographySelected = $isTypographyNode(element);
+    const isParagraphSelected = $isParagraphNode(element);
+    const isHeadingSelected = $isHeadingNode(element);
+    const isQuoteSelected = $isQuoteNode(element);
+
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -101,58 +102,54 @@ export const TypographyAction: TypographyAction = () => {
     }, []);
 
     useEffect(() => {
-        if (textBlockSelection) {
-            // header and paragraph elements inserted with typography node
-            if ($isTypographyNode(textBlockSelection?.element)) {
-                const el = textBlockSelection.element as TypographyNode;
-                setTypography(el.getTypographyValue());
+        if (!element) {
+            return;
+        }
+        // header and paragraph elements inserted with typography node
+        if (isTypographySelected) {
+            const el = element as TypographyNode;
+            setTypography(el.getTypographyValue());
+            return;
+        }
+
+        if (isParagraphSelected || isHeadingSelected || isQuoteSelected) {
+            const styleId = element.getTypographyStyleId();
+            if (!styleId) {
                 return;
             }
 
-            if (
-                $isParagraphNode(textBlockSelection?.element) ||
-                $isHeadingNode(textBlockSelection?.element) ||
-                $isQuoteNode(textBlockSelection?.element)
-            ) {
-                const elementWithThemeStyle = textBlockSelection?.element;
-                const styleId = elementWithThemeStyle.getTypographyStyleId();
-                if (!styleId) {
-                    return;
-                }
+            if (!themeEmotionMap) {
+                return;
+            }
 
-                if (!themeEmotionMap) {
-                    return;
-                }
+            const style = themeEmotionMap[styleId];
+            if (style) {
+                setTypography({
+                    name: style?.name,
+                    id: style.id,
+                    css: style.styles,
+                    tag: style.tag
+                });
+            }
+            return;
+        }
 
-                const style = themeEmotionMap[styleId];
-                if (style) {
+        // list and quote element
+        if (themeEmotionMap && element?.getStyleId) {
+            const themeStyleId = element?.getStyleId() || undefined;
+            if (themeStyleId) {
+                const elementStyle = themeEmotionMap[themeStyleId];
+                if (elementStyle) {
                     setTypography({
-                        name: style?.name,
-                        id: style.id,
-                        css: style.styles,
-                        tag: style.tag
+                        id: elementStyle.id,
+                        css: elementStyle.styles,
+                        name: elementStyle.name,
+                        tag: elementStyle.tag
                     });
-                }
-                return;
-            }
-
-            // list and quote element
-            if (themeEmotionMap && textBlockSelection?.element?.getStyleId) {
-                const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
-                if (themeStyleId) {
-                    const elementStyle = themeEmotionMap[themeStyleId];
-                    if (elementStyle) {
-                        setTypography({
-                            id: elementStyle.id,
-                            css: elementStyle.styles,
-                            name: elementStyle.name,
-                            tag: elementStyle.tag
-                        });
-                    }
                 }
             }
         }
-    }, [isTypographySelected, textType, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
+    }, [element, isTypographySelected, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
 
     return (
         <TypographyActionContext.Provider
@@ -166,7 +163,4 @@ export const TypographyAction: TypographyAction = () => {
     );
 };
 
-{
-    /* Typography dropdown settings */
-}
 TypographyAction.TypographyDropDown = TypographyActionDropDown;

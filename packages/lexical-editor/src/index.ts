@@ -5,6 +5,8 @@ export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export { useFontColorPicker } from "~/hooks/useFontColorPicker";
 export { useTypographyAction } from "~/hooks/useTypographyAction";
 export { useTextAlignmentAction } from "~/hooks/useTextAlignmentAction";
+export { useCurrentSelection } from "~/hooks/useCurrentSelection";
+export { useCurrentElement, getNodeFromSelection } from "~/hooks/useCurrentElement";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";

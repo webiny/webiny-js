@@ -16178,7 +16178,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsdom: 22.1.0
+    jsdom: 21.1.2
     lexical: ^0.11.3
   languageName: unknown
   linkType: soft
@@ -17156,6 +17156,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: f790b99a1bf63ef160c967e23c46feea7787e531292bb827126334612c234ed489a0dc2c7ba33156416f0ffa8d25bf2b0fdb7f35c2ba60eb3e960572bece4001
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.8.2":
+  version: 8.10.0
+  resolution: "acorn@npm:8.10.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 538ba38af0cc9e5ef983aee196c4b8b4d87c0c94532334fa7e065b2c8a1f85863467bb774231aae91613fcda5e68740c15d97b1967ae3394d20faddddd8af61d
   languageName: node
   linkType: hard
 
@@ -30509,15 +30518,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:22.1.0":
-  version: 22.1.0
-  resolution: "jsdom@npm:22.1.0"
+"jsdom@npm:21.1.2":
+  version: 21.1.2
+  resolution: "jsdom@npm:21.1.2"
   dependencies:
     abab: ^2.0.6
+    acorn: ^8.8.2
+    acorn-globals: ^7.0.0
     cssstyle: ^3.0.0
     data-urls: ^4.0.0
     decimal.js: ^10.4.3
     domexception: ^4.0.0
+    escodegen: ^2.0.0
     form-data: ^4.0.0
     html-encoding-sniffer: ^3.0.0
     http-proxy-agent: ^5.0.0
@@ -30541,7 +30553,7 @@ __metadata:
   peerDependenciesMeta:
     canvas:
       optional: true
-  checksum: d955ab83a6dad3e6af444098d30647c719bbb4cf97de053aa5751c03c8d6f3283d8c4d7fc2774c181f1d432fb0250e7332bc159e6b466424f4e337d73adcbf30
+  checksum: 6b3cf2d15e5a5712b3db5ff56eba82b97c9a879b52e95063cc8323bdf8837b6ca15cfec85b57ab71c95c6b4a4098bf67f274c6ff4e9ff519aa4811a04f290610
   languageName: node
   linkType: hard
 

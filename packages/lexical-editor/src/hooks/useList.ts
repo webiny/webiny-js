@@ -22,7 +22,8 @@ import {
     INSERT_UNORDERED_LIST_COMMAND,
     REMOVE_LIST_COMMAND
 } from "~/commands";
-import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
+import { getNodeFromSelection } from "~/hooks/useCurrentElement";
+import { $isListNode } from "~/nodes";
 
 export function useList(editor: LexicalEditor): void {
     useEffect(() => {
@@ -64,13 +65,13 @@ export function useList(editor: LexicalEditor): void {
                 (event: KeyboardEvent) => {
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
-                        const textSelection = getLexicalTextSelectionState(editor, selection);
+                        const node = getNodeFromSelection(selection);
+                        if (!$isListNode(node)) {
+                            return false;
+                        }
+
                         // Check if list have one list item remain, without text.
-                        if (
-                            textSelection?.state?.list.isSelected &&
-                            textSelection?.element?.__size === 1 &&
-                            typeof textSelection?.anchorNode.__text === "undefined"
-                        ) {
+                        if (node.getChildren().length === 1 && !node.getTextContent()) {
                             event.preventDefault();
                             removeList(editor);
                             return true;
@@ -91,13 +92,7 @@ export function useList(editor: LexicalEditor): void {
             editor.registerCommand(
                 INSERT_PARAGRAPH_COMMAND,
                 () => {
-                    const hasHandledInsertParagraph = $handleListInsertParagraph();
-
-                    if (hasHandledInsertParagraph) {
-                        return true;
-                    }
-
-                    return false;
+                    return $handleListInsertParagraph();
                 },
                 COMMAND_PRIORITY_LOW
             )
