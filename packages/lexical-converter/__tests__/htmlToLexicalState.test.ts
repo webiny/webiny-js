@@ -10,7 +10,7 @@ import { LexicalNode } from "lexical";
 const defaultParser = createHtmlToLexicalParser();
 
 describe("HTML to Lexical State Parser", () => {
-    // We're testing 2 parsers: JSOM and
+    // We're testing 2 parsers: JSDOM and DOMParser, as this package should work in both Node and Browser environments.
     const jsDomMocks = createMocks(toJsDom);
     const domParserMocks = createMocks(toBrowserDom);
 
