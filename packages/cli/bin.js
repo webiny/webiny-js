@@ -23,11 +23,11 @@ const currentNodeVersion = process.versions.node;
     try {
         const { stdout } = await execa("yarn", ["--version"]);
         if (!semver.satisfies(stdout, ">=2")) {
-            console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
+            console.error(chalk.red(`"@webiny/cli" requires yarn 2 or 3!`));
             process.exit(1);
         }
     } catch (err) {
-        console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
+        console.error(chalk.red(`"@webiny/cli" requires yarn 2 or 3!`));
         console.log(
             `Run ${chalk.blue("yarn set version 3")} to install a compatible version of yarn.`
         );
