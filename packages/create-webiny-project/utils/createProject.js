@@ -123,11 +123,17 @@ module.exports = async function createProject({
                 task: async () => {
                     // yarn set version
                     await execa("corepack", ["enable"], { cwd: projectRoot });
-                    await execa("YARN_IGNORE_NODE=1 yarn", ["set", "version", "berry"], {
-                        cwd: projectRoot
+                    await execa("yarn", ["set", "version", "berry"], {
+                        cwd: projectRoot,
+                        env: {
+                            YARN_IGNORE_NODE: "1"
+                        }
                     });
                     await execa("yarn", ["set", "version", "3.6.4"], {
-                        cwd: projectRoot
+                        cwd: projectRoot,
+                        env: {
+                            YARN_IGNORE_NODE: "1"
+                        }
                     });
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
