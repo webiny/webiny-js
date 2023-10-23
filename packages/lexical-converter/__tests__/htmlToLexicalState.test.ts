@@ -346,7 +346,7 @@ describe("HTML to Lexical State Parser", () => {
                                         direction: null,
                                         format: "",
                                         indent: 0,
-                                        type: "link-node",
+                                        type: "link",
                                         version: 1,
                                         rel: "noopener noreferrer",
                                         target: "_blank",
