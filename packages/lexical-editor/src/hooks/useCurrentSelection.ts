@@ -7,6 +7,7 @@ import {
     RangeSelection,
     NodeSelection
 } from "lexical";
+import { useIsMounted } from "./useIsMounted";
 
 export interface CurrentSelection {
     selection: ReturnType<typeof $getSelection>;
@@ -29,10 +30,13 @@ function getOutput(selection: ReturnType<typeof $getSelection>) {
 export function useCurrentSelection() {
     const [editor] = useLexicalComposerContext();
     const [selection, setSelection] = useState<CurrentSelection>(getOutput(null));
+    const isMounted = useIsMounted();
 
     const storeSelection = useCallback(() => {
         editor.getEditorState().read(() => {
-            setSelection(getOutput($getSelection()));
+            if (isMounted()) {
+                setSelection(getOutput($getSelection()));
+            }
         });
     }, [editor]);
 
@@ -50,10 +54,13 @@ export function useCurrentSelection() {
 export function useDeriveValueFromSelection<T>(generator: Generator<T>) {
     const [editor] = useLexicalComposerContext();
     const [value, setValue] = useState<T>(generator(getOutput(null)));
+    const isMounted = useIsMounted();
 
     const generateValue = useCallback(() => {
         editor.getEditorState().read(() => {
-            setValue(generator(getOutput($getSelection())));
+            if (isMounted()) {
+                setValue(generator(getOutput($getSelection())));
+            }
         });
     }, [editor]);
 

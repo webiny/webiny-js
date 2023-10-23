@@ -7733,7 +7733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/link@npm:0.11.3, @lexical/link@npm:^0.11.3":
+"@lexical/link@npm:0.11.3":
   version: 0.11.3
   resolution: "@lexical/link@npm:0.11.3"
   dependencies:
@@ -16233,7 +16233,6 @@ __metadata:
     "@lexical/code": ^0.11.3
     "@lexical/hashtag": ^0.11.3
     "@lexical/history": ^0.11.3
-    "@lexical/link": ^0.11.3
     "@lexical/list": ^0.11.3
     "@lexical/mark": ^0.11.3
     "@lexical/overflow": ^0.11.3
