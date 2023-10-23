@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
-    { "path": "../api-admin-users-cognito/tsconfig.build.json" },
     { "path": "../api-apw/tsconfig.build.json" },
     { "path": "../api-form-builder/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
