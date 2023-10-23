@@ -1,7 +1,6 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import { AcoContext } from "@webiny/api-aco/types";
-import { AdminUsersContext } from "@webiny/api-admin-users-cognito/types";
 import { MailerContext } from "@webiny/api-mailer/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { PbImportExportContext } from "@webiny/api-page-builder-import-export/graphql/types";
@@ -50,7 +49,6 @@ export interface AuditLogsContext
         AcoContext,
         MailerContext,
         SecurityContext,
-        AdminUsersContext,
         ApwContext {
     pageBuilder: PbImportExportContext["pageBuilder"];
     formBuilder: PbImportExportContext["formBuilder"];
