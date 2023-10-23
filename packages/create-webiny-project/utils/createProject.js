@@ -122,7 +122,10 @@ module.exports = async function createProject({
                 title: "Setup yarn",
                 task: async () => {
                     // yarn set version
-                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    await execa("corepack", ["enable"], { cwd: projectRoot });
+                    await execa("YARN_IGNORE_NODE=1 yarn", ["set", "version", "berry"], {
+                        cwd: projectRoot
+                    });
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
                     const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
