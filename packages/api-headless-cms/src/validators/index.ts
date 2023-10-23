@@ -11,7 +11,6 @@ import { createDateGteValidator } from "./dateGte";
 import { createTimeLteValidator } from "./timeLte";
 import { createTimeGteValidator } from "./timeGte";
 import { createUniqueValidator } from "./unique";
-import { createDynamicZoneValidator } from "./dynamicZone";
 
 export const createValidators = () => [
     createGteValidator(),
@@ -26,6 +25,5 @@ export const createValidators = () => [
     createDateGteValidator(),
     createTimeLteValidator(),
     createTimeGteValidator(),
-    createUniqueValidator(),
-    createDynamicZoneValidator()
+    createUniqueValidator()
 ];
