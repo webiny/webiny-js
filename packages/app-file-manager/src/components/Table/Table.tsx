@@ -70,7 +70,7 @@ const createRecordsData = (items: FileItem[]): FileEntry[] => {
     return items.map(data => {
         return {
             $type: "RECORD",
-            $selectable: true,
+            $selectable: true, // Files a.k.a. records are always selectable to perform bulk actions
             id: data.id,
             name: data.name,
             createdBy: data.createdBy?.displayName || "-",

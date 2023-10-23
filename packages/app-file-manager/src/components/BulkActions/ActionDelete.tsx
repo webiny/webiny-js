@@ -57,7 +57,7 @@ export const ActionDelete = observer(() => {
         });
 
     if (!canDeleteAll) {
-        console.log("Does not have permission to delete one or more files.");
+        console.log("You don't have permissions to delete files.");
         return null;
     }
 
