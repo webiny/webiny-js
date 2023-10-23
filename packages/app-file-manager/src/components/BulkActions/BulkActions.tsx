@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
-import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./styles";
+import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./BulkActions.styled";
 
 const t = i18n.ns("app-file-manager/components/bulk-actions");
 
