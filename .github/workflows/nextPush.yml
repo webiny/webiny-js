@@ -330,7 +330,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress-tests/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: next
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -340,11 +340,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: next
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        working-directory: next/cypress-tests
+        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -390,10 +390,10 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: next
-        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next
+        working-directory: next/cypress-tests
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
@@ -560,7 +560,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress-tests/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: next
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -570,11 +570,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: next
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        working-directory: next/cypress-tests
+        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -623,10 +623,10 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: next
-        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next
+        working-directory: next/cypress-tests
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 

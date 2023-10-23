@@ -1,8 +1,7 @@
 import { Context } from "@webiny/api/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { ApwIdentity } from "~/types";
 
 export interface ListWhere {

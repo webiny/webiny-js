@@ -2,33 +2,15 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../api-admin-users"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../api-tenant-manager"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-graphql"
-    }
+    { "path": "../api" },
+    { "path": "../api-admin-users" },
+    { "path": "../api-i18n" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-tenant-manager" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
