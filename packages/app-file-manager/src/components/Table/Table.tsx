@@ -1,6 +1,10 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "@webiny/app-aco";
 import { FolderItem, Location } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -14,6 +18,7 @@ import TimeAgo from "timeago-react";
 import { FileName, FolderName } from "./Name";
 import { FolderActionDelete } from "./FolderActionDelete";
 import { FolderActionEdit } from "./FolderActionEdit";
+import { FolderActionManagePermissions } from "./FolderActionManagePermissions";
 import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
@@ -117,6 +122,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
@@ -139,7 +145,18 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             />
                         );
                     }
-                    return <FolderName name={item.title} id={item.id} onClick={onFolderClick} />;
+
+                    const { hasNonInheritedPermissions, canManagePermissions } = item.original;
+
+                    return (
+                        <FolderName
+                            name={item.title}
+                            id={item.id}
+                            onClick={onFolderClick}
+                            canManagePermissions={canManagePermissions}
+                            hasNonInheritedPermissions={hasNonInheritedPermissions}
+                        />
+                    );
                 }
             },
             type: {
@@ -211,6 +228,14 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                     setSelectedFolder(original);
                                 }}
                             />
+                            {original.canManagePermissions && (
+                                <FolderActionManagePermissions
+                                    onClick={() => {
+                                        setManagePermissionsDialogOpen(true);
+                                        setSelectedFolder(original);
+                                    }}
+                                />
+                            )}
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);
@@ -250,6 +275,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         folder={selectedFolder}
                         open={updateDialogOpen}
                         onClose={() => setUpdateDialogOpen(false)}
+                    />
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={managePermissionsDialogOpen}
+                        onClose={() => setManagePermissionsDialogOpen(false)}
                     />
                     <FolderDialogDelete
                         folder={selectedFolder}

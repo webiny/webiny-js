@@ -5,6 +5,8 @@ export const createObjectMockModel = (): CmsModel => {
         tenant: "root",
         locale: "en-US",
         modelId: "objectModel",
+        singularApiName: "ObjectModel",
+        pluralApiName: "ObjectModels",
         name: "Object Model",
         titleFieldId: "titleFieldId",
         lockedFields: [],
@@ -24,6 +26,16 @@ export const createObjectMockModel = (): CmsModel => {
         description: "Object model for testing.",
         layout: [["titleId"], ["objectId"]],
         fields: [
+            {
+                fieldId: "textWithDefaultFieldId",
+                id: "textWithDefaultId",
+                label: "Text With Default",
+                type: "text-with-default",
+                storageId: "textWithDefaultStorageId",
+                settings: {
+                    defaultValue: "field with default value"
+                }
+            },
             {
                 fieldId: "titleFieldId",
                 storageId: "titleStorageId",
@@ -69,6 +81,16 @@ export const createObjectMockModel = (): CmsModel => {
                             label: "Date Multiple",
                             type: "datetime",
                             multipleValues: true
+                        },
+                        {
+                            fieldId: "nestedTextWithDefaultFieldId",
+                            id: "nestedTextWithDefaultId",
+                            label: "Text With Default",
+                            type: "text-with-default",
+                            storageId: "nestedTextWithDefaultStorageId",
+                            settings: {
+                                defaultValue: "nested field with default value"
+                            }
                         }
                     ],
                     layout: [["titleId"], ["dateId"], ["dateMultipleId"]]

@@ -14,6 +14,7 @@ import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissio
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
+import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -64,6 +65,11 @@ export interface HeadlessCms
      * @internal
      */
     permissions: HeadlessCmsPermissions;
+    /**
+     * Export operations.
+     */
+    export: HeadlessCmsExport;
+    importing: HeadlessCmsImport;
 }
 
 /**
@@ -343,6 +349,9 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
  * @category ModelField
  * @category FieldValidation
  */
+export interface CmsModelFieldValidatorPluginValidateCb {
+    (params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+}
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
      * A plugin type.
@@ -359,7 +368,7 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
         /**
          * Validation method.
          */
-        validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+        validate: CmsModelFieldValidatorPluginValidateCb;
     };
 }
 
@@ -547,6 +556,10 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+    /**
+     * Is this model created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -954,10 +967,12 @@ export interface CmsSettingsContext {
     getSettings: () => Promise<CmsSettings | null>;
     /**
      * Updates settings model with a new date.
+     * @deprecated
      */
     updateModelLastChange: () => Promise<void>;
     /**
      * Get the datetime when content model last changed.
+     * @deprecated
      */
     getModelLastChange: () => Promise<Date | null>;
 }
@@ -1008,9 +1023,10 @@ export type CmsSystemContext = {
  * @category GraphQL params
  */
 export interface CmsGroupCreateInput {
+    id?: string;
     name: string;
     slug?: string;
-    description?: string;
+    description?: string | null;
     icon: string;
 }
 
@@ -1057,7 +1073,7 @@ export interface CmsGroup {
     /**
      * Description for the group.
      */
-    description: string;
+    description: string | null;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
@@ -1084,6 +1100,10 @@ export interface CmsGroup {
      * Only available for the plugin constructed groups.
      */
     isPrivate?: boolean;
+    /**
+     * Is this group created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -2244,12 +2264,20 @@ export interface CreateCmsEntryInput {
     [key: string]: any;
 }
 
+export interface CreateCmsEntryOptionsInput {
+    skipValidators?: string[];
+}
+
 /**
  * @category Context
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
     [key: string]: any;
+}
+
+export interface CreateRevisionCmsEntryOptionsInput {
+    skipValidators?: string[];
 }
 
 /**
@@ -2261,6 +2289,10 @@ export interface UpdateCmsEntryInput {
         folderId?: string | null;
     };
     [key: string]: any;
+}
+
+export interface UpdateCmsEntryOptionsInput {
+    skipValidators?: string[];
 }
 
 /**
@@ -2293,6 +2325,9 @@ export interface DeleteMultipleEntriesParams {
 
 export type DeleteMultipleEntriesResponse = { id: string }[];
 
+export interface CmsEntryValidateResponse {
+    [key: string]: any;
+}
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2344,14 +2379,19 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (
+        model: CmsModel,
+        input: CreateCmsEntryInput,
+        options?: CreateCmsEntryOptionsInput
+    ) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        input: CreateFromCmsEntryInput
+        input: CreateFromCmsEntryInput,
+        options?: CreateRevisionCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
@@ -2360,8 +2400,17 @@ export interface CmsEntryContext {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput,
-        meta?: Record<string, any>
+        meta?: Record<string, any>,
+        options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
+    /**
+     * Validate the entry - either new one or existing one.
+     */
+    validateEntry: (
+        model: CmsModel,
+        id?: string,
+        input?: UpdateCmsEntryInput
+    ) => Promise<CmsEntryValidateResponse>;
     /**
      * Move entry, and all its revisions, to a new folder.
      */

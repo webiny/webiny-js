@@ -6,6 +6,8 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { until } from "@webiny/project-utils/testing/helpers/until";
+
 import {
     CREATE_FOLDER,
     DELETE_FOLDER,
@@ -29,12 +31,34 @@ import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import {
+    createFileManagerContext,
+    createFileManagerGraphQL,
+    FilePhysicalStoragePlugin
+} from "@webiny/api-file-manager";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import createAdminUsersApp from "@webiny/api-admin-users";
+
+import {
+    CREATE_FILE,
+    CREATE_FILES,
+    UPDATE_FILE,
+    DELETE_FILE,
+    GET_FILE,
+    LIST_FILES,
+    LIST_TAGS as LIST_FILE_TAGS
+} from "~tests/graphql/file";
+import { createWcpContext } from "@webiny/api-wcp";
+import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
+import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
+    testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 interface InvokeParams {
@@ -51,10 +75,15 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
+    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+
+    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
     const handler = createHandler({
         plugins: [
             ...cmsStorage.plugins,
+            createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
@@ -63,8 +92,25 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createI18NContext(),
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
+            createAdminUsersApp({
+                storageOperations: adminUsersStorage.storageOperations
+            }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
+            }),
+            createHeadlessCmsGraphQL(),
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
+            }),
+            createFileManagerGraphQL(),
+            /**
+             * Mock physical file storage plugin.
+             */
+            new FilePhysicalStoragePlugin({
+                // eslint-disable-next-line
+                upload: async () => {},
+                // eslint-disable-next-line
+                delete: async () => {}
             }),
             createHeadlessCmsGraphQL(),
             createAco(),
@@ -141,12 +187,39 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const fm = {
+        // Files
+        async createFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILE(fields), variables } });
+        },
+        async updateFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
+        },
+        async createFiles(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILES(fields), variables } });
+        },
+        async deleteFile(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_FILE, variables } });
+        },
+        async getFile(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: GET_FILE(fields), variables } });
+        },
+        async listFiles(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: LIST_FILES(fields), variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_FILE_TAGS, variables } });
+        }
+    };
+
     return {
+        until,
         params,
         handler,
         invoke,
         aco,
         search,
+        fm,
         async introspect() {
             return invoke({
                 body: {

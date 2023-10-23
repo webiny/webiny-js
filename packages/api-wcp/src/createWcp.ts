@@ -2,6 +2,7 @@ import { getWcpProjectLicense, getWcpAppUrl, getWcpApiUrl, WCP_FEATURE_LABEL } f
 import WError from "@webiny/error";
 import { WcpContextObject, CachedWcpProjectLicense } from "./types";
 import { getWcpProjectLicenseCacheKey, getWcpProjectEnvironment, wcpFetch } from "./utils";
+import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -17,8 +18,14 @@ export interface WcpFetchParams {
     meta: Record<string, any>;
 }
 
-export const createWcp = async (): Promise<WcpContextObject> => {
-    if (wcpProjectEnvironment) {
+export interface CreateWcpParams {
+    testProjectLicense?: DecryptedWcpProjectLicense;
+}
+
+export const createWcp = async (params: CreateWcpParams = {}): Promise<WcpContextObject> => {
+    if (params.testProjectLicense) {
+        cachedWcpProjectLicense.license = params.testProjectLicense;
+    } else if (wcpProjectEnvironment) {
         const currentCacheKey = getWcpProjectLicenseCacheKey();
         if (cachedWcpProjectLicense.cacheKey !== currentCacheKey) {
             cachedWcpProjectLicense.cacheKey = currentCacheKey;
@@ -106,6 +113,38 @@ export const createWcp = async (): Promise<WcpContextObject> => {
                 return process.env.WEBINY_MULTI_TENANCY === "true";
             }
             return projectLicense?.package?.features?.[wcpFeatureId]?.enabled === true;
+        },
+
+        canUseAacl() {
+            return this.canUseFeature("advancedAccessControlLayer");
+        },
+
+        canUseTeams() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options.teams;
+        },
+
+        canUseFolderLevelPermissions() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options
+                .folderLevelPermissions;
+        },
+
+        canUsePrivateFiles() {
+            if (!this.canUseAacl()) {
+                return false;
+            }
+
+            const license = this.getProjectLicense();
+            return license!.package.features.advancedAccessControlLayer.options.privateFiles;
         },
 
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
