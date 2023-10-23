@@ -13130,7 +13130,6 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
-    "@webiny/api-admin-users-cognito": 0.0.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
