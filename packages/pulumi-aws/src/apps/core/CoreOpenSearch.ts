@@ -64,7 +64,7 @@ export const OpenSearch = createAppModule({
             domain = app.addResource(aws.opensearch.Domain, {
                 name: domainName,
                 config: {
-                    engineVersion: "OpenSearch_2.7",
+                    engineVersion: "OpenSearch_2.9",
                     clusterConfig: isProduction ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
                         ? {
