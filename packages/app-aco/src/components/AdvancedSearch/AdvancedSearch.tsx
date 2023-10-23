@@ -18,16 +18,16 @@ import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
-    modelId: string;
+    namespace: string;
     onApplyFilter: (data: QueryObjectDTO | null) => void;
 }
 
 export const AdvancedSearch = observer(
-    ({ fields, modelId, onApplyFilter }: AdvancedSearchProps) => {
+    ({ fields, namespace, onApplyFilter }: AdvancedSearchProps) => {
         const client = useApolloClient();
 
         const [repository] = useState(
-            FilterRepository.getInstance(new FiltersGraphQLGateway(client), modelId)
+            FilterRepository.getInstance(new FiltersGraphQLGateway(client), namespace)
         );
         const [presenter] = useState<AdvancedSearchPresenter>(
             new AdvancedSearchPresenter(repository)

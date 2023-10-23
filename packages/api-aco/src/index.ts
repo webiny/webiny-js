@@ -10,5 +10,5 @@ export * from "./apps";
 export * from "./plugins";
 
 export const createAco = () => {
-    return [...createFields(), createAcoContext(), createAcoFields(), ...createAcoGraphQL()];
+    return [...createFields(), createAcoContext(), ...createAcoFields(), ...createAcoGraphQL()];
 };

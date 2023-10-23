@@ -16,7 +16,7 @@ export interface QueryObjectDTO {
     id: string;
     name: string;
     description?: string;
-    modelId: string;
+    namespace: string;
     operation: Operation;
     groups: QueryObjectGroupDTO[];
 }
@@ -48,7 +48,7 @@ export const queryObjectValidationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
     name: zod.string().trim().nonempty("Name is required."),
     description: zod.string().trim(),
-    modelId: zod.string().trim(),
+    namespace: zod.string().trim(),
     operation: operationValidator,
     groups: zod.array(groupValidationSchema).min(1)
 });
@@ -58,20 +58,20 @@ export class QueryObject {
     public readonly id;
     public name;
     public description;
-    public modelId: string;
+    public namespace: string;
     public operation: Operation;
     public groups: QueryObjectGroup[];
 
-    static createEmpty(modelId: string) {
-        return new QueryObject(modelId, Operation.AND, [
+    static createEmpty(namespace: string) {
+        return new QueryObject(namespace, Operation.AND, [
             new QueryObjectGroup(Operation.AND, [new QueryObjectFilter()])
         ]);
     }
 
     static create(queryObjectDto: QueryObjectDTO) {
-        const { modelId, operation, groups, id, name, description } = queryObjectDto;
+        const { namespace, operation, groups, id, name, description } = queryObjectDto;
 
-        return new QueryObject(modelId, operation, groups, id, name, description);
+        return new QueryObject(namespace, operation, groups, id, name, description);
     }
 
     static validate(data: QueryObjectDTO) {
@@ -79,7 +79,7 @@ export class QueryObject {
     }
 
     protected constructor(
-        modelId: string,
+        namespace: string,
         operation: Operation,
         groups: QueryObjectGroup[],
         id?: string,
@@ -87,7 +87,7 @@ export class QueryObject {
         description?: string
     ) {
         this.id = id ?? "";
-        this.modelId = modelId;
+        this.namespace = namespace;
         this.name = name ?? "Draft filter";
         this.description = description ?? "";
         this.operation = operation;

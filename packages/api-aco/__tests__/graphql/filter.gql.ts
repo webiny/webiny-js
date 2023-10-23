@@ -3,7 +3,7 @@ const DATA_FIELD = /* GraphQL */ `
         id
         name
         description
-        modelId
+        namespace
         operation
         groups
         createdBy {

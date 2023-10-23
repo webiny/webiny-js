@@ -5,7 +5,7 @@ export const filterMocks = {
         id: "filter-a",
         name: "Filter A",
         description: "Filter description A",
-        modelId: "demo-1",
+        namespace: "demo-1",
         operation: Operation.AND,
         groups: [
             JSON.stringify({
@@ -29,7 +29,7 @@ export const filterMocks = {
         id: "filter-b",
         name: "Filter B",
         description: "Filter description B",
-        modelId: "demo-1",
+        namespace: "demo-1",
         operation: Operation.OR,
         groups: [
             JSON.stringify({
@@ -53,7 +53,7 @@ export const filterMocks = {
         id: "filter-c",
         name: "Filter C",
         description: "Filter description C",
-        modelId: "demo-2",
+        namespace: "demo-2",
         operation: Operation.AND,
         groups: [
             JSON.stringify({

@@ -11,19 +11,19 @@ export class FilterRepository {
     private _loading: Loading;
     private static instance: FilterRepository;
     private _filters: FilterDTO[] = [];
-    public readonly modelId: string;
+    public readonly namespace: string;
 
-    constructor(gateway: GatewayInterface, modelId: string) {
+    constructor(gateway: GatewayInterface, namespace: string) {
         this.gateway = gateway;
         this._loading = new Loading();
-        this.modelId = modelId;
+        this.namespace = namespace;
         this.sorter = new Sorter(["createdOn_DESC"]);
         makeAutoObservable(this);
     }
 
-    static getInstance(gateway: GatewayInterface, modelId: string) {
+    static getInstance(gateway: GatewayInterface, namespace: string) {
         if (!FilterRepository.instance) {
-            FilterRepository.instance = new FilterRepository(gateway, modelId);
+            FilterRepository.instance = new FilterRepository(gateway, namespace);
         }
         return FilterRepository.instance;
     }
@@ -56,7 +56,7 @@ export class FilterRepository {
 
     async listFilters() {
         const response = await this.runWithLoading<FilterRaw[]>(
-            this.gateway.list(this.modelId),
+            this.gateway.list(this.namespace),
             "Listing filters"
         );
 

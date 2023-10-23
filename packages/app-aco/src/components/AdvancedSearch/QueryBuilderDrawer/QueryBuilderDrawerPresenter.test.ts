@@ -8,7 +8,7 @@ import {
 } from "~/components/AdvancedSearch/domain";
 
 describe("QueryBuilderDrawerPresenter", () => {
-    const modelId = "model-id";
+    const namespace = "namespace-id";
     const defaultFilter = { field: "", value: "", condition: "" };
 
     const fieldId = "test-field";
@@ -30,7 +30,7 @@ describe("QueryBuilderDrawerPresenter", () => {
         id: "",
         name: "QueryObject name",
         description: "QueryObject description",
-        modelId,
+        namespace,
         operation: Operation.AND,
         groups: [testGroup]
     };
@@ -398,7 +398,7 @@ describe("FieldDTO definition", () => {
         id: "",
         name: "QueryObject name",
         description: "QueryObject description",
-        modelId: "modelId",
+        namespace: "namespace",
         operation: Operation.AND,
         groups: [testGroup]
     };

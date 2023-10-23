@@ -5,7 +5,7 @@ import { Operation } from "~/filter/filter.types";
 
 const id = "filter-id";
 const name = "Filter Lifecycle Events";
-const modelId = "demo-lifecycle-events";
+const namespace = "demo-lifecycle-events";
 const operation = Operation.AND;
 const groups = [
     JSON.stringify({
@@ -34,7 +34,7 @@ describe("Filter Lifecycle Events", () => {
             data: {
                 id,
                 name,
-                modelId,
+                namespace,
                 operation,
                 groups
             }
@@ -47,7 +47,7 @@ describe("Filter Lifecycle Events", () => {
                         data: {
                             id: expect.stringContaining(id),
                             name,
-                            modelId,
+                            namespace,
                             operation,
                             groups
                         },
@@ -70,7 +70,7 @@ describe("Filter Lifecycle Events", () => {
             data: {
                 id,
                 name,
-                modelId,
+                namespace,
                 operation,
                 groups
             }
@@ -111,7 +111,7 @@ describe("Filter Lifecycle Events", () => {
             data: {
                 id,
                 name,
-                modelId,
+                namespace,
                 operation,
                 groups
             }

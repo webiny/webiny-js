@@ -7,7 +7,7 @@ import {
 import { QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
 describe("QuerySaverDialogPresenter", () => {
-    const modelId = "model-id";
+    const namespace = "namespace-id";
 
     const demoFilter: QueryObjectFilterDTO = {
         field: "any-field",
@@ -23,7 +23,7 @@ describe("QuerySaverDialogPresenter", () => {
         id: "",
         name: "QueryObject name",
         description: "QueryObject description",
-        modelId,
+        namespace,
         operation: Operation.AND,
         groups: [demoGroup]
     };

@@ -17,7 +17,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             id: ID!
             name: String!
             description: String
-            modelId: String!
+            namespace: String!
             operation: OperationEnum!
             groups: [JSON]!
             savedOn: DateTime
@@ -29,7 +29,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             id: ID!
             name: String!
             description: String
-            modelId: String!
+            namespace: String!
             operation: OperationEnum!
             groups: [JSON]!
         }
@@ -37,13 +37,13 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
         input FilterUpdateInput {
             name: String
             description: String
-            modelId: String
+            namespace: String
             operation: OperationEnum
             groups: [JSON]
         }
 
         input FiltersListWhereInput {
-            modelId: String
+            namespace: String
         }
 
         type FilterResponse {

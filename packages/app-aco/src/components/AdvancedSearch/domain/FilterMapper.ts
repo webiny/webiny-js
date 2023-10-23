@@ -13,7 +13,7 @@ export class FilterMapper {
             id: configuration.id,
             name: configuration.name,
             description: configuration.description || "",
-            modelId: configuration.modelId,
+            namespace: configuration.namespace,
             operation: configuration.operation,
             groups: groups.map(group => ({
                 operation: group.operation,
@@ -38,7 +38,7 @@ export class FilterMapper {
             id: configuration.id,
             name: configuration.name,
             description: configuration.description,
-            modelId: configuration.modelId,
+            namespace: configuration.namespace,
             operation: configuration.operation,
             groups: configuration.groups.map(group => JSON.stringify(group))
         };

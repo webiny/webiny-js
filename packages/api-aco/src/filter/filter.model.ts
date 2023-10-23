@@ -23,10 +23,10 @@ const description = () =>
         type: "text"
     });
 
-const modelId = () =>
+const namespace = () =>
     createModelField({
         label: "Model Id",
-        fieldId: "modelId",
+        fieldId: "namespace",
         type: "text",
         validation: [
             {
@@ -87,8 +87,8 @@ export const createFilterModelDefinition = (): FilterModelDefinition => {
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",
-        layout: [["name"], ["description"], ["modelId"], ["operation"], ["groups"]],
-        fields: [name(), description(), modelId(), operation(), groups()],
+        layout: [["name"], ["description"], ["namespace"], ["operation"], ["groups"]],
+        fields: [name(), description(), namespace(), operation(), groups()],
         description: "ACO - Filter content model",
         isPrivate: true
     };

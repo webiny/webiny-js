@@ -43,11 +43,11 @@ export class Filter extends QueryObject {
     public savedOn?: string;
     public createdBy?: User;
 
-    static override createEmpty(modelId: string) {
-        const queryObject = QueryObject.createEmpty(modelId);
+    static override createEmpty(namespace: string) {
+        const queryObject = QueryObject.createEmpty(namespace);
 
         return new Filter(
-            queryObject.modelId,
+            queryObject.namespace,
             queryObject.operation,
             queryObject.groups,
             queryObject.id,
@@ -58,7 +58,7 @@ export class Filter extends QueryObject {
 
     static override create(filterDto: FilterDTO) {
         const queryObject = QueryObject.create({
-            modelId: filterDto.modelId,
+            namespace: filterDto.namespace,
             operation: filterDto.operation,
             groups: filterDto.groups,
             id: filterDto.id,
@@ -67,7 +67,7 @@ export class Filter extends QueryObject {
         });
 
         return new Filter(
-            queryObject.modelId,
+            queryObject.namespace,
             queryObject.operation,
             queryObject.groups,
             queryObject.id,
@@ -89,7 +89,7 @@ export class Filter extends QueryObject {
     }
 
     protected constructor(
-        modelId: string,
+        namespace: string,
         operation: Operation,
         groups: QueryObjectGroup[],
         id?: string,
@@ -99,7 +99,7 @@ export class Filter extends QueryObject {
         savedOn?: string,
         createdBy?: User
     ) {
-        super(modelId, operation, groups, id, name, description);
+        super(namespace, operation, groups, id, name, description);
 
         this.createdOn = createdOn;
         this.createdBy = createdBy;

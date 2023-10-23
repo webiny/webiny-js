@@ -32,9 +32,9 @@ describe("`filter` CRUD", () => {
             createdBy: userMock
         });
 
-        // Let's check whether both of the filter exists, listing them by `modelId`.
+        // Let's check whether both of the filter exists, listing them by `namespace`.
         const [listResponse1] = await aco.listFilters({
-            where: { modelId: "demo-1" }
+            where: { namespace: "demo-1" }
         });
 
         expect(listResponse1).toEqual({
@@ -60,7 +60,7 @@ describe("`filter` CRUD", () => {
         });
 
         const [listResponse2] = await aco.listFilters({
-            where: { modelId: "demo-2" }
+            where: { namespace: "demo-2" }
         });
 
         expect(listResponse2.data.aco.listFilters).toEqual(
@@ -175,11 +175,11 @@ describe("`filter` CRUD", () => {
         });
     });
 
-    it("should not allow creating a `filter` with no `modelId` provided", async () => {
+    it("should not allow creating a `filter` with no `namespace` provided", async () => {
         const [response] = await aco.createFilter({
             data: {
                 ...filterMocks.filterA,
-                modelId: ""
+                namespace: ""
             }
         });
 
@@ -194,8 +194,8 @@ describe("`filter` CRUD", () => {
                             data: [
                                 {
                                     error: "Value is required.",
-                                    fieldId: "modelId",
-                                    storageId: "text@modelId"
+                                    fieldId: "namespace",
+                                    storageId: "text@namespace"
                                 }
                             ]
                         }
@@ -402,7 +402,7 @@ describe("`filter` CRUD", () => {
         await aco.createFilter({ data: filterMocks.filterA });
 
         const [listResponse] = await otherAco.listFilters({
-            where: { modelId: "demo-1" }
+            where: { namespace: "demo-1" }
         });
 
         expect(listResponse.data.aco.listFilters).toEqual(
@@ -445,7 +445,7 @@ describe("`filter` CRUD", () => {
         // List with anonymous identity
         {
             const [listResponse] = await anonymousAco.listFilters({
-                where: { modelId: "demo-1" }
+                where: { namespace: "demo-1" }
             });
             expect(listResponse.data.aco.listFilters).toEqual(
                 expect.objectContaining(notAuthorizedResponse)

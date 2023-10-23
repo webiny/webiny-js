@@ -180,7 +180,7 @@ export interface AcoApp {
 }
 
 export interface ListFiltersQueryVariables {
-    modelId: string;
+    namespace: string;
     limit: number;
     sort?: Record<string, any>;
     after?: string | null;

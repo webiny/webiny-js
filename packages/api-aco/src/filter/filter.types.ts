@@ -20,13 +20,13 @@ export interface Group {
 export interface Filter extends AcoBaseFields {
     name: string;
     description?: string;
-    modelId: string;
+    namespace: string;
     operation: Operation;
     groups: string[];
 }
 
 export interface ListFiltersWhere {
-    modelId: string;
+    namespace: string;
 }
 
 export interface ListFiltersParams {
@@ -38,13 +38,13 @@ export interface ListFiltersParams {
 
 export type CreateFilterParams = Pick<
     Filter,
-    "id" | "name" | "description" | "modelId" | "operation" | "groups"
+    "id" | "name" | "description" | "namespace" | "operation" | "groups"
 >;
 
 export interface UpdateFilterParams {
     name?: string;
     description?: string;
-    modelId?: string;
+    namespace?: string;
     operation?: Operation;
     groups?: string[];
 }

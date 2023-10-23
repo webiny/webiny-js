@@ -6,7 +6,7 @@ describe("GraphQLInputMapper", () => {
         const queryObjectDTO: QueryObjectDTO = {
             id: "any-id",
             name: "Untitled",
-            modelId: "any-modelId",
+            namespace: "any-namespace",
             operation: Operation.AND,
             groups: [
                 {

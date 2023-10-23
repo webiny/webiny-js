@@ -209,7 +209,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
 
     createFilter() {
         this.currentQueryObject = QueryObjectMapper.toDTO(
-            QueryObject.createEmpty(this.repository.modelId)
+            QueryObject.createEmpty(this.repository.namespace)
         );
         this.closeManager();
         this.openBuilder();

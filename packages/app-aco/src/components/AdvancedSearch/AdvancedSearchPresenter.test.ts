@@ -49,7 +49,7 @@ const wrapQueryObjectIntoFilter = (queryObject: QueryObjectDTO): FilterDTO => {
 };
 
 describe("AdvancedSearchPresenter", () => {
-    const modelId = "model-id";
+    const namespace = "namespace";
 
     const demoFilter: QueryObjectFilterDTO = {
         field: "any-field",
@@ -66,7 +66,7 @@ describe("AdvancedSearchPresenter", () => {
         id: "filter-1",
         name: "Filter 1",
         description: "Filter description",
-        modelId,
+        namespace,
         operation: Operation.AND,
         groups: [demoGroup]
     };
@@ -76,7 +76,7 @@ describe("AdvancedSearchPresenter", () => {
     const queryObject2: QueryObjectDTO = {
         id: "filter-2",
         name: "Filter 2",
-        modelId,
+        namespace,
         operation: Operation.AND,
         groups: [demoGroup]
     };
@@ -86,7 +86,7 @@ describe("AdvancedSearchPresenter", () => {
     const queryObject3: QueryObjectDTO = {
         id: "filter-3",
         name: "Filter 3",
-        modelId,
+        namespace,
         operation: Operation.AND,
         groups: [demoGroup]
     };
@@ -135,7 +135,7 @@ describe("AdvancedSearchPresenter", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const repository = new FilterRepository(gateway, modelId);
+        const repository = new FilterRepository(gateway, namespace);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -296,7 +296,7 @@ describe("AdvancedSearchPresenter", () => {
                 id: "",
                 name: "Draft filter",
                 description: "",
-                modelId,
+                namespace,
                 operation: Operation.AND,
                 groups: [
                     {
@@ -327,7 +327,7 @@ describe("AdvancedSearchPresenter", () => {
             id: "",
             name: "Draft filter",
             description: "",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [
                 {
@@ -373,7 +373,7 @@ describe("AdvancedSearchPresenter", () => {
             id: expect.any(String),
             name: "Draft filter",
             description: "",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(queryObject.groups[0])]
         });
@@ -479,7 +479,7 @@ describe("AdvancedSearchPresenter", () => {
             id: "filter-1",
             name: "Filter 1",
             description: "Filter description",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(queryObject.groups[0])]
         });
@@ -559,7 +559,7 @@ describe("AdvancedSearchPresenter", () => {
             id: "filter-1",
             name: `${filter1.name} - Edit`,
             description: "Filter description",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(queryObject1.groups[0])]
         });
@@ -656,7 +656,7 @@ describe("AdvancedSearchPresenter", () => {
             id: expect.any(String),
             name: `Clone of ${filter1.name}`,
             description: "Filter description",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(queryObject1.groups[0])]
         });
@@ -723,7 +723,7 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(gateway, modelId);
+        const repository = new FilterRepository(gateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -750,7 +750,7 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(createGateway, modelId);
+        const repository = new FilterRepository(createGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -761,7 +761,7 @@ describe("AdvancedSearchPresenter", () => {
             id: "",
             name: "Draft filter",
             description: "",
-            modelId,
+            namespace,
             operation: Operation.AND,
             groups: [
                 {
@@ -794,7 +794,7 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, modelId);
+        const repository = new FilterRepository(updateGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -823,7 +823,7 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, modelId);
+        const repository = new FilterRepository(updateGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters

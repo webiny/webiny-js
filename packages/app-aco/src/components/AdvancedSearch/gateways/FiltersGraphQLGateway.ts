@@ -29,7 +29,7 @@ const DATA_FIELD = /* GraphQL */ `
         id
         name
         description
-        modelId
+        namespace
         operation
         groups
         createdOn
@@ -48,9 +48,9 @@ export const CREATE_FILTER = gql`
 `;
 
 export const LIST_FILTERS = gql`
-    query ListFilters($modelId: String!, $limit: Int!) {
+    query ListFilters($namespace: String!, $limit: Int!) {
         aco {
-            listFilters(where: { modelId: $modelId }, limit: $limit) {
+            listFilters(where: { namespace: $namespace }, limit: $limit) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -98,14 +98,14 @@ export class FiltersGraphQLGateway implements GatewayInterface {
         this.client = client;
     }
 
-    async list(modelId: string) {
+    async list(namespace: string) {
         const { data: response } = await this.client.query<
             ListFiltersResponse,
             ListFiltersQueryVariables
         >({
             query: LIST_FILTERS,
             variables: {
-                modelId,
+                namespace,
                 limit: 10000
             },
             fetchPolicy: "network-only"
