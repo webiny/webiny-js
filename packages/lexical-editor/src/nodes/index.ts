@@ -2,11 +2,11 @@ import type { Klass, LexicalNode } from "lexical";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { HashtagNode } from "@lexical/hashtag";
-import { AutoLinkNode, LinkNode as BaseLinkNode } from "@lexical/link";
 import { MarkNode } from "@lexical/mark";
 import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { OverflowNode } from "@lexical/overflow";
 
+import { AutoLinkNode, LinkNode } from "./LinkNode";
 import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyNode } from "~/nodes/TypographyNode";
 import { ListNode } from "~/nodes/ListNode";
@@ -15,7 +15,6 @@ import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
 import { QuoteNode } from "~/nodes/QuoteNode";
 import { ImageNode } from "~/nodes/ImageNode";
-import { LinkNode } from "~/nodes/LinkNode";
 
 export * from "~/nodes/FontColorNode";
 export * from "~/nodes/TypographyNode";
@@ -77,19 +76,5 @@ export const allNodes: ReadonlyArray<
             return new QuoteNode();
         }
     },
-    LinkNode,
-    {
-        replace: BaseLinkNode,
-        with: (node: BaseLinkNode) => {
-            return new LinkNode(
-                node.getURL(),
-                {
-                    rel: node.getRel(),
-                    title: node.getTitle(),
-                    target: node.getTarget()
-                },
-                node.getKey()
-            );
-        }
-    }
+    LinkNode
 ];

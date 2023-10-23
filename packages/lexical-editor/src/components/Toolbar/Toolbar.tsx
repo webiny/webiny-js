@@ -8,14 +8,13 @@ import {
 } from "lexical";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
-import { $isLinkNode as $isBaseLinkNode } from "@lexical/link";
+import { $isLinkNode } from "~/nodes";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
-import { $isLinkNode } from "~/nodes/LinkNode";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 
 interface FloatingToolbarProps {
@@ -159,13 +158,7 @@ function isLinkNode(selection: RangeSelection) {
     const node = getSelectedNode(selection);
     const parent = node.getParent();
 
-    return (
-        $isBaseLinkNode(parent) ||
-        $isBaseLinkNode(node) ||
-        // custom link node
-        $isLinkNode(parent) ||
-        $isLinkNode(node)
-    );
+    return $isLinkNode(parent) || $isLinkNode(node);
 }
 
 export interface ToolbarProps {
