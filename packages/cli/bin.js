@@ -22,7 +22,7 @@ const currentNodeVersion = process.versions.node;
 
     try {
         const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, ">=4")) {
+        if (!semver.satisfies(stdout, ">=3")) {
             console.error(chalk.red(`"@webiny/cli" requires yarn 3 or 4!`));
             process.exit(1);
         }
