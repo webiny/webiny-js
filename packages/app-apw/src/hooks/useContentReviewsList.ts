@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
 import { useNavigate } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
@@ -37,6 +37,7 @@ interface UseContentReviewsListHook {
         editContentReview: (item: ApwContentReviewListItem) => void;
         status: ApwContentReviewStatus | "all";
         setStatus: (status: ApwContentReviewStatus | "all") => void;
+        refetch: () => Promise<any>;
     };
 }
 
@@ -69,7 +70,8 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const {
         data,
         loading,
-        fetchMore: queryMore
+        fetchMore: queryMore,
+        refetch
     } = useQuery<ListContentReviewsQueryResponse, ListContentReviewsQueryVariables>(
         LIST_CONTENT_REVIEWS_QUERY,
         {
@@ -150,6 +152,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         serializeSorters,
         editContentReview,
         status,
-        setStatus
+        setStatus,
+        refetch
     };
 };
