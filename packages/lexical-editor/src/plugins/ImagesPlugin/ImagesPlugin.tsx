@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -20,9 +21,8 @@ import {
     DROP_COMMAND,
     LexicalEditor
 } from "lexical";
-import { useEffect } from "react";
 import { $isImageNode, ImageNode } from "~/nodes/ImageNode";
-import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
+import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
 import { CAN_USE_DOM } from "~/utils/canUseDOM";
 import { insertImage } from "~/utils/nodes/insertImage";
 

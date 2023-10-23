@@ -19,7 +19,7 @@ import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { WebinyNodes } from "~/nodes/webinyNodes";
+import { allNodes } from "~/nodes";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
@@ -114,7 +114,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...WebinyNodes, ...configNodes, ...(nodes || [])],
+        nodes: [...allNodes, ...configNodes, ...(nodes || [])],
         theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap }
     };
 

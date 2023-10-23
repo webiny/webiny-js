@@ -1,10 +1,7 @@
 // render
 export { LexicalHtmlRenderer } from "~/components/LexicalHtmlRenderer";
 // hooks
-export { useRichTextEditor } from "~/hooks/useRichTextEditor";
-export { useFontColorPicker } from "~/hooks/useFontColorPicker";
-export { useTypographyAction } from "~/hooks/useTypographyAction";
-export { useTextAlignmentAction } from "~/hooks/useTextAlignmentAction";
+export * from "./hooks";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
@@ -31,7 +28,7 @@ export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 // plugins
-export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
+export { LinkPlugin } from "~/plugins/LinkPlugin/LinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
@@ -46,9 +43,10 @@ export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
 // Commands
-export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
+export * from "~/commands";
 // types
 export * as types from "./types";
+export * from "./nodes";
 // config
 export {
     LexicalEditorConfig,

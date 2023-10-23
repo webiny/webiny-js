@@ -2,22 +2,32 @@ import type { Klass, LexicalNode } from "lexical";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { HashtagNode } from "@lexical/hashtag";
-import { AutoLinkNode, LinkNode as BaseLinkNode } from "@lexical/link";
 import { MarkNode } from "@lexical/mark";
+import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { OverflowNode } from "@lexical/overflow";
+
+import { AutoLinkNode, LinkNode } from "./LinkNode";
 import { FontColorNode } from "~/nodes/FontColorNode";
-import { TypographyElementNode } from "~/nodes/TypographyElementNode";
+import { TypographyNode } from "~/nodes/TypographyNode";
 import { ListNode } from "~/nodes/ListNode";
 import { ListItemNode } from "~/nodes/ListItemNode";
 import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
-import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { QuoteNode } from "~/nodes/QuoteNode";
 import { ImageNode } from "~/nodes/ImageNode";
-import { LinkNode } from "~/nodes/link-node";
+
+export * from "~/nodes/FontColorNode";
+export * from "~/nodes/TypographyNode";
+export * from "~/nodes/ListNode";
+export * from "~/nodes/ListItemNode";
+export * from "~/nodes/HeadingNode";
+export * from "~/nodes/ParagraphNode";
+export * from "~/nodes/QuoteNode";
+export * from "~/nodes/ImageNode";
+export * from "~/nodes/LinkNode";
 
 // This is a list of all the nodes that our Lexical implementation supports OOTB.
-export const WebinyNodes: ReadonlyArray<
+export const allNodes: ReadonlyArray<
     | Klass<LexicalNode>
     | {
           replace: Klass<LexicalNode>;
@@ -41,7 +51,7 @@ export const WebinyNodes: ReadonlyArray<
 
     // Our custom nodes.
     FontColorNode,
-    TypographyElementNode,
+    TypographyNode,
 
     // The following code replaces the built-in Lexical nodes with our custom ones.
     // https://lexical.dev/docs/concepts/node-replacement
@@ -66,19 +76,5 @@ export const WebinyNodes: ReadonlyArray<
             return new QuoteNode();
         }
     },
-    LinkNode,
-    {
-        replace: BaseLinkNode,
-        with: (node: BaseLinkNode) => {
-            return new LinkNode(
-                node.getURL(),
-                {
-                    rel: node.getRel(),
-                    title: node.getTitle(),
-                    target: node.getTarget()
-                },
-                node.getKey()
-            );
-        }
-    }
+    LinkNode
 ];

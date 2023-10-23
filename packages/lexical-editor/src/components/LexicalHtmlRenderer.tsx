@@ -8,7 +8,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
-import { WebinyNodes } from "~/nodes/webinyNodes";
+import { allNodes } from "~/nodes";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { ClassNames, CSSObject } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
@@ -37,7 +37,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
             throw error;
         },
         editable: false,
-        nodes: [...WebinyNodes, ...(nodes || [])],
+        nodes: [...allNodes, ...(nodes || [])],
         theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap, styles: theme.styles }
     };
 

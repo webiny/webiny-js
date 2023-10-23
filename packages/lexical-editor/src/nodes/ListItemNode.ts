@@ -12,9 +12,9 @@ import {
     NodeSelection,
     ParagraphNode,
     RangeSelection,
-    SerializedElementNode
+    SerializedElementNode,
+    Spread
 } from "lexical";
-import { Spread } from "lexical";
 import { $createListNode, $isListNode, ListNode } from "~/nodes/ListNode";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import {
@@ -60,9 +60,7 @@ export class ListItemNode extends ElementNode {
     override createDOM(config: EditorConfig): HTMLElement {
         const element = document.createElement("li");
         const parent = this.getParent();
-
-        if ($isListNode(parent)) {
-            updateChildrenListItemValue(parent);
+        if ($isListNode(parent) && parent.getListType() === "check") {
             updateListItemChecked(element, this, null, parent);
         }
         element.value = this.__value;
@@ -73,14 +71,11 @@ export class ListItemNode extends ElementNode {
 
     override updateDOM(prevNode: ListItemNode, dom: HTMLElement, config: EditorConfig): boolean {
         const parent = this.getParent();
-
-        if ($isListNode(parent)) {
-            updateChildrenListItemValue(parent);
+        if ($isListNode(parent) && parent.getListType() === "check") {
             updateListItemChecked(dom, this, prevNode, parent);
         }
         // @ts-expect-error - this is always HTMLListItemElement
         dom.value = this.__value;
-
         $setListItemThemeClassNames(dom, config.theme, this);
 
         return false;
@@ -181,7 +176,7 @@ export class ListItemNode extends ElementNode {
             const afterListNode = node.getParentOrThrow();
 
             if ($isListNode(afterListNode)) {
-                afterListNode;
+                updateChildrenListItemValue(afterListNode);
             }
 
             return after;
@@ -304,10 +299,6 @@ export class ListItemNode extends ElementNode {
     setChecked(checked?: boolean): void {
         const self = this.getWritable();
         self.__checked = checked;
-    }
-
-    toggleChecked(): void {
-        this.setChecked(!this.__checked);
     }
 
     override getIndent(): number {

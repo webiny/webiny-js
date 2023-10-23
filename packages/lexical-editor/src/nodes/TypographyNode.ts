@@ -9,15 +9,15 @@ import {
     SerializedElementNode,
     Spread
 } from "lexical";
+import { addClassNamesToElement } from "@lexical/utils";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
-import { addClassNamesToElement } from "@lexical/utils";
 import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 // Command and payload
-export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
-    "ADD_TYPOGRAPHY_ELEMENT_COMMAND"
-);
+export const ADD_TYPOGRAPHY_COMMAND: LexicalCommand<TypographyPayload> =
+    createCommand("ADD_TYPOGRAPHY_COMMAND");
+
 const TypographyNodeAttrName = "data-typography-style-id";
 
 export interface TypographyPayload {
@@ -43,7 +43,7 @@ export type SerializedTypographyNode = Spread<
  * Main responsibility of this node is to apply custom or Webiny theme typography to selected text.
  * Extends the original ElementNode node to add additional transformation and support for webiny theme typography.
  */
-export class TypographyElementNode extends ElementNode {
+export class TypographyNode extends ElementNode {
     __styleId: string;
     __tag: TypographyHTMLTag;
     __name: string;
@@ -61,8 +61,8 @@ export class TypographyElementNode extends ElementNode {
         return "typography-el-node";
     }
 
-    static override clone(node: TypographyElementNode): TypographyElementNode {
-        return new TypographyElementNode(
+    static override clone(node: TypographyNode): TypographyNode {
+        return new TypographyNode(
             {
                 css: node.__css,
                 id: node.__styleId,
@@ -106,8 +106,8 @@ export class TypographyElementNode extends ElementNode {
         };
     }
 
-    static override importJSON(serializedNode: SerializedTypographyNode): TypographyElementNode {
-        const node = new TypographyElementNode({
+    static override importJSON(serializedNode: SerializedTypographyNode): TypographyNode {
+        const node = new TypographyNode({
             id: serializedNode.styleId,
             css: serializedNode.typographyStyles,
             tag: serializedNode.tag,
@@ -129,7 +129,7 @@ export class TypographyElementNode extends ElementNode {
         return false;
     }
 
-    override insertNewAfter(): TypographyElementNode {
+    override insertNewAfter(): TypographyNode {
         const newElement = $createTypographyNode({
             tag: this.__tag,
             name: this.__name,
@@ -151,13 +151,12 @@ export class TypographyElementNode extends ElementNode {
     }
 }
 
-export const $createTypographyNode = (
-    value: TypographyValue,
-    key?: NodeKey
-): TypographyElementNode => {
-    return new TypographyElementNode(value, key);
+export const $createTypographyNode = (value: TypographyValue, key?: NodeKey): TypographyNode => {
+    return new TypographyNode(value, key);
 };
 
-export const $isTypographyElementNode = (node: ElementNode | LexicalNode | null): boolean => {
-    return node instanceof TypographyElementNode;
+export const $isTypographyNode = (
+    node: ElementNode | LexicalNode | null
+): node is TypographyNode => {
+    return node instanceof TypographyNode;
 };

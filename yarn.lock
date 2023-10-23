@@ -7702,6 +7702,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/headless@npm:^0.11.3":
+  version: 0.11.3
+  resolution: "@lexical/headless@npm:0.11.3"
+  peerDependencies:
+    lexical: 0.11.3
+  checksum: 9bbabea45714a69deff7a6df7df55033c71904ffcee7398b8713e6178aace28f2fd75e111ca1f4113b13b2161498413ec82d90587f6289b35ab0de355494ebd2
+  languageName: node
+  linkType: hard
+
 "@lexical/history@npm:0.11.3, @lexical/history@npm:^0.11.3":
   version: 0.11.3
   resolution: "@lexical/history@npm:0.11.3"
@@ -7713,7 +7722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/html@npm:0.11.3":
+"@lexical/html@npm:0.11.3, @lexical/html@npm:^0.11.3":
   version: 0.11.3
   resolution: "@lexical/html@npm:0.11.3"
   dependencies:
@@ -7724,7 +7733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/link@npm:0.11.3, @lexical/link@npm:^0.11.3":
+"@lexical/link@npm:0.11.3":
   version: 0.11.3
   resolution: "@lexical/link@npm:0.11.3"
   dependencies:
@@ -7874,7 +7883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/utils@npm:0.11.3, @lexical/utils@npm:^0.11.3":
+"@lexical/utils@npm:0.11.3, @lexical/utils@npm:^0.11.2, @lexical/utils@npm:^0.11.3":
   version: 0.11.3
   resolution: "@lexical/utils@npm:0.11.3"
   dependencies:
@@ -14748,6 +14757,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": ^6.0.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
     "@fortawesome/react-fontawesome": ^0.1.17
+    "@lexical/utils": ^0.11.3
     "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
@@ -16176,11 +16186,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/lexical-converter@workspace:packages/lexical-converter":
+  version: 0.0.0-use.local
+  resolution: "@webiny/lexical-converter@workspace:packages/lexical-converter"
+  dependencies:
+    "@lexical/headless": ^0.11.3
+    "@lexical/html": ^0.11.3
+    "@types/jsdom": 21.1.3
+    "@webiny/cli": 0.0.0
+    "@webiny/lexical-editor": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    jsdom: 21.1.2
+    lexical: ^0.11.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/lexical-editor-actions@0.0.0, @webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions"
   dependencies:
     "@emotion/styled": ^11.10.6
+    "@lexical/selection": ^0.11.3
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
@@ -16198,6 +16224,7 @@ __metadata:
   resolution: "@webiny/lexical-editor-pb-element@workspace:packages/lexical-editor-pb-element"
   dependencies:
     "@emotion/styled": ^11.10.6
+    "@lexical/utils": ^0.11.2
     "@material-design-icons/svg": ^0.14.2
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
@@ -16223,7 +16250,6 @@ __metadata:
     "@lexical/code": ^0.11.3
     "@lexical/hashtag": ^0.11.3
     "@lexical/history": ^0.11.3
-    "@lexical/link": ^0.11.3
     "@lexical/list": ^0.11.3
     "@lexical/mark": ^0.11.3
     "@lexical/overflow": ^0.11.3
@@ -17149,6 +17175,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: f790b99a1bf63ef160c967e23c46feea7787e531292bb827126334612c234ed489a0dc2c7ba33156416f0ffa8d25bf2b0fdb7f35c2ba60eb3e960572bece4001
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.8.2":
+  version: 8.10.0
+  resolution: "acorn@npm:8.10.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 538ba38af0cc9e5ef983aee196c4b8b4d87c0c94532334fa7e065b2c8a1f85863467bb774231aae91613fcda5e68740c15d97b1967ae3394d20faddddd8af61d
   languageName: node
   linkType: hard
 
@@ -22344,6 +22379,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cssstyle@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "cssstyle@npm:3.0.0"
+  dependencies:
+    rrweb-cssom: ^0.6.0
+  checksum: 31f694dfed9998ed93570fe539610837b878193dd8487c33cb12db8004333c53c2a3904166288bbec68388c72fb01014d46d3243ddfb02fe845989d852c06f27
+  languageName: node
+  linkType: hard
+
 "csstype@npm:^2.5.7, csstype@npm:^2.6.6":
   version: 2.6.21
   resolution: "csstype@npm:2.6.21"
@@ -22606,6 +22650,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-urls@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "data-urls@npm:4.0.0"
+  dependencies:
+    abab: ^2.0.6
+    whatwg-mimetype: ^3.0.0
+    whatwg-url: ^12.0.0
+  checksum: 006e869b5bf079647949a3e9b1dd69d84b2d5d26e6b01c265485699bc96e83817d4b5aae758b2910a4c58c0601913f3a0034121c1ca2da268e9a244c57515b15
+  languageName: node
+  linkType: hard
+
 "dataloader@npm:^2.0.0":
   version: 2.2.1
   resolution: "dataloader@npm:2.2.1"
@@ -22760,7 +22815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.4.2":
+"decimal.js@npm:^10.4.2, decimal.js@npm:^10.4.3":
   version: 10.4.3
   resolution: "decimal.js@npm:10.4.3"
   checksum: 796404dcfa9d1dbfdc48870229d57f788b48c21c603c3f6554a1c17c10195fc1024de338b0cf9e1efe0c7c167eeb18f04548979bcc5fdfabebb7cc0ae3287bae
@@ -30511,6 +30566,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsdom@npm:21.1.2":
+  version: 21.1.2
+  resolution: "jsdom@npm:21.1.2"
+  dependencies:
+    abab: ^2.0.6
+    acorn: ^8.8.2
+    acorn-globals: ^7.0.0
+    cssstyle: ^3.0.0
+    data-urls: ^4.0.0
+    decimal.js: ^10.4.3
+    domexception: ^4.0.0
+    escodegen: ^2.0.0
+    form-data: ^4.0.0
+    html-encoding-sniffer: ^3.0.0
+    http-proxy-agent: ^5.0.0
+    https-proxy-agent: ^5.0.1
+    is-potential-custom-element-name: ^1.0.1
+    nwsapi: ^2.2.4
+    parse5: ^7.1.2
+    rrweb-cssom: ^0.6.0
+    saxes: ^6.0.0
+    symbol-tree: ^3.2.4
+    tough-cookie: ^4.1.2
+    w3c-xmlserializer: ^4.0.0
+    webidl-conversions: ^7.0.0
+    whatwg-encoding: ^2.0.0
+    whatwg-mimetype: ^3.0.0
+    whatwg-url: ^12.0.1
+    ws: ^8.13.0
+    xml-name-validator: ^4.0.0
+  peerDependencies:
+    canvas: ^2.5.0
+  peerDependenciesMeta:
+    canvas:
+      optional: true
+  checksum: 6b3cf2d15e5a5712b3db5ff56eba82b97c9a879b52e95063cc8323bdf8837b6ca15cfec85b57ab71c95c6b4a4098bf67f274c6ff4e9ff519aa4811a04f290610
+  languageName: node
+  linkType: hard
+
 "jsdom@npm:^20.0.0":
   version: 20.0.3
   resolution: "jsdom@npm:20.0.3"
@@ -33929,7 +34023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nwsapi@npm:^2.2.0":
+"nwsapi@npm:^2.2.0, nwsapi@npm:^2.2.4":
   version: 2.2.7
   resolution: "nwsapi@npm:2.2.7"
   checksum: cab25f7983acec7e23490fec3ef7be608041b460504229770e3bfcf9977c41d6fe58f518994d3bd9aa3a101f501089a3d4a63536f4ff8ae4b8c4ca23bdbfda4e
@@ -34840,7 +34934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^7.0.0, parse5@npm:^7.1.1":
+"parse5@npm:^7.0.0, parse5@npm:^7.1.1, parse5@npm:^7.1.2":
   version: 7.1.2
   resolution: "parse5@npm:7.1.2"
   dependencies:
@@ -36831,7 +36925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0, punycode@npm:^2.1.1":
+"punycode@npm:^2.1.0, punycode@npm:^2.1.1, punycode@npm:^2.3.0":
   version: 2.3.0
   resolution: "punycode@npm:2.3.0"
   checksum: 39f760e09a2a3bbfe8f5287cf733ecdad69d6af2fe6f97ca95f24b8921858b91e9ea3c9eeec6e08cede96181b3bb33f95c6ffd8c77e63986508aa2e8159fa200
@@ -39206,6 +39300,13 @@ __metadata:
       optional: true
   languageName: unknown
   linkType: soft
+
+"rrweb-cssom@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "rrweb-cssom@npm:0.6.0"
+  checksum: 182312f6e4f41d18230ccc34f14263bc8e8a6b9d30ee3ec0d2d8e643c6f27964cd7a8d638d4a00e988d93e8dc55369f4ab5a473ccfeff7a8bab95b36d2b5499c
+  languageName: node
+  linkType: hard
 
 "run-async@npm:^2.2.0, run-async@npm:^2.4.0":
   version: 2.4.1
@@ -41996,6 +42097,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tr46@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "tr46@npm:4.1.1"
+  dependencies:
+    punycode: ^2.3.0
+  checksum: aeeb821ac2cd792e63ec84888b4fd6598ac6ed75d861579e21a5cf9d4ee78b2c6b94e7d45036f2ca2088bc85b9b46560ad23c4482979421063b24137349dbd96
+  languageName: node
+  linkType: hard
+
 "tr46@npm:~0.0.3":
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
@@ -43699,6 +43809,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"whatwg-url@npm:^12.0.0, whatwg-url@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "whatwg-url@npm:12.0.1"
+  dependencies:
+    tr46: ^4.1.1
+    webidl-conversions: ^7.0.0
+  checksum: 8698993b763c1e7eda5ed16c31dab24bca6489626aca7caf8b5a2b64684dda6578194786f10ec42ceb1c175feea16d0a915096e6419e08d154ce551c43176972
+  languageName: node
+  linkType: hard
+
 "whatwg-url@npm:^5.0.0":
   version: 5.0.0
   resolution: "whatwg-url@npm:5.0.0"
@@ -44057,6 +44177,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.13.0":
+  version: 8.14.2
+  resolution: "ws@npm:8.14.2"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 
