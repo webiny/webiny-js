@@ -122,7 +122,6 @@ module.exports = async function createProject({
                 title: "Setup yarn",
                 task: async () => {
                     // yarn set version
-                    await execa("corepack", ["enable"], { cwd: projectRoot });
                     await execa("yarn", ["set", "version", "berry"], {
                         cwd: projectRoot,
                         env: {
@@ -137,6 +136,14 @@ module.exports = async function createProject({
                     });
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
+                    if (!fs.existsSync(yamlPath)) {
+                        fs.writeFileSync(
+                            yamlPath,
+                            "yarnPath: .yarn/releases/yarn-3.6.4.cjs",
+                            "utf-8"
+                        );
+                    }
+
                     const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
 
                     // Default settings are applied here. Currently we only apply the `nodeLinker` param.
