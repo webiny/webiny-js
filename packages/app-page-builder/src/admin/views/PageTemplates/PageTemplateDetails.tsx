@@ -137,7 +137,7 @@ const PageTemplatesDetails = ({
         <DetailsContainer>
             <RenderBlock>
                 <Elevation z={2}>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} data-testid={"pb-page-templates-form"}>
                         {getPageTemplateQuery.loading && <CircularProgress />}
                         <HeaderTitle>
                             <PageTemplateTitle>

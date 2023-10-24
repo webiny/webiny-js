@@ -6,6 +6,7 @@
  *
  */
 
+import React, { Suspense } from "react";
 import type {
     DOMConversionMap,
     DOMExportOutput,
@@ -17,11 +18,8 @@ import type {
     SerializedLexicalNode,
     Spread
 } from "lexical";
-
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
-import * as React from "react";
-import { Suspense } from "react";
-import { ImagePayload } from "~/commands/insertFiles";
+import { ImagePayload } from "~/commands";
 
 const ImageComponent = React.lazy(
     // @ts-ignore
@@ -102,8 +100,17 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         return { element };
     }
 
+    /**
+     * Control how an HTMLElement is represented in Lexical.
+     * DOM data comes from clipboard or parsing HTML to nodes with the available lexical functions.
+     * (@see @lexical/html package: https://github.com/facebook/lexical/blob/main/packages/lexical-html/README.md).
+     */
     static importDOM(): DOMConversionMap | null {
-        // prevent paste from clipboard
+        /**
+         * By returning 'null' value, we are preventing image node to be created.
+         * Example of how to implement and create the node:
+         * https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/nodes/ImageNode.tsx#L94
+         */
         return null;
     }
 
@@ -158,7 +165,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     }
 
     // View
-
     override createDOM(config: EditorConfig): HTMLElement {
         const span = document.createElement("span");
         const theme = config.theme;

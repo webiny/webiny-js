@@ -14,6 +14,7 @@ import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissio
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
+import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -64,6 +65,11 @@ export interface HeadlessCms
      * @internal
      */
     permissions: HeadlessCmsPermissions;
+    /**
+     * Export operations.
+     */
+    export: HeadlessCmsExport;
+    importing: HeadlessCmsImport;
 }
 
 /**
@@ -550,6 +556,10 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+    /**
+     * Is this model created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -1013,9 +1023,10 @@ export type CmsSystemContext = {
  * @category GraphQL params
  */
 export interface CmsGroupCreateInput {
+    id?: string;
     name: string;
     slug?: string;
-    description?: string;
+    description?: string | null;
     icon: string;
 }
 
@@ -1062,7 +1073,7 @@ export interface CmsGroup {
     /**
      * Description for the group.
      */
-    description: string;
+    description: string | null;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
@@ -1089,6 +1100,10 @@ export interface CmsGroup {
      * Only available for the plugin constructed groups.
      */
     isPrivate?: boolean;
+    /**
+     * Is this group created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**

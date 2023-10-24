@@ -57,6 +57,7 @@ describe("aco apps", () => {
                 name: expect.any(String),
                 isPrivate: true
             }),
+            isPlugin: true,
             isPrivate: true,
             tags: ["type:model"],
             webinyVersion: "0.0.0"
@@ -130,6 +131,7 @@ describe("aco apps", () => {
                 name: expect.any(String),
                 isPrivate: true
             }),
+            isPlugin: true,
             isPrivate: true,
             tags: ["type:model"],
             webinyVersion: "0.0.0"
@@ -210,7 +212,7 @@ describe("aco apps", () => {
                         isPrivate: true,
                         titleFieldId: "id"
                     }
-                })
+                } as any)
             );
         } catch (ex) {
             error = ex;

@@ -132,7 +132,7 @@ export const $createFontColorNode = (
     return new FontColorNode(text, color, themeColor, key);
 };
 
-export const $isFontColorNode = (node: LexicalNode): boolean => {
+export const $isFontColorNode = (node: LexicalNode): node is FontColorNode => {
     return node instanceof FontColorNode;
 };
 
