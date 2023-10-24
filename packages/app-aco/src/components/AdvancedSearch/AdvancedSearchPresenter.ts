@@ -1,11 +1,10 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import {
     Feedback,
+    Filter,
     FilterDTO,
-    FilterRepository,
-    QueryObject,
-    QueryObjectDTO,
-    QueryObjectMapper
+    FilterMapper,
+    FilterRepository
 } from "~/components/AdvancedSearch/domain";
 
 export interface AdvancedSearchPresenterInterface {
@@ -17,19 +16,19 @@ export interface AdvancedSearchPresenterInterface {
     openSaver(): void;
     closeSaver(): void;
     showFeedback(message: string): void;
-    applyFilter(filter: string | QueryObjectDTO): Promise<void>;
+    applyFilter(filter: string | FilterDTO): Promise<void>;
     unsetFilter(): void;
-    editAppliedQueryObject(): void;
+    editAppliedFilter(): void;
     createFilter(): void;
     editFilter(filterId: string): Promise<void>;
     deleteFilter(id: string): Promise<void>;
-    saveQueryObject(queryObject: QueryObjectDTO): void;
+    saveFilter(filter: FilterDTO): void;
     renameFilter(filterId: string): Promise<void>;
     cloneFilter(filterId: string): Promise<void>;
-    persistQueryObject(queryObject: QueryObjectDTO): Promise<void>;
+    persistFilter(filter: FilterDTO): Promise<void>;
     get vm(): {
-        appliedQueryObject: QueryObjectDTO | null;
-        currentQueryObject: QueryObjectDTO | null;
+        currentFilter: FilterDTO | null;
+        appliedFilter: FilterDTO | null;
         feedbackVm: {
             isOpen: boolean;
             message: string;
@@ -63,8 +62,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
     private showBuilder = false;
     private showManager = false;
     private showSaver = false;
-    private currentQueryObject: QueryObjectDTO | null = null;
-    private appliedQueryObject: QueryObjectDTO | null = null;
+    private currentFilter: FilterDTO | null = null;
+    private appliedFilter: FilterDTO | null = null;
 
     constructor(repository: FilterRepository) {
         this.repository = repository;
@@ -120,8 +119,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
 
     get vm() {
         return {
-            appliedQueryObject: this.appliedQueryObject,
-            currentQueryObject: this.currentQueryObject,
+            appliedFilter: this.appliedFilter,
+            currentFilter: this.currentFilter,
             feedbackVm: this.feedbackVm,
             managerVm: this.managerVm,
             builderVm: this.builderVm,
@@ -157,8 +156,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         this.feedback.message = message;
     }
 
-    async applyFilter(filter: string | QueryObjectDTO): Promise<void> {
-        let filterDto: QueryObjectDTO | FilterDTO;
+    async applyFilter(filter: string | FilterDTO): Promise<void> {
+        let filterDto: FilterDTO;
 
         if (typeof filter === "string") {
             const result = await this.repository.getFilterById(filter);
@@ -173,8 +172,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         }
 
         runInAction(() => {
-            this.appliedQueryObject = QueryObjectMapper.toDTO(filterDto);
-            this.currentQueryObject = null;
+            this.appliedFilter = filterDto;
+            this.currentFilter = null;
             this.closeManager();
             this.closeBuilder();
             this.closeSaver();
@@ -182,12 +181,12 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
     }
 
     unsetFilter() {
-        this.appliedQueryObject = null;
-        this.currentQueryObject = null;
+        this.appliedFilter = null;
+        this.currentFilter = null;
     }
 
-    editAppliedQueryObject() {
-        this.currentQueryObject = this.appliedQueryObject;
+    editAppliedFilter() {
+        this.currentFilter = this.appliedFilter;
         this.openBuilder();
     }
 
@@ -199,7 +198,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         }
 
         runInAction(() => {
-            this.currentQueryObject = QueryObjectMapper.toDTO(filter);
+            this.currentFilter = filter;
             this.closeManager();
             this.closeBuilder();
             this.openSaver();
@@ -207,9 +206,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
     }
 
     createFilter() {
-        this.currentQueryObject = QueryObjectMapper.toDTO(
-            QueryObject.createEmpty(this.repository.namespace)
-        );
+        this.currentFilter = FilterMapper.toDTO(Filter.createEmpty(this.repository.namespace));
         this.closeManager();
         this.openBuilder();
         this.closeSaver();
@@ -223,8 +220,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         }
 
         runInAction(() => {
-            this.currentQueryObject = QueryObjectMapper.toDTO(
-                QueryObject.create({ ...filter, id: "", name: `Clone of ${filter.name}` })
+            this.currentFilter = FilterMapper.toDTO(
+                Filter.create({ ...filter, id: "", name: `Clone of ${filter.name}` })
             );
             this.closeManager();
             this.openBuilder();
@@ -240,7 +237,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         }
 
         runInAction(() => {
-            this.currentQueryObject = QueryObjectMapper.toDTO(filter);
+            this.currentFilter = filter;
             this.closeManager();
             this.openBuilder();
             this.closeSaver();
@@ -251,22 +248,22 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         await this.repository.deleteFilter(filterId);
 
         runInAction(() => {
-            this.currentQueryObject = null;
+            this.currentFilter = null;
         });
     }
 
-    saveQueryObject(queryObject: QueryObjectDTO) {
-        this.currentQueryObject = queryObject;
+    saveFilter(filter: FilterDTO) {
+        this.currentFilter = filter;
         this.closeManager();
         this.openBuilder();
         this.openSaver();
     }
 
-    async persistQueryObject(queryObject: QueryObjectDTO) {
-        if (queryObject.id) {
-            await this.updateFilterIntoRepository(queryObject);
+    async persistFilter(filter: FilterDTO) {
+        if (filter.id) {
+            await this.updateFilterIntoRepository(filter);
         } else {
-            await this.createFilterIntoRepository(queryObject);
+            await this.createFilterIntoRepository(filter);
         }
 
         runInAction(() => {
@@ -276,29 +273,29 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         });
     }
 
-    private async createFilterIntoRepository(queryObject: QueryObjectDTO) {
-        const filter = await this.repository.createFilter(queryObject);
+    private async createFilterIntoRepository(filterDto: FilterDTO) {
+        const newFilter = await this.repository.createFilter(filterDto);
 
-        if (!filter) {
+        if (!newFilter) {
             return;
         }
 
         /**
          * repository.createFilter returns generates the filter id.
-         * We need to set it back as appliedQueryObject, otherwise further actions on the filter would fail (update/delete).
+         * We need to set it back as appliedFilter, otherwise further actions on the filter would fail (update/delete).
          */
         runInAction(() => {
-            this.appliedQueryObject = QueryObjectMapper.toDTO(filter);
-            this.currentQueryObject = null;
+            this.appliedFilter = newFilter;
+            this.currentFilter = null;
         });
     }
 
-    private async updateFilterIntoRepository(queryObject: QueryObjectDTO) {
-        await this.repository.updateFilter(queryObject);
+    private async updateFilterIntoRepository(filter: FilterDTO) {
+        await this.repository.updateFilter(filter);
 
         runInAction(() => {
-            this.appliedQueryObject = queryObject;
-            this.currentQueryObject = null;
+            this.appliedFilter = filter;
+            this.currentFilter = null;
         });
     }
 }

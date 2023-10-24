@@ -3,8 +3,8 @@ import {
     FieldDTO,
     FieldRaw,
     FieldType,
-    Operation,
-    QueryObjectDTO
+    FilterDTO,
+    Operation
 } from "~/components/AdvancedSearch/domain";
 
 describe("QueryBuilderDrawerPresenter", () => {
@@ -26,10 +26,10 @@ describe("QueryBuilderDrawerPresenter", () => {
         filters: [testFilter]
     };
 
-    const queryObject: QueryObjectDTO = {
+    const filter: FilterDTO = {
         id: "",
-        name: "QueryObject name",
-        description: "QueryObject description",
+        name: "Filter name",
+        description: "Filter description",
         namespace,
         operation: Operation.AND,
         groups: [testGroup]
@@ -46,15 +46,15 @@ describe("QueryBuilderDrawerPresenter", () => {
             }
         ];
 
-        presenter = new QueryBuilderDrawerPresenter(queryObject, defaultFields);
+        presenter = new QueryBuilderDrawerPresenter(filter, defaultFields);
     });
 
     it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
-        presenter.load(queryObject);
+        presenter.load(filter);
 
         // `vm` should have the expected `name` and `description` definition
-        expect(presenter.vm.name).toEqual(queryObject.name);
-        expect(presenter.vm.description).toEqual(queryObject.description);
+        expect(presenter.vm.name).toEqual(filter.name);
+        expect(presenter.vm.description).toEqual(filter.description);
 
         // `vm` should have the expected `fields` definition
         expect(presenter.vm.fields).toEqual([
@@ -86,8 +86,8 @@ describe("QueryBuilderDrawerPresenter", () => {
     });
 
     it("should be able to add and delete groups", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+        // let's load a filter
+        presenter.load(filter);
 
         // should only have 1 group, created by default
         expect(presenter.vm.data.groups.length).toBe(1);
@@ -149,8 +149,8 @@ describe("QueryBuilderDrawerPresenter", () => {
     });
 
     it("should be able to add and delete filters from a group", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+        // let's load a filter
+        presenter.load(filter);
 
         // let's load a new filter to the first group
         presenter.addNewFilterToGroup(0);
@@ -176,13 +176,13 @@ describe("QueryBuilderDrawerPresenter", () => {
         expect(presenter.vm.data.groups[0].filters).toEqual([defaultFilter]);
     });
 
-    it("should be able to set data back to the queryObject", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+    it("should be able to set data back to the filter", () => {
+        // let's load a filter
+        presenter.load(filter);
 
         {
             // should be able to set the `data` operation
-            presenter.setQueryObject({
+            presenter.setFilter({
                 operation: Operation.OR,
                 groups: [
                     {
@@ -199,7 +199,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         {
             // should be able to set the `data` group
-            presenter.setQueryObject({
+            presenter.setFilter({
                 operation: Operation.OR,
                 groups: [
                     {
@@ -216,7 +216,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         {
             // should be able to change the `data` filter definition
-            presenter.setQueryObject({
+            presenter.setFilter({
                 operation: Operation.OR,
                 groups: [
                     {
@@ -238,13 +238,13 @@ describe("QueryBuilderDrawerPresenter", () => {
     });
 
     it("should perform validation and call provided callbacks `onSubmit`", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+        // let's load a filter
+        presenter.load(filter);
 
         const onSuccess = jest.fn();
         const onError = jest.fn();
 
-        presenter.setQueryObject({
+        presenter.setFilter({
             operation: Operation.OR,
             groups: [
                 {
@@ -268,7 +268,7 @@ describe("QueryBuilderDrawerPresenter", () => {
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
         expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
 
-        presenter.setQueryObject({
+        presenter.setFilter({
             operation: Operation.OR,
             groups: [
                 {
@@ -294,13 +294,13 @@ describe("QueryBuilderDrawerPresenter", () => {
     });
 
     it("should perform validation and call provided callbacks `onSave`", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+        // let's load a filter
+        presenter.load(filter);
 
         const onSuccess = jest.fn();
         const onError = jest.fn();
 
-        presenter.setQueryObject({
+        presenter.setFilter({
             operation: Operation.OR,
             groups: [
                 {
@@ -324,7 +324,7 @@ describe("QueryBuilderDrawerPresenter", () => {
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
         expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
 
-        presenter.setQueryObject({
+        presenter.setFilter({
             operation: Operation.OR,
             groups: [
                 {
@@ -350,11 +350,11 @@ describe("QueryBuilderDrawerPresenter", () => {
     });
 
     it("should able to set the filter `field` data", () => {
-        // let's load a queryObjectDTO
-        presenter.load(queryObject);
+        // let's load a filter
+        presenter.load(filter);
 
-        // Let's change the queryObject and change the only exising filter
-        presenter.setQueryObject({
+        // Let's change the filter and change the only exising filter
+        presenter.setFilter({
             operation: Operation.OR,
             groups: [
                 {
@@ -394,10 +394,10 @@ describe("FieldDTO definition", () => {
         filters: [testFilter]
     };
 
-    const queryObject: QueryObjectDTO = {
+    const filter: FilterDTO = {
         id: "",
-        name: "QueryObject name",
-        description: "QueryObject description",
+        name: "Filter name",
+        description: "Filter description",
         namespace: "namespace",
         operation: Operation.AND,
         groups: [testGroup]
@@ -629,7 +629,7 @@ describe("FieldDTO definition", () => {
         let presenter: QueryBuilderDrawerPresenter;
 
         beforeEach(() => {
-            presenter = new QueryBuilderDrawerPresenter(queryObject, [fieldRaw]);
+            presenter = new QueryBuilderDrawerPresenter(filter, [fieldRaw]);
         });
 
         it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {

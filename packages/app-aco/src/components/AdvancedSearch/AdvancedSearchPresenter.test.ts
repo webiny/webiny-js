@@ -1,11 +1,11 @@
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
     FilterDTO,
+    FilterGroupDTO,
+    FilterGroupFilterDTO,
+    FilterRaw,
     FilterRepository,
     Operation,
-    QueryObjectDTO,
-    QueryObjectFilterDTO,
-    QueryObjectGroupDTO,
     User
 } from "./domain";
 import { FiltersGatewayInterface } from "./gateways";
@@ -33,84 +33,79 @@ const createMockGateway = ({
     ...(deleteFn && { delete: deleteFn })
 });
 
-const wrapQueryObjectIntoFilter = (queryObject: QueryObjectDTO): FilterDTO => {
-    const DemoUser: User = {
-        id: "any-id",
-        displayName: "John Doe",
-        type: "editor"
-    };
-
+const filterToRaw = (filterDto: FilterDTO): FilterRaw => {
     return {
-        ...queryObject,
-        createdOn: new Date().toString(),
-        savedOn: new Date().toString(),
-        createdBy: DemoUser
+        ...filterDto,
+        groups: filterDto.groups.map(group => JSON.stringify(group))
     };
 };
 
 describe("AdvancedSearchPresenter", () => {
     const namespace = "namespace";
 
-    const demoFilter: QueryObjectFilterDTO = {
+    const demoUser: User = {
+        id: "any-id",
+        displayName: "John Doe",
+        type: "editor"
+    };
+
+    const demoFilter: FilterGroupFilterDTO = {
         field: "any-field",
         value: "any-value",
         condition: "any-condition"
     };
 
-    const demoGroup: QueryObjectGroupDTO = {
+    const demoGroup: FilterGroupDTO = {
         operation: Operation.AND,
         filters: [demoFilter]
     };
 
-    const queryObject1: QueryObjectDTO = {
+    const filter1: FilterDTO = {
         id: "filter-1",
         name: "Filter 1",
         description: "Filter description",
         namespace,
         operation: Operation.AND,
-        groups: [demoGroup]
+        groups: [demoGroup],
+        createdOn: new Date().toString(),
+        savedOn: new Date().toString(),
+        createdBy: demoUser
     };
 
-    const filter1 = wrapQueryObjectIntoFilter(queryObject1);
+    const filterRaw1 = filterToRaw(filter1);
 
-    const queryObject2: QueryObjectDTO = {
+    const filter2: FilterDTO = {
         id: "filter-2",
         name: "Filter 2",
         namespace,
         operation: Operation.AND,
-        groups: [demoGroup]
+        groups: [demoGroup],
+        createdOn: new Date().toString(),
+        savedOn: new Date().toString(),
+        createdBy: demoUser
     };
 
-    const filter2 = wrapQueryObjectIntoFilter(queryObject2);
+    const filterRaw2 = filterToRaw(filter2);
 
-    const queryObject3: QueryObjectDTO = {
+    const filter3: FilterDTO = {
         id: "filter-3",
         name: "Filter 3",
         namespace,
         operation: Operation.AND,
-        groups: [demoGroup]
+        groups: [demoGroup],
+        createdOn: new Date().toString(),
+        savedOn: new Date().toString(),
+        createdBy: demoUser
     };
 
-    const filter3 = wrapQueryObjectIntoFilter(queryObject3);
+    const filterRaw3 = filterToRaw(filter3);
 
     const gateway = createMockGateway({
         list: jest.fn().mockImplementation(() => {
-            return Promise.resolve([
-                {
-                    ...filter1,
-                    groups: [JSON.stringify(demoGroup)]
-                },
-                {
-                    ...filter2,
-                    groups: [JSON.stringify(demoGroup)]
-                }
-            ]);
+            return Promise.resolve([filterRaw1, filterRaw2]);
         }),
         get: jest.fn().mockImplementation(() => {
-            return Promise.resolve({
-                ...filter3,
-                groups: [JSON.stringify(demoGroup)]
-            });
+            return Promise.resolve(filterRaw3);
         }),
         create: jest.fn().mockImplementation(() => {
             return Promise.resolve({
@@ -119,11 +114,7 @@ describe("AdvancedSearchPresenter", () => {
             });
         }),
         update: jest.fn().mockImplementation(() => {
-            return Promise.resolve({
-                ...filter1,
-                name: "Filter 1 - Edit",
-                groups: [JSON.stringify(demoGroup)]
-            });
+            return Promise.resolve({ ...filterRaw1, name: "Filter 1 - Edit" });
         }),
         delete: jest.fn().mockImplementation(() => {
             return Promise.resolve(true);
@@ -146,8 +137,8 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.list).toBeCalledTimes(1);
 
         expect(presenter.vm).toEqual({
-            appliedQueryObject: null,
-            currentQueryObject: null,
+            appliedFilter: null,
+            currentFilter: null,
             feedbackVm: {
                 isOpen: false,
                 message: ""
@@ -159,16 +150,16 @@ describe("AdvancedSearchPresenter", () => {
                 loadingLabel: "",
                 filters: [
                     {
-                        id: filter1.id,
-                        name: filter1.name,
-                        description: filter1.description,
-                        createdOn: filter1.createdOn
+                        id: filterRaw1.id,
+                        name: filterRaw1.name,
+                        description: filterRaw1.description,
+                        createdOn: filterRaw1.createdOn
                     },
                     {
-                        id: filter2.id,
-                        name: filter2.name,
+                        id: filterRaw2.id,
+                        name: filterRaw2.name,
                         description: "",
-                        createdOn: filter2.createdOn
+                        createdOn: filterRaw2.createdOn
                     }
                 ]
             },
@@ -212,8 +203,8 @@ describe("AdvancedSearchPresenter", () => {
         await presenter.applyFilter("filter-1");
 
         expect(presenter.vm).toMatchObject({
-            appliedQueryObject: queryObject1,
-            currentQueryObject: null,
+            appliedFilter: filter1,
+            currentFilter: null,
             managerVm: {
                 isOpen: false
             },
@@ -230,11 +221,11 @@ describe("AdvancedSearchPresenter", () => {
         // let's load some filters
         await presenter.load();
 
-        // Let's apply a queryObject
-        presenter.applyFilter(queryObject2);
+        // Let's apply a filter
+        presenter.applyFilter(filter2);
 
         expect(presenter.vm).toMatchObject({
-            appliedQueryObject: queryObject2,
+            appliedFilter: filter2,
             managerVm: {
                 isOpen: false
             },
@@ -256,22 +247,22 @@ describe("AdvancedSearchPresenter", () => {
         presenter.unsetFilter();
 
         expect(presenter.vm).toMatchObject({
-            appliedQueryObject: null,
-            currentQueryObject: null
+            appliedFilter: null,
+            currentFilter: null
         });
     });
 
-    it("should be able to edit an already applied query object", async () => {
+    it("should be able to edit an already applied filter", async () => {
         // let's load some filters
         await presenter.load();
 
         // Let's apply and unset the filter
         await presenter.applyFilter("filter-1");
-        presenter.editAppliedQueryObject();
+        presenter.editAppliedFilter();
 
         expect(presenter.vm).toMatchObject({
-            appliedQueryObject: queryObject1,
-            currentQueryObject: queryObject1,
+            appliedFilter: filter1,
+            currentFilter: filter1,
             builderVm: {
                 isOpen: true
             }
@@ -293,7 +284,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's create a new filter via builder
         presenter.createFilter();
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: {
+            currentFilter: {
                 id: "",
                 name: "Draft filter",
                 description: "",
@@ -323,8 +314,8 @@ describe("AdvancedSearchPresenter", () => {
             }
         });
 
-        // Let's change the QueryObject and open the saver
-        const queryObject = {
+        // Let's change the Filter and open the saver
+        const filter = {
             id: "",
             name: "Draft filter",
             description: "",
@@ -343,9 +334,9 @@ describe("AdvancedSearchPresenter", () => {
                 }
             ]
         };
-        presenter.saveQueryObject(queryObject);
+        presenter.saveFilter(filter);
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: queryObject,
+            currentFilter: filter,
             managerVm: {
                 isOpen: false
             },
@@ -358,7 +349,7 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        const persistPromise = presenter.persistQueryObject(queryObject);
+        const persistPromise = presenter.persistFilter(filter);
 
         // Let's check the transition to loading state
         expect(presenter.vm.saverVm).toMatchObject({
@@ -376,7 +367,7 @@ describe("AdvancedSearchPresenter", () => {
             description: "",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(queryObject.groups[0])]
+            groups: [JSON.stringify(filter.groups[0])]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -399,10 +390,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(3);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filter1.id,
-            name: filter1.name,
-            description: filter1.description,
-            createdOn: filter1.createdOn
+            id: filterRaw1.id,
+            name: filterRaw1.name,
+            description: filterRaw1.description,
+            createdOn: filterRaw1.createdOn
         });
     });
 
@@ -421,7 +412,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's select a filter to edit in the builder
         await presenter.editFilter("filter-1");
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: queryObject1,
+            currentFilter: filter1,
             managerVm: {
                 isOpen: false
             },
@@ -433,9 +424,9 @@ describe("AdvancedSearchPresenter", () => {
             }
         });
 
-        // Let's change the QueryObject and open the saver
-        const queryObject = {
-            ...queryObject1,
+        // Let's change the Filter and open the saver
+        const filter = {
+            ...filter1,
             groups: [
                 {
                     operation: Operation.OR,
@@ -449,9 +440,9 @@ describe("AdvancedSearchPresenter", () => {
                 }
             ]
         };
-        presenter.saveQueryObject(queryObject);
+        presenter.saveFilter(filter);
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: queryObject,
+            currentFilter: filter,
             managerVm: {
                 isOpen: false
             },
@@ -464,7 +455,7 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        const persistPromise = presenter.persistQueryObject(queryObject);
+        const persistPromise = presenter.persistFilter(filter);
 
         // Let's check the transition to loading state
         expect(presenter.vm.saverVm).toMatchObject({
@@ -482,7 +473,7 @@ describe("AdvancedSearchPresenter", () => {
             description: "Filter description",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(queryObject.groups[0])]
+            groups: [JSON.stringify(filter.groups[0])]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -505,10 +496,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(2);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filter1.id,
+            id: filterRaw1.id,
             name: "Filter 1 - Edit",
-            description: filter1.description,
-            createdOn: filter1.createdOn
+            description: filterRaw1.description,
+            createdOn: filterRaw1.createdOn
         });
     });
 
@@ -528,7 +519,7 @@ describe("AdvancedSearchPresenter", () => {
         await presenter.renameFilter("filter-1");
 
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: queryObject1,
+            currentFilter: filter1,
             managerVm: {
                 isOpen: false
             },
@@ -541,9 +532,9 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        const persistPromise = presenter.persistQueryObject({
-            ...queryObject1,
-            name: `${queryObject1.name} - Edit`
+        const persistPromise = presenter.persistFilter({
+            ...filter1,
+            name: `${filter1.name} - Edit`
         });
 
         // Let's check the transition to loading state
@@ -558,11 +549,11 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.update).toBeCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({
             id: "filter-1",
-            name: `${filter1.name} - Edit`,
+            name: `${filterRaw1.name} - Edit`,
             description: "Filter description",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(queryObject1.groups[0])]
+            groups: [JSON.stringify(filter1.groups[0])]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -576,7 +567,7 @@ describe("AdvancedSearchPresenter", () => {
             },
             feedbackVm: {
                 isOpen: true,
-                message: `Filter "${queryObject1.name} - Edit" was successfully updated.`
+                message: `Filter "${filter1.name} - Edit" was successfully updated.`
             }
         });
 
@@ -585,10 +576,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(2);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filter1.id,
-            name: `${filter1.name} - Edit`,
-            description: filter1.description,
-            createdOn: filter1.createdOn
+            id: filterRaw1.id,
+            name: `${filterRaw1.name} - Edit`,
+            description: filterRaw1.description,
+            createdOn: filterRaw1.createdOn
         });
     });
 
@@ -607,14 +598,14 @@ describe("AdvancedSearchPresenter", () => {
         // Let's clone a filter
         await presenter.cloneFilter("filter-1");
 
-        const clonedQueryObject = {
-            ...queryObject1,
+        const clonedFilter = {
+            ...filter1,
             id: "",
-            name: `Clone of ${queryObject1.name}`
+            name: `Clone of ${filter1.name}`
         };
 
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: clonedQueryObject,
+            currentFilter: clonedFilter,
             managerVm: {
                 isOpen: false
             },
@@ -626,9 +617,9 @@ describe("AdvancedSearchPresenter", () => {
             }
         });
 
-        presenter.saveQueryObject(clonedQueryObject);
+        presenter.saveFilter(clonedFilter);
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: clonedQueryObject,
+            currentFilter: clonedFilter,
             managerVm: {
                 isOpen: false
             },
@@ -641,7 +632,7 @@ describe("AdvancedSearchPresenter", () => {
         });
 
         // Let's save it via the gateway
-        const persistPromise = presenter.persistQueryObject(clonedQueryObject);
+        const persistPromise = presenter.persistFilter(clonedFilter);
 
         // Let's check the transition to loading state
         expect(presenter.vm.saverVm).toMatchObject({
@@ -655,11 +646,11 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
             id: expect.any(String),
-            name: `Clone of ${filter1.name}`,
+            name: `Clone of ${filterRaw1.name}`,
             description: "Filter description",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(queryObject1.groups[0])]
+            groups: [JSON.stringify(filter1.groups[0])]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -699,7 +690,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.delete).toBeCalledTimes(1);
         expect(gateway.delete).toHaveBeenCalledWith("filter-1");
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: null,
+            currentFilter: null,
             feedbackVm: {
                 isOpen: true,
                 message: 'Filter "Filter 1" was successfully deleted.'
@@ -711,10 +702,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(1);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filter2.id,
-            name: filter2.name,
+            id: filterRaw2.id,
+            name: filterRaw2.name,
             description: "",
-            createdOn: filter2.createdOn
+            createdOn: filterRaw2.createdOn
         });
     });
 
@@ -757,8 +748,8 @@ describe("AdvancedSearchPresenter", () => {
         // Let's load some filters
         await presenter.load();
 
-        // Let's try to save a QueryObject
-        const queryObject = {
+        // Let's try to save a Filter
+        const filter = {
             id: "",
             name: "Draft filter",
             description: "",
@@ -778,7 +769,7 @@ describe("AdvancedSearchPresenter", () => {
             ]
         };
 
-        await presenter.persistQueryObject(queryObject);
+        await presenter.persistFilter(filter);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -801,13 +792,13 @@ describe("AdvancedSearchPresenter", () => {
         // Let's load some filters
         await presenter.load();
 
-        // Let's try to save a QueryObject
-        const queryObject = {
-            ...queryObject1,
-            name: queryObject1 + " - Edit"
+        // Let's try to save a Filter
+        const filter = {
+            ...filter1,
+            name: filter1 + " - Edit"
         };
 
-        await presenter.persistQueryObject(queryObject);
+        await presenter.persistFilter(filter);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -830,7 +821,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's load some filters
         await presenter.load();
 
-        await presenter.deleteFilter(queryObject1.id);
+        await presenter.deleteFilter(filter1.id);
 
         expect(presenter.vm).toMatchObject({
             feedbackVm: {
@@ -847,7 +838,7 @@ describe("AdvancedSearchPresenter", () => {
         // Let's show any random feedback message
         presenter.showFeedback("Any message");
         expect(presenter.vm).toMatchObject({
-            currentQueryObject: null,
+            currentFilter: null,
             feedbackVm: {
                 isOpen: true,
                 message: "Any message"

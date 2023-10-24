@@ -1,8 +1,8 @@
-import { QueryObjectGroup, Filter, FilterRaw, FilterDTO } from "../domain";
+import { FilterRaw, Filter, FilterDTO, FilterGroup } from "../domain";
 
 export class FilterMapper {
     static toDTO(configuration: Filter | FilterRaw): FilterDTO {
-        const groups: QueryObjectGroup[] = configuration.groups.map(group => {
+        const groups: FilterGroup[] = configuration.groups.map(group => {
             if (typeof group === "string") {
                 return JSON.parse(group);
             }
@@ -21,15 +21,15 @@ export class FilterMapper {
                     field: filter.field || "",
                     value: filter.value || "",
                     condition: filter.condition || ""
-                }))
-            })),
-            createdBy: configuration.createdBy || {
-                id: "",
-                displayName: "",
-                type: ""
-            },
-            createdOn: configuration?.createdOn || "",
-            savedOn: configuration.savedOn || ""
+                })),
+                createdBy: configuration.createdBy || {
+                    id: "",
+                    displayName: "",
+                    type: ""
+                },
+                createdOn: configuration?.createdOn || "",
+                savedOn: configuration.savedOn || ""
+            }))
         };
     }
 

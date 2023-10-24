@@ -6,7 +6,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outline
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 
-import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
+import { FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "../QueryBuilderDrawerPresenter";
 
@@ -24,7 +24,7 @@ import { AccordionItemInner, Content, FilterOperationContainer } from "./Querybu
 
 export interface QueryBuilderProps {
     onForm: (form: FormAPI) => void;
-    onSubmit: (data: QueryObjectDTO) => void;
+    onSubmit: (data: FilterDTO) => void;
     onValidationError: () => void;
     presenter: QueryBuilderDrawerPresenter;
 }
@@ -40,7 +40,7 @@ export const QueryBuilder = observer(
         }, []);
 
         const onChange = (data: QueryBuilderFormData) => {
-            presenter.setQueryObject(data);
+            presenter.setFilter(data);
         };
 
         const onFormSubmit: FormOnSubmit<QueryBuilderFormData> = () => {

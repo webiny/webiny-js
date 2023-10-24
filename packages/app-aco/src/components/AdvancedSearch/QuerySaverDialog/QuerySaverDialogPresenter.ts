@@ -1,18 +1,18 @@
 import { makeAutoObservable } from "mobx";
 
-import { QueryObject, QueryObjectDTO } from "../domain";
+import { Filter, FilterDTO } from "../domain";
 
 export interface QuerySaverDialogPresenterInterface {
-    load(queryObject: QueryObjectDTO): void;
+    load(filter: FilterDTO): void;
     get vm(): {
         invalidFields: QuerySaverDialogViewModel["invalidFields"];
         data: QuerySaverDialogFormData;
     };
-    setQueryObject(data: QuerySaverDialogFormData): void;
+    setFilter(data: QuerySaverDialogFormData): void;
     onSubmit(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onSuccess?: (filter: FilterDTO) => void,
         onError?: (
-            queryObject: QueryObjectDTO,
+            filter: FilterDTO,
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
     ): Promise<void>;
@@ -24,64 +24,64 @@ export interface QuerySaverDialogFormData {
 }
 
 export interface QuerySaverDialogViewModel {
-    queryObject: QueryObjectDTO;
+    filter: FilterDTO;
     invalidFields: Record<string, { isValid: boolean; message: string }>;
 }
 
 export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInterface {
-    private queryObject: QuerySaverDialogViewModel["queryObject"];
+    private filter: QuerySaverDialogViewModel["filter"];
     private invalidFields: QuerySaverDialogViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
-    constructor(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
+    constructor(filter: FilterDTO) {
+        this.filter = filter;
         makeAutoObservable(this);
     }
 
-    load(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
+    load(filter: FilterDTO) {
+        this.filter = filter;
     }
 
     get vm() {
         return {
             invalidFields: this.invalidFields,
             data: {
-                name: this.queryObject.name,
-                description: this.queryObject.description
+                name: this.filter.name,
+                description: this.filter.description
             }
         };
     }
 
-    setQueryObject(data: QuerySaverDialogFormData) {
-        this.queryObject = {
-            ...this.queryObject,
+    setFilter(data: QuerySaverDialogFormData) {
+        this.filter = {
+            ...this.filter,
             ...data
         };
 
         if (this.formWasSubmitted) {
-            this.validateQueryObject(this.queryObject);
+            this.validateFilter(this.filter);
         }
     }
 
     async onSubmit(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
+        onSuccess?: (filter: FilterDTO) => void,
         onError?: (
-            queryObject: QueryObjectDTO,
+            filter: FilterDTO,
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
     ) {
         this.formWasSubmitted = true;
-        const result = this.validateQueryObject(this.queryObject);
+        const result = this.validateFilter(this.filter);
 
         if (result.success) {
-            onSuccess && onSuccess(this.queryObject);
+            onSuccess && onSuccess(this.filter);
         } else {
-            onError && onError(this.queryObject, this.invalidFields);
+            onError && onError(this.filter, this.invalidFields);
         }
     }
 
-    private validateQueryObject(data: QueryObjectDTO) {
-        const validation = QueryObject.validate(data);
+    private validateFilter(data: FilterDTO) {
+        const validation = Filter.validate(data);
 
         if (!validation.success) {
             this.invalidFields = validation.error.issues.reduce((acc, issue) => {

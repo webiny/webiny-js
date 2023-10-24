@@ -10,14 +10,14 @@ import { CircularProgress } from "@webiny/ui/Progress";
 
 import { QuerySaverDialogFormData, QuerySaverDialogPresenter } from "./QuerySaverDialogPresenter";
 
-import { QueryObjectDTO } from "../domain";
+import { FilterDTO } from "../domain";
 
 import { DialogContainer } from "./QuerySaverDialog.styled";
 
 interface QuerySaverDialogProps {
     onClose: () => void;
-    onSubmit: (data: QueryObjectDTO) => void;
-    queryObject: QueryObjectDTO;
+    onSubmit: (data: FilterDTO) => void;
+    filter: FilterDTO;
     vm: {
         isOpen: boolean;
         isLoading: boolean;
@@ -25,17 +25,15 @@ interface QuerySaverDialogProps {
     };
 }
 
-export const QuerySaverDialog = observer(({ queryObject, ...props }: QuerySaverDialogProps) => {
-    const [presenter] = useState<QuerySaverDialogPresenter>(
-        new QuerySaverDialogPresenter(queryObject)
-    );
+export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialogProps) => {
+    const [presenter] = useState<QuerySaverDialogPresenter>(new QuerySaverDialogPresenter(filter));
 
     useEffect(() => {
-        presenter.load(queryObject);
-    }, [queryObject]);
+        presenter.load(filter);
+    }, [filter]);
 
     const onChange = (data: QuerySaverDialogFormData) => {
-        presenter.setQueryObject(data);
+        presenter.setFilter(data);
     };
 
     const onFormSubmit: FormOnSubmit<QuerySaverDialogFormData> = () => {

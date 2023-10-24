@@ -5,28 +5,22 @@ import {
     FieldDTO,
     FieldMapper,
     FieldRaw,
-    QueryObjectGroupDTO,
-    Operation,
-    QueryObject,
-    QueryObjectDTO
+    Filter,
+    FilterDTO,
+    FilterGroupDTO,
+    Operation
 } from "../domain";
 
 export interface QueryBuilderDrawerPresenterInterface {
-    load(queryObject: QueryObjectDTO): void;
+    load(filter: FilterDTO): void;
     addGroup(): void;
     deleteGroup(groupIndex: number): void;
     addNewFilterToGroup(groupIndex: number): void;
     deleteFilterFromGroup(groupIndex: number, filterIndex: number): void;
     setFilterFieldData(groupIndex: number, filterIndex: number, data: string): void;
-    setQueryObject(data: QueryBuilderFormData): void;
-    onSubmit(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
-        onError?: (queryObject: QueryObjectDTO) => void
-    ): void;
-    onSave(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
-        onError?: (queryObject: QueryObjectDTO) => void
-    ): void;
+    setFilter(data: QueryBuilderFormData): void;
+    onSubmit(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void): void;
+    onSave(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void): void;
     get vm(): QueryBuilderViewModel;
 }
 
@@ -41,7 +35,7 @@ export interface QueryBuilderViewModel {
 
 export interface QueryBuilderFormData {
     operation: Operation;
-    groups: (QueryObjectGroupDTO & { title: string; open: boolean })[];
+    groups: (FilterGroupDTO & { title: string; open: boolean })[];
 }
 
 export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterInterface {
@@ -49,28 +43,28 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private invalidMessage = "";
-    private queryObject: QueryObjectDTO;
+    private filter: FilterDTO;
 
-    constructor(queryObject: QueryObjectDTO, fields: FieldRaw[]) {
-        this.queryObject = queryObject;
+    constructor(filter: FilterDTO, fields: FieldRaw[]) {
+        this.filter = filter;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
         makeAutoObservable(this);
     }
 
-    load(queryObject: QueryObjectDTO) {
-        this.queryObject = queryObject;
+    load(filter: FilterDTO) {
+        this.filter = filter;
     }
 
     get vm() {
         return {
-            name: this.queryObject.name,
-            description: this.queryObject.description || "",
+            name: this.filter.name,
+            description: this.filter.description || "",
             fields: this.fields,
             invalidFields: this.invalidFields,
             invalidMessage: this.invalidMessage,
             data: {
-                operation: this.queryObject.operation,
-                groups: this.queryObject.groups.map((group: QueryObjectGroupDTO, groupIndex) => {
+                operation: this.filter.operation,
+                groups: this.filter.groups.map((group: FilterGroupDTO, groupIndex) => {
                     return {
                         title: `Filter group #${groupIndex + 1}`,
                         open: true,
@@ -87,25 +81,23 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     addGroup() {
-        this.queryObject.groups.push({
+        this.filter.groups.push({
             operation: Operation.AND,
             filters: [{ field: "", value: "", condition: "" }]
         });
     }
 
     deleteGroup(groupIndex: number) {
-        this.queryObject.groups = this.queryObject.groups.filter(
-            (_, index) => index !== groupIndex
-        );
+        this.filter.groups = this.filter.groups.filter((_, index) => index !== groupIndex);
 
         // Make sure we always have at least 1 group!
-        if (this.queryObject.groups.length === 0) {
+        if (this.filter.groups.length === 0) {
             this.addGroup();
         }
     }
 
     addNewFilterToGroup(groupIndex: number) {
-        this.queryObject.groups[groupIndex].filters.push({
+        this.filter.groups[groupIndex].filters.push({
             field: "",
             value: "",
             condition: ""
@@ -113,14 +105,14 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     deleteFilterFromGroup(groupIndex: number, filterIndex: number) {
-        const filters = this.queryObject.groups[groupIndex].filters;
-        this.queryObject.groups[groupIndex].filters = filters.filter(
+        const filters = this.filter.groups[groupIndex].filters;
+        this.filter.groups[groupIndex].filters = filters.filter(
             (_, index) => index !== filterIndex
         );
 
         // Make sure we always have at least 1 filter!
-        if (this.queryObject.groups[groupIndex].filters.length === 0) {
-            this.queryObject.groups[groupIndex].filters.push({
+        if (this.filter.groups[groupIndex].filters.length === 0) {
+            this.filter.groups[groupIndex].filters.push({
                 field: "",
                 value: "",
                 condition: ""
@@ -129,20 +121,20 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     setFilterFieldData(groupIndex: number, filterIndex: number, data: string) {
-        this.queryObject.groups[groupIndex].filters = [
-            ...this.queryObject.groups[groupIndex].filters.slice(0, filterIndex),
+        this.filter.groups[groupIndex].filters = [
+            ...this.filter.groups[groupIndex].filters.slice(0, filterIndex),
             {
                 field: data,
                 value: "",
                 condition: ""
             },
-            ...this.queryObject.groups[groupIndex].filters.slice(filterIndex + 1)
+            ...this.filter.groups[groupIndex].filters.slice(filterIndex + 1)
         ];
     }
 
-    setQueryObject(data: QueryBuilderFormData) {
-        this.queryObject = {
-            ...this.queryObject,
+    setFilter(data: QueryBuilderFormData) {
+        this.filter = {
+            ...this.filter,
             operation: data.operation,
             groups: data.groups.map(group => ({
                 operation: group.operation,
@@ -151,37 +143,31 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
         };
 
         if (this.formWasSubmitted) {
-            this.validateQueryObject(this.queryObject);
+            this.validateFilter(this.filter);
         }
     }
 
-    onSubmit(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
-        onError?: (queryObject: QueryObjectDTO) => void
-    ) {
-        const result = this.validateQueryObject(this.queryObject);
+    onSubmit(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void) {
+        const result = this.validateFilter(this.filter);
         if (result.success) {
-            onSuccess && onSuccess(this.queryObject);
+            onSuccess && onSuccess(this.filter);
         } else {
-            onError && onError(this.queryObject);
+            onError && onError(this.filter);
         }
     }
 
-    onSave(
-        onSuccess?: (queryObject: QueryObjectDTO) => void,
-        onError?: (queryObject: QueryObjectDTO) => void
-    ) {
-        const result = this.validateQueryObject(this.queryObject);
+    onSave(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void) {
+        const result = this.validateFilter(this.filter);
         if (result.success) {
-            onSuccess && onSuccess(this.queryObject);
+            onSuccess && onSuccess(this.filter);
         } else {
-            onError && onError(this.queryObject);
+            onError && onError(this.filter);
         }
     }
 
-    private validateQueryObject(data: QueryObjectDTO) {
+    private validateFilter(data: FilterDTO) {
         this.formWasSubmitted = true;
-        const validation = QueryObject.validate(data);
+        const validation = Filter.validate(data);
 
         if (!validation.success) {
             this.invalidMessage = "Error during the validation: check the filter configuration.";

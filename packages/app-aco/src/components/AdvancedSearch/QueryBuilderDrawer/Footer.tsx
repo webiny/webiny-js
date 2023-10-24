@@ -3,7 +3,7 @@ import React from "react";
 import { FormAPI } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
-import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
+import { FilterDTO } from "~/components/AdvancedSearch/domain";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 
 import { SimpleFormFooter } from "./QueryBuilderDrawer.styled";
@@ -11,7 +11,7 @@ import { SimpleFormFooter } from "./QueryBuilderDrawer.styled";
 interface FooterProps {
     onClose: () => void;
     formRef: React.RefObject<FormAPI>;
-    onPersist: (data: QueryObjectDTO) => void;
+    onPersist: (data: FilterDTO) => void;
     onValidationError: () => void;
     presenter: QueryBuilderDrawerPresenter;
 }
@@ -25,8 +25,8 @@ export const Footer = ({
 }: FooterProps) => {
     const onSave = () => {
         presenter.onSave(
-            queryObject => {
-                onPersist(queryObject);
+            filter => {
+                onPersist(filter);
             },
             () => {
                 onValidationError();

@@ -9,7 +9,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import { FieldRaw, QueryObjectDTO } from "~/components/AdvancedSearch/domain";
+import { FieldRaw, FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
@@ -17,10 +17,10 @@ import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
     onClose: () => void;
-    onSave: (data: QueryObjectDTO) => void;
-    onSubmit: (data: QueryObjectDTO) => void;
+    onSave: (data: FilterDTO) => void;
+    onSubmit: (data: FilterDTO) => void;
     onValidationError: (message: string) => void;
-    queryObject: QueryObjectDTO;
+    filter: FilterDTO;
     vm: {
         isOpen: boolean;
     };
@@ -28,7 +28,7 @@ interface QueryBuilderDrawerProps {
 
 export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
     const [presenter] = useState<QueryBuilderDrawerPresenter>(
-        new QueryBuilderDrawerPresenter(props.queryObject, props.fields)
+        new QueryBuilderDrawerPresenter(props.filter, props.fields)
     );
 
     const onValidationError = useCallback(() => {
@@ -36,8 +36,8 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
     }, [presenter.vm.invalidMessage]);
 
     useEffect(() => {
-        presenter.load(props.queryObject);
-    }, [props.queryObject]);
+        presenter.load(props.filter);
+    }, [props.filter]);
 
     useHotkeys({
         zIndex: 55,

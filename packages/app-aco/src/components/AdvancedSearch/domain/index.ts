@@ -6,6 +6,4 @@ export * from "./FilterMapper";
 export * from "./FilterRepository";
 export * from "./Loading";
 export * from "./Operation";
-export * from "./QueryObject";
-export * from "./QueryObjectMapper";
 export * from "./Sorter";

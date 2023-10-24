@@ -1,11 +1,11 @@
 import React from "react";
 
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
+import { FilterDTO } from "~/components/AdvancedSearch/domain";
 import { CloseIcon, EditIcon } from "./SelectedFilter.styled";
 
 interface SelectedFilterProps {
-    queryObject: QueryObjectDTO;
+    filter: FilterDTO;
     onEdit: () => void;
     onDelete: () => void;
 }
@@ -14,7 +14,7 @@ export const SelectedFilter = (props: SelectedFilterProps) => {
     return (
         <Chips>
             <Chip
-                label={props.queryObject.name}
+                label={props.filter.name}
                 icon={<EditIcon />}
                 onTrailingIconInteraction={props.onDelete}
                 onInteraction={props.onEdit}

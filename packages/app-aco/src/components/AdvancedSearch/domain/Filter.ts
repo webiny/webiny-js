@@ -1,11 +1,5 @@
 import zod from "zod";
 import { Operation } from "./Operation";
-import {
-    QueryObjectGroup,
-    QueryObject,
-    QueryObjectDTO,
-    queryObjectValidationSchema
-} from "./QueryObject";
 
 export interface User {
     id: string;
@@ -13,7 +7,24 @@ export interface User {
     displayName: string | null;
 }
 
-export interface FilterDTO extends QueryObjectDTO {
+export interface FilterGroupFilterDTO {
+    field: string;
+    condition: string;
+    value: string;
+}
+
+export interface FilterGroupDTO {
+    operation: Operation;
+    filters: FilterGroupFilterDTO[];
+}
+
+export interface FilterDTO {
+    id: string;
+    name: string;
+    description?: string;
+    namespace: string;
+    operation: Operation;
+    groups: FilterGroupDTO[];
     createdOn?: string;
     createdBy?: User;
     savedOn?: string;
@@ -23,86 +34,116 @@ export interface FilterRaw extends Omit<FilterDTO, "groups"> {
     groups: string[];
 }
 
-export const filterValidationSchema = zod.union([
-    queryObjectValidationSchema,
-    zod.object({
-        createdOn: zod.date().optional(),
-        savedOn: zod.date().optional(),
-        createdBy: zod
-            .object({
-                id: zod.string().nonempty(),
-                type: zod.string().nonempty(),
-                displayName: zod.string().nullish()
-            })
-            .optional()
-    })
-]);
+const operationValidator = zod.enum([Operation.AND, Operation.OR]);
 
-export class Filter extends QueryObject {
+const filterGroupFilterValidationSchema = zod.object({
+    field: zod.string().trim().nonempty("Field is required."),
+    condition: zod.string().nonempty("Condition is required."),
+    value: zod.union([
+        zod.boolean(),
+        zod.number({
+            required_error: "Value is required.",
+            invalid_type_error: "Value must be a number."
+        }),
+        zod.string().trim().nonempty("Value is required."),
+        zod
+            .array(zod.union([zod.boolean(), zod.number(), zod.string()]))
+            .nonempty("At least one value is required.")
+    ])
+});
+
+const filterGroupValidationSchema = zod.object({
+    operation: operationValidator,
+    filters: zod.array(filterGroupFilterValidationSchema).min(1)
+});
+
+export const filterValidationSchema = zod.object({
+    id: zod.string().trim().optional().nullish(),
+    name: zod.string().trim().nonempty("Name is required."),
+    description: zod.string().trim(),
+    namespace: zod.string().trim(),
+    operation: operationValidator,
+    groups: zod.array(filterGroupValidationSchema).min(1),
+    createdOn: zod.date().optional(),
+    savedOn: zod.date().optional(),
+    createdBy: zod
+        .object({
+            id: zod.string().nonempty(),
+            type: zod.string().nonempty(),
+            displayName: zod.string().nullish()
+        })
+        .optional()
+});
+
+export class Filter {
+    public readonly operations = Operation;
+    public readonly id;
+    public name;
+    public description;
+    public namespace: string;
+    public operation: Operation;
+    public groups: FilterGroup[];
     public createdOn?: string;
     public savedOn?: string;
     public createdBy?: User;
 
-    static override createEmpty(namespace: string) {
-        const queryObject = QueryObject.createEmpty(namespace);
-
-        return new Filter(
-            queryObject.namespace,
-            queryObject.operation,
-            queryObject.groups,
-            queryObject.id,
-            queryObject.name,
-            queryObject.description
-        );
-    }
-
-    static override create(filterDto: FilterDTO) {
-        const queryObject = QueryObject.create({
-            namespace: filterDto.namespace,
-            operation: filterDto.operation,
-            groups: filterDto.groups,
-            id: filterDto.id,
-            name: filterDto.name,
-            description: filterDto.description
+    static createEmpty(namespace: string) {
+        return new Filter({
+            namespace,
+            operation: Operation.AND,
+            groups: [new FilterGroup(Operation.AND, [new FilterGroupFilter()])]
         });
-
-        return new Filter(
-            queryObject.namespace,
-            queryObject.operation,
-            queryObject.groups,
-            queryObject.id,
-            queryObject.name,
-            queryObject.description,
-            filterDto.createdOn,
-            filterDto.savedOn,
-            filterDto.createdBy
-        );
     }
 
-    static override validate(data: FilterDTO) {
-        const validation = filterValidationSchema.safeParse(data);
-        if (validation.success) {
-            return QueryObject.validate(data);
-        } else {
-            return validation;
-        }
+    static create(data: FilterDTO) {
+        return new Filter(data);
     }
 
-    protected constructor(
-        namespace: string,
-        operation: Operation,
-        groups: QueryObjectGroup[],
-        id?: string,
-        name?: string,
-        description?: string,
-        createdOn?: string,
-        savedOn?: string,
-        createdBy?: User
-    ) {
-        super(namespace, operation, groups, id, name, description);
+    static validate(data: FilterDTO) {
+        return filterValidationSchema.safeParse(data);
+    }
 
-        this.createdOn = createdOn;
-        this.createdBy = createdBy;
-        this.savedOn = savedOn;
+    protected constructor(data: {
+        namespace: string;
+        operation: Operation;
+        groups: FilterGroup[];
+        id?: string;
+        name?: string;
+        description?: string;
+        createdOn?: string;
+        savedOn?: string;
+        createdBy?: User;
+    }) {
+        this.id = data.id ?? "";
+        this.namespace = data.namespace;
+        this.name = data.name ?? "Draft filter";
+        this.description = data.description ?? "";
+        this.operation = data.operation;
+        this.groups = data.groups;
+        this.createdOn = data.createdOn;
+        this.createdBy = data.createdBy;
+        this.savedOn = data.savedOn;
+    }
+}
+
+export class FilterGroup {
+    public readonly operation: Operation;
+    public readonly filters: FilterGroupFilter[];
+
+    constructor(operation: Operation, filters: FilterGroupFilter[]) {
+        this.operation = operation;
+        this.filters = filters;
+    }
+}
+
+export class FilterGroupFilter {
+    public readonly field?: string;
+    public readonly condition?: string;
+    public readonly value?: string;
+
+    constructor(field?: string, condition?: string, value?: string) {
+        this.field = field;
+        this.condition = condition;
+        this.value = value;
     }
 }

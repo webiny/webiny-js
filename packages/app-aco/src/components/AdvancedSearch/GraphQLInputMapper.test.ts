@@ -1,9 +1,9 @@
 import { GraphQLInputMapper } from "./GraphQLInputMapper";
-import { Operation, QueryObjectDTO } from "./domain";
+import { Operation, FilterDTO } from "./domain";
 
 describe("GraphQLInputMapper", () => {
-    it("should return a GraphQL formatted output based on the received queryObject", () => {
-        const queryObjectDTO: QueryObjectDTO = {
+    it("should return a GraphQL formatted output based on the received FilterDTO", () => {
+        const filterDTO: FilterDTO = {
             id: "any-id",
             name: "Untitled",
             namespace: "any-namespace",
@@ -42,7 +42,7 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQL(queryObjectDTO);
+        const output = GraphQLInputMapper.toGraphQL(filterDTO);
 
         expect(output).toEqual({
             [Operation.AND]: [

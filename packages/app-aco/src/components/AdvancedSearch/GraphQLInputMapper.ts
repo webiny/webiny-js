@@ -1,7 +1,7 @@
-import { QueryObjectDTO } from "~/components/AdvancedSearch/domain";
+import { FilterDTO } from "~/components/AdvancedSearch/domain";
 
 export class GraphQLInputMapper {
-    static toGraphQL(configuration: QueryObjectDTO) {
+    static toGraphQL(configuration: FilterDTO) {
         return {
             [configuration.operation]: configuration.groups.map(group => {
                 return {
