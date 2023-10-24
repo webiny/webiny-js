@@ -198,6 +198,7 @@ describe("AdvancedSearchPresenter", () => {
 
         expect(presenter.vm.managerVm).toMatchObject({
             isOpen: false,
+            isLoading: false,
             loadingLabel: "",
             view: "LIST"
         });
