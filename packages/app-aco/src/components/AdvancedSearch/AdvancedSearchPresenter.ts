@@ -16,8 +16,7 @@ export interface AdvancedSearchPresenterInterface {
     openSaver(): void;
     closeSaver(): void;
     showFeedback(message: string): void;
-    applyFilter(filterId: string): Promise<void>;
-    applyQueryObject(queryObject: QueryObjectDTO): void;
+    applyFilter(filter: string | QueryObjectDTO): Promise<void>;
     unsetFilter(): void;
     editAppliedQueryObject(): void;
     createFilter(): void;
@@ -27,7 +26,6 @@ export interface AdvancedSearchPresenterInterface {
     renameFilter(filterId: string): Promise<void>;
     cloneFilter(filterId: string): Promise<void>;
     persistQueryObject(queryObject: QueryObjectDTO): Promise<void>;
-
     get vm(): {
         appliedQueryObject: QueryObjectDTO | null;
         currentQueryObject: QueryObjectDTO | null;
@@ -158,28 +156,26 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         this.feedback.message = message;
     }
 
-    async applyFilter(filterId: string) {
-        const filter = await this.repository.getFilterById(filterId);
+    async applyFilter(filter: string): Promise<void>;
+    async applyFilter(filter: QueryObjectDTO): Promise<void>;
+    async applyFilter(filter: any): Promise<void> {
+        let filterDto = filter;
 
-        if (!filter) {
+        if (typeof filter === "string") {
+            filterDto = await this.repository.getFilterById(filter);
+        }
+
+        if (!filterDto) {
             return;
         }
 
         runInAction(() => {
-            this.appliedQueryObject = QueryObjectMapper.toDTO(filter);
+            this.appliedQueryObject = QueryObjectMapper.toDTO(filterDto);
             this.currentQueryObject = null;
             this.closeManager();
             this.closeBuilder();
             this.closeSaver();
         });
-    }
-
-    applyQueryObject(queryObject: QueryObjectDTO) {
-        this.appliedQueryObject = queryObject;
-        this.currentQueryObject = null;
-        this.closeManager();
-        this.closeBuilder();
-        this.closeSaver();
     }
 
     unsetFilter() {

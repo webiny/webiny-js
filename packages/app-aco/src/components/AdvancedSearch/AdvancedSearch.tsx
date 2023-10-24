@@ -37,8 +37,8 @@ export const AdvancedSearch = observer(
             presenter.load();
         }, []);
 
-        const applyFilter = async (filterId: string) => {
-            await presenter.applyFilter(filterId);
+        const applyFilter = async (filter: string | QueryObjectDTO) => {
+            await presenter.applyFilter(filter);
             if (presenter.vm.appliedQueryObject) {
                 onApplyFilter(presenter.vm.appliedQueryObject);
             }
@@ -55,13 +55,6 @@ export const AdvancedSearch = observer(
             await presenter.deleteFilter(filterId);
             if (filterId === presenter.vm.appliedQueryObject?.id) {
                 unsetFilter();
-            }
-        };
-
-        const applyQueryObject = async (queryObject: QueryObjectDTO) => {
-            await presenter.applyQueryObject(queryObject);
-            if (presenter.vm.appliedQueryObject) {
-                onApplyFilter(presenter.vm.appliedQueryObject);
             }
         };
 
@@ -98,7 +91,7 @@ export const AdvancedSearch = observer(
                             fields={fields}
                             onClose={() => presenter.closeBuilder()}
                             onSave={queryObject => presenter.saveQueryObject(queryObject)}
-                            onSubmit={applyQueryObject}
+                            onSubmit={applyFilter}
                             onValidationError={message => presenter.showFeedback(message)}
                             queryObject={presenter.vm.currentQueryObject}
                             vm={presenter.vm.builderVm}
