@@ -4,18 +4,18 @@ import { Filter, FilterDTO } from "../domain";
 
 export interface QuerySaverDialogPresenterInterface {
     load(filter: FilterDTO): void;
-    get vm(): {
-        invalidFields: QuerySaverDialogViewModel["invalidFields"];
-        data: QuerySaverDialogFormData;
-    };
     setFilter(data: QuerySaverDialogFormData): void;
-    onSubmit(
+    onSave(
         onSuccess?: (filter: FilterDTO) => void,
         onError?: (
             filter: FilterDTO,
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
     ): Promise<void>;
+    get vm(): {
+        invalidFields: QuerySaverDialogViewModel["invalidFields"];
+        data: QuerySaverDialogFormData;
+    };
 }
 
 export interface QuerySaverDialogFormData {
@@ -34,6 +34,7 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
     private formWasSubmitted = false;
 
     constructor() {
+        this.filter = undefined;
         makeAutoObservable(this);
     }
 
@@ -66,7 +67,7 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
         }
     }
 
-    async onSubmit(
+    async onSave(
         onSuccess?: (filter: FilterDTO) => void,
         onError?: (
             filter: FilterDTO,
@@ -77,9 +78,7 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
             return;
         }
 
-        this.formWasSubmitted = true;
         const result = this.validateFilter(this.filter);
-
         if (result.success) {
             onSuccess && onSuccess(this.filter);
         } else {
@@ -88,6 +87,7 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
     }
 
     private validateFilter(data: FilterDTO) {
+        this.formWasSubmitted = true;
         const validation = Filter.validate(data);
 
         if (!validation.success) {

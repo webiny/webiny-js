@@ -5,8 +5,7 @@ import {
     FilterGroupFilterDTO,
     FilterRaw,
     FilterRepository,
-    Operation,
-    User
+    Operation
 } from "./domain";
 import { FiltersGatewayInterface } from "./gateways";
 
@@ -43,12 +42,6 @@ const filterToRaw = (filterDto: FilterDTO): FilterRaw => {
 describe("AdvancedSearchPresenter", () => {
     const namespace = "namespace";
 
-    const demoUser: User = {
-        id: "any-id",
-        displayName: "John Doe",
-        type: "editor"
-    };
-
     const demoFilter: FilterGroupFilterDTO = {
         field: "any-field",
         value: "any-value",
@@ -67,9 +60,7 @@ describe("AdvancedSearchPresenter", () => {
         namespace,
         operation: Operation.AND,
         groups: [demoGroup],
-        createdOn: new Date().toString(),
-        savedOn: new Date().toString(),
-        createdBy: demoUser
+        createdOn: new Date().toString()
     };
 
     const filterRaw1 = filterToRaw(filter1);
@@ -80,9 +71,7 @@ describe("AdvancedSearchPresenter", () => {
         namespace,
         operation: Operation.AND,
         groups: [demoGroup],
-        createdOn: new Date().toString(),
-        savedOn: new Date().toString(),
-        createdBy: demoUser
+        createdOn: new Date().toString()
     };
 
     const filterRaw2 = filterToRaw(filter2);
@@ -93,9 +82,7 @@ describe("AdvancedSearchPresenter", () => {
         namespace,
         operation: Operation.AND,
         groups: [demoGroup],
-        createdOn: new Date().toString(),
-        savedOn: new Date().toString(),
-        createdBy: demoUser
+        createdOn: new Date().toString()
     };
 
     const filterRaw3 = filterToRaw(filter3);

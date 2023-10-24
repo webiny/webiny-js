@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Form, FormOnSubmit } from "@webiny/form";
+import { Form } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -16,7 +16,7 @@ import { DialogContainer } from "./QuerySaverDialog.styled";
 
 interface QuerySaverDialogProps {
     onClose: () => void;
-    onSubmit: (data: FilterDTO) => void;
+    onSave: (data: FilterDTO) => void;
     filter: FilterDTO;
     vm: {
         isOpen: boolean;
@@ -36,9 +36,9 @@ export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialog
         presenter.setFilter(data);
     };
 
-    const onFormSubmit: FormOnSubmit<QuerySaverDialogFormData> = () => {
-        presenter.onSubmit(queryObject => {
-            props.onSubmit(queryObject);
+    const onSubmit = () => {
+        presenter.onSave(filter => {
+            props.onSave(filter);
         });
     };
 
@@ -48,7 +48,7 @@ export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialog
                 <Form
                     data={presenter.vm.data}
                     onChange={onChange}
-                    onSubmit={onFormSubmit}
+                    onSubmit={onSubmit}
                     invalidFields={presenter.vm.invalidFields}
                 >
                     {({ Bind, form }) => (

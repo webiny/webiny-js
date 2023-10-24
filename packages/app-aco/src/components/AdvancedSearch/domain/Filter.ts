@@ -55,8 +55,7 @@ export const filterValidationSchema = zod.object({
     description: zod.string().trim(),
     namespace: zod.string().trim(),
     operation: operationValidator,
-    groups: zod.array(filterGroupValidationSchema).min(1),
-    createdOn: zod.date().optional()
+    groups: zod.array(filterGroupValidationSchema).min(1)
 });
 
 export class Filter {

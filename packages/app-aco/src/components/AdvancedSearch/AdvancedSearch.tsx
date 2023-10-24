@@ -97,7 +97,7 @@ export const AdvancedSearch = observer(
                             vm={presenter.vm.builderVm}
                         />
                         <QuerySaverDialog
-                            onSubmit={persistAndApplyFilter}
+                            onSave={persistAndApplyFilter}
                             onClose={() => presenter.closeSaver()}
                             filter={presenter.vm.currentFilter}
                             vm={presenter.vm.saverVm}

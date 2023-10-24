@@ -74,7 +74,7 @@ describe("QuerySaverDialogPresenter", () => {
             description: ""
         });
 
-        presenter.onSubmit(onSuccess, onError);
+        presenter.onSave(onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
@@ -85,7 +85,7 @@ describe("QuerySaverDialogPresenter", () => {
             description: ""
         });
 
-        presenter.onSubmit(onSuccess, onError);
+        presenter.onSave(onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
         expect(presenter.vm.invalidFields).toEqual({});
