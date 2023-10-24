@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, FormOnSubmit, FormProps, GenericFormData } from "@webiny/form";
 
-import { FilterContainer, FiltersContainer, FormContainer } from "./Filters.styles";
+import { FilterContainer, FiltersContainer, FormContainer } from "./Filters.styled";
 
 type Filter = {
     name: string;

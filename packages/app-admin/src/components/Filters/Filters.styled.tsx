@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const FiltersContainer = styled("div")`
+export const FiltersContainer = styled.div`
     width: 100%;
     height: auto;
     background-color: var(--mdc-theme-surface);
