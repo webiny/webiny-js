@@ -27,6 +27,7 @@ export interface QueryBuilderDrawerPresenterInterface {
         onSuccess?: (queryObject: QueryObjectDTO) => void,
         onError?: (queryObject: QueryObjectDTO) => void
     ): void;
+    get vm(): QueryBuilderViewModel;
 }
 
 export interface QueryBuilderViewModel {
@@ -34,6 +35,7 @@ export interface QueryBuilderViewModel {
     description: string;
     fields: FieldDTO[];
     invalidFields: Record<string, { isValid: boolean; message: string }>;
+    invalidMessage: string;
     data: QueryBuilderFormData;
 }
 
@@ -62,7 +64,7 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     get vm() {
         return {
             name: this.queryObject.name,
-            description: this.queryObject.description,
+            description: this.queryObject.description || "",
             fields: this.fields,
             invalidFields: this.invalidFields,
             invalidMessage: this.invalidMessage,
