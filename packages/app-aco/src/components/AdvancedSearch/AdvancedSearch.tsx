@@ -53,7 +53,9 @@ export const AdvancedSearch = observer(
 
         const deleteFilter = async (filterId: string) => {
             await presenter.deleteFilter(filterId);
-            unsetFilter();
+            if (filterId === presenter.vm.appliedQueryObject?.id) {
+                unsetFilter();
+            }
         };
 
         const applyQueryObject = async (queryObject: QueryObjectDTO) => {
