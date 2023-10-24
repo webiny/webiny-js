@@ -32,7 +32,7 @@ const setupSteps: NormalJob["steps"] = [
     disableWebinyTelemetryStep
 ];
 
-const createSetupCypressJobs = (dbSetup: string) => {
+const createJobs = (dbSetup: string) => {
     const jobNames = {
         init: `e2e-wby-cms-${dbSetup}-init`,
         projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
@@ -40,7 +40,7 @@ const createSetupCypressJobs = (dbSetup: string) => {
     };
 
     const initJob: NormalJob = {
-        needs: "check_comment",
+        needs: "checkComment",
         name: `E2E (${dbSetup.toUpperCase()}}) - Init`,
         "runs-on": "ubuntu-latest",
         outputs: {
@@ -246,7 +246,7 @@ const createSetupCypressJobs = (dbSetup: string) => {
 // Create "Pull requests" workflow.
 export const pullRequestsCommandCypress = createWorkflow({
     name: "Pull Requests Command - Cypress",
-    on: "pull_request",
+    on: "issue_comment",
     env: defaultEnv,
     jobs: {
         checkComment: {
@@ -277,8 +277,8 @@ export const pullRequestsCommandCypress = createWorkflow({
                 }
             ]
         },
-        ...createSetupCypressJobs("ddb"),
-        ...createSetupCypressJobs("ddb-es"),
-        ...createSetupCypressJobs("ddb-os")
+        ...createJobs("ddb"),
+        ...createJobs("ddb-es"),
+        ...createJobs("ddb-os")
     }
 });

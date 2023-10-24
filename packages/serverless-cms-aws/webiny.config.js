@@ -17,7 +17,6 @@ async function buildHandlers(options) {
                             return {
                                 title: path.dirname(handlerPath).replace(__dirname, "."),
                                 async task() {
-                                    return;
                                     await require(handlerPath).commands.build({
                                         ...options,
                                         logs: false
