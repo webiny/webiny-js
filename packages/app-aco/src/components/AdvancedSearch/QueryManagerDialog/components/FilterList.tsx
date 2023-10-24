@@ -12,12 +12,14 @@ import { ListActions } from "../QueryManagerDialog.styled";
 import { QueryManagerFilter } from "../QueryManagerDialog";
 import { Description } from "~/components/AdvancedSearch/QueryManagerDialog/components/Description";
 
+type filterCallback = (filterId: string) => void;
+
 interface FilterListProps {
-    onEdit: (filterId: string) => void;
-    onRename: (filterId: string) => void;
-    onDelete: (filterId: string) => void;
-    onSelect: (filterId: string) => void;
-    onClone: (filterId: string) => void;
+    onEdit: filterCallback;
+    onRename: filterCallback;
+    onDelete: filterCallback;
+    onSelect: filterCallback;
+    onClone: filterCallback;
     filters: QueryManagerFilter[];
 }
 

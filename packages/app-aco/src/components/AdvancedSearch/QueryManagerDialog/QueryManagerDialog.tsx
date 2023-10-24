@@ -8,14 +8,16 @@ import { Empty, FilterList } from "./components";
 
 import { DialogContainer } from "./QueryManagerDialog.styled";
 
+type filterCallback = (filterId: string) => void;
+
 interface QueryBuilderProps {
     onClose: () => void;
     onCreate: () => void;
-    onEdit: (filterId: string) => void;
-    onRename: (filterId: string) => void;
-    onClone: (filterId: string) => void;
-    onDelete: (filterId: string) => void;
-    onSelect: (filterId: string) => void;
+    onEdit: filterCallback;
+    onRename: filterCallback;
+    onClone: filterCallback;
+    onDelete: filterCallback;
+    onSelect: filterCallback;
     vm: {
         isOpen: boolean;
         isLoading: boolean;
