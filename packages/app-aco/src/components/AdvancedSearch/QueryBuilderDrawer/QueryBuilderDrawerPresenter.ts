@@ -19,7 +19,7 @@ export interface QueryBuilderDrawerPresenterInterface {
     deleteFilterFromGroup(groupIndex: number, filterIndex: number): void;
     setFilterFieldData(groupIndex: number, filterIndex: number, data: string): void;
     setFilter(data: QueryBuilderFormData): void;
-    onSubmit(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void): void;
+    onApply(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void): void;
     onSave(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void): void;
     get vm(): QueryBuilderViewModel;
 }
@@ -43,10 +43,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private invalidMessage = "";
-    private filter: FilterDTO;
+    private filter: FilterDTO | undefined;
 
-    constructor(filter: FilterDTO, fields: FieldRaw[]) {
-        this.filter = filter;
+    constructor(fields: FieldRaw[]) {
+        this.filter = undefined;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
         makeAutoObservable(this);
     }
@@ -57,30 +57,35 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
 
     get vm() {
         return {
-            name: this.filter.name,
-            description: this.filter.description || "",
+            name: this.filter?.name || "",
+            description: this.filter?.description || "",
             fields: this.fields,
             invalidFields: this.invalidFields,
             invalidMessage: this.invalidMessage,
             data: {
-                operation: this.filter.operation,
-                groups: this.filter.groups.map((group: FilterGroupDTO, groupIndex) => {
-                    return {
-                        title: `Filter group #${groupIndex + 1}`,
-                        open: true,
-                        operation: group.operation,
-                        filters: group.filters.map(filter => ({
-                            field: filter.field,
-                            condition: filter.condition,
-                            value: filter.value
-                        }))
-                    };
-                })
+                operation: this.filter?.operation || Operation.AND,
+                groups:
+                    this.filter?.groups.map((group: FilterGroupDTO, groupIndex) => {
+                        return {
+                            title: `Filter group #${groupIndex + 1}`,
+                            open: true,
+                            operation: group.operation,
+                            filters: group.filters.map(filter => ({
+                                field: filter.field,
+                                condition: filter.condition,
+                                value: filter.value
+                            }))
+                        };
+                    }) || []
             }
         };
     }
 
     addGroup() {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter.groups.push({
             operation: Operation.AND,
             filters: [{ field: "", value: "", condition: "" }]
@@ -88,6 +93,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     deleteGroup(groupIndex: number) {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter.groups = this.filter.groups.filter((_, index) => index !== groupIndex);
 
         // Make sure we always have at least 1 group!
@@ -97,6 +106,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     addNewFilterToGroup(groupIndex: number) {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter.groups[groupIndex].filters.push({
             field: "",
             value: "",
@@ -105,6 +118,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     deleteFilterFromGroup(groupIndex: number, filterIndex: number) {
+        if (!this.filter) {
+            return;
+        }
+
         const filters = this.filter.groups[groupIndex].filters;
         this.filter.groups[groupIndex].filters = filters.filter(
             (_, index) => index !== filterIndex
@@ -121,6 +138,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     setFilterFieldData(groupIndex: number, filterIndex: number, data: string) {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter.groups[groupIndex].filters = [
             ...this.filter.groups[groupIndex].filters.slice(0, filterIndex),
             {
@@ -133,6 +154,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     setFilter(data: QueryBuilderFormData) {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter = {
             ...this.filter,
             operation: data.operation,
@@ -147,7 +172,11 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
         }
     }
 
-    onSubmit(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void) {
+    onApply(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void) {
+        if (!this.filter) {
+            return;
+        }
+
         const result = this.validateFilter(this.filter);
         if (result.success) {
             onSuccess && onSuccess(this.filter);
@@ -157,6 +186,10 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
     }
 
     onSave(onSuccess?: (filter: FilterDTO) => void, onError?: (filter: FilterDTO) => void) {
+        if (!this.filter) {
+            return;
+        }
+
         const result = this.validateFilter(this.filter);
         if (result.success) {
             onSuccess && onSuccess(this.filter);

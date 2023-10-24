@@ -46,7 +46,7 @@ describe("QueryBuilderDrawerPresenter", () => {
             }
         ];
 
-        presenter = new QueryBuilderDrawerPresenter(filter, defaultFields);
+        presenter = new QueryBuilderDrawerPresenter(defaultFields);
     });
 
     it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
@@ -237,7 +237,7 @@ describe("QueryBuilderDrawerPresenter", () => {
         }
     });
 
-    it("should perform validation and call provided callbacks `onSubmit`", () => {
+    it("should perform validation and call provided callbacks `onApply`", () => {
         // let's load a filter
         presenter.load(filter);
 
@@ -262,7 +262,7 @@ describe("QueryBuilderDrawerPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(onSuccess, onError);
+        presenter.onApply(onSuccess, onError);
 
         expect(onError).toBeCalledTimes(1);
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
@@ -286,7 +286,7 @@ describe("QueryBuilderDrawerPresenter", () => {
             ]
         });
 
-        presenter.onSubmit(onSuccess, onError);
+        presenter.onApply(onSuccess, onError);
 
         expect(onSuccess).toBeCalledTimes(1);
         expect(presenter.vm.invalidFields).toEqual({});
@@ -383,26 +383,6 @@ describe("QueryBuilderDrawerPresenter", () => {
 });
 
 describe("FieldDTO definition", () => {
-    const testFilter = {
-        field: "",
-        condition: "",
-        value: ""
-    };
-
-    const testGroup = {
-        operation: Operation.AND,
-        filters: [testFilter]
-    };
-
-    const filter: FilterDTO = {
-        id: "",
-        name: "Filter name",
-        description: "Filter description",
-        namespace: "namespace",
-        operation: Operation.AND,
-        groups: [testGroup]
-    };
-
     const fields: [FieldRaw, FieldDTO][] = [
         [
             {
@@ -629,7 +609,7 @@ describe("FieldDTO definition", () => {
         let presenter: QueryBuilderDrawerPresenter;
 
         beforeEach(() => {
-            presenter = new QueryBuilderDrawerPresenter(filter, [fieldRaw]);
+            presenter = new QueryBuilderDrawerPresenter([fieldRaw]);
         });
 
         it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {

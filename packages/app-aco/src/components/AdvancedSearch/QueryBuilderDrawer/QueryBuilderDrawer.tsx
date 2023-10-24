@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
@@ -12,13 +12,13 @@ import { QueryBuilder } from "./QueryBuilder";
 import { FieldRaw, FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
-import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
+import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "./QueryBuilderDrawerPresenter";
 
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
     onClose: () => void;
     onSave: (data: FilterDTO) => void;
-    onSubmit: (data: FilterDTO) => void;
+    onApply: (data: FilterDTO) => void;
     onValidationError: (message: string) => void;
     filter: FilterDTO;
     vm: {
@@ -26,22 +26,44 @@ interface QueryBuilderDrawerProps {
     };
 }
 
-export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
+export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const [presenter] = useState<QueryBuilderDrawerPresenter>(
-        new QueryBuilderDrawerPresenter(props.filter, props.fields)
+        new QueryBuilderDrawerPresenter(props.fields)
     );
 
-    const onValidationError = useCallback(() => {
-        props.onValidationError(presenter.vm.invalidMessage);
-    }, [presenter.vm.invalidMessage]);
-
     useEffect(() => {
-        presenter.load(props.filter);
-    }, [props.filter]);
+        presenter.load(filter);
+    }, [filter]);
+
+    const onChange = (data: QueryBuilderFormData) => {
+        presenter.setFilter(data);
+    };
+
+    const onApply = () => {
+        presenter.onApply(
+            filter => {
+                props.onApply(filter);
+            },
+            () => {
+                props.onValidationError(presenter.vm.invalidMessage);
+            }
+        );
+    };
+
+    const onSave = () => {
+        presenter.onSave(
+            filter => {
+                props.onSave(filter);
+            },
+            () => {
+                props.onValidationError(presenter.vm.invalidMessage);
+            }
+        );
+    };
 
     useHotkeys({
         zIndex: 55,
-        disabled: !open,
+        disabled: !props.vm.isOpen,
         keys: {
             esc: props.onClose
         }
@@ -55,17 +77,20 @@ export const QueryBuilderDrawer = observer((props: QueryBuilderDrawerProps) => {
                 <Header onClose={props.onClose} />
                 <QueryBuilder
                     onForm={form => (ref.current = form)}
-                    onSubmit={props.onSubmit}
-                    onValidationError={onValidationError}
-                    presenter={presenter}
+                    onSubmit={onApply}
+                    onChange={data => onChange(data)}
+                    onDeleteGroup={groupIndex => presenter.deleteGroup(groupIndex)}
+                    onSetFilterFieldData={(groupIndex, filterIndex, data) =>
+                        presenter.setFilterFieldData(groupIndex, filterIndex, data)
+                    }
+                    onDeleteFilterFromGroup={(groupIndex, filterIndex) =>
+                        presenter.deleteFilterFromGroup(groupIndex, filterIndex)
+                    }
+                    onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
+                    onAddGroup={() => presenter.addGroup()}
+                    vm={presenter.vm}
                 />
-                <Footer
-                    formRef={ref}
-                    onClose={props.onClose}
-                    onPersist={props.onSave}
-                    onValidationError={onValidationError}
-                    presenter={presenter}
-                />
+                <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />
             </DrawerContent>
         </DrawerContainer>
     );

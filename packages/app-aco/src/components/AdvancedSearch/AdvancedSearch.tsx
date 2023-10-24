@@ -91,7 +91,7 @@ export const AdvancedSearch = observer(
                             fields={fields}
                             onClose={() => presenter.closeBuilder()}
                             onSave={filter => presenter.saveFilter(filter)}
-                            onSubmit={applyFilter}
+                            onApply={applyFilter}
                             onValidationError={message => presenter.showFeedback(message)}
                             filter={presenter.vm.currentFilter}
                             vm={presenter.vm.builderVm}
