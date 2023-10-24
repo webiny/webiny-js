@@ -9,7 +9,7 @@ env:
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
-    name: Check comment for /cypress_new
+    name: Check comment for /cypressnew
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -18,7 +18,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress_new
+          command: cypressnew
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
