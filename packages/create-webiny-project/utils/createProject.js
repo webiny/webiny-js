@@ -131,13 +131,7 @@ module.exports = async function createProject({
                      * We do not want to do the recursive directory creating as it might do something in parent directories which we do not want.
                      */
                     const yarnReleaseFullPath = path.join(projectRoot, yarnReleasesPath);
-                    if (!fs.existsSync(yarnReleaseFullPath)) {
-                        const yarnFullPath = path.join(projectRoot, yarnPath);
-                        if (!fs.existsSync(yarnFullPath)) {
-                            fs.mkdirSync(yarnFullPath);
-                        }
-                        fs.mkdirSync(yarnReleaseFullPath);
-                    }
+                    fs.ensureDirSync(yarnReleaseFullPath);
 
                     const source = path.join(__dirname, path.join("binaries", yarnFile));
                     if (!fs.existsSync(source)) {
