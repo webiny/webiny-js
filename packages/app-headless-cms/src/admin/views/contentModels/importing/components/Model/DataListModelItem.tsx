@@ -8,9 +8,12 @@ import { ToggleModelCb } from "~/admin/views/contentModels/importing/ImportConte
 const ContainerBase = styled("div")(() => {
     return {
         width: "100%",
-        padding: "2px 5px 0 5px",
+        padding: "0px 5px 15px 5px",
         margin: "0",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        '&:last-child': {
+            paddingBottom: '2px'
+        }
     };
 });
 const ContainerCreate = styled(ContainerBase)(() => {
@@ -32,7 +35,8 @@ const ModelContainer = styled("div")({
     display: "flex",
     width: "100%",
     flexDirection: "row",
-    verticalAlign: "middle"
+    alignItems: "center",
+    justifyContent: "space-between",
 });
 const Name = styled("h4")({
     fontSize: "12px",
@@ -42,7 +46,7 @@ const Name = styled("h4")({
 const CheckboxContainer = styled("div")({
     width: "120px",
     textAlign: "right",
-    verticalAlign: "middle"
+    verticalAlign: "middle",
 });
 
 const Button = styled("button")({
@@ -54,7 +58,10 @@ const Button = styled("button")({
     lineHeight: "12px",
     cursor: "pointer",
     outline: "0 none",
-    backgroundColor: "var(--mdc-theme-background)"
+    backgroundColor: "var(--mdc-theme-background)",
+    '&.selected': {
+        border: "1px solid var(--mdc-theme-secondary)",
+    }
 });
 
 const ImportedText = styled("div")({
@@ -92,8 +99,8 @@ const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
     }
     return (
         <CheckboxContainer>
-            <Button onClick={onClick}>
-                {selected ? "Exclude from import" : "Include in import"}
+            <Button onClick={onClick} className={selected ? 'selected' : ''}>
+                {selected ? "Model will be imported" : "Model will be skipped"}
             </Button>
         </CheckboxContainer>
     );
@@ -126,18 +133,20 @@ export const DataListModelItem: React.VFC<Props> = ({ model, toggle, selected })
     return (
         <Container model={model}>
             <ModelContainer>
-                <Name>{model.name || model.id}</Name>
+                <div>
+                    <Name>{model.name || model.id}</Name>
+                    {model.error ? (
+                        <DataListModelItemError error={model.error} />
+                    ) : (
+                        <DataListModelItemInfo model={model} />
+                    )}
+                </div>
                 {model.imported ? (
                     <Imported />
                 ) : (
                     <Checkbox model={model} toggle={toggle} selected={selected} />
                 )}
             </ModelContainer>
-            {model.error ? (
-                <DataListModelItemError error={model.error} />
-            ) : (
-                <DataListModelItemInfo model={model} />
-            )}
         </Container>
     );
 };
