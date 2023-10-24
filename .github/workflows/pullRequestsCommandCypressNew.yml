@@ -50,10 +50,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -70,7 +66,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-project-setup:
-    name: E2E (DDB}) - Project setup
+    name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
     runs-on: ubuntu-latest
     outputs:
@@ -97,10 +93,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -132,17 +124,13 @@ jobs:
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
-
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
-
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-
       - name: Version and publish to Verdaccio
         working-directory: dev
         run: yarn release --type=verdaccio
-
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
@@ -151,7 +139,6 @@ jobs:
           path: |
             dev/.verdaccio/
             dev/.verdaccio.yaml
-
       - name: Create directory
         run: mkdir xyz
       - name: Create a new Webiny project
@@ -175,6 +162,10 @@ jobs:
             !xyz/test-project/node_modules/**/*
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Deploy Core
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/core --env dev
@@ -279,10 +270,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -299,7 +286,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-es-project-setup:
-    name: E2E (DDB-ES}) - Project setup
+    name: E2E (DDB-ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
     runs-on: ubuntu-latest
     outputs:
@@ -326,10 +313,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -399,6 +382,10 @@ jobs:
             !xyz/test-project/node_modules/**/*
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Deploy Core
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/core --env dev
@@ -504,10 +491,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#      - name: Disable Webiny telemetry
-#        run: >
-#          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-#          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -524,7 +507,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-os-project-setup:
-    name: E2E (DDB-OS}) - Project setup
+    name: E2E (DDB-OS) - Project setup
     needs: e2e-wby-cms-ddb-os-init
     runs-on: ubuntu-latest
     outputs:
@@ -551,10 +534,6 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -624,6 +603,10 @@ jobs:
             !xyz/test-project/node_modules/**/*
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Deploy Core
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/core --env dev
