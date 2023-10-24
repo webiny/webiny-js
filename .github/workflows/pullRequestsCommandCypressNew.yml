@@ -132,13 +132,17 @@ jobs:
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
+
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
+
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+
       - name: Version and publish to Verdaccio
         working-directory: dev
         run: yarn release --type=verdaccio
+
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
@@ -147,6 +151,7 @@ jobs:
           path: |
             dev/.verdaccio/
             dev/.verdaccio.yaml
+
       - name: Create directory
         run: mkdir xyz
       - name: Create a new Webiny project
@@ -499,10 +504,10 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
+#      - name: Disable Webiny telemetry
+#        run: >
+#          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+#          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
