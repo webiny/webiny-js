@@ -3,17 +3,17 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { mdbid } from "@webiny/utils";
 
 import { FilterDTO, FilterMapper, FilterRaw, Loading, Sorter } from "../domain";
-import { GatewayInterface } from "../gateways";
+import { FiltersGatewayInterface } from "../gateways";
 
 export class FilterRepository {
-    private gateway: GatewayInterface;
+    private gateway: FiltersGatewayInterface;
     private sorter: Sorter<FilterDTO>;
     private _loading: Loading;
     private static instance: FilterRepository;
     private _filters: FilterDTO[] = [];
     public readonly namespace: string;
 
-    constructor(gateway: GatewayInterface, namespace: string) {
+    constructor(gateway: FiltersGatewayInterface, namespace: string) {
         this.gateway = gateway;
         this._loading = new Loading();
         this.namespace = namespace;
@@ -21,7 +21,7 @@ export class FilterRepository {
         makeAutoObservable(this);
     }
 
-    static getInstance(gateway: GatewayInterface, namespace: string) {
+    static getInstance(gateway: FiltersGatewayInterface, namespace: string) {
         if (!FilterRepository.instance) {
             FilterRepository.instance = new FilterRepository(gateway, namespace);
         }

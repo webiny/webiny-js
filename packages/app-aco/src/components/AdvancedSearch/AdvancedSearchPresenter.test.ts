@@ -8,9 +8,9 @@ import {
     QueryObjectGroupDTO,
     User
 } from "./domain";
-import { GatewayInterface } from "./gateways";
+import { FiltersGatewayInterface } from "./gateways";
 
-const mockGateway: GatewayInterface = {
+const mockGateway: FiltersGatewayInterface = {
     list: jest.fn(),
     get: jest.fn(),
     create: jest.fn(),
@@ -24,7 +24,7 @@ const createMockGateway = ({
     create,
     update,
     delete: deleteFn
-}: Partial<GatewayInterface>): GatewayInterface => ({
+}: Partial<FiltersGatewayInterface>): FiltersGatewayInterface => ({
     ...mockGateway,
     ...(list && { list }),
     ...(get && { get }),
@@ -204,7 +204,7 @@ describe("AdvancedSearchPresenter", () => {
         });
     });
 
-    it("should be able to apply a filter", async () => {
+    it("should be able to apply a filter via filterId", async () => {
         // let's load some filters
         await presenter.load();
 
@@ -226,12 +226,12 @@ describe("AdvancedSearchPresenter", () => {
         });
     });
 
-    it("should be able to apply a queryObject", async () => {
+    it("should be able to apply directly a filter", async () => {
         // let's load some filters
         await presenter.load();
 
         // Let's apply a queryObject
-        presenter.applyQueryObject(queryObject2);
+        presenter.applyFilter(queryObject2);
 
         expect(presenter.vm).toMatchObject({
             appliedQueryObject: queryObject2,

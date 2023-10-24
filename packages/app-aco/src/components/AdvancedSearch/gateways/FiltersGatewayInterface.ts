@@ -1,6 +1,6 @@
 import { FilterRaw } from "../domain";
 
-export interface GatewayInterface {
+export interface FiltersGatewayInterface {
     list: (namespace: string) => Promise<FilterRaw[]>;
     get: (id: string) => Promise<FilterRaw>;
     create: (filter: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">) => Promise<FilterRaw>;

@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import {
     Feedback,
+    FilterDTO,
     FilterRepository,
     QueryObject,
     QueryObjectDTO,
@@ -156,17 +157,19 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         this.feedback.message = message;
     }
 
-    async applyFilter(filter: string): Promise<void>;
-    async applyFilter(filter: QueryObjectDTO): Promise<void>;
-    async applyFilter(filter: any): Promise<void> {
-        let filterDto = filter;
+    async applyFilter(filter: string | QueryObjectDTO): Promise<void> {
+        let filterDto: QueryObjectDTO | FilterDTO;
 
         if (typeof filter === "string") {
-            filterDto = await this.repository.getFilterById(filter);
-        }
+            const result = await this.repository.getFilterById(filter);
 
-        if (!filterDto) {
-            return;
+            if (!result) {
+                return;
+            }
+
+            filterDto = result;
+        } else {
+            filterDto = filter;
         }
 
         runInAction(() => {

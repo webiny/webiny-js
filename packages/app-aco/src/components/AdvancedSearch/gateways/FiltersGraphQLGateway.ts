@@ -13,7 +13,7 @@ import {
     UpdateFilterResponse,
     UpdateFilterVariables
 } from "~/types";
-import { GatewayInterface } from "./GatewayInterface";
+import { FiltersGatewayInterface } from "./FiltersGatewayInterface";
 import { FilterRaw } from "../domain";
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -91,7 +91,7 @@ export const DELETE_FILTER = gql`
     }
 `;
 
-export class FiltersGraphQLGateway implements GatewayInterface {
+export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     private client: ApolloClient<any>;
 
     constructor(client: ApolloClient<any>) {
