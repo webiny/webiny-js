@@ -80,9 +80,9 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
         const vm = {
             isOpen: this.showManager,
             view: "EMPTY",
-            isLoading: this.repository.loading.isLoading,
-            loadingLabel: this.repository.loading.loadingLabel,
-            filters: this.repository.filters.map(filter => ({
+            isLoading: this.repository.getLoading().isLoading,
+            loadingLabel: this.repository.getLoading().loadingLabel,
+            filters: this.repository.getFilters().map(filter => ({
                 id: filter.id,
                 name: filter.name,
                 description: filter.description || "",
@@ -90,7 +90,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
             }))
         };
 
-        if (this.repository.filters.length !== 0) {
+        if (this.repository.getFilters().length !== 0) {
             vm.view = "LIST";
         }
 
@@ -99,8 +99,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
 
     private get feedbackVm() {
         return {
-            isOpen: Boolean(this.feedback.message || this.repository.loading.message),
-            message: this.feedback.message || this.repository.loading.message
+            isOpen: Boolean(this.feedback.message || this.repository.getLoading().message),
+            message: this.feedback.message || this.repository.getLoading().message
         };
     }
 
@@ -113,8 +113,8 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
     private get saverVm() {
         return {
             isOpen: this.showSaver,
-            isLoading: this.repository.loading.isLoading,
-            loadingLabel: this.repository.loading.loadingLabel
+            isLoading: this.repository.getLoading().isLoading,
+            loadingLabel: this.repository.getLoading().loadingLabel
         };
     }
 

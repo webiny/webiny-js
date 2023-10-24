@@ -8,14 +8,14 @@ import { FiltersGatewayInterface } from "../gateways";
 export class FilterRepository {
     private gateway: FiltersGatewayInterface;
     private sorter: Sorter<FilterDTO>;
-    private _loading: Loading;
+    private loading: Loading;
     private static instance: FilterRepository;
-    private _filters: FilterDTO[] = [];
+    private filters: FilterDTO[] = [];
     public readonly namespace: string;
 
     constructor(gateway: FiltersGatewayInterface, namespace: string) {
         this.gateway = gateway;
-        this._loading = new Loading();
+        this.loading = new Loading();
         this.namespace = namespace;
         this.sorter = new Sorter(["createdOn_DESC"]);
         makeAutoObservable(this);
@@ -28,15 +28,15 @@ export class FilterRepository {
         return FilterRepository.instance;
     }
 
-    get filters() {
-        return cloneDeep(this._filters);
+    getFilters() {
+        return cloneDeep(this.filters);
     }
 
-    get loading() {
+    getLoading() {
         return {
-            isLoading: this._loading.isLoading,
-            loadingLabel: this._loading.loadingLabel,
-            message: this._loading.feedback
+            isLoading: this.loading.isLoading,
+            loadingLabel: this.loading.loadingLabel,
+            message: this.loading.feedback
         };
     }
 
@@ -46,7 +46,7 @@ export class FilterRepository {
         successMessage?: string,
         failureMessage?: string
     ) {
-        return await this._loading.runCallbackWithLoading(
+        return await this.loading.runCallbackWithLoading(
             action,
             loadingLabel,
             successMessage,
@@ -65,7 +65,7 @@ export class FilterRepository {
         }
 
         runInAction(() => {
-            this._filters = this.sorter.sort(response.map(filter => FilterMapper.toDTO(filter)));
+            this.filters = this.sorter.sort(response.map(filter => FilterMapper.toDTO(filter)));
         });
     }
 
@@ -84,7 +84,7 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this._filters = this.sorter.sort([filterDTO, ...this.filters]);
+            this.filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
         return cloneDeep(filterDTO);
@@ -106,7 +106,7 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this._filters = this.sorter.sort([filterDTO, ...this.filters]);
+            this.filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
         return cloneDeep(filterDTO);
@@ -129,7 +129,7 @@ export class FilterRepository {
             const filterDTO = FilterMapper.toDTO(response);
 
             runInAction(() => {
-                this._filters = this.sorter.sort([
+                this.filters = this.sorter.sort([
                     ...this.filters.slice(0, filterIndex),
                     {
                         ...this.filters[filterIndex],
@@ -156,7 +156,7 @@ export class FilterRepository {
 
         if (response) {
             runInAction(() => {
-                this._filters = this.sorter.sort(this._filters.filter(filter => filter.id !== id));
+                this.filters = this.sorter.sort(this.filters.filter(filter => filter.id !== id));
             });
         }
     }
