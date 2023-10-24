@@ -1,5 +1,10 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps, disableWebinyTelemetry } from "./steps";
+import {
+    createSetupVerdaccioSteps,
+    disableWebinyTelemetryStep,
+    createDeployWebinySteps
+} from "./steps";
+import { NODE_VERSION } from "./utils";
 
 // Some global environment variables.
 const defaultEnv = {
@@ -12,7 +17,7 @@ const setupSteps: NormalJob["steps"] = [
     {
         uses: "actions/setup-node@v3",
         with: {
-            "node-version": 16
+            "node-version": NODE_VERSION
         }
     },
     { uses: "actions/checkout@v3" },
@@ -24,7 +29,7 @@ const setupSteps: NormalJob["steps"] = [
             GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
         }
     },
-    disableWebinyTelemetry
+    disableWebinyTelemetryStep
 ];
 
 const createSetupCypressJobs = (dbSetup: string) => {
@@ -141,26 +146,7 @@ const createSetupCypressJobs = (dbSetup: string) => {
                     path: "xyz/test-project/\n!xyz/test-project/node_modules/**/*\n!xyz/test-project/**/node_modules/**/*\n!xyz/test-project/.yarn/cache/**/*\n"
                 }
             },
-            {
-                name: "Deploy Core",
-                "working-directory": "xyz/test-project",
-                run: "yarn webiny deploy apps/core --env dev"
-            },
-            {
-                name: "Deploy API",
-                "working-directory": "xyz/test-project",
-                run: "yarn webiny deploy apps/api --env dev"
-            },
-            {
-                name: "Deploy Admin Area",
-                "working-directory": "xyz/test-project",
-                run: "yarn webiny deploy apps/admin --env dev"
-            },
-            {
-                name: "Deploy Website",
-                "working-directory": "xyz/test-project",
-                run: "yarn webiny deploy apps/website --env dev"
-            },
+            ...createDeployWebinySteps({ workingDirectory: "xyz/test-project" }),
             {
                 name: "Create Cypress config",
                 "working-directory": "dev",
