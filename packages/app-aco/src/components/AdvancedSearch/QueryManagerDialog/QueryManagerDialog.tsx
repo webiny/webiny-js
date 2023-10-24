@@ -10,7 +10,7 @@ import { DialogContainer } from "./QueryManagerDialog.styled";
 
 type filterCallback = (filterId: string) => void;
 
-interface QueryBuilderProps {
+interface QueryManagerDialogProps {
     onClose: () => void;
     onCreate: () => void;
     onEdit: filterCallback;
@@ -34,7 +34,7 @@ export interface QueryManagerFilter {
     createdOn: string;
 }
 
-export const QueryManagerDialog = ({ vm, ...props }: QueryBuilderProps) => {
+export const QueryManagerDialog = ({ vm, ...props }: QueryManagerDialogProps) => {
     return (
         <DialogContainer open={vm.isOpen} onClose={props.onClose}>
             <DialogTitle>{"Advanced search filter"}</DialogTitle>
