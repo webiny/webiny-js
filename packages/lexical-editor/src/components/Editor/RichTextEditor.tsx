@@ -144,6 +144,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             <>
                 {staticToolbar && staticToolbar}
                 <div
+                    /* This className is necessary for targeting of editor container from CSS files. */
+                    className={"editor-shell"}
                     ref={scrollRef}
                     style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                 >
