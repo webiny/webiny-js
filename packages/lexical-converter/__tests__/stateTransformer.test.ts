@@ -11,7 +11,7 @@ import {
     ListNode,
     ParagraphNode,
     QuoteNode
-} from "@webiny/lexical-editor";
+} from "@webiny/lexical-nodes";
 import { stateMock } from "./mocks/stateMocks";
 import { createLexicalStateTransformer } from "~/createLexicalStateTransformer";
 

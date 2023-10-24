@@ -9,7 +9,7 @@ import {
 } from "lexical";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { createHeadlessEditor } from "@lexical/headless";
-import { allNodes } from "@webiny/lexical-editor";
+import { allNodes } from "@webiny/lexical-nodes";
 
 interface LexicalStateTransformerConfig {
     editorConfig?: Pick<CreateEditorArgs, "nodes" | "theme">;

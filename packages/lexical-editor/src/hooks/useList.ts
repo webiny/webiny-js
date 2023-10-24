@@ -15,15 +15,15 @@ import {
     indentList,
     insertList,
     outdentList,
-    removeList
-} from "~/nodes/ListNode/formatList";
+    removeList,
+    $isListNode
+} from "@webiny/lexical-nodes";
 import {
     INSERT_ORDERED_LIST_COMMAND,
     INSERT_UNORDERED_LIST_COMMAND,
     REMOVE_LIST_COMMAND
 } from "~/commands";
 import { getNodeFromSelection } from "~/hooks/useCurrentElement";
-import { $isListNode } from "~/nodes";
 
 export function useList(editor: LexicalEditor): void {
     useEffect(() => {

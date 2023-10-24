@@ -21,10 +21,10 @@ import {
     DROP_COMMAND,
     LexicalEditor
 } from "lexical";
-import { $isImageNode, ImageNode } from "~/nodes/ImageNode";
+import { $isImageNode, ImageNode } from "@webiny/lexical-nodes";
 import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
 import { CAN_USE_DOM } from "~/utils/canUseDOM";
-import { insertImage } from "~/utils/nodes/insertImage";
+import { insertImage } from "~/utils/insertImage";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 

@@ -8,7 +8,7 @@ import {
     COMMAND_PRIORITY_LOW,
     PASTE_COMMAND
 } from "lexical";
-import { LinkNode, TOGGLE_LINK_COMMAND, toggleLink } from "~/nodes/LinkNode";
+import { LinkNode, TOGGLE_LINK_COMMAND, toggleLink } from "@webiny/lexical-nodes";
 
 type Props = {
     validateUrl?: (url: string) => boolean;

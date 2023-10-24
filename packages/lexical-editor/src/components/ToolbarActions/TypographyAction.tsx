@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { LexicalCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Compose, makeComposable } from "@webiny/react-composition";
+import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
-import { TypographyValue } from "~/types";
 import {
     $isHeadingNode,
     $isParagraphNode,
@@ -12,7 +12,7 @@ import {
     ADD_TYPOGRAPHY_COMMAND,
     TypographyNode,
     TypographyPayload
-} from "~/nodes";
+} from "@webiny/lexical-nodes";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
     INSERT_ORDERED_LIST_COMMAND,

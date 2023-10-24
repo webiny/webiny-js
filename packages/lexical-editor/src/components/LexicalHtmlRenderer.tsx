@@ -1,24 +1,25 @@
-import React from "react";
-import { LexicalValue, ThemeEmotionMap } from "~/types";
-import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+import React, { useRef } from "react";
+import { ClassNames, CSSObject } from "@emotion/react";
+import { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { allNodes } from "@webiny/lexical-nodes";
+import {
+    createTheme,
+    WebinyTheme,
+    ThemeEmotionMap,
+    toTypographyEmotionMap
+} from "@webiny/lexical-theme";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+import { LexicalValue } from "~/types";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
-import { Klass, LexicalNode } from "lexical";
-import { allNodes } from "~/nodes";
-import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { ClassNames, CSSObject } from "@emotion/react";
-import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
     value: LexicalValue | null;
-    /*
-     * @description Theme to be injected into lexical editor
-     */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
@@ -30,6 +31,8 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
     theme,
     themeEmotionMap
 }) => {
+    const editorTheme = useRef(createTheme());
+
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
@@ -38,7 +41,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
         },
         editable: false,
         nodes: [...allNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap, styles: theme.styles }
+        theme: { ...editorTheme.current, emotionMap: themeEmotionMap, styles: theme.styles }
     };
 
     return (
