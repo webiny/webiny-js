@@ -26,7 +26,7 @@ interface QuerySaverDialogProps {
 }
 
 export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialogProps) => {
-    const [presenter] = useState<QuerySaverDialogPresenter>(new QuerySaverDialogPresenter(filter));
+    const [presenter] = useState<QuerySaverDialogPresenter>(new QuerySaverDialogPresenter());
 
     useEffect(() => {
         presenter.load(filter);

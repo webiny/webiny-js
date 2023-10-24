@@ -24,7 +24,7 @@ export interface QuerySaverDialogFormData {
 }
 
 export interface QuerySaverDialogViewModel {
-    filter: FilterDTO;
+    filter: FilterDTO | undefined;
     invalidFields: Record<string, { isValid: boolean; message: string }>;
 }
 
@@ -33,8 +33,7 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
     private invalidFields: QuerySaverDialogViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
-    constructor(filter: FilterDTO) {
-        this.filter = filter;
+    constructor() {
         makeAutoObservable(this);
     }
 
@@ -46,13 +45,17 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
         return {
             invalidFields: this.invalidFields,
             data: {
-                name: this.filter.name,
-                description: this.filter.description
+                name: this.filter?.name || "",
+                description: this.filter?.description || ""
             }
         };
     }
 
     setFilter(data: QuerySaverDialogFormData) {
+        if (!this.filter) {
+            return;
+        }
+
         this.filter = {
             ...this.filter,
             ...data
@@ -70,6 +73,10 @@ export class QuerySaverDialogPresenter implements QuerySaverDialogPresenterInter
             invalidFields: QuerySaverDialogViewModel["invalidFields"]
         ) => void
     ) {
+        if (!this.filter) {
+            return;
+        }
+
         this.formWasSubmitted = true;
         const result = this.validateFilter(this.filter);
 

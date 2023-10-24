@@ -31,7 +31,7 @@ describe("QuerySaverDialogPresenter", () => {
     let presenter: QuerySaverDialogPresenter;
 
     beforeEach(() => {
-        presenter = new QuerySaverDialogPresenter(filter);
+        presenter = new QuerySaverDialogPresenter();
     });
 
     it("should create QuerySaverDialogPresenter with `vm` definition", () => {
