@@ -1,6 +1,6 @@
 // @ts-ignore - There are no types "@types/react-style-object-to-css" for this lib.
 import reactToCSS from "react-style-object-to-css";
-import { CSSObject } from "@emotion/react";
+import type { CSSObject } from "@emotion/react";
 
 /*
  * Converts CSS style objects to string
