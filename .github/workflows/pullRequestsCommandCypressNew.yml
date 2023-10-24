@@ -32,7 +32,7 @@ jobs:
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
   e2e-wby-cms-ddb-init:
-    needs: check_comment
+    needs: checkComment
     name: E2E (DDB}) - Init
     runs-on: ubuntu-latest
     outputs:
@@ -256,7 +256,7 @@ jobs:
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
   e2e-wby-cms-ddb-es-init:
-    needs: check_comment
+    needs: checkComment
     name: E2E (DDB-ES}) - Init
     runs-on: ubuntu-latest
     outputs:
@@ -481,7 +481,7 @@ jobs:
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
   e2e-wby-cms-ddb-os-init:
-    needs: check_comment
+    needs: checkComment
     name: E2E (DDB-OS}) - Init
     runs-on: ubuntu-latest
     outputs:
