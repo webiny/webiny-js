@@ -1,12 +1,6 @@
 import zod from "zod";
 import { Operation } from "./Operation";
 
-export interface User {
-    id: string;
-    type: string;
-    displayName: string | null;
-}
-
 export interface FilterGroupFilterDTO {
     field: string;
     condition: string;
@@ -26,8 +20,6 @@ export interface FilterDTO {
     operation: Operation;
     groups: FilterGroupDTO[];
     createdOn?: string;
-    createdBy?: User;
-    savedOn?: string;
 }
 
 export interface FilterRaw extends Omit<FilterDTO, "groups"> {
@@ -64,15 +56,7 @@ export const filterValidationSchema = zod.object({
     namespace: zod.string().trim(),
     operation: operationValidator,
     groups: zod.array(filterGroupValidationSchema).min(1),
-    createdOn: zod.date().optional(),
-    savedOn: zod.date().optional(),
-    createdBy: zod
-        .object({
-            id: zod.string().nonempty(),
-            type: zod.string().nonempty(),
-            displayName: zod.string().nullish()
-        })
-        .optional()
+    createdOn: zod.date().optional()
 });
 
 export class Filter {
@@ -84,8 +68,6 @@ export class Filter {
     public operation: Operation;
     public groups: FilterGroup[];
     public createdOn?: string;
-    public savedOn?: string;
-    public createdBy?: User;
 
     static createEmpty(namespace: string) {
         return new Filter({
@@ -111,8 +93,6 @@ export class Filter {
         name?: string;
         description?: string;
         createdOn?: string;
-        savedOn?: string;
-        createdBy?: User;
     }) {
         this.id = data.id ?? "";
         this.namespace = data.namespace;
@@ -121,8 +101,6 @@ export class Filter {
         this.operation = data.operation;
         this.groups = data.groups;
         this.createdOn = data.createdOn;
-        this.createdBy = data.createdBy;
-        this.savedOn = data.savedOn;
     }
 }
 

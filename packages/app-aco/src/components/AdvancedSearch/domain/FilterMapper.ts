@@ -15,20 +15,14 @@ export class FilterMapper {
             description: configuration.description || "",
             namespace: configuration.namespace,
             operation: configuration.operation,
+            createdOn: configuration.createdOn || "",
             groups: groups.map(group => ({
                 operation: group.operation,
                 filters: group.filters.map(filter => ({
                     field: filter.field || "",
                     value: filter.value || "",
                     condition: filter.condition || ""
-                })),
-                createdBy: configuration.createdBy || {
-                    id: "",
-                    displayName: "",
-                    type: ""
-                },
-                createdOn: configuration?.createdOn || "",
-                savedOn: configuration.savedOn || ""
+                }))
             }))
         };
     }
