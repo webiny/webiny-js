@@ -8,7 +8,7 @@ import {
 } from "lexical";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
-import { $isLinkNode } from "~/nodes";
+import { $isLinkNode } from "@webiny/lexical-nodes";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";

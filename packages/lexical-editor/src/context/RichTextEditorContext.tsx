@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
 import { LexicalEditor } from "lexical";
-import { ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
-import { WebinyTheme } from "~/themes/webinyLexicalTheme";
+import type { ThemeEmotionMap, WebinyTheme } from "@webiny/lexical-theme";
+import { ToolbarActionPlugin, ToolbarType } from "~/types";
 
 export interface RichTextEditorContext {
     toolbarType?: ToolbarType;

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "~/nodes";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { getNodeFromSelection } from "~/hooks/useCurrentElement";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 
