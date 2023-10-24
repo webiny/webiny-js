@@ -3,13 +3,13 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: Pull Requests Command - Cypress
-'on': pull_request
+'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
-    name: Check comment for /cypressnew
+    name: Check comment for /cypress_new
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -18,7 +18,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypressnew
+          command: cypress_new
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
