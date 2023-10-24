@@ -43,7 +43,7 @@ jobs:
       - &ref_0
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - &ref_1
         uses: actions/checkout@v3
       - &ref_2
