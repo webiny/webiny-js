@@ -16,5 +16,5 @@ export function getFolderFieldValues(entry: CmsEntry, fields: string[]) {
 }
 
 export function getFilterFieldValues(entry: CmsEntry, fields: string[]) {
-    return { ...pick(entry, fields), ...entry.values } as Filter;
+    return { ...pick(entry, fields), id: entry.entryId, ...entry.values } as Filter;
 }

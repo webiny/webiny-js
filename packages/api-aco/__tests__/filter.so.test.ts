@@ -165,6 +165,8 @@ describe("`filter` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "name",
+                                    id: "name",
+                                    parents: [],
                                     storageId: "text@name"
                                 }
                             ]
@@ -195,6 +197,8 @@ describe("`filter` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "namespace",
+                                    id: "namespace",
+                                    parents: [],
                                     storageId: "text@namespace"
                                 }
                             ]
@@ -236,8 +240,11 @@ describe("`filter` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Array must contain at least 1 element(s)",
-                                    path: ""
+                                    error: "At least one group is required.",
+                                    fieldId: "groups",
+                                    id: "groups",
+                                    parents: [],
+                                    storageId: "object@groups"
                                 }
                             ]
                         }
@@ -267,23 +274,13 @@ describe("`filter` CRUD", () => {
         });
 
         expect(response).toEqual({
-            data: {
-                aco: {
-                    createFilter: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED",
-                            message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Invalid enum value. Expected 'AND' | 'OR', received ''",
-                                    path: "0.operation"
-                                }
-                            ]
-                        }
-                    }
+            errors: [
+                {
+                    locations: expect.any(Array),
+                    message:
+                        'Variable "$data" got invalid value "" at "data.groups[0].operation"; Value "" does not exist in "OperationEnum" enum.'
                 }
-            }
+            ]
         });
     });
 
@@ -310,8 +307,11 @@ describe("`filter` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Array must contain at least 1 element(s)",
-                                    path: "0.filters"
+                                    error: "At least one filter is required.",
+                                    fieldId: "filters",
+                                    id: "filters",
+                                    parents: ["groups", "0"],
+                                    storageId: "object@filters"
                                 }
                             ]
                         }
@@ -350,16 +350,25 @@ describe("`filter` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Field is required.",
-                                    path: "0.filters.0.field"
-                                },
-                                {
-                                    error: "Condition is required.",
-                                    path: "0.filters.0.condition"
+                                    error: "Value is required.",
+                                    fieldId: "field",
+                                    id: "field",
+                                    parents: ["groups", "0", "filters", "0"],
+                                    storageId: "text@field"
                                 },
                                 {
                                     error: "Value is required.",
-                                    path: "0.filters.0.value"
+                                    fieldId: "condition",
+                                    id: "condition",
+                                    parents: ["groups", "0", "filters", "0"],
+                                    storageId: "text@condition"
+                                },
+                                {
+                                    error: "Value is required.",
+                                    fieldId: "value",
+                                    id: "value",
+                                    parents: ["groups", "0", "filters", "0"],
+                                    storageId: "text@value"
                                 }
                             ]
                         }
@@ -382,7 +391,7 @@ describe("`filter` CRUD", () => {
             data: null,
             error: {
                 code: "NOT_FOUND",
-                message: `Entry by ID "${id}" not found.`,
+                message: "Entry not found!",
                 data: null
             }
         });

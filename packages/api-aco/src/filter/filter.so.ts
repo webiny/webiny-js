@@ -18,22 +18,20 @@ export const createFilterOperations = (
         modelName: FILTER_MODEL_ID
     });
 
-    const getFilter: AcoFilterStorageOperations["getFilter"] = ({ id }) => {
-        return withModel(async model => {
-            const entry = await cms.getEntryById(model, id);
-
-            if (!entry) {
-                throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
-                    id
-                });
-            }
-
-            return getFilterFieldValues(entry, baseFields);
-        });
-    };
-
     return {
-        getFilter,
+        getFilter({ id }) {
+            return withModel(async model => {
+                const entry = await cms.getEntry(model, { where: { entryId: id, latest: true } });
+
+                if (!entry) {
+                    throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
+                        id
+                    });
+                }
+
+                return getFilterFieldValues(entry, baseFields);
+            });
+        },
         listFilters(params) {
             return withModel(async model => {
                 const { sort, where } = params;
@@ -58,14 +56,16 @@ export const createFilterOperations = (
         },
         updateFilter({ id, data }) {
             return withModel(async model => {
-                const original = await getFilter({ id });
+                const original = await cms.getEntry(model, {
+                    where: { entryId: id, latest: true }
+                });
 
                 const input = {
                     ...original,
                     ...data
                 };
 
-                const entry = await cms.updateEntry(model, id, input);
+                const entry = await cms.updateEntry(model, original.id, input);
                 return getFilterFieldValues(entry, baseFields);
             });
         },
