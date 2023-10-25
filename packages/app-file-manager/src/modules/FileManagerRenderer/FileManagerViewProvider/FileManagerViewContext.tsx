@@ -27,7 +27,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
-    areFilesSelectable: boolean;
+    hasOnSelectCallback: boolean;
     listTitle: string;
     loadMoreFiles: () => void;
     meta: ListMeta | undefined;
@@ -364,7 +364,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     const context: FileManagerViewContext = {
         ...omit(state, ["activeTags"]),
         accept: props.accept,
-        areFilesSelectable: Boolean(props.onChange),
+        hasOnSelectCallback: Boolean(props.onChange),
         createFile,
         deleteFile,
         files,
@@ -492,7 +492,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         toggleSelected(file: FileItem) {
             setState(state => {
                 const existingIndex = state.selected.findIndex(item => item.id === file.id);
-                const selected = state.selected;
+                const selected = [...state.selected];
 
                 if (existingIndex < 0) {
                     selected.push(file);
