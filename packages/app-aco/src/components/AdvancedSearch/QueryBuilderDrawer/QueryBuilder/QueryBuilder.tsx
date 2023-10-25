@@ -74,6 +74,7 @@ export const QueryBuilder = observer((props: QueryBuilderProps) => {
                                                 <AccordionItem.Action
                                                     icon={<DeleteIcon />}
                                                     onClick={() => props.onDeleteGroup(groupIndex)}
+                                                    disabled={!group.canDelete}
                                                 />
                                             </AccordionItem.Actions>
                                         }

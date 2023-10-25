@@ -73,7 +73,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.AND,
-                    filters: [testFilter]
+                    canDelete: false,
+                    filters: [
+                        {
+                            ...testFilter,
+                            canDelete: false
+                        }
+                    ]
                 }
             ]
         });
@@ -94,7 +100,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                 title: "Filter group #1",
                 open: true,
                 operation: Operation.AND,
-                filters: [testFilter]
+                canDelete: false,
+                filters: [
+                    {
+                        ...testFilter,
+                        canDelete: false
+                    }
+                ]
             }
         ]);
 
@@ -107,18 +119,30 @@ describe("QueryBuilderDrawerPresenter", () => {
                 title: "Filter group #1",
                 open: true,
                 operation: Operation.AND,
-                filters: [testFilter]
+                canDelete: false,
+                filters: [
+                    {
+                        ...testFilter,
+                        canDelete: false
+                    }
+                ]
             },
             {
                 title: "Filter group #2",
                 open: true,
                 operation: Operation.AND,
-                filters: [testFilter]
+                canDelete: true,
+                filters: [
+                    {
+                        ...testFilter,
+                        canDelete: false
+                    }
+                ]
             }
         ]);
 
         // let's delete the first group
-        presenter.deleteGroup(0);
+        presenter.deleteGroup(1);
 
         // should have 1 group only
         expect(presenter.vm.data.groups.length).toBe(1);
@@ -127,7 +151,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                 title: "Filter group #1",
                 open: true,
                 operation: Operation.AND,
-                filters: [testFilter]
+                canDelete: false,
+                filters: [
+                    {
+                        ...testFilter,
+                        canDelete: false
+                    }
+                ]
             }
         ]);
 
@@ -141,7 +171,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                 title: "Filter group #1",
                 open: true,
                 operation: Operation.AND,
-                filters: [testFilter]
+                canDelete: false,
+                filters: [
+                    {
+                        ...testFilter,
+                        canDelete: false
+                    }
+                ]
             }
         ]);
     });
@@ -155,12 +191,21 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         // should have 2 filters inside the only existing group
         expect(presenter.vm.data.groups[0].filters.length).toBe(2);
-        expect(presenter.vm.data.groups[0].filters).toEqual([testFilter, testFilter]);
+        expect(presenter.vm.data.groups[0].filters).toEqual([
+            {
+                ...testFilter,
+                canDelete: false
+            },
+            {
+                ...testFilter,
+                canDelete: true
+            }
+        ]);
 
-        const resultFilter = presenter.vm.data.groups[0].filters[1];
+        const resultFilter = presenter.vm.data.groups[0].filters[0];
 
-        // let's delete the first filter
-        presenter.deleteFilterFromGroup(0, 0);
+        // let's delete the second filter
+        presenter.deleteFilterFromGroup(0, 1);
 
         // should have 1 group only
         expect(presenter.vm.data.groups.length).toBe(1);
@@ -171,7 +216,12 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         // should still have 1 default filter
         expect(presenter.vm.data.groups.length).toBe(1);
-        expect(presenter.vm.data.groups[0].filters).toEqual([defaultFilter]);
+        expect(presenter.vm.data.groups[0].filters).toEqual([
+            {
+                ...defaultFilter,
+                canDelete: false
+            }
+        ]);
     });
 
     it("should be able to set data back to the filter", () => {
@@ -187,7 +237,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                         title: "Filter group #1",
                         open: true,
                         operation: Operation.AND,
-                        filters: [testFilter]
+                        canDelete: false,
+                        filters: [
+                            {
+                                ...testFilter,
+                                canDelete: false
+                            }
+                        ]
                     }
                 ]
             });
@@ -204,7 +260,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                         title: "Filter group #1",
                         open: true,
                         operation: Operation.OR,
-                        filters: [testFilter]
+                        canDelete: false,
+                        filters: [
+                            {
+                                ...testFilter,
+                                canDelete: false
+                            }
+                        ]
                     }
                 ]
             });
@@ -221,9 +283,11 @@ describe("QueryBuilderDrawerPresenter", () => {
                         title: "Filter group #1",
                         open: true,
                         operation: Operation.OR,
+                        canDelete: false,
                         filters: [
                             {
                                 ...testFilter,
+                                canDelete: false,
                                 field: "any-field"
                             }
                         ]
@@ -249,8 +313,10 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.OR,
+                    canDelete: false,
                     filters: [
                         {
+                            canDelete: false,
                             field: "any-field",
                             condition: "any-condition",
                             value: "" // empty value -> this should trigger the error
@@ -273,11 +339,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.OR,
+                    canDelete: false,
                     filters: [
                         {
                             field: "any-field",
                             condition: "any-condition",
-                            value: "any-value"
+                            value: "any-value",
+                            canDelete: false
                         }
                     ]
                 }
@@ -305,8 +373,10 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.OR,
+                    canDelete: false,
                     filters: [
                         {
+                            canDelete: false,
                             field: "any-field",
                             condition: "any-condition",
                             value: "" // empty value -> this should trigger the error
@@ -329,8 +399,10 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.OR,
+                    canDelete: false,
                     filters: [
                         {
+                            canDelete: false,
                             field: "any-field",
                             condition: "any-condition",
                             value: "any-value"
@@ -359,11 +431,13 @@ describe("QueryBuilderDrawerPresenter", () => {
                     title: "Filter group #1",
                     open: true,
                     operation: Operation.AND,
+                    canDelete: false,
                     filters: [
                         {
                             field: "any-field",
                             condition: "any-condition",
-                            value: "any-value"
+                            value: "any-value",
+                            canDelete: false
                         }
                     ]
                 }
@@ -375,7 +449,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         // should have a filter with default definition and new field value
         expect(presenter.vm.data.groups[0].filters).toEqual([
-            { ...defaultFilter, field: "new-field" }
+            { ...defaultFilter, field: "new-field", canDelete: false }
         ]);
     });
 });

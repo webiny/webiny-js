@@ -8,6 +8,7 @@ import {
     Filter,
     FilterDTO,
     FilterGroupDTO,
+    FilterGroupFilterDTO,
     Operation
 } from "../domain";
 
@@ -35,7 +36,13 @@ export interface QueryBuilderViewModel {
 
 export interface QueryBuilderFormData {
     operation: Operation;
-    groups: (FilterGroupDTO & { title: string; open: boolean })[];
+    groups: {
+        operation: Operation;
+        title: string;
+        open: boolean;
+        canDelete: boolean;
+        filters: (FilterGroupFilterDTO & { canDelete: boolean })[];
+    }[];
 }
 
 export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterInterface {
@@ -70,10 +77,12 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
                             title: `Filter group #${groupIndex + 1}`,
                             open: true,
                             operation: group.operation,
-                            filters: group.filters.map(filter => ({
+                            canDelete: groupIndex !== 0,
+                            filters: group.filters.map((filter, filterIndex) => ({
                                 field: filter.field,
                                 condition: filter.condition,
-                                value: filter.value
+                                value: filter.value,
+                                canDelete: filterIndex !== 0
                             }))
                         };
                     }) || []

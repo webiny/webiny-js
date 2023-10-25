@@ -14,7 +14,7 @@ import { CellInner, FilterContainer } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;
-    filter: FilterGroupFilterDTO;
+    filter: FilterGroupFilterDTO & { canDelete: boolean };
     fields: FieldDTO[];
     onDelete: () => void;
     onFieldSelectChange: (data: string) => void;
@@ -78,7 +78,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                 </Cell>
                 <Cell span={1} align={"middle"}>
                     <CellInner align={"center"}>
-                        <RemoveFilter onClick={onDelete} />
+                        <RemoveFilter onClick={onDelete} disabled={!filter.canDelete} />
                     </CellInner>
                 </Cell>
             </Grid>
