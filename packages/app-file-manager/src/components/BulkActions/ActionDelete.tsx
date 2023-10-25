@@ -51,7 +51,7 @@ export const ActionDelete = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Delete files",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished deleting files! See full report below:"
                 });
             }
         });

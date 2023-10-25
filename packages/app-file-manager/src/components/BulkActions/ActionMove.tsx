@@ -51,7 +51,7 @@ export const ActionMove = observer(() => {
                     showResultsDialog({
                         results: worker.results,
                         title: "Move files",
-                        message: "Operation completed, here below you find the complete report:"
+                        message: "Finished moving files! See full report below:"
                     });
                 }
             });
