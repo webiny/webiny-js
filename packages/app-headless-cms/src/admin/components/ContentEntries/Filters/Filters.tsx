@@ -5,7 +5,7 @@ import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 import { AdvancedSearch, GraphQLInputMapper } from "@webiny/app-aco";
 import { useModel } from "~/admin/hooks";
 import { FieldsMapper } from "./FieldsMapper";
-import { FieldRaw, QueryObjectDTO } from "@webiny/app-aco/components/AdvancedSearch/domain";
+import { FieldRaw, FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain";
 
 export const Filters = () => {
     const { browser } = useContentEntryListConfig();
@@ -30,7 +30,7 @@ export const Filters = () => {
         list.setFilters(convertedFilters);
     };
 
-    const applyAdvancedSearch = (data: QueryObjectDTO | null) => {
+    const applyAdvancedSearch = (data: FilterDTO | null) => {
         if (!data) {
             return list.setFilters({});
         }
