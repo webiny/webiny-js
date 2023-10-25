@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/filled/settings_backup_restore.svg";
+import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { observer } from "mobx-react-lite";
 import { useRecords } from "@webiny/app-aco";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
@@ -62,7 +62,7 @@ const ActionUnpublish = () => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Unpublish entries",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished unpublishing entries! See full report below:"
                 });
             }
         });

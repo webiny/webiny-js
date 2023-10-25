@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
@@ -61,7 +61,7 @@ const ActionDelete = () => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Delete entries",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished deleting entries! See full report below:"
                 });
             }
         });

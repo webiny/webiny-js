@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ReactComponent as PublishIcon } from "@material-design-icons/svg/filled/publish.svg";
+import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
@@ -62,7 +62,7 @@ const ActionPublish = () => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Publish entries",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished publishing entries! See full report below:"
                 });
             }
         });
