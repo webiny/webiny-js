@@ -8,7 +8,10 @@
     "dynamodb",
     "elasticsearch",
     "ddb-es",
-    "fb:ddb-es"
+    "fb:ddb-es",
+    "opensearch",
+    "ddb-os",
+    "fb:ddb-os"
   ],
   "repository": {
     "type": "git",
