@@ -8,7 +8,7 @@ name: Pull Requests Command - Cypress
 
 jobs:
   check_comment:
-    name: Check comment for /cypress-dev
+    name: Check comment for /cypressdev
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -17,7 +17,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress-dev
+          command: cypressdev
           reaction: "true"
           reaction-type: "eyes"
           allow-edits: "false"
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -225,7 +225,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [14]
+        node: [18]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -240,7 +240,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -293,7 +293,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -338,7 +338,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -481,7 +481,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [14]
+        node: [18]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -499,7 +499,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:

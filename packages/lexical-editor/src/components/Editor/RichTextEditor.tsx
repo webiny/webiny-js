@@ -15,14 +15,18 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
+import { LexicalValue, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { WebinyNodes } from "~/nodes/webinyNodes";
+import {
+    createTheme,
+    WebinyTheme,
+    ThemeEmotionMap,
+    toTypographyEmotionMap
+} from "@webiny/lexical-theme";
+import { allNodes } from "@webiny/lexical-nodes";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
@@ -70,6 +74,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     contentEditableStyles,
     placeholderStyles
 }: RichTextEditorProps) => {
+    const editorTheme = useRef(createTheme());
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = (
@@ -114,8 +119,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...WebinyNodes, ...configNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap }
+        nodes: [...allNodes, ...configNodes, ...(nodes || [])],
+        theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
@@ -139,6 +144,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             <>
                 {staticToolbar && staticToolbar}
                 <div
+                    /* This className is necessary for targeting of editor container from CSS files. */
+                    className={"editor-shell"}
                     ref={scrollRef}
                     style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                 >
