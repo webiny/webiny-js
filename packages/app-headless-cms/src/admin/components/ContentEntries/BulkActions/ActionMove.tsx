@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from "react";
-import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
+import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-const ActionMove = () => {
+export const ActionMove = observer(() => {
     const { moveRecord } = useRecords();
     const { currentFolderId } = useNavigateFolder();
 
@@ -17,8 +18,7 @@ const ActionMove = () => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openWorkerDialog = useCallback(
@@ -54,7 +54,7 @@ const ActionMove = () => {
                     showResultsDialog({
                         results: worker.results,
                         title: "Move entries",
-                        message: "Operation completed, here below you find the complete report:"
+                        message: "Finished moving entries! See full report below:"
                     });
                 }
             });
@@ -82,6 +82,4 @@ const ActionMove = () => {
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionMove);
+});

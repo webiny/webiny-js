@@ -54,7 +54,7 @@ export const ActionMove = observer(() => {
                     showResultsDialog({
                         results: worker.results,
                         title: "Move pages",
-                        message: "Operation completed, here below you find the complete report:"
+                        message: "Finished moving pages! See full report below:"
                     });
                 }
             });
