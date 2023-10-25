@@ -1,4 +1,4 @@
-import { App, Entity, Action } from "~/types";
+import { Action, App, Entity } from "~/types";
 
 export type AuditAction = {
     app: App;
