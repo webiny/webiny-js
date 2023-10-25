@@ -126,7 +126,9 @@ const createJobs = (dbSetup: string) => {
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
-            ...createSetupVerdaccioSteps(),
+            ...createSetupVerdaccioSteps({
+                verdaccioFilesArtifactName: `verdaccio-files-${dbSetup}`
+            }),
             {
                 name: "Create directory",
                 run: "mkdir xyz"
@@ -150,7 +152,7 @@ const createJobs = (dbSetup: string) => {
                 name: "Create project-files artifact",
                 uses: "actions/upload-artifact@v3",
                 with: {
-                    name: "project-files",
+                    name: `project-files-${dbSetup}`,
                     "retention-days": 1,
                     path: "xyz/test-project/\n!xyz/test-project/node_modules/**/*\n!xyz/test-project/**/node_modules/**/*\n!xyz/test-project/.yarn/cache/**/*\n"
                 }

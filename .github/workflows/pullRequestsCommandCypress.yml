@@ -140,7 +140,7 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb
           retention-days: 1
           path: |
             dev/.verdaccio/
@@ -165,7 +165,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb
           retention-days: 1
           path: |
             xyz/test-project/
@@ -376,7 +376,7 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb-es
           retention-days: 1
           path: |
             dev/.verdaccio/
@@ -401,7 +401,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb-es
           retention-days: 1
           path: |
             xyz/test-project/
@@ -616,7 +616,7 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb-os
           retention-days: 1
           path: |
             dev/.verdaccio/
@@ -641,7 +641,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb-os
           retention-days: 1
           path: |
             xyz/test-project/

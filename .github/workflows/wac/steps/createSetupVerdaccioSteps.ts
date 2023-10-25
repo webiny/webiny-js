@@ -1,4 +1,7 @@
-export const createSetupVerdaccioSteps = ({ workingDirectory = "dev" } = {}) => {
+export const createSetupVerdaccioSteps = ({
+    workingDirectory = "dev",
+    verdaccioFilesArtifactName = "verdaccio-files"
+} = {}) => {
     return [
         {
             name: "Start Verdaccio local server",
@@ -31,7 +34,7 @@ export const createSetupVerdaccioSteps = ({ workingDirectory = "dev" } = {}) => 
             name: "Create verdaccio-files artifact",
             uses: "actions/upload-artifact@v3",
             with: {
-                name: "verdaccio-files",
+                name: verdaccioFilesArtifactName,
                 "retention-days": 1,
                 path: "dev/.verdaccio/\ndev/.verdaccio.yaml\n"
             }
