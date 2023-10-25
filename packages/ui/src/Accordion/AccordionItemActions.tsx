@@ -23,3 +23,11 @@ export const AccordionItemAction = ({ icon, onClick, disabled }: AccordionItemAc
         />
     );
 };
+
+export interface AccordionItemElementProps {
+    element: JSX.Element;
+}
+
+export const AccordionItemElement = ({ element }: AccordionItemElementProps) => {
+    return <div onClick={e => e.stopPropagation()}>{element}</div>;
+};

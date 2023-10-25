@@ -14179,14 +14179,19 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.2.0
+    mobx: ^6.9.0
+    mobx-react-lite: ^3.4.3
     react: 17.0.2
     react-dnd: ^16.0.1
     react-dom: 17.0.2
+    react-hotkeyz: ^1.0.4
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12
+    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 

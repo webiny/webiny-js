@@ -16,6 +16,7 @@ import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecor
 import { FOLDER_MODEL_ID } from "~/folder/folder.model";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFolderFieldValues } from "~/utils/getFieldValues";
+import { createFilterCrudMethods } from "~/filter/filter.crud";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
@@ -133,6 +134,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         }),
         search: createSearchRecordCrudMethods(params),
         folderLevelPermissions,
+        filter: createFilterCrudMethods(params),
         apps,
         getApp: (name: string) => apps.get(name),
         listApps: () => apps.list(),

@@ -6,6 +6,9 @@ export const FiltersContainer = styled.div`
     background-color: var(--mdc-theme-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 export const FormContainer = styled.div`

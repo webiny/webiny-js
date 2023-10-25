@@ -9,7 +9,11 @@ import { Typography } from "~/Typography";
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
 import classNames from "classnames";
-import { AccordionItemAction, AccordionItemActions } from "~/Accordion/AccordionItemActions";
+import {
+    AccordionItemAction,
+    AccordionItemActions,
+    AccordionItemElement
+} from "~/Accordion/AccordionItemActions";
 
 const Content = styled.div`
     width: 100%;
@@ -215,10 +219,12 @@ type AccordionItem = React.FC<AccordionItemProps> & {
     Divider: typeof Divider;
     Actions: typeof AccordionItemActions;
     Action: typeof AccordionItemAction;
+    Element: typeof AccordionItemElement;
 };
 
 export const AccordionItem: AccordionItem = Object.assign(AccordionItemComponent, {
     Divider,
     Action: AccordionItemAction,
-    Actions: AccordionItemActions
+    Actions: AccordionItemActions,
+    Element: AccordionItemElement
 });
