@@ -252,7 +252,7 @@ describe("`filter` CRUD", () => {
             data: {
                 ...filterMocks.filterA,
                 groups: [
-                    JSON.stringify({
+                    {
                         operation: "",
                         filters: [
                             {
@@ -261,7 +261,7 @@ describe("`filter` CRUD", () => {
                                 value: "any"
                             }
                         ]
-                    })
+                    }
                 ]
             }
         });
@@ -292,10 +292,10 @@ describe("`filter` CRUD", () => {
             data: {
                 ...filterMocks.filterA,
                 groups: [
-                    JSON.stringify({
+                    {
                         operation: Operation.AND,
                         filters: []
-                    })
+                    }
                 ]
             }
         });
@@ -326,7 +326,7 @@ describe("`filter` CRUD", () => {
             data: {
                 ...filterMocks.filterA,
                 groups: [
-                    JSON.stringify({
+                    {
                         operation: Operation.AND,
                         filters: [
                             {
@@ -335,7 +335,7 @@ describe("`filter` CRUD", () => {
                                 value: ""
                             }
                         ]
-                    })
+                    }
                 ]
             }
         });

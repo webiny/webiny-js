@@ -14,7 +14,14 @@ const DATA_FIELD = /* GraphQL */ `
         name
         description
         operation
-        groups
+        groups {
+            operation
+            filters {
+                field
+                condition
+                value
+            }
+        }
         createdOn
     }
 `;

@@ -2,7 +2,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { makeAutoObservable, runInAction } from "mobx";
 import { mdbid } from "@webiny/utils";
 
-import { FilterDTO, FilterMapper, FilterRaw, Loading, Sorter } from "../domain";
+import { FilterDTO, FilterMapper, Loading, Sorter } from "../domain";
 import { FiltersGatewayInterface } from "../gateways";
 
 export class FilterRepository {
@@ -55,7 +55,7 @@ export class FilterRepository {
     }
 
     async listFilters() {
-        const response = await this.runWithLoading<FilterRaw[]>(
+        const response = await this.runWithLoading<FilterDTO[]>(
             this.gateway.list(this.namespace),
             "Listing filters"
         );
@@ -76,7 +76,7 @@ export class FilterRepository {
             return cloneDeep(filterInCache);
         }
 
-        const response = await this.runWithLoading<FilterRaw>(this.gateway.get(id));
+        const response = await this.runWithLoading<FilterDTO>(this.gateway.get(id));
 
         if (!response) {
             return;
@@ -91,13 +91,13 @@ export class FilterRepository {
     }
 
     async createFilter(filter: FilterDTO) {
-        const rawFilter = FilterMapper.toRaw(filter);
+        const filterStorage = FilterMapper.toStorage(filter);
         const id = mdbid();
 
-        const response = await this.runWithLoading<FilterRaw>(
-            this.gateway.create({ ...rawFilter, id, namespace: this.namespace }),
+        const response = await this.runWithLoading<FilterDTO>(
+            this.gateway.create({ ...filterStorage, id, namespace: this.namespace }),
             "Creating filter",
-            `Filter "${rawFilter.name}" was successfully created.`
+            `Filter "${filterStorage.name}" was successfully created.`
         );
 
         if (!response) {
@@ -113,11 +113,11 @@ export class FilterRepository {
     }
 
     async updateFilter(filter: FilterDTO) {
-        const rawFilter = FilterMapper.toRaw(filter);
-        const response = await this.runWithLoading<FilterRaw>(
-            this.gateway.update(rawFilter),
+        const filterStorage = FilterMapper.toStorage(filter);
+        const response = await this.runWithLoading<FilterDTO>(
+            this.gateway.update(filterStorage),
             "Updating filter",
-            `Filter "${rawFilter.name}" was successfully updated.`
+            `Filter "${filterStorage.name}" was successfully updated.`
         );
 
         if (!response) {

@@ -1,4 +1,4 @@
-import { FilterRaw } from "~/components/AdvancedSearch/domain";
+import { FilterDTO, FilterStorage } from "~/components/AdvancedSearch/domain";
 import { AcoError } from "~/types";
 
 export interface ListFiltersQueryVariables {
@@ -11,7 +11,7 @@ export interface ListFiltersQueryVariables {
 export interface ListFiltersResponse {
     aco: {
         listFilters: {
-            data: FilterRaw[] | null;
+            data: FilterDTO[] | null;
             error: AcoError | null;
         };
     };
@@ -20,7 +20,7 @@ export interface ListFiltersResponse {
 export interface GetFilterResponse {
     aco: {
         getFilter: {
-            data: FilterRaw | null;
+            data: FilterDTO | null;
             error: AcoError | null;
         };
     };
@@ -30,8 +30,7 @@ export interface GetFilterQueryVariables {
     id: string;
 }
 
-export interface CreateFilterPayload
-    extends Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn"> {
+export interface CreateFilterPayload extends FilterStorage {
     namespace: string;
 }
 
@@ -42,13 +41,13 @@ export interface CreateFilterVariables {
 export interface CreateFilterResponse {
     aco: {
         createFilter: {
-            data: FilterRaw;
+            data: FilterDTO;
             error: AcoError | null;
         };
     };
 }
 
-export type UpdateFilterPayload = Partial<Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">>;
+export type UpdateFilterPayload = Partial<FilterStorage>;
 
 export interface UpdateFilterVariables {
     id: string;
@@ -58,7 +57,7 @@ export interface UpdateFilterVariables {
 export interface UpdateFilterResponse {
     aco: {
         updateFilter: {
-            data: FilterRaw;
+            data: FilterDTO;
             error: AcoError | null;
         };
     };

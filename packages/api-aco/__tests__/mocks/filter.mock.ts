@@ -8,7 +8,7 @@ export const filterMocks = {
         namespace: "demo-1",
         operation: Operation.AND,
         groups: [
-            JSON.stringify({
+            {
                 operation: Operation.AND,
                 filters: [
                     {
@@ -22,7 +22,7 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            })
+            }
         ]
     },
     filterB: {
@@ -32,7 +32,7 @@ export const filterMocks = {
         namespace: "demo-1",
         operation: Operation.OR,
         groups: [
-            JSON.stringify({
+            {
                 operation: Operation.OR,
                 filters: [
                     {
@@ -46,7 +46,7 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            })
+            }
         ]
     },
     filterC: {
@@ -56,7 +56,7 @@ export const filterMocks = {
         namespace: "demo-2",
         operation: Operation.AND,
         groups: [
-            JSON.stringify({
+            {
                 operation: Operation.OR,
                 filters: [
                     {
@@ -70,7 +70,7 @@ export const filterMocks = {
                         value: "value 2"
                     }
                 ]
-            })
+            }
         ]
     }
 };

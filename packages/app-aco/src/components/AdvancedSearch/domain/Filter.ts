@@ -21,9 +21,7 @@ export interface FilterDTO {
     createdOn?: string;
 }
 
-export interface FilterRaw extends Omit<FilterDTO, "groups"> {
-    groups: string[];
-}
+export type FilterStorage = Omit<FilterDTO, "createdOn">;
 
 const operationValidator = zod.enum([Operation.AND, Operation.OR]);
 

@@ -8,7 +8,7 @@ const name = "Filter Lifecycle Events";
 const namespace = "demo-lifecycle-events";
 const operation = Operation.AND;
 const groups = [
-    JSON.stringify({
+    {
         operation: Operation.OR,
         filters: [
             {
@@ -17,7 +17,7 @@ const groups = [
                 value: "any-value"
             }
         ]
-    })
+    }
 ];
 
 describe("Filter Lifecycle Events", () => {

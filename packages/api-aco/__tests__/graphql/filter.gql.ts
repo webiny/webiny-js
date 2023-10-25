@@ -5,7 +5,14 @@ const DATA_FIELD = /* GraphQL */ `
         description
         namespace
         operation
-        groups
+        groups {
+            operation
+            filters {
+                field
+                condition
+                value
+            }
+        }
         createdBy {
             id
             displayName

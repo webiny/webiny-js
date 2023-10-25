@@ -1,7 +1,7 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
-import { checkPermissions } from "~/utils/checkPermissions";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext } from "~/types";
@@ -13,16 +13,38 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             OR
         }
 
+        type GroupFilter {
+            field: String!
+            condition: String!
+            value: String!
+        }
+
+        type Group {
+            operation: OperationEnum!
+            filters: [GroupFilter]!
+        }
+
         type Filter {
             id: ID!
             name: String!
             description: String
             namespace: String!
             operation: OperationEnum!
-            groups: [JSON]!
+            groups: [Group]!
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
+        }
+
+        input GroupFilterInput {
+            field: String!
+            condition: String!
+            value: String!
+        }
+
+        input GroupInput {
+            operation: OperationEnum!
+            filters: [GroupFilterInput]!
         }
 
         input FilterCreateInput {
@@ -31,7 +53,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             description: String
             namespace: String!
             operation: OperationEnum!
-            groups: [JSON]!
+            groups: [GroupInput]!
         }
 
         input FilterUpdateInput {
@@ -39,7 +61,7 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             description: String
             namespace: String
             operation: OperationEnum
-            groups: [JSON]
+            groups: [GroupInput]
         }
 
         input FiltersListWhereInput {
@@ -76,13 +98,13 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
         AcoQuery: {
             getFilter: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.filter.get(id);
                 });
             },
             listFilters: async (_, args: any, context) => {
                 try {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const [entries, meta] = await context.aco.filter.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
@@ -93,19 +115,19 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
         AcoMutation: {
             createFilter: async (_, { data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.filter.create(data);
                 });
             },
             updateFilter: async (_, { id, data }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.filter.update(id, data);
                 });
             },
             deleteFilter: async (_, { id }, context) => {
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return context.aco.filter.delete(id);
                 });
             }

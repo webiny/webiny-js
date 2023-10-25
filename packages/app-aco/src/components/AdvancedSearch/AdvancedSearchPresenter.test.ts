@@ -3,7 +3,6 @@ import {
     FilterDTO,
     FilterGroupDTO,
     FilterGroupFilterDTO,
-    FilterRaw,
     FilterRepository,
     Operation
 } from "./domain";
@@ -32,13 +31,6 @@ const createMockGateway = ({
     ...(deleteFn && { delete: deleteFn })
 });
 
-const filterToRaw = (filterDto: FilterDTO): FilterRaw => {
-    return {
-        ...filterDto,
-        groups: filterDto.groups.map(group => JSON.stringify(group))
-    };
-};
-
 describe("AdvancedSearchPresenter", () => {
     const namespace = "namespace";
 
@@ -62,8 +54,6 @@ describe("AdvancedSearchPresenter", () => {
         createdOn: new Date().toString()
     };
 
-    const filterRaw1 = filterToRaw(filter1);
-
     const filter2: FilterDTO = {
         id: "filter-2",
         name: "Filter 2",
@@ -72,33 +62,18 @@ describe("AdvancedSearchPresenter", () => {
         createdOn: new Date().toString()
     };
 
-    const filterRaw2 = filterToRaw(filter2);
-
-    const filter3: FilterDTO = {
-        id: "filter-3",
-        name: "Filter 3",
-        operation: Operation.AND,
-        groups: [demoGroup],
-        createdOn: new Date().toString()
-    };
-
-    const filterRaw3 = filterToRaw(filter3);
-
     const gateway = createMockGateway({
         list: jest.fn().mockImplementation(() => {
-            return Promise.resolve([filterRaw1, filterRaw2]);
+            return Promise.resolve([filter1, filter2]);
         }),
         get: jest.fn().mockImplementation(() => {
-            return Promise.resolve(filterRaw3);
+            return Promise.resolve(filter1);
         }),
         create: jest.fn().mockImplementation(() => {
-            return Promise.resolve({
-                ...filter1,
-                groups: [JSON.stringify(demoGroup)]
-            });
+            return Promise.resolve(filter1);
         }),
         update: jest.fn().mockImplementation(() => {
-            return Promise.resolve({ ...filterRaw1, name: "Filter 1 - Edit" });
+            return Promise.resolve({ ...filter1, name: "Filter 1 - Edit" });
         }),
         delete: jest.fn().mockImplementation(() => {
             return Promise.resolve(true);
@@ -134,16 +109,16 @@ describe("AdvancedSearchPresenter", () => {
                 loadingLabel: "",
                 filters: [
                     {
-                        id: filterRaw1.id,
-                        name: filterRaw1.name,
-                        description: filterRaw1.description,
-                        createdOn: filterRaw1.createdOn
+                        id: filter1.id,
+                        name: filter1.name,
+                        description: filter1.description,
+                        createdOn: filter1.createdOn
                     },
                     {
-                        id: filterRaw2.id,
-                        name: filterRaw2.name,
+                        id: filter2.id,
+                        name: filter2.name,
                         description: "",
-                        createdOn: filterRaw2.createdOn
+                        createdOn: filter2.createdOn
                     }
                 ]
             },
@@ -349,7 +324,7 @@ describe("AdvancedSearchPresenter", () => {
             description: "",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(filter.groups[0])]
+            groups: [filter.groups[0]]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -372,10 +347,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(3);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filterRaw1.id,
-            name: filterRaw1.name,
-            description: filterRaw1.description,
-            createdOn: filterRaw1.createdOn
+            id: filter1.id,
+            name: filter1.name,
+            description: filter1.description,
+            createdOn: filter1.createdOn
         });
     });
 
@@ -454,7 +429,7 @@ describe("AdvancedSearchPresenter", () => {
             name: "Filter 1",
             description: "Filter description",
             operation: Operation.AND,
-            groups: [JSON.stringify(filter.groups[0])]
+            groups: [filter.groups[0]]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -477,10 +452,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(2);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filterRaw1.id,
+            id: filter1.id,
             name: "Filter 1 - Edit",
-            description: filterRaw1.description,
-            createdOn: filterRaw1.createdOn
+            description: filter1.description,
+            createdOn: filter1.createdOn
         });
     });
 
@@ -530,10 +505,10 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.update).toBeCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({
             id: "filter-1",
-            name: `${filterRaw1.name} - Edit`,
+            name: `${filter1.name} - Edit`,
             description: "Filter description",
             operation: Operation.AND,
-            groups: [JSON.stringify(filter1.groups[0])]
+            groups: [filter1.groups[0]]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -556,10 +531,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(2);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filterRaw1.id,
-            name: `${filterRaw1.name} - Edit`,
-            description: filterRaw1.description,
-            createdOn: filterRaw1.createdOn
+            id: filter1.id,
+            name: `${filter1.name} - Edit`,
+            description: filter1.description,
+            createdOn: filter1.createdOn
         });
     });
 
@@ -626,11 +601,11 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.create).toBeCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
             id: expect.any(String),
-            name: `Clone of ${filterRaw1.name}`,
+            name: `Clone of ${filter1.name}`,
             description: "Filter description",
             namespace,
             operation: Operation.AND,
-            groups: [JSON.stringify(filter1.groups[0])]
+            groups: [filter1.groups[0]]
         });
         expect(presenter.vm).toMatchObject({
             managerVm: {
@@ -682,10 +657,10 @@ describe("AdvancedSearchPresenter", () => {
         presenter.openManager();
         expect(presenter.vm.managerVm.filters.length).toBe(1);
         expect(presenter.vm.managerVm.filters[0]).toEqual({
-            id: filterRaw2.id,
-            name: filterRaw2.name,
+            id: filter2.id,
+            name: filter2.name,
             description: "",
-            createdOn: filterRaw2.createdOn
+            createdOn: filter2.createdOn
         });
     });
 

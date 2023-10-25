@@ -1,5 +1,4 @@
 import { createAcoContext } from "~/createAcoContext";
-import { createAcoFields } from "~/createAcoFields";
 import { createAcoGraphQL } from "~/createAcoGraphQL";
 import { createFields } from "~/fields";
 
@@ -10,5 +9,5 @@ export * from "./apps";
 export * from "./plugins";
 
 export const createAco = () => {
-    return [...createFields(), createAcoContext(), ...createAcoFields(), ...createAcoGraphQL()];
+    return [...createFields(), createAcoContext(), ...createAcoGraphQL()];
 };

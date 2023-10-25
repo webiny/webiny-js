@@ -1,7 +1,6 @@
 import WebinyError from "@webiny/error";
 
 import { FILTER_MODEL_ID } from "./filter.model";
-import { validateFilterGroupsInput } from "./filter.validation";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
@@ -53,7 +52,6 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
-                validateFilterGroupsInput(data.groups);
                 const entry = await cms.createEntry(model, data);
                 return getFilterFieldValues(entry, baseFields);
             });
@@ -66,8 +64,6 @@ export const createFilterOperations = (
                     ...original,
                     ...data
                 };
-
-                validateFilterGroupsInput(input.groups);
 
                 const entry = await cms.updateEntry(model, id, input);
                 return getFilterFieldValues(entry, baseFields);

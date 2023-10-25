@@ -22,7 +22,7 @@ export interface Filter extends AcoBaseFields {
     description?: string;
     namespace: string;
     operation: Operation;
-    groups: string[];
+    groups: Group[];
 }
 
 export interface ListFiltersWhere {
@@ -46,7 +46,7 @@ export interface UpdateFilterParams {
     description?: string;
     namespace?: string;
     operation?: Operation;
-    groups?: string[];
+    groups?: Group[];
 }
 
 export interface DeleteFilterParams {
