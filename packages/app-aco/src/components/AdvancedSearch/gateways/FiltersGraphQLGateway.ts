@@ -1,7 +1,7 @@
 import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
 
 import {
+    CreateFilterPayload,
     CreateFilterResponse,
     CreateFilterVariables,
     DeleteFilterResponse,
@@ -10,85 +10,18 @@ import {
     GetFilterResponse,
     ListFiltersQueryVariables,
     ListFiltersResponse,
+    UpdateFilterPayload,
     UpdateFilterResponse,
     UpdateFilterVariables
-} from "~/types";
+} from "./filters.types";
 import { FiltersGatewayInterface } from "./FiltersGatewayInterface";
-import { FilterRaw } from "../domain";
-
-const ERROR_FIELD = /* GraphQL */ `
-    {
-        code
-        data
-        message
-    }
-`;
-
-const DATA_FIELD = /* GraphQL */ `
-    {
-        id
-        name
-        description
-        operation
-        groups
-        createdOn
-    }
-`;
-
-export const CREATE_FILTER = gql`
-    mutation CreateFilter($data: FilterCreateInput!) {
-        aco {
-            createFilter(data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const LIST_FILTERS = gql`
-    query ListFilters($namespace: String!, $limit: Int!) {
-        aco {
-            listFilters(where: { namespace: $namespace }, limit: $limit) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const GET_FILTER = gql`
-    query GetFilters($id: ID!) {
-        aco {
-            getFilter(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const UPDATE_FILTER = gql`
-    mutation UpdateFilter($id: ID!, $data: FilterUpdateInput!) {
-        aco {
-            updateFilter(id: $id, data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const DELETE_FILTER = gql`
-    mutation DeleteFilter($id: ID!) {
-        aco {
-            deleteFilter(id: $id) {
-                data
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
+import {
+    CREATE_FILTER,
+    DELETE_FILTER,
+    GET_FILTER,
+    LIST_FILTERS,
+    UPDATE_FILTER
+} from "./filters.gql";
 
 export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     private client: ApolloClient<any>;
@@ -145,7 +78,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
         return data;
     }
 
-    async create(filter: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">) {
+    async create(filter: CreateFilterPayload) {
         const { data: response } = await this.client.mutate<
             CreateFilterResponse,
             CreateFilterVariables
@@ -169,8 +102,12 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
         return data;
     }
 
-    async update(filter: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">) {
+    async update(filter: UpdateFilterPayload) {
         const { id, name, description, operation, groups } = filter;
+
+        if (!id) {
+            throw new Error("Error while updating filter, missing id.");
+        }
 
         const { data: response } = await this.client.mutate<
             UpdateFilterResponse,

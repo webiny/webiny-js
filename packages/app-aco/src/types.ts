@@ -3,7 +3,6 @@ import {
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
-import { FilterRaw } from "~/components/AdvancedSearch/domain";
 
 export * from "~/graphql/records/types";
 
@@ -177,73 +176,4 @@ export interface AcoApp {
     id: string;
     model: AcoModel;
     getFields: () => AcoModelField[];
-}
-
-export interface ListFiltersQueryVariables {
-    namespace: string;
-    limit: number;
-    sort?: Record<string, any>;
-    after?: string | null;
-}
-
-export interface ListFiltersResponse {
-    aco: {
-        listFilters: {
-            data: FilterRaw[] | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface GetFilterResponse {
-    aco: {
-        getFilter: {
-            data: FilterRaw | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface GetFilterQueryVariables {
-    id: string;
-}
-
-export interface CreateFilterVariables {
-    data: Omit<FilterRaw, "createdOn" | "createdBy" | "savedOn">;
-}
-
-export interface CreateFilterResponse {
-    aco: {
-        createFilter: {
-            data: FilterRaw;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface UpdateFilterVariables {
-    id: string;
-    data: Partial<Omit<FilterRaw, "id" | "createdOn" | "createdBy" | "savedOn">>;
-}
-
-export interface UpdateFilterResponse {
-    aco: {
-        updateFilter: {
-            data: FilterRaw;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface DeleteFilterVariables {
-    id: string;
-}
-
-export interface DeleteFilterResponse {
-    aco: {
-        deleteFilter: {
-            data: boolean;
-            error: AcoError | null;
-        };
-    };
 }
