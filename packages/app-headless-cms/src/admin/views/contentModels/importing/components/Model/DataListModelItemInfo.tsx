@@ -18,7 +18,7 @@ const getText = (action?: string | null) => {
     if (action === "create") {
         return `Model will be created.`;
     } else if (action === "update") {
-        return `Model will be updated`;
+        return `Model will be updated.`;
     } else if (action === "code") {
         return "Model cannot be updated because it was created via code.";
     }

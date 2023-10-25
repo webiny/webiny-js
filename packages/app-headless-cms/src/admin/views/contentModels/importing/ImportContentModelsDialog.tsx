@@ -7,6 +7,7 @@ import { ImportButton } from "./components/ImportButton";
 import { FileUpload } from "./components/FileUpload";
 import { Errors } from "./components/Errors";
 import { DataList } from "./components/DataList";
+import { DataListInstructions } from "./components/Model/DataListInstructions";
 import { ImportContextProvider } from "~/admin/views/contentModels/importing/ImportContext";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/import-content-models-dialog");
@@ -45,6 +46,7 @@ export const ImportContentModelsDialog: React.VFC<ImportContentModelsDialogProps
                         <UID.DialogTitle>{t`Import Content Models`}</UID.DialogTitle>
                         <UID.DialogContent>
                             <FileUpload />
+                            {validated && <DataListInstructions />}
                             <Errors errors={errors} />
                             <DataList />
                         </UID.DialogContent>
