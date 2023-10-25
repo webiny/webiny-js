@@ -11,8 +11,8 @@ const ContainerBase = styled("div")(() => {
         padding: "0px 5px 15px 5px",
         margin: "0",
         boxSizing: "border-box",
-        '&:last-child': {
-            paddingBottom: '2px'
+        "&:last-child": {
+            paddingBottom: "2px"
         }
     };
 });
@@ -36,7 +36,7 @@ const ModelContainer = styled("div")({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
 });
 const Name = styled("h4")({
     fontSize: "12px",
@@ -46,7 +46,7 @@ const Name = styled("h4")({
 const CheckboxContainer = styled("div")({
     width: "120px",
     textAlign: "right",
-    verticalAlign: "middle",
+    verticalAlign: "middle"
 });
 
 const Button = styled("button")({
@@ -59,8 +59,8 @@ const Button = styled("button")({
     cursor: "pointer",
     outline: "0 none",
     backgroundColor: "var(--mdc-theme-background)",
-    '&.selected': {
-        border: "1px solid var(--mdc-theme-secondary)",
+    "&.selected": {
+        border: "1px solid var(--mdc-theme-secondary)"
     }
 });
 
@@ -99,7 +99,7 @@ const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
     }
     return (
         <CheckboxContainer>
-            <Button onClick={onClick} className={selected ? 'selected' : ''}>
+            <Button onClick={onClick} className={selected ? "selected" : ""}>
                 {selected ? "Model will be imported" : "Model will be skipped"}
             </Button>
         </CheckboxContainer>
