@@ -4,8 +4,9 @@ import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { usePermission, useCms, useContentEntry } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-const ActionPublish = () => {
+export const ActionPublish = observer(() => {
     const { canPublish } = usePermission();
     const { publishEntryRevision } = useCms();
     const { contentModel } = useContentEntry();
@@ -17,8 +18,7 @@ const ActionPublish = () => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openPublishEntriesDialog = () =>
@@ -68,6 +68,7 @@ const ActionPublish = () => {
         });
 
     if (!canPublish("cms.contentEntry")) {
+        console.log("You don't have permissions to publish entries.");
         return null;
     }
 
@@ -79,6 +80,4 @@ const ActionPublish = () => {
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionPublish);
+});

@@ -4,8 +4,9 @@ import { observer } from "mobx-react-lite";
 import { useRecords } from "@webiny/app-aco";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useContentEntry, usePermission } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-const ActionUnpublish = () => {
+export const ActionUnpublish = observer(() => {
     const { canUnpublish } = usePermission();
     const { unpublishEntryRevision } = useCms();
     const { contentModel } = useContentEntry();
@@ -17,8 +18,7 @@ const ActionUnpublish = () => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openUnpublishEntriesDialog = () =>
@@ -68,6 +68,7 @@ const ActionUnpublish = () => {
         });
 
     if (!canUnpublish("cms.contentEntry")) {
+        console.log("You don't have permissions to unpublish entries.");
         return null;
     }
 
@@ -79,6 +80,4 @@ const ActionUnpublish = () => {
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionUnpublish);
+});

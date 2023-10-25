@@ -4,8 +4,9 @@ import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useContentEntry } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-const ActionDelete = () => {
+export const ActionDelete = observer(() => {
     const { deleteEntry } = useCms();
     const { contentModel } = useContentEntry();
     const { removeRecordFromCache } = useRecords();
@@ -16,8 +17,7 @@ const ActionDelete = () => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openDeleteEntriesDialog = () =>
@@ -74,6 +74,4 @@ const ActionDelete = () => {
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionDelete);
+});
