@@ -57,7 +57,6 @@ describe("AdvancedSearchPresenter", () => {
         id: "filter-1",
         name: "Filter 1",
         description: "Filter description",
-        namespace,
         operation: Operation.AND,
         groups: [demoGroup],
         createdOn: new Date().toString()
@@ -68,7 +67,6 @@ describe("AdvancedSearchPresenter", () => {
     const filter2: FilterDTO = {
         id: "filter-2",
         name: "Filter 2",
-        namespace,
         operation: Operation.AND,
         groups: [demoGroup],
         createdOn: new Date().toString()
@@ -79,7 +77,6 @@ describe("AdvancedSearchPresenter", () => {
     const filter3: FilterDTO = {
         id: "filter-3",
         name: "Filter 3",
-        namespace,
         operation: Operation.AND,
         groups: [demoGroup],
         createdOn: new Date().toString()
@@ -275,7 +272,6 @@ describe("AdvancedSearchPresenter", () => {
                 id: "",
                 name: "Draft filter",
                 description: "",
-                namespace,
                 operation: Operation.AND,
                 groups: [
                     {
@@ -306,7 +302,6 @@ describe("AdvancedSearchPresenter", () => {
             id: "",
             name: "Draft filter",
             description: "",
-            namespace,
             operation: Operation.AND,
             groups: [
                 {
@@ -458,7 +453,6 @@ describe("AdvancedSearchPresenter", () => {
             id: "filter-1",
             name: "Filter 1",
             description: "Filter description",
-            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(filter.groups[0])]
         });
@@ -538,7 +532,6 @@ describe("AdvancedSearchPresenter", () => {
             id: "filter-1",
             name: `${filterRaw1.name} - Edit`,
             description: "Filter description",
-            namespace,
             operation: Operation.AND,
             groups: [JSON.stringify(filter1.groups[0])]
         });
@@ -740,7 +733,6 @@ describe("AdvancedSearchPresenter", () => {
             id: "",
             name: "Draft filter",
             description: "",
-            namespace,
             operation: Operation.AND,
             groups: [
                 {

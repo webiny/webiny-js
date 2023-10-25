@@ -16,7 +16,6 @@ export interface FilterDTO {
     id: string;
     name: string;
     description?: string;
-    namespace: string;
     operation: Operation;
     groups: FilterGroupDTO[];
     createdOn?: string;
@@ -53,7 +52,6 @@ export const filterValidationSchema = zod.object({
     id: zod.string().trim().optional().nullish(),
     name: zod.string().trim().nonempty("Name is required."),
     description: zod.string().trim(),
-    namespace: zod.string().trim(),
     operation: operationValidator,
     groups: zod.array(filterGroupValidationSchema).min(1)
 });
@@ -63,14 +61,12 @@ export class Filter {
     public readonly id;
     public name;
     public description;
-    public namespace: string;
     public operation: Operation;
     public groups: FilterGroup[];
     public createdOn?: string;
 
-    static createEmpty(namespace: string) {
+    static createEmpty() {
         return new Filter({
-            namespace,
             operation: Operation.AND,
             groups: [new FilterGroup(Operation.AND, [new FilterGroupFilter()])]
         });
@@ -85,7 +81,6 @@ export class Filter {
     }
 
     protected constructor(data: {
-        namespace: string;
         operation: Operation;
         groups: FilterGroup[];
         id?: string;
@@ -94,7 +89,6 @@ export class Filter {
         createdOn?: string;
     }) {
         this.id = data.id ?? "";
-        this.namespace = data.namespace;
         this.name = data.name ?? "Draft filter";
         this.description = data.description ?? "";
         this.operation = data.operation;

@@ -206,7 +206,7 @@ export class AdvancedSearchPresenter implements AdvancedSearchPresenterInterface
     }
 
     createFilter() {
-        this.currentFilter = FilterMapper.toDTO(Filter.createEmpty(this.repository.namespace));
+        this.currentFilter = FilterMapper.toDTO(Filter.createEmpty());
         this.closeManager();
         this.openBuilder();
         this.closeSaver();

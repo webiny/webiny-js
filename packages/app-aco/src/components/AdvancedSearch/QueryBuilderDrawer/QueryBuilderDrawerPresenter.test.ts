@@ -8,7 +8,6 @@ import {
 } from "~/components/AdvancedSearch/domain";
 
 describe("QueryBuilderDrawerPresenter", () => {
-    const namespace = "namespace-id";
     const defaultFilter = { field: "", value: "", condition: "" };
 
     const fieldId = "test-field";
@@ -30,7 +29,6 @@ describe("QueryBuilderDrawerPresenter", () => {
         id: "",
         name: "Filter name",
         description: "Filter description",
-        namespace,
         operation: Operation.AND,
         groups: [testGroup]
     };

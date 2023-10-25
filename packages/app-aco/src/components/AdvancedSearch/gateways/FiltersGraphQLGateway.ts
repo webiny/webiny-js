@@ -29,7 +29,6 @@ const DATA_FIELD = /* GraphQL */ `
         id
         name
         description
-        namespace
         operation
         groups
         createdOn

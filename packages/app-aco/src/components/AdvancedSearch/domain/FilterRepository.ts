@@ -95,7 +95,7 @@ export class FilterRepository {
         const id = mdbid();
 
         const response = await this.runWithLoading<FilterRaw>(
-            this.gateway.create({ ...rawFilter, id }),
+            this.gateway.create({ ...rawFilter, id, namespace: this.namespace }),
             "Creating filter",
             `Filter "${rawFilter.name}" was successfully created.`
         );

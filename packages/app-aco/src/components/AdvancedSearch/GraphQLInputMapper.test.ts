@@ -6,7 +6,6 @@ describe("GraphQLInputMapper", () => {
         const filterDTO: FilterDTO = {
             id: "any-id",
             name: "Untitled",
-            namespace: "any-namespace",
             operation: Operation.AND,
             groups: [
                 {
