@@ -37,8 +37,8 @@ export default /* GraphQL */ `
     input CategoryApiNameWhichIsABitDifferentThanModelIdInput {
         id: ID
         wbyAco_location: WbyAcoLocationInput
-        title: String!
-        slug: String!
+        title: String
+        slug: String
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
@@ -158,11 +158,13 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createCategoryApiNameWhichIsABitDifferentThanModelId(data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelId(data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!, options: CreateCmsEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput, options: CreateRevisionCmsEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!, options: UpdateCmsEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        
+        validateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CmsEntryValidationResponse!
     
         moveCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, folderId: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdMoveResponse
 

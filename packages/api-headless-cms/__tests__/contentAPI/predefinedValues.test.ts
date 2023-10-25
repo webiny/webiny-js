@@ -1,4 +1,4 @@
-import { CmsModel, CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
@@ -135,7 +135,9 @@ describe("predefined values", () => {
                             {
                                 storageId: expect.stringMatching("text@"),
                                 fieldId: "bugType",
-                                error: "Value sent does not match any of the available predefined values."
+                                id: "bugType",
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }
@@ -171,8 +173,10 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }
@@ -208,13 +212,17 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
+                                id: "bugType",
                                 storageId: expect.stringMatching("text@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             },
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }

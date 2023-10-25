@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createAcoHooks } from "~/createAcoHooks";
-import { createAcoStorageOperations } from "~/createAcoStorageOperations";
+import { baseFields, createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
@@ -11,6 +11,11 @@ import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { AcoAppRegisterPlugin } from "~/plugins";
+import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
+import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators";
+import { FOLDER_MODEL_ID } from "~/folder/folder.model";
+import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
+import { getFolderFieldValues } from "~/utils/getFieldValues";
 import { createFilterCrudMethods } from "~/filter/filter.crud";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
@@ -32,28 +37,76 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         return tenancy.getCurrentTenant();
     };
 
-    const getIdentity = () => security.getIdentity();
+    const storageOperations = createAcoStorageOperations({
+        /**
+         * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
+         */
+        cms: context.cms,
+        /**
+         * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
+         */
+        getCmsContext: () => context,
+        security
+    });
+
+    const folderLevelPermissions = new FolderLevelPermissions({
+        getIdentity: () => security.getIdentity(),
+        getIdentityTeam: async () => {
+            return security.withoutAuthorization(async () => {
+                const identity = security.getIdentity();
+                const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
+                if (!adminUser) {
+                    return null;
+                }
+
+                if (!adminUser.team) {
+                    return null;
+                }
+
+                return context.security.getTeam({ where: { id: adminUser.team } });
+            });
+        },
+        listPermissions: () => security.listPermissions(),
+        listAllFolders: type => {
+            // When retrieving a list of all folders, we want to do it in the
+            // fastest way and that is by directly using CMS's storage operations.
+            const { withModel } = createOperationsWrapper({
+                modelName: FOLDER_MODEL_ID,
+                cms: context.cms,
+                getCmsContext: () => context,
+                security
+            });
+
+            return withModel(async model => {
+                const results = await context.cms.storageOperations.entries.list(model, {
+                    limit: 100_000,
+                    where: {
+                        type,
+
+                        // Folders always work with latest entries. We never publish them.
+                        latest: true
+                    },
+                    sort: ["title_ASC"]
+                });
+
+                return results.items.map(entry => getFolderFieldValues(entry, baseFields));
+            });
+        },
+        canUseTeams: () => context.wcp.canUseTeams(),
+        canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions()
+    });
 
     const params: CreateAcoParams = {
         getLocale,
-        getIdentity,
         getTenant,
-        storageOperations: createAcoStorageOperations({
-            /**
-             * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
-             */
-            cms: context.cms,
-            /**
-             * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
-             */
-            getCmsContext: () => context,
-            security
-        })
+        storageOperations,
+        folderLevelPermissions
     };
 
     const defaultRecordModel = await context.security.withoutAuthorization(async () => {
         return context.cms.getModel(SEARCH_RECORD_MODEL_ID);
     });
+
     if (!defaultRecordModel) {
         throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
     }
@@ -70,9 +123,17 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         });
     }
 
+    const listAdminUsers = () => context.adminUsers.listUsers();
+    const listTeams = () => context.security.listTeams();
+
     context.aco = {
-        folder: createFolderCrudMethods(params),
+        folder: createFolderCrudMethods({
+            ...params,
+            listAdminUsers,
+            listTeams
+        }),
         search: createSearchRecordCrudMethods(params),
+        folderLevelPermissions,
         filter: createFilterCrudMethods(params),
         apps,
         getApp: (name: string) => apps.get(name),
@@ -84,6 +145,13 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
             });
         }
     };
+
+    if (context.wcp.canUseFolderLevelPermissions()) {
+        new CmsEntriesCrudDecorators({ context }).decorate();
+
+        // PB decorators registered here: packages/api-page-builder-aco/src/index.ts
+        // new PageBuilderCrudDecorators({ context }).decorate();
+    }
 };
 
 export const createAcoContext = () => {

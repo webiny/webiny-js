@@ -66,3 +66,4 @@ export { useTenancy } from "@webiny/app-tenancy";
 export type { Tenant } from "@webiny/app-tenancy";
 
 export { AddPbWebsiteSettings } from "@webiny/app-page-builder";
+export * from "./apolloClientFactory";

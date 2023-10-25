@@ -12,11 +12,21 @@ import {
     DELETE_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
-    UPDATE_PAGE
+    UPDATE_PAGE,
+    GET_PAGE,
+    LIST_PAGES
 } from "~tests/graphql/page.gql";
 import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 
 import { GET_RECORD, LIST_RECORDS } from "~tests/graphql/record.gql";
+
+import {
+    CREATE_FOLDER,
+    DELETE_FOLDER,
+    GET_FOLDER,
+    LIST_FOLDERS,
+    UPDATE_FOLDER
+} from "~tests/graphql/folder.gql";
 
 import { createAcoPageBuilderContext } from "~/index";
 import {
@@ -28,12 +38,17 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
+import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import createAdminUsersApp from "@webiny/api-admin-users";
+import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
+import { createWcpContext } from "@webiny/api-wcp";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
+    testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 interface InvokeParams {
@@ -57,15 +72,22 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const i18nStorage = getStorageOps<any[]>("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const adminUsersStorage = getStorageOps<HeadlessCmsStorageOperations>("adminUsers");
+
+    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
     const handler = createHandler({
         plugins: [
             ...cmsStorage.plugins,
+            createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             createI18NContext(),
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
+            createAdminUsersApp({
+                storageOperations: adminUsersStorage.storageOperations
+            }),
             new CmsParametersPlugin(async () => {
                 return {
                     locale: "en-US",
@@ -109,6 +131,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         // Pages
         async createPage(variables = {}) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
+        }, // Pages
+        async getPage(variables = {}) {
+            return invoke({ body: { query: GET_PAGE, variables } });
+        },
+        async listPages(variables = {}) {
+            return invoke({ body: { query: LIST_PAGES, variables } });
         },
         async updatePage(variables = {}) {
             return invoke({ body: { query: UPDATE_PAGE, variables } });
@@ -138,6 +166,24 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const folders = {
+        async createFolder(variables = {}) {
+            return invoke({ body: { query: CREATE_FOLDER, variables } });
+        },
+        async updateFolder(variables = {}) {
+            return invoke({ body: { query: UPDATE_FOLDER, variables } });
+        },
+        async deleteFolder(variables = {}) {
+            return invoke({ body: { query: DELETE_FOLDER, variables } });
+        },
+        async listFolders(variables = {}) {
+            return invoke({ body: { query: LIST_FOLDERS, variables } });
+        },
+        async getFolder(variables = {}) {
+            return invoke({ body: { query: GET_FOLDER, variables } });
+        }
+    };
+
     return {
         params,
         handler,
@@ -150,6 +196,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             });
         },
         pageBuilder,
+        folders,
         search
     };
 };
