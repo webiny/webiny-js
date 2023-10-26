@@ -51,15 +51,16 @@ describe("5.38.0-001", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        await expect(scanTable(table, {
-            filters: [
-                {
-                    attr: "TYPE",
-                    beginsWith: "fb.form"
-                }
-            ]
-        })).resolves.toEqual(migratedData)
-
+        await expect(
+            scanTable(table, {
+                filters: [
+                    {
+                        attr: "TYPE",
+                        beginsWith: "fb.form"
+                    }
+                ]
+            })
+        ).resolves.toEqual(migratedData);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
