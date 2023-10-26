@@ -1,5 +1,5 @@
 import { SearchRecordItem } from "@webiny/app-aco/types";
-import { auditLogsApps } from "@webiny/api-audit-logs";
+import { auditLogsApps } from "@webiny/api-audit-logs/config";
 
 import { AuditLog, User } from "~/types";
 
