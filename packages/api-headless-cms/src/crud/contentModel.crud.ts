@@ -662,6 +662,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 );
             }
 
+            clearModelsCache();
+
             await onModelAfterDelete.publish({
                 model
             });
