@@ -12,7 +12,6 @@ async function buildHandlers(options) {
             {
                 title: "Build handlers for user projects",
                 task(ctx, task) {
-                    return;
                     return task.newListr(
                         handlerPaths.map(handlerPath => {
                             return {
