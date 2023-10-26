@@ -72,7 +72,7 @@ export const createFormsData = () => {
             tenant: "root",
             TYPE: "fb.form.latest",
             version: 3,
-            webinyVersion: "5.37.7",
+            webinyVersion: "5.38.7",
             _ct: "2023-10-26T11:40:09.807Z",
             _et: "FormBuilderForm",
             _md: "2023-10-26T11:40:09.807Z"
@@ -144,7 +144,7 @@ export const createFormsData = () => {
             tenant: "root",
             TYPE: "fb.form.latestPublished",
             version: 2,
-            webinyVersion: "5.37.7",
+            webinyVersion: "5.38.7",
             _ct: "2023-10-26T11:40:03.932Z",
             _et: "FormBuilderForm",
             _md: "2023-10-26T11:40:03.932Z"
@@ -153,7 +153,7 @@ export const createFormsData = () => {
             PK: "T#root#L#en-US#FB#F",
             SK: "653a4ff9daeb1e00081ae00f#0001",
             createdBy,
-            createdOn: "2023-10-26T11:39:37.237Z",
+            createdOn: "2023-10-26T11:39:38.238Z",
             fields: [
                 {
                     fieldId: "firstName",
@@ -242,7 +242,7 @@ export const createFormsData = () => {
             tenant: "root",
             TYPE: "fb.form",
             version: 1,
-            webinyVersion: "5.37.7",
+            webinyVersion: "5.38.7",
             _ct: "2023-10-26T11:39:48.657Z",
             _et: "FormBuilderForm",
             _md: "2023-10-26T11:39:48.657Z"
@@ -316,7 +316,7 @@ export const createFormsData = () => {
             tenant: "root",
             TYPE: "fb.form",
             version: 2,
-            webinyVersion: "5.37.7",
+            webinyVersion: "5.38.7",
             _ct: "2023-10-26T11:40:03.932Z",
             _et: "FormBuilderForm",
             _md: "2023-10-26T11:40:03.932Z"
@@ -389,7 +389,7 @@ export const createFormsData = () => {
             tenant: "root",
             TYPE: "fb.form",
             version: 3,
-            webinyVersion: "5.37.7",
+            webinyVersion: "5.38.7",
             _ct: "2023-10-26T11:40:09.807Z",
             _et: "FormBuilderForm",
             _md: "2023-10-26T11:40:09.807Z"

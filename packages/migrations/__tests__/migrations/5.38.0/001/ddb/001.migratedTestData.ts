@@ -11,8 +11,8 @@ export const migratedData = [
             id: "admin",
             type: "admin"
         },
-        createdOn: "2023-10-26T11:39:37.237Z",
-        entity: "FbForm",
+        createdOn: "2023-10-26T11:39:38.238Z",
+        entity: "FormBuilderForm",
         fields: [
             {
                 _id: "Y9OCPiqvc",
@@ -108,7 +108,7 @@ export const migratedData = [
         ],
         tenant: "root",
         version: 1,
-        webinyVersion: "5.37.7"
+        webinyVersion: "5.38.7"
     },
     {
         GSI1_PK: "T#root#L#en-US#FB#F#653a4ff9daeb1e00081ae00f",
@@ -123,7 +123,7 @@ export const migratedData = [
             type: "admin"
         },
         createdOn: "2023-10-26T11:39:50.612Z",
-        entity: "FbForm",
+        entity: "FormBuilderForm",
         fields: [
             {
                 _id: "Y9OCPiqvc",
@@ -195,7 +195,7 @@ export const migratedData = [
         ],
         tenant: "root",
         version: 2,
-        webinyVersion: "5.37.7"
+        webinyVersion: "5.38.7"
     },
     {
         GSI1_PK: "T#root#L#en-US#FB#F#653a4ff9daeb1e00081ae00f",
@@ -210,7 +210,7 @@ export const migratedData = [
             type: "admin"
         },
         createdOn: "2023-10-26T11:40:06.567Z",
-        entity: "FbForm",
+        entity: "FormBuilderForm",
         fields: [
             {
                 _id: "Y9OCPiqvc",
@@ -281,7 +281,7 @@ export const migratedData = [
         ],
         tenant: "root",
         version: 3,
-        webinyVersion: "5.37.7"
+        webinyVersion: "5.38.7"
     },
     {
         PK: "T#root#L#en-US#FB#F#L",
@@ -294,7 +294,7 @@ export const migratedData = [
             type: "admin"
         },
         createdOn: "2023-10-26T11:40:06.567Z",
-        entity: "FbForm",
+        entity: "FormBuilderForm",
         fields: [
             {
                 _id: "Y9OCPiqvc",
@@ -365,7 +365,7 @@ export const migratedData = [
         ],
         tenant: "root",
         version: 3,
-        webinyVersion: "5.37.7"
+        webinyVersion: "5.38.7"
     },
     {
         PK: "T#root#L#en-US#FB#F#LP",
@@ -378,7 +378,7 @@ export const migratedData = [
             type: "admin"
         },
         createdOn: "2023-10-26T11:39:50.612Z",
-        entity: "FbForm",
+        entity: "FormBuilderForm",
         fields: [
             {
                 _id: "Y9OCPiqvc",
@@ -450,6 +450,6 @@ export const migratedData = [
         ],
         tenant: "root",
         version: 2,
-        webinyVersion: "5.37.7"
+        webinyVersion: "5.38.7"
     }
 ];

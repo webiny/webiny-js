@@ -8,13 +8,13 @@ import {
     scanTable
 } from "~tests/utils";
 import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
-import { createFormsData } from "./005.data";
-import { migratedData } from "./005.migratedTestData";
+import { createFormsData } from "./001.data";
+import { migratedData } from "./001.migratedTestData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.37.0-005", () => {
+describe("5.38.0-001", () => {
     const table = getPrimaryDynamoDbTable();
 
     logTestNameBeforeEachTest();

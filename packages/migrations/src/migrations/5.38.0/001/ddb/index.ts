@@ -5,24 +5,11 @@ import {
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { createFormEntity } from "../entities/createFormEntity";
-import { batchWriteAll, BatchWriteItem, ddbScanWithCallback, scan } from "~/utils";
+import { batchWriteAll, BatchWriteItem, scan } from "~/utils";
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
 
-interface LastEvaluatedKey {
-    PK: string;
-    SK: string;
-    GSI1_PK: string;
-    GSI1_SK: string;
-}
-
-interface MultiStepFormsDataMigrationCheckpoint {
-    lastEvaluatedKey?: LastEvaluatedKey | boolean;
-}
-
-export class MultiStepForms_5_38_0_001
-    implements DataMigration<MultiStepFormsDataMigrationCheckpoint>
-{
+export class MultiStepForms_5_38_0_001 implements DataMigration {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
 
     constructor(table: Table) {
@@ -61,9 +48,7 @@ export class MultiStepForms_5_38_0_001
         return false;
     }
 
-    async execute({
-        logger
-    }: DataMigrationContext<MultiStepFormsDataMigrationCheckpoint>): Promise<void> {
+    async execute({ logger }: DataMigrationContext): Promise<void> {
         const result = await scan<FbForm>({
             entity: this.formEntity,
             options: {

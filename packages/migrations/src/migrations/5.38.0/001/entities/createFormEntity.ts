@@ -2,7 +2,7 @@ import { Table } from "dynamodb-toolbox";
 import { createLegacyEntity } from "~/utils";
 
 export const createFormEntity = (table: Table) => {
-    return createLegacyEntity(table, "FbForm", {
+    return createLegacyEntity(table, "FormBuilderForm", {
         PK: {
             partitionKey: true
         },
@@ -80,6 +80,6 @@ export const createFormEntity = (table: Table) => {
         },
         webinyVersion: {
             type: "string"
-        },
+        }
     });
 };
