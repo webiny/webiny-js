@@ -1,27 +1,45 @@
+import WebinyError from "@webiny/error";
 import { mdbid } from "@webiny/utils";
 import { IAcoApp } from "@webiny/api-aco/types";
-import WebinyError from "@webiny/error";
+import { AuditAction, AuditLog, AuditLogsContext } from "~/types";
+import { Compression, createCompressor } from "~/utils/compression";
 
-import { AuditAction } from "~/utils/getAuditObject";
-import { AuditLogsContext, AuditLog } from "~/types";
-
-type AuditLogPayload = Omit<AuditLog, "id" | "data"> & {
+interface AuditLogPayload extends Omit<AuditLog, "id" | "data"> {
     data: Record<string, any>;
-};
+}
 
-const createAuditLog = async (app: IAcoApp, payload: AuditLogPayload) => {
+interface CreateAuditLogParams {
+    app: IAcoApp;
+    payload: AuditLogPayload;
+    compression: Pick<Compression, "compress" | "decompress">;
+}
+
+const createAuditLog = async (params: CreateAuditLogParams) => {
+    const { app, payload, compression } = params;
+
     const payloadData = JSON.stringify(payload.data);
 
     try {
-        await app.search.create({
+        const entry = {
             id: mdbid(),
             title: payload.message,
             content: payload.message,
             tags: [],
             type: "AuditLogs",
             location: { folderId: "root" },
-            data: { ...payload, data: payloadData }
+            data: {
+                ...payload,
+                data: payloadData
+            }
+        };
+        await app.search.create({
+            ...entry,
+            data: {
+                ...entry.data,
+                data: await compression.compress(entry.data.data)
+            }
         });
+        return entry;
     } catch (error) {
         throw WebinyError.from(error, {
             message: "Error while creating new audit log",
@@ -30,12 +48,23 @@ const createAuditLog = async (app: IAcoApp, payload: AuditLogPayload) => {
     }
 };
 
-const createOrMergeAuditLog = async (app: IAcoApp, payload: AuditLogPayload, delay: number) => {
+interface CreateOrMergeAuditLogParams {
+    app: IAcoApp;
+    payload: AuditLogPayload;
+    delay: number;
+    compression: Pick<Compression, "compress" | "decompress">;
+}
+
+const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
+    const { app, payload, delay, compression } = params;
     // Get the latest audit log of this entry.
     const [records] = await app.search.list({
         where: {
             type: "AuditLogs",
-            data: { entityId: payload.entityId, initiator: payload.initiator }
+            data: {
+                entityId: payload.entityId,
+                initiator: payload.initiator
+            }
         },
         limit: 1
     });
@@ -47,22 +76,27 @@ const createOrMergeAuditLog = async (app: IAcoApp, payload: AuditLogPayload, del
 
         // Check if the latest audit log is saved within delay range.
         if (newLogDate - existingLogDate < delay * 1000) {
+            const existingLogData = await compression.decompress(existingLog.data as any);
             // Update latest audit log with new "after" payload.
-            const beforePayloadData = JSON.parse(existingLog.data.data)?.before;
+            const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
             const afterPayloadData = payload.data?.after;
             const updatedPayloadData = beforePayloadData
                 ? JSON.stringify({ before: beforePayloadData, after: afterPayloadData })
                 : JSON.stringify(payload.data);
 
+            const data = await compression.compress(updatedPayloadData);
             try {
                 await app.search.update(existingLog.id, {
                     data: {
                         ...payload,
-                        data: updatedPayloadData
+                        data
                     }
                 });
 
-                return;
+                return {
+                    ...existingLog,
+                    data: updatedPayloadData
+                };
             } catch (error) {
                 throw WebinyError.from(error, {
                     message: "Error while updating audit log",
@@ -72,7 +106,7 @@ const createOrMergeAuditLog = async (app: IAcoApp, payload: AuditLogPayload, del
         }
     }
 
-    createAuditLog(app, payload);
+    return createAuditLog(params);
 };
 
 export const getAuditConfig = (audit: AuditAction) => {
@@ -85,6 +119,7 @@ export const getAuditConfig = (audit: AuditAction) => {
         const { aco, security } = context;
 
         if (!aco) {
+            console.log("No ACO defined.");
             return;
         }
 
@@ -104,11 +139,21 @@ export const getAuditConfig = (audit: AuditAction) => {
         const app = aco.getApp("AuditLogs");
         const delay = audit.action.newEntryDelay;
 
+        const compression = createCompressor();
+
         // Check if there is delay on audit log creation for this action.
         if (delay) {
-            await createOrMergeAuditLog(app, auditLogPayload, delay);
-        } else {
-            await createAuditLog(app, auditLogPayload);
+            return await createOrMergeAuditLog({
+                app,
+                payload: auditLogPayload,
+                delay,
+                compression
+            });
         }
+        return await createAuditLog({
+            app,
+            payload: auditLogPayload,
+            compression
+        });
     };
 };

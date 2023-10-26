@@ -1,29 +1,21 @@
-import { Action, App, Entity } from "~/types";
-
-export type AuditAction = {
-    app: App;
-    entity: Entity;
-    action: Action;
-};
+import { ActionObject, App, AuditObject, EntityObject } from "~/types";
 
 export const getAuditObject = (apps: App[]) => {
-    const obj: Record<string, Record<string, Record<string, AuditAction>>> = {};
+    return apps.reduce<AuditObject>((result, app) => {
+        result[app.app] = app.entities.reduce<EntityObject>((entities, entity) => {
+            entities[entity.type] = entity.actions.reduce<ActionObject>((actions, action) => {
+                actions[action.type] = {
+                    app,
+                    entity,
+                    action
+                };
 
-    apps.forEach(app => {
-        const entitiesObj: Record<string, Record<string, AuditAction>> = {};
+                return actions;
+            }, {});
 
-        app.entities.forEach(entity => {
-            const actionsObj: Record<string, AuditAction> = {};
+            return entities;
+        }, {});
 
-            entity.actions.forEach(action => {
-                actionsObj[action.type] = { app, entity, action };
-            });
-
-            entitiesObj[entity.type] = actionsObj;
-        });
-
-        obj[app.app] = entitiesObj;
-    });
-
-    return obj;
+        return result;
+    }, {});
 };

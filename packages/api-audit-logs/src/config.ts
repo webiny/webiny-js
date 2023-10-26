@@ -1,20 +1,30 @@
 import { getAuditObject } from "~/utils/getAuditObject";
 import { App } from "~/types";
 
+export enum ActionType {
+    CREATE = "CREATE",
+    UPDATE = "UPDATE",
+    DELETE = "DELETE",
+    PUBLISH = "PUBLISH",
+    UNPUBLISH = "UNPUBLISH",
+    IMPORT = "IMPORT",
+    EXPORT = "EXPORT"
+}
+
 const commonActions = {
-    CREATE: { type: "CREATE", displayName: "Create" },
-    UPDATE: { type: "UPDATE", displayName: "Update" },
-    DELETE: { type: "DELETE", displayName: "Delete" }
+    CREATE: { type: ActionType.CREATE, displayName: "Create" },
+    UPDATE: { type: ActionType.UPDATE, displayName: "Update" },
+    DELETE: { type: ActionType.DELETE, displayName: "Delete" }
 };
 
 const publishActions = {
-    PUBLISH: { type: "PUBLISH", displayName: "Publish" },
-    UNPUBLISH: { type: "UNPUBLISH", displayName: "Unpublish" }
+    PUBLISH: { type: ActionType.PUBLISH, displayName: "Publish" },
+    UNPUBLISH: { type: ActionType.UNPUBLISH, displayName: "Unpublish" }
 };
 
 const importExportActions = {
-    IMPORT: { type: "IMPORT", displayName: "Import" },
-    EXPORT: { type: "EXPORT", displayName: "Export" }
+    IMPORT: { type: ActionType.IMPORT, displayName: "Import" },
+    EXPORT: { type: ActionType.EXPORT, displayName: "Export" }
 };
 
 export const auditLogsApps: App[] = [
