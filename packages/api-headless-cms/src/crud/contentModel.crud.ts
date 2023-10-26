@@ -104,10 +104,12 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         })
     };
 
+    const listModelsCache = new Map<string, Promise<CmsModel[]>>();
     const clearModelsCache = (): void => {
         for (const loader of Object.values(loaders)) {
             loader.clearAll();
         }
+        listModelsCache.clear();
     };
 
     const managers = new Map<string, CmsModelManager>();
@@ -183,30 +185,49 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const modelsList = async (): Promise<CmsModel[]> => {
         const databaseModels: CmsModel[] = await loaders.listModels.load("listModels");
-
         const pluginsModels = getModelsAsPlugins();
-
         return databaseModels.concat(pluginsModels);
     };
-
+    /**
+     * The list models cache is a key -> Promise pair so it the listModels() can be called multiple times but executed only once.
+     */
     const listModels = async () => {
-        return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-            const models = await modelsList();
-            return filterAsync(models, async model => {
-                const ownsModel = await modelsPermissions.ensure(
-                    { owns: model.createdBy },
-                    { throw: false }
-                );
+        /**
+         * Maybe we can cache based on permissions, not the identity id?
+         *
+         * TODO: @adrian please check if possible.
+         */
+        const key = JSON.stringify({
+            tenant: getTenant().id,
+            locale: getLocale().code,
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
+        });
+        if (listModelsCache.has(key)) {
+            return listModelsCache.get(key) as Promise<CmsModel[]>;
+        }
+        const cachedModelList = async () => {
+            return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
+                const models = await modelsList();
+                return filterAsync(models, async model => {
+                    const ownsModel = await modelsPermissions.ensure(
+                        { owns: model.createdBy },
+                        { throw: false }
+                    );
 
-                if (!ownsModel) {
-                    return false;
-                }
+                    if (!ownsModel) {
+                        return false;
+                    }
 
-                return modelsPermissions.canAccessModel({
-                    model
+                    return modelsPermissions.canAccessModel({
+                        model
+                    });
                 });
             });
-        });
+        };
+
+        listModelsCache.set(key, cachedModelList());
+
+        return listModelsCache.get(key) as Promise<CmsModel[]>;
     };
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
@@ -375,7 +396,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 model
             });
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await updateManager(context, model);
 
@@ -507,7 +528,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, resultModel);
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await onModelAfterUpdate.publish({
                 input: {} as CmsModelUpdateInput,
@@ -595,7 +616,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 model
             });
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await updateManager(context, model);
 

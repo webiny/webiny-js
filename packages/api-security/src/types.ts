@@ -85,6 +85,8 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     getStorageOperations(): SecurityStorageOperations;
 
+    isAuthorizationEnabled(): boolean;
+
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
 
     /**
