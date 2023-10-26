@@ -84,6 +84,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             if (projectAppParams.openSearch) {
                 searchEngineParams = app.getParam(projectAppParams.openSearch);
             } else if (projectAppParams.elasticSearch) {
+                searchEngineParams = app.getParam(projectAppParams.elasticSearch);
             }
 
             if (searchEngineParams) {
