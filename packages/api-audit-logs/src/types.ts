@@ -7,7 +7,7 @@ import { PbImportExportContext } from "@webiny/api-page-builder-import-export/gr
 import { ApwContext } from "@webiny/api-apw/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 
-export type Action = {
+export interface Action {
     type: string;
     displayName: string;
     /**
@@ -15,22 +15,22 @@ export type Action = {
      * During this delay actions will update existing audit log instead of creating new ones.
      */
     newEntryDelay?: number;
-};
+}
 
-export type Entity = {
+export interface Entity {
     type: string;
     displayName: string;
     linkToEntity?: (id: string) => string;
     actions: Action[];
-};
+}
 
-export type App = {
+export interface App {
     app: string;
     displayName: string;
     entities: Entity[];
-};
+}
 
-export type AuditLog = {
+export interface AuditLog {
     id: string;
     message: string;
     app: string;
@@ -40,7 +40,7 @@ export type AuditLog = {
     data: JSON;
     timestamp: Date;
     initiator: string;
-};
+}
 
 export interface AuditLogsContext
     extends BaseContext,
@@ -52,4 +52,22 @@ export interface AuditLogsContext
         ApwContext {
     pageBuilder: PbImportExportContext["pageBuilder"];
     formBuilder: PbImportExportContext["formBuilder"];
+}
+
+export interface AuditObject {
+    [app: string]: EntityObject;
+}
+
+export interface EntityObject {
+    [entity: string]: ActionObject;
+}
+
+export interface ActionObject {
+    [action: string]: AuditAction;
+}
+
+export interface AuditAction {
+    app: App;
+    entity: Entity;
+    action: Action;
 }
