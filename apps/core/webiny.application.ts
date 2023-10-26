@@ -1,6 +1,5 @@
 import { createCoreApp } from "@webiny/serverless-cms-aws";
 
 export default createCoreApp({
-    pulumiResourceNamePrefix: "wby-",
-    openSearch: true
+    pulumiResourceNamePrefix: "wby-"
 });
