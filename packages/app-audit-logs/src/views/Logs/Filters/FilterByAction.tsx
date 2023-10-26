@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 
 import { useBind, useForm } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
-import { auditLogsApps } from "@webiny/api-audit-logs";
+import { auditLogsApps } from "@webiny/api-audit-logs/config";
 
 const getValidFilterValue = (value: string): string | undefined => {
     if (value === "all" || value === "") {

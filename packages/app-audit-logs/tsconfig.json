@@ -20,8 +20,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-audit-log/*": ["../api-audit-log/src/*"],
-      "@webiny/api-audit-log": ["../api-audit-log/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
