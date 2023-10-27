@@ -965,6 +965,10 @@ describe("content model test", () => {
 
         const { listContentModelsQuery: listModels } = useGraphQLHandler({
             ...manageHandlerOpts,
+            identity: {
+                ...helpers.identity,
+                id: "identityWithSpecificModelPermissions"
+            },
             permissions: createPermissions({ models: [createdContentModels[0].modelId] })
         });
 
