@@ -127,36 +127,42 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             async result => {
                 const items: BatchWriteItem[] = [];
                 for (const current of result.items) {
-                    if (!current.TYPE || !current.TYPE.startsWith("fb.form")) {
+                    const isFbForm = current.TYPE?.startsWith("fb.form");
+                    if (!isFbForm) {
                         continue;
                     }
 
-                    if (!current.steps) {
-                        // If no steps are defined, we need to create a single step.
-                        current.steps = [];
-
-                        if (Array.isArray(current.layout)) {
-                            // If layout is an array, we need to create a single step with all the fields.
-                            current.steps = [{ title: "Step 1", layout: current.layout || [] }];
-                            delete current.layout;
-                        }
-                        items.push(this.formEntity.putBatch(current));
+                    if (current.steps) {
+                        continue;
                     }
+
+                    // If no steps are defined, we need to create a single step.
+                    current.steps = [];
+
+                    if (Array.isArray(current.layout)) {
+                        // If layout is an array, we need to create a single step with all the fields.
+                        current.steps.push({ title: "Step 1", layout: current.layout });
+                        delete current.layout;
+                    }
+
+                    items.push(this.formEntity.putBatch(current));
                 }
 
-                if (items.length >= 0) {
-                    const execute = () => {
-                        return batchWriteAll({ table: this.formEntity.table, items });
-                    };
-
-                    logger.trace("Storing the DynamoDB records...");
-                    await executeWithRetry(execute, {
-                        onFailedAttempt: error => {
-                            logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                            logger.error(error.message);
-                        }
-                    });
+                if (items.length === 0) {
+                    return;
                 }
+
+                const execute = () => {
+                    return batchWriteAll({ table: this.formEntity.table, items });
+                };
+
+                logger.trace("Storing the DynamoDB records...");
+                await executeWithRetry(execute, {
+                    onFailedAttempt: error => {
+                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
+                        logger.error(error.message);
+                    }
+                });
             }
         );
 

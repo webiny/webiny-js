@@ -5,5 +5,5 @@ export interface FbForm {
     formId: string;
     steps?: Array<{ title: string; layout: FbFormLayout }>;
     layout?: FbFormLayout;
-    TYPE: string;
+    TYPE?: string;
 }
