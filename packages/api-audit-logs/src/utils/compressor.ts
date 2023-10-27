@@ -1,4 +1,3 @@
-// TODO make compressor work
 import { compress as gzip, decompress as ungzip } from "@webiny/utils/compression/gzip";
 
 const GZIP = "gzip";
@@ -12,33 +11,35 @@ const convertToBuffer = (value: string | Buffer) => {
     return value;
 };
 
-export interface CompressedData {
-    compression: string;
-    value: string;
-}
-
 export interface OriginalData {
     [key: string]: any;
 }
 
 export interface Compressor {
     canCompress(data: any): boolean;
-    compress(data: any): Promise<CompressedData>;
-    canDecompress(data: CompressedData | Record<string, any>): boolean;
-    decompress(data: CompressedData): Promise<OriginalData | null>;
+    compress(data: any): Promise<string>;
+    canDecompress(data: string): boolean;
+    decompress(data: string): Promise<OriginalData | null>;
 }
 
 class GzipCompression implements Compressor {
     public canCompress(data: any): boolean {
-        if (data) {
+        let compression: string | undefined;
+        try {
+            const result = JSON.parse(data);
+            if (!result?.compression) {
+                return false;
+            }
+            compression = result.compression;
+        } catch {
             return false;
         }
         /**
          * If already compressed, skip this.
          */
-        if (data.compression) {
-            if (data.compression !== "GZIP") {
-                console.log(`Data is already compressed with "${data.compression}".`);
+        if (compression) {
+            if (compression !== "GZIP") {
+                console.log(`Data is compressed with "${compression}". Cannot compress again.`);
             }
             return false;
         }
@@ -58,14 +59,18 @@ class GzipCompression implements Compressor {
         }
     }
 
-    public canDecompress(data: CompressedData | Record<string, any>): boolean {
-        if (data) {
+    public canDecompress(data: string): boolean {
+        let compression: string;
+        try {
+            const result = JSON.parse(data);
+            if (!result?.compression) {
+                return false;
+            }
+            compression = result.compression;
+        } catch {
             return false;
         }
-        const compression = (data as any)?.compression;
-        if (!compression) {
-            return false;
-        } else if (compression !== GZIP) {
+        if (compression !== GZIP) {
             console.log(
                 `Could not decompress given data since its compression is not "${GZIP}". It is "${compression}".`
             );
@@ -74,9 +79,19 @@ class GzipCompression implements Compressor {
         return true;
     }
 
-    public async decompress(data: CompressedData): Promise<OriginalData | null> {
+    public async decompress(data: string): Promise<OriginalData | null> {
+        let compressedValue: string;
         try {
-            const buf = await ungzip(convertToBuffer(data.value));
+            const result = JSON.parse(data);
+            if (!result.value) {
+                return null;
+            }
+            compressedValue = result.value;
+        } catch {
+            return null;
+        }
+        try {
+            const buf = await ungzip(convertToBuffer(compressedValue));
             const value = buf.toString(FROM_STORAGE_ENCODING);
             return JSON.parse(value);
         } catch (ex) {
