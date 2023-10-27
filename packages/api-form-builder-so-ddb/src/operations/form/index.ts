@@ -152,46 +152,10 @@ export const createFormStorageOperations = (
         };
     };
 
-    const createForm = async (
-        params: FormBuilderStorageOperationsCreateFormParams
-    ): Promise<FbForm> => {
-        const { form } = params;
-
-        const revisionKeys = createRevisionKeys(form);
-        const latestKeys = createLatestKeys(form);
-        const gsiKeys = createGSIKeys(form);
-
-        const items = [
-            entity.putBatch({
-                ...form,
-                ...revisionKeys,
-                ...gsiKeys,
-                TYPE: createFormType()
-            }),
-            entity.putBatch({
-                ...form,
-                ...latestKeys,
-                TYPE: createFormLatestType()
-            })
-        ];
-
-        try {
-            await batchWriteAll({
-                table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not insert form data into table.",
-                ex.code || "CREATE_FORM_ERROR",
-                {
-                    revisionKeys,
-                    latestKeys,
-                    form
-                }
-            );
-        }
-        return form;
+    const createForm = () => {
+        throw new Error(
+            "api-form-builder-ddb does not implement the Form Builder storage operations."
+        );
     };
 
     const createFormFrom = async (
@@ -357,76 +321,10 @@ export const createFormStorageOperations = (
         }
     };
 
-    const listForms = async (
-        params: FormBuilderStorageOperationsListFormsParams
-    ): Promise<FormBuilderStorageOperationsListFormsResponse> => {
-        const { sort, limit, where: initialWhere, after } = params;
-
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createFormLatestPartitionKey(initialWhere),
-            options: {
-                gte: " "
-            }
-        };
-
-        let results;
-        try {
-            results = await queryAll<FbForm>(queryAllParams);
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could list forms.",
-                ex.code || "LIST_FORMS_ERROR",
-                {
-                    where: initialWhere,
-                    partitionKey: queryAllParams.partitionKey
-                }
-            );
-        }
-        const totalCount = results.length;
-
-        const where: Partial<FormBuilderStorageOperationsListFormsParams["where"]> = {
-            ...initialWhere
-        };
-        /**
-         * We need to remove conditions so we do not filter by them again.
-         */
-        delete where.tenant;
-        delete where.locale;
-
-        const filteredItems = filterItems({
-            plugins,
-            items: results,
-            where,
-            fields: formDynamoDbFields
-        });
-
-        const sortedItems = sortItems({
-            items: filteredItems,
-            sort,
-            fields: formDynamoDbFields
-        });
-
-        const start = parseInt(decodeCursor(after) || "0") || 0;
-        const hasMoreItems = totalCount > start + limit;
-        const end = limit > totalCount + start + limit ? undefined : start + limit;
-        const items = sortedItems.slice(start, end);
-        /**
-         * Although we do not need a cursor here, we will use it as such to keep it standardized.
-         * Number is simply encoded.
-         */
-        const cursor = items.length > 0 ? encodeCursor(start + limit) : null;
-
-        const meta = {
-            hasMoreItems,
-            totalCount,
-            cursor
-        };
-
-        return {
-            items,
-            meta
-        };
+    const listForms = () => {
+        throw new Error(
+            "api-form-builder-ddb does not implement the Form Builder storage operations."
+        );
     };
 
     const listFormRevisions = async (

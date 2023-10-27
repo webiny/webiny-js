@@ -6,14 +6,13 @@ import {
     NotFoundResponse,
     Response
 } from "@webiny/handler-graphql/responses";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { sanitizeFormSubmissionData, flattenSubmissionMeta } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
 import { mdbid } from "@webiny/utils";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
-const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
-    type: "graphql-schema",
-    schema: {
+export const createFormSchema = () => {
+    const formSchema = new GraphQLSchemaPlugin<FormBuilderContext>({
         typeDefs: /* GraphQL */ `
             enum FbFormStatusEnum {
                 published
@@ -378,9 +377,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 },
                 listForms: async (_, __, { formBuilder }) => {
                     try {
-                        const forms = await formBuilder.listForms();
+                        const [data, meta] = await formBuilder.listForms();
 
-                        return new ListResponse(forms);
+                        return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -661,7 +660,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             }
         }
-    }
-};
+    });
 
-export default plugin;
+    return formSchema;
+};

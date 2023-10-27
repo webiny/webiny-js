@@ -223,7 +223,7 @@ export interface OnFormAfterUnpublishTopicParams {
 export interface FormsCRUD {
     getForm(id: string, options?: FormBuilderGetFormOptions): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
-    listForms(): Promise<FbForm[]>;
+    listForms(): Promise<FormBuilderStorageOperationsListFormsResponse>;
     createForm(data: FormCreateInput): Promise<FbForm>;
     updateForm(id: string, data: Partial<FormUpdateInput>): Promise<FbForm>;
     deleteForm(id: string): Promise<boolean>;
@@ -586,14 +586,15 @@ export interface FormBuilderStorageOperationsListFormRevisionsParams {
  * @category StorageOperations
  * @category StorageOperationsParams
  */
-export interface FormBuilderStorageOperationsListFormsResponse {
-    items: FbForm[];
-    meta: {
+
+export type FormBuilderStorageOperationsListFormsResponse = [
+    FbForm[],
+    {
         hasMoreItems: boolean;
         cursor: string | null;
         totalCount: number;
-    };
-}
+    }
+];
 
 /**
  * @category StorageOperations

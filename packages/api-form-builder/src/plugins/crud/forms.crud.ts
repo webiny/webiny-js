@@ -194,9 +194,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             try {
-                const { items } = await this.storageOperations.listForms(listFormParams);
-
-                return items;
+                return await this.storageOperations.listForms(listFormParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list all forms by given params",
@@ -214,14 +212,16 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             await this.getForm(`${pid}#${revisionNumber}`, options);
 
             try {
-                return await this.storageOperations.listFormRevisions({
+                const result = (await this.storageOperations.listFormRevisions({
                     where: {
-                        id,
+                        id: `${pid}#${revisionNumber}`,
                         tenant: getTenant().id,
                         locale: getLocale().code
                     },
                     sort: ["version_ASC"]
-                });
+                })) as unknown as FbForm[][];
+
+                return result[0];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list form revisions.",
@@ -367,10 +367,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.createForm({
-                    input,
-                    form
-                });
+                const result = await this.storageOperations.createForm({ form, input });
                 await onFormAfterCreate.publish({
                     form: result
                 });
