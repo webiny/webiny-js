@@ -38,7 +38,7 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
         /**
          * If not searchable, continue further.
          */
-        if (!plugin.fullTextSearch) {
+        if (!plugin.fullTextSearch || field.settings?.disableFullTextSearch === true) {
             return result;
         }
 
