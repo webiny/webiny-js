@@ -152,6 +152,10 @@ export interface CmsModelFieldSettings {
      */
     type?: string;
     /**
+     * Disable full text search explicitly on this field.
+     */
+    disableFullTextSearch?: boolean;
+    /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */
     [key: string]: any;
