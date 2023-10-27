@@ -13,7 +13,7 @@ import { CmsEntriesRootFolder_5_37_0_002 } from "~/migrations/5.37.0/002/ddb-es"
 import { AcoFolders_5_37_0_003 } from "~/migrations/5.37.0/003/ddb-es";
 import { AcoRecords_5_37_0_004 } from "~/migrations/5.37.0/004/ddb-es";
 import { FileManager_5_37_0_005 } from "~/migrations/5.37.0/005/ddb-es";
-import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
+import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb-es";
 
 export const migrations = () => {
     return [

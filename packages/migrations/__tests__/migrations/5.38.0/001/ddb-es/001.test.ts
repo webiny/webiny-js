@@ -1,27 +1,36 @@
 import {
     assertNotError,
-    createDdbMigrationHandler,
+    createDdbEsMigrationHandler,
+    getDynamoToEsTable,
     getPrimaryDynamoDbTable,
     groupMigrations,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
-import { createFormsData } from "./001.data";
+import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb-es";
+import { createFormsData, createEsFormsData } from "./001.data";
 import { migratedData } from "./001.migratedTestData";
+import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
+import { esGetIndexName } from "~/utils";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import { createLocalesData, createTenantsData } from "~tests/migrations/5.38.0/001/ddb/001.data";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
 describe("5.38.0-001", () => {
-    const table = getPrimaryDynamoDbTable();
+    const primaryTable = getPrimaryDynamoDbTable();
+    const dynamoToEsTable = getDynamoToEsTable();
+    const elasticsearchClient = createElasticsearchClient();
 
     logTestNameBeforeEachTest();
 
     it("should not run if no forms found", async () => {
-        const handler = createDdbMigrationHandler({
-            table,
+        const handler = createDdbEsMigrationHandler({
+            primaryTable,
+            dynamoToEsTable,
+            elasticsearchClient,
             migrations: [MultiStepForms_5_38_0_001]
         });
 
@@ -36,12 +45,30 @@ describe("5.38.0-001", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, [...createFormsData()]);
+        await insertTestData(primaryTable, [
+            ...createFormsData(),
+            ...createTenantsData(),
+            ...createLocalesData()
+        ]);
 
-        const handler = createDdbMigrationHandler({
-            table,
+        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                isHeadlessCmsModel: false,
+                type: "form-builder"
+            });
+        });
+
+        await elasticsearchClient.indices.refreshAll();
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable,
+            dynamoToEsTable,
+            elasticsearchClient,
             migrations: [MultiStepForms_5_38_0_001]
         });
+
         const { data, error } = await handler();
 
         assertNotError(error);
@@ -52,7 +79,7 @@ describe("5.38.0-001", () => {
         expect(grouped.notApplicable.length).toBe(0);
 
         await expect(
-            scanTable(table, {
+            scanTable(primaryTable, {
                 filters: [
                     {
                         attr: "TYPE",
@@ -64,10 +91,16 @@ describe("5.38.0-001", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, [...createFormsData()]);
+        await insertTestData(primaryTable, [
+            ...createFormsData(),
+            ...createTenantsData(),
+            ...createLocalesData()
+        ]);
 
-        const handler = createDdbMigrationHandler({
-            table,
+        const handler = createDdbEsMigrationHandler({
+            primaryTable,
+            dynamoToEsTable,
+            elasticsearchClient,
             migrations: [MultiStepForms_5_38_0_001]
         });
 
