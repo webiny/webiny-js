@@ -240,10 +240,17 @@ export const createFolderCrudMethods = ({
             return true;
         },
 
+        async getAncestors(folder: Folder) {
+            const [folders] = await this.listAll({ where: { type: folder.type } });
+            return getFolderAndItsAncestors({ folder, folders });
+        },
+
+        /**
+         * @deprecated use `getAncestors` instead
+         */
         async getFolderWithAncestors(id: string) {
-            const { type } = await this.get(id);
-            const [folders] = await this.listAll({ where: { type } });
-            return getFolderAndItsAncestors({ id, folders });
+            const folder = await this.get(id);
+            return this.getAncestors(folder);
         },
 
         async listFolderLevelPermissionsTargets() {
