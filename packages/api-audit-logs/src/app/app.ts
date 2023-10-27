@@ -85,7 +85,7 @@ export const createApp = (): IAcoAppRegisterParams => {
                 label: "Initiator"
             }
         ],
-        onEntry: async (entry: any) => {
+        onEntry: async entry => {
             if (!entry.data?.data) {
                 return entry;
             }
