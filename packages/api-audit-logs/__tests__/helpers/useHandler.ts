@@ -1,7 +1,6 @@
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { createHandlerCore, CreateHandlerCoreParams } from "./handlerCore";
-import { AuditLogsContext } from "~/types";
-import { AuditLogsAcoContext } from "@webiny/api-audit-logs-aco/types";
+import { AuditLogsContext, AuditLogsAcoContext } from "~/types";
 
 export const useHandler = (params?: CreateHandlerCoreParams) => {
     const core = createHandlerCore(params);

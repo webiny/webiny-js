@@ -2,8 +2,8 @@ import { getAuditConfig } from "~/utils/getAuditConfig";
 import { AuditAction } from "~/types";
 import { useHandler } from "./helpers/useHandler";
 import { ActionType } from "~/config";
-import { AUDIT_LOGS_TYPE } from "@webiny/api-audit-logs-aco/contants";
-import { createCompressor } from "~/utils/compression";
+import { AUDIT_LOGS_TYPE } from "~/app/contants";
+import { compressor } from "~/utils/compressor";
 
 describe("create audit log", () => {
     const audit: AuditAction = {
@@ -35,8 +35,6 @@ describe("create audit log", () => {
             ]
         }
     };
-
-    const compressor = createCompressor();
 
     it("should create a new audit log", async () => {
         const createAuditLog = getAuditConfig(audit);
@@ -96,31 +94,28 @@ describe("create audit log", () => {
 
         await createAuditLog(message, data, entityId, context);
 
-        const [result] = await context.aco.getApp(AUDIT_LOGS_TYPE).search.list({});
+        const [results] = await context.aco.getApp(AUDIT_LOGS_TYPE).search.list({});
 
-        expect(result).toEqual([
-            {
-                values: {
-                    id: expect.any(String),
-                    title: message,
-                    content: message,
-                    data: {
-                        action: ActionType.CREATE,
-                        app: "cms",
-                        entity: "user",
-                        initiator: "id-12345678",
-                        timestamp: expect.any(Date),
-                        entityId,
-                        message,
-                        data
-                    },
-                    location: {
-                        folderId: "root"
-                    },
-                    tags: [],
-                    type: "AuditLogs"
-                }
-            }
-        ]);
+        const [result] = results;
+        expect(result).toMatchObject({
+            id: expect.any(String),
+            title: message,
+            content: message,
+            data: {
+                action: ActionType.CREATE,
+                app: "cms",
+                entity: "user",
+                initiator: "id-12345678",
+                timestamp: expect.any(Date),
+                entityId,
+                message,
+                data: JSON.stringify(data)
+            },
+            location: {
+                folderId: "root"
+            },
+            tags: [],
+            type: "AuditLogs"
+        });
     });
 });

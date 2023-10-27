@@ -34,7 +34,6 @@ import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
-import { createAcoAuditLogsContext } from "@webiny/api-audit-logs-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 
 // Imports plugins created via scaffolding utilities.
@@ -122,8 +121,7 @@ export const handler = createHandler({
                 }
             });
         }),
-        createAuditLogs(),
-        createAcoAuditLogsContext()
+        createAuditLogs()
     ],
     http: { debug }
 });

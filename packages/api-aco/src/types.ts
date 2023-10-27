@@ -113,12 +113,15 @@ export interface IAcoApp {
     removeField: IAcoAppRemoveFieldCallable;
     modifyField: IAcoAppModifyFieldCallable;
 }
+// TODO: determine correct type
+export type IAcoAppOnEntry<T = any> = (entry: T) => Promise<T>;
 
 export interface IAcoAppParams {
     name: string;
     apiName: string;
     model: CmsModel;
     fields: CmsModelField[];
+    onEntry?: IAcoAppOnEntry;
 }
 
 export type IAcoAppsOptions = CreateAcoParams;

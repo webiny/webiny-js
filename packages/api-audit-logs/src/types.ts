@@ -7,6 +7,8 @@ import { PbImportExportContext } from "@webiny/api-page-builder-import-export/gr
 import { ApwContext } from "@webiny/api-apw/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 
+export * from "~/app/types";
+
 export interface Action {
     type: string;
     displayName: string;
