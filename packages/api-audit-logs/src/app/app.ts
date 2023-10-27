@@ -1,5 +1,17 @@
 import { IAcoAppRegisterParams } from "@webiny/api-aco/types";
-import { AUDIT_LOGS_TYPE } from "~/contants";
+import { AUDIT_LOGS_TYPE } from "./contants";
+import { compressor } from "~/utils/compressor";
+
+const toDate = (value: string | Date) => {
+    if (value instanceof Date) {
+        return value;
+    }
+    try {
+        return new Date(value);
+    } catch {
+        return value;
+    }
+};
 
 export const createApp = (): IAcoAppRegisterParams => {
     return {
@@ -72,6 +84,19 @@ export const createApp = (): IAcoAppRegisterParams => {
                 storageId: "text@initiator",
                 label: "Initiator"
             }
-        ]
+        ],
+        onEntry: async (entry: any) => {
+            if (!entry.data?.data) {
+                return entry;
+            }
+            return {
+                ...entry,
+                data: {
+                    ...entry.data,
+                    timestamp: toDate(entry.data.timestamp),
+                    data: compressor.decompress(entry.data.data)
+                }
+            };
+        }
     };
 };
