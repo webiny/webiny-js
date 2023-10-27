@@ -1120,7 +1120,6 @@ export interface CmsGroupListParams {
     where: {
         tenant: string;
         locale: string;
-        [key: string]: any;
     };
 }
 
