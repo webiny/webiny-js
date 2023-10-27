@@ -8,7 +8,8 @@ import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/ty
 import {
     AcoSearchRecordCrud,
     AcoSearchRecordCrudBase,
-    AcoSearchRecordStorageOperations
+    AcoSearchRecordStorageOperations,
+    SearchRecord
 } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
 import { AcoFilterCrud, AcoFilterStorageOperations } from "~/filter/filter.types";
@@ -114,7 +115,7 @@ export interface IAcoApp {
     modifyField: IAcoAppModifyFieldCallable;
 }
 // TODO: determine correct type
-export type IAcoAppOnEntry<T = any> = (entry: T) => Promise<T>;
+export type IAcoAppOnEntry<T = any> = (entry: SearchRecord<T>) => Promise<SearchRecord<T>>;
 
 export interface IAcoAppParams {
     name: string;
