@@ -1,31 +1,31 @@
-import { onModelAfterCreateHook, onModelAfterUpdateHook, onModelAfterDeleteHook } from "./models";
-import { onGroupAfterCreateHook, onGroupAfterUpdateHook, onGroupAfterDeleteHook } from "./groups";
+import { onModelAfterCreateHook, onModelAfterDeleteHook, onModelAfterUpdateHook } from "./models";
+import { onGroupAfterCreateHook, onGroupAfterDeleteHook, onGroupAfterUpdateHook } from "./groups";
 import {
-    // onEntryAfterCreateHook,
-    onEntryAfterDeleteHook
-} from "./entries";
-import {
+    onEntryAfterCreateHook,
+    onEntryAfterUpdateHook,
+    onEntryAfterDeleteHook,
+    onEntryAfterPublishHook,
+    onEntryAfterUnpublishHook,
     onEntryRevisionAfterCreateHook,
-    onEntryRevisionAfterUpdateHook,
-    onEntryRevisionAfterDeleteHook,
-    onEntryRevisionAfterPublishHook,
-    onEntryRevisionAfterUnpublishHook
-} from "./entryRevisions";
-
+    onEntryRevisionAfterDeleteHook
+} from "./entries";
 import { AuditLogsContext } from "~/types";
 
 export const createHeadlessCmsHooks = (context: AuditLogsContext) => {
-    onModelAfterCreateHook(context);
-    onModelAfterUpdateHook(context);
-    onModelAfterDeleteHook(context);
+    // groups
     onGroupAfterCreateHook(context);
     onGroupAfterUpdateHook(context);
     onGroupAfterDeleteHook(context);
-    // onEntryAfterCreateHook(context); Create loops, since ACO uses Headless CMS to store entries
+    // models
+    onModelAfterCreateHook(context);
+    onModelAfterUpdateHook(context);
+    onModelAfterDeleteHook(context);
+    // entries
+    onEntryAfterCreateHook(context);
+    onEntryAfterUpdateHook(context);
     onEntryAfterDeleteHook(context);
+    onEntryAfterPublishHook(context);
+    onEntryAfterUnpublishHook(context);
     onEntryRevisionAfterCreateHook(context);
-    onEntryRevisionAfterUpdateHook(context);
     onEntryRevisionAfterDeleteHook(context);
-    onEntryRevisionAfterPublishHook(context);
-    onEntryRevisionAfterUnpublishHook(context);
 };
