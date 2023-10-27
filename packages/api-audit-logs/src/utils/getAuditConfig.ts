@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { mdbid } from "@webiny/utils";
 import { IAcoApp } from "@webiny/api-aco/types";
 import { AuditAction, AuditLog, AuditLogsContext } from "~/types";
-import { Compression, createCompressor } from "~/utils/compression";
+import { compressor } from "~/utils/compressor";
 
 interface AuditLogPayload extends Omit<AuditLog, "id" | "data"> {
     data: Record<string, any>;
@@ -11,11 +11,10 @@ interface AuditLogPayload extends Omit<AuditLog, "id" | "data"> {
 interface CreateAuditLogParams {
     app: IAcoApp;
     payload: AuditLogPayload;
-    compression: Pick<Compression, "compress" | "decompress">;
 }
 
 const createAuditLog = async (params: CreateAuditLogParams) => {
-    const { app, payload, compression } = params;
+    const { app, payload } = params;
 
     const payloadData = JSON.stringify(payload.data);
 
@@ -36,7 +35,7 @@ const createAuditLog = async (params: CreateAuditLogParams) => {
             ...entry,
             data: {
                 ...entry.data,
-                data: await compression.compress(entry.data.data)
+                data: await compressor.compress(entry.data.data)
             }
         });
         return entry;
@@ -52,11 +51,10 @@ interface CreateOrMergeAuditLogParams {
     app: IAcoApp;
     payload: AuditLogPayload;
     delay: number;
-    compression: Pick<Compression, "compress" | "decompress">;
 }
 
 const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
-    const { app, payload, delay, compression } = params;
+    const { app, payload, delay } = params;
     // Get the latest audit log of this entry.
     const [records] = await app.search.list({
         where: {
@@ -76,7 +74,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
 
         // Check if the latest audit log is saved within delay range.
         if (newLogDate - existingLogDate < delay * 1000) {
-            const existingLogData = await compression.decompress(existingLog.data as any);
+            const existingLogData = await compressor.decompress(existingLog.data as any);
             // Update latest audit log with new "after" payload.
             const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
             const afterPayloadData = payload.data?.after;
@@ -84,7 +82,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
                 ? JSON.stringify({ before: beforePayloadData, after: afterPayloadData })
                 : JSON.stringify(payload.data);
 
-            const data = await compression.compress(updatedPayloadData);
+            const data = await compressor.compress(updatedPayloadData);
             try {
                 await app.search.update(existingLog.id, {
                     data: {
@@ -139,21 +137,17 @@ export const getAuditConfig = (audit: AuditAction) => {
         const app = aco.getApp("AuditLogs");
         const delay = audit.action.newEntryDelay;
 
-        const compression = createCompressor();
-
         // Check if there is delay on audit log creation for this action.
         if (delay) {
             return await createOrMergeAuditLog({
                 app,
                 payload: auditLogPayload,
-                delay,
-                compression
+                delay
             });
         }
         return await createAuditLog({
             app,
-            payload: auditLogPayload,
-            compression
+            payload: auditLogPayload
         });
     };
 };

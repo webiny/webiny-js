@@ -1,6 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
 import { createSubscriptionHooks } from "~/subscriptions";
 import { AuditLogsContext } from "~/types";
+import { createAcoAuditLogsContext } from "~/app";
 
 export const createAuditLogs = () => {
     const subscriptionsPlugin = new ContextPlugin<AuditLogsContext>(async context => {
@@ -12,7 +13,8 @@ export const createAuditLogs = () => {
 
     subscriptionsPlugin.name = "auditLogs.context.subscriptions";
 
-    return [subscriptionsPlugin];
+    return [subscriptionsPlugin, createAcoAuditLogsContext()];
 };
 
 export * from "~/config";
+export * from "~/app/createAppModifier";

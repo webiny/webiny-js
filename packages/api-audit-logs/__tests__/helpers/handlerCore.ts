@@ -27,7 +27,7 @@ import { ImportExportTaskStorageOperations } from "@webiny/api-page-builder-impo
 import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createMailerContext } from "@webiny/api-mailer";
-import { createAcoAuditLogsContext } from "@webiny/api-audit-logs-aco";
+import { createAcoAuditLogsContext } from "~/app";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;

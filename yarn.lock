@@ -13092,33 +13092,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-audit-logs-aco@0.0.0, @webiny/api-audit-logs-aco@workspace:packages/api-audit-logs-aco":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-audit-logs-aco@workspace:packages/api-audit-logs-aco"
-  dependencies:
-    "@babel/cli": ^7.22.6
-    "@babel/core": ^7.22.8
-    "@babel/preset-env": ^7.22.7
-    "@babel/preset-typescript": ^7.22.5
-    "@babel/runtime": ^7.22.6
-    "@webiny/api": 0.0.0
-    "@webiny/api-aco": 0.0.0
-    "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-i18n": 0.0.0
-    "@webiny/api-security": 0.0.0
-    "@webiny/api-tenancy": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/handler": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/handler-graphql": 0.0.0
-    "@webiny/plugins": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    graphql: ^15.8.0
-    ttypescript: ^1.5.13
-    typescript: ^4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-audit-logs@0.0.0, @webiny/api-audit-logs@workspace:packages/api-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
@@ -13132,7 +13105,6 @@ __metadata:
     "@webiny/api-aco": 0.0.0
     "@webiny/api-admin-users": 0.0.0
     "@webiny/api-apw": 0.0.0
-    "@webiny/api-audit-logs-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -18010,7 +17982,6 @@ __metadata:
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
     "@webiny/api-audit-logs": 0.0.0
-    "@webiny/api-audit-logs-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0

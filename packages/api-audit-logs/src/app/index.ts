@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
-import { AuditLogsAcoContext } from "~/types";
-import { createApp } from "~/app";
+import { AuditLogsAcoContext } from "./types";
+import { createApp } from "./app";
 
 export * from "./createAppModifier";
 

@@ -1,3 +1,4 @@
+// TODO make compressor work
 import { compress as gzip, decompress as ungzip } from "@webiny/utils/compression/gzip";
 
 const GZIP = "gzip";
@@ -20,14 +21,14 @@ export interface OriginalData {
     [key: string]: any;
 }
 
-export interface Compression {
+export interface Compressor {
     canCompress(data: any): boolean;
     compress(data: any): Promise<CompressedData>;
     canDecompress(data: CompressedData | Record<string, any>): boolean;
     decompress(data: CompressedData): Promise<OriginalData | null>;
 }
 
-class GzipCompression implements Compression {
+class GzipCompression implements Compressor {
     public canCompress(data: any): boolean {
         if (data) {
             return false;
@@ -85,21 +86,25 @@ class GzipCompression implements Compression {
     }
 }
 
-export const createCompressor = (): Pick<Compression, "compress" | "decompress"> => {
-    const compressor = new GzipCompression();
+const createCompressor = (): Pick<Compressor, "compress" | "decompress"> => {
+    const instance = new GzipCompression();
 
     return {
         compress: async (data: any) => {
-            if (!compressor.canCompress(data)) {
+            if (!instance.canCompress(data)) {
                 return data;
             }
-            return compressor.compress(data);
+            return instance.compress(data);
         },
         decompress(data: any) {
-            if (!compressor.canDecompress(data)) {
+            if (!instance.canDecompress(data)) {
                 return data;
             }
-            return compressor.decompress(data);
+            return instance.decompress(data);
         }
     };
 };
+
+const compressor = createCompressor();
+
+export { compressor };

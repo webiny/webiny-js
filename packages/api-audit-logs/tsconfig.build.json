@@ -13,7 +13,6 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-admin-users/tsconfig.build.json" },
-    { "path": "../api-audit-logs-aco/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
