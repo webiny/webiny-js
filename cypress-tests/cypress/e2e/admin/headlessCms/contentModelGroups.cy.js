@@ -1,15 +1,51 @@
-import { generateId } from "../../../support/utils";
+/**
+ * These tests sometimes start failing because data is not deleted after test runs.
+ * Ideally, we want to clear all data BEFORE executing tests, just to be sure that there
+ * is no unexpected data. This is especially important because we test sorting, and it
+ * fails if there are unexpected items in the list.
+ */
+import uniqid from "uniqid";
+
+const groupNames = ["Group", "Group", "A Group", "Z Group"];
 
 context("Headless CMS - Content Model Groups", () => {
-    beforeEach(() => {
-        cy.login();
-        cy.cmsDeleteAllContentModelGroups();
+    beforeEach(() => cy.login());
+
+    after(() => {
+        return cy.cmsListContentModelGroup().then(result => {
+            const groups = result.filter(group => {
+                return groupNames.some(name => {
+                    group.name.startsWith(name);
+                });
+            });
+            return cy.waitUntil(
+                () => {
+                    return Promise.all(
+                        groups.map(async group => {
+                            return cy.cmsDeleteContentModelGroup({
+                                id: group.id
+                            });
+                        })
+                    ).then(data => {
+                        if (!Array.isArray(data)) {
+                            return false;
+                        } else if (data.length !== groups.length) {
+                            return false;
+                        }
+                        return data.every(item => !!item);
+                    });
+                },
+                {
+                    description: `Wait until all groups are deleted.`
+                }
+            );
+        });
     });
 
     it("should able to create, update, and immediately delete everything", () => {
         cy.visit("/cms/content-model-groups");
-        const newGroup = `Group ${generateId()}`;
-        const newGroup2 = `Group-2 ${generateId()}`;
+        const newGroup = `Group ${uniqid()}`;
+        const newGroup2 = `Group-2 ${uniqid()}`;
         // Create a new group
         cy.findAllByTestId("new-record-button").first().click();
         cy.findByTestId("cms.form.group.name").type(newGroup);
@@ -23,11 +59,9 @@ context("Headless CMS - Content Model Groups", () => {
 
         // Check newly created group in list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newGroup).should("exist");
-                });
+            cy.get("li").within(() => {
+                cy.findByText(newGroup).should("exist");
+            });
         });
 
         // Update groups' name
@@ -38,18 +72,13 @@ context("Headless CMS - Content Model Groups", () => {
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         cy.findByText("Content model group saved successfully!").should("exist");
-
         // Check if the updated group is present in the list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newGroup2).should("exist");
-                    // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
-                        force: true
-                    });
-                });
+            cy.get("li").within(() => {
+                cy.findByText(newGroup2).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
         });
 
         // Delete the newly created group
@@ -71,8 +100,8 @@ context("Headless CMS - Content Model Groups", () => {
     it("should able to create, search, sort, and immediately delete everything", () => {
         cy.visit("/cms/content-model-groups");
         // Create few content model groups
-        const newGroup1 = `A Group ${generateId()}`;
-        const newGroup2 = `Z Group ${generateId()}`;
+        const newGroup1 = `A Group ${uniqid()}`;
+        const newGroup2 = `Z Group ${uniqid()}`;
 
         // Create a Group one
         cy.findAllByTestId("new-record-button").first().click();
@@ -182,37 +211,27 @@ context("Headless CMS - Content Model Groups", () => {
 
         // Finally, delete group2
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newGroup2).should("exist");
-                    // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
-                        force: true
-                    });
-                });
+            cy.get("li").within(() => {
+                cy.findByText(newGroup2).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
         });
-
         // Delete the newly created group
         cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i).should("exist");
             cy.findByText(/confirm$/i).click({ force: true });
         });
-
         // Confirm that group is deleted successfully
         cy.findByText(`Content model group "${newGroup2}" deleted.`);
 
         // Delete group1
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li")
-                .first()
-                .within(() => {
-                    cy.findByText(newGroup1).should("exist");
-                    // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
-                        force: true
-                    });
-                });
+            cy.get("li").within(() => {
+                cy.findByText(newGroup1).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
         });
         // Delete the newly created group
         cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
