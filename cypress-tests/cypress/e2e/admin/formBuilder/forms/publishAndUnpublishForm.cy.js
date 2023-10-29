@@ -4,7 +4,6 @@ context("Forms Creation", () => {
     beforeEach(() => cy.login());
 
     it("should be able to create, publish, unpublish, re-publish, and immediately delete everything", () => {
-        cy.fbDeleteAllForms();
         const newFormTitle = `Test form ${uniqid()}`;
         // 1. Create form
         cy.visit("/form-builder/forms");
@@ -138,8 +137,9 @@ context("Forms Creation", () => {
                     cy.findByText(/\(v3\)/i).should("exist");
                 });
         });
-
-        // Delete form.
+        // Finally, delete the form and it's all revisions
+        //Delete form
+        cy.findByTestId("fb.form-details.tab.form-preview").click();
         cy.findByTestId("fb.form-preview.header.delete").click();
         cy.wait(500);
         cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
@@ -147,5 +147,6 @@ context("Forms Creation", () => {
             cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText(/Form was deleted successfully/i).should("exist");
+        cy.wait(500);
     });
 });

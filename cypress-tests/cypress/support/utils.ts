@@ -1,5 +1,4 @@
 import { GraphQLClient } from "graphql-request";
-import { customAlphabet } from "nanoid";
 
 const DEFAULT_TENANT_ID = "root";
 
@@ -34,7 +33,3 @@ export const createGqlClient = (gqlClientOptions: CreateGqlClientParams = {}) =>
 };
 
 export const gqlClient = createGqlClient();
-
-export const generateId = () => {
-    return customAlphabet("abcdefghijklmnopqrstuvwxyz", 10)();
-};

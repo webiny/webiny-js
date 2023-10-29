@@ -1,4 +1,4 @@
-import { gqlClient } from "../utils";
+import { GraphQLClient } from "graphql-request";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -24,11 +24,14 @@ const QUERY = /* GraphQL */ `
 
 Cypress.Commands.add("pbListBlockCategories", () => {
     cy.login().then(user => {
-        return gqlClient
-            .request({
-                query: QUERY,
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => response.pageBuilder.listBlockCategories.data);
+        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+            headers: {
+                authorization: `Bearer ${user.idToken.jwtToken}`
+            }
+        });
+
+        return client.request(QUERY).then(response => {
+            return response.pageBuilder.listBlockCategories.data;
+        });
     });
 });
