@@ -1,4 +1,4 @@
-import { gqlClient } from "../utils";
+import { GraphQLClient } from "graphql-request";
 
 const MUTATION = /* GraphQL */ `
     mutation DeleteBlockCategory($slug: String!) {
@@ -25,14 +25,20 @@ declare global {
 Cypress.Commands.add("pbDeleteAllBlockCategories", () => {
     cy.pbListBlockCategories().then(categories => {
         cy.login().then(user => {
+            const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+                headers: {
+                    authorization: `Bearer ${user.idToken.jwtToken}`
+                }
+            });
+
             return Promise.all(
                 categories.map(category => {
-                    return gqlClient
-                        .request({
-                            query: MUTATION,
-                            variables: { slug: category.slug },
-                            authToken: user.idToken.jwtToken
-                        })
+                    const variables = {
+                        slug: category.slug
+                    };
+
+                    return client
+                        .request(MUTATION, variables)
                         .then(response => response.pageBuilder.deleteBlockCategory);
                 })
             );
