@@ -55,7 +55,9 @@ context("Page Builder - Blocks", () => {
             // Wait for the right panel to load (adjust this timeout if needed)
             cy.get(".webiny-split-view__right-panel").should("be.visible", { timeout: 10000 });
             cy.contains(
-                (pageTemplateData1.title && pageTemplateData1.description) || (pageTemplateData2.title && pageTemplateData2.description) || (pageTemplateData3.title && pageTemplateData3.description)
+                (pageTemplateData1.title && pageTemplateData1.description) ||
+                    (pageTemplateData2.title && pageTemplateData2.description) ||
+                    (pageTemplateData3.title && pageTemplateData3.description)
             ).should("exist");
         });
     });

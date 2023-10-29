@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            createPageTemplate(data: any): Promise<any>; // Update the data type as needed
+            pbCreatePageTemplate(data: any): Promise<any>; // Update the data type as needed
         }
     }
 }
