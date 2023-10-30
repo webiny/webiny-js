@@ -62,7 +62,9 @@ export const getLatestEntryRevision = async (
     const item = items.shift();
     if (!item) {
         throw new WebinyError("There is no entry with given ID.", "ENTRY_NOT_FOUND", {
-            entryId
+            entryId,
+            model: model.modelId,
+            items
         });
     }
     return item;
@@ -117,9 +119,10 @@ const isWorkflowApplicable = (entry: CmsEntry, workflow: ApwWorkflow): boolean =
 interface AssignWorkflowToEntryParams {
     apw: AdvancedPublishingWorkflow;
     entry: CmsEntry;
+    model: CmsModel;
 }
 export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams): Promise<void> => {
-    const { apw, entry } = params;
+    const { apw, entry, model } = params;
     /**
      * Lookup and assign "workflowId".
      */
@@ -133,7 +136,7 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
             }
         });
 
-        console.log(`Found ${entries.length} workflows.`);
+        console.log(`Found ${entries.length} workflow(s) for model ${model.modelId}.`);
 
         /*
          *  Re-order them based on workflow scope and pre-defined rule i.e.
@@ -181,7 +184,13 @@ export const hasEntries = (workflow: ApwWorkflow): Boolean => {
     );
 };
 
-export const isAwpModel = (model: CmsModel): boolean => {
+export const isApwDisabledOnModel = (model: Pick<CmsModel, "modelId" | "isPrivate">): boolean => {
+    /**
+     * We should not run APW on private models as well.
+     */
+    if (model.isPrivate) {
+        return true;
+    }
     return [
         CHANGE_REQUEST_MODEL_ID,
         COMMENT_MODEL_ID,
