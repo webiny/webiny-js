@@ -77,6 +77,11 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     }
                 });
 
+                if (!esRecords.length) {
+                    // Continue with next locale.
+                    return true;
+                }
+
                 const batchGetItems: BatchReadItem[] = [];
                 for (const esRecord of esRecords) {
                     batchGetItems.push(
