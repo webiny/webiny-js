@@ -19,11 +19,10 @@ import {
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { I18NLocale, ListLocalesParams, Tenant } from "~/migrations/5.37.0/003/types";
-import { scanWithCallback } from "@webiny/db-dynamodb";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
-import { executeWithRetry } from "@webiny/utils";
 import { Client } from "@elastic/elasticsearch";
+import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
@@ -119,52 +118,94 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
-        await scanWithCallback<FbForm>(
-            {
-                entity: this.formEntity,
-                options: {}
-            },
-            async result => {
-                const items: BatchWriteItem[] = [];
-                for (const current of result.items) {
-                    const isFbForm = current.TYPE?.startsWith("fb.form");
-                    if (!isFbForm) {
-                        continue;
-                    }
+        const tenants = await this.listTenants();
 
-                    if (current.steps) {
-                        continue;
-                    }
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+            if (locales.length === 0) {
+                continue;
+            }
 
-                    // If no steps are defined, we need to create a single step.
-                    current.steps = [];
-
-                    if (Array.isArray(current.layout)) {
-                        // If layout is an array, we need to create a single step with all the fields.
-                        current.steps.push({ title: "Step 1", layout: current.layout });
-                        delete current.layout;
-                    }
-
-                    items.push(this.formEntity.putBatch(current));
-                }
-
-                if (items.length === 0) {
-                    return;
-                }
-
-                const execute = () => {
-                    return batchWriteAll({ table: this.formEntity.table, items });
+            for (const locale of locales) {
+                const indexNameParams = {
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: "form-builder",
+                    isHeadlessCmsModel: false
                 };
 
-                logger.trace("Storing the DynamoDB records...");
-                await executeWithRetry(execute, {
-                    onFailedAttempt: error => {
-                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                        logger.error(error.message);
+                const indexExists = await esGetIndexExist({
+                    elasticsearchClient: this.elasticsearchClient,
+                    ...indexNameParams
+                });
+
+                if (!indexExists) {
+                    continue;
+                }
+
+                const records = await esQueryAll<FbForm>({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index: esGetIndexName(indexNameParams),
+                    body: {
+                        size: 1000
                     }
                 });
+
+                for (let i = 0; i < records.length; i++) {
+                    const record = records[i];
+                    const tenantId = tenant.data.id;
+                    const localeCode = locale.code;
+                    const formId = record.formId;
+
+                    const formRecords = await queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
+                        options: {
+                            gte: " "
+                        }
+                    });
+
+                    const items: BatchWriteItem[] = [];
+                    for (const current of formRecords) {
+                        const isFbForm = current.TYPE?.startsWith("fb.form");
+                        if (!isFbForm) {
+                            continue;
+                        }
+
+                        if (current.steps) {
+                            continue;
+                        }
+
+                        // If no steps are defined, we need to create a single step.
+                        current.steps = [];
+
+                        if (Array.isArray(current.layout)) {
+                            // If layout is an array, we need to create a single step with all the fields.
+                            current.steps.push({ title: "Step 1", layout: current.layout });
+                            delete current.layout;
+                        }
+
+                        items.push(this.formEntity.putBatch(current));
+                    }
+
+                    if (items.length === 0) {
+                        return;
+                    }
+
+                    const execute = () => {
+                        return batchWriteAll({ table: this.formEntity.table, items });
+                    };
+
+                    logger.trace("Storing the DynamoDB records...");
+                    await executeWithRetry(execute, {
+                        onFailedAttempt: error => {
+                            logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
+                            logger.error(error.message);
+                        }
+                    });
+                }
             }
-        );
+        }
 
         logger.info("Updated all the forms.");
     }
