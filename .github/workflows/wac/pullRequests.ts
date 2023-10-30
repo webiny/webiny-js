@@ -240,11 +240,10 @@ const createJobs = (dbSetup: string) => {
 
 // Create "Pull requests" workflow.
 export const pullRequestsCommandCypress = createWorkflow({
-    name: "Pull Requests Command - Cypress",
-    on: "issue_comment",
+    name: "Pull Requests",
+    on: "pull_request",
     env: {
-        NODE_OPTIONS,
-        AWS_REGION: "eu-central-1"
+        NODE_OPTIONS
     },
     jobs: {
         checkComment: {
