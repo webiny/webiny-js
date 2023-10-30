@@ -57,14 +57,12 @@ export const getLatestEntryRevision = async (
     params: GetLatestEntryRevisionParams
 ): Promise<CmsEntry> => {
     const { cms, model, entryId } = params;
-    const items = await cms.getLatestEntriesByIds(model, [entryId]);
+    const [item] = await cms.getLatestEntriesByIds(model, [entryId]);
 
-    const item = items.shift();
     if (!item) {
         throw new WebinyError("There is no entry with given ID.", "ENTRY_NOT_FOUND", {
             entryId,
-            model: model.modelId,
-            items
+            model: model.modelId
         });
     }
     return item;
