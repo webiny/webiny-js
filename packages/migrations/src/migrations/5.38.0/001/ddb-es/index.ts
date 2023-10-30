@@ -165,21 +165,32 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
 
                 // For each form record, let's ensure the "steps" property is defined.
                 for (const formId of uniqueFormIds) {
-                    const ddbRecords = await queryAll<FbForm>({
-                        entity: this.formEntity,
-                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
-                        options: {
-                            gte: " "
-                        }
-                    });
+                    const ddbRecords = await Promise.all([
+                        queryAll<FbForm>({
+                            entity: this.formEntity,
+                            partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
+                            options: {
+                                eq: "L"
+                            }
+                        }),
+                        queryAll<FbForm>({
+                            entity: this.formEntity,
+                            partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
+                            options: {
+                                eq: "LP"
+                            }
+                        }),
+                        queryAll<FbForm>({
+                            entity: this.formEntity,
+                            partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
+                            options: {
+                                beginsWith: "REV#"
+                            }
+                        })
+                    ]).then(response => response.flat());
 
                     const items: BatchWriteItem[] = [];
                     for (const ddbRecord of ddbRecords) {
-                        const isFbForm = this.isFbFormRecord(ddbRecord);
-                        if (!isFbForm) {
-                            continue;
-                        }
-
                         if (ddbRecord.steps) {
                             continue;
                         }
@@ -219,17 +230,6 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
         });
 
         logger.info("Updated all the forms.");
-    }
-
-    private isFbFormRecord(record: FbForm): boolean {
-        // fb.formSubmission
-        const recordType = record.TYPE;
-        if (!recordType) {
-            return false;
-        }
-
-        // We must ensure "fb.formSubmission" are not included.
-        return recordType.startsWith("fb.form") && recordType !== "fb.formSubmission";
     }
 }
 

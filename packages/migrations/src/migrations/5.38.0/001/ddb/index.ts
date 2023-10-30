@@ -8,7 +8,6 @@ import { createFormEntity } from "../entities/createFormEntity";
 import { batchWriteAll, BatchWriteItem, forEachTenantLocale, queryAll } from "~/utils";
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { scanWithCallback } from "@webiny/db-dynamodb";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
@@ -63,45 +62,36 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             callback: async ({ tenantId, localeCode }) => {
                 const items: BatchWriteItem[] = [];
 
-                {
-                    const ddbRecords = await queryAll<FbForm>({
+                const ddbRecords = [
+                    ...(await queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
-                    });
-
-                    for (const ddbRecord of ddbRecords) {
-                        const recordMigrated = this.migrateFormRecord(ddbRecord);
-                        if (recordMigrated) {
-                            items.push(this.formEntity.putBatch(ddbRecord));
-                        }
-                    }
-                }
-
-                {
-                    const ddbRecords = await queryAll<FbForm>({
+                    })),
+                    ...(await queryAll<FbForm>({
                         entity: this.formEntity,
-                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#L`
-                    });
-
-                    for (const ddbRecord of ddbRecords) {
-                        const recordMigrated = this.migrateFormRecord(ddbRecord);
-                        if (recordMigrated) {
-                            items.push(this.formEntity.putBatch(ddbRecord));
-                        }
-                    }
-                }
-                {
-                    const ddbRecords = await queryAll<FbForm>({
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#L`
+                    })),
+                    ...(await queryAll<FbForm>({
                         entity: this.formEntity,
-                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#LP`
-                    });
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`
+                    }))
+                ];
 
-                    for (const ddbRecord of ddbRecords) {
-                        const recordMigrated = this.migrateFormRecord(ddbRecord);
-                        if (recordMigrated) {
-                            items.push(this.formEntity.putBatch(ddbRecord));
-                        }
+                for (const ddbRecord of ddbRecords) {
+                    if (ddbRecord.steps) {
+                        return false;
                     }
+
+                    // If no steps are defined, we need to create a single step.
+                    ddbRecord.steps = [];
+
+                    if (Array.isArray(ddbRecord.layout)) {
+                        // If layout is an array, we need to create a single step with all the fields.
+                        ddbRecord.steps = [{ title: "Step 1", layout: ddbRecord.layout }];
+                        delete ddbRecord.layout;
+                    }
+
+                    items.push(this.formEntity.putBatch(ddbRecord));
                 }
 
                 const execute = () => {
@@ -120,82 +110,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             }
         });
 
-        await scanWithCallback<FbForm>(
-            {
-                entity: this.formEntity,
-                options: {}
-            },
-            async result => {
-                const items: BatchWriteItem[] = [];
-                for (const current of result.items) {
-                    const isFbForm = this.isFbFormRecord(current);
-                    if (!isFbForm) {
-                        continue;
-                    }
-
-                    if (current.steps) {
-                        continue;
-                    }
-
-                    // If no steps are defined, we need to create a single step.
-                    current.steps = [];
-
-                    if (Array.isArray(current.layout)) {
-                        // If layout is an array, we need to create a single step with all the fields.
-                        current.steps = [{ title: "Step 1", layout: current.layout }];
-                        delete current.layout;
-                    }
-
-                    items.push(this.formEntity.putBatch(current));
-                }
-
-                if (!items.length) {
-                    return;
-                }
-
-                const execute = () => {
-                    return batchWriteAll({ table: this.formEntity.table, items });
-                };
-
-                logger.trace("Storing the DynamoDB records...");
-                await executeWithRetry(execute, {
-                    onFailedAttempt: error => {
-                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                        logger.error(error.message);
-                    }
-                });
-            }
-        );
-
         logger.info("Updated all the forms.");
-    }
-
-    private isFbFormRecord(record: FbForm): boolean {
-        // fb.formSubmission
-        const recordType = record.TYPE;
-        if (!recordType) {
-            return false;
-        }
-
-        // We must ensure "fb.formSubmission" are not included.
-        return recordType.startsWith("fb.form") && recordType !== "fb.formSubmission";
-    }
-
-    private migrateFormRecord(record: FbForm): boolean {
-        if (record.steps) {
-            return false;
-        }
-
-        // If no steps are defined, we need to create a single step.
-        record.steps = [];
-
-        if (Array.isArray(record.layout)) {
-            // If layout is an array, we need to create a single step with all the fields.
-            record.steps = [{ title: "Step 1", layout: record.layout }];
-            delete record.layout;
-        }
-
-        return true;
     }
 }
 
