@@ -11,7 +11,7 @@ const throwDeleteError = (folder: Folder) => {
     );
 };
 
-export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
+export const onFolderBeforeDeleteAcoHook = ({ aco }: AcoContext) => {
     aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
         try {
             const { id, type } = folder;
@@ -51,8 +51,8 @@ export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
             throwDeleteError(folder);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onFolderBeforeDelete hook",
-                code: "ACO_BEFORE_FOLDER_DELETE_HOOK"
+                message: "Error while executing onFolderBeforeDeleteAcoHook hook",
+                code: "ACO_BEFORE_FOLDER_DELETE_ACO_HOOK"
             });
         }
     });
