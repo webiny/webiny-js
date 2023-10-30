@@ -22,7 +22,7 @@ import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
 
-export class MultiStepForms_5_38_0_001 implements DataMigration {
+export class MultiStepForms_5_38_0_002 implements DataMigration {
     private readonly table: Table;
     private readonly formEntity: ReturnType<typeof createFormEntity>;
     private readonly elasticsearchClient: Client;
@@ -34,11 +34,11 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     getId() {
-        return "5.38.0-001";
+        return "5.38.0-002";
     }
 
     getDescription() {
-        return "Convert forms to multi-step forms.";
+        return "Convert forms to multi-step forms (form submissions).";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -73,44 +73,28 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName(indexNameParams),
                     body: {
+                        // query: {
+                        //     bool: {
+                        //         filter: [{ term: { "__type.keyword": "fb.submission" } }]
+                        //     }
+                        // },
                         query: {
                             bool: {
-                                filter: [{ term: { "__type.keyword": "fb.form" } }]
+                                filter: [{ term: { "__type.keyword": "fb.submission" } }],
+                                must_not: {
+                                    exists: {
+                                        field: "form.steps"
+                                    }
+                                }
                             }
                         },
-                        size: 10000
+                        size: 1
                     }
                 });
 
-                if (!esRecords.length) {
-                    // Continue with next locale.
-                    return true;
-                }
-
-                const formIds = esRecords.map(item => item.formId).filter(Boolean);
-                const uniqueFormIds = [...new Set(formIds)];
-
-                const batchGetItems: BatchReadItem[] = [];
-                for (const formId of uniqueFormIds) {
-                    batchGetItems.push(
-                        this.formEntity.getBatch({
-                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
-                            SK: "L"
-                        })
-                    );
-                }
-
-                // Get DynamoDB records for all the forms retrieved from Elasticsearch.
-                const ddbRecords = await batchReadAll<FbForm>({
-                    table: this.formEntity.table,
-                    items: batchGetItems
-                });
-
-                for (const ddbRecord of ddbRecords) {
-                    if (!ddbRecord.steps) {
-                        shouldExecute = true;
-                        return false;
-                    }
+                if (esRecords.length) {
+                    shouldExecute = true;
+                    return false;
                 }
 
                 return true;
@@ -233,7 +217,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(MultiStepForms_5_38_0_001, [
+makeInjectable(MultiStepForms_5_38_0_002, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)
 ]);
