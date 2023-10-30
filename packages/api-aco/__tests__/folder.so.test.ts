@@ -1,11 +1,30 @@
+import { mdbid } from "@webiny/utils";
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
+
+const createSampleFileData = (overrides: Record<string, any> = {}) => {
+    const id = mdbid();
+    return {
+        id,
+        type: "image/jpeg",
+        name: "image-48.jpg",
+        size: 269965,
+        key: `${id}/image.jpg`,
+        tags: [],
+        location: {
+            folderId: ""
+        },
+        ...overrides
+    };
+};
 
 describe("`folder` CRUD", () => {
     let folder1: Record<string, any>;
     let folder2: Record<string, any>;
     let aco: ReturnType<typeof useGraphQlHandler>["aco"];
+    let fm: ReturnType<typeof useGraphQlHandler>["fm"];
+    let cms: ReturnType<typeof useGraphQlHandler>["cms"];
 
     beforeEach(async () => {
         const handler = useGraphQlHandler({});
@@ -35,6 +54,8 @@ describe("`folder` CRUD", () => {
             });
 
         aco = handler.aco;
+        fm = handler.fm;
+        cms = handler.cms;
     });
 
     it("should be able to create, read, update and delete `folders`", async () => {
@@ -262,6 +283,159 @@ describe("`folder` CRUD", () => {
                             message:
                                 "Error: delete all child folders and entries before proceeding."
                         })
+                    }
+                }
+            }
+        });
+    });
+
+    it("should NOT delete `FmFile` folder in case has child file", async () => {
+        // Let's create a folder.
+        const [folderResponse] = await aco.createFolder({
+            data: { ...folderMocks.folderA, type: "FmFile" }
+        });
+        const folder = folderResponse.data.aco.createFolder.data;
+
+        // Let's create a file within the folder.
+        const [fileResponse] = await fm.createFile({
+            data: {
+                ...createSampleFileData(),
+                location: {
+                    folderId: folder.id
+                }
+            }
+        });
+
+        const file = fileResponse.data.fileManager.createFile.data;
+
+        // Let's try to delete the folder.
+        const [failedResponse] = await aco.deleteFolder({ id: folder.id });
+
+        expect(failedResponse).toEqual({
+            data: {
+                aco: {
+                    deleteFolder: {
+                        data: null,
+                        error: expect.objectContaining({
+                            code: "DELETE_FOLDER_WITH_CHILDREN",
+                            message: "Error: delete all child folders and files before proceeding."
+                        })
+                    }
+                }
+            }
+        });
+
+        // Let's delete the file.
+        await fm.deleteFile({
+            id: file.id
+        });
+
+        const [succesfullResponse] = await aco.deleteFolder({ id: folder.id });
+
+        expect(succesfullResponse).toEqual({
+            data: {
+                aco: {
+                    deleteFolder: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's list folders.
+        const [listFolderResponse] = await aco.listFolders({ where: { type: "FmFile" } });
+
+        expect(listFolderResponse).toEqual({
+            data: {
+                aco: {
+                    listFolders: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 0
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should NOT delete `HCMS` folder in case has child entry", async () => {
+        // Let's create model and group.
+        const modelGroup = await cms.createTestModelGroup();
+        const model = await cms.createBasicModel({ modelGroup: modelGroup.id });
+
+        // Let's create a folder.
+        const [folderResponse] = await aco.createFolder({
+            data: { ...folderMocks.folderA, type: `cms:${model.modelId}` }
+        });
+        const folder = folderResponse.data.aco.createFolder.data;
+
+        // Let's create an entry within the folder.
+        const [entryResponse] = await cms.createEntry(model, {
+            data: {
+                title: "Test entry",
+                wbyAco_location: {
+                    folderId: folder.id
+                }
+            }
+        });
+
+        const entry = entryResponse.data.createBasicTestModel.data;
+
+        // Let's try to delete the folder.
+        const [failedResponse] = await aco.deleteFolder({ id: folder.id });
+
+        expect(failedResponse).toEqual({
+            data: {
+                aco: {
+                    deleteFolder: {
+                        data: null,
+                        error: expect.objectContaining({
+                            code: "DELETE_FOLDER_WITH_CHILDREN",
+                            message:
+                                "Error: delete all child folders and entries before proceeding."
+                        })
+                    }
+                }
+            }
+        });
+
+        // Let's delete the entry.
+        await cms.deleteEntry(model, {
+            revision: entry.id
+        });
+
+        const [succesfullResponse] = await aco.deleteFolder({ id: folder.id });
+
+        expect(succesfullResponse).toEqual({
+            data: {
+                aco: {
+                    deleteFolder: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's list folders.
+        const [listFolderResponse] = await aco.listFolders({ where: { type: "basicTestModel" } });
+
+        expect(listFolderResponse).toEqual({
+            data: {
+                aco: {
+                    listFolders: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 0
+                        }
                     }
                 }
             }

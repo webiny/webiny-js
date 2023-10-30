@@ -1,6 +1,5 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { useCmsGraphQlHandler } from "./utils/useCmsGraphQlHandler";
 
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
@@ -23,14 +22,13 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
     test.todo("as a user without FM permissions, I should not be able to CRUD content");
 
     test("as a full-access user, I should be able to CRUD content in root folder", async () => {
-        const cmsGqlIdentityA = useCmsGraphQlHandler({ identity: identityA });
-        const modelGroup = await cmsGqlIdentityA.createTestModelGroup();
-        const model = await cmsGqlIdentityA.createBasicModel({ modelGroup: modelGroup.id });
+        const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
+        const model = await gqlIdentityA.cms.createBasicModel({ modelGroup: modelGroup.id });
 
         const entries = [];
         for (let i = 1; i <= 4; i++) {
             entries.push(
-                await cmsGqlIdentityA
+                await gqlIdentityA.cms
                     .createEntry(model, { data: { title: `Test-${i}` } })
                     .then(([response]) => {
                         return response.data.createBasicTestModel.data;
@@ -39,7 +37,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         }
 
         await expect(
-            cmsGqlIdentityA.listEntries(model).then(([response]) => {
+            gqlIdentityA.cms.listEntries(model).then(([response]) => {
                 return response.data.listBasicTestModels.data;
             })
         ).resolves.toHaveLength(4);
@@ -47,7 +45,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expect(
-                cmsGqlIdentityA
+                gqlIdentityA.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.getBasicTestModel.data;
@@ -57,14 +55,13 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
     });
 
     test("as a non-full-access user, I should be able to CRUD content in root folder", async () => {
-        const cmsGqlIdentityA = useCmsGraphQlHandler({ identity: identityB });
-        const modelGroup = await cmsGqlIdentityA.createTestModelGroup();
-        const model = await cmsGqlIdentityA.createBasicModel({ modelGroup: modelGroup.id });
+        const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
+        const model = await gqlIdentityA.cms.createBasicModel({ modelGroup: modelGroup.id });
 
         const entries = [];
         for (let i = 1; i <= 4; i++) {
             entries.push(
-                await cmsGqlIdentityA
+                await gqlIdentityA.cms
                     .createEntry(model, { data: { title: `Test-${i}` } })
                     .then(([response]) => {
                         return response.data.createBasicTestModel.data;
@@ -73,7 +70,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         }
 
         await expect(
-            cmsGqlIdentityA.listEntries(model).then(([response]) => {
+            gqlIdentityA.cms.listEntries(model).then(([response]) => {
                 return response.data.listBasicTestModels.data;
             })
         ).resolves.toHaveLength(4);
@@ -81,7 +78,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expect(
-                cmsGqlIdentityA
+                gqlIdentityA.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.getBasicTestModel.data;
@@ -91,13 +88,13 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
     });
 
     test("as a user, I should not be able to CRUD content in an inaccessible folder", async () => {
-        const cmsGqlIdentityA = useCmsGraphQlHandler({ identity: identityA });
-        const cmsGqlIdentityC = useCmsGraphQlHandler({
+        const gqlIdentityA = useGraphQlHandler({ identity: identityA });
+        const gqlIdentityC = useGraphQlHandler({
             identity: identityC,
             permissions: [{ name: "cms.*" }]
         });
-        const modelGroup = await cmsGqlIdentityA.createTestModelGroup();
-        const model = await cmsGqlIdentityA.createBasicModel({ modelGroup: modelGroup.id });
+        const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
+        const model = await gqlIdentityA.cms.createBasicModel({ modelGroup: modelGroup.id });
 
         const folder = await gqlIdentityA.aco
             .createFolder({
@@ -114,7 +111,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         const entries = [];
         for (let i = 1; i <= 4; i++) {
             entries.push(
-                await cmsGqlIdentityA
+                await gqlIdentityA.cms
                     .createEntry(model, {
                         data: {
                             title: `Test-${i}`,
@@ -146,7 +143,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expectNotAuthorized(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
@@ -156,7 +153,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
 
         // Listing content in the folder should be forbidden for identity C.
         await expect(
-            cmsGqlIdentityC
+            gqlIdentityC.cms
                 .listEntries(model, {
                     where: {
                         wbyAco_location: {
@@ -179,7 +176,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
 
         // Creating content in the folder should be forbidden for identity C.
         await expectNotAuthorized(
-            cmsGqlIdentityC
+            gqlIdentityC.cms
                 .createEntry(model, {
                     data: {
                         title: `Test-5`,
@@ -197,7 +194,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expectNotAuthorized(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
                         data: { title: createdEntry.title + "-update" }
@@ -212,7 +209,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expectNotAuthorized(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
@@ -237,7 +234,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expect(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
@@ -250,7 +247,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
 
         // Listing content in the folder should be now allowed for identity C.
         await expect(
-            cmsGqlIdentityC
+            gqlIdentityC.cms
                 .listEntries(model, {
                     where: {
                         wbyAco_location: {
@@ -278,9 +275,11 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
 
         // Creating content in the folder should be now allowed for identity C.
         await expect(
-            cmsGqlIdentityC.createEntry(model, { data: { title: `Test-5` } }).then(([response]) => {
-                return response.data.createBasicTestModel;
-            })
+            gqlIdentityC.cms
+                .createEntry(model, { data: { title: `Test-5` } })
+                .then(([response]) => {
+                    return response.data.createBasicTestModel;
+                })
         ).resolves.toMatchObject({
             data: { id: expect.any(String) }
         });
@@ -289,7 +288,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expect(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
                         data: { title: createdEntry.title + "-update" }
@@ -306,7 +305,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
             await expect(
-                cmsGqlIdentityC
+                gqlIdentityC.cms
                     .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
