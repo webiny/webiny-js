@@ -1,10 +1,9 @@
 import React from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { formatToQuote } from "~/utils/nodes/formatToQuote";
-import { formatToParagraph } from "~/utils/nodes/formatToParagraph";
+import { $isQuoteNode, formatToQuote, formatToParagraph } from "@webiny/lexical-nodes";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { $isQuoteNode } from "~/nodes/QuoteNode";
 import { useCurrentElement } from "~/hooks/useCurrentElement";
+
 export const QuoteAction = () => {
     const [editor] = useLexicalComposerContext();
     const { themeEmotionMap } = useRichTextEditor();

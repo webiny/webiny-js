@@ -1,6 +1,6 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import { QuoteNode } from "~/nodes/QuoteNode";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { QuoteNode } from "@webiny/lexical-nodes";
 import { useQuote } from "~/hooks/useQuote";
 
 export function QuotePlugin(): null {

@@ -15,7 +15,7 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 
-import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "~/nodes";
+import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { LinkPreview } from "~/ui/LinkPreview";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { sanitizeUrl } from "~/utils/sanitizeUrl";

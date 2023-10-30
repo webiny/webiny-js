@@ -41,12 +41,10 @@ export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
-export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
 // Commands
 export * from "~/commands";
 // types
 export * as types from "./types";
-export * from "./nodes";
 // config
 export {
     LexicalEditorConfig,

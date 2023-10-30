@@ -14,12 +14,12 @@ interface RecordActionDeleteProps {
 }
 
 export const RecordActionDelete: React.VFC<RecordActionDeleteProps> = ({ record }) => {
-    const { canEdit } = useFileManagerApi();
+    const { canDelete } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({
         file: record
     });
 
-    if (!canEdit(record)) {
+    if (!canDelete(record)) {
         return null;
     }
 

@@ -52,7 +52,7 @@ const useWorker = () => {
 
     useEffect(() => {
         worker.items = selected;
-    }, [selected]);
+    }, [selected.length]);
 
     // Reset selected items in both usePagesList and Worker
     const resetItems = useCallback(() => {
@@ -61,7 +61,7 @@ const useWorker = () => {
     }, []);
 
     return {
-        items: worker.items,
+        items: selected,
         process: (callback: (items: PbPageDataItem[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<PbPageDataItem>) => Promise<void>,

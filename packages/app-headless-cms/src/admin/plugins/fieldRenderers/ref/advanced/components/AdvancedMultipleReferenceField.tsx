@@ -162,7 +162,8 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
         loadMore
     } = useReferences({
         values,
-        perPage: 10
+        perPage: 10,
+        requestContext
     });
 
     const onRemove = useCallback(

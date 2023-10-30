@@ -10,8 +10,10 @@ import {
     AcoSearchRecordStorageOperations
 } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
+import { AcoFilterCrud, AcoFilterStorageOperations } from "~/filter/filter.types";
 import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
 
+export * from "./filter/filter.types";
 export * from "./folder/folder.types";
 export * from "./record/record.types";
 
@@ -45,6 +47,7 @@ export interface AcoBaseFields {
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
+    filter: AcoFilterCrud;
     folderLevelPermissions: FolderLevelPermissions;
     apps: IAcoApps;
     registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
@@ -59,7 +62,9 @@ export interface CreateAcoParams {
     folderLevelPermissions: FolderLevelPermissions;
 }
 
-export type AcoStorageOperations = AcoFolderStorageOperations & AcoSearchRecordStorageOperations;
+export type AcoStorageOperations = AcoFolderStorageOperations &
+    AcoSearchRecordStorageOperations &
+    AcoFilterStorageOperations;
 
 export interface AcoContext
     extends BaseContext,

@@ -7,13 +7,16 @@ import {
     useTypographyAction
 } from "@webiny/lexical-editor";
 import { TypographyStyle } from "@webiny/theme/types";
-import { TypographyValue } from "@webiny/lexical-editor/types";
+import { TypographyValue } from "@webiny/lexical-theme";
 import { useTheme } from "@webiny/app-admin";
 import { useCurrentElement } from "@webiny/lexical-editor/hooks/useCurrentElement";
-import { $isHeadingNode } from "@webiny/lexical-editor/nodes/HeadingNode";
-import { $isParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
-import { $isQuoteNode } from "@webiny/lexical-editor/nodes/QuoteNode";
-import { $isListNode, ListNode } from "@webiny/lexical-editor/nodes/ListNode";
+import {
+    $isHeadingNode,
+    $isParagraphNode,
+    $isQuoteNode,
+    $isListNode,
+    ListNode
+} from "@webiny/lexical-nodes";
 
 /*
  * This components support the typography selection for the Page Builder app.

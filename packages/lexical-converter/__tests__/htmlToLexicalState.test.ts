@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+import { LexicalNode } from "lexical";
+import { $isHeadingNode } from "@webiny/lexical-nodes";
 import { createMocks } from "./mocks/htmlMocks";
 import { createHtmlToLexicalParser } from "~/index";
 import { toBrowserDom, toJsDom } from "./utils/toDom";
-import { $isHeadingNode } from "@webiny/lexical-editor";
-import { LexicalNode } from "lexical";
 
 const defaultParser = createHtmlToLexicalParser();
 

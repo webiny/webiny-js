@@ -3,7 +3,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
-import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
+import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "@webiny/lexical-nodes";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 

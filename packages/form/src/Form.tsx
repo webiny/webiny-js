@@ -408,6 +408,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                         }
                     }));
                 }
+
                 return validationResults;
             })
             .catch(validationError => {

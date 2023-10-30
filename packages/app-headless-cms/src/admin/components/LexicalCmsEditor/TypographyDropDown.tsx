@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import {
-    $isHeadingNode,
-    $isParagraphNode,
-    $isQuoteNode,
     DropDown,
     DropDownItem,
     useCurrentSelection,
     useCurrentElement,
-    useTypographyAction,
+    useTypographyAction
+} from "@webiny/lexical-editor";
+import {
+    $isHeadingNode,
+    $isParagraphNode,
+    $isQuoteNode,
     $isListNode,
     ListNode
-} from "@webiny/lexical-editor";
+} from "@webiny/lexical-nodes";
 import { TypographyStyle } from "@webiny/theme/types";
-import { TypographyValue } from "@webiny/lexical-editor/types";
+import { TypographyValue } from "@webiny/lexical-theme";
 import { useTheme } from "@webiny/app-admin";
 
 export const TypographyDropDown = () => {

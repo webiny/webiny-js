@@ -1,16 +1,8 @@
-import { createCommand, LexicalCommand, LexicalEditor, NodeKey } from "lexical";
+import { createCommand, LexicalCommand, NodeKey } from "lexical";
+import { ImageNodeProps } from "@webiny/lexical-nodes";
 
-export interface ImagePayload {
-    id: string;
-    altText: string;
-    caption?: LexicalEditor;
-    height?: number;
+export interface ImagePayload extends ImageNodeProps {
     key?: NodeKey;
-    maxWidth?: number;
-    showCaption?: boolean;
-    src: string;
-    width?: number;
-    captionsEnabled?: boolean;
 }
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<ImagePayload> =

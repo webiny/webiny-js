@@ -3,13 +3,13 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: Pull Requests Command - Cypress
-'on': pull_request
+'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
-    name: Check comment for /cypressnew
+    name: Check comment for /cypress_new
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -18,7 +18,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypressnew
+          command: cypress_new
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
@@ -32,8 +32,8 @@ jobs:
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
   e2e-wby-cms-ddb-init:
-    needs: check_comment
-    name: E2E (DDB}) - Init
+    needs: checkComment
+    name: E2E (DDB) - Init
     runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -44,16 +44,15 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: ''
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -70,7 +69,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-project-setup:
-    name: E2E (DDB}) - Project setup
+    name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
     runs-on: ubuntu-latest
     outputs:
@@ -85,22 +84,21 @@ jobs:
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: dev
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: dev
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -142,13 +140,17 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb
           retention-days: 1
           path: |
             dev/.verdaccio/
             dev/.verdaccio.yaml
       - name: Create directory
         run: mkdir xyz
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
@@ -163,7 +165,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb
           retention-days: 1
           path: |
             xyz/test-project/
@@ -209,55 +211,62 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 14
+          - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@v3
         with:
-          path: next
+          path: dev
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: dev
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v3
         with:
-          path: next/.webiny/cached-packages
+          path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
-          path: next/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+          path: dev/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
       - name: Install dependencies
-        working-directory: next
+        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: next
+        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: next
+        working-directory: dev
         run: >-
           echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
           }}' > cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next/cypress-tests
+        working-directory: dev/cypress-tests
         timeout-minutes: 40
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
   e2e-wby-cms-ddb-es-init:
-    needs: check_comment
-    name: E2E (DDB-ES}) - Init
+    needs: checkComment
+    name: E2E (DDB-ES) - Init
     runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -268,16 +277,15 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: ''
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -294,7 +302,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-es-project-setup:
-    name: E2E (DDB-ES}) - Project setup
+    name: E2E (DDB-ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
     runs-on: ubuntu-latest
     outputs:
@@ -309,22 +317,24 @@ jobs:
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: dev
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: dev
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -366,13 +376,17 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb-es
           retention-days: 1
           path: |
             dev/.verdaccio/
             dev/.verdaccio.yaml
       - name: Create directory
         run: mkdir xyz
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
@@ -387,7 +401,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb-es
           retention-days: 1
           path: |
             xyz/test-project/
@@ -433,56 +447,66 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 14
+          - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+        needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@v3
         with:
-          path: next
+          path: dev
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: dev
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v3
         with:
-          path: next/.webiny/cached-packages
+          path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
-          path: next/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+          path: dev/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
       - name: Install dependencies
-        working-directory: next
+        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: next
+        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: next
+        working-directory: dev
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next/cypress-tests
+        working-directory: dev/cypress-tests
         timeout-minutes: 40
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
   e2e-wby-cms-ddb-os-init:
-    needs: check_comment
-    name: E2E (DDB-OS}) - Init
+    needs: checkComment
+    name: E2E (DDB-OS) - Init
     runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -493,16 +517,15 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: ''
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - name: Get day of the month
         id: get-day
         run: >-
@@ -519,7 +542,7 @@ jobs:
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
   e2e-wby-cms-ddb-os-project-setup:
-    name: E2E (DDB-OS}) - Project setup
+    name: E2E (DDB-OS) - Project setup
     needs: e2e-wby-cms-ddb-os-init
     runs-on: ubuntu-latest
     outputs:
@@ -534,22 +557,24 @@ jobs:
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
+        with:
+          path: dev
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
+        working-directory: dev
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
       - uses: actions/cache@v3
         id: yarn-cache
         with:
@@ -591,13 +616,17 @@ jobs:
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: verdaccio-files
+          name: verdaccio-files-ddb-os
           retention-days: 1
           path: |
             dev/.verdaccio/
             dev/.verdaccio.yaml
       - name: Create directory
         run: mkdir xyz
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
@@ -612,7 +641,7 @@ jobs:
       - name: Create project-files artifact
         uses: actions/upload-artifact@v3
         with:
-          name: project-files
+          name: project-files-ddb-os
           retention-days: 1
           path: |
             xyz/test-project/
@@ -658,49 +687,59 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 14
+          - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-os-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb-os
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+        needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@v3
         with:
-          path: next
+          path: dev
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: dev
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v3
         with:
-          path: next/.webiny/cached-packages
+          path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
-          path: next/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+          path: dev/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
       - name: Install dependencies
-        working-directory: next
+        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: next
+        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: next
+        working-directory: dev
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next/cypress-tests
+        working-directory: dev/cypress-tests
         timeout-minutes: 40
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder

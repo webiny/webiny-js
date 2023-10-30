@@ -8,7 +8,7 @@ import {
     scanTable
 } from "~tests/utils";
 import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
-import { createFormsData } from "./001.data";
+import { createFormsData, createLocalesData, createTenantsData } from "./001.data";
 import { migratedData } from "./001.migratedTestData";
 
 jest.retryTimes(0);
@@ -36,7 +36,11 @@ describe("5.38.0-001", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, [...createFormsData()]);
+        await insertTestData(table, [
+            ...createFormsData(),
+            ...createTenantsData(),
+            ...createLocalesData()
+        ]);
 
         const handler = createDdbMigrationHandler({
             table,
@@ -64,7 +68,11 @@ describe("5.38.0-001", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, [...createFormsData()]);
+        await insertTestData(table, [
+            ...createFormsData(),
+            ...createTenantsData(),
+            ...createLocalesData()
+        ]);
 
         const handler = createDdbMigrationHandler({
             table,

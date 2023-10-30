@@ -1,8 +1,7 @@
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { $getRoot, $getSelection } from "lexical";
-import { allNodes } from "@webiny/lexical-editor";
-import { $createParagraphNode } from "@webiny/lexical-editor/nodes/ParagraphNode";
+import { allNodes, $createParagraphNode } from "@webiny/lexical-nodes";
 import { NodeMapper, ParserConfigurationOptions } from "~/types";
 
 /**

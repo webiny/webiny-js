@@ -8,7 +8,8 @@ const Container = styled("div")({
     width: "100%",
     margin: "0 auto",
     backgroundColor: "var(--mdc-theme-background)",
-    border: "1px dashed var(--mdc-theme-on-background)"
+    border: "1px dashed var(--mdc-theme-on-background)",
+    cursor: "pointer"
 });
 
 const Text = styled("p")({
@@ -52,7 +53,7 @@ export const FileUpload: React.VFC = () => {
                 return (
                     <>
                         <Container onClick={() => browseFiles()} {...getDropZoneProps()}>
-                            <Text>{fileName || "Drop file here."}</Text>
+                            <Text>{fileName || "Drop a file here, or click to select one."}</Text>
                         </Container>
                     </>
                 );
