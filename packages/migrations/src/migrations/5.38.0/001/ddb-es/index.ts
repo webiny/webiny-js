@@ -69,7 +69,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     return true;
                 }
 
-                const records = await esQueryAll<FbForm>({
+                const esRecords = await esQueryAll<FbForm>({
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName(indexNameParams),
                     body: {
@@ -78,11 +78,10 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                 });
 
                 const batchGetItems: BatchReadItem[] = [];
-                for (let i = 0; i < records.length; i++) {
-                    const record = records[i];
+                for (const esRecord of esRecords) {
                     batchGetItems.push(
                         this.formEntity.getBatch({
-                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${record.formId}`,
+                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${esRecord.formId}`,
                             SK: "L"
                         })
                     );
@@ -94,9 +93,8 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     items: batchGetItems
                 });
 
-                for (let i = 0; i < ddbRecords.length; i++) {
-                    const current = ddbRecords[i];
-                    if (!current.steps) {
+                for (const ddbRecord of ddbRecords) {
+                    if (!ddbRecord.steps) {
                         shouldExecute = true;
                         return false;
                     }

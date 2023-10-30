@@ -35,15 +35,14 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                const forms = await queryAll<FbForm>({
+                const ddbRecords = await queryAll<FbForm>({
                     entity: this.formEntity,
                     // Pulling all forms via the `T#root#L#en-US#FB#F` PK will suffice.
                     partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
                 });
 
-                for (let i = 0; i < forms.length; i++) {
-                    const current = forms[i];
-                    if (!current.steps) {
+                for (const ddbRecord of ddbRecords) {
+                    if (!ddbRecord.steps) {
                         shouldExecute = true;
                         return false;
                     }
