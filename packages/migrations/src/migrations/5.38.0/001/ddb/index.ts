@@ -49,6 +49,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     }
                 }
 
+                // Continue to the next locale.
                 return true;
             }
         });
