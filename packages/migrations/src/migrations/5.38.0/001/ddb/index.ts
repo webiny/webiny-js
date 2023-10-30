@@ -57,6 +57,69 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
+        await forEachTenantLocale({
+            table: this.table,
+            logger,
+            callback: async ({ tenantId, localeCode }) => {
+                const items: BatchWriteItem[] = [];
+
+                {
+                    const ddbRecords = await queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
+                    });
+
+                    for (const ddbRecord of ddbRecords) {
+                        const recordMigrated = this.migrateFormRecord(ddbRecord);
+                        if (recordMigrated) {
+                            items.push(this.formEntity.putBatch(ddbRecord));
+                        }
+                    }
+                }
+
+                {
+                    const ddbRecords = await queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#L`
+                    });
+
+                    for (const ddbRecord of ddbRecords) {
+                        const recordMigrated = this.migrateFormRecord(ddbRecord);
+                        if (recordMigrated) {
+                            items.push(this.formEntity.putBatch(ddbRecord));
+                        }
+                    }
+                }
+                {
+                    const ddbRecords = await queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#LP`
+                    });
+
+                    for (const ddbRecord of ddbRecords) {
+                        const recordMigrated = this.migrateFormRecord(ddbRecord);
+                        if (recordMigrated) {
+                            items.push(this.formEntity.putBatch(ddbRecord));
+                        }
+                    }
+                }
+
+                const execute = () => {
+                    return batchWriteAll({ table: this.formEntity.table, items });
+                };
+
+                logger.trace("Storing the DynamoDB records...");
+                await executeWithRetry(execute, {
+                    onFailedAttempt: error => {
+                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
+                        logger.error(error.message);
+                    }
+                });
+
+                return true;
+            }
+        });
+
         await scanWithCallback<FbForm>(
             {
                 entity: this.formEntity,
@@ -116,6 +179,23 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
 
         // We must ensure "fb.formSubmission" are not included.
         return recordType.startsWith("fb.form") && recordType !== "fb.formSubmission";
+    }
+
+    private migrateFormRecord(record: FbForm): boolean {
+        if (record.steps) {
+            return false;
+        }
+
+        // If no steps are defined, we need to create a single step.
+        record.steps = [];
+
+        if (Array.isArray(record.layout)) {
+            // If layout is an array, we need to create a single step with all the fields.
+            record.steps = [{ title: "Step 1", layout: record.layout }];
+            delete record.layout;
+        }
+
+        return true;
     }
 }
 

@@ -73,7 +73,12 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName(indexNameParams),
                     body: {
-                        size: 1000
+                        query: {
+                            bool: {
+                                filter: [{ term: { "__type.keyword": "fb.form" } }]
+                            }
+                        },
+                        size: 10000
                     }
                 });
 
@@ -82,11 +87,14 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     return true;
                 }
 
+                const formIds = esRecords.map(item => item.formId).filter(Boolean);
+                const uniqueFormIds = [...new Set(formIds)];
+
                 const batchGetItems: BatchReadItem[] = [];
-                for (const esRecord of esRecords) {
+                for (const formId of uniqueFormIds) {
                     batchGetItems.push(
                         this.formEntity.getBatch({
-                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${esRecord.formId}`,
+                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
                             SK: "L"
                         })
                     );
@@ -138,7 +146,12 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName(indexNameParams),
                     body: {
-                        size: 1000
+                        query: {
+                            bool: {
+                                filter: [{ term: { "__type.keyword": "fb.form" } }]
+                            }
+                        },
+                        size: 10000
                     }
                 });
 
@@ -147,9 +160,11 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     return true;
                 }
 
-                for (const esRecord of esRecords) {
-                    const formId = esRecord.formId;
+                const formIds = esRecords.map(item => item.formId).filter(Boolean);
+                const uniqueFormIds = [...new Set(formIds)];
 
+                // For each form record, let's ensure the "steps" property is defined.
+                for (const formId of uniqueFormIds) {
                     const ddbRecords = await queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,

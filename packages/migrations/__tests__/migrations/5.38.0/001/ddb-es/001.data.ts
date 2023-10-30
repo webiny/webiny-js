@@ -418,6 +418,115 @@ export const createEsFormsData = () => {
             slug: "form-1-653a578347a0da00088b9f2f",
             tenant: "root",
             status: "draft"
+        },
+        {
+            data: {
+                firstName: "one",
+                lastName: "two",
+                jobTitle: "four",
+                email: "three@three.com"
+            },
+            form: {
+                layout: [["Dxye-uTxZ"], ["F7OHlHobd"], ["CTa88hKhF"], ["EZzUH0RuE"]],
+                parent: "653f80144866de00082fb764",
+                name: "Form1",
+                id: "653f80144866de00082fb764#0002",
+                fields: [
+                    {
+                        settings: {
+                            defaultValue: null
+                        },
+                        helpText: null,
+                        name: "firstName",
+                        options: [],
+                        placeholderText: null,
+                        _id: "Dxye-uTxZ",
+                        label: "First name",
+                        type: "text",
+                        validation: [],
+                        fieldId: "firstName"
+                    },
+                    {
+                        settings: {
+                            defaultValue: null
+                        },
+                        helpText: null,
+                        name: "lastName",
+                        options: [],
+                        placeholderText: null,
+                        _id: "F7OHlHobd",
+                        label: "Last name",
+                        type: "text",
+                        validation: [],
+                        fieldId: "lastName"
+                    },
+                    {
+                        settings: {
+                            defaultValue: null
+                        },
+                        helpText: null,
+                        name: "email",
+                        options: [],
+                        placeholderText: null,
+                        _id: "CTa88hKhF",
+                        label: "Email",
+                        type: "text",
+                        validation: [
+                            {
+                                settings: {
+                                    regex: null,
+                                    flags: null,
+                                    preset: "email"
+                                },
+                                name: "pattern",
+                                message: "Please enter a valid e-mail."
+                            }
+                        ],
+                        fieldId: "email"
+                    },
+                    {
+                        settings: {
+                            defaultValue: null
+                        },
+                        helpText: null,
+                        name: "jobTitle",
+                        options: [],
+                        placeholderText: null,
+                        _id: "EZzUH0RuE",
+                        label: "Job title",
+                        type: "text",
+                        validation: [],
+                        fieldId: "jobTitle"
+                    }
+                ],
+                version: 2
+            },
+            webinyVersion: "5.37.8",
+            meta: {
+                ip: "0.0.0.0",
+                submittedOn: "2023-10-30T10:08:03.069Z",
+                url: {
+                    query: {
+                        preview: "653f804a639a930008cde314#0001",
+                        __tenant: "root",
+                        __locale: "en-US"
+                    },
+                    location:
+                        "https://diorb6363f1go.cloudfront.net/untitled-locqk5st?preview=653f804a639a930008cde314%230001&__locale=en-US&__tenant=root"
+                }
+            },
+            savedOn: "2023-10-30T10:08:03.403Z",
+            __type: "fb.submission",
+            id: "653f8083639a930008cde316",
+            locale: "en-US",
+            createdOn: "2023-10-30T10:08:03.403Z",
+            ownedBy: {
+                displayName: "ad min",
+                id: "653f7fc9639a930008cde2f9",
+                type: "admin"
+            },
+            logs: [],
+            tenant: "root"
         }
     ];
 };
