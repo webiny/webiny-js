@@ -115,7 +115,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
         }
 
         // We must ensure "fb.formSubmission" are not included.
-        return recordType.startsWith("fb.form") || recordType !== "fb.formSubmission";
+        return recordType.startsWith("fb.form") && recordType !== "fb.formSubmission";
     }
 }
 
