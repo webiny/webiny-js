@@ -62,24 +62,24 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             callback: async ({ tenantId, localeCode }) => {
                 const items: BatchWriteItem[] = [];
 
-                const ddbRecords = [
-                    ...(await queryAll<FbForm>({
+                const ddbRecords = await Promise.all([
+                    queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
-                    })),
-                    ...(await queryAll<FbForm>({
+                    }),
+                    queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#L`
-                    })),
-                    ...(await queryAll<FbForm>({
+                    }),
+                    queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`
-                    }))
-                ];
+                    })
+                ]).then(response => response.flat());
 
                 for (const ddbRecord of ddbRecords) {
                     if (ddbRecord.steps) {
-                        return false;
+                        continue;
                     }
 
                     // If no steps are defined, we need to create a single step.
