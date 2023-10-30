@@ -116,6 +116,9 @@ export interface IAcoApp {
 }
 // TODO: determine correct type
 export type IAcoAppOnEntry<T = any> = (entry: SearchRecord<T>) => Promise<SearchRecord<T>>;
+export type IAcoAppOnEntryList<T = any> = (entry: SearchRecord<T>[]) => Promise<SearchRecord<T>[]>;
+export type AcoRequestAction = "create" | "update" | "delete" | "move" | "fetch";
+export type IAcoAppOnAnyRequest = (context: AcoContext, action: AcoRequestAction) => Promise<void>;
 
 export interface IAcoAppParams {
     name: string;
@@ -123,6 +126,8 @@ export interface IAcoAppParams {
     model: CmsModel;
     fields: CmsModelField[];
     onEntry?: IAcoAppOnEntry;
+    onEntryList?: IAcoAppOnEntryList;
+    onAnyRequest?: IAcoAppOnAnyRequest;
 }
 
 export type IAcoAppsOptions = CreateAcoParams;
