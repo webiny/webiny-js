@@ -1,6 +1,7 @@
-import { IAcoAppRegisterParams } from "@webiny/api-aco/types";
+import { IAcoAppRegisterParams, SearchRecord } from "@webiny/api-aco/types";
 import { AUDIT_LOGS_TYPE } from "./contants";
 import { compressor } from "~/utils/compressor";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 const toDate = (value: string | Date) => {
     if (value instanceof Date) {
@@ -11,6 +12,20 @@ const toDate = (value: string | Date) => {
     } catch {
         return value;
     }
+};
+
+const decompressData = (entry: SearchRecord<any>): SearchRecord<any> => {
+    if (!entry.data?.data) {
+        return entry;
+    }
+    return {
+        ...entry,
+        data: {
+            ...entry.data,
+            timestamp: toDate(entry.data.timestamp),
+            data: compressor.decompress(entry.data.data)
+        }
+    };
 };
 
 export const createApp = (): IAcoAppRegisterParams => {
@@ -86,17 +101,28 @@ export const createApp = (): IAcoAppRegisterParams => {
             }
         ],
         onEntry: async entry => {
-            if (!entry.data?.data) {
-                return entry;
-            }
-            return {
-                ...entry,
-                data: {
-                    ...entry.data,
-                    timestamp: toDate(entry.data.timestamp),
-                    data: compressor.decompress(entry.data.data)
+            return decompressData(entry);
+        },
+        onEntryList: async entries => {
+            return Promise.all(
+                entries.map(entry => {
+                    return decompressData(entry);
+                })
+            );
+        },
+        onAnyRequest: async (context, action) => {
+            const permissions = await context.security.getPermissions("al.*");
+            for (const permission of permissions) {
+                if (permission.name === "al.*") {
+                    return;
+                } else if (permission.name === `al.${action}`) {
+                    return;
                 }
-            };
+            }
+
+            throw new NotAuthorizedError({
+                message: "You cannot access audit logs."
+            });
         }
     };
 };
