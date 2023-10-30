@@ -1,6 +1,8 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { AcoContext } from "~/types";
 
+const ROOT_FOLDER = "root";
+
 interface EntryManagerCrudDecoratorsParams {
     context: AcoContext;
 }
@@ -42,13 +44,15 @@ export class CmsEntriesCrudDecorators {
             const entry = await originalCmsGetEntry(model, params);
 
             const folderId = entry?.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "r"
-                });
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return entry;
             }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "r"
+            });
 
             return entry;
         };
@@ -58,14 +62,14 @@ export class CmsEntriesCrudDecorators {
             const entry = await originalCmsGetEntryById(model, params);
 
             const folderId = entry?.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "r"
-                });
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return entry;
             }
-
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "r"
+            });
             return entry;
         };
 
@@ -74,26 +78,27 @@ export class CmsEntriesCrudDecorators {
             const entriesByIds = await originalGetLatestEntriesByIds(model, ids);
             const returnEntriesByIds: typeof entriesByIds = [];
 
-            for (let i = 0; i < entriesByIds.length; i++) {
-                const entry = entriesByIds[i];
+            for (const entry of entriesByIds) {
+                const folderId = entry.location?.folderId;
+                if (!folderId || folderId === "root") {
+                    returnEntriesByIds.push(entry);
+                    continue;
+                }
 
-                const folderId = entry?.location?.folderId;
-                if (folderId && folderId !== "root") {
-                    try {
-                        // Getting the folder can also throw an error if user does not have access.
-                        const folder = await context.aco.folder.get(folderId);
-                        await folderLevelPermissions.ensureCanAccessFolderContent({
-                            folder,
-                            rwd: "r"
-                        });
+                try {
+                    // Getting the folder can also throw an error if user does not have access.
+                    const folder = await context.aco.folder.get(folderId);
+                    await folderLevelPermissions.ensureCanAccessFolderContent({
+                        folder,
+                        rwd: "r"
+                    });
 
-                        returnEntriesByIds.push(entry);
-                    } catch (e) {
-                        if (e instanceof NotAuthorizedError) {
-                            continue;
-                        }
-                        throw e;
+                    returnEntriesByIds.push(entry);
+                } catch (e) {
+                    if (e instanceof NotAuthorizedError) {
+                        continue;
                     }
+                    throw e;
                 }
             }
 
@@ -107,26 +112,27 @@ export class CmsEntriesCrudDecorators {
             const entriesByIds = await originalGetPublishedEntriesByIds(model, ids);
             const returnEntriesByIds: typeof entriesByIds = [];
 
-            for (let i = 0; i < entriesByIds.length; i++) {
-                const entry = entriesByIds[i];
+            for (const entry of entriesByIds) {
+                const folderId = entry.location?.folderId;
+                if (!folderId || folderId === "root") {
+                    returnEntriesByIds.push(entry);
+                    continue;
+                }
 
-                const folderId = entry?.location?.folderId;
-                if (folderId && folderId !== "root") {
-                    try {
-                        // Getting the folder can also throw an error if user does not have access.
-                        const folder = await context.aco.folder.get(folderId);
-                        await folderLevelPermissions.ensureCanAccessFolderContent({
-                            folder,
-                            rwd: "r"
-                        });
+                try {
+                    // Getting the folder can also throw an error if user does not have access.
+                    const folder = await context.aco.folder.get(folderId);
+                    await folderLevelPermissions.ensureCanAccessFolderContent({
+                        folder,
+                        rwd: "r"
+                    });
 
-                        returnEntriesByIds.push(entry);
-                    } catch (e) {
-                        if (e instanceof NotAuthorizedError) {
-                            continue;
-                        }
-                        throw e;
+                    returnEntriesByIds.push(entry);
+                } catch (e) {
+                    if (e instanceof NotAuthorizedError) {
+                        continue;
                     }
+                    throw e;
                 }
             }
 
@@ -136,13 +142,16 @@ export class CmsEntriesCrudDecorators {
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
         context.cms.createEntry = async (model, params) => {
             const folderId = params.wbyAco_location?.folderId || params.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "w"
-                });
+
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsCreateEntry(model, params);
             }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "w"
+            });
 
             return originalCmsCreateEntry(model, params);
         };
@@ -154,13 +163,15 @@ export class CmsEntriesCrudDecorators {
             });
 
             const folderId = entry?.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "w"
-                });
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsUpdateEntry(model, id, input, meta);
             }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "w"
+            });
 
             return originalCmsUpdateEntry(model, id, input, meta);
         };
@@ -172,13 +183,15 @@ export class CmsEntriesCrudDecorators {
             });
 
             const folderId = entry?.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "d"
-                });
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsDeleteEntry(model, id);
             }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "d"
+            });
 
             return originalCmsDeleteEntry(model, id);
         };
@@ -190,13 +203,15 @@ export class CmsEntriesCrudDecorators {
             });
 
             const folderId = entry?.location?.folderId;
-            if (folderId && folderId !== "root") {
-                const folder = await context.aco.folder.get(folderId);
-                await folderLevelPermissions.ensureCanAccessFolderContent({
-                    folder,
-                    rwd: "d"
-                });
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsDeleteEntryRevision(model, id);
             }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "d"
+            });
 
             return originalCmsDeleteEntryRevision(model, id);
         };
