@@ -65,7 +65,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             async result => {
                 const items: BatchWriteItem[] = [];
                 for (const current of result.items) {
-                    const isFbForm = current.TYPE?.startsWith("fb.form");
+                    const isFbForm = this.isFbFormRecord(current);
                     if (!isFbForm) {
                         continue;
                     }
@@ -105,6 +105,17 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
         );
 
         logger.info("Updated all the forms.");
+    }
+
+    private isFbFormRecord(record: FbForm): boolean {
+        // fb.formSubmission
+        const recordType = record.TYPE;
+        if (!recordType) {
+            return false;
+        }
+
+        // We must ensure "fb.formSubmission" are not included.
+        return recordType.startsWith("fb.form") || recordType !== "fb.formSubmission";
     }
 }
 
