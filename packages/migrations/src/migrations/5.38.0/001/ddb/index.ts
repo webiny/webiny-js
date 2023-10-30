@@ -60,8 +60,6 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                const items: BatchWriteItem[] = [];
-
                 const ddbRecords = await Promise.all([
                     queryAll<FbForm>({
                         entity: this.formEntity,
@@ -77,6 +75,12 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     })
                 ]).then(response => response.flat());
 
+                if (!ddbRecords.length) {
+                    // Continue to the next locale.
+                    return true;
+                }
+
+                const items: BatchWriteItem[] = [];
                 for (const ddbRecord of ddbRecords) {
                     if (ddbRecord.steps) {
                         continue;
