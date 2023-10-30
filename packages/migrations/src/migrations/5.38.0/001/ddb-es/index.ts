@@ -14,26 +14,22 @@ import {
     esGetIndexExist,
     esGetIndexName,
     esQueryAll,
+    forEachTenantLocale,
     queryAll
 } from "~/utils";
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { I18NLocale, ListLocalesParams, Tenant } from "~/migrations/5.37.0/003/types";
-import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createTenantEntity } from "../entities/createTenantEntity";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
+    private readonly table: Table;
     private readonly formEntity: ReturnType<typeof createFormEntity>;
-    private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly elasticsearchClient: Client;
 
     constructor(table: Table, elasticsearchClient: Client) {
+        this.table = table;
         this.formEntity = createFormEntity(table);
-        this.localeEntity = createLocaleEntity(table);
-        this.tenantEntity = createTenantEntity(table);
         this.elasticsearchClient = elasticsearchClient;
     }
 
@@ -46,23 +42,15 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const tenants = await this.listTenants();
-        if (tenants.length === 0) {
-            logger.info(`No tenants found in the system; skipping migration.`);
-            return false;
-        }
+        let shouldExecute = false;
 
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            if (locales.length === 0) {
-                logger.info(`No locales found in tenant "${tenant.data.id}".`);
-                continue;
-            }
-
-            for (const locale of locales) {
+        await forEachTenantLocale({
+            table: this.table,
+            logger,
+            callback: async ({ tenantId, localeCode }) => {
                 const indexNameParams = {
-                    tenant: tenant.data.id,
-                    locale: locale.code,
+                    tenant: tenantId,
+                    locale: localeCode,
                     type: "form-builder",
                     isHeadlessCmsModel: false
                 };
@@ -74,9 +62,11 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
 
                 if (!indexExists) {
                     logger.info(
-                        `No Elasticsearch index found for folders in tenant "${tenant.data.id}" and locale "${locale.code}"; skipping.`
+                        `No Elasticsearch index found for folders in tenant "${tenantId}" and locale "${localeCode}"; skipping.`
                     );
-                    continue;
+
+                    // Continue with next locale.
+                    return true;
                 }
 
                 const records = await esQueryAll<FbForm>({
@@ -92,8 +82,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     const record = records[i];
                     batchGetItems.push(
                         this.formEntity.getBatch({
-                            // T#root#L#en-US#FB#F#653a578347a0da00088b9f2f
-                            PK: `T#${tenant.data.id}#L#${locale.code}#FB#F#${record.formId}`,
+                            PK: `T#${tenantId}#L#${localeCode}#FB#F#${record.formId}`,
                             SK: "L"
                         })
                     );
@@ -108,28 +97,26 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                 for (let i = 0; i < ddbRecords.length; i++) {
                     const current = ddbRecords[i];
                     if (!current.steps) {
-                        return true;
+                        shouldExecute = true;
+                        return false;
                     }
                 }
-            }
-        }
 
-        return false;
+                return true;
+            }
+        });
+
+        return shouldExecute;
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
-        const tenants = await this.listTenants();
-
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            if (locales.length === 0) {
-                continue;
-            }
-
-            for (const locale of locales) {
+        await forEachTenantLocale({
+            table: this.table,
+            logger,
+            callback: async ({ tenantId, localeCode }) => {
                 const indexNameParams = {
-                    tenant: tenant.data.id,
-                    locale: locale.code,
+                    tenant: tenantId,
+                    locale: localeCode,
                     type: "form-builder",
                     isHeadlessCmsModel: false
                 };
@@ -140,10 +127,11 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                 });
 
                 if (!indexExists) {
-                    continue;
+                    // Continue with next locale.
+                    return true;
                 }
 
-                const records = await esQueryAll<FbForm>({
+                const esRecords = await esQueryAll<FbForm>({
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName(indexNameParams),
                     body: {
@@ -151,13 +139,10 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     }
                 });
 
-                for (let i = 0; i < records.length; i++) {
-                    const record = records[i];
-                    const tenantId = tenant.data.id;
-                    const localeCode = locale.code;
-                    const formId = record.formId;
+                for (const esRecord of esRecords) {
+                    const formId = esRecord.formId;
 
-                    const formRecords = await queryAll<FbForm>({
+                    const ddbRecords = await queryAll<FbForm>({
                         entity: this.formEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
                         options: {
@@ -166,30 +151,30 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     });
 
                     const items: BatchWriteItem[] = [];
-                    for (const current of formRecords) {
-                        const isFbForm = current.TYPE?.startsWith("fb.form");
+                    for (const ddbRecord of ddbRecords) {
+                        const isFbForm = ddbRecord.TYPE?.startsWith("fb.form");
                         if (!isFbForm) {
                             continue;
                         }
 
-                        if (current.steps) {
+                        if (ddbRecord.steps) {
                             continue;
                         }
 
                         // If no steps are defined, we need to create a single step.
-                        current.steps = [];
+                        ddbRecord.steps = [];
 
-                        if (Array.isArray(current.layout)) {
+                        if (Array.isArray(ddbRecord.layout)) {
                             // If layout is an array, we need to create a single step with all the fields.
-                            current.steps.push({ title: "Step 1", layout: current.layout });
-                            delete current.layout;
+                            ddbRecord.steps.push({ title: "Step 1", layout: ddbRecord.layout });
+                            delete ddbRecord.layout;
                         }
 
-                        items.push(this.formEntity.putBatch(current));
+                        items.push(this.formEntity.putBatch(ddbRecord));
                     }
 
-                    if (items.length === 0) {
-                        return;
+                    if (!items.length) {
+                        continue;
                     }
 
                     const execute = () => {
@@ -204,31 +189,13 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                         }
                     });
                 }
+
+                // Continue with next locale.
+                return true;
             }
-        }
+        });
 
         logger.info("Updated all the forms.");
-    }
-
-    private async listTenants(): Promise<Tenant[]> {
-        return await queryAll<Tenant>({
-            entity: this.tenantEntity,
-            partitionKey: "TENANTS",
-            options: {
-                index: "GSI1",
-                gte: " "
-            }
-        });
-    }
-
-    private async listLocales({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
-        return await queryAll<I18NLocale>({
-            entity: this.localeEntity,
-            partitionKey: `T#${tenant.data.id}#I18N#L`,
-            options: {
-                gte: " "
-            }
-        });
     }
 }
 

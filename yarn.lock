@@ -16340,6 +16340,7 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/ioc": 0.0.0
+    "@webiny/logger": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0

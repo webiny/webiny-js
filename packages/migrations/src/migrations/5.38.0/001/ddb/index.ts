@@ -5,24 +5,19 @@ import {
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { createFormEntity } from "../entities/createFormEntity";
-import { batchWriteAll, BatchWriteItem, queryAll } from "~/utils";
+import { batchWriteAll, BatchWriteItem, forEachTenantLocale, queryAll } from "~/utils";
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { I18NLocale, ListLocalesParams, Tenant } from "~/migrations/5.37.0/003/types";
 import { scanWithCallback } from "@webiny/db-dynamodb";
-import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createTenantEntity } from "../entities/createTenantEntity";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
-    private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
+    private readonly table: Table;
 
     constructor(table: Table) {
+        this.table = table;
         this.formEntity = createFormEntity(table);
-        this.localeEntity = createLocaleEntity(table);
-        this.tenantEntity = createTenantEntity(table);
     }
 
     getId() {
@@ -34,36 +29,31 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const tenants = await this.listTenants();
-        if (tenants.length === 0) {
-            logger.info(`No tenants found in the system; skipping migration.`);
-            return false;
-        }
+        let shouldExecute = false;
 
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            if (locales.length === 0) {
-                logger.info(`No locales found in tenant "${tenant.data.id}".`);
-                continue;
-            }
-
-            for (const locale of locales) {
+        await forEachTenantLocale({
+            table: this.table,
+            logger,
+            callback: async ({ tenantId, localeCode }) => {
                 const forms = await queryAll<FbForm>({
                     entity: this.formEntity,
                     // Pulling all forms via the `T#root#L#en-US#FB#F` PK will suffice.
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#FB#F`
+                    partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
                 });
 
                 for (let i = 0; i < forms.length; i++) {
                     const current = forms[i];
                     if (!current.steps) {
-                        return true;
+                        shouldExecute = true;
+                        return false;
                     }
                 }
-            }
-        }
 
-        return false;
+                return true;
+            }
+        });
+
+        return shouldExecute;
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
@@ -96,7 +86,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                     items.push(this.formEntity.putBatch(current));
                 }
 
-                if (items.length === 0) {
+                if (!items.length) {
                     return;
                 }
 
@@ -115,27 +105,6 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
         );
 
         logger.info("Updated all the forms.");
-    }
-
-    private async listTenants(): Promise<Tenant[]> {
-        return await queryAll<Tenant>({
-            entity: this.tenantEntity,
-            partitionKey: "TENANTS",
-            options: {
-                index: "GSI1",
-                gte: " "
-            }
-        });
-    }
-
-    private async listLocales({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
-        return await queryAll<I18NLocale>({
-            entity: this.localeEntity,
-            partitionKey: `T#${tenant.data.id}#I18N#L`,
-            options: {
-                gte: " "
-            }
-        });
     }
 }
 
