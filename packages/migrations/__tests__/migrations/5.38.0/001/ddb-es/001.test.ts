@@ -107,6 +107,17 @@ describe("5.38.0-001", () => {
             ...createLocalesData()
         ]);
 
+        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                isHeadlessCmsModel: false,
+                type: "form-builder"
+            });
+        });
+
+        await elasticsearchClient.indices.refreshAll();
+
         const handler = createDdbEsMigrationHandler({
             primaryTable,
             dynamoToEsTable,
