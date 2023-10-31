@@ -84,7 +84,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             tenant,
             locale,
             models: modelPlugins.map(({ contentModel: model }) => {
-                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}`;
+                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
+                    model.savedOn || "unknown"
+                }`;
             })
         });
         return listPluginModelsCache.getOrSet(cacheKey, () => {
@@ -147,7 +149,11 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             tenant,
             locale,
             identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
-            plugins: pluginModels.map(({ modelId }) => modelId)
+            plugins: pluginModels.map(model => {
+                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
+                    model.savedOn || "unknown"
+                }`;
+            })
         });
 
         return listAllModelsCache.getOrSet(cacheKey, async () => {
