@@ -15,7 +15,7 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
     ] as NonNullable<NormalJob["steps"]>;
 
 // Create "Pull requests" workflow.
-export const pullRequestsCommandCypress = createWorkflow({
+export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
     env: {
@@ -316,11 +316,6 @@ export const pullRequestsCommandCypress = createWorkflow({
                 {
                     name: "Create a new Webiny project",
                     run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
-                },
-                {
-                    name: 'Build "api" app',
-                    "working-directory": "test-project",
-                    run: "yarn webiny ws run build --folder api --env dev"
                 }
             ]
         }

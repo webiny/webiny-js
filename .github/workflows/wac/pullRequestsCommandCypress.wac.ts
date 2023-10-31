@@ -126,10 +126,26 @@ const createJobs = (dbSetup: string) => {
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
-            ...createSetupVerdaccioSteps({
-                verdaccioFilesArtifactName: `verdaccio-files-${dbSetup}`,
-                versionAndPublish: true
-            }),
+            ...createSetupVerdaccioSteps(),
+            {
+                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                "working-directory": "dev",
+                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+            },
+            {
+                name: "Version and publish to Verdaccio",
+                "working-directory": "dev",
+                run: "yarn release --type=verdaccio"
+            },
+            {
+                name: "Create verdaccio-files artifact",
+                uses: "actions/upload-artifact@v3",
+                with: {
+                    name: `verdaccio-files-${dbSetup}`,
+                    "retention-days": 1,
+                    path: "dev/.verdaccio/\ndev/.verdaccio.yaml\n"
+                }
+            },
             {
                 name: "Create directory",
                 run: "mkdir xyz"

@@ -1,4 +1,4 @@
-export const createSetupVerdaccioSteps = ({ workingDirectory = "dev" } = {}) => {
+export const createSetupVerdaccioSteps = ({ workingDirectory = "" } = {}) => {
     return [
         {
             name: "Start Verdaccio local server",
