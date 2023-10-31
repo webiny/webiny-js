@@ -1611,78 +1611,38 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     return {
-        /**
-         * Deprecated - will be removed in 5.35.0
-         */
-        onBeforeEntryCreate: onEntryBeforeCreate,
-        onAfterEntryCreate: onEntryAfterCreate,
-        onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
-        onAfterEntryCreateRevision: onEntryRevisionAfterCreate,
-        onBeforeEntryUpdate: onEntryBeforeUpdate,
-        onAfterEntryUpdate: onEntryAfterUpdate,
-        onBeforeEntryDelete: onEntryBeforeDelete,
-        onAfterEntryDelete: onEntryAfterDelete,
-        onBeforeEntryDeleteRevision: onEntryRevisionBeforeDelete,
-        onAfterEntryDeleteRevision: onEntryRevisionAfterDelete,
-        onBeforeEntryPublish: onEntryBeforePublish,
-        onAfterEntryPublish: onEntryAfterPublish,
-        onBeforeEntryUnpublish: onEntryBeforeUnpublish,
-        onAfterEntryUnpublish: onEntryAfterUnpublish,
-        onBeforeEntryGet: onEntryBeforeGet,
-        onBeforeEntryList: onEntryBeforeList,
-        /**
-         * Released in 5.34.0
-         *
-         * Create
-         */
         onEntryBeforeCreate,
         onEntryAfterCreate,
         onEntryCreateError,
-        /**
-         * Create revision
-         */
+
         onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
         onEntryRevisionAfterCreate,
         onEntryRevisionCreateError: onEntryCreateRevisionError,
-        /**
-         * Update
-         */
+
         onEntryBeforeUpdate,
         onEntryAfterUpdate,
         onEntryUpdateError,
-        /**
-         * Move
-         */
+
         onEntryBeforeMove,
         onEntryAfterMove,
         onEntryMoveError,
-        /**
-         * Delete whole entry
-         */
+
         onEntryBeforeDelete,
         onEntryAfterDelete,
         onEntryDeleteError,
-        /**
-         * Delete entry revision
-         */
+
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
-        /**
-         * Publish
-         */
+
         onEntryBeforePublish,
         onEntryAfterPublish,
         onEntryPublishError,
-        /**
-         * Republish
-         */
+
         onEntryBeforeRepublish,
         onEntryAfterRepublish,
         onEntryRepublishError,
-        /**
-         * Unpublish
-         */
+
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
         onEntryUnpublishError,

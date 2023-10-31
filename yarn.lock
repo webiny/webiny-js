@@ -13096,12 +13096,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-file-manager-ddb@0.0.0, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
@@ -13403,7 +13397,6 @@ __metadata:
     "@webiny/validation": 0.0.0
     apollo-graphql: ^0.9.5
     code-frame: ^5.0.0
-    dataloader: ^2.0.0
     dot-prop: ^6.0.1
     get-yarn-workspaces: ^1.0.2
     graphql: ^15.7.2
