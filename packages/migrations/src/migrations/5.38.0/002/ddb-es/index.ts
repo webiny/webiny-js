@@ -39,14 +39,14 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly formSubmissionEntity: ReturnType<typeof createFormSubmissionEntity>;
-    private readonly formDdbEsEntity: ReturnType<typeof createFormSubmissionDdbEsEntity>;
+    private readonly formSubmissionDdbEsEntity: ReturnType<typeof createFormSubmissionDdbEsEntity>;
     private readonly elasticsearchClient: Client;
 
     constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.table = table;
         this.esTable = esTable;
         this.formSubmissionEntity = createFormSubmissionEntity(table);
-        this.formDdbEsEntity = createFormSubmissionDdbEsEntity(esTable);
+        this.formSubmissionDdbEsEntity = createFormSubmissionDdbEsEntity(esTable);
         this.elasticsearchClient = elasticsearchClient;
     }
 
@@ -170,7 +170,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     }
 
                     primaryTableRecordsToWrite.push(this.formSubmissionEntity.putBatch(item));
-                    ddbEsTableRecordsToRead.push(this.formDdbEsEntity.getBatch(item));
+                    ddbEsTableRecordsToRead.push(this.formSubmissionDdbEsEntity.getBatch(item));
                 }
 
                 // Second, let's prepare a list of records to write to the DDB-ES table.
@@ -178,9 +178,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     table: this.esTable,
                     items: ddbEsTableRecordsToRead
                 }).then(ddbEsTableRecords => {
-                    for (let i = 0; i < ddbEsTableRecords.length; i++) {
-                        const ddbEsTableRecord = ddbEsTableRecords[i];
-
+                    for (const ddbEsTableRecord of ddbEsTableRecords) {
                         if (!ddbEsTableRecord.data || !ddbEsTableRecord.data.form) {
                             continue;
                         }
@@ -201,7 +199,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                         }
 
                         ddbEsTableRecordsToWrite.push(
-                            this.formDdbEsEntity.putBatch(ddbEsTableRecord)
+                            this.formSubmissionDdbEsEntity.putBatch(ddbEsTableRecord)
                         );
                     }
                 });
@@ -230,7 +228,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     // 2. Update DynamoDB records (DDB-ES table).
                     const execute = () => {
                         return batchWriteAll({
-                            table: this.formDdbEsEntity.table,
+                            table: this.formSubmissionDdbEsEntity.table,
                             items: ddbEsTableRecordsToWrite
                         });
                     };
