@@ -13,7 +13,6 @@ import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollectio
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
-import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
@@ -22,12 +21,10 @@ interface HeadlessCmsPermissions {
     groups: ModelGroupsPermissions;
     models: ModelsPermissions;
     entries: EntriesPermissions;
-    settings: SettingsPermissions;
 }
 
 export interface HeadlessCms
-    extends CmsSettingsContext,
-        CmsSystemContext,
+    extends CmsSystemContext,
         CmsGroupContext,
         CmsModelContext,
         CmsEntryContext {
@@ -60,7 +57,7 @@ export interface HeadlessCms
      */
     storageOperations: HeadlessCmsStorageOperations;
     /**
-     * Permissions for settings, groups, models and entries.
+     * Permissions for groups, models and entries.
      *
      * @internal
      */
@@ -937,38 +934,6 @@ export interface CmsIdentity {
      * Type of the user (admin, user)
      */
     type: string;
-}
-
-/**
- * Representation of settings database model.
- *
- * @category Database model
- */
-export interface CmsSettings {
-    /**
-     * Last content model change. Used to cache GraphQL schema.
-     */
-    contentModelLastChange: Date;
-    /**
-     * Settings tenant.
-     */
-    tenant: string;
-    /**
-     * Settings locale.
-     */
-    locale: string;
-}
-
-/**
- * Settings CRUD in context.
- *
- * @category Context
- */
-export interface CmsSettingsContext {
-    /**
-     * Gets settings model from the database.
-     */
-    getSettings: () => Promise<CmsSettings | null>;
 }
 
 export interface OnSystemBeforeInstallTopicParams {
@@ -2435,13 +2400,6 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
 };
 
 /**
- * Settings security permission.
- *
- * @category SecurityPermission
- */
-export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
-
-/**
  * A base security permission for CMS.
  *
  * @category SecurityPermission
@@ -2927,34 +2885,6 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished"
 }
 
-export interface CmsSettingsStorageOperationsGetParams {
-    locale: string;
-    tenant: string;
-}
-
-export interface CmsSettingsStorageOperationsCreateParams {
-    settings: CmsSettings;
-}
-
-export interface CmsSettingsStorageOperationsUpdateParams {
-    settings: CmsSettings;
-}
-
-export interface CmsSettingsStorageOperations {
-    /**
-     * Get the settings from the storage.
-     */
-    get: (params: CmsSettingsStorageOperationsGetParams) => Promise<CmsSettings | null>;
-    /**
-     * Create settings in the storage.
-     */
-    create: (params: CmsSettingsStorageOperationsCreateParams) => Promise<CmsSettings>;
-    /**
-     * Update the settings in the storage.
-     */
-    update: (params: CmsSettingsStorageOperationsUpdateParams) => Promise<CmsSettings>;
-}
-
 export interface CmsSystem {
     version?: string;
     readAPIKey?: string;
@@ -2994,7 +2924,6 @@ export interface CmsSystemStorageOperations {
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
     name: string;
     system: CmsSystemStorageOperations;
-    settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;
