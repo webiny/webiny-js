@@ -1,4 +1,3 @@
-import DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
 import {
     CmsContext,
@@ -31,10 +30,6 @@ import { createTopic } from "@webiny/pubsub";
 import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
 import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
 import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
-import { assignModelAfterCreate } from "./contentModel/afterCreate";
-import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
-import { assignModelAfterDelete } from "./contentModel/afterDelete";
-import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { filterAsync } from "~/utils/filterAsync";
 import {
@@ -44,25 +39,10 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import {
-    ensurePluralApiName,
-    ensureSingularApiName
-} from "./contentModel/compatibility/modelApiName";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
-
-/**
- * Given a model, return an array of tags ensuring the `type` tag is set.
- */
-const ensureTypeTag = (model: Pick<CmsModel, "tags">) => {
-    // Let's make sure we have a `type` tag assigned.
-    // If `type` tag is not set, set it to a default one (`model`).
-    const tags = model.tags || [];
-    if (!tags.some(tag => tag.startsWith("type:"))) {
-        tags.push("type:model");
-    }
-
-    return tags;
-};
+import { createCacheKey, createMemoryCache } from "~/utils";
+import { ensureTypeTag } from "./contentModel/ensureTypeTag";
+import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -77,37 +57,11 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     const { getTenant, getIdentity, getLocale, storageOperations, modelsPermissions, context } =
         params;
 
-    const loaders = {
-        listModels: new DataLoader(async () => {
-            const models = await storageOperations.models.list({
-                where: {
-                    tenant: getTenant().id,
-                    locale: getLocale().code
-                }
-            });
-            return [
-                models.map(model => {
-                    return {
-                        ...model,
-                        tags: ensureTypeTag(model),
-                        tenant: model.tenant || getTenant().id,
-                        locale: model.locale || getLocale().code,
-                        /**
-                         * TODO: remove in v5.36.0
-                         * This is for backward compatibility while migrations are not yet executed.
-                         */
-                        singularApiName: ensureSingularApiName(model),
-                        pluralApiName: ensurePluralApiName(model)
-                    };
-                })
-            ];
-        })
-    };
-
+    const listPluginModelsCache = createMemoryCache<CmsModel[]>();
+    const listAllModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const clearModelsCache = (): void => {
-        for (const loader of Object.values(loaders)) {
-            loader.clearAll();
-        }
+        listAllModelsCache.clear();
+        listPluginModelsCache.clear();
     };
 
     const managers = new Map<string, CmsModelManager>();
@@ -120,55 +74,53 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return manager;
     };
 
-    const checkModelPermissions = (rwd: string) => {
+    const checkModelPermissions = async (rwd: string) => {
         return modelsPermissions.ensure({ rwd });
     };
 
-    const getModelsAsPlugins = (): CmsModel[] => {
-        const tenant = getTenant().id;
-        const locale = getLocale().code;
-
-        return (
-            context.plugins
-                .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                /**
-                 * We need to filter out models that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
-                    if (modelTenant && modelTenant !== tenant) {
-                        return false;
-                    } else if (modelLocale && modelLocale !== locale) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map(plugin => {
-                    return {
-                        ...plugin.contentModel,
-                        tags: ensureTypeTag(plugin.contentModel),
-                        tenant,
-                        locale,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                })
-        );
+    const getModelsAsPlugins = (tenant: string, locale: string): CmsModel[] => {
+        const modelPlugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
+        const cacheKey = createCacheKey({
+            tenant,
+            locale,
+            models: modelPlugins.map(({ contentModel: model }) => {
+                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
+                    model.savedOn || "unknown"
+                }`;
+            })
+        });
+        return listPluginModelsCache.getOrSet(cacheKey, () => {
+            return (
+                modelPlugins
+                    /**
+                     * We need to filter out models that are not for this tenant or locale.
+                     * If it does not have tenant or locale define, it is for every locale and tenant
+                     */
+                    .filter(plugin => {
+                        const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
+                        if (modelTenant && modelTenant !== tenant) {
+                            return false;
+                        } else if (modelLocale && modelLocale !== locale) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map(plugin => {
+                        return {
+                            ...plugin.contentModel,
+                            tags: ensureTypeTag(plugin.contentModel),
+                            tenant,
+                            locale,
+                            webinyVersion: context.WEBINY_VERSION
+                        };
+                    })
+            );
+        });
     };
 
-    const modelsGet = async (modelId: string) => {
-        const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
-
-        if (pluginModel) {
-            return pluginModel;
-        }
-
-        const model = await storageOperations.models.get({
-            tenant: getTenant().id,
-            locale: getLocale().code,
-            modelId
-        });
-
+    const getModelFromCache = async (modelId: string) => {
+        const models = await listModels();
+        const model = models.find(m => m.modelId === modelId);
         if (!model) {
             throw new NotFoundError(`Content model "${modelId}" was not found!`);
         }
@@ -181,29 +133,49 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         };
     };
 
-    const modelsList = async (): Promise<CmsModel[]> => {
-        const databaseModels: CmsModel[] = await loaders.listModels.load("listModels");
-
-        const pluginsModels = getModelsAsPlugins();
-
-        return databaseModels.concat(pluginsModels);
-    };
-
+    /**
+     * The list models cache is a key -> Promise pair so it the listModels() can be called multiple times but executed only once.
+     */
     const listModels = async () => {
-        return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-            const models = await modelsList();
-            return filterAsync(models, async model => {
-                const ownsModel = await modelsPermissions.ensure(
-                    { owns: model.createdBy },
-                    { throw: false }
-                );
+        /**
+         * Maybe we can cache based on permissions, not the identity id?
+         *
+         * TODO: @adrian please check if possible.
+         */
+        const tenant = getTenant().id;
+        const locale = getLocale().code;
+        const pluginModels = getModelsAsPlugins(tenant, locale);
+        const cacheKey = createCacheKey({
+            tenant,
+            locale,
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
+            plugins: pluginModels.map(model => {
+                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
+                    model.savedOn || "unknown"
+                }`;
+            })
+        });
 
-                if (!ownsModel) {
-                    return false;
-                }
+        return listAllModelsCache.getOrSet(cacheKey, async () => {
+            return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
+                const databaseModels = await listModelsFromDatabase(params);
+                const models = databaseModels.concat(pluginModels);
+                /**
+                 * Filter models based on permissions.
+                 */
+                return filterAsync(models, async model => {
+                    const ownsModel = await modelsPermissions.ensure(
+                        { owns: model.createdBy },
+                        { throw: false }
+                    );
 
-                return modelsPermissions.canAccessModel({
-                    model
+                    if (!ownsModel) {
+                        return false;
+                    }
+
+                    return modelsPermissions.canAccessModel({
+                        model
+                    });
                 });
             });
         });
@@ -213,7 +185,12 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
             await checkModelPermissions("r");
 
-            const model = await modelsGet(modelId);
+            const model = await context.security.withoutAuthorization(async () => {
+                return await getModelFromCache(modelId);
+            });
+            if (!model) {
+                throw new NotFoundError(`Content model "${modelId}" was not found!`);
+            }
 
             await modelsPermissions.ensure({ owns: model.createdBy });
             await modelsPermissions.ensureCanAccessModel({
@@ -224,18 +201,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getModelManager: CmsModelContext["getModelManager"] = async (
+    const getEntryManager: CmsModelContext["getEntryManager"] = async (
         target
     ): Promise<CmsModelManager> => {
         const modelId = typeof target === "string" ? target : target.modelId;
         if (managers.has(modelId)) {
             return managers.get(modelId) as CmsModelManager;
         }
-        const models = await modelsList();
-        const model = models.find(m => m.modelId === modelId);
-        if (!model) {
-            throw new NotFoundError(`There is no content model "${modelId}".`);
-        }
+        const model = await getModelFromCache(modelId);
         return await updateManager(context, model);
     };
 
@@ -285,30 +258,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         context,
         storageOperations
     });
-    assignModelAfterCreate({
-        context,
-        onModelAfterCreate
-    });
     assignModelBeforeUpdate({
         onModelBeforeUpdate,
         context
-    });
-    assignModelAfterUpdate({
-        context,
-        onModelAfterUpdate
-    });
-    assignModelAfterCreateFrom({
-        context,
-        onModelAfterCreateFrom
     });
     assignModelBeforeDelete({
         onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
-    });
-    assignModelAfterDelete({
-        context,
-        onModelAfterDelete
     });
 
     /**
@@ -329,12 +286,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             assignModelDefaultFields(data);
         }
 
-        const group = await context.security.withoutAuthorization(async () => {
-            return context.cms.getGroup(data.group);
-        });
-        if (!group) {
-            throw new NotFoundError(`There is no group "${data.group}".`);
-        }
+        const group = await context.cms.getGroup(data.group);
 
         const identity = getIdentity();
         const model: CmsModel = {
@@ -375,7 +327,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 model
             });
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await updateManager(context, model);
 
@@ -419,12 +371,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         };
         const groupId = data.group;
         if (groupId) {
-            const groupData = await context.security.withoutAuthorization(async () => {
-                return context.cms.getGroup(groupId);
-            });
-            if (!groupData) {
-                throw new NotFoundError(`There is no group "${groupId}".`);
-            }
+            const groupData = await context.cms.getGroup(groupId);
             group = {
                 id: groupData.id,
                 name: groupData.name
@@ -507,7 +454,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             await updateManager(context, resultModel);
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await onModelAfterUpdate.publish({
                 input: {} as CmsModelUpdateInput,
@@ -595,7 +542,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 model
             });
 
-            loaders.listModels.clearAll();
+            clearModelsCache();
 
             await updateManager(context, model);
 
@@ -641,6 +588,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 );
             }
 
+            clearModelsCache();
+
             await onModelAfterDelete.publish({
                 model
             });
@@ -668,20 +617,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return true;
     };
     return {
-        /**
-         * Deprecated - will be removed in 5.36.0
-         */
-        onBeforeModelCreate: onModelBeforeCreate,
-        onAfterModelCreate: onModelAfterCreate,
-        onBeforeModelCreateFrom: onModelBeforeCreateFrom,
-        onAfterModelCreateFrom: onModelAfterCreateFrom,
-        onBeforeModelUpdate: onModelBeforeUpdate,
-        onAfterModelUpdate: onModelAfterUpdate,
-        onBeforeModelDelete: onModelBeforeDelete,
-        onAfterModelDelete: onModelAfterDelete,
-        /**
-         * Released in 5.34.0
-         */
         onModelBeforeCreate,
         onModelAfterCreate,
         onModelCreateError,
@@ -741,11 +676,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 }
             );
         },
-        getModelManager,
-        getEntryManager: async model => {
-            return getModelManager(model);
-        },
-        getManagers: () => managers,
+        getEntryManager,
         getEntryManagers: () => managers
     };
 };

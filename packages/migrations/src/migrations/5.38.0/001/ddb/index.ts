@@ -8,7 +8,6 @@ import { createFormEntity } from "../entities/createFormEntity";
 import { batchWriteAll, BatchWriteItem, forEachTenantLocale, queryAll } from "~/utils";
 import { FbForm } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { scanWithCallback } from "@webiny/db-dynamodb";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
@@ -57,37 +56,46 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
-        await scanWithCallback<FbForm>(
-            {
-                entity: this.formEntity,
-                options: {}
-            },
-            async result => {
-                const items: BatchWriteItem[] = [];
-                for (const current of result.items) {
-                    const isFbForm = current.TYPE?.startsWith("fb.form");
-                    if (!isFbForm) {
-                        continue;
-                    }
+        await forEachTenantLocale({
+            table: this.table,
+            logger,
+            callback: async ({ tenantId, localeCode }) => {
+                const ddbRecords = await Promise.all([
+                    queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F`
+                    }),
+                    queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#L`
+                    }),
+                    queryAll<FbForm>({
+                        entity: this.formEntity,
+                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`
+                    })
+                ]).then(response => response.flat());
 
-                    if (current.steps) {
+                if (!ddbRecords.length) {
+                    // Continue to the next locale.
+                    return true;
+                }
+
+                const items: BatchWriteItem[] = [];
+                for (const ddbRecord of ddbRecords) {
+                    if (ddbRecord.steps) {
                         continue;
                     }
 
                     // If no steps are defined, we need to create a single step.
-                    current.steps = [];
+                    ddbRecord.steps = [];
 
-                    if (Array.isArray(current.layout)) {
+                    if (Array.isArray(ddbRecord.layout)) {
                         // If layout is an array, we need to create a single step with all the fields.
-                        current.steps = [{ title: "Step 1", layout: current.layout }];
-                        delete current.layout;
+                        ddbRecord.steps = [{ title: "Step 1", layout: ddbRecord.layout }];
+                        delete ddbRecord.layout;
                     }
 
-                    items.push(this.formEntity.putBatch(current));
-                }
-
-                if (!items.length) {
-                    return;
+                    items.push(this.formEntity.putBatch(ddbRecord));
                 }
 
                 const execute = () => {
@@ -101,8 +109,10 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
                         logger.error(error.message);
                     }
                 });
+
+                return true;
             }
-        );
+        });
 
         logger.info("Updated all the forms.");
     }

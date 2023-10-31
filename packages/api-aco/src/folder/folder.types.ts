@@ -118,6 +118,11 @@ export interface AcoFolderCrud {
 
     delete(id: string): Promise<Boolean>;
 
+    getAncestors(folder: Folder): Promise<Folder[]>;
+
+    /**
+     * @deprecated use `getAncestors` instead
+     */
     getFolderWithAncestors(id: string): Promise<Folder[]>;
 
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
