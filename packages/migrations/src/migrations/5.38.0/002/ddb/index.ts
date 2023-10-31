@@ -108,7 +108,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
         logger.debug(`Scanning DynamoDB table... ${usingKey}`);
         await ddbScanWithCallback<FbFormSubmission>(
             {
-                entity: this.formEntity,
+                entity: this.formSubmissionEntity,
                 options: {
                     filters: [
                         {
