@@ -64,7 +64,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                 const uniqueFormIds = [...new Set(formIds)];
 
                 for (const formId of uniqueFormIds) {
-                    // Get 5 latest form submissions. If the "steps" property
+                    // Get a form submission. If the "steps" property
                     // is not defined, we need to execute the migration.
                     const formSubmission = await queryOne<FbFormSubmission>({
                         entity: this.formSubmissionEntity,
