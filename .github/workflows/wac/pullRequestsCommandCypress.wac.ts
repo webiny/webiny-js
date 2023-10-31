@@ -127,7 +127,8 @@ const createJobs = (dbSetup: string) => {
                 }
             },
             ...createSetupVerdaccioSteps({
-                verdaccioFilesArtifactName: `verdaccio-files-${dbSetup}`
+                verdaccioFilesArtifactName: `verdaccio-files-${dbSetup}`,
+                versionAndPublish: true
             }),
             {
                 name: "Create directory",

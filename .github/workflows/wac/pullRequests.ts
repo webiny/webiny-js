@@ -11,232 +11,8 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
                 "node-version": NODE_VERSION
             }
         },
-        { uses: "actions/checkout@v3", with: { path: workingDirectory } },
-        { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
-        {
-            name: "Checkout Pull Request",
-            "working-directory": workingDirectory,
-            run: "hub pr checkout ${{ github.event.issue.number }}",
-            env: {
-                GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
-            }
-        }
+        { uses: "actions/checkout@v3", with: { path: workingDirectory } }
     ] as NonNullable<NormalJob["steps"]>;
-
-const createJobs = (dbSetup: string) => {
-    const jobNames = {
-        init: `e2e-wby-cms-${dbSetup}-init`,
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
-        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
-    };
-
-    const initJob: NormalJob = {
-        needs: "checkComment",
-        name: `E2E (${dbSetup.toUpperCase()}) - Init`,
-        "runs-on": "ubuntu-latest",
-        outputs: {
-            day: "${{ steps.get-day.outputs.day }}",
-            ts: "${{ steps.get-timestamp.outputs.ts }}",
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}"
-        },
-        steps: [
-            ...createSetupSteps(),
-            {
-                name: "Get day of the month",
-                id: "get-day",
-                run: 'echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT'
-            },
-            {
-                name: "Get timestamp",
-                id: "get-timestamp",
-                run: 'echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT'
-            },
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
-            }
-        ]
-    };
-
-    const env: Record<string, string> = {
-        AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
-        AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
-        PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
-        PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `$\{{ secrets.WEBINY_PULUMI_BACKEND }}$\{{ needs.${jobNames.init}.outputs.ts }}_ddb`,
-        YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
-    };
-
-    if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = `$\{{ needs.${jobNames.init}.outputs.ts }}_`;
-    } else if (dbSetup === "ddb-os") {
-        // We still use the same environment variables as for "ddb-es" setup, it's
-        // just that the values are read from different secrets.
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = `$\{{ needs.${jobNames.init}.outputs.ts }}_`;
-    }
-
-    const projectSetupJob: NormalJob = {
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        needs: jobNames.init,
-        "runs-on": "ubuntu-latest",
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
-        environment: "next",
-        env,
-        steps: [
-            ...createSetupSteps({ workingDirectory: "dev" }),
-            {
-                uses: "actions/cache@v3",
-                id: "yarn-cache",
-                with: {
-                    path: "dev/.yarn/cache",
-                    key: "yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}"
-                }
-            },
-            {
-                uses: "actions/cache@v3",
-                id: "cached-packages",
-                with: {
-                    path: "dev/.webiny/cached-packages",
-                    key: `$\{{ runner.os }}-$\{{ needs.${jobNames.init}.outputs.day }}-$\{{ secrets.RANDOM_CACHE_KEY_SUFFIX }}`
-                }
-            },
-            {
-                name: "Install dependencies",
-                "working-directory": "dev",
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                "working-directory": "dev",
-                run: "yarn build:quick"
-            },
-            {
-                uses: "actions/cache@v3",
-                id: "packages-cache",
-                with: {
-                    path: "dev/.webiny/cached-packages",
-                    key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
-                }
-            },
-            ...createSetupVerdaccioSteps({
-                verdaccioFilesArtifactName: `verdaccio-files-${dbSetup}`
-            }),
-            {
-                name: "Create directory",
-                run: "mkdir xyz"
-            },
-            {
-                name: "Disable Webiny telemetry",
-                run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
-            },
-            {
-                name: "Create a new Webiny project",
-                "working-directory": "xyz",
-                run: `npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"$\{{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
-`
-            },
-            {
-                name: "Print CLI version",
-                "working-directory": "xyz/test-project",
-                run: "yarn webiny --version"
-            },
-            {
-                name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v3",
-                with: {
-                    name: `project-files-${dbSetup}`,
-                    "retention-days": 1,
-                    path: "xyz/test-project/\n!xyz/test-project/node_modules/**/*\n!xyz/test-project/**/node_modules/**/*\n!xyz/test-project/.yarn/cache/**/*\n"
-                }
-            },
-            ...createDeployWebinySteps({ workingDirectory: "xyz/test-project" }),
-            {
-                name: "Create Cypress config",
-                "working-directory": "dev",
-                run: "yarn setup-cypress --projectFolder ../xyz/test-project"
-            },
-            {
-                name: "Save Cypress config",
-                id: "save-cypress-config",
-                "working-directory": "dev",
-                run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-            },
-            {
-                name: "Cypress - run installation wizard test",
-                "working-directory": "dev/cypress-tests",
-                run: 'yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-            }
-        ]
-    };
-
-    const cypressTestsJob = {
-        name: `$\{{ matrix.cypress-folder }} (${dbSetup}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
-        needs: [jobNames.init, jobNames.projectSetup],
-        strategy: {
-            "fail-fast": false,
-            matrix: {
-                os: ["ubuntu-latest"],
-                node: [NODE_VERSION],
-                "cypress-folder": `$\{{ fromJson(needs.${jobNames.init}.outputs.cypress-folders) }}`
-            }
-        },
-        "runs-on": "ubuntu-latest",
-        environment: "next",
-        env,
-        steps: [
-            ...createSetupSteps({ workingDirectory: "dev" }),
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: "dev/.webiny/cached-packages",
-                    key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
-                }
-            },
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: "dev/.yarn/cache",
-                    key: "yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}"
-                }
-            },
-            {
-                name: "Install dependencies",
-                "working-directory": "dev",
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                "working-directory": "dev",
-                run: "yarn build:quick"
-            },
-            {
-                name: "Set up Cypress config",
-                "working-directory": "dev",
-                run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
-            },
-            {
-                name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
-                "working-directory": "dev/cypress-tests",
-                "timeout-minutes": 40,
-                run: 'yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"'
-            }
-        ]
-    };
-
-    return {
-        [jobNames.init]: initJob,
-        [jobNames.projectSetup]: projectSetupJob,
-        [jobNames.cypressTests]: cypressTestsJob
-    };
-};
 
 // Create "Pull requests" workflow.
 export const pullRequestsCommandCypress = createWorkflow({
@@ -246,36 +22,307 @@ export const pullRequestsCommandCypress = createWorkflow({
         NODE_OPTIONS
     },
     jobs: {
-        checkComment: {
-            name: `Check comment for /cypress`,
+        "validate-commits": {
+            name: "Validate commit messages",
             "runs-on": "ubuntu-latest",
-            if: "${{ github.event.issue.pull_request }}",
             steps: [
                 {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
+                    uses: "actions/checkout@v3"
+                },
+                {
+                    uses: "webiny/action-conventional-commits@v1.1.0"
+                }
+            ]
+        },
+        init: {
+            name: "Init",
+            "runs-on": "webiny-build-packages",
+            outputs: {
+                "jest-packages": "${{ steps.list-jest-packages.outputs.jest-packages }}",
+                day: "${{ steps.get-day.outputs.day }}",
+                ts: "${{ steps.get-timestamp.outputs.ts }}",
+                "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
+            },
+            steps: [
+                ...createSetupSteps(),
+                {
+                    name: "Get day of the month",
+                    id: "get-day",
+                    run: 'echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Get timestamp",
+                    id: "get-timestamp",
+                    run: 'echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Is a PR from a fork",
+                    id: "is-fork-pr",
+                    run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Ignored Jest packages",
+                    id: "get-ignored-jest-packages",
+                    if: "steps.is-fork-pr.outputs.is-fork-pr == 'true'",
+                    run: 'echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "List packages with Jest tests",
+                    id: "list-jest-packages",
+                    run: 'echo "jest-packages=$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >> $GITHUB_OUTPUT'
+                },
+                {
+                    uses: "actions/cache@v3",
+                    id: "yarn-cache",
                     with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "cypress",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    name: "Create comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
+                    uses: "actions/cache@v3",
+                    id: "cached-packages",
                     with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
+                        path: ".webiny/cached-packages",
+                        key: "${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages",
+                    run: "yarn build:quick"
+                },
+                {
+                    uses: "actions/cache@v3",
+                    id: "packages-cache",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ steps.get-timestamp.outputs.ts }}"
                     }
                 }
             ]
         },
-        ...createJobs("ddb"),
-        ...createJobs("ddb-es"),
-        ...createJobs("ddb-os")
+        "code-analysis": {
+            needs: "init",
+            name: "Static code analysis",
+            "runs-on": "ubuntu-latest",
+            steps: [
+                ...createSetupSteps(),
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ needs.init.outputs.ts }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Check code formatting",
+                    run: "yarn prettier:check"
+                },
+                {
+                    name: "Check dependencies",
+                    run: "yarn adio"
+                },
+                {
+                    name: "Check TS configs",
+                    run: "yarn check-ts-configs"
+                },
+                {
+                    name: "ESLint",
+                    run: "yarn eslint"
+                }
+            ]
+        },
+        "code-analysis-typescript": {
+            name: "Static code analysis (TypeScript)",
+            "runs-on": "webiny-build-packages",
+            steps: [
+                ...createSetupSteps(),
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages (full)",
+                    run: "yarn build"
+                }
+            ]
+        },
+        "jest-tests": {
+            needs: "init",
+            name: "${{ matrix.package.cmd }}",
+            strategy: {
+                "fail-fast": false,
+                matrix: {
+                    os: ["ubuntu-latest"],
+                    node: [NODE_VERSION],
+                    package: "${{ fromJson(needs.init.outputs.jest-packages) }}"
+                }
+            },
+            "runs-on": "${{ matrix.os }}",
+            env: {
+                AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
+                AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+                AWS_ELASTIC_SEARCH_DOMAIN_NAME: "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}",
+                ELASTIC_SEARCH_ENDPOINT: "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}",
+                ELASTIC_SEARCH_INDEX_PREFIX: "${{ matrix.package.id }}"
+            },
+            steps: [
+                ...createSetupSteps(),
+
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ needs.init.outputs.ts }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages",
+                    run: "yarn build:quick"
+                },
+                {
+                    name: "Run tests",
+                    run: "yarn test ${{ matrix.package.cmd }}"
+                }
+            ]
+        },
+        "verdaccio-publish": {
+            if: "needs.init.outputs.is-fork-pr != 'true'",
+            needs: "init",
+            name: "Publish to Verdaccio",
+            "runs-on": "ubuntu-latest",
+            steps: [
+                {
+                    uses: "actions/setup-node@v3",
+                    with: {
+                        "node-version": NODE_VERSION
+                    }
+                },
+                {
+                    uses: "actions/checkout@v3",
+                    with: {
+                        "fetch-depth": 0,
+                        ref: "${{ github.event.pull_request.head.ref }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ needs.init.outputs.ts }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages",
+                    run: "yarn build:quick"
+                },
+                ...createSetupVerdaccioSteps({ workingDirectory: "verdaccio-files" }),
+                {
+                    name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                    run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+                },
+                {
+                    name: "Version and publish to Verdaccio",
+                    run: "yarn release --type=verdaccio"
+                },
+                {
+                    name: "Upload verdaccio files",
+                    uses: "actions/upload-artifact@v3",
+                    with: {
+                        name: "verdaccio-files",
+                        "retention-days": 1,
+                        path: ".verdaccio/\n.verdaccio.yaml\n"
+                    }
+                }
+            ]
+        },
+        "test-create-webiny-project": {
+            needs: "verdaccio-publish",
+            name: 'Test "create-webiny-project"',
+            strategy: {
+                "fail-fast": false,
+                matrix: {
+                    os: ["ubuntu-latest"],
+                    node: [NODE_VERSION]
+                }
+            },
+            "runs-on": "${{ matrix.os }}",
+            env: {
+                YARN_ENABLE_IMMUTABLE_INSTALLS: false
+            },
+            steps: [
+                {
+                    uses: "actions/setup-node@v3",
+                    with: {
+                        "node-version": "${{ matrix.node }}"
+                    }
+                },
+                {
+                    uses: "actions/download-artifact@v3",
+                    with: {
+                        name: "verdaccio-files",
+                        path: "verdaccio-files"
+                    }
+                },
+                ...createSetupVerdaccioSteps({ workingDirectory: "verdaccio-files" }),
+                {
+                    name: "Disable Webiny telemetry",
+                    run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
+                },
+                {
+                    name: "Create a new Webiny project",
+                    run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
+                },
+                {
+                    name: 'Build "api" app',
+                    "working-directory": "test-project",
+                    run: "yarn webiny ws run build --folder api --env dev"
+                }
+            ]
+        }
     }
 });
