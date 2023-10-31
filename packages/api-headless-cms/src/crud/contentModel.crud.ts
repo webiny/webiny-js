@@ -30,10 +30,6 @@ import { createTopic } from "@webiny/pubsub";
 import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
 import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
 import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
-import { assignModelAfterCreate } from "./contentModel/afterCreate";
-import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
-import { assignModelAfterDelete } from "./contentModel/afterDelete";
-import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { filterAsync } from "~/utils/filterAsync";
 import {
@@ -256,30 +252,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         context,
         storageOperations
     });
-    assignModelAfterCreate({
-        context,
-        onModelAfterCreate
-    });
     assignModelBeforeUpdate({
         onModelBeforeUpdate,
         context
-    });
-    assignModelAfterUpdate({
-        context,
-        onModelAfterUpdate
-    });
-    assignModelAfterCreateFrom({
-        context,
-        onModelAfterCreateFrom
     });
     assignModelBeforeDelete({
         onModelBeforeDelete,
         plugins: context.plugins,
         storageOperations
-    });
-    assignModelAfterDelete({
-        context,
-        onModelAfterDelete
     });
 
     /**
@@ -691,8 +671,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             );
         },
         getEntryManager,
-        getEntryManagers: () => managers,
-        getModelManager: getEntryManager,
-        getManagers: () => managers
+        getEntryManagers: () => managers
     };
 };
