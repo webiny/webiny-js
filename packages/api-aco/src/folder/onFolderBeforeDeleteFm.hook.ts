@@ -27,7 +27,7 @@ export const onFolderBeforeDeleteFmHook = (context: AcoContext) => {
             }
 
             throw new WebinyError(
-                "Error: delete all child folders and files before proceeding.",
+                "Delete all child folders and files before proceeding.",
                 "DELETE_FOLDER_WITH_CHILDREN",
                 {
                     folder
@@ -35,7 +35,7 @@ export const onFolderBeforeDeleteFmHook = (context: AcoContext) => {
             );
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onFolderBeforeDeleteFmHook hook",
+                message: "Error while executing onFolderBeforeDeleteFmHook hook.",
                 code: "ACO_BEFORE_FOLDER_DELETE_FILE_HOOK"
             });
         }

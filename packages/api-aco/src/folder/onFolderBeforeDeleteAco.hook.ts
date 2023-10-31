@@ -3,7 +3,7 @@ import { AcoContext, Folder, IAcoApp } from "~/types";
 
 const throwDeleteError = (folder: Folder) => {
     throw new WebinyError(
-        "Error: delete all child folders and entries before proceeding.",
+        "Delete all child folders and entries before proceeding.",
         "DELETE_FOLDER_WITH_CHILDREN",
         {
             folder
@@ -51,7 +51,7 @@ export const onFolderBeforeDeleteAcoHook = ({ aco }: AcoContext) => {
             throwDeleteError(folder);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onFolderBeforeDeleteAcoHook hook",
+                message: "Error while executing onFolderBeforeDeleteAcoHook hook.",
                 code: "ACO_BEFORE_FOLDER_DELETE_ACO_HOOK"
             });
         }

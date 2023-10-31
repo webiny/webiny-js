@@ -39,7 +39,7 @@ export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
             }
 
             throw new WebinyError(
-                "Error: delete all child folders and entries before proceeding.",
+                "Delete all child folders and entries before proceeding.",
                 "DELETE_FOLDER_WITH_CHILDREN",
                 {
                     folder
@@ -47,7 +47,7 @@ export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
             );
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onFolderBeforeDeleteHcmsHook hook",
+                message: "Error while executing onFolderBeforeDeleteHcmsHook hook.",
                 code: "ACO_BEFORE_FOLDER_DELETE_HCMS_HOOK"
             });
         }
