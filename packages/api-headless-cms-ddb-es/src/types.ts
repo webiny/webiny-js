@@ -152,7 +152,6 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     SYSTEM = "CmsSystem",
-    SETTINGS = "CmsSettings",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries",
@@ -176,7 +175,7 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
     getTable: () => Table;
     getEsTable: () => Table;
     getEntities: () => Record<
-        "system" | "settings" | "groups" | "models" | "entries" | "entriesEs",
+        "system" | "groups" | "models" | "entries" | "entriesEs",
         Entity<any>
     >;
 }
