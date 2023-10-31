@@ -190,7 +190,7 @@ jobs:
       - name: Build packages
         run: yarn build:quick
       - name: Start Verdaccio local server
-        working-directory: verdaccio-files
+        working-directory: ''
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
