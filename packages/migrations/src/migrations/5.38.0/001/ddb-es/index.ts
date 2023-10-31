@@ -38,7 +38,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     getDescription() {
-        return "Convert forms tu multi-step forms.";
+        return "Convert forms to multi-step forms.";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {

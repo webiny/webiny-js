@@ -14,6 +14,7 @@ import { AcoFolders_5_37_0_003 } from "~/migrations/5.37.0/003/ddb-es";
 import { AcoRecords_5_37_0_004 } from "~/migrations/5.37.0/004/ddb-es";
 import { FileManager_5_37_0_005 } from "~/migrations/5.37.0/005/ddb-es";
 import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb-es";
+import { MultiStepForms_5_38_0_002 } from "~/migrations/5.38.0/002/ddb-es";
 
 export const migrations = () => {
     return [
@@ -29,6 +30,7 @@ export const migrations = () => {
         AcoFolders_5_37_0_003,
         AcoRecords_5_37_0_004,
         FileManager_5_37_0_005,
-        MultiStepForms_5_38_0_001
+        MultiStepForms_5_38_0_001,
+        MultiStepForms_5_38_0_002
     ];
 };
