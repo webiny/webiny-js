@@ -9,6 +9,8 @@ export interface FbForm {
 }
 
 export interface FbFormSubmission {
+    tenant: string;
+    locale: string;
     id: string;
     form: {
         steps?: Array<{ title: string; layout: FbFormLayout }>;

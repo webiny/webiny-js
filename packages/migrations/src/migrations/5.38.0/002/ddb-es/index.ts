@@ -12,10 +12,13 @@ import {
     batchWriteAll,
     BatchWriteItem,
     ddbScanWithCallback,
+    disableElasticsearchIndexing,
     esGetIndexExist,
     esGetIndexName,
     esQueryAll,
-    forEachTenantLocale
+    fetchOriginalElasticsearchSettings,
+    forEachTenantLocale,
+    restoreOriginalElasticsearchSettings
 } from "~/utils";
 import { FbForm, FbFormSubmission } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
@@ -31,8 +34,16 @@ interface LastEvaluatedKey {
     GSI1_SK: string;
 }
 
-interface FolderSubmissionsDataMigrationCheckpoint {
+interface IndexSettings {
+    number_of_replicas: number;
+    refresh_interval: `${number}s`;
+}
+
+interface FormSubmissionsDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
+    indexes: {
+        [index: string]: IndexSettings | null;
+    };
 }
 
 export class MultiStepForms_5_38_0_002 implements DataMigration {
@@ -119,8 +130,9 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
     async execute({
         logger,
         ...context
-    }: DataMigrationContext<FolderSubmissionsDataMigrationCheckpoint>): Promise<void> {
-        const migrationStatus = context.checkpoint || {};
+    }: DataMigrationContext<FormSubmissionsDataMigrationCheckpoint>): Promise<void> {
+        const migrationStatus =
+            context.checkpoint || ({} as FormSubmissionsDataMigrationCheckpoint);
 
         if (migrationStatus.lastEvaluatedKey === true) {
             logger.info(`Migration completed, no need to start again.`);
@@ -175,38 +187,68 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     ddbEsTableRecordsToRead.push(
                         this.formSubmissionDdbEsEntity.getBatch(scanResult)
                     );
+
+                    const index = esGetIndexName({
+                        tenant: scanResult.tenant,
+                        locale: scanResult.locale,
+                        type: "form-builder",
+                        isHeadlessCmsModel: false
+                    });
+
+                    // Check for the elasticsearch index settings
+                    if (!migrationStatus.indexes || migrationStatus.indexes[index] === undefined) {
+                        // We need to fetch the index settings first
+                        const settings = await fetchOriginalElasticsearchSettings({
+                            index,
+                            logger,
+                            elasticsearchClient: this.elasticsearchClient
+                        });
+
+                        // ... add it to the checkpoint...
+                        migrationStatus.indexes = {
+                            ...migrationStatus.indexes,
+                            [index]: settings
+                        };
+
+                        // and then set not to index
+                        await disableElasticsearchIndexing({
+                            elasticsearchClient: this.elasticsearchClient,
+                            index,
+                            logger
+                        });
+                    }
                 }
 
                 // Second, let's prepare a list of records to write to the DDB-ES table.
-                await batchReadAll({
+                const ddbEsTableRecords = await batchReadAll({
                     table: this.esTable,
                     items: ddbEsTableRecordsToRead
-                }).then(ddbEsTableRecords => {
-                    for (const ddbEsTableRecord of ddbEsTableRecords) {
-                        if (!ddbEsTableRecord.data || !ddbEsTableRecord.data.form) {
-                            continue;
-                        }
-
-                        if (ddbEsTableRecord.data.form.steps) {
-                            continue;
-                        }
-
-                        // If no steps are defined, we need to create a single step.
-                        ddbEsTableRecord.data.form.steps = [];
-
-                        if (Array.isArray(ddbEsTableRecord.data.form.layout)) {
-                            // If layout is an array, we need to create a single step with all the fields.
-                            ddbEsTableRecord.data.form.steps = [
-                                { title: "Step 1", layout: ddbEsTableRecord.data.form.layout }
-                            ];
-                            delete ddbEsTableRecord.data.form.layout;
-                        }
-
-                        ddbEsTableRecordsToWrite.push(
-                            this.formSubmissionDdbEsEntity.putBatch(ddbEsTableRecord)
-                        );
-                    }
                 });
+
+                for (const ddbEsTableRecord of ddbEsTableRecords) {
+                    if (!ddbEsTableRecord.data || !ddbEsTableRecord.data.form) {
+                        continue;
+                    }
+
+                    if (ddbEsTableRecord.data.form.steps) {
+                        continue;
+                    }
+
+                    // If no steps are defined, we need to create a single step.
+                    ddbEsTableRecord.data.form.steps = [];
+
+                    if (Array.isArray(ddbEsTableRecord.data.form.layout)) {
+                        // If layout is an array, we need to create a single step with all the fields.
+                        ddbEsTableRecord.data.form.steps = [
+                            { title: "Step 1", layout: ddbEsTableRecord.data.form.layout }
+                        ];
+                        delete ddbEsTableRecord.data.form.layout;
+                    }
+
+                    ddbEsTableRecordsToWrite.push(
+                        this.formSubmissionDdbEsEntity.putBatch(ddbEsTableRecord)
+                    );
+                }
 
                 {
                     // 1. Update DynamoDB records (primary table).
@@ -262,7 +304,17 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
             }
         );
 
+        /**
+         * This is the end of the migration.
+         */
+        await restoreOriginalElasticsearchSettings({
+            indexSettings: migrationStatus.indexes,
+            logger,
+            elasticsearchClient: this.elasticsearchClient
+        });
+
         migrationStatus.lastEvaluatedKey = true;
+        migrationStatus.indexes = {};
         context.createCheckpoint(migrationStatus);
     }
 }
