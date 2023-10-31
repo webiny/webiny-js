@@ -19,7 +19,7 @@ export const pullRequestsTest = createWorkflow({
     name: "Pull Requests",
     on: {
         pull_request: {
-            branches: ["adrian*"]
+            branches: ["next-ci-workflows"]
         }
     },
 
