@@ -969,16 +969,6 @@ export interface CmsSettingsContext {
      * Gets settings model from the database.
      */
     getSettings: () => Promise<CmsSettings | null>;
-    /**
-     * Updates settings model with a new date.
-     * @deprecated
-     */
-    updateModelLastChange: () => Promise<void>;
-    /**
-     * Get the datetime when content model last changed.
-     * @deprecated
-     */
-    getModelLastChange: () => Promise<Date | null>;
 }
 
 export interface OnSystemBeforeInstallTopicParams {
@@ -1002,18 +992,7 @@ export type CmsSystemContext = {
     setSystemVersion: (version: string) => Promise<void>;
     installSystem: () => Promise<void>;
     /**
-     * Lifecycle events - deprecated
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeSystemInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterSystemInstall: Topic<OnSystemAfterInstallTopicParams>;
-    /**
-     * Released in 5.34.0
+     * Lifecycle Events
      */
     onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
     onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
@@ -1782,17 +1761,12 @@ export interface CmsModelContext {
      * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
-     *
-     * @deprecated use the getEntryManager() method instead
      */
-    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
-     * @deprecated use getEntryManagers instead
      */
-    getManagers: () => Map<string, CmsModelManager>;
     getEntryManagers: () => Map<string, CmsModelManager>;
     /**
      * Clear all the model caches.
@@ -2398,74 +2372,7 @@ export interface CmsEntryContext {
         params: GetUniqueFieldValuesParams
     ) => Promise<CmsEntryUniqueValue[]>;
     /**
-     * Lifecycle events - deprecated.
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeEntryCreate: Topic<OnEntryBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryCreate: Topic<OnEntryAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryCreateRevision: Topic<OnEntryRevisionBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryCreateRevision: Topic<OnEntryRevisionAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryUpdate: Topic<OnEntryAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryDelete: Topic<OnEntryBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryDelete: Topic<OnEntryAfterDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryDeleteRevision: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryDeleteRevision: Topic<OnEntryRevisionAfterDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryPublish: Topic<OnEntryBeforePublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryPublish: Topic<OnEntryAfterPublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryGet: Topic<OnEntryBeforeGetTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryList: Topic<EntryBeforeListTopicParams>;
-    /**
-     * Lifecycle events released in 5.33.0
+     * Lifecycle Events
      */
     onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
     onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
