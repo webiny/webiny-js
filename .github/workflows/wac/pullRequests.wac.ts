@@ -18,6 +18,7 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
+    branches: [""],
     env: {
         NODE_OPTIONS
     },

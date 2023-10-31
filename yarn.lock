@@ -27068,9 +27068,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"github-actions-wac@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "github-actions-wac@npm:1.3.0"
+"github-actions-wac@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "github-actions-wac@npm:1.3.1"
   dependencies:
     cosmiconfig: ^7.0.1
     debug: ^4.3.4
@@ -27083,7 +27083,7 @@ __metadata:
   bin:
     ghawac: bin.js
     github-actions-wac: bin.js
-  checksum: 0f9d1812ef3badc7fd07bba02cd096df1d12b0597f66639fdd41847568eb29e1a3a84ee2b222da91a9b0633dbc1b8c95c444f13a4359f6730c825b4f37fb3ede
+  checksum: c6312cadf655d3425249688d5764573950b03b7520e5b223989925c65ecfd1d218e860d1305e036abce7f59cb95c488c30b76c530e9f52fbcfa24a9b6b9d5f20
   languageName: node
   linkType: hard
 
@@ -39347,7 +39347,7 @@ __metadata:
     get-stream: ^3.0.0
     get-yarn-workspaces: ^1.0.2
     git-cz: ^1.7.1
-    github-actions-wac: ^1.3.0
+    github-actions-wac: ^1.3.1
     glob: ^7.1.3
     globby: ^8.0.1
     got: ^9.6.0

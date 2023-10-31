@@ -75,7 +75,7 @@ jobs:
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
-    env:
+    env: &ref_0
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
@@ -123,17 +123,17 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: ''
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: dev
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: dev
         run: yarn release --type=verdaccio
@@ -215,16 +215,7 @@ jobs:
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+    env: *ref_0
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -308,7 +299,7 @@ jobs:
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
-    env:
+    env: &ref_1
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
@@ -359,17 +350,17 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: ''
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: dev
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: dev
         run: yarn release --type=verdaccio
@@ -451,19 +442,7 @@ jobs:
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+    env: *ref_1
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -548,7 +527,7 @@ jobs:
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
-    env:
+    env: &ref_2
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
@@ -599,17 +578,17 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: ''
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: dev
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: dev
         run: yarn release --type=verdaccio
@@ -691,19 +670,7 @@ jobs:
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-os-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
+    env: *ref_2
     steps:
       - uses: actions/setup-node@v3
         with:
