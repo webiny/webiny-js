@@ -88,7 +88,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:48:17.073Z"
     },
@@ -181,7 +181,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:48:25.076Z"
     },
@@ -274,7 +274,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:48:33.517Z"
     },
@@ -352,7 +352,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:50:10.361Z"
     },
@@ -430,7 +430,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:50:16.740Z"
     },
@@ -508,7 +508,7 @@ export const migratedDdbEsTableData = [
             tenant: "root",
             webinyVersion: "5.37.8"
         },
-        entity: "DdbEsEntries",
+        entity: "FormBuilderSubmissionEs",
         index: "root-en-us-form-builder",
         modified: "2023-10-31T07:50:23.217Z"
     }

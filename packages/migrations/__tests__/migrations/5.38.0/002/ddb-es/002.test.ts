@@ -14,9 +14,7 @@ import { createDdbEsTableData } from "./002.ddbEsTableData";
 import { createEsData } from "./002.esData";
 import { migratedDdbPrimaryTableData } from "./002.migratedDdbPrimaryTableData";
 import { migratedDdbEsTableData } from "./002.migratedDdbEsTableData";
-import {
-    insertElasticsearchTestData,
-} from "~tests/utils/insertElasticsearchTestData";
+import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createMigratedEsData } from "~tests/migrations/5.38.0/002/ddb-es/002.migratedEsData";

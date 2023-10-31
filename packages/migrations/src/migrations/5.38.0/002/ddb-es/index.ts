@@ -11,7 +11,6 @@ import {
     BatchReadItem,
     batchWriteAll,
     BatchWriteItem,
-    createDdbEsEntryEntity,
     ddbScanWithCallback,
     esGetIndexExist,
     esGetIndexName,
@@ -23,6 +22,7 @@ import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
 import { createFormSubmissionEntity } from "~/migrations/5.38.0/002/entities/createFormSubmissionEntity";
+import { createFormSubmissionDdbEsEntity } from "~/migrations/5.38.0/002/entities/createFormSubmissionDdbEsEntity";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -39,14 +39,14 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly formSubmissionEntity: ReturnType<typeof createFormSubmissionEntity>;
-    private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
+    private readonly formDdbEsEntity: ReturnType<typeof createFormSubmissionDdbEsEntity>;
     private readonly elasticsearchClient: Client;
 
     constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.table = table;
         this.esTable = esTable;
         this.formSubmissionEntity = createFormSubmissionEntity(table);
-        this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
+        this.formDdbEsEntity = createFormSubmissionDdbEsEntity(esTable);
         this.elasticsearchClient = elasticsearchClient;
     }
 
@@ -170,7 +170,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     }
 
                     primaryTableRecordsToWrite.push(this.formSubmissionEntity.putBatch(item));
-                    ddbEsTableRecordsToRead.push(this.ddbEsEntryEntity.getBatch(item));
+                    ddbEsTableRecordsToRead.push(this.formDdbEsEntity.getBatch(item));
                 }
 
                 // Second, let's prepare a list of records to write to the DDB-ES table.
@@ -201,7 +201,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                         }
 
                         ddbEsTableRecordsToWrite.push(
-                            this.ddbEsEntryEntity.putBatch(ddbEsTableRecord)
+                            this.formDdbEsEntity.putBatch(ddbEsTableRecord)
                         );
                     }
                 });
@@ -230,7 +230,7 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     // 2. Update DynamoDB records (DDB-ES table).
                     const execute = () => {
                         return batchWriteAll({
-                            table: this.ddbEsEntryEntity.table,
+                            table: this.formDdbEsEntity.table,
                             items: ddbEsTableRecordsToWrite
                         });
                     };

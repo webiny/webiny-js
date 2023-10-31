@@ -18,6 +18,6 @@ const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
     }
 };
 
-export const createDdbEsEntryEntity = (table: Table) => {
-    return createStandardEntity(table, "DdbEsEntries", ddbEsAttributes);
+export const createFormSubmissionDdbEsEntity = (table: Table) => {
+    return createStandardEntity(table, "FormBuilderSubmissionEs", ddbEsAttributes);
 };

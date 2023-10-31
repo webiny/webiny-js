@@ -44,6 +44,6 @@ export const createFormSubmissionEntity = (table: Table) => {
         },
         webinyVersion: {
             type: "string"
-        },
+        }
     });
 };
