@@ -66,7 +66,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             tenant,
             locale,
             groups: pluginGroups.map(({ contentModelGroup: group }) => {
-                return `${group.id}#${group.slug}`;
+                return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
             })
         });
 
@@ -110,7 +110,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             locale,
             identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
             groups: pluginGroups.map(group => {
-                return `${group.id}#${group.slug}`;
+                return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
             })
         });
 
