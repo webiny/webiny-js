@@ -12,7 +12,19 @@ export const transferDynamoDbToElasticsearch = async <
     table: Table,
     getIndexName: (item: TItem) => string
 ) => {
-    const records: TItem[] = await Promise.all(await scanTable(table));
+    const records: TItem[] = await Promise.all(
+        (
+            await scanTable(table)
+        ).map(async record => {
+            const result = await getDecompressedData(record.data);
+
+            return {
+                ...result,
+                PK: record.PK || result.PK,
+                SK: record.SK || result.SK
+            };
+        })
+    );
 
     if (!records?.length) {
         return;
