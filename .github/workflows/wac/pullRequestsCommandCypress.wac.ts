@@ -256,7 +256,7 @@ const createJobs = (dbSetup: string) => {
 };
 
 // Create "Pull requests" workflow.
-export const pullRequestsCommandCypress = createWorkflow({
+export const pullRequestsCommandCypressTest = createWorkflow({
     name: "Pull Requests Command - Cypress",
     on: "issue_comment",
     env: {

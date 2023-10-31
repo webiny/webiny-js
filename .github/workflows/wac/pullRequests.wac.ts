@@ -15,10 +15,14 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
     ] as NonNullable<NormalJob["steps"]>;
 
 // Create "Pull requests" workflow.
-export const pullRequests = createWorkflow({
+export const pullRequestsTest = createWorkflow({
     name: "Pull Requests",
-    on: "pull_request",
-    branches: [""],
+    on: {
+        pull_request: {
+            branches: ["adrian*"]
+        }
+    },
+
     env: {
         NODE_OPTIONS
     },
