@@ -1213,7 +1213,7 @@ export interface CmsGroupContext {
     /**
      * Gets content model group by given id.
      */
-    getGroup: (id: string) => Promise<CmsGroup | null>;
+    getGroup: (id: string) => Promise<CmsGroup>;
     /**
      * List all content model groups. Filterable via params.
      */
@@ -1235,34 +1235,7 @@ export interface CmsGroupContext {
      */
     clearGroupsCache: () => void;
     /**
-     * Lifecycle events - deprecated
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeGroupCreate: Topic<OnGroupBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupCreate: Topic<OnGroupAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeGroupUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupUpdate: Topic<OnGroupAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeGroupDelete: Topic<OnGroupBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupDelete: Topic<OnGroupAfterDeleteTopicParams>;
-    /**
-     * Lifecycle events released in 5.33.0
+     * Lifecycle Events
      */
     onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
     onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
@@ -1826,42 +1799,7 @@ export interface CmsModelContext {
      */
     clearModelsCache: () => void;
     /**
-     * Lifecycle events - deprecated.
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeModelCreate: Topic<OnModelBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelCreate: Topic<OnModelAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelUpdate: Topic<OnModelBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelUpdate: Topic<OnModelAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelDelete: Topic<OnModelBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelDelete: Topic<OnModelAfterDeleteTopicParams>;
-    /**
-     * Lifecycle events - released in 5.33.0
+     * Lifecycle Events
      */
     onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
     onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
