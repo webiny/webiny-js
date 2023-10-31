@@ -43,7 +43,6 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     SYSTEM = "CmsSystem",
-    SETTINGS = "CmsSettings",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries"
@@ -62,7 +61,7 @@ export interface StorageOperationsFactoryParams {
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
     getTable: () => Table;
-    getEntities: () => Record<"system" | "settings" | "groups" | "models" | "entries", Entity<any>>;
+    getEntities: () => Record<"system" | "groups" | "models" | "entries", Entity<any>>;
 }
 
 export interface StorageOperationsFactory {
