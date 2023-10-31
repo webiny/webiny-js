@@ -1,23 +1,62 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import { AcoContext } from "~/types";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
+
+type Context = Pick<AcoContext, "aco" | "cms">;
 
 const ROOT_FOLDER = "root";
 
+const createFolderType = (model: Pick<CmsModel, "modelId">): string => {
+    return `cms:${model.modelId}`;
+};
+
+const filterEntriesByFolderFactory = (context: Context, permissions: FolderLevelPermissions) => {
+    return async (model: CmsModel, entries: CmsEntry[]) => {
+        const [folders] = await context.aco.folder.listAll({
+            where: {
+                type: createFolderType(model)
+            }
+        });
+
+        const results = await Promise.all(
+            entries.map(async entry => {
+                const folderId = entry.location?.folderId;
+                if (!folderId || folderId === ROOT_FOLDER) {
+                    return entry;
+                }
+                const folder = folders.find(folder => folder.id === folderId);
+                if (!folder) {
+                    throw new NotFoundError(`Folder "${folderId}" not found.`);
+                }
+                const result = await permissions.canAccessFolderContent({
+                    folder,
+                    rwd: "r"
+                });
+                return result ? entry : null;
+            })
+        );
+
+        return results.filter((entry): entry is CmsEntry => !!entry);
+    };
+};
+
 interface EntryManagerCrudDecoratorsParams {
-    context: AcoContext;
+    context: Context;
 }
 
 export class CmsEntriesCrudDecorators {
-    private readonly context: AcoContext;
+    private readonly context: Context;
 
-    // TODO: Not smart to pass the whole `context`. We probably want to refactor this.
-    constructor({ context }: EntryManagerCrudDecoratorsParams) {
+    public constructor({ context }: EntryManagerCrudDecoratorsParams) {
         this.context = context;
     }
 
-    decorate() {
+    public decorate() {
         const context = this.context;
         const folderLevelPermissions = context.aco.folderLevelPermissions;
+
+        const filterEntriesByFolder = filterEntriesByFolderFactory(context, folderLevelPermissions);
 
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
@@ -33,7 +72,7 @@ export class CmsEntriesCrudDecorators {
                     wbyAco_location: {
                         // At the moment, all users can access entries in the root folder.
                         // Root folder level permissions cannot be set yet.
-                        folderId_in: ["root", ...allFolders.map(folder => folder.id)]
+                        folderId_in: [ROOT_FOLDER, ...allFolders.map(folder => folder.id)]
                     }
                 }
             });
@@ -75,68 +114,17 @@ export class CmsEntriesCrudDecorators {
 
         const originalGetLatestEntriesByIds = context.cms.getLatestEntriesByIds.bind(context.cms);
         context.cms.getLatestEntriesByIds = async (model, ids) => {
-            const entriesByIds = await originalGetLatestEntriesByIds(model, ids);
-            const returnEntriesByIds: typeof entriesByIds = [];
+            const entries = await originalGetLatestEntriesByIds(model, ids);
 
-            for (const entry of entriesByIds) {
-                const folderId = entry.location?.folderId;
-                if (!folderId || folderId === "root") {
-                    returnEntriesByIds.push(entry);
-                    continue;
-                }
-
-                try {
-                    // Getting the folder can also throw an error if user does not have access.
-                    const folder = await context.aco.folder.get(folderId);
-                    await folderLevelPermissions.ensureCanAccessFolderContent({
-                        folder,
-                        rwd: "r"
-                    });
-
-                    returnEntriesByIds.push(entry);
-                } catch (e) {
-                    if (e instanceof NotAuthorizedError) {
-                        continue;
-                    }
-                    throw e;
-                }
-            }
-
-            return returnEntriesByIds;
+            return filterEntriesByFolder(model, entries);
         };
 
         const originalGetPublishedEntriesByIds = context.cms.getPublishedEntriesByIds.bind(
             context.cms
         );
         context.cms.getPublishedEntriesByIds = async (model, ids) => {
-            const entriesByIds = await originalGetPublishedEntriesByIds(model, ids);
-            const returnEntriesByIds: typeof entriesByIds = [];
-
-            for (const entry of entriesByIds) {
-                const folderId = entry.location?.folderId;
-                if (!folderId || folderId === "root") {
-                    returnEntriesByIds.push(entry);
-                    continue;
-                }
-
-                try {
-                    // Getting the folder can also throw an error if user does not have access.
-                    const folder = await context.aco.folder.get(folderId);
-                    await folderLevelPermissions.ensureCanAccessFolderContent({
-                        folder,
-                        rwd: "r"
-                    });
-
-                    returnEntriesByIds.push(entry);
-                } catch (e) {
-                    if (e instanceof NotAuthorizedError) {
-                        continue;
-                    }
-                    throw e;
-                }
-            }
-
-            return returnEntriesByIds;
+            const entries = await originalGetPublishedEntriesByIds(model, ids);
+            return filterEntriesByFolder(model, entries);
         };
 
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
