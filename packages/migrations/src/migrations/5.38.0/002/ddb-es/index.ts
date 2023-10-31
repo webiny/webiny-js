@@ -148,29 +148,33 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                     limit: 500
                 }
             },
-            async scanResult => {
-                logger.debug(`Processing ${scanResult.items.length} items...`);
+            async scanResults => {
+                logger.debug(`Processing ${scanResults.items.length} items...`);
                 const primaryTableRecordsToWrite: BatchWriteItem[] = [];
                 const ddbEsTableRecordsToRead: BatchReadItem[] = [];
                 const ddbEsTableRecordsToWrite: BatchWriteItem[] = [];
 
                 // First, let's prepare a list of records to write to the primary table.
-                for (const item of scanResult.items) {
-                    if (item.form.steps) {
+                for (const scanResult of scanResults.items) {
+                    if (scanResult.form.steps) {
                         continue;
                     }
 
                     // If no steps are defined, we need to create a single step.
-                    item.form.steps = [];
+                    scanResult.form.steps = [];
 
-                    if (Array.isArray(item.form.layout)) {
+                    if (Array.isArray(scanResult.form.layout)) {
                         // If layout is an array, we need to create a single step with all the fields.
-                        item.form.steps = [{ title: "Step 1", layout: item.form.layout }];
-                        delete item.form.layout;
+                        scanResult.form.steps = [
+                            { title: "Step 1", layout: scanResult.form.layout }
+                        ];
+                        delete scanResult.form.layout;
                     }
 
-                    primaryTableRecordsToWrite.push(this.formSubmissionEntity.putBatch(item));
-                    ddbEsTableRecordsToRead.push(this.formSubmissionDdbEsEntity.getBatch(item));
+                    primaryTableRecordsToWrite.push(this.formSubmissionEntity.putBatch(scanResult));
+                    ddbEsTableRecordsToRead.push(
+                        this.formSubmissionDdbEsEntity.getBatch(scanResult)
+                    );
                 }
 
                 // Second, let's prepare a list of records to write to the DDB-ES table.
@@ -245,8 +249,8 @@ export class MultiStepForms_5_38_0_002 implements DataMigration {
                 }
 
                 // Update checkpoint after every batch
-                migrationStatus.lastEvaluatedKey = scanResult.lastEvaluatedKey?.PK
-                    ? (scanResult.lastEvaluatedKey as unknown as LastEvaluatedKey)
+                migrationStatus.lastEvaluatedKey = scanResults.lastEvaluatedKey?.PK
+                    ? (scanResults.lastEvaluatedKey as unknown as LastEvaluatedKey)
                     : true;
 
                 // Check if we should store checkpoint and exit.
