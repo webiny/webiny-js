@@ -179,7 +179,7 @@ export const createFormStorageOperations = (
     const createFormFrom = async (
         params: FormBuilderStorageOperationsCreateFormFromParams
     ): Promise<FbForm> => {
-        const { form, original, latest } = params;
+        const { form } = params;
 
         const revisionKeys = {
             PK: createFormPartitionKey(form),
@@ -217,9 +217,7 @@ export const createFormStorageOperations = (
                 {
                     revisionKeys,
                     latestKeys,
-                    original,
-                    form,
-                    latest
+                    form
                 }
             );
         }
@@ -242,9 +240,7 @@ export const createFormStorageOperations = (
                 ex.code || "CREATE_FORM_FROM_ERROR",
                 {
                     latestKeys,
-                    form,
-                    latest,
-                    original
+                    form
                 }
             );
         }
