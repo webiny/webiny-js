@@ -7,6 +7,8 @@ import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
 import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
+import "./pageBuilder/createCategory";
+import "./pageBuilder/pbDeleteAllCategories";
 import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
 import "./pageBuilder/pbPublishPage";
