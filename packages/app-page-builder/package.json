@@ -70,6 +70,7 @@
     "react-dom": "17.0.2",
     "react-helmet": "^6.1.0",
     "react-images": "^0.5.19",
+    "react-in-viewport": "^1.0.0-alpha.30",
     "react-sortable": "^2.0.0",
     "react-sortable-tree": "^2.6.0",
     "react-transition-group": "^4.3.0",
