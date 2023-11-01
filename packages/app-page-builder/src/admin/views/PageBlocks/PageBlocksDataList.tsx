@@ -57,7 +57,7 @@ const ListItem = styled.div`
     }
 `;
 
-const ListItemText = styled("span")({
+const ListItemText = styled("div")({
     textTransform: "uppercase",
     alignSelf: "start",
     marginTop: "15px"
