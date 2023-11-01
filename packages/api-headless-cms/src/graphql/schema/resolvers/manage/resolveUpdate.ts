@@ -14,7 +14,7 @@ type ResolveUpdate = ResolverFactory<any, ResolveUpdateArgs>;
 
 export const resolveUpdate: ResolveUpdate =
     ({ model }) =>
-    async (_, args: any, context) => {
+    async (_, args, context) => {
         try {
             const entry = await context.cms.updateEntry(
                 model,

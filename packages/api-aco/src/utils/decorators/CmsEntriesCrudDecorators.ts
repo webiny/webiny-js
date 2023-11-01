@@ -128,11 +128,11 @@ export class CmsEntriesCrudDecorators {
         };
 
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
-        context.cms.createEntry = async (model, params) => {
+        context.cms.createEntry = async (model, params, options) => {
             const folderId = params.wbyAco_location?.folderId || params.location?.folderId;
 
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsCreateEntry(model, params);
+                return originalCmsCreateEntry(model, params, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -141,18 +141,18 @@ export class CmsEntriesCrudDecorators {
                 rwd: "w"
             });
 
-            return originalCmsCreateEntry(model, params);
+            return originalCmsCreateEntry(model, params, options);
         };
 
         const originalCmsUpdateEntry = context.cms.updateEntry.bind(context.cms);
-        context.cms.updateEntry = async (model, id, input, meta) => {
+        context.cms.updateEntry = async (model, id, input, meta, options) => {
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
             });
 
             const folderId = entry?.location?.folderId;
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsUpdateEntry(model, id, input, meta);
+                return originalCmsUpdateEntry(model, id, input, meta, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -161,18 +161,18 @@ export class CmsEntriesCrudDecorators {
                 rwd: "w"
             });
 
-            return originalCmsUpdateEntry(model, id, input, meta);
+            return originalCmsUpdateEntry(model, id, input, meta, options);
         };
 
         const originalCmsDeleteEntry = context.cms.deleteEntry.bind(context.cms);
-        context.cms.deleteEntry = async (model, id) => {
+        context.cms.deleteEntry = async (model, id, options) => {
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
             });
 
             const folderId = entry?.location?.folderId;
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsDeleteEntry(model, id);
+                return originalCmsDeleteEntry(model, id, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -181,7 +181,7 @@ export class CmsEntriesCrudDecorators {
                 rwd: "d"
             });
 
-            return originalCmsDeleteEntry(model, id);
+            return originalCmsDeleteEntry(model, id, options);
         };
 
         const originalCmsDeleteEntryRevision = context.cms.deleteEntryRevision.bind(context.cms);
