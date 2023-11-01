@@ -1,7 +1,6 @@
 import { createFormBuilder } from "~/index";
 import { FormBuilderContext, FbFormPermission } from "~/types";
 import WebinyError from "@webiny/error";
-import { SecurityPermission } from "@webiny/api-security/types";
 import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsModelPlugin } from "@webiny/api-headless-cms";
 import { CmsFormBuilderStorage } from "./CmsFormBuilderStorage";
@@ -29,16 +28,16 @@ export class FormBuilderContextSetup {
             };
         }
 
-        const formPermissions = new FormsPermissions({
-            getIdentity: this.context.security.getIdentity,
+        const formsPermissions = new FormsPermissions({
+            getIdentity: this.getIdentity.bind(this),
             getPermissions: () => this.context.security.getPermissions("fb.form"),
             fullAccessPermissionName: "fb.*"
         });
 
         return createFormBuilder({
             storageOperations,
-            formsPermissions: this.formsPermissions,
-            getTenant: () => this.context.tenancy.getCurrentTenant(),
+            formsPermissions,
+            getTenant: this.getTenantId.bind(this),
             getLocale: this.getLocale.bind(this),
             context: this.context
         });
@@ -62,22 +61,6 @@ export class FormBuilderContextSetup {
     private getTenantId() {
         return this.context.tenancy.getCurrentTenant().id;
     }
-
-    private async getPermissions<T extends SecurityPermission = SecurityPermission>(
-        name: string
-    ): Promise<T[]> {
-        return this.context.security.getPermissions(name);
-    }
-
-    private basePermissionsArgs = {
-        getIdentity: this.getIdentity.bind(this),
-        fullAccessPermissionName: "fb.*"
-    };
-
-    private formsPermissions = new FormsPermissions({
-        ...this.basePermissionsArgs,
-        getPermissions: () => this.context.security.getPermissions("fb.form")
-    });
 
     private async setupCmsStorageOperations() {
         // This registers code plugins (model group, models)
