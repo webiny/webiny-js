@@ -15274,6 +15274,7 @@ __metadata:
     react-dom: 17.0.2
     react-helmet: ^6.1.0
     react-images: ^0.5.19
+    react-in-viewport: ^1.0.0-alpha.30
     react-sortable: ^2.0.0
     react-sortable-tree: ^2.6.0
     react-transition-group: ^4.3.0
@@ -27966,7 +27967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -37983,6 +37984,18 @@ __metadata:
     react: ^15.0 || ^16.0
     react-dom: ^15.0 || ^16.0
   checksum: cdc90a9a76c7e475c5da93f2e8a84896802e325c223a3d389a1795ce512814a07f5a9e7de7e4e66903e9e81cfd4e1e822ccb6f7e930cda0225b3991b7d6800bb
+  languageName: node
+  linkType: hard
+
+"react-in-viewport@npm:^1.0.0-alpha.30":
+  version: 1.0.0-alpha.30
+  resolution: "react-in-viewport@npm:1.0.0-alpha.30"
+  dependencies:
+    hoist-non-react-statics: ^3.0.0
+  peerDependencies:
+    react: ^16.8.3 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.3 || ^17.0.0 || ^18.0.0
+  checksum: 1098ccdab9a10b8aadabf1a53f5809507e26db687a4243bd2dde2bdbecd1a8df66f4e9d00ee2a04bfd1542f937e758ef256d5fb6d637b4de5496e6252f84ce9e
   languageName: node
   linkType: hard
 
