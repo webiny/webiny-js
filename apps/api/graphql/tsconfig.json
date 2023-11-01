@@ -15,6 +15,9 @@
       "path": "../../../packages/api-apw/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-audit-logs/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-file-manager/tsconfig.build.json"
     },
     {
@@ -117,6 +120,8 @@
       "@webiny/api-admin-users-so-ddb": ["../../../packages/api-admin-users-so-ddb/src"],
       "@webiny/api-apw/*": ["../../../packages/api-apw/src/*"],
       "@webiny/api-apw": ["../../../packages/api-apw/src"],
+      "@webiny/api-audit-logs/*": ["../../../packages/api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../../../packages/api-audit-logs/src"],
       "@webiny/api-file-manager/*": ["../../../packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../../../packages/api-file-manager/src"],
       "@webiny/api-file-manager-ddb/*": ["../../../packages/api-file-manager-ddb/src/*"],

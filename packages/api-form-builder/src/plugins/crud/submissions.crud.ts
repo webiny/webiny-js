@@ -16,7 +16,9 @@ import {
     OnFormSubmissionBeforeUpdate,
     OnFormSubmissionAfterUpdate,
     OnFormSubmissionBeforeDelete,
-    OnFormSubmissionAfterDelete
+    OnFormSubmissionAfterDelete,
+    OnFormSubmissionsBeforeExport,
+    OnFormSubmissionsAfterExport
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -57,6 +59,14 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
         "formBuilder.onFormSubmissionAfterDelete"
     );
 
+    // export
+    const onFormSubmissionsBeforeExport = createTopic<OnFormSubmissionsBeforeExport>(
+        "formBuilder.onFormSubmissionsBeforeExport"
+    );
+    const onFormSubmissionsAfterExport = createTopic<OnFormSubmissionsAfterExport>(
+        "formBuilder.onFormSubmissionsAfterExport"
+    );
+
     return {
         onFormSubmissionBeforeCreate,
         onFormSubmissionAfterCreate,
@@ -64,6 +74,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
         onFormSubmissionAfterUpdate,
         onFormSubmissionBeforeDelete,
         onFormSubmissionAfterDelete,
+        onFormSubmissionsBeforeExport,
+        onFormSubmissionsAfterExport,
         async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
             let form: FbForm;
             if (typeof formId === "string") {
