@@ -6,13 +6,16 @@
       "path": "../../../packages/api-aco/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
+      "path": "../../../packages/api-admin-users/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/api-admin-users-cognito-so-ddb/tsconfig.build.json"
+      "path": "../../../packages/api-admin-users-so-ddb/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-apw/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-audit-logs/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-file-manager/tsconfig.build.json"
@@ -113,16 +116,12 @@
       "~/*": ["./src/*"],
       "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
       "@webiny/api-aco": ["../../../packages/api-aco/src"],
-      "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
-      "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
-      "@webiny/api-admin-users-cognito-so-ddb/*": [
-        "../../../packages/api-admin-users-cognito-so-ddb/src/*"
-      ],
-      "@webiny/api-admin-users-cognito-so-ddb": [
-        "../../../packages/api-admin-users-cognito-so-ddb/src"
-      ],
+      "@webiny/api-admin-users-so-ddb/*": ["../../../packages/api-admin-users-so-ddb/src/*"],
+      "@webiny/api-admin-users-so-ddb": ["../../../packages/api-admin-users-so-ddb/src"],
       "@webiny/api-apw/*": ["../../../packages/api-apw/src/*"],
       "@webiny/api-apw": ["../../../packages/api-apw/src"],
+      "@webiny/api-audit-logs/*": ["../../../packages/api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../../../packages/api-audit-logs/src"],
       "@webiny/api-file-manager/*": ["../../../packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../../../packages/api-file-manager/src"],
       "@webiny/api-file-manager-ddb/*": ["../../../packages/api-file-manager-ddb/src/*"],

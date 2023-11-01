@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
@@ -130,6 +131,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 : null;
 
             app.addOutputs({
+                region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,

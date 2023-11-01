@@ -37,7 +37,7 @@ const TSCONFIG = {
     const errors = {};
     let errorsCount = 0;
     const warningsCount = 0;
-    const includes = ["/packages/", "/packages-v6/"];
+    const includes = ["/packages/"];
 
     const workspacesPackages = getPackages({ includes }).filter(pkg => pkg.isTs);
 

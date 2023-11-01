@@ -12,7 +12,6 @@ import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 import { PbEditorBlockPlugin } from "~/types";
 import { useCallback } from "react";
-import previewFallback from "~/admin/views/PageBlocks/assets/preview.png";
 
 interface BlockPreviewProps {
     plugin: PbEditorBlockPlugin;
@@ -46,6 +45,8 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                 {onDelete && (
                     <Styled.DeleteBlock>
                         <ConfirmationDialog
+                            // We need to have this z-index because without it Delete Block Dialog will be rendered below All Blocks Component.
+                            style={{ zIndex: 100 }}
                             title="Delete block"
                             message="Are you sure you want to delete this block?"
                             loading={<CircularProgress label={"Deleting block..."} />}
@@ -80,13 +81,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                     </Styled.EditBlock>
                 )}
             </Styled.Overlay>
-            <Styled.BlockPreview>
-                {plugin?.image?.src ? (
-                    plugin.preview?.()
-                ) : (
-                    <img src={previewFallback} alt={plugin.title} />
-                )}
-            </Styled.BlockPreview>
+            <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
             <Styled.Title>
                 <Typography use={"overline"}>{plugin.title}</Typography>
             </Styled.Title>

@@ -51,6 +51,7 @@ class Validation {
      */
     setValidator(name: string, callable: Validator): this {
         this.__validators[name] = callable;
+        this.__validators[name].validatorName = name;
         return this;
     }
 
@@ -127,6 +128,7 @@ class Validation {
 
         for (const [name, params] of entries(parsedValidateProperty)) {
             const validator = this.getValidator(name);
+            console.log("validator name", validator.validatorName);
             try {
                 validator(value, params);
             } catch (e) {

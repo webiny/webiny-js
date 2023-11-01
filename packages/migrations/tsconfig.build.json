@@ -6,6 +6,7 @@
     { "path": "../data-migration/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../logger/tsconfig.build.json" },
     { "path": "../ioc/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },

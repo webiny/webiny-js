@@ -24,6 +24,7 @@ apps/**/build/
 .history
 *.tsbuildinfo
 cypress.json
+cypress.config.ts
 cypress/screenshots/*
 .pulumi
 Pulumi.*

@@ -10,6 +10,7 @@ import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
+import { BulkActions } from "~/admin/components/BulkActions";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
@@ -109,6 +110,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
+                <BulkActions />
                 <Wrapper>
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import ElementPreview from "./SaveDialog/ElementPreview";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { PageElementsProvider } from "~/contexts/PageBuilder/PageElementsProvider";
 
 import {
     Dialog,
@@ -20,7 +21,8 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
-import { PbEditorBlockCategoryPlugin, PbEditorElement } from "~/types";
+import { PbEditorBlockCategoryPlugin, PbEditorElement, PbElement } from "~/types";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -57,6 +59,16 @@ const SaveDialog = (props: Props) => {
     const { element, open, onClose, type } = props;
     const [loading, setLoading] = useState(false);
 
+    const [pbElement, setPbElement] = useState<PbElement>();
+    const { getElementTree } = useEventActionHandler();
+
+    // We need to get element children to show on preview.
+    useEffect(() => {
+        setTimeout(async () => {
+            setPbElement((await getElementTree({ element })) as PbElement);
+        });
+    }, [element.id]);
+
     const blockCategoriesOptions = plugins
         .byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
         .map(item => {
@@ -74,7 +86,7 @@ const SaveDialog = (props: Props) => {
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type, category: "general" }}>
+            <Form onSubmit={onSubmit} data={{ type, category: "general", id: element.id }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogTitle>Save {type}</DialogTitle>
@@ -123,21 +135,9 @@ const SaveDialog = (props: Props) => {
                             <Grid>
                                 <Cell span={12}>
                                     <PreviewBox>
-                                        <Bind name={"preview"}>
-                                            {({ value, onChange }) =>
-                                                value ? (
-                                                    <img src={value} alt={""} />
-                                                ) : open ? (
-                                                    <ElementPreview
-                                                        key={element.id}
-                                                        onChange={onChange}
-                                                        element={element}
-                                                    />
-                                                ) : (
-                                                    <></>
-                                                )
-                                            }
-                                        </Bind>
+                                        <PageElementsProvider>
+                                            <ElementPreview element={pbElement} />
+                                        </PageElementsProvider>
                                     </PreviewBox>
                                 </Cell>
                             </Grid>

@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -80,7 +80,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -115,7 +115,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -137,7 +137,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [16]
+        node: [18]
         package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
     # PRs from repo forks won't have access to these environment variables / secrets.
@@ -182,7 +182,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -241,7 +241,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [16]
+        node: [18]
     runs-on: ${{ matrix.os }}
     env:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

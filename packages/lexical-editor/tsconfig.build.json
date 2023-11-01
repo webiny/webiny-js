@@ -2,8 +2,10 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../react-composition/tsconfig.build.json" },
-    { "path": "../react-properties/tsconfig.build.json" }
+    { "path": "../lexical-nodes/tsconfig.build.json" },
+    { "path": "../lexical-theme/tsconfig.build.json" },
+    { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

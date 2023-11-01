@@ -10,7 +10,7 @@ import {
 import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { PluginsContainer } from "@webiny/plugins";
@@ -185,12 +185,15 @@ export const createGroupsStorageOperations = (
         delete where["tenant"];
         delete where["locale"];
 
-        const filteredItems = filterItems({
-            items: records,
-            where,
-            fields: [],
-            plugins
-        });
+        const filteredItems = cleanupItems(
+            entity,
+            filterItems({
+                items: records,
+                where,
+                fields: [],
+                plugins
+            })
+        );
 
         if (!sort || sort.length === 0 || filteredItems.length === 0) {
             return filteredItems;

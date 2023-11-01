@@ -13,7 +13,7 @@ import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollectio
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
-import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
+import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -21,12 +21,10 @@ interface HeadlessCmsPermissions {
     groups: ModelGroupsPermissions;
     models: ModelsPermissions;
     entries: EntriesPermissions;
-    settings: SettingsPermissions;
 }
 
 export interface HeadlessCms
-    extends CmsSettingsContext,
-        CmsSystemContext,
+    extends CmsSystemContext,
         CmsGroupContext,
         CmsModelContext,
         CmsEntryContext {
@@ -59,11 +57,16 @@ export interface HeadlessCms
      */
     storageOperations: HeadlessCmsStorageOperations;
     /**
-     * Permissions for settings, groups, models and entries.
+     * Permissions for groups, models and entries.
      *
      * @internal
      */
     permissions: HeadlessCmsPermissions;
+    /**
+     * Export operations.
+     */
+    export: HeadlessCmsExport;
+    importing: HeadlessCmsImport;
 }
 
 /**
@@ -145,6 +148,10 @@ export interface CmsModelFieldSettings {
      * Date field.
      */
     type?: string;
+    /**
+     * Disable full text search explicitly on this field.
+     */
+    disableFullTextSearch?: boolean;
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */
@@ -343,6 +350,9 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
  * @category ModelField
  * @category FieldValidation
  */
+export interface CmsModelFieldValidatorPluginValidateCb {
+    (params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+}
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
      * A plugin type.
@@ -359,7 +369,7 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
         /**
          * Validation method.
          */
-        validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+        validate: CmsModelFieldValidatorPluginValidateCb;
     };
 }
 
@@ -547,6 +557,10 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+    /**
+     * Is this model created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -922,46 +936,6 @@ export interface CmsIdentity {
     type: string;
 }
 
-/**
- * Representation of settings database model.
- *
- * @category Database model
- */
-export interface CmsSettings {
-    /**
-     * Last content model change. Used to cache GraphQL schema.
-     */
-    contentModelLastChange: Date;
-    /**
-     * Settings tenant.
-     */
-    tenant: string;
-    /**
-     * Settings locale.
-     */
-    locale: string;
-}
-
-/**
- * Settings CRUD in context.
- *
- * @category Context
- */
-export interface CmsSettingsContext {
-    /**
-     * Gets settings model from the database.
-     */
-    getSettings: () => Promise<CmsSettings | null>;
-    /**
-     * Updates settings model with a new date.
-     */
-    updateModelLastChange: () => Promise<void>;
-    /**
-     * Get the datetime when content model last changed.
-     */
-    getModelLastChange: () => Promise<Date | null>;
-}
-
 export interface OnSystemBeforeInstallTopicParams {
     tenant: string;
     locale: string;
@@ -983,18 +957,7 @@ export type CmsSystemContext = {
     setSystemVersion: (version: string) => Promise<void>;
     installSystem: () => Promise<void>;
     /**
-     * Lifecycle events - deprecated
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeSystemInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterSystemInstall: Topic<OnSystemAfterInstallTopicParams>;
-    /**
-     * Released in 5.34.0
+     * Lifecycle Events
      */
     onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
     onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
@@ -1008,9 +971,10 @@ export type CmsSystemContext = {
  * @category GraphQL params
  */
 export interface CmsGroupCreateInput {
+    id?: string;
     name: string;
     slug?: string;
-    description?: string;
+    description?: string | null;
     icon: string;
 }
 
@@ -1057,7 +1021,7 @@ export interface CmsGroup {
     /**
      * Description for the group.
      */
-    description: string;
+    description: string | null;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
@@ -1084,6 +1048,10 @@ export interface CmsGroup {
      * Only available for the plugin constructed groups.
      */
     isPrivate?: boolean;
+    /**
+     * Is this group created via plugin?
+     */
+    isPlugin?: boolean;
 }
 
 /**
@@ -1189,7 +1157,7 @@ export interface CmsGroupContext {
     /**
      * Gets content model group by given id.
      */
-    getGroup: (id: string) => Promise<CmsGroup | null>;
+    getGroup: (id: string) => Promise<CmsGroup>;
     /**
      * List all content model groups. Filterable via params.
      */
@@ -1211,34 +1179,7 @@ export interface CmsGroupContext {
      */
     clearGroupsCache: () => void;
     /**
-     * Lifecycle events - deprecated
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeGroupCreate: Topic<OnGroupBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupCreate: Topic<OnGroupAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeGroupUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupUpdate: Topic<OnGroupAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeGroupDelete: Topic<OnGroupBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterGroupDelete: Topic<OnGroupAfterDeleteTopicParams>;
-    /**
-     * Lifecycle events released in 5.33.0
+     * Lifecycle Events
      */
     onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
     onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
@@ -1785,59 +1726,19 @@ export interface CmsModelContext {
      * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
-     *
-     * @deprecated use the getEntryManager() method instead
      */
-    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
-     * @deprecated use getEntryManagers instead
      */
-    getManagers: () => Map<string, CmsModelManager>;
     getEntryManagers: () => Map<string, CmsModelManager>;
     /**
      * Clear all the model caches.
      */
     clearModelsCache: () => void;
     /**
-     * Lifecycle events - deprecated.
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeModelCreate: Topic<OnModelBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelCreate: Topic<OnModelAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelUpdate: Topic<OnModelBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelUpdate: Topic<OnModelAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeModelDelete: Topic<OnModelBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterModelDelete: Topic<OnModelAfterDeleteTopicParams>;
-    /**
-     * Lifecycle events - released in 5.33.0
+     * Lifecycle Events
      */
     onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
     onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
@@ -2243,12 +2144,20 @@ export interface CreateCmsEntryInput {
     [key: string]: any;
 }
 
+export interface CreateCmsEntryOptionsInput {
+    skipValidators?: string[];
+}
+
 /**
  * @category Context
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
     [key: string]: any;
+}
+
+export interface CreateRevisionCmsEntryOptionsInput {
+    skipValidators?: string[];
 }
 
 /**
@@ -2260,6 +2169,10 @@ export interface UpdateCmsEntryInput {
         folderId?: string | null;
     };
     [key: string]: any;
+}
+
+export interface UpdateCmsEntryOptionsInput {
+    skipValidators?: string[];
 }
 
 /**
@@ -2292,6 +2205,9 @@ export interface DeleteMultipleEntriesParams {
 
 export type DeleteMultipleEntriesResponse = { id: string }[];
 
+export interface CmsEntryValidateResponse {
+    [key: string]: any;
+}
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2343,14 +2259,19 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (
+        model: CmsModel,
+        input: CreateCmsEntryInput,
+        options?: CreateCmsEntryOptionsInput
+    ) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        input: CreateFromCmsEntryInput
+        input: CreateFromCmsEntryInput,
+        options?: CreateRevisionCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
@@ -2359,8 +2280,17 @@ export interface CmsEntryContext {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput,
-        meta?: Record<string, any>
+        meta?: Record<string, any>,
+        options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
+    /**
+     * Validate the entry - either new one or existing one.
+     */
+    validateEntry: (
+        model: CmsModel,
+        id?: string,
+        input?: UpdateCmsEntryInput
+    ) => Promise<CmsEntryValidateResponse>;
     /**
      * Move entry, and all its revisions, to a new folder.
      */
@@ -2407,74 +2337,7 @@ export interface CmsEntryContext {
         params: GetUniqueFieldValuesParams
     ) => Promise<CmsEntryUniqueValue[]>;
     /**
-     * Lifecycle events - deprecated.
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeEntryCreate: Topic<OnEntryBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryCreate: Topic<OnEntryAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryCreateRevision: Topic<OnEntryRevisionBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryCreateRevision: Topic<OnEntryRevisionAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryUpdate: Topic<OnEntryAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryDelete: Topic<OnEntryBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryDelete: Topic<OnEntryAfterDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryDeleteRevision: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryDeleteRevision: Topic<OnEntryRevisionAfterDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryPublish: Topic<OnEntryBeforePublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryPublish: Topic<OnEntryAfterPublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterEntryUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryGet: Topic<OnEntryBeforeGetTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeEntryList: Topic<EntryBeforeListTopicParams>;
-    /**
-     * Lifecycle events released in 5.33.0
+     * Lifecycle Events
      */
     onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
     onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
@@ -2535,13 +2398,6 @@ interface CmsEntryResolverFactoryParams {
 export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsContext> = {
     (params: CmsEntryResolverFactoryParams): GraphQLFieldResolver<TSource, TArgs, TContext>;
 };
-
-/**
- * Settings security permission.
- *
- * @category SecurityPermission
- */
-export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
 
 /**
  * A base security permission for CMS.
@@ -3029,34 +2885,6 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished"
 }
 
-export interface CmsSettingsStorageOperationsGetParams {
-    locale: string;
-    tenant: string;
-}
-
-export interface CmsSettingsStorageOperationsCreateParams {
-    settings: CmsSettings;
-}
-
-export interface CmsSettingsStorageOperationsUpdateParams {
-    settings: CmsSettings;
-}
-
-export interface CmsSettingsStorageOperations {
-    /**
-     * Get the settings from the storage.
-     */
-    get: (params: CmsSettingsStorageOperationsGetParams) => Promise<CmsSettings | null>;
-    /**
-     * Create settings in the storage.
-     */
-    create: (params: CmsSettingsStorageOperationsCreateParams) => Promise<CmsSettings>;
-    /**
-     * Update the settings in the storage.
-     */
-    update: (params: CmsSettingsStorageOperationsUpdateParams) => Promise<CmsSettings>;
-}
-
 export interface CmsSystem {
     version?: string;
     readAPIKey?: string;
@@ -3096,7 +2924,6 @@ export interface CmsSystemStorageOperations {
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
     name: string;
     system: CmsSystemStorageOperations;
-    settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;
