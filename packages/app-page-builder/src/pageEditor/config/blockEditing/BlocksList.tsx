@@ -10,7 +10,6 @@ interface RenderRowProps {
     onDelete: (plugin: PbEditorBlockPlugin) => void;
     blocks: PbEditorBlockPlugin[];
     addBlock: (plugin: PbEditorBlockPlugin) => void;
-    viewport: HTMLElement | null;
 }
 
 const BlockSkeleton = styled.div`
@@ -95,7 +94,6 @@ const BlocksList: React.FC<BlocksListProps> = props => {
             >
                 {blocks.map((block, index) => (
                     <BlockRow
-                        viewport={rightPanelElement.current}
                         key={block.name}
                         index={index}
                         blocks={blocks}
