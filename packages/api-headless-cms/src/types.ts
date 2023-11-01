@@ -169,6 +169,7 @@ export type CmsModelFieldType =
     | "rich-text"
     | "text"
     | "dynamicZone"
+    | "json"
     | string;
 /**
  * A definition for content model field. This type exists on the app side as well.

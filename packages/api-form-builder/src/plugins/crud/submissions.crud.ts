@@ -382,7 +382,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             const data = await new models.FormSubmissionUpdateDataModel().populate(input);
             data.validate();
 
-            const updatedData = data.toJSON();
+            const updatedData = await data.toJSON();
 
             const submissionId = input.id;
 

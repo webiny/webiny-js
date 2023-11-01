@@ -161,6 +161,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         fields.forEach(field => {
             const fieldId = field.fieldId;
 
+            // Remove after form model fields id fix
+            if (!field.settings) {
+                return;
+            }
+
             if (
                 fieldId &&
                 "defaultValue" in field.settings &&

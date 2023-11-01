@@ -21,7 +21,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         }
     } = params;
 
-    const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
+    const fieldId = initialFieldId || camelCase(label);
 
     return {
         id: fieldId,
@@ -35,4 +35,4 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         multipleValues,
         predefinedValues
     };
-}
+};

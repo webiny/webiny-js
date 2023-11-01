@@ -5,6 +5,7 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsModelPlugin } from "@webiny/api-headless-cms";
 import { CmsFormBuilderStorage } from "./CmsFormBuilderStorage";
+import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
 import { AppPermissions } from "@webiny/api-security/utils/AppPermissions";
 
 class FormsPermissions extends AppPermissions<FbFormPermission> {}
@@ -80,17 +81,30 @@ export class FormBuilderContextSetup {
 
     private async setupCmsStorageOperations() {
         // This registers code plugins (model group, models)
-        const { groupPlugin, formModelDefinition } = createFormBuilderPlugins();
+        const { groupPlugin, formModelDefinition, submissionModelDefinition } =
+            createFormBuilderPlugins();
 
         // Finally, register all plugins
-        this.context.plugins.register([groupPlugin, new CmsModelPlugin(formModelDefinition)]);
+        this.context.plugins.register([
+            groupPlugin,
+            new CmsModelPlugin(formModelDefinition),
+            new CmsModelPlugin(submissionModelDefinition)
+        ]);
         const formModel = await this.getModel("fbForm");
+        const submissionModel = await this.getModel("fbSubmission");
 
-        return await CmsFormBuilderStorage.create({
-            formModel,
-            cms: this.context.cms,
-            security: this.context.security
-        });
+        return {
+            ...(await CmsFormBuilderStorage.create({
+                model: formModel,
+                cms: this.context.cms,
+                security: this.context.security
+            })),
+            ...(await CmsSubmissionsStorage.create({
+                model: submissionModel,
+                cms: this.context.cms,
+                security: this.context.security
+            }))
+        };
     }
 
     private async getModel(modelId: string) {

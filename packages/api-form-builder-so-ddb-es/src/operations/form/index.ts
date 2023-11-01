@@ -456,10 +456,7 @@ export const createFormStorageOperations = (
             cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null
         };
 
-        return {
-            items,
-            meta
-        };
+        return [items, meta];
     };
 
     const listFormRevisions = async (

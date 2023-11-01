@@ -8,6 +8,7 @@ import { createRichTextField } from "./richText";
 import { createFileField } from "./file";
 import { createObjectField } from "./object";
 import { createDynamicZoneField } from "~/graphqlFields/dynamicZone";
+import { createJSONField } from "./json";
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
 export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
@@ -20,5 +21,6 @@ export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createRichTextField(),
     createFileField(),
     createObjectField(),
-    createDynamicZoneField()
+    createDynamicZoneField(),
+    createJSONField()
 ];

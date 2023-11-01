@@ -232,7 +232,7 @@ export interface FormsCRUD {
     createFormRevision(fromRevisionId: string): Promise<FbForm>;
     incrementFormViews(id: string): Promise<boolean>;
     incrementFormSubmissions(id: string): Promise<boolean>;
-    getFormRevisions(id: string, options?: FormBuilderGetFormRevisionsOptions): Promise<FbForm[]>;
+    getFormRevisions(id: string): Promise<FbForm[]>;
     getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteFormRevision(id: string): Promise<boolean>;
@@ -567,7 +567,7 @@ export interface FormBuilderStorageOperationsListFormsParams {
  */
 export interface FormBuilderStorageOperationsListFormRevisionsParamsWhere {
     id?: string;
-    formId?: string;
+    formId: string;
     version_not?: number;
     publishedOn_not?: string | null;
     tenant: string;
@@ -610,8 +610,6 @@ export interface FormBuilderStorageOperationsCreateFormParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsCreateFormFromParams {
-    original: FbForm;
-    latest: FbForm;
     form: FbForm;
 }
 
@@ -765,9 +763,7 @@ export interface FormBuilderFormStorageOperations {
     /**
      * Delete the single form revision.
      */
-    deleteFormRevision(
-        params: FormBuilderStorageOperationsDeleteFormRevisionParams
-    ): Promise<FbForm>;
+    deleteFormRevision({ form }: { form: FbForm }): Promise<FbForm>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
 }

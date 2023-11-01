@@ -1,5 +1,6 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { createFormDataModelDefinition } from "./models/form.model";
+import { createSubmissionDataModelDefinition } from "./models/submission.model";
 
 export const createFormBuilderPlugins = () => {
     const groupId = "contentModelGroup_fb";
@@ -15,6 +16,9 @@ export const createFormBuilderPlugins = () => {
 
     return {
         groupPlugin,
-        formModelDefinition: createFormDataModelDefinition()
+        formModelDefinition: createFormDataModelDefinition(groupPlugin.contentModelGroup),
+        submissionModelDefinition: createSubmissionDataModelDefinition(
+            groupPlugin.contentModelGroup
+        )
     };
 };

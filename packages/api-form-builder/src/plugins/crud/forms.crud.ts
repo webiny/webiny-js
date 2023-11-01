@@ -147,9 +147,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
              * as a resolver to an `FbForm` GraphQL type, and we already check permissions
              * and ownership when resolving the form in `getForm`.
              */
-            const revisions = await this.getFormRevisions(id, {
-                auth: false
-            });
+            const revisions = await this.getFormRevisions(id);
 
             /**
              * Then calculate the stats
@@ -206,15 +204,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
-        async getFormRevisions(this: FormBuilder, id, options) {
-            // Just get the form first, to check if it exists and if user has access to it.
-            const [pid, revisionNumber = "0001"] = id.split("#");
-            await this.getForm(`${pid}#${revisionNumber}`, options);
-
+        async getFormRevisions(this: FormBuilder, id) {
             try {
                 const result = (await this.storageOperations.listFormRevisions({
                     where: {
-                        id: `${pid}#${revisionNumber}`,
+                        formId: id,
                         tenant: getTenant().id,
                         locale: getLocale().code
                     },
@@ -308,15 +302,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
              */
             const formId = mdbid();
             const version = 1;
-            const id = createIdentifier({
-                id: formId,
-                version
-            });
 
             const slug = `${slugify(data.name)}-${formId}`.toLowerCase();
 
             const form: FbForm = {
-                id,
+                id: formId,
                 formId,
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -492,7 +482,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             const revisions = await this.storageOperations.listFormRevisions({
                 where: {
-                    formId: formFormId,
+                    formId: formFormId || "",
                     tenant: form.tenant,
                     locale: form.locale
                 },
@@ -513,11 +503,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     previous,
                     revisions
                 });
-                await this.storageOperations.deleteFormRevision({
-                    form,
-                    previous,
-                    revisions
-                });
+                await this.storageOperations.deleteFormRevision({ form });
                 await onFormRevisionAfterDelete.publish({
                     form,
                     previous,
@@ -537,11 +523,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async publishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "p" });
-
+            const [pid, revisionNumber = "0001"] = id.split("#");
             /**
              * getForm checks for existence of the form.
              */
-            const original = await this.getForm(id, {
+            const original = await this.getForm(`${pid}#${revisionNumber}`, {
                 auth: false
             });
 
@@ -630,12 +616,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             const original = await this.getForm(id, {
                 auth: false
             });
-
             const originalFormFormId = original.formId || (original.id.split("#").pop() as string);
-
             const latest = await this.storageOperations.getForm({
                 where: {
-                    formId: originalFormFormId,
+                    id,
                     latest: true,
                     tenant: original.tenant,
                     locale: original.locale
@@ -689,9 +673,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form
                 });
                 const result = await this.storageOperations.createFormFrom({
-                    original,
-                    latest,
-                    form
+                    form: latest
                 });
                 await onFormRevisionAfterCreate.publish({
                     original,
