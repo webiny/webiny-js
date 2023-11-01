@@ -4,7 +4,6 @@ import {
     CmsContext,
     CmsGroup,
     CmsGroupContext,
-    CmsGroupListParams,
     HeadlessCmsStorageOperations,
     OnGroupAfterCreateTopicParams,
     OnGroupAfterDeleteTopicParams,
@@ -76,6 +75,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         })
     };
 
+    const listGroupsCache = new Map<string, Promise<CmsGroup[]>>();
     const clearGroupsCache = (): void => {
         for (const loader of Object.values(dataLoaders)) {
             loader.clearAll();
@@ -124,15 +124,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return group;
     };
 
-    const listGroupsViaDataLoader = async (params: CmsGroupListParams) => {
-        const { where } = params || {};
-
+    const listGroupsViaDataLoader = async () => {
         try {
             return await dataLoaders.listGroups.load("listGroups");
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
-                ...(ex.data || {}),
-                where
+                ...(ex.data || {})
             });
         }
     };
@@ -191,6 +188,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         return group;
     };
+
     const listGroups: CmsGroupContext["listGroups"] = async params => {
         const { where } = params || {};
 
@@ -198,30 +196,44 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         await modelGroupsPermissions.ensure({ rwd: "r" });
 
-        const response = await listGroupsViaDataLoader({
-            ...(params || {}),
-            where: {
-                ...(where || {}),
-                tenant: tenant || getTenant().id,
-                locale: locale || getLocale().code
-            }
+        /**
+         * Maybe we can cache based on permissions, not the identity id?
+         *
+         * TODO: @adrian please check if possible.
+         */
+        const key = JSON.stringify({
+            tenant: tenant || getTenant().id,
+            locale: locale || getLocale().code,
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
         });
+        if (listGroupsCache.has(key)) {
+            return listGroupsCache.get(key) as Promise<CmsGroup[]>;
+        }
 
-        return filterAsync(response, async group => {
-            const ownsGroup = await modelGroupsPermissions.ensure(
-                { owns: group.createdBy },
-                { throw: false }
-            );
+        const cached = async () => {
+            const response = await listGroupsViaDataLoader();
 
-            if (!ownsGroup) {
-                return false;
-            }
+            return filterAsync(response, async group => {
+                const ownsGroup = await modelGroupsPermissions.ensure(
+                    { owns: group.createdBy },
+                    { throw: false }
+                );
 
-            return await modelGroupsPermissions.canAccessGroup({
-                group
+                if (!ownsGroup) {
+                    return false;
+                }
+
+                return await modelGroupsPermissions.canAccessGroup({
+                    group
+                });
             });
-        });
+        };
+
+        listGroupsCache.set(key, cached());
+
+        return listGroupsCache.get(key) as Promise<CmsGroup[]>;
     };
+
     const createGroup: CmsGroupContext["createGroup"] = async input => {
         await modelGroupsPermissions.ensure({ rwd: "w" });
 

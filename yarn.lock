@@ -13096,12 +13096,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-file-manager-ddb@0.0.0, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
@@ -16340,6 +16334,7 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/ioc": 0.0.0
+    "@webiny/logger": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
