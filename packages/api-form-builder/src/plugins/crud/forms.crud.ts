@@ -206,16 +206,16 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async getFormRevisions(this: FormBuilder, id) {
             try {
-                const result = (await this.storageOperations.listFormRevisions({
+                const result = await this.storageOperations.listFormRevisions({
                     where: {
                         formId: id,
                         tenant: getTenant().id,
                         locale: getLocale().code
                     },
                     sort: ["version_ASC"]
-                })) as unknown as FbForm[][];
+                });
 
-                return result[0];
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list form revisions.",
@@ -490,7 +490,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             });
 
             const previous = revisions.find(rev => rev.version < form.version) || null;
-            if (!previous && revisions.length === 1) {
+            if (revisions.length === 1) {
                 /**
                  * Means we're deleting the last revision, so we need to delete the whole form.
                  */

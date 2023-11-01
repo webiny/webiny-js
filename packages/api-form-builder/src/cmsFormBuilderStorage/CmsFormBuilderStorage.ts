@@ -55,7 +55,7 @@ export class CmsFormBuilderStorage {
         const entries = await this.security.withoutAuthorization(async () => {
             return await this.cms.getEntryRevisions(model, formId);
         });
-        return [entries.map(entry => this.getFormFieldValues(entry))];
+        return entries.map(entry => this.getFormFieldValues(entry));
     };
 
     listForms = async (params: FormBuilderStorageOperationsListFormsParams) => {
@@ -95,7 +95,6 @@ export class CmsFormBuilderStorage {
         });
     };
 
-    // [WIP]
     deleteFormRevision = async ({ form }: { form: FbForm }) => {
         const model = this.modelWithContext(form);
 

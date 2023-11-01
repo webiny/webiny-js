@@ -67,4 +67,4 @@ export const createFormBuilderSettingsSchema = () => {
     });
 
     return formBuilderSettingGraphQL;
-}
+};
