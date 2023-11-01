@@ -13,6 +13,8 @@ import { CmsEntriesRootFolder_5_37_0_002 } from "~/migrations/5.37.0/002/ddb";
 import { AcoFolders_5_37_0_003 } from "~/migrations/5.37.0/003/ddb";
 import { AcoRecords_5_37_0_004 } from "~/migrations/5.37.0/004/ddb";
 import { FileManager_5_37_0_005 } from "~/migrations/5.37.0/005/ddb";
+import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
+import { MultiStepForms_5_38_0_002 } from "~/migrations/5.38.0/002/ddb";
 
 export const migrations = () => {
     return [
@@ -27,6 +29,8 @@ export const migrations = () => {
         CmsEntriesRootFolder_5_37_0_002,
         AcoFolders_5_37_0_003,
         AcoRecords_5_37_0_004,
-        FileManager_5_37_0_005
+        FileManager_5_37_0_005,
+        MultiStepForms_5_38_0_001,
+        MultiStepForms_5_38_0_002
     ];
 };

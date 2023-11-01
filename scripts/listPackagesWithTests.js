@@ -37,6 +37,13 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-tenant-manager --storage=ddb"];
     },
 
+    "api-audit-logs": () => {
+        return [
+            "packages/api-audit-logs --storage=ddb",
+            "packages/api-audit-logs --storage=ddb-es,ddb"
+        ];
+    },
+
     "api-file-manager": () => {
         return [
             "packages/api-file-manager --storage=ddb",
