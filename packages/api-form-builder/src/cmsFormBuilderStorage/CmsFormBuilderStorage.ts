@@ -53,7 +53,7 @@ export class CmsFormBuilderStorage {
         } = params;
         const model = this.modelWithContext({ tenant, locale });
         const entries = await this.security.withoutAuthorization(async () => {
-            return await this.cms.getEntryRevisions(model, `${formId}#0001`);
+            return await this.cms.getEntryRevisions(model, formId);
         });
         return [entries.map(entry => this.getFormFieldValues(entry))];
     };
@@ -76,7 +76,6 @@ export class CmsFormBuilderStorage {
         return [entries.map(entry => this.getFormFieldValues(entry)), meta];
     };
 
-    // [WIP]
     createFormFrom = async (params: any) => {
         const { form } = params;
         const model = this.modelWithContext(form);

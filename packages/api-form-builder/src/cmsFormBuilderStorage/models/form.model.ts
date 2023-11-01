@@ -41,6 +41,15 @@ const statusField = () => {
     });
 };
 
+const lockedField = () => {
+    return createModelField({
+        label: "Locked",
+        fieldId: "locked",
+        type: "text",
+        validation: [required()]
+    });
+};
+
 const field_IdField = () => {
     return createModelField({
         label: "ID",
@@ -309,7 +318,16 @@ const settingsField = (fields: CmsModelField[]) => {
     });
 };
 
-const DEFAULT_FIELDS = ["formId", "name", "published", "status", "fields", "steps", "settings"];
+const DEFAULT_FIELDS = [
+    "formId",
+    "name",
+    "published",
+    "status",
+    "locked",
+    "fields",
+    "steps",
+    "settings"
+];
 
 const SETTINGS_FIELDS: CmsModelField[] = [
     settingsLayoutField([settingsLayoutRendererField()]),
@@ -354,6 +372,7 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): any => {
             nameField(),
             publishedField(),
             statusField(),
+            lockedField(),
             fieldsField(FIELD_FIELDS),
             stepsField(STEP_FIELDS),
             settingsField(SETTINGS_FIELDS)
