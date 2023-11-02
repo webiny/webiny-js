@@ -35,6 +35,7 @@ export interface I18NContextObject {
     setContentLocale: (locale: I18NLocale) => void;
     getLocales: () => I18NLocale[];
     getLocale: (code: string) => I18NLocale | undefined;
+    reloadLocales: () => Promise<void>;
     locales: LocalesCRUD;
     system: SystemCRUD;
     hasI18NContentPermission: () => Promise<boolean>;
