@@ -6,6 +6,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { SecurityContext } from "@webiny/api-security/types";
 
 export type LocaleKeys = "default" | "content";
+
 export interface I18NLocale {
     code: string;
     default: boolean;
@@ -27,7 +28,9 @@ export interface I18NLocaleData extends I18NLocale {
 export interface I18NContextObject {
     defaultLocale?: string | null;
     acceptLanguage?: string | null;
+
     getContentLocale(): I18NLocale | undefined;
+
     getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | undefined;
     setCurrentLocale: (localeContext: LocaleKeys, locale: I18NLocale) => void;
     getCurrentLocales: () => { context: string; locale: string | null }[];
@@ -35,6 +38,7 @@ export interface I18NContextObject {
     setContentLocale: (locale: I18NLocale) => void;
     getLocales: () => I18NLocale[];
     getLocale: (code: string) => I18NLocale | undefined;
+    reloadLocales: () => Promise<void>;
     locales: LocalesCRUD;
     system: SystemCRUD;
     hasI18NContentPermission: () => Promise<boolean>;
@@ -50,18 +54,22 @@ export interface SystemInstallParams {
  */
 export interface SystemCRUD {
     storageOperations: I18NSystemStorageOperations;
+
     /**
      * Get the current version of the i18n.
      */
     getSystemVersion(): Promise<string | null>;
+
     /**
      * Set the current version of the i18n.
      */
     setSystemVersion(version: string): Promise<void>;
+
     /**
      * Run the install process for the i18n.
      */
     installSystem(params: SystemInstallParams): Promise<void>;
+
     /**
      * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
@@ -87,6 +95,7 @@ export interface I18NContext extends Context, ClientContext, TenancyContext, Sec
 export interface ContextI18NGetLocales extends Plugin {
     name: "context-i18n-get-locales";
     type: "context-i18n-get-locales";
+
     resolve(params: { context: I18NContext }): Promise<I18NLocale[]>;
 }
 
@@ -124,6 +133,7 @@ export interface LocalesCRUDListParams {
 export interface OnSystemBeforeInstallTopicParams {
     code: string;
 }
+
 export interface OnSystemAfterInstallTopicParams {
     code: string;
 }
@@ -133,33 +143,39 @@ export interface OnLocaleBeforeCreateTopicParams {
     locale: I18NLocaleData;
     tenant: string;
 }
+
 export interface OnLocaleAfterCreateTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
+
 export interface OnLocaleBeforeUpdateTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
     tenant: string;
 }
+
 export interface OnLocaleAfterUpdateTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
     tenant: string;
 }
+
 export interface OnLocaleBeforeDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
+
 export interface OnLocaleAfterDeleteTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
     tenant: string;
 }
+
 /**
  * Definition for the locales part crud of the i18n.
  */
@@ -256,11 +272,13 @@ export interface I18NLocalesStorageOperationsListParams {
     after?: string;
     sort?: string[];
 }
+
 interface I18NLocalesStorageOperationsListResponseMeta {
     hasMoreItems: boolean;
     totalCount: number;
     cursor: string | null;
 }
+
 export type I18NLocalesStorageOperationsListResponse = [
     I18NLocaleData[],
     I18NLocalesStorageOperationsListResponseMeta
@@ -269,10 +287,12 @@ export type I18NLocalesStorageOperationsListResponse = [
 export interface I18NLocalesStorageOperationsCreateParams {
     locale: I18NLocaleData;
 }
+
 export interface I18NLocalesStorageOperationsUpdateParams {
     original: I18NLocaleData;
     locale: I18NLocaleData;
 }
+
 export interface I18NLocalesStorageOperationsUpdateDefaultParams {
     /**
      * The current default locale, possibly null if its the first insert into the storage..
@@ -283,6 +303,7 @@ export interface I18NLocalesStorageOperationsUpdateDefaultParams {
      */
     locale: I18NLocaleData;
 }
+
 export interface I18NLocalesStorageOperationsDeleteParams {
     locale: I18NLocaleData;
 }
