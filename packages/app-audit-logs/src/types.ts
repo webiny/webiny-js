@@ -1,4 +1,4 @@
-export type AuditLog = {
+export interface AuditLog {
     id: string;
     message: string;
     app: string;
@@ -8,13 +8,13 @@ export type AuditLog = {
     data: string;
     timestamp: Date;
     initiator: string;
-};
+}
 
-export type User = {
+export interface User {
     id: string;
     firstName: string;
     lastName: string;
-    group: {
+    group?: {
         name: string;
     };
-};
+}
