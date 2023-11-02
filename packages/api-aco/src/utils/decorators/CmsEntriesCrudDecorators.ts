@@ -2,10 +2,10 @@ import { AcoContext } from "~/types";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
+import { createWhere } from "./where";
+import { ROOT_FOLDER } from "./constants";
 
 type Context = Pick<AcoContext, "aco" | "cms">;
-
-const ROOT_FOLDER = "root";
 
 const createFolderType = (
     model: Pick<CmsModel, "modelId">
@@ -68,30 +68,15 @@ export class CmsEntriesCrudDecorators {
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
             const folderType = createFolderType(model);
-            const allFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                folderType
-            );
+            const folders = await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
-            const location: Record<string, any> = {
-                wbyAco_location: {
-                    // At the moment, all users can access entries in the root folder.
-                    // Root folder level permissions cannot be set yet.
-                    folderId_in: [ROOT_FOLDER, ...allFolders.map(folder => folder.id)]
-                }
-            };
-            if (params.where?.wbyAco_location) {
-                const existingAnd = (params.where.wbyAco_location as any).AND || [];
-                location.wbyAco_location = {
-                    AND: existingAnd.concat([...(params.where.wbyAco_location as any)])
-                };
-            }
-
+            const where = createWhere({
+                where: params.where,
+                folders
+            });
             return originalCmsListEntries(model, {
                 ...params,
-                where: {
-                    ...(params?.where || {}),
-                    ...location
-                }
+                where
             });
         };
 
