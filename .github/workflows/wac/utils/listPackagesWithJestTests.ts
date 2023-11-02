@@ -127,7 +127,7 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             { cmd: "packages/api-headless-cms --storage=ddb", storage: "ddb" },
             { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" },
+            { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
     "api-headless-cms-ddb-es": () => {
