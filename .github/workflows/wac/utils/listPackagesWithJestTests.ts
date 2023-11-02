@@ -180,7 +180,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             {
                 cmd: "packages/migrations",
-                storage: ["ddb-es", "ddb-os", "ddb"]
+                // This will run migrations against DynamoDB too twice, once with each storage
+                // driver. This is because, at the moment, we can't run migrations against DynamoDB only.
+                // That's why we're not including "ddb" in the list below.
+                storage: ["ddb-es", "ddb-os"]
             }
         ];
     },

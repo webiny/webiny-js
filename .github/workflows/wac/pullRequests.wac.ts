@@ -296,7 +296,7 @@ export const pullRequestsTest = createWorkflow({
                     name: "Build packages",
                     run: "yarn build:quick"
                 },
-                ...createSetupVerdaccioSteps(),
+                ...createSetupVerdaccioSteps({ workingDirectory: "verdaccio-files" }),
                 {
                     name: 'Create ".npmrc" file in the project root, with a dummy auth token',
                     run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
