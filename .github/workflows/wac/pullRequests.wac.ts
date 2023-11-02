@@ -49,7 +49,7 @@ const createJestTestsJob = (storage: string | null) => {
             matrix: {
                 os: ["ubuntu-latest"],
                 node: [NODE_VERSION],
-                package: "${{ fromJson(" + JSON.stringify(packages) + ") }}"
+                package: "${{ fromJson('" + JSON.stringify(packages) + "') }}"
             }
         },
         "runs-on": "${{ matrix.os }}",
@@ -84,8 +84,6 @@ const createJestTestsJob = (storage: string | null) => {
             }
         ]
     };
-
-    return jobs;
 };
 
 export const pullRequestsTest = createWorkflow({
