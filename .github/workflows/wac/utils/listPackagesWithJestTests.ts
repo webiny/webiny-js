@@ -13,7 +13,7 @@ import path from "path";
 
 interface PackageWithTests {
     cmd: string;
-    storage?: string;
+    storage?: string | string[];
 }
 
 interface PackageWithTestsWithId extends PackageWithTests {
@@ -175,6 +175,22 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
                 cmd: "packages/app-aco"
             }
         ];
+    },
+    migrations: () => {
+        return [
+            {
+                cmd: "packages/migrations",
+                storage: ["ddb-es", "ddb-os", "ddb"]
+            }
+        ];
+    },
+    "api-elasticsearch": () => {
+        return [
+            {
+                cmd: "packages/api-elasticsearch",
+                storage: ["ddb-es", "ddb-os"]
+            }
+        ];
     }
 };
 
@@ -220,6 +236,7 @@ interface ListPackagesWithJestTestsParams {
 
 export const listPackagesWithJestTests = (params: ListPackagesWithJestTestsParams = {}) => {
     const allPackages = fs.readdirSync("packages");
+
     const packagesWithTests = [];
 
     for (let i = 0; i < allPackages.length; i++) {
@@ -248,8 +265,13 @@ export const listPackagesWithJestTests = (params: ListPackagesWithJestTestsParam
     }
 
     if (storage === null) {
-        return output.filter(item => !item.storage);
+        return output.filter(item => !item.storage || !item.storage.length);
     }
 
-    return output.filter(item => item.storage === storage);
+    return output.filter(item => {
+        if (Array.isArray(item.storage)) {
+            return item.storage.includes(storage);
+        }
+        return item.storage === storage;
+    });
 };
