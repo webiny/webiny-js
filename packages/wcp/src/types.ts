@@ -16,6 +16,7 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     MT = "multiTenancy",
     APW = "advancedPublishingWorkflow",
     AACL = "advancedAccessControlLayer",
+    AL = "auditLogs",
     AUDIT_LOGS = "auditLogs"
 }
 
@@ -51,6 +52,9 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
         enabled: boolean;
         options: { teams: boolean; privateFiles: boolean; folderLevelPermissions: boolean };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
+        enabled: boolean;
     };
 }
 

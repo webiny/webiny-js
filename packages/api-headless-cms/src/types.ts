@@ -1838,6 +1838,17 @@ export interface CmsEntryListWhere {
      */
     latest?: boolean;
     /**
+     * ACO related parameters.
+     */
+    wbyAco_location?: {
+        folderId?: string;
+        folderId_not?: string;
+        folderId_in?: string[];
+        folderId_not_in?: string[];
+        AND?: CmsEntryListWhere[];
+        OR?: CmsEntryListWhere[];
+    };
+    /**
      * This is to allow querying by any content model field defined by the user.
      */
     [key: string]:

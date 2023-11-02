@@ -4,7 +4,7 @@ import {
     assignWorkflowToEntry,
     getEntryTitle,
     hasEntries,
-    isAwpModel,
+    isApwDisabledOnModel,
     updateEntryMeta
 } from "~/plugins/cms/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
@@ -22,17 +22,18 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
     const { apw, cms } = params;
 
     cms.onEntryBeforeCreate.subscribe(async ({ entry, model }) => {
-        if (isAwpModel(model)) {
+        if (isApwDisabledOnModel(model)) {
             return;
         }
         await assignWorkflowToEntry({
             apw,
-            entry
+            entry,
+            model
         });
     });
 
     cms.onEntryRevisionBeforeCreate.subscribe(async ({ entry, original, model }) => {
-        if (isAwpModel(model)) {
+        if (isApwDisabledOnModel(model)) {
             return;
         }
         /**
@@ -57,12 +58,13 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
          */
         await assignWorkflowToEntry({
             apw,
-            entry
+            entry,
+            model
         });
     });
 
     cms.onEntryBeforeUpdate.subscribe(async ({ entry, original, model }) => {
-        if (isAwpModel(model)) {
+        if (isApwDisabledOnModel(model)) {
             return;
         }
         const prevApwWorkflowId = original.meta?.apw?.workflowId;

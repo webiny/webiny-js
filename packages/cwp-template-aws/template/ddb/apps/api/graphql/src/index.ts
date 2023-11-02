@@ -28,6 +28,7 @@ import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
+import { createAuditLogs } from "@webiny/api-audit-logs";
 /**
  * APW
  */
@@ -96,6 +97,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createAuditLogs(),
         scaffoldsPlugins()
     ],
     http: { debug }

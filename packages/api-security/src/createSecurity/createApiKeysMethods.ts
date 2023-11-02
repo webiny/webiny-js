@@ -10,6 +10,7 @@ import { withFields, string } from "@commodo/fields";
 // @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
+import { createTopic } from "@webiny/pubsub";
 import { mdbid } from "@webiny/utils";
 import { NotAuthorizedError } from "~/index";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -48,6 +49,15 @@ export const createApiKeysMethods = ({
         return tenant;
     };
     return {
+        onApiKeyBeforeCreate: createTopic("security.onApiKeyBeforeCreate"),
+        onApiKeyAfterCreate: createTopic("security.onApiKeyAfterCreate"),
+        onApiKeyBeforeBatchCreate: createTopic("security.onApiKeyBeforeBatchCreate"),
+        onApiKeyAfterBatchCreate: createTopic("security.onApiKeyAfterBatchCreate"),
+        onApiKeyBeforeUpdate: createTopic("security.onApiKeyBeforeUpdate"),
+        onApiKeyAfterUpdate: createTopic("security.onApiKeyAfterUpdate"),
+        onApiKeyBeforeDelete: createTopic("security.onApiKeyBeforeDelete"),
+        onApiKeyAfterDelete: createTopic("security.onApiKeyAfterDelete"),
+
         async getApiKeyByToken(token: string) {
             try {
                 return await storageOperations.getApiKeyByToken({
@@ -135,9 +145,13 @@ export const createApiKeysMethods = ({
             };
 
             try {
-                return await storageOperations.createApiKey({
+                await this.onApiKeyBeforeCreate.publish({ apiKey });
+                const result = await storageOperations.createApiKey({
                     apiKey
                 });
+                await this.onApiKeyAfterCreate.publish({ apiKey: result });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create API key.",
@@ -170,10 +184,14 @@ export const createApiKeysMethods = ({
                 ...changedData
             };
             try {
-                return await storageOperations.updateApiKey({
+                await this.onApiKeyBeforeUpdate.publish({ original, apiKey });
+                const result = await storageOperations.updateApiKey({
                     original,
                     apiKey
                 });
+                await this.onApiKeyAfterUpdate.publish({ original, apiKey: result });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update API key.",
@@ -199,7 +217,10 @@ export const createApiKeysMethods = ({
             }
 
             try {
+                await this.onApiKeyBeforeDelete.publish({ apiKey });
                 await storageOperations.deleteApiKey({ apiKey });
+                await this.onApiKeyAfterDelete.publish({ apiKey });
+
                 return true;
             } catch (ex) {
                 throw new WebinyError(
