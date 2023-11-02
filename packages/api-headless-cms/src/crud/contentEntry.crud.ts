@@ -1056,6 +1056,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         const entry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        /**
+         * No need to continue if the entry is already in the requested folder.
+         */
+        if (entry.location?.folderId === folderId) {
+            return entry;
+        }
 
         try {
             await onEntryBeforeMove.publish({

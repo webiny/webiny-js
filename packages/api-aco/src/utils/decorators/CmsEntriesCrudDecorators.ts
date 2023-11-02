@@ -6,13 +6,22 @@ import { createWhere } from "./where";
 import { ROOT_FOLDER } from "./constants";
 
 type Context = Pick<AcoContext, "aco" | "cms">;
+/**
+ * Keep this until we figure out how to fetch the folders.
+ */
+const isPageModel = (model: CmsModel): boolean => {
+    if (model.modelId === "pbPage") {
+        return true;
+    } else if (model.modelId === "acoSearchRecord-pbpage") {
+        return true;
+    }
+    return false;
+};
 
-const createFolderType = (
-    model: Pick<CmsModel, "modelId">
-): "FmFile" | "PbPage" | `cms:${string}` => {
+const createFolderType = (model: CmsModel): "FmFile" | "PbPage" | `cms:${string}` => {
     if (model.modelId === "fmFile") {
         return "FmFile";
-    } else if (model.modelId === "pbPage") {
+    } else if (isPageModel(model)) {
         return "PbPage";
     }
     return `cms:${model.modelId}`;
@@ -228,20 +237,38 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsMoveEntry = context.cms.moveEntry.bind(context.cms);
         context.cms.moveEntry = async (model, id, targetFolderId) => {
+            /**
+             * First we need to check if user has access to the entries existing folder.
+             */
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
             });
-
-            const folderId = entry?.location?.folderId;
-            if (!folderId || folderId === ROOT_FOLDER) {
+            const folderId = entry?.location?.folderId || ROOT_FOLDER;
+            /**
+             * If the entry is in the same folder we are trying to move it to, just continue.
+             */
+            if (folderId === targetFolderId) {
                 return originalCmsMoveEntry(model, id, targetFolderId);
+            } else if (folderId !== ROOT_FOLDER) {
+                /**
+                 * If entry current folder is not a root, check for access
+                 */
+                const folder = await context.aco.folder.get(folderId);
+                await folderLevelPermissions.ensureCanAccessFolderContent({
+                    folder,
+                    rwd: "w"
+                });
             }
-
-            const folder = await context.aco.folder.get(folderId);
-            await folderLevelPermissions.ensureCanAccessFolderContent({
-                folder,
-                rwd: "w"
-            });
+            /**
+             * If target folder is not a ROOT_FOLDER, check for access.
+             */
+            if (targetFolderId !== ROOT_FOLDER) {
+                const folder = await context.aco.folder.get(targetFolderId);
+                await folderLevelPermissions.ensureCanAccessFolderContent({
+                    folder,
+                    rwd: "w"
+                });
+            }
 
             return originalCmsMoveEntry(model, id, targetFolderId);
         };
