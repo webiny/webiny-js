@@ -10,7 +10,17 @@ import path from "path";
 /**
  * Some packages require custom handling.
  */
-const CUSTOM_HANDLERS: Record<string, () => Array<string>> = {
+
+interface PackageWithTests {
+    cmd: string;
+    storage?: string;
+}
+
+interface PackageWithTestsWithId extends PackageWithTests {
+    id: string;
+}
+
+const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     // Ignore "i18n" package.
     i18n: () => [],
 
@@ -18,92 +28,128 @@ const CUSTOM_HANDLERS: Record<string, () => Array<string>> = {
     "project-utils": () => [],
 
     "api-tenancy": () => {
-        return ["packages/api-tenancy --storage=ddb"];
+        return [{ cmd: "packages/api-tenancy --storage=ddb", storage: "ddb" }];
     },
 
     "api-security": () => {
-        return ["packages/api-security --storage=ddb"];
+        return [{ cmd: "packages/api-security --storage=ddb", storage: "ddb" }];
     },
 
     "api-security-cognito": () => {
-        return ["packages/api-security-cognito --storage=ddb"];
+        return [{ cmd: "packages/api-security-cognito --storage=ddb", storage: "ddb" }];
     },
 
     "api-i18n": () => {
-        return ["packages/api-i18n --storage=ddb"];
+        return [{ cmd: "packages/api-i18n --storage=ddb", storage: "ddb" }];
     },
 
     "api-tenant-manager": () => {
-        return ["packages/api-tenant-manager --storage=ddb"];
+        return [{ cmd: "packages/api-tenant-manager --storage=ddb", storage: "ddb" }];
     },
 
     "api-file-manager": () => {
         return [
-            "packages/api-file-manager --storage=ddb",
-            "packages/api-file-manager --storage=ddb-es,ddb"
+            { cmd: "packages/api-file-manager --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/api-file-manager --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }
         ];
     },
 
     "api-form-builder": () => {
         return [
-            "packages/api-form-builder --storage=ddb",
-            "packages/api-form-builder --storage=ddb-es,ddb"
+            { cmd: "packages/api-form-builder --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-form-builder --storage=ddb", storage: "ddb" }
         ];
     },
 
     "api-form-builder-so-ddb-es": () => {
-        return ["packages/api-form-builder-so-ddb-es --storage=ddb-es,ddb"];
+        return [
+            {
+                cmd: "packages/api-form-builder-so-ddb-es --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }
+        ];
     },
 
     "api-page-builder": () => {
         return [
-            "packages/api-page-builder --storage=ddb",
-            "packages/api-page-builder --storage=ddb-es,ddb"
+            { cmd: "packages/api-page-builder --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-page-builder --storage=ddb", storage: "ddb" }
         ];
     },
     "api-page-builder-so-ddb-es": () => {
-        return ["packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb"];
+        return [
+            {
+                cmd: "packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }
+        ];
     },
 
     "api-page-builder-import-export": () => {
-        return ["packages/api-page-builder-import-export --storage=ddb"];
+        return [
+            {
+                cmd: "packages/api-page-builder-import-export --storage=ddb",
+                storage: "ddb"
+            }
+        ];
     },
 
     "api-prerendering-service": () => {
-        return ["packages/api-prerendering-service --storage=ddb"];
+        return [{ cmd: "packages/api-prerendering-service --storage=ddb", storage: "ddb" }];
     },
 
     "api-mailer": () => {
-        return ["packages/api-mailer --storage=ddb", "packages/api-mailer --storage=ddb-es,ddb"];
+        return [
+            { cmd: "packages/api-mailer --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-mailer --storage=ddb-es,ddb", storage: "ddb-es" }
+        ];
     },
 
     "api-headless-cms": () => {
         return [
-            "packages/api-headless-cms --storage=ddb",
-            "packages/api-headless-cms --storage=ddb-es,ddb"
+            { cmd: "packages/api-headless-cms --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" }
         ];
     },
     "api-headless-cms-ddb-es": () => {
-        return ["packages/api-headless-cms-ddb-es --storage=ddb-es,ddb"];
+        return [
+            {
+                cmd: "packages/api-headless-cms-ddb-es --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }
+        ];
     },
     "api-apw": () => {
         return [
-            "packages/api-apw --storage=ddb"
+            { cmd: "packages/api-apw --storage=ddb", storage: "ddb" }
             // TODO: With ddb-es setup, some tests are failing!
             // "packages/api-apw --storage=ddb-es,ddb"
         ];
     },
     "api-aco": () => {
-        return ["packages/api-aco --storage=ddb", "packages/api-aco --storage=ddb-es,ddb"];
+        return [
+            { cmd: "packages/api-aco --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-aco --storage=ddb-es,ddb", storage: "ddb-es" }
+        ];
     },
     "api-page-builder-aco": () => {
         return [
-            "packages/api-page-builder-aco --storage=ddb",
-            "packages/api-page-builder-aco --storage=ddb-es,ddb"
+            { cmd: "packages/api-page-builder-aco --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/api-page-builder-aco --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }
         ];
     },
     "app-aco": () => {
-        return ["packages/app-aco"];
+        return [
+            {
+                cmd: "packages/app-aco"
+            }
+        ];
     }
 };
 
@@ -159,16 +205,16 @@ export const listPackagesWithJestTests = (params: ListPackagesWithJestTestsParam
         } else {
             const testsFolder = path.join("packages", packageName, "__tests__");
             if (hasTestFiles(testsFolder)) {
-                packagesWithTests.push(`packages/${packageName}`);
+                packagesWithTests.push({ cmd: `packages/${packageName}` } as PackageWithTests);
             }
         }
     }
 
     const output = packagesWithTests.map(pkg => {
         return {
-            cmd: pkg,
-            id: cmdToId(pkg)
-        };
+            ...pkg,
+            id: cmdToId(pkg.cmd)
+        } as PackageWithTestsWithId;
     });
 
     const { storage } = params;
@@ -177,8 +223,8 @@ export const listPackagesWithJestTests = (params: ListPackagesWithJestTestsParam
     }
 
     if (storage === null) {
-        return output.filter(item => !item.cmd.includes("--storage="));
+        return output.filter(item => !item.storage);
     }
 
-    return output.filter(item => item.cmd.includes(`--storage=${storage}`));
+    return output.filter(item => item.storage === storage);
 };

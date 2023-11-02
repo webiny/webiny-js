@@ -17,71 +17,73 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
 
 // Create "Pull requests" workflow.
 
-const createJestTestsJobs = (storage: string | null) => {
+const createJestTestsJob = (storage: string | null) => {
+    const env: Record<string, string> = {};
+
+    if (storage) {
+        env["AWS_ACCESS_KEY_ID"] = "${{ secrets.AWS_ACCESS_KEY_ID }}";
+        env["AWS_SECRET_ACCESS_KEY"] = "${{ secrets.AWS_SECRET_ACCESS_KEY }}";
+
+        if (storage === "ddb-es") {
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+        } else if (storage === "ddb-os") {
+            // We still use the same environment variables as for "ddb-es" setup, it's
+            // just that the values are read from different secrets.
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+        }
+    }
+
     const packages = listPackagesWithJestTests({
         storage
     });
 
-    let jobs: Record<string, any> = {};
-
-    packages.forEach(pkg => {
-        const env: Record<string, string> = {};
-
-        if (storage) {
-            env["AWS_ACCESS_KEY_ID"] = "${{ secrets.AWS_ACCESS_KEY_ID }}";
-            env["AWS_SECRET_ACCESS_KEY"] = "${{ secrets.AWS_SECRET_ACCESS_KEY }}";
-
-            if (storage === "ddb-es") {
-                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
-                    "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-                env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
-            } else if (storage === "ddb-os") {
-                // We still use the same environment variables as for "ddb-es" setup, it's
-                // just that the values are read from different secrets.
-                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
-                    "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-                env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+    return {
+        needs: "init",
+        name: "${{ matrix.package.cmd }}",
+        strategy: {
+            "fail-fast": false,
+            matrix: {
+                os: ["ubuntu-latest"],
+                node: [NODE_VERSION],
+                package: "${{ fromJson(" + JSON.stringify(packages) + ") }}"
             }
-        }
-
-        jobs[`jest-${pkg.id}`] = {
-            needs: "init",
-            name: pkg.cmd,
-            "runs-on": "ubuntu-latest",
-            env,
-            steps: [
-                ...createSetupSteps(),
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build:quick"
-                },
-                {
-                    name: "Run tests",
-                    run: "yarn test ${{ matrix.package.cmd }}"
+        },
+        "runs-on": "${{ matrix.os }}",
+        env,
+        steps: [
+            ...createSetupSteps(),
+            {
+                uses: "actions/cache@v3",
+                with: {
+                    path: ".yarn/cache",
+                    key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                 }
-            ]
-        };
-    });
+            },
+            {
+                uses: "actions/cache@v3",
+                with: {
+                    path: ".webiny/cached-packages",
+                    key: "packages-cache-${{ needs.init.outputs.ts }}"
+                }
+            },
+            {
+                name: "Install dependencies",
+                run: "yarn --immutable"
+            },
+            {
+                name: "Build packages",
+                run: "yarn build:quick"
+            },
+            {
+                name: "Run tests",
+                run: "yarn test ${{ matrix.package.cmd }}"
+            }
+        ]
+    };
 
     return jobs;
 };
@@ -243,7 +245,8 @@ export const pullRequestsTest = createWorkflow({
                 }
             ]
         },
-        ...createJestTestsJobs(null),
+        "jest-tests-no-storage": createJestTestsJob(null),
+        "jest-tests-ddb": createJestTestsJob("ddb"),
         // ...createJestTestsJobs("ddb"),
         // ...createJestTestsJobs("ddb-es"),
         // ...createJestTestsJobs("ddb-os"),
