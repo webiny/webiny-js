@@ -1,6 +1,7 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps, createDeployWebinySteps } from "./steps";
+import { createSetupVerdaccioSteps } from "./steps";
 import { NODE_OPTIONS, NODE_VERSION } from "./utils";
+import { listPackagesWithJestTests } from "./utils";
 
 // Let's assign some of the common steps into a standalone const.
 const createSetupSteps = ({ workingDirectory = "" } = {}) =>
@@ -15,6 +16,76 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
     ] as NonNullable<NormalJob["steps"]>;
 
 // Create "Pull requests" workflow.
+
+const createJestTestsJobs = (storage: string | null) => {
+    const packages = listPackagesWithJestTests({
+        storage
+    });
+
+    let jobs: Record<string, any> = {};
+
+    packages.forEach(pkg => {
+        const env: Record<string, string> = {};
+
+        if (storage) {
+            env["AWS_ACCESS_KEY_ID"] = "${{ secrets.AWS_ACCESS_KEY_ID }}";
+            env["AWS_SECRET_ACCESS_KEY"] = "${{ secrets.AWS_SECRET_ACCESS_KEY }}";
+
+            if (storage === "ddb-es") {
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
+                    "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
+                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
+                env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+            } else if (storage === "ddb-os") {
+                // We still use the same environment variables as for "ddb-es" setup, it's
+                // just that the values are read from different secrets.
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
+                    "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+                env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+            }
+        }
+
+        jobs[`jest-${pkg.id}`] = {
+            needs: "init",
+            name: pkg.cmd,
+            "runs-on": "ubuntu-latest",
+            env,
+            steps: [
+                ...createSetupSteps(),
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ needs.init.outputs.ts }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages",
+                    run: "yarn build:quick"
+                },
+                {
+                    name: "Run tests",
+                    run: "yarn test ${{ matrix.package.cmd }}"
+                }
+            ]
+        };
+    });
+
+    return jobs;
+};
+
 export const pullRequestsTest = createWorkflow({
     name: "Pull Requests",
     on: {
@@ -27,6 +98,16 @@ export const pullRequestsTest = createWorkflow({
         NODE_OPTIONS
     },
     jobs: {
+        "validate-workflows": {
+            name: "Validate workflows",
+            "runs-on": "ubuntu-latest",
+            steps: [
+                {
+                    name: "Validate",
+                    run: "npx github-actions-wac validate"
+                }
+            ]
+        },
         "validate-commits": {
             name: "Validate commit messages",
             "runs-on": "ubuntu-latest",
@@ -43,7 +124,6 @@ export const pullRequestsTest = createWorkflow({
             name: "Init",
             "runs-on": "webiny-build-packages",
             outputs: {
-                "jest-packages": "${{ steps.list-jest-packages.outputs.jest-packages }}",
                 day: "${{ steps.get-day.outputs.day }}",
                 ts: "${{ steps.get-timestamp.outputs.ts }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
@@ -64,17 +144,6 @@ export const pullRequestsTest = createWorkflow({
                     name: "Is a PR from a fork",
                     id: "is-fork-pr",
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
-                },
-                {
-                    name: "Ignored Jest packages",
-                    id: "get-ignored-jest-packages",
-                    if: "steps.is-fork-pr.outputs.is-fork-pr == 'true'",
-                    run: 'echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT'
-                },
-                {
-                    name: "List packages with Jest tests",
-                    id: "list-jest-packages",
-                    run: 'echo "jest-packages=$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >> $GITHUB_OUTPUT'
                 },
                 {
                     uses: "actions/cache@v3",
@@ -174,56 +243,59 @@ export const pullRequestsTest = createWorkflow({
                 }
             ]
         },
-        "jest-tests": {
-            needs: "init",
-            name: "${{ matrix.package.cmd }}",
-            strategy: {
-                "fail-fast": false,
-                matrix: {
-                    os: ["ubuntu-latest"],
-                    node: [NODE_VERSION],
-                    package: "${{ fromJson(needs.init.outputs.jest-packages) }}"
-                }
-            },
-            "runs-on": "${{ matrix.os }}",
-            env: {
-                AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
-                AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
-                AWS_ELASTIC_SEARCH_DOMAIN_NAME: "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}",
-                ELASTIC_SEARCH_ENDPOINT: "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}",
-                ELASTIC_SEARCH_INDEX_PREFIX: "${{ matrix.package.id }}"
-            },
-            steps: [
-                ...createSetupSteps(),
-
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build:quick"
-                },
-                {
-                    name: "Run tests",
-                    run: "yarn test ${{ matrix.package.cmd }}"
-                }
-            ]
-        },
+        ...createJestTestsJobs(null),
+        // ...createJestTestsJobs("ddb"),
+        // ...createJestTestsJobs("ddb-es"),
+        // ...createJestTestsJobs("ddb-os"),
+        // "jest-tests": {
+        //     needs: "init",
+        //     name: "${{ matrix.package.cmd }}",
+        //     strategy: {
+        //         "fail-fast": false,
+        //         matrix: {
+        //             os: ["ubuntu-latest"],
+        //             node: [NODE_VERSION],
+        //             package: "${{ fromJson(needs.init.outputs.jest-packages) }}"
+        //         }
+        //     },
+        //     "runs-on": "${{ matrix.os }}",
+        //     env: {
+        //         AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
+        //         AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+        //         AWS_ELASTIC_SEARCH_DOMAIN_NAME: "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}",
+        //         ELASTIC_SEARCH_ENDPOINT: "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}",
+        //         ELASTIC_SEARCH_INDEX_PREFIX: "${{ matrix.package.id }}"
+        //     },
+        //     steps: [
+        //         ...createSetupSteps(),
+        //         {
+        //             uses: "actions/cache@v3",
+        //             with: {
+        //                 path: ".yarn/cache",
+        //                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+        //             }
+        //         },
+        //         {
+        //             uses: "actions/cache@v3",
+        //             with: {
+        //                 path: ".webiny/cached-packages",
+        //                 key: "packages-cache-${{ needs.init.outputs.ts }}"
+        //             }
+        //         },
+        //         {
+        //             name: "Install dependencies",
+        //             run: "yarn --immutable"
+        //         },
+        //         {
+        //             name: "Build packages",
+        //             run: "yarn build:quick"
+        //         },
+        //         {
+        //             name: "Run tests",
+        //             run: "yarn test ${{ matrix.package.cmd }}"
+        //         }
+        //     ]
+        // },
         "verdaccio-publish": {
             if: "needs.init.outputs.is-fork-pr != 'true'",
             needs: "init",

@@ -10,6 +10,12 @@ name: Pull Requests
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
 jobs:
+  validate-workflows:
+    name: Validate workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate
+        run: npx github-actions-wac validate
   validate-commits:
     name: Validate commit messages
     runs-on: ubuntu-latest
@@ -20,7 +26,6 @@ jobs:
     name: Init
     runs-on: webiny-build-packages
     outputs:
-      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
@@ -45,17 +50,6 @@ jobs:
         id: is-fork-pr
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
-          $GITHUB_OUTPUT
-      - name: Ignored Jest packages
-        id: get-ignored-jest-packages
-        if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
-        run: echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT
-      - name: List packages with Jest tests
-        id: list-jest-packages
-        run: >-
-          echo "jest-packages=$(node scripts/listPackagesWithTests.js
-          --ignore-packages=${{
-          steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >>
           $GITHUB_OUTPUT
       - uses: actions/cache@v3
         id: yarn-cache
@@ -125,24 +119,687 @@ jobs:
         run: yarn --immutable
       - name: Build packages (full)
         run: yarn build
-  jest-tests:
+  jest-api:
     needs: init
-    name: ${{ matrix.package.cmd }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        node:
-          - 18
-        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
-    runs-on: ${{ matrix.os }}
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+    name: packages/api
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-admin-settings:
+    needs: init
+    name: packages/api-admin-settings
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-authentication:
+    needs: init
+    name: packages/api-authentication
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-authentication-cognito:
+    needs: init
+    name: packages/api-authentication-cognito
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-dynamodb-to-elasticsearch:
+    needs: init
+    name: packages/api-dynamodb-to-elasticsearch
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-elasticsearch:
+    needs: init
+    name: packages/api-elasticsearch
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-headless-cms-ddb:
+    needs: init
+    name: packages/api-headless-cms-ddb
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-api-wcp:
+    needs: init
+    name: packages/api-wcp
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-app-aco:
+    needs: init
+    name: packages/app-aco
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-app-admin:
+    needs: init
+    name: packages/app-admin
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-cwp-template-aws:
+    needs: init
+    name: packages/cwp-template-aws
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-data-migration:
+    needs: init
+    name: packages/data-migration
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-db-dynamodb:
+    needs: init
+    name: packages/db-dynamodb
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-form:
+    needs: init
+    name: packages/form
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-handler:
+    needs: init
+    name: packages/handler
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-handler-aws:
+    needs: init
+    name: packages/handler-aws
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-handler-graphql:
+    needs: init
+    name: packages/handler-graphql
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-handler-logs:
+    needs: init
+    name: packages/handler-logs
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-ioc:
+    needs: init
+    name: packages/ioc
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-lexical-converter:
+    needs: init
+    name: packages/lexical-converter
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-migrations:
+    needs: init
+    name: packages/migrations
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-plugins:
+    needs: init
+    name: packages/plugins
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-pubsub:
+    needs: init
+    name: packages/pubsub
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-react-properties:
+    needs: init
+    name: packages/react-properties
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-react-rich-text-lexical-renderer:
+    needs: init
+    name: packages/react-rich-text-lexical-renderer
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-utils:
+    needs: init
+    name: packages/utils
+    runs-on: ubuntu-latest
+    env: {}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jest-validation:
+    needs: init
+    name: packages/validation
+    runs-on: ubuntu-latest
+    env: {}
     steps:
       - uses: actions/setup-node@v3
         with:
