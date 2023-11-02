@@ -208,6 +208,98 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+  jest-tests-ddb-es:
+    needs: init
+    name: ${{ matrix.package.cmd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 18
+        package: >-
+          ${{ fromJson('[{"cmd":"packages/api-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-file-manager
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-so-ddb-es_ddb-es_ddb"}]')
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+    if: needs.init.outputs.is-fork-pr != 'true'
+  jest-tests-ddb-os:
+    needs: init
+    name: ${{ matrix.package.cmd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 18
+        package: ${{ fromJson('[]') }}
+    runs-on: ${{ matrix.os }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          path: ''
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+    if: needs.init.outputs.is-fork-pr != 'true'
   verdaccio-publish:
     if: needs.init.outputs.is-fork-pr != 'true'
     needs: init
