@@ -67,9 +67,8 @@ const DefaultFormLayout: FormLayoutComponent = ({
 
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields(currentStepIndex);
-    /**
-     * Once the data is successfully submitted, we show a success message.
-     */
+
+    // Once the data is successfully submitted, we show a success message.
     const submitForm = async (data: Record<string, any>): Promise<void> => {
         if (isLastStep) {
             setLoading(true);
@@ -118,7 +117,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                             >
                                 Previous Step
                             </Button>
-                            {currentStepIndex === formData.steps.length - 1 ? (
+                            {isLastStep ? (
                                 <Button
                                     type="primary"
                                     onClick={submit}
