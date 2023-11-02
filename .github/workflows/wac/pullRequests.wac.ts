@@ -27,13 +27,13 @@ const createJestTestsJob = (storage: string | null) => {
         if (storage === "ddb-es") {
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
         } else if (storage === "ddb-os") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = pkg.id;
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
         }
     }
 
@@ -41,7 +41,7 @@ const createJestTestsJob = (storage: string | null) => {
         storage
     });
 
-    return {
+    const job: NormalJob = {
         needs: "init",
         name: "${{ matrix.package.cmd }}",
         strategy: {
@@ -84,6 +84,14 @@ const createJestTestsJob = (storage: string | null) => {
             }
         ]
     };
+
+    // We prevent running of Jest tests if a PR was created from a fork.
+    // This is because we don't want to expose our AWS credentials to forks.
+    if (storage === "ddb-es" || storage === "ddb-os") {
+        job.if = "needs.init.outputs.is-fork-pr != 'true'";
+    }
+
+    return job;
 };
 
 export const pullRequestsTest = createWorkflow({
@@ -245,58 +253,8 @@ export const pullRequestsTest = createWorkflow({
         },
         "jest-tests-no-storage": createJestTestsJob(null),
         "jest-tests-ddb": createJestTestsJob("ddb"),
-        // ...createJestTestsJobs("ddb"),
-        // ...createJestTestsJobs("ddb-es"),
-        // ...createJestTestsJobs("ddb-os"),
-        // "jest-tests": {
-        //     needs: "init",
-        //     name: "${{ matrix.package.cmd }}",
-        //     strategy: {
-        //         "fail-fast": false,
-        //         matrix: {
-        //             os: ["ubuntu-latest"],
-        //             node: [NODE_VERSION],
-        //             package: "${{ fromJson(needs.init.outputs.jest-packages) }}"
-        //         }
-        //     },
-        //     "runs-on": "${{ matrix.os }}",
-        //     env: {
-        //         AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
-        //         AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
-        //         AWS_ELASTIC_SEARCH_DOMAIN_NAME: "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}",
-        //         ELASTIC_SEARCH_ENDPOINT: "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}",
-        //         ELASTIC_SEARCH_INDEX_PREFIX: "${{ matrix.package.id }}"
-        //     },
-        //     steps: [
-        //         ...createSetupSteps(),
-        //         {
-        //             uses: "actions/cache@v3",
-        //             with: {
-        //                 path: ".yarn/cache",
-        //                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-        //             }
-        //         },
-        //         {
-        //             uses: "actions/cache@v3",
-        //             with: {
-        //                 path: ".webiny/cached-packages",
-        //                 key: "packages-cache-${{ needs.init.outputs.ts }}"
-        //             }
-        //         },
-        //         {
-        //             name: "Install dependencies",
-        //             run: "yarn --immutable"
-        //         },
-        //         {
-        //             name: "Build packages",
-        //             run: "yarn build:quick"
-        //         },
-        //         {
-        //             name: "Run tests",
-        //             run: "yarn test ${{ matrix.package.cmd }}"
-        //         }
-        //     ]
-        // },
+        "jest-tests-ddb-es": createJestTestsJob("ddb-es"),
+        "jest-tests-ddb-os": createJestTestsJob("ddb-os"),
         "verdaccio-publish": {
             if: "needs.init.outputs.is-fork-pr != 'true'",
             needs: "init",
