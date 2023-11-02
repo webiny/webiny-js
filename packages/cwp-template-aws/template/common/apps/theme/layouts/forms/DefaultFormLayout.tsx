@@ -93,7 +93,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit }) => (
                 <Wrapper>
-                    <StepTitle>{currentStep?.title}</StepTitle>
+                    {isMultiStepForm && <StepTitle>{currentStep?.title}</StepTitle>}
                     {fields.map((row, rowIndex) => (
                         <Row key={rowIndex}>
                             {row.map(field => (
