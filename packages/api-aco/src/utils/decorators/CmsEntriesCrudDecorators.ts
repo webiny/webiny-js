@@ -7,7 +7,14 @@ type Context = Pick<AcoContext, "aco" | "cms">;
 
 const ROOT_FOLDER = "root";
 
-const createFolderType = (model: Pick<CmsModel, "modelId">): string => {
+const createFolderType = (
+    model: Pick<CmsModel, "modelId">
+): "FmFile" | "PbPage" | `cms:${string}` => {
+    if (model.modelId === "fmFile") {
+        return "FmFile";
+    } else if (model.modelId === "pbPage") {
+        return "PbPage";
+    }
     return `cms:${model.modelId}`;
 };
 
@@ -60,20 +67,30 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
-            const folderType = model.modelId === "fmFile" ? "FmFile" : `cms:${model.modelId}`;
+            const folderType = createFolderType(model);
             const allFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
                 folderType
             );
+
+            const location: Record<string, any> = {
+                wbyAco_location: {
+                    // At the moment, all users can access entries in the root folder.
+                    // Root folder level permissions cannot be set yet.
+                    folderId_in: [ROOT_FOLDER, ...allFolders.map(folder => folder.id)]
+                }
+            };
+            if (params.where?.wbyAco_location) {
+                const existingAnd = (params.where.wbyAco_location as any).AND || [];
+                location.wbyAco_location = {
+                    AND: existingAnd.concat([...(params.where.wbyAco_location as any)])
+                };
+            }
 
             return originalCmsListEntries(model, {
                 ...params,
                 where: {
                     ...(params?.where || {}),
-                    wbyAco_location: {
-                        // At the moment, all users can access entries in the root folder.
-                        // Root folder level permissions cannot be set yet.
-                        folderId_in: [ROOT_FOLDER, ...allFolders.map(folder => folder.id)]
-                    }
+                    ...location
                 }
             });
         };
