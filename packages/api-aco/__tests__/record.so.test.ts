@@ -582,7 +582,7 @@ describe("`search` CRUD", () => {
             ]
         });
 
-        // Creating a record with same "id"
+        // Let's create a record into folder1
         const [createResponse] = await search.createRecord({
             data: {
                 ...recordMocks.recordA,
@@ -592,6 +592,7 @@ describe("`search` CRUD", () => {
 
         const record = createResponse.data.search.createRecord.data;
 
+        // Let's move the record to folder2
         const [moveResponse] = await search.moveRecord({
             id: record.id,
             folderId: folder2.id
@@ -608,9 +609,33 @@ describe("`search` CRUD", () => {
             }
         });
 
-        const [listMovedRecords] = await search.listRecords();
+        // Let's list records for folder1
+        const [listFolder1] = await search.listRecords({
+            where: { type: "page", location: { folderId: folder1.id } }
+        });
 
-        expect(listMovedRecords).toMatchObject({
+        expect(listFolder1).toMatchObject({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Let's list records for folder2
+        const [listFolder2] = await search.listRecords({
+            where: { type: "page", location: { folderId: folder2.id } }
+        });
+
+        expect(listFolder2).toMatchObject({
             data: {
                 search: {
                     listRecords: {
@@ -633,6 +658,7 @@ describe("`search` CRUD", () => {
             }
         });
 
+        // Let's check the record itself
         const [movedRecord] = await search.getRecord({ id: record.id });
         expect(movedRecord).toMatchObject({
             data: {
