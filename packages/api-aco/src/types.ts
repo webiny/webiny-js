@@ -3,11 +3,13 @@ import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext } from "@webiny/api-admin-users/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import {
     AcoSearchRecordCrud,
     AcoSearchRecordCrudBase,
-    AcoSearchRecordStorageOperations
+    AcoSearchRecordStorageOperations,
+    SearchRecord
 } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
 import { AcoFilterCrud, AcoFilterStorageOperations } from "~/filter/filter.types";
@@ -72,7 +74,8 @@ export interface AcoContext
         TenancyContext,
         SecurityContext,
         AdminUsersContext,
-        CmsContext {
+        CmsContext,
+        FileManagerContext {
     aco: AdvancedContentOrganisation;
 }
 
@@ -111,12 +114,20 @@ export interface IAcoApp {
     removeField: IAcoAppRemoveFieldCallable;
     modifyField: IAcoAppModifyFieldCallable;
 }
+// TODO: determine correct type
+export type IAcoAppOnEntry<T = any> = (entry: SearchRecord<T>) => Promise<SearchRecord<T>>;
+export type IAcoAppOnEntryList<T = any> = (entry: SearchRecord<T>[]) => Promise<SearchRecord<T>[]>;
+export type AcoRequestAction = "create" | "update" | "delete" | "move" | "fetch";
+export type IAcoAppOnAnyRequest = (context: AcoContext, action: AcoRequestAction) => Promise<void>;
 
 export interface IAcoAppParams {
     name: string;
     apiName: string;
     model: CmsModel;
     fields: CmsModelField[];
+    onEntry?: IAcoAppOnEntry;
+    onEntryList?: IAcoAppOnEntryList;
+    onAnyRequest?: IAcoAppOnAnyRequest;
 }
 
 export type IAcoAppsOptions = CreateAcoParams;

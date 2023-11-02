@@ -9,6 +9,7 @@ import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 import { Button } from "./DefaultFormLayout/buttons/Button";
+
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
@@ -66,9 +67,8 @@ const DefaultFormLayout: FormLayoutComponent = ({
 
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields(currentStepIndex);
-    /**
-     * Once the data is successfully submitted, we show a success message.
-     */
+
+    // Once the data is successfully submitted, we show a success message.
     const submitForm = async (data: Record<string, any>): Promise<void> => {
         if (isLastStep) {
             setLoading(true);
@@ -92,7 +92,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit }) => (
                 <Wrapper>
-                    <StepTitle>{currentStep?.title}</StepTitle>
+                    {isMultiStepForm && <StepTitle>{currentStep?.title}</StepTitle>}
                     {fields.map((row, rowIndex) => (
                         <Row key={rowIndex}>
                             {row.map(field => (
@@ -117,7 +117,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                             >
                                 Previous Step
                             </Button>
-                            {currentStepIndex === formData.steps.length - 1 ? (
+                            {isLastStep ? (
                                 <Button
                                     type="primary"
                                     onClick={submit}
