@@ -144,6 +144,26 @@ export class CmsEntriesCrudDecorators {
             return originalCmsCreateEntry(model, params, options);
         };
 
+        const originalCmsCreateFromEntry = context.cms.createEntryRevisionFrom.bind(context.cms);
+        context.cms.createEntryRevisionFrom = async (model, id, input, options) => {
+            const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
+                id
+            });
+
+            const folderId = entry?.location?.folderId;
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsCreateFromEntry(model, id, input, options);
+            }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "w"
+            });
+
+            return originalCmsCreateFromEntry(model, id, input, options);
+        };
+
         const originalCmsUpdateEntry = context.cms.updateEntry.bind(context.cms);
         context.cms.updateEntry = async (model, id, input, meta, options) => {
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
@@ -202,6 +222,26 @@ export class CmsEntriesCrudDecorators {
             });
 
             return originalCmsDeleteEntryRevision(model, id);
+        };
+
+        const originalCmsMoveEntry = context.cms.moveEntry.bind(context.cms);
+        context.cms.moveEntry = async (model, id, targetFolderId) => {
+            const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
+                id
+            });
+
+            const folderId = entry?.location?.folderId;
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsMoveEntry(model, id, targetFolderId);
+            }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "w"
+            });
+
+            return originalCmsMoveEntry(model, id, targetFolderId);
         };
     }
 }
