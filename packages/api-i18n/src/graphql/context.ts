@@ -16,6 +16,7 @@ interface Locales {
     content: string;
     default: string;
 }
+
 const headerCache: Record<string, Locales> = {};
 /**
  * Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
@@ -46,6 +47,7 @@ interface GetLocaleFromHeadersResult {
     acceptLanguageHeader: string | null;
     contextLocaleHeader: string | null;
 }
+
 const getLocaleFromHeaders = (
     headers: Record<string, any>,
     localeContext: LocaleKeys = "default"
@@ -92,16 +94,19 @@ interface I18NCache {
 // TODO: refactor this context factory following the newer applications (e.g., api-tenancy, api-security)
 const createBaseContextPlugin = () => {
     return new ContextPlugin<I18NContext>(async context => {
-        let locales: I18NLocale[] = [];
-        if (context.tenancy.getCurrentTenant()) {
+        const loadLocales = () => {
+            if (!context.tenancy.getCurrentTenant()) {
+                return [];
+            }
+
             const plugin = context.plugins.byName<ContextI18NGetLocales>(
                 "context-i18n-get-locales"
             );
             if (!plugin) {
                 throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
             }
-            locales = await plugin.resolve({ context });
-        }
+            return plugin.resolve({ context });
+        };
 
         const { plugins } = context;
 
@@ -111,7 +116,7 @@ const createBaseContextPlugin = () => {
             acceptLanguage: "",
             defaultLocale: null,
             locale: new Map(),
-            locales
+            locales: await loadLocales()
         };
 
         const getDefaultLocale = () => {
@@ -210,6 +215,10 @@ const createBaseContextPlugin = () => {
             return getCurrentLocale("content");
         };
 
+        const reloadLocales = async () => {
+            __i18n.locales = await loadLocales();
+        };
+
         context.i18n = {
             ...(context.i18n || ({} as any)),
             getDefaultLocale,
@@ -220,6 +229,7 @@ const createBaseContextPlugin = () => {
             setContentLocale,
             getLocales,
             getLocale,
+            reloadLocales,
             hasI18NContentPermission: () => hasI18NContentPermission(context),
             checkI18NContentPermission
         };
