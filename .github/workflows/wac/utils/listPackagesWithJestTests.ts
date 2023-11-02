@@ -53,6 +53,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             {
                 cmd: "packages/api-file-manager --storage=ddb-es,ddb",
                 storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-file-manager --storage=ddb-os,ddb",
+                storage: "ddb-os"
             }
         ];
     },
@@ -60,6 +64,7 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-form-builder": () => {
         return [
             { cmd: "packages/api-form-builder --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-form-builder --storage=ddb-os,ddb", storage: "ddb-os" },
             { cmd: "packages/api-form-builder --storage=ddb", storage: "ddb" }
         ];
     },
@@ -69,6 +74,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             {
                 cmd: "packages/api-form-builder-so-ddb-es --storage=ddb-es,ddb",
                 storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-form-builder-so-ddb-es --storage=ddb-os,ddb",
+                storage: "ddb-os"
             }
         ];
     },
@@ -76,6 +85,7 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-page-builder": () => {
         return [
             { cmd: "packages/api-page-builder --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-page-builder --storage=ddb-os,ddb", storage: "ddb-os" },
             { cmd: "packages/api-page-builder --storage=ddb", storage: "ddb" }
         ];
     },
@@ -84,6 +94,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             {
                 cmd: "packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb",
                 storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-page-builder-so-ddb-es --storage=ddb-os,ddb",
+                storage: "ddb-os"
             }
         ];
     },
@@ -104,14 +118,16 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-mailer": () => {
         return [
             { cmd: "packages/api-mailer --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-mailer --storage=ddb-es,ddb", storage: "ddb-es" }
+            { cmd: "packages/api-mailer --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-mailer --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
 
     "api-headless-cms": () => {
         return [
             { cmd: "packages/api-headless-cms --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" }
+            { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" },
         ];
     },
     "api-headless-cms-ddb-es": () => {
@@ -119,6 +135,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             {
                 cmd: "packages/api-headless-cms-ddb-es --storage=ddb-es,ddb",
                 storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-headless-cms-ddb-es --storage=ddb-os,ddb",
+                storage: "ddb-os"
             }
         ];
     },
@@ -132,7 +152,8 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-aco": () => {
         return [
             { cmd: "packages/api-aco --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-aco --storage=ddb-es,ddb", storage: "ddb-es" }
+            { cmd: "packages/api-aco --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
     "api-page-builder-aco": () => {
@@ -141,6 +162,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             {
                 cmd: "packages/api-page-builder-aco --storage=ddb-es,ddb",
                 storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-page-builder-aco --storage=ddb-os,ddb",
+                storage: "ddb-os"
             }
         ];
     },
