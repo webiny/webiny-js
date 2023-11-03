@@ -7,7 +7,7 @@ export const validateOrGetDefaultDbSort = (
     initial?: ListSearchRecordsSort
 ): ListSearchRecordsSort => {
     if (!Array.isArray(initial) || initial.length === 0) {
-        return ["createdOn_DESC"];
+        return ["savedOn_DESC"];
     }
 
     return initial;

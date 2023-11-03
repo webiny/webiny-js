@@ -146,11 +146,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 enableSorting: true,
                 size: 400
             },
-            createdOn: {
-                header: "Created",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
-                enableSorting: true
-            },
             createdBy: {
                 header: "Author"
             },
