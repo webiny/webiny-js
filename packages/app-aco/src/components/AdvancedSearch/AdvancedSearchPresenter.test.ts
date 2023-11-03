@@ -5,6 +5,7 @@ import {
     FilterGroupDTO,
     FilterGroupFilterDTO,
     FilterRepository,
+    FilterRepositoryFactory,
     Operation
 } from "./domain";
 import { FiltersGatewayInterface } from "./gateways";
@@ -84,12 +85,14 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     let presenter: AdvancedSearchPresenter;
+    let repositoryFactory: FilterRepositoryFactory;
     let repository: FilterRepository;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        repository = FilterRepository.getInstance(gateway, namespace);
+        repositoryFactory = new FilterRepositoryFactory(gateway);
+        repository = repositoryFactory.create(namespace);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -138,7 +141,7 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     it("should transition to loading state and then to list state", async () => {
-        const repository = FilterRepository.getInstance(gateway, createNamespace());
+        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         const loadPromise = presenter.load();
@@ -677,7 +680,8 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = FilterRepository.getInstance(gateway, createNamespace());
+        const repositoryFactory = new FilterRepositoryFactory(gateway);
+        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -704,7 +708,8 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = FilterRepository.getInstance(createGateway, createNamespace());
+        const repositoryFactory = new FilterRepositoryFactory(createGateway);
+        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -747,7 +752,8 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = FilterRepository.getInstance(updateGateway, createNamespace());
+        const repositoryFactory = new FilterRepositoryFactory(updateGateway);
+        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -776,7 +782,8 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = FilterRepository.getInstance(updateGateway, namespace);
+        const repositoryFactory = new FilterRepositoryFactory(updateGateway);
+        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -799,8 +806,10 @@ describe("AdvancedSearchPresenter", () => {
             list
         });
 
+        const repositoryFactory = new FilterRepositoryFactory(gateway);
+
         const namespace1 = createNamespace();
-        repository = FilterRepository.getInstance(gateway, namespace1);
+        repository = repositoryFactory.create(namespace1);
         presenter = new AdvancedSearchPresenter(repository);
 
         // let's load some filters
@@ -809,7 +818,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(gateway.list).toHaveBeenLastCalledWith(namespace1);
 
         const namespace2 = createNamespace();
-        repository = FilterRepository.getInstance(gateway, namespace2);
+        repository = repositoryFactory.create(namespace2);
         presenter = new AdvancedSearchPresenter(repository);
 
         // let's load some filters
