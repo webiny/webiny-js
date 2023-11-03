@@ -227,7 +227,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async getPublishedFormRevisionById(this: FormBuilder, id) {
-            const [formId, version] = id.split("#");
+            const [version] = id.split("#");
             if (!version) {
                 throw new WebinyError("There is no version in given ID value.", "VERSION_ERROR", {
                     id
@@ -238,8 +238,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             try {
                 form = await this.storageOperations.getForm({
                     where: {
-                        formId,
-                        version: Number(version),
+                        id,
                         published: true,
                         tenant: getTenant().id,
                         locale: getLocale().code
@@ -260,16 +259,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             return form;
         },
         async getLatestPublishedFormRevision(this: FormBuilder, id) {
-            /**
-             * Make sure we have a unique form ID, and not a revision ID
-             */
-            const [formId] = id.split("#");
-
             let form: FbForm | null = null;
             try {
                 form = await this.storageOperations.getForm({
                     where: {
-                        formId,
+                        id,
                         published: true,
                         tenant: getTenant().id,
                         locale: getLocale().code
@@ -398,10 +392,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             const form: FbForm = {
                 ...original,
-                ...data,
-                savedOn: new Date().toISOString(),
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
+                ...data
             };
 
             try {
@@ -538,10 +529,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 ...original,
                 published: true,
                 publishedOn: new Date().toISOString(),
-                locked: true,
-                savedOn: new Date().toISOString(),
                 status: getStatus({ published: true, locked: true }),
-                tenant: getTenant().id,
+                locked: true,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -551,7 +540,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 });
                 const result = await this.storageOperations.publishForm({
                     original,
-                    form
+                    form,
+                    input: form
                 });
                 await onFormAfterPublish.publish({
                     form
@@ -583,7 +573,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 published: false,
                 savedOn: new Date().toISOString(),
                 status: getStatus({ published: false, locked: true }),
-                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -593,7 +582,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 });
                 const result = await this.storageOperations.unpublishForm({
                     original,
-                    form
+                    form,
+                    input: form
                 });
                 await onFormAfterUnpublish.publish({
                     form: result
@@ -712,7 +702,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             try {
                 await this.storageOperations.updateForm({
                     form,
-                    input: {}
+                    input: form
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -745,7 +735,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             try {
                 await this.storageOperations.updateForm({
                     form,
-                    input: {}
+                    input: form
                 });
             } catch (ex) {
                 throw new WebinyError(

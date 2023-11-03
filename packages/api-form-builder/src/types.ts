@@ -647,6 +647,7 @@ export interface FormBuilderStorageOperationsDeleteFormRevisionParams {
 export interface FormBuilderStorageOperationsPublishFormParams {
     original: FbForm;
     form: FbForm;
+    input: Record<string, any>;
 }
 
 /**
@@ -656,6 +657,7 @@ export interface FormBuilderStorageOperationsPublishFormParams {
 export interface FormBuilderStorageOperationsUnpublishFormParams {
     original: FbForm;
     form: FbForm;
+    input: Record<string, any>;
 }
 
 /**

@@ -41,6 +41,49 @@ const statusField = () => {
     });
 };
 
+const statsViewsField = () => {
+    return createModelField({
+        label: "Views",
+        type: "number"
+    });
+};
+
+const statsSubmissionsField = () => {
+    return createModelField({
+        label: "Submissions",
+        type: "number"
+    });
+};
+
+const conversionRateStatsSubmissionsField = () => {
+    return createModelField({
+        label: "Conversion Rate",
+        fieldId: "conversionRate",
+        type: "number"
+    });
+};
+
+const statsField = (fields: CmsModelField[]) => {
+    return createModelField({
+        label: "Stats",
+        type: "object",
+        settings: {
+            fields
+        }
+    });
+};
+
+const overallStatsField = (fields: CmsModelField[]) => {
+    return createModelField({
+        label: "Overall Stats",
+        fieldId: "overallStats",
+        type: "object",
+        settings: {
+            fields
+        }
+    });
+};
+
 const lockedField = () => {
     return createModelField({
         label: "Locked",
@@ -145,36 +188,11 @@ const fieldValidationMessageField = () => {
     });
 };
 
-const fieldValidationSettingsValuesField = () => {
-    return createModelField({
-        label: "Values",
-        type: "object",
-        multipleValues: true
-    });
-};
-
-const fieldValidationSettingsValueField = () => {
-    return createModelField({
-        label: "Value",
-        type: "text"
-    });
-};
-
-const fieldValidationSettingsPresetField = () => {
-    return createModelField({
-        label: "Preset",
-        type: "text"
-    });
-};
-
-const fieldValidationSettingsField = (fields: CmsModelField[]) => {
+const fieldValidationSettingsField = () => {
     return createModelField({
         label: "Settings",
-        type: "object",
-        validation: [required()],
-        settings: {
-            fields
-        }
+        type: "json",
+        validation: [required()]
     });
 };
 
@@ -193,7 +211,7 @@ const fieldValidationField = (fields: CmsModelField[]) => {
 const fieldSettingsField = () => {
     return createModelField({
         label: "Settings",
-        type: "object"
+        type: "json"
     });
 };
 
@@ -245,10 +263,43 @@ const settingsReCaptchaEnabledField = () => {
     });
 };
 
+const settingsReCaptchaSettingsEnabledField = () => {
+    return createModelField({
+        label: "Enabled",
+        type: "boolean"
+    });
+};
+
+const settingsReCaptchaSettingsSecretKeyField = () => {
+    return createModelField({
+        label: "Secret Key",
+        fieldId: "secretKey",
+        type: "text"
+    });
+};
+
+const settingsReCaptchaSettingsSiteKeyField = () => {
+    return createModelField({
+        label: "Site Key",
+        fieldId: "siteKey",
+        type: "text"
+    });
+};
+
+const settingsReCaptchaSettingsField = (fields: CmsModelField[]) => {
+    return createModelField({
+        label: "Settings",
+        type: "object",
+        settings: {
+            fields
+        }
+    });
+};
+
 const settingsReCaptchaErrorMessageField = () => {
     return createModelField({
         label: "ErrorMessage",
-        type: "text"
+        type: "json"
     });
 };
 
@@ -290,21 +341,48 @@ const settingsSubmitButtonLabelField = () => {
 const settingsFullWidthSubmitButtonField = () => {
     return createModelField({
         label: "FullWidthSubmitButton",
-        type: "text"
+        type: "boolean"
     });
 };
 
 const settingsSuccessMessageField = () => {
     return createModelField({
         label: "SuccessMessage",
+        type: "json"
+    });
+};
+
+const settingsTermsOfServiceMessageEnabledField = () => {
+    return createModelField({
+        label: "Enabled",
+        fieldId: "enabled",
+        type: "boolean"
+    });
+};
+
+const settingsTermsOfServiceMessageMessageField = () => {
+    return createModelField({
+        label: "Message",
+        fieldId: "message",
+        type: "json"
+    });
+};
+
+const settingsTermsOfServiceMessageErrorMessageField = () => {
+    return createModelField({
+        label: "Error Message",
+        fieldId: "errorMessage",
         type: "text"
     });
 };
 
-const settingsTermsOfServiceMessageField = () => {
+const settingsTermsOfServiceMessageField = (fields: CmsModelField[]) => {
     return createModelField({
         label: "TermsOfServiceMessage",
-        type: "text"
+        type: "object",
+        settings: {
+            fields
+        }
     });
 };
 
@@ -318,15 +396,25 @@ const settingsField = (fields: CmsModelField[]) => {
     });
 };
 
+const triggersField = () => {
+    return createModelField({
+        label: "Triggers",
+        type: "json"
+    });
+};
+
 const DEFAULT_FIELDS = [
     "formId",
     "name",
     "published",
     "status",
+    "stats",
+    "overallStats",
     "locked",
     "fields",
     "steps",
-    "settings"
+    "settings",
+    "triggers"
 ];
 
 const SETTINGS_FIELDS: CmsModelField[] = [
@@ -334,8 +422,20 @@ const SETTINGS_FIELDS: CmsModelField[] = [
     settingsSubmitButtonLabelField(),
     settingsFullWidthSubmitButtonField(),
     settingsSuccessMessageField(),
-    settingsTermsOfServiceMessageField(),
-    settingsReCaptchaField([settingsReCaptchaEnabledField(), settingsReCaptchaErrorMessageField()])
+    settingsTermsOfServiceMessageField([
+        settingsTermsOfServiceMessageEnabledField(),
+        settingsTermsOfServiceMessageMessageField(),
+        settingsTermsOfServiceMessageErrorMessageField()
+    ]),
+    settingsReCaptchaField([
+        settingsReCaptchaEnabledField(),
+        settingsReCaptchaSettingsField([
+            settingsReCaptchaSettingsEnabledField(),
+            settingsReCaptchaSettingsSecretKeyField(),
+            settingsReCaptchaSettingsSiteKeyField()
+        ]),
+        settingsReCaptchaErrorMessageField()
+    ])
 ];
 
 export const FIELD_FIELDS = [
@@ -350,11 +450,7 @@ export const FIELD_FIELDS = [
     fieldValidationField([
         fieldValidationNameField(),
         fieldValidationMessageField(),
-        fieldValidationSettingsField([
-            fieldValidationSettingsValuesField(),
-            fieldValidationSettingsValueField(),
-            fieldValidationSettingsPresetField()
-        ])
+        fieldValidationSettingsField()
     ]),
     fieldSettingsField()
 ];
@@ -372,10 +468,21 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): any => {
             nameField(),
             publishedField(),
             statusField(),
+            statsField([
+                statsViewsField(),
+                statsSubmissionsField(),
+                conversionRateStatsSubmissionsField()
+            ]),
+            overallStatsField([
+                statsViewsField(),
+                statsSubmissionsField(),
+                conversionRateStatsSubmissionsField()
+            ]),
             lockedField(),
             fieldsField(FIELD_FIELDS),
             stepsField(STEP_FIELDS),
-            settingsField(SETTINGS_FIELDS)
+            settingsField(SETTINGS_FIELDS),
+            triggersField()
         ],
         description: "Form Builder - Form builder create data model",
         isPrivate: true,

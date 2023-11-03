@@ -5,7 +5,9 @@ import {
     FormBuilderStorageOperationsListFormsParams,
     FormBuilderStorageOperationsListFormRevisionsParams,
     FormBuilderStorageOperationsUpdateFormParams,
-    FormBuilderStorageOperationsDeleteFormRevisionParams
+    FormBuilderStorageOperationsDeleteFormRevisionParams,
+    FormBuilderStorageOperationsPublishFormParams,
+    FormBuilderStorageOperationsUnpublishFormParams
 } from "~/types";
 
 interface ModelContext {
@@ -85,7 +87,15 @@ export class CmsFormBuilderStorage {
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.createEntryRevisionFrom(model, form.id, {});
+            return await this.cms.createEntryRevisionFrom(model, form.id, {
+                status: "draft",
+                published: false,
+                locked: false,
+                stats: {
+                    submissions: 0,
+                    views: 0
+                }
+            });
         });
 
         return entry ? this.getFormFieldValues(entry) : null;
@@ -119,6 +129,28 @@ export class CmsFormBuilderStorage {
 
         const entry = await this.security.withoutAuthorization(async () => {
             return await this.cms.updateEntry(model, form.id, input, meta, options);
+        });
+
+        return entry ? this.getFormFieldValues(entry) : null;
+    };
+
+    publishForm = async (params: FormBuilderStorageOperationsPublishFormParams) => {
+        const { form, input } = params;
+        const model = this.modelWithContext(form);
+
+        const entry = await this.security.withoutAuthorization(async () => {
+            return await this.cms.updateEntry(model, form.id, input);
+        });
+
+        return entry ? this.getFormFieldValues(entry) : null;
+    };
+
+    unpublishForm = async (params: FormBuilderStorageOperationsUnpublishFormParams) => {
+        const { form, input } = params;
+        const model = this.modelWithContext(form);
+
+        const entry = await this.security.withoutAuthorization(async () => {
+            return await this.cms.updateEntry(model, form.id, input);
         });
 
         return entry ? this.getFormFieldValues(entry) : null;

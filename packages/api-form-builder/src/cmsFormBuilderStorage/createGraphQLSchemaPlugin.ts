@@ -6,16 +6,15 @@ import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-
 
 import { isInstallationPending } from "~/cmsFormBuilderStorage/isInstallationPending";
 import { createFormBuilderSettingsSchema } from "~/plugins/graphql/formSettings";
-import { createFormSchema } from "~/plugins/graphql/form";
 import { createBaseSchema } from "~/plugins/graphql";
 import { createSubmissionsSchema } from "~/plugins/graphql/submissionsSchema";
+import { createFormsSchema } from "~/plugins/graphql/formsSchema";
 import { FormBuilderContext } from "~/types";
 
 export const createGraphQLSchemaPlugin = () => {
     return [
         createBaseSchema(),
         createFormBuilderSettingsSchema(),
-        createFormSchema(),
         // Submission schema is generated dynamically, based on a CMS model, so we need to
         // register it from a ContextPlugin, to perform additional bootstrap.
         new ContextPlugin<FormBuilderContext>(async context => {
@@ -25,6 +24,7 @@ export const createGraphQLSchemaPlugin = () => {
 
             await context.security.withoutAuthorization(async () => {
                 const submissionModel = (await context.cms.getModel("fbSubmission")) as CmsModel;
+                const formsModel = (await context.cms.getModel("fbForm")) as CmsModel;
                 const models = await context.cms.listModels();
                 const fieldPlugins = createFieldTypePluginRecords(context.plugins);
                 /**
@@ -41,13 +41,23 @@ export const createGraphQLSchemaPlugin = () => {
                     }
                 });
 
-                const graphQlPlugin = createSubmissionsSchema({
+                const formsGraphQlPlugin = createFormsSchema({
+                    model: formsModel,
+                    models,
+                    plugins: fieldPlugins
+                });
+
+                const submissionsGraphQlPlugin = createSubmissionsSchema({
                     model: submissionModel,
                     models,
                     plugins: fieldPlugins
                 });
 
-                context.plugins.register([...plugins, graphQlPlugin]);
+                context.plugins.register([
+                    ...plugins,
+                    formsGraphQlPlugin,
+                    submissionsGraphQlPlugin
+                ]);
             });
         })
     ];
