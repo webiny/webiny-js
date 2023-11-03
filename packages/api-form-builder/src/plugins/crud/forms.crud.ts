@@ -410,9 +410,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     original
                 });
                 const result = await this.storageOperations.updateForm({
-                    input: data,
                     form,
-                    original
+                    input,
+                    meta: {},
+                    options: {}
                 });
                 await onFormAfterUpdate.publish({
                     form,
@@ -710,8 +711,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             try {
                 await this.storageOperations.updateForm({
-                    original,
-                    form
+                    form,
+                    input: {}
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -743,8 +744,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             try {
                 await this.storageOperations.updateForm({
-                    original,
-                    form
+                    form,
+                    input: {}
                 });
             } catch (ex) {
                 throw new WebinyError(

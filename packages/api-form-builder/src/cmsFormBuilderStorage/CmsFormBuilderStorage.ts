@@ -3,7 +3,9 @@ import { Security } from "@webiny/api-security/types";
 import {
     FbForm,
     FormBuilderStorageOperationsListFormsParams,
-    FormBuilderStorageOperationsListFormRevisionsParams
+    FormBuilderStorageOperationsListFormRevisionsParams,
+    FormBuilderStorageOperationsUpdateFormParams,
+    FormBuilderStorageOperationsDeleteFormRevisionParams
 } from "~/types";
 
 interface ModelContext {
@@ -32,36 +34,38 @@ export class CmsFormBuilderStorage {
 
     createForm = async ({ form }: { form: FbForm }) => {
         const model = this.modelWithContext(form);
+
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.createEntry(model, { ...form });
         });
+
         return this.getFormFieldValues(entry);
     };
 
     getForm = async ({ where }: FormBuilderStorageOperationsListFormsParams) => {
         const { id, tenant, locale } = where;
         const model = this.modelWithContext({ tenant, locale });
+
         const entry = await this.security.withoutAuthorization(async () => {
             return await this.cms.getEntryById(model, id || "");
         });
+
         return entry ? this.getFormFieldValues(entry) : null;
     };
 
     listFormRevisions = async (params: FormBuilderStorageOperationsListFormRevisionsParams) => {
-        const {
-            where: { tenant, locale, formId }
-        } = params;
+        const { tenant, locale, formId } = params.where;
         const model = this.modelWithContext({ tenant, locale });
+
         const entries = await this.security.withoutAuthorization(async () => {
             return await this.cms.getEntryRevisions(model, formId);
         });
+
         return entries.map(entry => this.getFormFieldValues(entry));
     };
 
     listForms = async (params: FormBuilderStorageOperationsListFormsParams) => {
-        const tenant = params.where.tenant;
-        const locale = params.where.locale;
-
+        const { id, tenant, locale, ...restWhere } = params.where;
         const model = this.modelWithContext({ tenant, locale });
 
         const [entries, meta] = await this.security.withoutAuthorization(async () => {
@@ -69,7 +73,7 @@ export class CmsFormBuilderStorage {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where: {}
+                where: { entryId: id, ...restWhere }
             });
         });
 
@@ -79,9 +83,11 @@ export class CmsFormBuilderStorage {
     createFormFrom = async (params: any) => {
         const { form } = params;
         const model = this.modelWithContext(form);
+
         const entry = await this.security.withoutAuthorization(async () => {
             return await this.cms.createEntryRevisionFrom(model, form.id, {});
         });
+
         return entry ? this.getFormFieldValues(entry) : null;
     };
 
@@ -95,12 +101,27 @@ export class CmsFormBuilderStorage {
         });
     };
 
-    deleteFormRevision = async ({ form }: { form: FbForm }) => {
+    deleteFormRevision = async ({ form }: FormBuilderStorageOperationsDeleteFormRevisionParams) => {
         const model = this.modelWithContext(form);
 
         await this.security.withoutAuthorization(async () => {
             return await this.cms.deleteEntryRevision(model, form.id);
         });
+    };
+
+    updateForm = async ({
+        form,
+        input,
+        meta,
+        options
+    }: FormBuilderStorageOperationsUpdateFormParams) => {
+        const model = this.modelWithContext(form);
+
+        const entry = await this.security.withoutAuthorization(async () => {
+            return await this.cms.updateEntry(model, form.id, input, meta, options);
+        });
+
+        return entry ? this.getFormFieldValues(entry) : null;
     };
 
     private getFormFieldValues(entry: CmsEntry) {

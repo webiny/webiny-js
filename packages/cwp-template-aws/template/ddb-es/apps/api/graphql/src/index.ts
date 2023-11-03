@@ -22,10 +22,13 @@ import elasticsearchClientContext, {
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
+import {
+    createFormBuilderContext,
+    createFormBuilderGraphQL
+} from "@webiny/api-form-builder/cmsFormBuilderStorage/createFormBuilderContext";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
-import { createFormBuilder } from "@webiny/api-form-builder";
-import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
@@ -99,12 +102,12 @@ export const handler = createHandler({
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
-        createFormBuilder({
+        createFormBuilderContext({
             storageOperations: createFormBuilderStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient
+                documentClient
             })
         }),
+        createFormBuilderGraphQL(),
         createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({

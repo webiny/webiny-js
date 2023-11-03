@@ -179,13 +179,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
             table,
             entity: entities.settings
         }),
-        ...createFormStorageOperations({
-            elasticsearch,
-            table,
-            entity: entities.form,
-            esEntity: entities.esForm,
-            plugins
-        }),
+        ...createFormStorageOperations(),
         ...createSubmissionStorageOperations({
             elasticsearch,
             table,

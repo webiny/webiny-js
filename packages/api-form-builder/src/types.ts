@@ -618,9 +618,10 @@ export interface FormBuilderStorageOperationsCreateFormFromParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsUpdateFormParams {
-    input?: Record<string, any>;
-    original: FbForm;
     form: FbForm;
+    input: Record<string, any>;
+    meta?: Record<string, any>;
+    options?: Record<string, any>;
 }
 
 /**
@@ -636,14 +637,6 @@ export interface FormBuilderStorageOperationsDeleteFormParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsDeleteFormRevisionParams {
-    /**
-     * Method always receives all the revisions of given form ordered by version_DESC.
-     */
-    revisions: FbForm[];
-    /**
-     * Previous revision of the current form. Always the first lesser available version.
-     */
-    previous: FbForm | null;
     form: FbForm;
 }
 
@@ -763,7 +756,9 @@ export interface FormBuilderFormStorageOperations {
     /**
      * Delete the single form revision.
      */
-    deleteFormRevision({ form }: { form: FbForm }): Promise<FbForm>;
+    deleteFormRevision(
+        params: FormBuilderStorageOperationsDeleteFormRevisionParams
+    ): Promise<FbForm>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
 }

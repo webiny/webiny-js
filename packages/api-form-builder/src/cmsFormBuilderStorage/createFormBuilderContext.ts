@@ -9,7 +9,7 @@ export const createFormBuilderContext = ({ storageOperations }: { storageOperati
         await fbContext.setupContext(storageOperations);
     });
 
-    plugin.name = "form.builder-createContext";
+    plugin.name = "form-builder.createContext";
 
     return plugin;
 };

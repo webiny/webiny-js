@@ -91,12 +91,12 @@ export const handler = createHandler({
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
-        createFormBuilderGraphQL(),
         createFormBuilderContext({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
             })
         }),
+        createFormBuilderGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })

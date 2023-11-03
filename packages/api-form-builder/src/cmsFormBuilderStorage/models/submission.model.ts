@@ -56,7 +56,7 @@ const metaUrlField = (fields: CmsModelField[]) => {
     return createModelField({
         label: "URL",
         fieldId: "url",
-        type: "text",
+        type: "object",
         settings: {
             fields,
             layout: fields.map(field => [field.storageId])
@@ -80,6 +80,15 @@ const formIdField = () => {
     return createModelField({
         label: "ID",
         fieldId: "id",
+        type: "text",
+        validation: [required()]
+    });
+};
+
+const formNameField = () => {
+    return createModelField({
+        label: "Name",
+        fieldId: "name",
         type: "text",
         validation: [required()]
     });
@@ -143,6 +152,7 @@ export const createSubmissionDataModelDefinition = (group: CmsModelGroup): CmsPr
             ]),
             formField([
                 formIdField(),
+                formNameField(),
                 formParentField(),
                 versionField(),
                 fieldsField(FIELD_FIELDS),

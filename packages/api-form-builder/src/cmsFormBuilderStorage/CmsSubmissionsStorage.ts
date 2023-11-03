@@ -3,7 +3,6 @@ import omit from "lodash/omit";
 import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 
-import { ListSubmissionsWhereProcessor } from "~/cmsFormBuilderStorage/ListSubmissionsWhereProcessor";
 import {
     FormBuilderStorageOperationsCreateSubmissionParams,
     FormBuilderStorageOperationsUpdateSubmissionParams,
@@ -19,7 +18,6 @@ export class CmsSubmissionsStorage {
     private readonly cms: HeadlessCms;
     private readonly security: Security;
     private readonly model: CmsModel;
-    private readonly submissionsWhereProcessor: ListSubmissionsWhereProcessor;
 
     static async create(params: { model: CmsModel; cms: HeadlessCms; security: Security }) {
         return new CmsSubmissionsStorage(params.model, params.cms, params.security);
@@ -29,7 +27,6 @@ export class CmsSubmissionsStorage {
         this.model = model;
         this.cms = cms;
         this.security = security;
-        this.submissionsWhereProcessor = new ListSubmissionsWhereProcessor();
     }
 
     private modelWithContext({ tenant, locale }: ModelContext): CmsModel {
@@ -37,18 +34,18 @@ export class CmsSubmissionsStorage {
     }
 
     listSubmissions = async (params: FormBuilderStorageOperationsListSubmissionsParams) => {
-        const tenant = params.where.tenant;
-        const locale = params.where.locale;
-
+        const { id_in, formId, tenant, locale } = params.where;
         const model = this.modelWithContext({ tenant, locale });
 
         const [entries, meta] = await this.security.withoutAuthorization(async () => {
-            const where = this.submissionsWhereProcessor.process(params.where);
             return await this.cms.listLatestEntries(model, {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where
+                where: {
+                    entryId_in: id_in,
+                    form: { parent: formId }
+                }
             });
         });
 
@@ -59,6 +56,7 @@ export class CmsSubmissionsStorage {
         submission
     }: FormBuilderStorageOperationsCreateSubmissionParams) => {
         const model = this.modelWithContext(submission);
+
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.createEntry(model, { ...submission });
         });
