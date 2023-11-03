@@ -2,12 +2,28 @@ import { AcoContext } from "~/types";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
+import { createWhere } from "./where";
+import { ROOT_FOLDER } from "./constants";
 
 type Context = Pick<AcoContext, "aco" | "cms">;
+/**
+ * Keep this until we figure out how to fetch the folders.
+ */
+const isPageModel = (model: CmsModel): boolean => {
+    if (model.modelId === "pbPage") {
+        return true;
+    } else if (model.modelId === "acoSearchRecord-pbpage") {
+        return true;
+    }
+    return false;
+};
 
-const ROOT_FOLDER = "root";
-
-const createFolderType = (model: Pick<CmsModel, "modelId">): string => {
+const createFolderType = (model: CmsModel): "FmFile" | "PbPage" | `cms:${string}` => {
+    if (model.modelId === "fmFile") {
+        return "FmFile";
+    } else if (isPageModel(model)) {
+        return "PbPage";
+    }
     return `cms:${model.modelId}`;
 };
 
@@ -60,21 +76,16 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsListEntries = context.cms.listEntries.bind(context.cms);
         context.cms.listEntries = async (model, params) => {
-            const folderType = model.modelId === "fmFile" ? "FmFile" : `cms:${model.modelId}`;
-            const allFolders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                folderType
-            );
+            const folderType = createFolderType(model);
+            const folders = await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
+            const where = createWhere({
+                where: params.where,
+                folders
+            });
             return originalCmsListEntries(model, {
                 ...params,
-                where: {
-                    ...(params?.where || {}),
-                    wbyAco_location: {
-                        // At the moment, all users can access entries in the root folder.
-                        // Root folder level permissions cannot be set yet.
-                        folderId_in: [ROOT_FOLDER, ...allFolders.map(folder => folder.id)]
-                    }
-                }
+                where
             });
         };
 
@@ -128,11 +139,11 @@ export class CmsEntriesCrudDecorators {
         };
 
         const originalCmsCreateEntry = context.cms.createEntry.bind(context.cms);
-        context.cms.createEntry = async (model, params) => {
+        context.cms.createEntry = async (model, params, options) => {
             const folderId = params.wbyAco_location?.folderId || params.location?.folderId;
 
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsCreateEntry(model, params);
+                return originalCmsCreateEntry(model, params, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -141,18 +152,38 @@ export class CmsEntriesCrudDecorators {
                 rwd: "w"
             });
 
-            return originalCmsCreateEntry(model, params);
+            return originalCmsCreateEntry(model, params, options);
+        };
+
+        const originalCmsCreateFromEntry = context.cms.createEntryRevisionFrom.bind(context.cms);
+        context.cms.createEntryRevisionFrom = async (model, id, input, options) => {
+            const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
+                id
+            });
+
+            const folderId = entry?.location?.folderId;
+            if (!folderId || folderId === ROOT_FOLDER) {
+                return originalCmsCreateFromEntry(model, id, input, options);
+            }
+
+            const folder = await context.aco.folder.get(folderId);
+            await folderLevelPermissions.ensureCanAccessFolderContent({
+                folder,
+                rwd: "w"
+            });
+
+            return originalCmsCreateFromEntry(model, id, input, options);
         };
 
         const originalCmsUpdateEntry = context.cms.updateEntry.bind(context.cms);
-        context.cms.updateEntry = async (model, id, input, meta) => {
+        context.cms.updateEntry = async (model, id, input, meta, options) => {
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
             });
 
             const folderId = entry?.location?.folderId;
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsUpdateEntry(model, id, input, meta);
+                return originalCmsUpdateEntry(model, id, input, meta, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -161,18 +192,18 @@ export class CmsEntriesCrudDecorators {
                 rwd: "w"
             });
 
-            return originalCmsUpdateEntry(model, id, input, meta);
+            return originalCmsUpdateEntry(model, id, input, meta, options);
         };
 
         const originalCmsDeleteEntry = context.cms.deleteEntry.bind(context.cms);
-        context.cms.deleteEntry = async (model, id) => {
+        context.cms.deleteEntry = async (model, id, options) => {
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
             });
 
             const folderId = entry?.location?.folderId;
             if (!folderId || folderId === ROOT_FOLDER) {
-                return originalCmsDeleteEntry(model, id);
+                return originalCmsDeleteEntry(model, id, options);
             }
 
             const folder = await context.aco.folder.get(folderId);
@@ -181,7 +212,7 @@ export class CmsEntriesCrudDecorators {
                 rwd: "d"
             });
 
-            return originalCmsDeleteEntry(model, id);
+            return originalCmsDeleteEntry(model, id, options);
         };
 
         const originalCmsDeleteEntryRevision = context.cms.deleteEntryRevision.bind(context.cms);
@@ -202,6 +233,44 @@ export class CmsEntriesCrudDecorators {
             });
 
             return originalCmsDeleteEntryRevision(model, id);
+        };
+
+        const originalCmsMoveEntry = context.cms.moveEntry.bind(context.cms);
+        context.cms.moveEntry = async (model, id, targetFolderId) => {
+            /**
+             * First we need to check if user has access to the entries existing folder.
+             */
+            const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
+                id
+            });
+            const folderId = entry?.location?.folderId || ROOT_FOLDER;
+            /**
+             * If the entry is in the same folder we are trying to move it to, just continue.
+             */
+            if (folderId === targetFolderId) {
+                return originalCmsMoveEntry(model, id, targetFolderId);
+            } else if (folderId !== ROOT_FOLDER) {
+                /**
+                 * If entry current folder is not a root, check for access
+                 */
+                const folder = await context.aco.folder.get(folderId);
+                await folderLevelPermissions.ensureCanAccessFolderContent({
+                    folder,
+                    rwd: "w"
+                });
+            }
+            /**
+             * If target folder is not a ROOT_FOLDER, check for access.
+             */
+            if (targetFolderId !== ROOT_FOLDER) {
+                const folder = await context.aco.folder.get(targetFolderId);
+                await folderLevelPermissions.ensureCanAccessFolderContent({
+                    folder,
+                    rwd: "w"
+                });
+            }
+
+            return originalCmsMoveEntry(model, id, targetFolderId);
         };
     }
 }
