@@ -22,10 +22,17 @@ export class FilterRepository {
     }
 
     static getInstance(gateway: FiltersGatewayInterface, namespace: string) {
-        if (!FilterRepository.instance) {
+        if (!FilterRepository.instance || !this.isMatchingInstance(gateway, namespace)) {
             FilterRepository.instance = new FilterRepository(gateway, namespace);
         }
         return FilterRepository.instance;
+    }
+
+    private static isMatchingInstance(
+        gateway: FiltersGatewayInterface,
+        namespace: string
+    ): boolean {
+        return this.instance.gateway === gateway && this.instance.namespace === namespace;
     }
 
     getFilters() {

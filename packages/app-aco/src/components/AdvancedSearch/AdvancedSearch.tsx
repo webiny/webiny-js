@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useApolloClient } from "@apollo/react-hooks";
 
@@ -26,12 +26,13 @@ export const AdvancedSearch = observer(
     ({ fields, namespace, onApplyFilter }: AdvancedSearchProps) => {
         const client = useApolloClient();
 
-        const [repository] = useState(
-            FilterRepository.getInstance(new FiltersGraphQLGateway(client), namespace)
-        );
-        const [presenter] = useState<AdvancedSearchPresenter>(
-            new AdvancedSearchPresenter(repository)
-        );
+        const repository = useMemo<FilterRepository>(() => {
+            return FilterRepository.getInstance(new FiltersGraphQLGateway(client), namespace);
+        }, [namespace]);
+
+        const presenter = useMemo<AdvancedSearchPresenter>(() => {
+            return new AdvancedSearchPresenter(repository);
+        }, [repository]);
 
         useEffect(() => {
             presenter.load();

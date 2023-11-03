@@ -1,3 +1,4 @@
+import { mdbid } from "@webiny/utils";
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
     FilterDTO,
@@ -31,8 +32,10 @@ const createMockGateway = ({
     ...(deleteFn && { delete: deleteFn })
 });
 
+const createNamespace = () => mdbid();
+
 describe("AdvancedSearchPresenter", () => {
-    const namespace = "namespace";
+    const namespace = createNamespace();
 
     const demoFilter: FilterGroupFilterDTO = {
         field: "any-field",
@@ -81,11 +84,12 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     let presenter: AdvancedSearchPresenter;
+    let repository: FilterRepository;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const repository = new FilterRepository(gateway, namespace);
+        repository = FilterRepository.getInstance(gateway, namespace);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -134,6 +138,9 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     it("should transition to loading state and then to list state", async () => {
+        const repository = FilterRepository.getInstance(gateway, createNamespace());
+        const presenter = new AdvancedSearchPresenter(repository);
+
         const loadPromise = presenter.load();
 
         expect(presenter.vm.managerVm).toMatchObject({
@@ -670,7 +677,7 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(gateway, namespace);
+        const repository = FilterRepository.getInstance(gateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -697,7 +704,7 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(createGateway, namespace);
+        const repository = FilterRepository.getInstance(createGateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -740,7 +747,7 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, namespace);
+        const repository = FilterRepository.getInstance(updateGateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -769,7 +776,7 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, namespace);
+        const repository = FilterRepository.getInstance(updateGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -783,6 +790,32 @@ describe("AdvancedSearchPresenter", () => {
                 message
             }
         });
+    });
+
+    it("should set the right namespace while getting the repository instance", async () => {
+        const list = jest.fn();
+
+        const gateway = createMockGateway({
+            list
+        });
+
+        const namespace1 = createNamespace();
+        repository = FilterRepository.getInstance(gateway, namespace1);
+        presenter = new AdvancedSearchPresenter(repository);
+
+        // let's load some filters
+        await presenter.load();
+
+        expect(gateway.list).toHaveBeenLastCalledWith(namespace1);
+
+        const namespace2 = createNamespace();
+        repository = FilterRepository.getInstance(gateway, namespace2);
+        presenter = new AdvancedSearchPresenter(repository);
+
+        // let's load some filters
+        await presenter.load();
+
+        expect(gateway.list).toHaveBeenLastCalledWith(namespace2);
     });
 
     it("should be able to show a feedback message", async () => {
