@@ -1,7 +1,6 @@
 import { customAlphabet } from "nanoid";
 
 context("Menus Module", () => {
-
     const menuName = "Test menu";
     const menuSlug = "test-slug";
     const menuDesc = "This is a description.";
@@ -41,7 +40,7 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.").should("exist");
         cy.wait(500);
-        
+
         //Assert the menu is being displayed properly on the right side of the screen.
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
@@ -62,9 +61,5 @@ context("Menus Module", () => {
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(menuNameEdit).should("not.exist");
         });
-
     });
-
-
-
 });

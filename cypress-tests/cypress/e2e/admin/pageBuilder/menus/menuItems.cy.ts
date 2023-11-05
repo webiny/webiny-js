@@ -1,7 +1,6 @@
 import { customAlphabet } from "nanoid";
 
 context("Menus Module", () => {
-
     const pageListName = "Testing page list";
     const pageListNameEdit = "Testing editing page list name";
     const linkName = "Link menu item name";
@@ -15,16 +14,15 @@ context("Menus Module", () => {
     const pageNameEdit = "Page menu item name edit";
     const pageURLEdit = "/page-test-edit/";
 
-
     const menuData = {
         data: {
-          title: "Testing menu items",
-          slug: "test-menu-items",
-          description: "Testing menu items.",
-          items: [],
-        },
-      };
-      
+            title: "Testing menu items",
+            slug: "test-menu-items",
+            description: "Testing menu items.",
+            items: []
+        }
+    };
+
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllMenus();
@@ -71,7 +69,9 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         //Assert all edits are being properly displayed.
-        cy.findByTestId(`pb-menu-item-render-${pageListNameEdit}`).contains(pageListNameEdit).should("exist");
+        cy.findByTestId(`pb-menu-item-render-${pageListNameEdit}`)
+            .contains(pageListNameEdit)
+            .should("exist");
         cy.findByTestId("pb-edit-icon-button").click();
         cy.findByTestId("pb.menu.new.listitem.title").should("have.value", pageListNameEdit);
         cy.findByTestId("pb.menu.new.listitem.sortby").should("have.value", "publishedOn");
@@ -100,7 +100,9 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.link.title").clear().type(linkNameEdit);
         cy.findByTestId("pb.menu.new.link.url").clear().type(linkURLEdit);
         cy.findByTestId("pb.menu.new.link.button.save").click();
-        cy.findByTestId(`pb-menu-item-render-${linkNameEdit}`).contains(linkNameEdit).should("exist");
+        cy.findByTestId(`pb-menu-item-render-${linkNameEdit}`)
+            .contains(linkNameEdit)
+            .should("exist");
 
         //Delete the link menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
@@ -122,7 +124,9 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.folder.title").clear().type(folderNameEdit);
         cy.findByTestId("pb.menu.new.folder.button.save").click();
 
-        cy.findByTestId(`pb-menu-item-render-${folderNameEdit}`).contains(folderNameEdit).should("exist");
+        cy.findByTestId(`pb-menu-item-render-${folderNameEdit}`)
+            .contains(folderNameEdit)
+            .should("exist");
 
         //Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
@@ -146,12 +150,13 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.page.url").clear().type(pageURLEdit);
         cy.findByTestId("pb.menu.new.page.button.save").click();
 
-        cy.findByTestId(`pb-menu-item-render-${pageNameEdit}`).contains(pageNameEdit).should("exist");
+        cy.findByTestId(`pb-menu-item-render-${pageNameEdit}`)
+            .contains(pageNameEdit)
+            .should("exist");
 
         //Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
         cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${pageNameEdit}`).should("not.exist");
-
     });
 });

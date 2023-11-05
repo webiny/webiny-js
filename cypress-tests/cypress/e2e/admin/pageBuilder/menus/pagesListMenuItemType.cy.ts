@@ -1,42 +1,11 @@
-/**
- * IMPORTANT!
- * Temporarily skipping this test suite due to Prerendering Service issues with Puppeteer.
- * An issue is added to our tracker and will be resolved ASAP.
- */
-describe.skip("Menus Module", () => {
-    // Not generating unique IDs because of Cypress' multiple super domains issue. Once we change the domain,
-    // this code gets executed again, meaning we get a different unique ID. This is also the reason why the
-    // test below is broken into multiple steps.
-    const id = Cypress.env("TEST_RUN_ID");
+import { last } from "cypress/types/lodash";
+
+describe("Menus Module", () => {
+    const id = 3;
     const idEdited = `X-${id}-Y`;
     const totalPages = 3;
 
-    beforeEach(() => cy.login());
-
-    it(`Step 0: create and publish ${totalPages} pages (pseudo "beforeAll" hook)`, () => {
-        for (let i = 0; i < totalPages; i++) {
-            // eslint-disable-next-line
-            cy.pbCreatePage({ category: "static" }).then(page => {
-                // eslint-disable-next-line jest/valid-expect-in-promise
-                cy.pbUpdatePage({
-                    id: page.id,
-                    data: {
-                        category: "static",
-                        path: `/page-${id}-${i}`,
-                        title: `Page-${id}-${i}`,
-                        settings: {
-                            general: {
-                                layout: "static",
-                                tags: [`page-${id}`, `page-${id}-${i}`]
-                            }
-                        }
-                    }
-                }).then(page => {
-                    cy.pbPublishPage({ id: page.id });
-                });
-            });
-        }
-    });
+    beforeEach(() =>{ cy.login(), cy.pbCreateAndPublishPages(3, "test")});
 
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
         cy.visit("/page-builder/menus");
@@ -101,7 +70,7 @@ describe.skip("Menus Module", () => {
 
         cy.findByTestId("pb-desktop-header").within(() => {
             // Let's check the links and the order.
-            cy.findByText(`added-menu-${id}`).within(() => {
+            cy.contains(`added-menu-${id}`).within(() => {
                 cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
                 cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
             });
@@ -117,7 +86,7 @@ describe.skip("Menus Module", () => {
 
         cy.wait(500);
 
-        cy.findByTestId(`pb-menu-item-render-${id}`).within(() => {
+        cy.findByTestId(`pb-menu-item-render-added-menu-${id}`).eq(0).within(() => {
             cy.findByTestId("pb-edit-icon-button").click();
         });
 
