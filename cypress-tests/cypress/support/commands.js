@@ -5,6 +5,8 @@ import "./dropFile";
 import "./reloadUntil";
 import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
+import "./pageBuilder/createMenu";
+import "./pageBuilder/pbDeleteAllMenus";
 import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbCreateCategoryAndBlocks";
