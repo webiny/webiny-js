@@ -6,7 +6,6 @@ export interface State {
     activeTags: string[];
     dragging: boolean;
     filters: Record<string, any> | undefined;
-    hasPreviouslyUploadedFiles: boolean | null;
     isSearch: boolean;
     limit: number;
     listSort?: ListFilesSort;
@@ -39,7 +38,6 @@ export const initializeState = (): State => {
         dragging: false,
         isSearch: false,
         filters: undefined,
-        hasPreviouslyUploadedFiles: null,
         limit: 50,
         listSort: [],
         listTable: false,
