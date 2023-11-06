@@ -36,6 +36,7 @@ export interface TableProps {
     onRecordClick: (id: string) => void;
     onFolderClick: (id: string) => void;
     onSelectRow: ((rows: Entry[] | []) => void) | undefined;
+    onToggleRow: ((row: Entry) => void) | undefined;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
@@ -107,6 +108,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         records,
         selectedRecords,
         onSelectRow,
+        onToggleRow,
         loading,
         onRecordClick,
         onFolderClick,
@@ -247,6 +249,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                onToggleRow={onToggleRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
                 initialSorting={[

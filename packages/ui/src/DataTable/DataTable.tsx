@@ -112,6 +112,10 @@ interface Props<T> {
      */
     onSelectRow?: (rows: T[]) => void;
     /**
+     * Callback that receives the toggled row.
+     */
+    onToggleRow?: (row: T) => void;
+    /**
      * Callback that receives current sorting state.
      */
     onSortingChange?: OnSortingChange;
@@ -143,7 +147,8 @@ export interface ColumnDirectionProps {
 
 interface DefineColumnsOptions<T> {
     canSelectAllRows: boolean;
-    onSelectRow: Props<T>["onSelectRow"];
+    onSelectRow?: Props<T>["onSelectRow"];
+    onToggleRow: Props<T>["onToggleRow"];
     loadingInitial: Props<T>["loadingInitial"];
 }
 
@@ -151,7 +156,7 @@ const defineColumns = <T,>(
     columns: Props<T>["columns"],
     options: DefineColumnsOptions<T>
 ): ColumnDef<T>[] => {
-    const { canSelectAllRows, onSelectRow, loadingInitial } = options;
+    const { canSelectAllRows, onSelectRow, onToggleRow, loadingInitial } = options;
 
     return useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
@@ -191,7 +196,9 @@ const defineColumns = <T,>(
             };
         });
 
-        const select: ColumnDef<T>[] = !!onSelectRow
+        const isSelectable = onToggleRow || onSelectRow;
+
+        const select: ColumnDef<T>[] = isSelectable
             ? [
                   {
                       id: "datatable-select-column",
@@ -242,7 +249,7 @@ const defineColumns = <T,>(
 
             return column;
         });
-    }, [columns, onSelectRow, loadingInitial]);
+    }, [columns, onSelectRow, onToggleRow, loadingInitial]);
 };
 
 const defineData = <T,>(
@@ -304,6 +311,7 @@ export const DataTable = <T extends Object & DefaultData>({
     data,
     columns,
     onSelectRow,
+    onToggleRow,
     loadingInitial,
     stickyColumns,
     stickyRows,
@@ -323,8 +331,27 @@ export const DataTable = <T extends Object & DefaultData>({
     }, [selectedRows, data]);
 
     const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => {
-        if (typeof onSelectRow === "function") {
-            const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
+        const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
+
+        /**
+         * `@tanstack/react-table` isn't telling us what row was selected or deselected. It simply gives us
+         * the new selection state (an object with row indexes that are currently selected).
+         *
+         * To figure out what row was toggled, we need to calculate the difference between the old selection
+         * and the new selection. What we're doing here is:
+         * - find all items that were present in the previous selection, but are no longer present in the new selection
+         * - find all items that are present in the new selection, but were not present in the previous selection
+         */
+        const toggledRows = [
+            ...Object.keys(rowSelection).filter(x => !(x in newSelection)),
+            ...Object.keys(newSelection).filter(x => !(x in rowSelection))
+        ];
+
+        // If the difference is only 1 item, and `onToggleRow` is available, execute that.
+        if (toggledRows.length === 1 && typeof onToggleRow === "function") {
+            onToggleRow(data[parseInt(toggledRows[0])]);
+            return;
+        } else if (typeof onSelectRow === "function") {
             const selection = Object.keys(newSelection).map(key => data[parseInt(key)]);
             onSelectRow(selection);
         }
@@ -339,7 +366,12 @@ export const DataTable = <T extends Object & DefaultData>({
 
     const table = useReactTable({
         data: defineData(data, loadingInitial),
-        columns: defineColumns(columns, { canSelectAllRows, onSelectRow, loadingInitial }),
+        columns: defineColumns(columns, {
+            canSelectAllRows,
+            onSelectRow,
+            onToggleRow,
+            loadingInitial
+        }),
         enableColumnResizing: true,
         columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
