@@ -3,6 +3,8 @@ import { dataLoader, loadingHandler } from "~/handlers";
 import { FolderItem, Loading, LoadingActions } from "~/types";
 import { AcoAppContext } from "~/contexts/app";
 import { useFoldersApi } from "~/hooks";
+import { ROOT_FOLDER } from "~/constants";
+import { useSecurity } from "@webiny/app-security";
 
 interface FoldersContext {
     folders?: FolderItem[] | null;
@@ -20,6 +22,8 @@ interface FoldersContext {
     deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
 
     getDescendantFolders(id?: string): FolderItem[];
+
+    canManageFolderStructure(id: string): boolean;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
@@ -45,6 +49,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
     const [folders, setFolders] = useState<FolderItem[] | null>(null);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const foldersApi = useFoldersApi();
+    const { getPermission } = useSecurity();
 
     const app = appContext ? appContext.app : undefined;
 
@@ -129,6 +134,16 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
 
             getDescendantFolders(id) {
                 return foldersApi.getDescendantFolders(type, id);
+            },
+
+            canManageFolderStructure(id) {
+                if (id !== ROOT_FOLDER) {
+                    const folder = folders?.find(folder => folder.id === id);
+                    return !!folder?.canManageStructure;
+                }
+
+                // Root folder can be managed only if the user has full access.
+                return !!getPermission("*");
             }
         };
     }, [folders, loading, setLoading, setFolders]);

@@ -32,6 +32,10 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
         return null;
     }
 
+    if (!folder.canManageStructure) {
+        return null;
+    }
+
     return (
         <Container className={"folder-tree-menu-action"}>
             <Menu handle={<More />} renderToPortal={true}>

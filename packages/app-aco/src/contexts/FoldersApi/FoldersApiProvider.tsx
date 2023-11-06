@@ -44,6 +44,7 @@ export interface FoldersApiContext {
             FolderItem,
             | "type"
             | "canManagePermissions"
+            | "canManageStructure"
             | "hasNonInheritedPermissions"
             | "createdOn"
             | "createdBy"
