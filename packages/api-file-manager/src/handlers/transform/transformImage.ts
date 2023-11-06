@@ -1,12 +1,11 @@
 /**
  * Sharp is included in the AWS Lambda layer
  */
-// @ts-ignore
 import sharp from "sharp";
-import { PutObjectCommandInput } from "@webiny/aws-sdk/client-s3";
+import type { Readable } from "stream";
 
 interface Transformation {
-    width: string;
+    width: number;
 }
 
 export interface TransformOptions {
@@ -18,12 +17,14 @@ export interface TransformOptions {
  * Check "sanitizeImageTransformations.js" to allow additional image processing transformations.
  */
 export const transformImage = async (
-    buffer: PutObjectCommandInput["Body"],
+    stream: Readable,
     transformations: Transformation,
     options: TransformOptions = {}
-): Promise<PutObjectCommandInput["Body"]> => {
+): Promise<Buffer> => {
     const { width } = transformations;
-    return await sharp(buffer, { animated: options.animated ?? false })
-        .resize({ width })
-        .toBuffer();
+    const transformedImage = sharp({ animated: options.animated ?? false }).resize({
+        width
+    });
+
+    return await stream.pipe(transformedImage).toBuffer();
 };
