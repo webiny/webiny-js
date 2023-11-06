@@ -43,7 +43,7 @@ interface Column<T> {
     /*
      * Cell renderer, receives the full row and returns the value to render inside the cell.
      */
-    cell?: (row: T) => string | number | JSX.Element;
+    cell?: (row: T) => string | number | JSX.Element | null;
     /*
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
