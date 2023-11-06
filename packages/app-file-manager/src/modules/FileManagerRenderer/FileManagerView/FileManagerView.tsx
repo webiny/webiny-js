@@ -178,8 +178,6 @@ const FileManagerView = () => {
     const filesBeingUploaded = uploader.getJobs().length;
     const progress = uploader.progress;
 
-    const onDrop = () => view.setDragging(false);
-
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!view.isListLoading && view.isSearch && view.files.length === 0) {
             return <Empty isSearchResult={true} browseFiles={browseFiles} />;
@@ -208,6 +206,21 @@ const FileManagerView = () => {
                       view.setSelected(files);
                   };
 
+            const onToggleRow: TableProps["onToggleRow"] = view.hasOnSelectCallback
+                ? row => {
+                      const files = getSelectableRow([row]);
+
+                      if (view.multiple) {
+                          view.toggleSelected(files[0]);
+                      } else {
+                          view.onChange(files[0]);
+                      }
+                  }
+                : row => {
+                      const files = getSelectableRow([row]);
+                      view.toggleSelected(files[0]);
+                  };
+
             return (
                 <Table
                     folders={view.folders}
@@ -217,6 +230,7 @@ const FileManagerView = () => {
                     onRecordClick={view.showFileDetails}
                     onFolderClick={view.setFolderId}
                     onSelectRow={onSelectRow}
+                    onToggleRow={onToggleRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
                     settings={view.settings}
@@ -234,6 +248,7 @@ const FileManagerView = () => {
                 selected={view.selected}
                 multiple={view.multiple}
                 toggleSelected={view.toggleSelected}
+                deselectAll={view.deselectAll}
                 onChange={view.onChange}
                 onClose={view.onClose}
                 hasOnSelectCallback={view.hasOnSelectCallback}
@@ -264,7 +279,6 @@ const FileManagerView = () => {
                     uploadFiles(filesToUpload);
                 }}
                 onError={errors => {
-                    console.log("onError", errors);
                     const message = outputFileSelectionError(errors);
                     showSnackbar(message);
                 }}
@@ -324,7 +338,7 @@ const FileManagerView = () => {
                                 {...getDropZoneProps({
                                     onDragOver: () => view.setDragging(true),
                                     onDragLeave: () => view.setDragging(false),
-                                    onDrop
+                                    onDrop: () => view.setDragging(false)
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import isEqual from "lodash/isEqual";
 import { validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting";
 import { useFolders } from "@webiny/app-aco";
@@ -32,14 +32,12 @@ interface UseListFilesParams {
     };
     folderId: string;
     state: State;
-    onFirstLoad: (meta: ListMeta) => void;
 }
 
-export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseListFilesParams) {
+export function useListFiles({ modifiers, folderId, state }: UseListFilesParams) {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
     const { getDescendantFolders } = useFolders();
-    const firstLoad = useRef(true);
     const [meta, setMeta] = useState<ListMeta | undefined>(undefined);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>({});
@@ -93,11 +91,6 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
                 [action]: false
             };
         });
-
-        if (firstLoad.current) {
-            firstLoad.current = false;
-            onFirstLoad(fmResponse.meta);
-        }
     };
 
     const getListVariables = () => {
