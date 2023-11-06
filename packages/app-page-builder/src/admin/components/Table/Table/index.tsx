@@ -184,6 +184,10 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
+                    if (!entry.original.canManageStructure) {
+                        return null;
+                    }
+
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit
