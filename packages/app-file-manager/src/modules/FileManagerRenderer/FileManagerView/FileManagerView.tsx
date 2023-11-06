@@ -178,8 +178,6 @@ const FileManagerView = () => {
     const filesBeingUploaded = uploader.getJobs().length;
     const progress = uploader.progress;
 
-    const onDrop = () => view.setDragging(false);
-
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!view.isListLoading && view.isSearch && view.files.length === 0) {
             return <Empty isSearchResult={true} browseFiles={browseFiles} />;
