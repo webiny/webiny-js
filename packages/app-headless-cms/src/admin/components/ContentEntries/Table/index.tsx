@@ -150,7 +150,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    // If the user cannot manage structure for the folder, there's no sense to show the menu.
+                    // If the user cannot manage structure for the folder, no need to show the menu.
                     if (!record.original.canManageStructure) {
                         return null;
                     }
