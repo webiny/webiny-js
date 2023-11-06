@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DropOptions,
     getBackendOptions,
@@ -99,6 +99,11 @@ export const List: React.VFC<ListProps> = ({
         setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
 
+    const canDrag = useCallback((folderId: string) => {
+        const isRootFolder = folderId === ROOT_FOLDER;
+        return !isRootFolder && canManageFolderStructure(folderId);
+    }, []);
+
     return (
         <>
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
@@ -108,7 +113,7 @@ export const List: React.VFC<ListProps> = ({
                     onDrop={handleDrop}
                     onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
-                    canDrag={item => canManageFolderStructure(String(item!.id))}
+                    canDrag={item => canDrag(item!.id as string)}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}
