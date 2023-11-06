@@ -31,6 +31,7 @@ module.exports = {
             "buffer",
             "fs",
             "readline",
+            "stream",
             "util",
             "events",
             "crypto",
