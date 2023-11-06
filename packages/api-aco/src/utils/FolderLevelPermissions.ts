@@ -184,6 +184,7 @@ export class FolderLevelPermissions {
                     );
 
                 if (currentIdentityPermissionIndex >= 0) {
+                    // Move existing permission to the first position.
                     const [identityPermission] = currentFolderPermissions.permissions.splice(
                         currentIdentityPermissionIndex,
                         1
@@ -204,8 +205,7 @@ export class FolderLevelPermissions {
                         } else if (folder.type === ACO_SEARCH_RECORD_PB_PAGE) {
                             hasFullAccess = this.hasPbPageFullAccess(permissions);
                         } else if (folder.type.startsWith("cms:")) {
-                            const modelId = folder.type.replace("cms:", "");
-                            hasFullAccess = this.hasCmsEntryFullAccess(permissions, modelId);
+                            hasFullAccess = this.hasCmsEntryFullAccess(permissions);
                         }
                     }
 
@@ -504,62 +504,11 @@ export class FolderLevelPermissions {
         return false;
     }
 
-    private hasCmsEntryFullAccess(permissions: SecurityPermission[], modelId: string) {
+    private hasCmsEntryFullAccess(permissions: SecurityPermission[]) {
         if (this.hasFullAccess(permissions)) {
             return true;
         }
 
-        const hasCmsFullAccess = permissions.some(p => p.name === "cms.*");
-        if (hasCmsFullAccess) {
-            return true;
-        }
-
-        const hasManageEndpointPermission = permissions.some(p => p.name === "cms.endpoint.manage");
-        if (hasManageEndpointPermission) {
-            return true;
-        }
-
-        // Check `cms.contentModelGroup` permissions.
-        let groupsCanAccess = false;
-
-        const cmsContentModelGroupPermissions = permissions.filter(
-            p => p.name === "cms.contentModelGroup"
-        );
-
-        for (const p of cmsContentModelGroupPermissions) {
-            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.groups)) {
-                groupsCanAccess = true;
-                break;
-            }
-        }
-
-        if (!groupsCanAccess) {
-            return false;
-        }
-
-        // Check `cms.contentModel` permissions.
-        let modelsCanAccess = false;
-
-        const cmsContentModelPermissions = permissions.filter(p => p.name === "cms.contentModel");
-
-        for (const p of cmsContentModelPermissions) {
-            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.models)) {
-                modelsCanAccess = true;
-                break;
-            }
-        }
-
-        if (!modelsCanAccess) {
-            return false;
-        }
-
-        const cmsEntryPermissions = permissions.filter(p => p.name === "cms.contentEntry");
-        for (const p of cmsEntryPermissions) {
-            if (!p.own && p.rwd === "rwd") {
-                return true;
-            }
-        }
-
-        return false;
+        return permissions.some(p => p.name === "cms.*");
     }
 }
