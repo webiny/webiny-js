@@ -39,6 +39,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const FileListWrapper = styled("div")({
     float: "right",
+    zIndex: 60,
     display: "inline-block",
     width: "calc(100vw - 286px)",
     height: "calc(100vh - 94px)",
@@ -176,6 +177,8 @@ const FileManagerView = () => {
 
     const filesBeingUploaded = uploader.getJobs().length;
     const progress = uploader.progress;
+
+    const onDrop = () => view.setDragging(false);
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!view.isListLoading && view.isSearch && view.files.length === 0) {
@@ -319,17 +322,13 @@ const FileManagerView = () => {
                             </LeftSidebar>
                             <FileListWrapper
                                 {...getDropZoneProps({
-                                    onDragEnter: () =>
-                                        view.hasPreviouslyUploadedFiles && view.setDragging(true)
+                                    onDragOver: () => view.setDragging(true),
+                                    onDragLeave: () => view.setDragging(false),
+                                    onDrop
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >
-                                {view.dragging && view.hasPreviouslyUploadedFiles && (
-                                    <DropFilesHere
-                                        onDragLeave={() => view.setDragging(false)}
-                                        onDrop={() => view.setDragging(false)}
-                                    />
-                                )}
+                                {view.dragging && <DropFilesHere />}
                                 <BulkActions />
                                 <Filters />
                                 <Scrollbar
