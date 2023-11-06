@@ -14,6 +14,10 @@ export interface State {
     searchLabel: string;
     searchQuery: string;
     selected: FileItem[];
+    selection: {
+        anchor?: number | undefined;
+        focus?: number | undefined;
+    };
     settings: Settings | undefined;
     showingFileDetails: string | null;
     showingFilters: boolean;
@@ -45,6 +49,7 @@ export const initializeState = (): State => {
         searchLabel: "",
         searchQuery: "",
         selected: [],
+        selection: {},
         settings: undefined,
         showingFileDetails: null,
         showingFilters: false,
