@@ -509,6 +509,10 @@ export class FolderLevelPermissions {
             return true;
         }
 
+        // At the moment, we only check for the existence of `cms.*` permission. But, we
+        // should extend this function and have it check if the full access has been granted
+        // on a specific content model level. The reason why this wasn't already implemented
+        // is because of the complexity and lack of time.
         return permissions.some(p => p.name === "cms.*");
     }
 }
