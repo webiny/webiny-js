@@ -5,6 +5,7 @@ import { AcoAppContext } from "~/contexts/app";
 import { useFoldersApi } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
 import { useSecurity } from "@webiny/app-security";
+import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
 
 interface FoldersContext {
     folders?: FolderItem[] | null;
@@ -50,6 +51,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const foldersApi = useFoldersApi();
     const { getPermission } = useSecurity();
+    const { canUseFolderLevelPermissions } = useWcp();
 
     const app = appContext ? appContext.app : undefined;
 
@@ -137,6 +139,11 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             },
 
             canManageFolderStructure(id) {
+                // If FLP is not enabled, all users can manage folder structure.
+                if (!canUseFolderLevelPermissions()) {
+                    return true;
+                }
+
                 if (id !== ROOT_FOLDER) {
                     const folder = folders?.find(folder => folder.id === id);
                     return !!folder?.canManageStructure;
