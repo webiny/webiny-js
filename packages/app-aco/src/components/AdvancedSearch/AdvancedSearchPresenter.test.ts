@@ -5,7 +5,6 @@ import {
     FilterGroupDTO,
     FilterGroupFilterDTO,
     FilterRepository,
-    FilterRepositoryFactory,
     Operation
 } from "./domain";
 import { FiltersGatewayInterface } from "./gateways";
@@ -85,14 +84,12 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     let presenter: AdvancedSearchPresenter;
-    let repositoryFactory: FilterRepositoryFactory;
     let repository: FilterRepository;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        repositoryFactory = new FilterRepositoryFactory(gateway);
-        repository = repositoryFactory.create(namespace);
+        repository = new FilterRepository(gateway, namespace);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -141,7 +138,6 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     it("should transition to loading state and then to list state", async () => {
-        const repository = repositoryFactory.create(createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         const loadPromise = presenter.load();
@@ -680,8 +676,7 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repositoryFactory = new FilterRepositoryFactory(gateway);
-        const repository = repositoryFactory.create(createNamespace());
+        const repository = new FilterRepository(gateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -708,8 +703,7 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repositoryFactory = new FilterRepositoryFactory(createGateway);
-        const repository = repositoryFactory.create(createNamespace());
+        const repository = new FilterRepository(createGateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -752,8 +746,7 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repositoryFactory = new FilterRepositoryFactory(updateGateway);
-        const repository = repositoryFactory.create(createNamespace());
+        const repository = new FilterRepository(updateGateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -782,8 +775,7 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repositoryFactory = new FilterRepositoryFactory(updateGateway);
-        const repository = repositoryFactory.create(createNamespace());
+        const repository = new FilterRepository(updateGateway, createNamespace());
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -797,34 +789,6 @@ describe("AdvancedSearchPresenter", () => {
                 message
             }
         });
-    });
-
-    it("should set the right namespace while getting the repository instance", async () => {
-        const list = jest.fn();
-
-        const gateway = createMockGateway({
-            list
-        });
-
-        const repositoryFactory = new FilterRepositoryFactory(gateway);
-
-        const namespace1 = createNamespace();
-        repository = repositoryFactory.create(namespace1);
-        presenter = new AdvancedSearchPresenter(repository);
-
-        // let's load some filters
-        await presenter.load();
-
-        expect(gateway.list).toHaveBeenLastCalledWith(namespace1);
-
-        const namespace2 = createNamespace();
-        repository = repositoryFactory.create(namespace2);
-        presenter = new AdvancedSearchPresenter(repository);
-
-        // let's load some filters
-        await presenter.load();
-
-        expect(gateway.list).toHaveBeenLastCalledWith(namespace2);
     });
 
     it("should be able to show a feedback message", async () => {

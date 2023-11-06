@@ -1,9 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { useApolloClient } from "@apollo/react-hooks";
 
-import { FieldRaw, FilterDTO, FilterRepositoryFactory } from "./domain";
-import { FiltersGraphQLGateway } from "./gateways";
+import { FieldRaw, FilterDTO, FilterRepository } from "./domain";
 
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
@@ -18,23 +16,15 @@ import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
 
 interface AdvancedSearchProps {
     fields: FieldRaw[];
-    namespace: string;
+    repository: FilterRepository;
     onApplyFilter: (data: FilterDTO | null) => void;
 }
 
 export const AdvancedSearch = observer(
-    ({ fields, namespace, onApplyFilter }: AdvancedSearchProps) => {
-        const client = useApolloClient();
-
-        const [repositoryFactory] = useState<FilterRepositoryFactory>(() => {
-            const gateway = new FiltersGraphQLGateway(client);
-            return new FilterRepositoryFactory(gateway);
-        });
-
+    ({ fields, repository, onApplyFilter }: AdvancedSearchProps) => {
         const presenter = useMemo<AdvancedSearchPresenter>(() => {
-            const repository = repositoryFactory.create(namespace);
             return new AdvancedSearchPresenter(repository);
-        }, [namespace]);
+        }, [FilterRepository]);
 
         useEffect(() => {
             presenter.load();

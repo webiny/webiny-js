@@ -1,19 +1,25 @@
-import { FiltersGatewayInterface } from "~/components/AdvancedSearch/gateways";
+import { ApolloClient } from "apollo-client";
+import {
+    FiltersGatewayInterface,
+    FiltersGraphQLGateway
+} from "~/components/AdvancedSearch/gateways";
 import { FilterRepository } from "./FilterRepository";
 
-export class FilterRepositoryFactory {
-    private readonly gateway: FiltersGatewayInterface;
-    private repositories: { [key: string]: FilterRepository } = {};
+class FilterRepositoryFactory {
+    private gateway: FiltersGatewayInterface | undefined;
+    private cache: Map<string, FilterRepository> = new Map();
 
-    constructor(gateway: FiltersGatewayInterface) {
-        this.gateway = gateway;
-    }
-
-    create(namespace: string): FilterRepository {
-        if (!this.repositories[namespace]) {
-            this.repositories[namespace] = new FilterRepository(this.gateway, namespace);
+    getRepository(client: ApolloClient<any>, namespace: string) {
+        if (!this.gateway) {
+            this.gateway = new FiltersGraphQLGateway(client);
         }
 
-        return this.repositories[namespace];
+        if (!this.cache.has(namespace)) {
+            this.cache.set(namespace, new FilterRepository(this.gateway, namespace));
+        }
+
+        return this.cache.get(namespace) as FilterRepository;
     }
 }
+
+export const filterRepositoryFactory = new FilterRepositoryFactory();
