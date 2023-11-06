@@ -3,6 +3,7 @@ import { SecurityPermission, Team } from "@webiny/api-security/types";
 import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import structuredClone from "@ungap/structured-clone";
+import { ACO_SEARCH_RECORD_PB_PAGE, FM_FILE_FOLDER_TYPE } from "~/utils/constants";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor";
 
@@ -190,9 +191,24 @@ export class FolderLevelPermissions {
                     currentFolderPermissions.permissions.unshift(identityPermission);
                     identityFirstPermission = identityPermission;
                 } else {
+                    let hasFullAccess = this.hasFullAccess(permissions);
+
                     // If the current identity is not in the permissions, let's add it.
                     // If the user has full access, we'll add it as "owner".
-                    const hasFullAccess = permissions.some(p => p.name === "*");
+                    if (!hasFullAccess) {
+                        // Let's check if the user has full access set on the app level. For example,
+                        // if we're working with "FmFile" folder type, we'll check for "fm.*" permission.
+                        // The same goes with Page Builder pages and CMS content entries.
+                        if (folder.type === FM_FILE_FOLDER_TYPE) {
+                            hasFullAccess = this.hasFmFileFullAccess(permissions);
+                        } else if (folder.type === ACO_SEARCH_RECORD_PB_PAGE) {
+                            hasFullAccess = this.hasPbPageFullAccess(permissions);
+                        } else if (folder.type.startsWith("cms:")) {
+                            const modelId = folder.type.replace("cms:", "");
+                            hasFullAccess = this.hasCmsEntryFullAccess(permissions, modelId);
+                        }
+                    }
+
                     if (hasFullAccess) {
                         identityFirstPermission = {
                             target: `admin:${identity.id}`,
@@ -442,5 +458,108 @@ export class FolderLevelPermissions {
 
     permissionsIncludeNonInheritedPermissions(folderPermissionsList?: FolderPermission[]) {
         return folderPermissionsList?.some(p => !p.inheritedFrom);
+    }
+
+    private hasFullAccess(permissions: SecurityPermission[]) {
+        return permissions.some(p => p.name === "*");
+    }
+
+    private hasFmFileFullAccess(permissions: SecurityPermission[]) {
+        if (this.hasFullAccess(permissions)) {
+            return true;
+        }
+
+        const hasFmFullAccess = permissions.some(p => p.name === "fm.*");
+        if (hasFmFullAccess) {
+            return true;
+        }
+
+        const fmFilePermissions = permissions.filter(p => p.name === "fm.file");
+        for (const p of fmFilePermissions) {
+            if (!p.own && p.rwd === "rwd") {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private hasPbPageFullAccess(permissions: SecurityPermission[]) {
+        if (this.hasFullAccess(permissions)) {
+            return true;
+        }
+
+        const hasPbFullAccess = permissions.some(p => p.name === "pb.*");
+        if (hasPbFullAccess) {
+            return true;
+        }
+
+        const pbPagePermissions = permissions.filter(p => p.name === "pb.page");
+        for (const p of pbPagePermissions) {
+            if (!p.own && p.rwd === "rwd") {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private hasCmsEntryFullAccess(permissions: SecurityPermission[], modelId: string) {
+        if (this.hasFullAccess(permissions)) {
+            return true;
+        }
+
+        const hasCmsFullAccess = permissions.some(p => p.name === "cms.*");
+        if (hasCmsFullAccess) {
+            return true;
+        }
+
+        const hasManageEndpointPermission = permissions.some(p => p.name === "cms.endpoint.manage");
+        if (hasManageEndpointPermission) {
+            return true;
+        }
+
+        // Check `cms.contentModelGroup` permissions.
+        let groupsCanAccess = false;
+
+        const cmsContentModelGroupPermissions = permissions.filter(
+            p => p.name === "cms.contentModelGroup"
+        );
+
+        for (const p of cmsContentModelGroupPermissions) {
+            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.groups)) {
+                groupsCanAccess = true;
+                break;
+            }
+        }
+
+        if (!groupsCanAccess) {
+            return false;
+        }
+
+        // Check `cms.contentModel` permissions.
+        let modelsCanAccess = false;
+
+        const cmsContentModelPermissions = permissions.filter(p => p.name === "cms.contentModel");
+
+        for (const p of cmsContentModelPermissions) {
+            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.models)) {
+                modelsCanAccess = true;
+                break;
+            }
+        }
+
+        if (!modelsCanAccess) {
+            return false;
+        }
+
+        const cmsEntryPermissions = permissions.filter(p => p.name === "cms.contentEntry");
+        for (const p of cmsEntryPermissions) {
+            if (!p.own && p.rwd === "rwd") {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

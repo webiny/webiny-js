@@ -4,25 +4,32 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
 import { createWhere } from "./where";
 import { ROOT_FOLDER } from "./constants";
+import {
+    ACO_SEARCH_RECORD_PB_PAGE,
+    FM_FILE_FOLDER_TYPE,
+    FM_FILE_MODEL_ID,
+    PB_PAGE_FOLDER_TYPE,
+    PB_PAGE_MODEL_ID
+} from "~/utils/constants";
 
 type Context = Pick<AcoContext, "aco" | "cms">;
 /**
  * Keep this until we figure out how to fetch the folders.
  */
 const isPageModel = (model: CmsModel): boolean => {
-    if (model.modelId === "pbPage") {
+    if (model.modelId === PB_PAGE_MODEL_ID) {
         return true;
-    } else if (model.modelId === "acoSearchRecord-pbpage") {
+    } else if (model.modelId === ACO_SEARCH_RECORD_PB_PAGE) {
         return true;
     }
     return false;
 };
 
 const createFolderType = (model: CmsModel): "FmFile" | "PbPage" | `cms:${string}` => {
-    if (model.modelId === "fmFile") {
-        return "FmFile";
+    if (model.modelId === FM_FILE_MODEL_ID) {
+        return FM_FILE_FOLDER_TYPE;
     } else if (isPageModel(model)) {
-        return "PbPage";
+        return PB_PAGE_FOLDER_TYPE;
     }
     return `cms:${model.modelId}`;
 };
