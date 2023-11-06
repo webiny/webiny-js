@@ -14307,6 +14307,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
