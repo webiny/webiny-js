@@ -104,8 +104,6 @@ export const setSelection = ({
         });
     }
 
-    console.log(selection);
-
     return {
         ...state,
         selection,

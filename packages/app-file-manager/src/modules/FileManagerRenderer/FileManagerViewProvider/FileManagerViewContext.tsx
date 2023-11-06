@@ -152,7 +152,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         setState(state => ({
             ...state,
-            selectionAnchor: undefined,
+            selection: {},
             filters: undefined,
             searchQuery: "",
             activeTags: [],
@@ -428,7 +428,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 ...state,
                 selected: [],
                 filters: data,
-                selectionAnchor: undefined
+                selection: {}
             }));
         },
         setFolderId(folderId) {

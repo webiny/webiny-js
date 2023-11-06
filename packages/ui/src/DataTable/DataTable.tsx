@@ -333,11 +333,21 @@ export const DataTable = <T extends Object & DefaultData>({
     const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => {
         const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
 
+        /**
+         * `@tanstack/react-table` isn't telling us what row was selected or deselected. It simply gives us
+         * the new selection state (an object with row indexes that are currently selected).
+         *
+         * To figure out what row was toggled, we need to calculate the difference between the old selection
+         * and the new selection. What we're doing here is:
+         * - find all items that were present in the previous selection, but are no longer present in the new selection
+         * - find all items that are present in the new selection, but were not present in the previous selection
+         */
         const toggledRows = [
             ...Object.keys(rowSelection).filter(x => !(x in newSelection)),
             ...Object.keys(newSelection).filter(x => !(x in rowSelection))
         ];
 
+        // If the difference is only 1 item, and `onToggleRow` is available, execute that.
         if (toggledRows.length === 1 && typeof onToggleRow === "function") {
             onToggleRow(data[parseInt(toggledRows[0])]);
             return;
