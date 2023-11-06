@@ -14,11 +14,11 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.12.0",
     "@webiny/api": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "aws-elasticsearch-connector": "^9.0.0",
-    "aws-sdk": "^2.971.0",
     "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
@@ -37,13 +37,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-sdk"
-      ]
-    }
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
