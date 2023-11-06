@@ -1,5 +1,5 @@
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-import AWS from "aws-sdk";
+import { fromTemporaryCredentials } from "@webiny/aws-sdk/credential-providers";
 import WebinyError from "@webiny/error";
 /**
  * Package aws-elasticsearch-connector does not have types.
@@ -23,7 +23,21 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
         /**
          * If no `auth` configuration is present, we setup AWS connector.
          */
-        Object.assign(clientOptions, createAwsElasticsearchConnector(AWS.config));
+        const credentials = fromTemporaryCredentials({
+            params: {
+                RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
+                RoleSessionName: "temporary-session",
+                DurationSeconds: 3600
+            }
+        })();
+
+        Object.assign(
+            clientOptions,
+            createAwsElasticsearchConnector({
+                region: process.env.AWS_REGION,
+                credentials
+            } as any) // aws-elasticsearch-connector still uses aws-sdk v2 types.
+        );
     }
 
     try {
