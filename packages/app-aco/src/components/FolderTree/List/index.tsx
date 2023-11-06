@@ -37,7 +37,7 @@ export const List: React.VFC<ListProps> = ({
     hiddenFolderIds,
     enableActions
 }) => {
-    const { updateFolder } = useFolders();
+    const { updateFolder, canManageFolderStructure } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
@@ -108,7 +108,7 @@ export const List: React.VFC<ListProps> = ({
                     onDrop={handleDrop}
                     onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
-                    canDrag={item => item!.id !== ROOT_FOLDER}
+                    canDrag={item => canManageFolderStructure(String(item!.id))}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}
