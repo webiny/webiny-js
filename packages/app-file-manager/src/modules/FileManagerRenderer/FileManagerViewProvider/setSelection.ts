@@ -81,20 +81,30 @@ export const setSelection = ({
 
         selected.forEach(file => {
             const index = getFileIndex(files, file);
+            const selectionAnchor = selection.anchor;
 
-            if (
-                index !== undefined &&
-                oldFocus &&
-                newFocus &&
-                newFocus < oldFocus &&
-                index > newFocus &&
-                index <= oldFocus
-            ) {
+            const mustNotBeUndefined = [index, oldFocus, newFocus, selectionAnchor];
+            if (mustNotBeUndefined.includes(undefined)) {
+                return;
+            }
+
+            /**
+             * If the new selection is smaller than the previous selection, we need to deselect items
+             * that are now outside the new, smaller, selection.
+             */
+            // @ts-expect-error We already checked for `undefined` above.
+            if (newFocus < oldFocus && index > newFocus && index <= oldFocus) {
                 selected.delete(file);
             }
 
-            // @ts-ignore
-            if(selection.anchor > oldAnchor && index >= oldAnchor && index < oldFocus) {
+            /**
+             * If the previous selection was made backwards (`oldAnchor` is essentially pointing to the shift-clicked item
+             * of the previous selection, which is the `focus` of the selection, but it's normalized, so it becomes an anchor),
+             * and the current selection is made forward (selectionAnchor > oldAnchor), we need to deselect items between the
+             * old selection anchor and the old selection focus (which is also the new selection anchor).
+             */
+            // @ts-expect-error We already checked for `undefined` above.
+            if (selectionAnchor > oldAnchor && index >= oldAnchor && index < oldFocus) {
                 selected.delete(file);
             }
         });
