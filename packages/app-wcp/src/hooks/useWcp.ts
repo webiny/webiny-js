@@ -5,6 +5,10 @@ import { WcpProject, WcpProjectPackage } from "~/types";
 interface UseWcpHook {
     getProject: () => WcpProject | null;
     canUseFeature: (featureId: keyof WcpProjectPackage["features"]) => boolean;
+    canUseAacl: () => boolean;
+    canUseTeams: () => boolean;
+    canUsePrivateFiles: () => boolean;
+    canUseFolderLevelPermissions: () => boolean;
 }
 
 export function useWcp(): UseWcpHook {
@@ -27,5 +31,46 @@ export function useWcp(): UseWcpHook {
         [context.project]
     );
 
-    return { getProject, canUseFeature };
+    const canUseAacl = () => {
+        return canUseFeature("advancedAccessControlLayer");
+    };
+
+    const canUseTeams = () => {
+        if (!canUseAacl()) {
+            return false;
+        }
+
+        const advancedAccessControlLayer =
+            context.project!.package.features.advancedAccessControlLayer!;
+        return advancedAccessControlLayer.options.teams;
+    };
+
+    const canUseFolderLevelPermissions = () => {
+        if (!canUseAacl()) {
+            return false;
+        }
+
+        const advancedAccessControlLayer =
+            context.project!.package.features.advancedAccessControlLayer!;
+        return advancedAccessControlLayer.options.folderLevelPermissions;
+    };
+
+    const canUsePrivateFiles = () => {
+        if (!canUseAacl()) {
+            return false;
+        }
+
+        const advancedAccessControlLayer =
+            context.project!.package.features.advancedAccessControlLayer!;
+        return advancedAccessControlLayer.options.privateFiles;
+    };
+
+    return {
+        getProject,
+        canUseFeature,
+        canUseAacl,
+        canUseTeams,
+        canUseFolderLevelPermissions,
+        canUsePrivateFiles
+    };
 }
