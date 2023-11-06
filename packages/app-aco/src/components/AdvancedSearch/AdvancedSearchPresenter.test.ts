@@ -1,4 +1,3 @@
-import { mdbid } from "@webiny/utils";
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import {
     FilterDTO,
@@ -32,10 +31,8 @@ const createMockGateway = ({
     ...(deleteFn && { delete: deleteFn })
 });
 
-const createNamespace = () => mdbid();
-
 describe("AdvancedSearchPresenter", () => {
-    const namespace = createNamespace();
+    const namespace = "namespace";
 
     const demoFilter: FilterGroupFilterDTO = {
         field: "any-field",
@@ -84,12 +81,11 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     let presenter: AdvancedSearchPresenter;
-    let repository: FilterRepository;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        repository = new FilterRepository(gateway, namespace);
+        const repository = new FilterRepository(gateway, namespace);
         presenter = new AdvancedSearchPresenter(repository);
     });
 
@@ -138,8 +134,6 @@ describe("AdvancedSearchPresenter", () => {
     });
 
     it("should transition to loading state and then to list state", async () => {
-        const presenter = new AdvancedSearchPresenter(repository);
-
         const loadPromise = presenter.load();
 
         expect(presenter.vm.managerVm).toMatchObject({
@@ -676,7 +670,7 @@ describe("AdvancedSearchPresenter", () => {
             list: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(gateway, createNamespace());
+        const repository = new FilterRepository(gateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load the app, without filters
@@ -703,7 +697,7 @@ describe("AdvancedSearchPresenter", () => {
             create: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(createGateway, createNamespace());
+        const repository = new FilterRepository(createGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -746,7 +740,7 @@ describe("AdvancedSearchPresenter", () => {
             update: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, createNamespace());
+        const repository = new FilterRepository(updateGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
@@ -775,7 +769,7 @@ describe("AdvancedSearchPresenter", () => {
             delete: jest.fn().mockRejectedValue(new Error(message))
         });
 
-        const repository = new FilterRepository(updateGateway, createNamespace());
+        const repository = new FilterRepository(updateGateway, namespace);
         const presenter = new AdvancedSearchPresenter(repository);
 
         // Let's load some filters
