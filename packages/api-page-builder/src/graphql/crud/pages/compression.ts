@@ -26,7 +26,7 @@ const createCompressContent = (plugins: ContentCompressionPlugin[]): CompressCon
     return async (page: Page) => {
         const value = page.content;
 
-        if (value && (value as any).compression) {
+        if (value?.compression) {
             return value as CompressedValue;
         }
         try {
@@ -46,7 +46,7 @@ const createDecompressContent = (
         /**
          * Possibly no compression on the content so lets return what ever is inside the content.
          */
-        if (!value || !value.compression) {
+        if (!value?.compression) {
             return value;
         }
         const plugin = plugins.find(pl => pl.canDecompress(value));

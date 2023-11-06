@@ -19,6 +19,7 @@ import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedDa
 
 import {
     batchWriteAll,
+    BatchWriteItem,
     esCreateIndex,
     esFindOne,
     esGetIndexExist,
@@ -219,8 +220,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             `Processing batch #${batch} in group ${groupId} (${pages.length} pages).`
                         );
 
-                        const ddbItems = [] as any;
-                        const ddbEsItems = [] as any;
+                        const ddbItems: BatchWriteItem[] = [];
+                        const ddbEsItems: BatchWriteItem[] = [];
 
                         for (const page of pages) {
                             const ddbPage = await queryOne<any>({

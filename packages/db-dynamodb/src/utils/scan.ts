@@ -2,11 +2,22 @@ import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
 import { ScanOptions as DynamoDBToolboxScanOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { Entity, Table } from "dynamodb-toolbox";
 
-export interface ScanParams {
-    entity: Entity<any> & { table: Table<string, string, string> };
-    options: DynamoDBToolboxScanOptions;
+export interface BaseScanParams {
+    options?: DynamoDBToolboxScanOptions;
     params?: Partial<ScanInput>;
 }
+
+export interface ScanWithTable extends BaseScanParams {
+    table: Table<string, string, string>;
+    entity?: never;
+}
+
+export interface ScanWithEntity extends BaseScanParams {
+    entity: Entity & ScanWithTable;
+    table?: never;
+}
+
+export type ScanParams = ScanWithTable | ScanWithEntity;
 
 export interface ScanResponse<T> {
     items: T[];
@@ -62,9 +73,17 @@ export type ScanDbItem<T> = T & {
 };
 
 export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
-    const { entity, options } = params;
+    const { options } = params;
 
-    const result = await entity.table.scan(options, params.params);
+    const table = params.table ? params.table : params.entity.table;
+
+    const result = await table.scan(
+        {
+            ...options,
+            execute: true
+        },
+        params.params
+    );
 
     return convertResult(result) as ScanResponse<T>;
 };

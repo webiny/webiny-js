@@ -257,7 +257,7 @@ export interface MenuStorageOperations {
     /**
      * Get a single menu item by given params.
      */
-    get(params: MenuStorageOperationsGetParams): Promise<Menu>;
+    get(params: MenuStorageOperationsGetParams): Promise<Menu | null>;
     /**
      * Get all menu items by given params.
      */

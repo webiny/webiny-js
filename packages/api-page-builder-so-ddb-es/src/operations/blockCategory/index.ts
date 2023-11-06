@@ -17,6 +17,7 @@ import { BlockCategoryDynamoDbElasticFieldPlugin } from "~/plugins/definitions/B
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "~/operations/blockCategory/keys";
 import { BlockCategoryStorageOperations } from "~/types";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.blockCategory";
@@ -62,10 +63,13 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...blockCategory,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...blockCategory,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -95,10 +99,13 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...blockCategory,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...blockCategory,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -130,9 +137,9 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                ...blockCategory,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.

@@ -5,6 +5,8 @@ export * from "./createEntity";
 export * from "./cursor";
 export * from "./filter";
 export * from "./get";
+export * from "./delete";
+export * from "./put";
 export * from "./listResponse";
 export * from "./query";
 export * from "./sort";

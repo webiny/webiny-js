@@ -1,15 +1,15 @@
 import React, {
-    Fragment,
-    useEffect,
     createContext,
+    Fragment,
     useCallback,
+    useContext,
+    useEffect,
     useMemo,
-    useState,
-    useContext
+    useState
 } from "react";
 import { nanoid } from "nanoid";
 import { makeComposable, Plugins } from "@webiny/app";
-import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
+import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
@@ -68,8 +68,11 @@ const LegacyMenuPlugins: React.FC = () => {
                 </Plugins>
             );
         });
-        // TODO @ts-refactor
-        setMenus(menuElements as any);
+        /**
+         * TODO Figure out correct types for the menus.
+         */
+        // @ts-expect-error
+        setMenus(menuElements);
     }, []);
 
     return menus;

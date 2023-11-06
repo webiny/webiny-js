@@ -17,6 +17,7 @@ import { PageTemplateDynamoDbFieldPlugin } from "~/plugins/definitions/PageTempl
 import { PluginsContainer } from "@webiny/plugins";
 import { createGSI1PK, createPrimaryPK } from "./keys";
 import { DataContainer, PageTemplateStorageOperations } from "~/types";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.pageTemplate";
@@ -131,10 +132,13 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                data: pageTemplate,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    data: pageTemplate,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -163,10 +167,13 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                data: pageTemplate,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    data: pageTemplate,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -195,9 +202,9 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                data: pageTemplate,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.

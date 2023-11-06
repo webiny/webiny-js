@@ -39,7 +39,7 @@ const CognitoIdP: React.FC = () => {
 
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer as any} with={CognitoLoginScreen} />
+            <Compose component={LoginScreenRenderer} with={CognitoLoginScreen} />
             <Plugins>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>

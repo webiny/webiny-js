@@ -84,6 +84,7 @@ import { PageBuilderStorageOperations } from "~/types";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     permissions?: any;
@@ -93,7 +94,7 @@ interface Params {
 }
 
 export default ({ permissions, identity, plugins }: Params = {}) => {
-    const i18nStorage = getStorageOps("i18n");
+    const i18nStorage = getStorageOps<any>("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -107,7 +108,8 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nStorage.storageOperations as any,
+            i18nStorage.storageOperations,
+            ,
             mockLocalesPlugins(),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
@@ -171,7 +173,7 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
                 body: JSON.stringify(body),
                 ...rest
             },
-            {} as any
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

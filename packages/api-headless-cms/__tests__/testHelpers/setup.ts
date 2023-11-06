@@ -61,7 +61,7 @@ const getModel = (item: CmsModel | string): CmsModel => {
 
 interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    models: CmsModel[] | string[];
+    models: (CmsModel | string)[];
 }
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
     const { manager, models } = params;

@@ -4,6 +4,7 @@ import {
     AcoContext,
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
+    GenericSearchData,
     IAcoApp,
     IAcoAppModifyFieldCallableCallback,
     IAcoAppParams,
@@ -31,15 +32,17 @@ export class AcoApp implements IAcoApp {
             create: async <TData>(data: CreateSearchRecordParams<TData>) => {
                 return this.context.aco.search.create<TData>(this.getModel(), data);
             },
-            update: async <TData>(id: string, data: SearchRecord<TData>) => {
-                /**
-                 * Required to have as any atm as TS is breaking on the return type.
-                 */
-                return (await this.context.aco.search.update<TData>(
-                    this.getModel(),
-                    id,
-                    data
-                )) as any;
+            /**
+             * TODO: determine correct return type
+             * @param id
+             * @param data
+             */
+            // @ts-expect-error
+            update: async <TData extends GenericSearchData>(
+                id: string,
+                data: SearchRecord<TData>
+            ) => {
+                return await this.context.aco.search.update<TData>(this.getModel(), id, data);
             },
             move: async (id: string, folderId?: string) => {
                 return this.context.aco.search.move(this.getModel(), id, folderId);

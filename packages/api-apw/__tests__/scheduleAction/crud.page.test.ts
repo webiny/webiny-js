@@ -5,6 +5,7 @@ import {
     ApwScheduleActionCrud,
     ApwScheduleActionTypes
 } from "~/scheduler/types";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 const ONE_MINUTE = 1000 * 60;
 const TIME_SEPARATOR = ":";
@@ -31,7 +32,7 @@ describe("Schedule action CRUD Test - Page type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -154,7 +155,7 @@ describe("Schedule action CRUD Test - Page type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -246,7 +247,7 @@ describe("Schedule action CRUD Test - Page type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -321,7 +322,7 @@ describe("Schedule action CRUD Test - Page type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**

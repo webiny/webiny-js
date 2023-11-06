@@ -231,7 +231,7 @@ export interface SecurityStorageOperations {
         params: StorageOperationsGetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
 
-    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
+    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
 
     getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
 

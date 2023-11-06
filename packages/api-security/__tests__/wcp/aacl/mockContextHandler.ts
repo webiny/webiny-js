@@ -15,6 +15,7 @@ import { customAuthenticator } from "~tests/wcp/aacl/mocks/customAuthenticator";
 import { customAuthorizer } from "~tests/wcp/aacl/mocks/customAuthorizer";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { PluginCollection } from "@webiny/plugins/types";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 type CreateMockContextHandlerOptions = {
     plugins?: PluginCollection;
@@ -49,7 +50,8 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
         plugins: [
             createWcpContext(),
             new ContextPlugin<SecurityContext>(async context => {
-                (context as any).tenancy = {
+                // @ts-expect-error
+                context.tenancy = {
                     getCurrentTenant: () => {
                         return {
                             id: "root"
@@ -84,7 +86,7 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
                     headers: { "x-tenant": "root" },
                     body: ""
                 },
-                {} as any
+                {} as LambdaContext
             );
         },
         documentClient,

@@ -16,6 +16,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageElementDynamoDbElasticFieldPlugin } from "~/plugins/definitions/PageElementDynamoDbElasticFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -54,10 +55,13 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageElement,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageElement,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             return pageElement;
         } catch (ex) {
@@ -80,10 +84,13 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageElement,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageElement,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             return pageElement;
         } catch (ex) {
@@ -107,7 +114,10 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await entity.delete(keys);
+            await deleteItem({
+                entity,
+                keys
+            });
             return pageElement;
         } catch (ex) {
             throw new WebinyError(
@@ -129,11 +139,10 @@ export const createPageElementStorageOperations = ({
             SK: createSortKey(where)
         };
         try {
-            const result = (await entity.get(keys)) as any;
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<PageElement>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page element by given parameters.",

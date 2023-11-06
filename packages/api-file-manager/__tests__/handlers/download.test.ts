@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from "aws-lambda";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import {
@@ -7,6 +6,10 @@ import {
 } from "~/handlers/download";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import { fileAData } from "~tests/mocks/files";
+import {
+    APIGatewayEvent,
+    APIGatewayEventRequestContextWithAuthorizer
+} from "@webiny/handler-aws/types";
 
 const binaryMimeTypes: string[] = [];
 binaryMimeTypes.indexOf = () => {
@@ -72,7 +75,7 @@ const createFileDownloadEvent = (path: string): APIGatewayEvent => {
         },
         queryStringParameters: null,
         isBase64Encoded: false,
-        requestContext: {} as any,
+        requestContext: {} as APIGatewayEventRequestContextWithAuthorizer<any>,
         resource: "",
         multiValueHeaders: {},
         stageVariables: null

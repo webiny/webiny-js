@@ -447,7 +447,7 @@ describe('Form Builder "Form" Test', () => {
         await until(
             () => listForms().then(([data]) => data),
             ({ data }: any) => {
-                return (data.formBuilder.listForms.data as any[]).every(form => {
+                return data.formBuilder.listForms.data.every((form: any) => {
                     return [form1.id, form2.id, form3.id].includes(form.id);
                 });
             }
@@ -518,7 +518,7 @@ describe('Form Builder "Form" Test', () => {
         await until(
             () => listForms().then(([data]) => data),
             ({ data }: any) => {
-                return (data.formBuilder.listForms.data as any[]).every(form => {
+                return data.formBuilder.listForms.data.every((form: any) => {
                     return [form1.id, form3.id].includes(form.id);
                 });
             }
@@ -634,7 +634,7 @@ describe('Form Builder "Form" Test', () => {
         await until(
             () => listForms().then(([data]) => data),
             ({ data }: any) => {
-                return (data.formBuilder.listForms.data as any[]).every(form => {
+                return data.formBuilder.listForms.data.every((form: any) => {
                     return [`${form1.formId}#0002`, form3.id].includes(form.id);
                 });
             }

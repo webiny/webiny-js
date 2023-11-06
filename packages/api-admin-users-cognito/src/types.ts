@@ -250,7 +250,7 @@ export interface AdminUsersStorageOperations {
     deleteUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsDeleteUserParams<TUser>
     ): Promise<void>;
-    getSystemData(params: StorageOperationsGetSystemParams): Promise<System>;
+    getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
     updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
 }

@@ -30,7 +30,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                 <Bind>
                     {bind => (
                         <ContentEntriesMultiAutocomplete
-                            key={getKey(props.field, bind as any)}
+                            key={getKey(props.field, bind)}
                             {...props}
                             bind={bind}
                         />

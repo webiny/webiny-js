@@ -17,6 +17,7 @@ import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDyn
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "./keys";
 import { PageBlockStorageOperations } from "~/types";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.pageBlock";
@@ -114,10 +115,13 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -147,10 +151,13 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -182,9 +189,9 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                ...pageBlock,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.

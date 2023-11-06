@@ -1,4 +1,11 @@
-import React from "react";
+import React, {
+    useContext,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState
+} from "react";
 import lodashGet from "lodash/get";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashIsPlainObject from "lodash/isPlainObject";
@@ -9,7 +16,6 @@ import lodashHas from "lodash/has";
 import set from "lodash/fp/set";
 import { Bind } from "./Bind";
 import ValidationError from "./ValidationError";
-import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import {
     BindComponentProps,
     FormAPI,
@@ -330,11 +336,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         ) {
             return Promise.resolve(null);
         }
-        const value = lodashGet(
-            stateRef.current.data,
-            name,
-            inputs.current[name].defaultValue
-        ) as any;
+        const value = lodashGet(stateRef.current.data, name, inputs.current[name].defaultValue);
         const { validators } = inputs.current[name];
         const hasValidators = Object.keys(validators).length > 0;
 

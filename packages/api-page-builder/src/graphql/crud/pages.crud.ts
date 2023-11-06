@@ -42,9 +42,9 @@ import {
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
 import {
-    mdbid,
     createIdentifier,
     createZodError,
+    mdbid,
     parseIdentifier,
     removeNullValues,
     removeUndefinedValues,
@@ -671,7 +671,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async deletePage(this: PageBuilderContextObject, id) {
             await pagesPermissions.ensure({ rwd: "d" });
 
@@ -833,9 +836,9 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
                 if (deleteMethod === "deleteAll") {
-                    return [resultPage, null] as any;
+                    return [resultPage, null];
                 }
-                return [resultPage, latestPage] as any;
+                return [resultPage, latestPage];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page.",
@@ -1188,7 +1191,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
             return decompressPage(page);
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listLatestPages(params, options = {}) {
             const { auth } = options;
             if (auth !== false) {
@@ -1236,7 +1242,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
-                    items as any[],
+                    items,
                     {
                         ...meta,
                         cursor: meta.hasMoreItems ? meta.cursor : null
@@ -1253,7 +1259,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listPublishedPages(params) {
             const {
                 after = null,
@@ -1290,7 +1299,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
-                    items as any[],
+                    items,
                     {
                         ...meta,
                         cursor: meta.hasMoreItems ? meta.cursor : null
@@ -1307,7 +1316,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listPageRevisions(pageId) {
             const { id: pid } = parseIdentifier(pageId);
 
@@ -1326,7 +1338,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     limit: 10000,
                     after: undefined
                 });
-                return pages as any[];
+                return pages;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all the revisions from requested page.",

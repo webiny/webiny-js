@@ -17,7 +17,6 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { configurations } from "~/configurations";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -29,6 +28,7 @@ import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
+import { getClean } from "@webiny/db-dynamodb";
 
 export type DbRecord<T = any> = T & {
     PK: string;
@@ -344,9 +344,7 @@ export const createFormStorageOperations = (
         return form;
     };
 
-    const getForm = async (
-        params: FormBuilderStorageOperationsGetFormParams
-    ): Promise<FbForm | null> => {
+    const getForm = async (params: FormBuilderStorageOperationsGetFormParams) => {
         const { where } = params;
         const { id, formId, latest, published, version, tenant, locale } = where;
         if (latest && published) {
@@ -382,11 +380,10 @@ export const createFormStorageOperations = (
         };
 
         try {
-            const result = (await entity.get(keys)) as any;
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<FbForm>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get form by keys.",
@@ -408,7 +405,7 @@ export const createFormStorageOperations = (
             sort,
             limit: limit + 1,
             where,
-            after: decodeCursor(after) as any
+            after: decodeCursor(after)
         });
 
         const esConfig = configurations.es({

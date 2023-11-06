@@ -128,8 +128,11 @@ export const createAdminUsers = ({
                 await onUserBeforeCreate.publish({ user, inputData: data });
                 /**
                  * Always delete `password` from the user data!
+                 *
+                 * Error is expected because password is not optional parameter.
                  */
-                delete (user as any)["password"];
+                // @ts-expect-error
+                delete user["password"];
 
                 try {
                     result = await storageOperations.createUser({ user });

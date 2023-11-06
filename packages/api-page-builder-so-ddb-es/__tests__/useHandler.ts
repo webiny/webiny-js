@@ -47,6 +47,7 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import { configurations as cmsConfigurations } from "@webiny/api-headless-cms-ddb-es/configurations";
 import { SEARCH_RECORD_MODEL_ID } from "@webiny/api-aco/record/record.model";
 import { FOLDER_MODEL_ID } from "@webiny/api-aco/folder/folder.model";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     plugins?: PluginCollection;
@@ -203,7 +204,7 @@ export const useHandler = (params: Params) => {
                 body: JSON.stringify(body),
                 ...rest
             },
-            {} as any
+            {} as LambdaContext
         );
 
         return [JSON.parse(response.body), response];

@@ -6,8 +6,8 @@ import {
 } from "@webiny/api-form-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { FormBuilderSystemCreateKeysParams, FormBuilderSystemStorageOperations } from "~/types";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
+import { getClean } from "@webiny/db-dynamodb";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
@@ -64,11 +64,10 @@ export const createSystemStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = (await entity.get(keys)) as any;
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<System>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get the system record by given keys.",

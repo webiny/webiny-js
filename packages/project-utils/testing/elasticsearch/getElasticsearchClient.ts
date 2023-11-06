@@ -12,9 +12,8 @@ import { logger } from "../logger";
 import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
-import { createElasticsearchClient } from "./createClient";
-import { simulateStream, getDocumentClient } from "../dynamodb";
-import { ElasticsearchClient } from "./createClient";
+import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
+import { getDocumentClient, simulateStream } from "../dynamodb";
 import { PluginCollection } from "../environment";
 
 interface GetElasticsearchClientParams {
@@ -78,7 +77,7 @@ export class ElasticsearchClientConfig {
         const gzipCompression = createGzipCompression();
         const simulationContext = new ContextPlugin(async context => {
             context.plugins.register(gzipCompression);
-            await elasticsearchClientContext.apply(context as any);
+            await elasticsearchClientContext.apply(context);
         });
 
         simulateStream(

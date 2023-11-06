@@ -1150,10 +1150,10 @@ export const createEntriesStorageOperations = (
              *
              * No need to transform it for the storage because it was fetched directly from the Elasticsearch table, where it sits transformed.
              */
-            const latestEsEntryDataDecompressed: CmsIndexEntry = (await decompress(
+            const latestEsEntryDataDecompressed = (await decompress(
                 plugins,
                 latestEsEntry.data
-            )) as any;
+            )) as CmsIndexEntry;
 
             const latestTransformer = createTransformer({
                 plugins,

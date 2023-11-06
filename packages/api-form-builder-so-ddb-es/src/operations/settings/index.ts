@@ -11,7 +11,7 @@ import {
     FormBuilderSettingsStorageOperationsCreatePartitionKeyParams
 } from "~/types";
 import WebinyError from "@webiny/error";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { getClean } from "@webiny/db-dynamodb";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
@@ -71,11 +71,10 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = (await entity.get(keys)) as any;
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<Settings>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get the settings record by given keys.",

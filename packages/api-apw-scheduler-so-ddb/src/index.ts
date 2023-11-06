@@ -1,28 +1,29 @@
-import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { createTable } from "~/definitions/table";
 import { createScheduleActionsEntity } from "~/definitions/scheduleActionEntity";
-import { PartitionKeyOptions, CreateStorageOperationsParams } from "~/types";
+import { CreateStorageOperationsParams, PartitionKeyOptions } from "~/types";
 import {
     ApwScheduleAction,
     ApwScheduleActionStorageOperations,
+    ListWhere,
+    StorageOperationsCreateScheduleActionParams,
+    StorageOperationsDeleteCurrentTaskParams,
+    StorageOperationsDeleteScheduleActionParams,
     StorageOperationsGetScheduleActionParams,
     StorageOperationsListScheduleActionsParams,
-    StorageOperationsCreateScheduleActionParams,
-    StorageOperationsUpdateScheduleActionParams,
-    StorageOperationsDeleteScheduleActionParams,
     StorageOperationsListScheduleActionsResponse,
     StorageOperationsUpdateCurrentTaskParams,
-    StorageOperationsDeleteCurrentTaskParams,
-    ListWhere
+    StorageOperationsUpdateScheduleActionParams
 } from "@webiny/api-apw/scheduler/types";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { ApwSchedulerScheduleActionDynamoDbFieldPlugin } from "~/plugins/ApwSchedulerScheduleActionDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createFields } from "~/definitions/fields";
 import dynamoDbFilters from "@webiny/db-dynamodb/plugins/filters";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 export const createStorageOperations = (
     params: CreateStorageOperationsParams
@@ -65,11 +66,10 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = (await entity.get(keys)) as any;
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entity, result.Item);
+                return await getClean<ApwScheduleAction>({
+                    entity,
+                    keys
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load schedule action by given parameters.",
@@ -192,10 +192,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entity.put({
-                    ...item,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...item,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return item;
             } catch (ex) {
@@ -222,7 +225,10 @@ export const createStorageOperations = (
             };
 
             try {
-                await entity.delete(keys);
+                await deleteItem({
+                    entity,
+                    keys
+                });
                 return true;
             } catch (ex) {
                 throw new WebinyError(
@@ -245,11 +251,10 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = (await entity.get(keys)) as any;
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entity, result.Item);
+                return await getClean<ApwScheduleAction>({
+                    entity,
+                    keys
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load current schedule action by given parameters.",
@@ -276,10 +281,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entity.update({
-                    ...item,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...item,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return item;
             } catch (ex) {
@@ -304,7 +312,10 @@ export const createStorageOperations = (
             };
 
             try {
-                await entity.delete(keys);
+                await deleteItem({
+                    entity,
+                    keys
+                });
                 return true;
             } catch (ex) {
                 throw new WebinyError(

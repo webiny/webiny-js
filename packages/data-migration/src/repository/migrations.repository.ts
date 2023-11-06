@@ -1,9 +1,14 @@
-import { Table, Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { MigrationItem, MigrationRepository, MigrationRun } from "~/types";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { PrimaryDynamoTableSymbol } from "~/symbols";
 import { createStandardEntity } from "./createStandardEntity";
+import { deleteItem, get, put } from "@webiny/db-dynamodb";
+
+interface MigrationCheckpoint {
+    data: unknown;
+}
 
 export class MigrationRepositoryImpl implements MigrationRepository {
     private readonly run: Entity<any>;
@@ -31,13 +36,16 @@ export class MigrationRepositoryImpl implements MigrationRepository {
     }
 
     async saveRun(run: MigrationRun): Promise<void> {
-        await this.run.put({
-            PK: `MIGRATION_RUN#${run.id}`,
-            SK: "A",
-            TYPE: "migration.run",
-            GSI1_PK: "MIGRATION_RUNS",
-            GSI1_SK: run.id,
-            data: run
+        await put({
+            entity: this.run,
+            item: {
+                PK: `MIGRATION_RUN#${run.id}`,
+                SK: "A",
+                TYPE: "migration.run",
+                GSI1_PK: "MIGRATION_RUNS",
+                GSI1_SK: run.id,
+                data: run
+            }
         });
     }
 
@@ -59,44 +67,56 @@ export class MigrationRepositoryImpl implements MigrationRepository {
     }
 
     async logMigration(migration: MigrationItem): Promise<void> {
-        await this.migration.put({
-            PK: `MIGRATION#${migration.id}`,
-            SK: "A",
-            TYPE: "migration",
-            GSI1_PK: "MIGRATIONS",
-            GSI1_SK: migration.id,
-            data: migration
+        await put({
+            entity: this.migration,
+            item: {
+                PK: `MIGRATION#${migration.id}`,
+                SK: "A",
+                TYPE: "migration",
+                GSI1_PK: "MIGRATIONS",
+                GSI1_SK: migration.id,
+                data: migration
+            }
         });
     }
 
     async createCheckpoint(id: string, data: unknown): Promise<void> {
-        await this.checkpoint.put({
-            PK: `MIGRATION_CHECKPOINT#${id}`,
-            SK: "A",
-            TYPE: "migration.checkpoint",
-            GSI1_PK: "MIGRATION_CHECKPOINTS",
-            GSI1_SK: id,
-            data
+        await put({
+            entity: this.checkpoint,
+            item: {
+                PK: `MIGRATION_CHECKPOINT#${id}`,
+                SK: "A",
+                TYPE: "migration.checkpoint",
+                GSI1_PK: "MIGRATION_CHECKPOINTS",
+                GSI1_SK: id,
+                data
+            }
         });
     }
 
     async deleteCheckpoint(id: string): Promise<void> {
-        await this.checkpoint.delete({
-            PK: `MIGRATION_CHECKPOINT#${id}`,
-            SK: "A"
+        await deleteItem({
+            entity: this.checkpoint,
+            keys: {
+                PK: `MIGRATION_CHECKPOINT#${id}`,
+                SK: "A"
+            }
         });
     }
 
     async getCheckpoint(id: string): Promise<unknown | null> {
-        const record = (await this.checkpoint.get({
-            PK: `MIGRATION_CHECKPOINT#${id}`,
-            SK: "A"
-        })) as any;
+        const record = await get<MigrationCheckpoint>({
+            entity: this.checkpoint,
+            keys: {
+                PK: `MIGRATION_CHECKPOINT#${id}`,
+                SK: "A"
+            }
+        });
 
-        if (!record || !record.Item) {
+        if (!record) {
             return null;
         }
-        return record.Item.data;
+        return record.data;
     }
 }
 

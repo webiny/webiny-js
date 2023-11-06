@@ -42,6 +42,7 @@ import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { AcoContext } from "@webiny/api-aco/types";
 import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -159,8 +160,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

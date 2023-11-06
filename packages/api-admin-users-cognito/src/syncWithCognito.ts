@@ -1,6 +1,6 @@
 import {
-    CognitoIdentityProvider,
-    AdminCreateUserRequest
+    AdminCreateUserRequest,
+    CognitoIdentityProvider
 } from "@webiny/aws-sdk/client-cognito-identity-provider";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
@@ -57,8 +57,8 @@ export const syncWithCognito = ({
         adminUsers.onUserBeforeCreate.subscribe(async ({ user, inputData }) => {
             // Immediately delete password from `user`, as that object will be stored to the database.
             // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
-            // Casting as any because password does not exist on user, but we know it does
-            delete (user as any)["password"];
+            // @ts-expect-error
+            delete user["password"];
 
             const username = getUsername(inputData);
 
@@ -143,8 +143,8 @@ export const syncWithCognito = ({
 
         adminUsers.onUserBeforeUpdate.subscribe(({ updateData }) => {
             // Immediately delete password from `updateData`, as that object will be merged with the `user` data.
-            // Casting as any because password does not exist on user, but we know it does
-            delete (updateData as any)["password"];
+            // @ts-expect-error
+            delete updateData["password"];
         });
 
         adminUsers.onUserAfterUpdate.subscribe(async ({ originalUser, updatedUser, inputData }) => {
@@ -172,7 +172,7 @@ export const syncWithCognito = ({
 
             await cognito.adminUpdateUserAttributes(params);
 
-            const { password } = (inputData as any) || {};
+            const { password } = inputData || {};
             if (password) {
                 const pass = {
                     Permanent: true,

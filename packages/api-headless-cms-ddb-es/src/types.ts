@@ -43,7 +43,7 @@ export interface CmsIndexEntry extends CmsEntry {
  * @category Elasticsearch
  * @category CmsEntry
  */
-interface CmsModelFieldToElasticsearchToParams {
+export interface CmsModelFieldToElasticsearchToParams {
     plugins: PluginsContainer;
     model: CmsModel;
     field: CmsModelField;
@@ -65,7 +65,7 @@ interface CmsModelFieldToElasticsearchToParams {
  * @category Elasticsearch
  * @category CmsEntry
  */
-interface CmsModelFieldToElasticsearchFromParams {
+export interface CmsModelFieldToElasticsearchFromParams {
     plugins: PluginsContainer;
     model: CmsModel;
     field: CmsModelField;

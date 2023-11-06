@@ -24,7 +24,7 @@ import {
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
 import { configurations } from "~/configurations";
-import { encodeCursor, createLimit } from "@webiny/api-elasticsearch";
+import { createLimit, encodeCursor } from "@webiny/api-elasticsearch";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";
 import { SearchLatestPagesPlugin } from "~/plugins/definitions/SearchLatestPagesPlugin";
 import { SearchPublishedPagesPlugin } from "~/plugins/definitions/SearchPublishedPagesPlugin";
@@ -47,6 +47,7 @@ import {
 } from "./keys";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 /**
  * This function removes attributes that were once present in the Page record, which we no longer need.
@@ -148,10 +149,13 @@ export const createPageStorageOperations = (
                 items
             });
 
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
             return page;
         } catch (ex) {
@@ -181,8 +185,10 @@ export const createPageStorageOperations = (
             ...keys,
             SK: createLatestSortKey()
         };
-        const latestPageResult = (await entity.get(latestKeys)) as any;
-        const latestPage = cleanupItem(entity, latestPageResult ? latestPageResult.Item : null);
+        const latestPage = await getClean<Page>({
+            entity,
+            keys: latestKeys
+        });
 
         const items = [
             entity.putBatch({
@@ -194,7 +200,7 @@ export const createPageStorageOperations = (
 
         const esData = getESLatestPageData(plugins, page, input);
 
-        if (latestPage && latestPage.id === page.id) {
+        if (latestPage && latestPage?.id === page.id) {
             /**
              * We also update the regular record.
              */
@@ -215,10 +221,13 @@ export const createPageStorageOperations = (
                 items
             });
 
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
 
             return page;
@@ -684,11 +693,10 @@ export const createPageStorageOperations = (
             SK: sortKey
         };
         try {
-            const result = (await entity.get(keys)) as any;
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",

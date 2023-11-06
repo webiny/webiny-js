@@ -211,7 +211,7 @@ const createBaseContextPlugin = () => {
         };
 
         context.i18n = {
-            ...(context.i18n || ({} as any)),
+            ...context.i18n,
             getDefaultLocale,
             setCurrentLocale,
             getCurrentLocales,

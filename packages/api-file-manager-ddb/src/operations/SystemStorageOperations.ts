@@ -8,7 +8,7 @@ import {
     FileManagerSystemStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
-import { createLegacyEntity, createTable } from "@webiny/db-dynamodb";
+import { createLegacyEntity, createTable, get, put } from "@webiny/db-dynamodb";
 
 interface SystemStorageOperationsConstructorParams {
     documentClient: DynamoDBClient;
@@ -38,14 +38,14 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
         tenant
     }: FileManagerSystemStorageOperationsGetParams): Promise<FileManagerSystem | null> {
         try {
-            const system = (await this._entity.get({
-                PK: `T#${tenant}#SYSTEM`,
-                SK: SORT_KEY
-            })) as any;
-            if (!system || !system.Item) {
-                return null;
-            }
-            return system.Item;
+            const system = await get<FileManagerSystem>({
+                entity: this._entity,
+                keys: {
+                    PK: `T#${tenant}#SYSTEM`,
+                    SK: SORT_KEY
+                }
+            });
+            return system || null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager system.",
@@ -59,10 +59,13 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
     ): Promise<FileManagerSystem> {
         const { data } = params;
         try {
-            await this._entity.put({
-                PK: `T#${data.tenant}#SYSTEM`,
-                SK: SORT_KEY,
-                ...data
+            await put({
+                entity: this._entity,
+                item: {
+                    ...data,
+                    PK: `T#${data.tenant}#SYSTEM`,
+                    SK: SORT_KEY
+                }
             });
         } catch (ex) {
             throw new WebinyError(
@@ -82,10 +85,13 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
         const { original, data } = params;
 
         try {
-            await this._entity.update({
-                PK: `T#${data.tenant}#SYSTEM`,
-                SK: SORT_KEY,
-                ...data
+            await put({
+                entity: this._entity,
+                item: {
+                    ...data,
+                    PK: `T#${data.tenant}#SYSTEM`,
+                    SK: SORT_KEY
+                }
             });
         } catch (ex) {
             throw new WebinyError(
