@@ -1,11 +1,12 @@
-import { createFormBuilder } from "~/index";
-import { FormBuilderContext, FbFormPermission } from "~/types";
-import WebinyError from "@webiny/error";
-import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsModelPlugin } from "@webiny/api-headless-cms";
-import { CmsFormBuilderStorage } from "./CmsFormBuilderStorage";
-import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
 import { AppPermissions } from "@webiny/api-security/utils/AppPermissions";
+import WebinyError from "@webiny/error";
+
+import { createFormBuilder } from "~/index";
+import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
+import { CmsFormsStorage } from "./CmsFormsStorage";
+import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
+import { FormBuilderContext, FbFormPermission, FormBuilderStorageOperations } from "~/types";
 
 class FormsPermissions extends AppPermissions<FbFormPermission> {}
 
@@ -16,53 +17,7 @@ export class FormBuilderContextSetup {
         this.context = context;
     }
 
-    async setupContext(storageOperations: any) {
-        const formStorageOps = await this.context.security.withoutAuthorization(() => {
-            return this.setupCmsStorageOperations();
-        });
-
-        if (formStorageOps) {
-            storageOperations = {
-                ...storageOperations,
-                ...formStorageOps
-            };
-        }
-
-        const formsPermissions = new FormsPermissions({
-            getIdentity: this.getIdentity.bind(this),
-            getPermissions: () => this.context.security.getPermissions("fb.form"),
-            fullAccessPermissionName: "fb.*"
-        });
-
-        return createFormBuilder({
-            storageOperations,
-            formsPermissions,
-            getTenant: this.getTenantId.bind(this),
-            getLocale: this.getLocale.bind(this),
-            context: this.context
-        });
-    }
-
-    private getLocale() {
-        const locale = this.context.i18n.getContentLocale();
-        if (!locale) {
-            throw new WebinyError(
-                "Missing locale on context.i18n locale in File Manager API.",
-                "LOCALE_ERROR"
-            );
-        }
-        return locale;
-    }
-
-    private getIdentity() {
-        return this.context.security.getIdentity();
-    }
-
-    private getTenantId() {
-        return this.context.tenancy.getCurrentTenant().id;
-    }
-
-    private async setupCmsStorageOperations() {
+    async setupContext(storageOperations: FormBuilderStorageOperations) {
         // This registers code plugins (model group, models)
         const { groupPlugin, formModelDefinition, submissionModelDefinition } =
             createFormBuilderPlugins();
@@ -73,21 +28,55 @@ export class FormBuilderContextSetup {
             new CmsModelPlugin(formModelDefinition),
             new CmsModelPlugin(submissionModelDefinition)
         ]);
-        const formModel = await this.getModel("fbForm");
-        const submissionModel = await this.getModel("fbSubmission");
 
-        return {
-            ...(await CmsFormBuilderStorage.create({
-                model: formModel,
-                cms: this.context.cms,
-                security: this.context.security
-            })),
-            ...(await CmsSubmissionsStorage.create({
-                model: submissionModel,
-                cms: this.context.cms,
-                security: this.context.security
-            }))
+        const formsStorageOps = await this.context.security.withoutAuthorization(() => {
+            return this.setupFormsCmsStorageOperations();
+        });
+        const submissionsStorageOps = await this.context.security.withoutAuthorization(() => {
+            return this.setupSubmissionsCmsStorageOperations();
+        });
+
+        storageOperations = {
+            ...storageOperations,
+            forms: formsStorageOps,
+            submissions: submissionsStorageOps
         };
+
+        const formsPermissions = new FormsPermissions({
+            getIdentity: this.getIdentity.bind(this),
+            getPermissions: () => this.context.security.getPermissions("fb.form"),
+            fullAccessPermissionName: "fb.*"
+        });
+
+        return createFormBuilder({
+            storageOperations,
+            formsPermissions,
+            context: this.context
+        });
+    }
+
+    private getIdentity() {
+        return this.context.security.getIdentity();
+    }
+
+    private async setupFormsCmsStorageOperations() {
+        const model = await this.getModel("fbForm");
+
+        return await CmsFormsStorage.create({
+            model,
+            cms: this.context.cms,
+            security: this.context.security
+        });
+    }
+
+    private async setupSubmissionsCmsStorageOperations() {
+        const model = await this.getModel("fbSubmission");
+
+        return await CmsSubmissionsStorage.create({
+            model,
+            cms: this.context.cms,
+            security: this.context.security
+        });
     }
 
     private async getModel(modelId: string) {

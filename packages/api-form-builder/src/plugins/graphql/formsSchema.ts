@@ -81,7 +81,7 @@ export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
                         /**
                          * This fetches the exact revision specified by revision ID
                          */
-                        form = await formBuilder.getPublishedFormRevisionById(args.revision);
+                        form = await formBuilder.getForm(args.revision, { auth: false });
                     } else if (args.parent) {
                         /**
                          * This fetches the latest published revision for given parent form

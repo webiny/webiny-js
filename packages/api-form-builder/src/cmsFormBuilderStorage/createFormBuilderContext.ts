@@ -1,9 +1,13 @@
 import { ContextPlugin } from "@webiny/api";
-import { FormBuilderContext } from "~/types";
+import { FormBuilderContext, FormBuilderStorageOperations } from "~/types";
 import { FormBuilderContextSetup } from "./FormBuilderContextSetup";
 import { createGraphQLSchemaPlugin } from "./createGraphQLSchemaPlugin";
 
-export const createFormBuilderContext = ({ storageOperations }: { storageOperations: any }) => {
+type CreateFormBuilderContextParams = {
+    storageOperations: FormBuilderStorageOperations;
+};
+
+export const createFormBuilderContext = ({ storageOperations }: CreateFormBuilderContextParams) => {
     const plugin = new ContextPlugin<FormBuilderContext>(async context => {
         const fbContext = new FormBuilderContextSetup(context);
         await fbContext.setupContext(storageOperations);

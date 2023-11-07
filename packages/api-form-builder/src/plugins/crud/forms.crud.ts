@@ -114,7 +114,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             let form: FbForm | null = null;
             try {
-                form = await this.storageOperations.getForm({
+                form = await this.storageOperations.forms.getForm({
                     where: {
                         id,
                         tenant: getTenant().id,
@@ -192,7 +192,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             try {
-                return await this.storageOperations.listForms(listFormParams);
+                return await this.storageOperations.forms.listForms(listFormParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list all forms by given params",
@@ -206,7 +206,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async getFormRevisions(this: FormBuilder, id) {
             try {
-                const result = await this.storageOperations.listFormRevisions({
+                const result = await this.storageOperations.forms.listFormRevisions({
                     where: {
                         formId: id,
                         tenant: getTenant().id,
@@ -226,42 +226,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
-        async getPublishedFormRevisionById(this: FormBuilder, id) {
-            const [version] = id.split("#");
-            if (!version) {
-                throw new WebinyError("There is no version in given ID value.", "VERSION_ERROR", {
-                    id
-                });
-            }
-
-            let form: FbForm | null = null;
-            try {
-                form = await this.storageOperations.getForm({
-                    where: {
-                        id,
-                        published: true,
-                        tenant: getTenant().id,
-                        locale: getLocale().code
-                    }
-                });
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not load published form revision by ID.",
-                    ex.code || "GET_PUBLISHED_FORM_BY_ID_ERROR",
-                    {
-                        id
-                    }
-                );
-            }
-            if (!form) {
-                throw new NotFoundError(`Form "${id}" was not found!`);
-            }
-            return form;
-        },
         async getLatestPublishedFormRevision(this: FormBuilder, id) {
             let form: FbForm | null = null;
             try {
-                form = await this.storageOperations.getForm({
+                form = await this.storageOperations.forms.getForm({
                     where: {
                         id,
                         published: true,
@@ -351,7 +319,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.createForm({ form, input });
+                const result = await this.storageOperations.forms.createForm({ form, input });
                 await onFormAfterCreate.publish({
                     form: result
                 });
@@ -372,7 +340,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             await updateData.validate();
             const data = await updateData.toJSON({ onlyDirty: true });
 
-            const original = await this.storageOperations.getForm({
+            const original = await this.storageOperations.forms.getForm({
                 where: {
                     id,
                     tenant: getTenant().id,
@@ -400,7 +368,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form,
                     original
                 });
-                const result = await this.storageOperations.updateForm({
+                const result = await this.storageOperations.forms.updateForm({
                     form,
                     input,
                     meta: {},
@@ -426,7 +394,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async deleteForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "d" });
 
-            const form = await this.storageOperations.getForm({
+            const form = await this.storageOperations.forms.getForm({
                 where: {
                     id,
                     tenant: getTenant().id,
@@ -444,7 +412,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforeDelete.publish({
                     form
                 });
-                await this.storageOperations.deleteForm({
+                await this.storageOperations.forms.deleteForm({
                     form
                 });
                 await onFormAfterDelete.publish({
@@ -472,7 +440,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             const formFormId = form.formId || form.id.split("#").pop();
 
-            const revisions = await this.storageOperations.listFormRevisions({
+            const revisions = await this.storageOperations.forms.listFormRevisions({
                 where: {
                     formId: formFormId || "",
                     tenant: form.tenant,
@@ -495,7 +463,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     previous,
                     revisions
                 });
-                await this.storageOperations.deleteFormRevision({ form });
+                await this.storageOperations.forms.deleteFormRevision({ form });
                 await onFormRevisionAfterDelete.publish({
                     form,
                     previous,
@@ -538,7 +506,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforePublish.publish({
                     form
                 });
-                const result = await this.storageOperations.publishForm({
+                const result = await this.storageOperations.forms.publishForm({
                     original,
                     form,
                     input: form
@@ -580,7 +548,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforeUnpublish.publish({
                     form
                 });
-                const result = await this.storageOperations.unpublishForm({
+                const result = await this.storageOperations.forms.unpublishForm({
                     original,
                     form,
                     input: form
@@ -608,7 +576,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
             const originalFormFormId = original.formId || (original.id.split("#").pop() as string);
-            const latest = await this.storageOperations.getForm({
+            const latest = await this.storageOperations.forms.getForm({
                 where: {
                     id,
                     latest: true,
@@ -663,7 +631,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     latest,
                     form
                 });
-                const result = await this.storageOperations.createFormFrom({
+                const result = await this.storageOperations.forms.createFormFrom({
                     form: latest
                 });
                 await onFormRevisionAfterCreate.publish({
@@ -700,7 +668,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await this.storageOperations.updateForm({
+                await this.storageOperations.forms.updateForm({
                     form,
                     input: form
                 });
@@ -733,7 +701,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                await this.storageOperations.updateForm({
+                await this.storageOperations.forms.updateForm({
                     form,
                     input: form
                 });

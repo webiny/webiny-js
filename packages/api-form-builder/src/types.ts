@@ -233,7 +233,6 @@ export interface FormsCRUD {
     incrementFormViews(id: string): Promise<boolean>;
     incrementFormSubmissions(id: string): Promise<boolean>;
     getFormRevisions(id: string): Promise<FbForm[]>;
-    getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteFormRevision(id: string): Promise<boolean>;
     /**
@@ -742,27 +741,27 @@ export interface FormBuilderSettingsStorageOperations {
  */
 export interface FormBuilderFormStorageOperations {
     getForm(params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm | null>;
-    listForms(
-        params: FormBuilderStorageOperationsListFormsParams
-    ): Promise<FormBuilderStorageOperationsListFormsResponse>;
-    listFormRevisions(
-        params: FormBuilderStorageOperationsListFormRevisionsParams
-    ): Promise<FbForm[]>;
     createForm(params: FormBuilderStorageOperationsCreateFormParams): Promise<FbForm>;
     createFormFrom(params: FormBuilderStorageOperationsCreateFormFromParams): Promise<FbForm>;
     updateForm(params: FormBuilderStorageOperationsUpdateFormParams): Promise<FbForm>;
     /**
      * Delete all form revisions + latest + published.
      */
-    deleteForm(params: FormBuilderStorageOperationsDeleteFormParams): Promise<FbForm>;
+    deleteForm(params: FormBuilderStorageOperationsDeleteFormParams): Promise<void>;
     /**
      * Delete the single form revision.
      */
-    deleteFormRevision(
-        params: FormBuilderStorageOperationsDeleteFormRevisionParams
-    ): Promise<FbForm>;
+    deleteFormRevision(params: FormBuilderStorageOperationsDeleteFormRevisionParams): Promise<void>;
+    listForms(
+        params: FormBuilderStorageOperationsListFormsParams
+    ): Promise<FormBuilderStorageOperationsListFormsResponse>;
+    listFormRevisions(
+        params: FormBuilderStorageOperationsListFormRevisionsParams
+    ): Promise<FbForm[]>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
+    beforeInit?: (context: FormBuilderContext) => Promise<void>;
+    init?: (context: FormBuilderContext) => Promise<void>;
 }
 
 /**
@@ -791,16 +790,18 @@ export interface FormBuilderSubmissionStorageOperations {
     ): Promise<FbSubmission>;
     deleteSubmission(
         params: FormBuilderStorageOperationsDeleteSubmissionParams
-    ): Promise<FbSubmission>;
+    ): Promise<FbSubmission | null>;
+    beforeInit?: (context: FormBuilderContext) => Promise<void>;
+    init?: (context: FormBuilderContext) => Promise<void>;
 }
 /**
  * @category StorageOperations
  */
 export interface FormBuilderStorageOperations
     extends FormBuilderSystemStorageOperations,
-        FormBuilderSettingsStorageOperations,
-        FormBuilderFormStorageOperations,
-        FormBuilderSubmissionStorageOperations {
+        FormBuilderSettingsStorageOperations {
+    forms: FormBuilderFormStorageOperations;
+    submissions: FormBuilderSubmissionStorageOperations;
     beforeInit?: (context: FormBuilderContext) => Promise<void>;
     init?: (context: FormBuilderContext) => Promise<void>;
 }

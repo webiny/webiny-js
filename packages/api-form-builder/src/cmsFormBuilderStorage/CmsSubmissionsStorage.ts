@@ -6,7 +6,8 @@ import { Security } from "@webiny/api-security/types";
 import {
     FormBuilderStorageOperationsCreateSubmissionParams,
     FormBuilderStorageOperationsUpdateSubmissionParams,
-    FormBuilderStorageOperationsListSubmissionsParams
+    FormBuilderStorageOperationsListSubmissionsParams,
+    FbSubmission
 } from "~/types";
 
 interface ModelContext {
@@ -33,7 +34,7 @@ export class CmsSubmissionsStorage {
         return { ...this.model, tenant, locale };
     }
 
-    listSubmissions = async (params: FormBuilderStorageOperationsListSubmissionsParams) => {
+    async listSubmissions(params: FormBuilderStorageOperationsListSubmissionsParams) {
         const { id_in, formId, tenant, locale } = params.where;
         const model = this.modelWithContext({ tenant, locale });
 
@@ -50,11 +51,9 @@ export class CmsSubmissionsStorage {
         });
 
         return { items: entries.map(entry => this.getSubmissionValues(entry)), meta };
-    };
+    }
 
-    createSubmission = async ({
-        submission
-    }: FormBuilderStorageOperationsCreateSubmissionParams) => {
+    async createSubmission({ submission }: FormBuilderStorageOperationsCreateSubmissionParams) {
         const model = this.modelWithContext(submission);
 
         const entry = await this.security.withoutAuthorization(() => {
@@ -62,11 +61,9 @@ export class CmsSubmissionsStorage {
         });
 
         return this.getSubmissionValues(entry);
-    };
+    }
 
-    updateSubmission = async ({
-        submission
-    }: FormBuilderStorageOperationsUpdateSubmissionParams) => {
+    async updateSubmission({ submission }: FormBuilderStorageOperationsUpdateSubmissionParams) {
         const model = this.modelWithContext(submission);
 
         return await this.security.withoutAuthorization(async () => {
@@ -87,18 +84,26 @@ export class CmsSubmissionsStorage {
 
             return this.getSubmissionValues(updatedEntry);
         });
-    };
+    }
+
+    async getSubmission() {
+        return null;
+    }
+
+    async deleteSubmission() {
+        return null;
+    }
 
     private getSubmissionValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
-            createdBy: entry.createdBy,
+            ownedBy: entry.createdBy,
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,
             ...entry.values
-        };
+        } as FbSubmission;
     }
 }

@@ -1,4 +1,4 @@
-import { FormBuilderStorageOperations } from "~/types";
+import { FormBuilderStorageOperations, FormBuilderContext } from "~/types";
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 import { createFormsCrud } from "~/plugins/crud/forms.crud";
@@ -9,9 +9,10 @@ import { SettingsPermissions } from "~/plugins/crud/permissions/SettingsPermissi
 
 export interface CreateFormBuilderCrudParams {
     storageOperations: FormBuilderStorageOperations;
+    context: FormBuilderContext;
 }
 
-export const setupFormBuilderContext = async (params: any) => {
+export const setupFormBuilderContext = async (params: CreateFormBuilderCrudParams) => {
     const { storageOperations, context } = params;
 
     const getLocale = () => {
@@ -33,18 +34,26 @@ export const setupFormBuilderContext = async (params: any) => {
         return context.tenancy.getCurrentTenant();
     };
 
-    if (storageOperations.beforeInit) {
-        try {
+    try {
+        if (storageOperations.beforeInit) {
             await storageOperations.beforeInit(context);
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not run before init in Form Builder storage operations.",
-                ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
-                {
-                    ...ex
-                }
-            );
         }
+
+        if (storageOperations.forms.beforeInit) {
+            await storageOperations.forms.beforeInit(context);
+        }
+
+        if (storageOperations.submissions.beforeInit) {
+            await storageOperations.submissions.beforeInit(context);
+        }
+    } catch (ex) {
+        throw new WebinyError(
+            ex.message || "Could not run before init in Form Builder storage operations.",
+            ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
+            {
+                ...ex
+            }
+        );
     }
 
     const basePermissionsArgs = {
@@ -88,12 +97,18 @@ export const setupFormBuilderContext = async (params: any) => {
         })
     };
 
-    if (!storageOperations.init) {
-        return;
-    }
-
     try {
-        await storageOperations.init(context);
+        if (storageOperations.init) {
+            await storageOperations.init(context);
+        }
+
+        if (storageOperations.forms.init) {
+            await storageOperations.forms.init(context);
+        }
+
+        if (storageOperations.submissions.init) {
+            await storageOperations.submissions.init(context);
+        }
     } catch (ex) {
         throw new WebinyError(
             ex.message || "Could not run init in Form Builder storage operations.",

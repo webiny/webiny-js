@@ -1,5 +1,7 @@
-import { createModelField } from "../creteModelField";
+import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 import { CmsModelField, CmsModelGroup } from "@webiny/api-headless-cms/types";
+
+import { createModelField } from "../creteModelField";
 
 const required = () => {
     return {
@@ -28,7 +30,7 @@ const nameField = () => {
 const publishedField = () => {
     return createModelField({
         label: "Published",
-        type: "text",
+        type: "boolean",
         validation: [required()]
     });
 };
@@ -457,7 +459,7 @@ export const FIELD_FIELDS = [
 
 export const STEP_FIELDS = [stepTitleField(), stepLayoutField()];
 
-export const createFormDataModelDefinition = (group: CmsModelGroup): any => {
+export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
     return {
         name: "FbForm",
         modelId: "fbForm",

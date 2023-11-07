@@ -99,7 +99,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                const { items } = await this.storageOperations.listSubmissions(
+                const { items } = await this.storageOperations.submissions.listSubmissions(
                     listSubmissionsParams
                 );
 
@@ -156,7 +156,9 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                const result = await this.storageOperations.listSubmissions(listSubmissionsParams);
+                const result = await this.storageOperations.submissions.listSubmissions(
+                    listSubmissionsParams
+                );
 
                 return [result.items, result.meta];
             } catch (ex) {
@@ -308,7 +310,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await this.storageOperations.createSubmission({
+                await this.storageOperations.submissions.createSubmission({
                     input: modelData,
                     form,
                     submission
@@ -411,7 +413,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     original,
                     submission
                 });
-                await this.storageOperations.updateSubmission({
+                await this.storageOperations.submissions.updateSubmission({
                     input: updatedData,
                     form,
                     original,
@@ -448,7 +450,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await this.storageOperations.deleteSubmission({
+                await this.storageOperations.submissions.deleteSubmission({
                     form,
                     submission
                 });

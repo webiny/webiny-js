@@ -8,8 +8,6 @@ import { FormsPermissions } from "./plugins/crud/permissions/FormsPermissions";
 export interface CreateFormBuilderParams {
     storageOperations: FormBuilderStorageOperations;
     formsPermissions: FormsPermissions;
-    getTenant: any;
-    getLocale: any;
     context: FormBuilderContext;
 }
 
