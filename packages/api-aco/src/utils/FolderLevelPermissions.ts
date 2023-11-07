@@ -403,12 +403,7 @@ export class FolderLevelPermissions {
     }
 
     async canCreateFolderInRoot() {
-        if (!this.canUseFolderLevelPermissions()) {
-            return true;
-        }
-
-        const permissions = await this.listPermissions();
-        return permissions.some(p => p.name === "*");
+        return true;
     }
 
     async filterFolders(params: FilterFoldersParams) {
