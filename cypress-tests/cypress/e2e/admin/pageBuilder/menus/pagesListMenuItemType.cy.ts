@@ -1,4 +1,3 @@
-import { last } from "cypress/types/lodash";
 
 describe("Menus Module", () => {
     const id = 3;
@@ -59,23 +58,22 @@ describe("Menus Module", () => {
         cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.");
     });
-
-    it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-
-        cy.reloadUntil(() => {
-            // We wait until the document contains the newly added menu.
-            return Cypress.$(`:contains(added-menu-${id})`).length > 0;
-        });
-
-        cy.findByTestId("pb-desktop-header").within(() => {
-            // Let's check the links and the order.
-            cy.contains(`added-menu-${id}`).within(() => {
-                cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
-                cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
+        it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
+            cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
+    
+            cy.reloadUntil(() => {
+                // We wait until the document contains the newly added menu.
+                return Cypress.$(`:contains(added-menu-${id})`).length > 0;
+            });
+    
+            cy.findByTestId("pb-desktop-header").within(() => {
+                // Let's check the links and the order.
+                cy.findByText(`added-menu-${id}`).within(() => {
+                    cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
+                    cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
+                });
             });
         });
-    });
 
     it(`Step 3: change the order of pages`, () => {
         cy.visit("/page-builder/menus");
@@ -142,10 +140,6 @@ describe("Menus Module", () => {
             // Let's check the links and the order.
             cy.findByText(`added-menu-${idEdited}`).should("not.exist");
         });
-    });
-
-    it(`Step 7: delete all ${totalPages} pages (pseudo "afterAll" hook)`, () => {
-        // List pages
         cy.pbListPages({
             sort: ["publishedOn_DESC"]
         }).then(pages => {
@@ -153,7 +147,7 @@ describe("Menus Module", () => {
             for (let i = 0; i < totalPages; i++) {
                 const page = pages[i];
                 cy.pbDeletePage({ id: page.id });
-            }
+                }
+            });
         });
-    });
-});
+    });    
