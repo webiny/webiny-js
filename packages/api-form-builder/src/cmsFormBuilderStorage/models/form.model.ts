@@ -90,7 +90,7 @@ const lockedField = () => {
     return createModelField({
         label: "Locked",
         fieldId: "locked",
-        type: "text",
+        type: "boolean",
         validation: [required()]
     });
 };
@@ -405,6 +405,22 @@ const triggersField = () => {
     });
 };
 
+const publishedOnField = () => {
+    return createModelField({
+        label: "Published On",
+        fieldId: "publishedOn",
+        type: "datetime"
+    });
+};
+
+const slugField = () => {
+    return createModelField({
+        label: "Slug",
+        fieldId: "slug",
+        type: "text"
+    });
+};
+
 const DEFAULT_FIELDS = [
     "formId",
     "name",
@@ -416,7 +432,9 @@ const DEFAULT_FIELDS = [
     "fields",
     "steps",
     "settings",
-    "triggers"
+    "triggers",
+    "publishedOn",
+    "slug"
 ];
 
 const SETTINGS_FIELDS: CmsModelField[] = [
@@ -484,7 +502,9 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
             fieldsField(FIELD_FIELDS),
             stepsField(STEP_FIELDS),
             settingsField(SETTINGS_FIELDS),
-            triggersField()
+            triggersField(),
+            publishedOnField(),
+            slugField()
         ],
         description: "Form Builder - Form builder create data model",
         isPrivate: true,

@@ -7,7 +7,10 @@ import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createFormBuilder } from "~/index";
+import {
+    createFormBuilderContext,
+    createFormBuilderGraphQL
+} from "~/cmsFormBuilderStorage/createFormBuilderContext";
 // Graphql
 import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
 import {
@@ -45,6 +48,7 @@ import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { FormBuilderStorageOperations } from "~/types";
 import { createPageBuilderContext } from "@webiny/api-page-builder";
+import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -65,7 +69,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
     const i18nStorage = getStorageOps("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const pageBuilderStorage = getStorageOps<FileManagerStorageOperations>("pageBuilder");
+    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -95,7 +99,7 @@ export default (params: UseGqlHandlerParams = {}) => {
             }),
 
             createFileManagerGraphQL(),
-            createFormBuilder({
+            createFormBuilderContext({
                 storageOperations: formBuilderStorage.storageOperations
             }),
             {
@@ -123,6 +127,7 @@ export default (params: UseGqlHandlerParams = {}) => {
                     // dummy
                 }
             },
+            createFormBuilderGraphQL(),
             ...plugins
         ]
     });

@@ -280,7 +280,7 @@ describe("Forms Security Test", () => {
                     ...mock,
                     steps: [
                         {
-                            title: "",
+                            title: "Step 1",
                             layout: []
                         }
                     ]
@@ -294,7 +294,7 @@ describe("Forms Security Test", () => {
                                 ...new MockResponse({ prefix: `new-updated-form-`, id: formId }),
                                 steps: [
                                     {
-                                        title: "",
+                                        title: "Step 1",
                                         layout: []
                                     }
                                 ]

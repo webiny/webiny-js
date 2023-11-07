@@ -109,6 +109,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
             return await this.cms.createEntryRevisionFrom(model, form.id, {
                 status: "draft",
                 published: false,
+                publishedOn: null,
                 locked: false,
                 stats: {
                     submissions: 0,
@@ -216,6 +217,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,
             version: entry.version,
+            ownedBy: entry.ownedBy,
             ...entry.values
         } as FbForm;
     }
