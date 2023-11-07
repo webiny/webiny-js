@@ -92,6 +92,13 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
                 return results.items.map(entry => getFolderFieldValues(entry, baseFields));
             });
         },
+        listCmsContentModels: () => {
+            return context.cms.listModels();
+        },
+        getCmsEndpoint() {
+            return context.cms.type;
+        },
+        getLocale: () => getLocale(),
         canUseTeams: () => context.wcp.canUseTeams(),
         canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions()
     });

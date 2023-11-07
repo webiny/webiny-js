@@ -4,6 +4,8 @@ import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import structuredClone from "@ungap/structured-clone";
 import { ACO_SEARCH_RECORD_PB_PAGE, FM_FILE_FOLDER_TYPE } from "~/utils/constants";
+import { ApiEndpoint, CmsModel } from "@webiny/api-headless-cms/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor";
 
@@ -46,6 +48,9 @@ export interface FolderLevelPermissionsParams {
     getIdentityTeam: () => Promise<Team | null>;
     listPermissions: () => Promise<SecurityPermission[]>;
     listAllFolders: (folderType: string) => Promise<Folder[]>;
+    listCmsContentModels: () => Promise<CmsModel[]>;
+    getCmsEndpoint: () => ApiEndpoint | null;
+    getLocale: () => I18NLocale;
     canUseTeams: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
 }
@@ -55,6 +60,9 @@ export class FolderLevelPermissions {
     private readonly getIdentityTeam: () => Promise<Team | null>;
     private readonly listPermissions: () => Promise<SecurityPermission[]>;
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
+    private readonly listCmsContentModelsCallback: () => Promise<CmsModel[]>;
+    private readonly getCmsEndpointCallback: () => ApiEndpoint | null;
+    private readonly getLocaleCallback: () => I18NLocale;
     private readonly canUseTeams: () => boolean;
     private readonly canUseFolderLevelPermissions: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
@@ -64,6 +72,9 @@ export class FolderLevelPermissions {
         this.getIdentityTeam = params.getIdentityTeam;
         this.listPermissions = params.listPermissions;
         this.listAllFoldersCallback = params.listAllFolders;
+        this.listCmsContentModelsCallback = params.listCmsContentModels;
+        this.getCmsEndpointCallback = params.getCmsEndpoint;
+        this.getLocaleCallback = params.getLocale;
         this.canUseTeams = params.canUseTeams;
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
     }
@@ -112,7 +123,6 @@ export class FolderLevelPermissions {
 
         const allFolders = foldersList || (await this.listAllFolders(folderType));
         const identity = this.getIdentity();
-        const permissions = await this.listPermissions();
 
         const processedFolderPermissions: FolderPermissionsListItem[] = [];
 
@@ -121,7 +131,7 @@ export class FolderLevelPermissions {
             identityTeam = await this.getIdentityTeam();
         }
 
-        const processFolderPermissions = (folder: Folder) => {
+        const processFolderPermissions = async (folder: Folder) => {
             if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
                 return;
             }
@@ -144,7 +154,7 @@ export class FolderLevelPermissions {
 
                     // If not, process the parent folder.
                     if (!processedParentFolderPermissions) {
-                        processFolderPermissions(parentFolder);
+                        await processFolderPermissions(parentFolder);
                         processedParentFolderPermissions = processedFolderPermissions.find(
                             fp => fp.folderId === folder.parentId
                         );
@@ -192,7 +202,7 @@ export class FolderLevelPermissions {
                     currentFolderPermissions.permissions.unshift(identityPermission);
                     identityFirstPermission = identityPermission;
                 } else {
-                    let hasFullAccess = this.hasFullAccess(permissions);
+                    let hasFullAccess = await this.hasFullAccess();
 
                     // If the current identity is not in the permissions, let's add it.
                     // If the user has full access, we'll add it as "owner".
@@ -201,11 +211,11 @@ export class FolderLevelPermissions {
                         // if we're working with "FmFile" folder type, we'll check for "fm.*" permission.
                         // The same goes with Page Builder pages and CMS content entries.
                         if (folder.type === FM_FILE_FOLDER_TYPE) {
-                            hasFullAccess = this.hasFmFileFullAccess(permissions);
+                            hasFullAccess = await this.hasFmFileFullAccess();
                         } else if (folder.type === ACO_SEARCH_RECORD_PB_PAGE) {
-                            hasFullAccess = this.hasPbPageFullAccess(permissions);
+                            hasFullAccess = await this.hasPbPageFullAccess();
                         } else if (folder.type.startsWith("cms:")) {
-                            hasFullAccess = this.hasCmsEntryFullAccess(permissions);
+                            hasFullAccess = await this.hasCmsEntryFullAccess();
                         }
                     }
 
@@ -244,7 +254,7 @@ export class FolderLevelPermissions {
 
         for (let i = 0; i < allFolders!.length; i++) {
             const folder = allFolders![i];
-            processFolderPermissions(folder);
+            await processFolderPermissions(folder);
         }
 
         return processedFolderPermissions;
@@ -460,15 +470,17 @@ export class FolderLevelPermissions {
         return folderPermissionsList?.some(p => !p.inheritedFrom);
     }
 
-    private hasFullAccess(permissions: SecurityPermission[]) {
+    private async hasFullAccess() {
+        const permissions = await this.listPermissions();
         return permissions.some(p => p.name === "*");
     }
 
-    private hasFmFileFullAccess(permissions: SecurityPermission[]) {
-        if (this.hasFullAccess(permissions)) {
+    private async hasFmFileFullAccess() {
+        if (await this.hasFullAccess()) {
             return true;
         }
 
+        const permissions = await this.listPermissions();
         const hasFmFullAccess = permissions.some(p => p.name === "fm.*");
         if (hasFmFullAccess) {
             return true;
@@ -484,11 +496,12 @@ export class FolderLevelPermissions {
         return false;
     }
 
-    private hasPbPageFullAccess(permissions: SecurityPermission[]) {
-        if (this.hasFullAccess(permissions)) {
+    private async hasPbPageFullAccess() {
+        if (await this.hasFullAccess()) {
             return true;
         }
 
+        const permissions = await this.listPermissions();
         const hasPbFullAccess = permissions.some(p => p.name === "pb.*");
         if (hasPbFullAccess) {
             return true;
@@ -504,15 +517,76 @@ export class FolderLevelPermissions {
         return false;
     }
 
-    private hasCmsEntryFullAccess(permissions: SecurityPermission[]) {
-        if (this.hasFullAccess(permissions)) {
+    private async hasCmsEntryFullAccess() {
+        if (await this.hasFullAccess()) {
             return true;
         }
 
-        // At the moment, we only check for the existence of `cms.*` permission. But, we
-        // should extend this function and have it check if the full access has been granted
-        // on a specific content model level. The reason why this wasn't already implemented
-        // is because of the complexity and lack of time.
-        return permissions.some(p => p.name === "cms.*");
+        const permissions = await this.listPermissions();
+        const hasCmsFullAccess = permissions.some(p => p.name === "cms.*");
+        if (hasCmsFullAccess) {
+            return true;
+        }
+
+        const endpoint = this.getCmsEndpointCallback();
+        if (!endpoint) {
+            return false;
+        }
+
+        const endpointPermissionName = `cms.endpoint.${endpoint}.manage`;
+        const hasManageEndpointPermission = permissions.some(
+            p => p.name === endpointPermissionName
+        );
+
+        if (hasManageEndpointPermission) {
+            return true;
+        }
+
+        // Check `cms.contentModelGroup` permissions.
+        let groupsCanAccess = false;
+
+        // TODO: THIS
+        const models = await this.listCmsContentModelsCallback();
+        const locale = this.getLocaleCallback();
+
+        const cmsContentModelGroupPermissions = permissions.filter(
+            p => p.name === "cms.contentModelGroup"
+        );
+
+        for (const p of cmsContentModelGroupPermissions) {
+            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.groups)) {
+                groupsCanAccess = true;
+                break;
+            }
+        }
+
+        if (!groupsCanAccess) {
+            return false;
+        }
+
+        // Check `cms.contentModel` permissions.
+        let modelsCanAccess = false;
+
+        const cmsContentModelPermissions = permissions.filter(p => p.name === "cms.contentModel");
+
+        for (const p of cmsContentModelPermissions) {
+            if (!p.own && p.rwd === "rwd" && !Array.isArray(p.models)) {
+                modelsCanAccess = true;
+                break;
+            }
+        }
+
+        if (!modelsCanAccess) {
+            return false;
+        }
+
+        const cmsEntryPermissions = permissions.filter(p => p.name === "cms.contentEntry");
+        for (const p of cmsEntryPermissions) {
+            if (!p.own && p.rwd === "rwd") {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

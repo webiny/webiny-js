@@ -258,7 +258,7 @@ export class CmsEntriesCrudDecorators {
                 return originalCmsMoveEntry(model, id, targetFolderId);
             } else if (folderId !== ROOT_FOLDER) {
                 /**
-                 * If entry current folder is not a root, check for access
+                 * If entry current folder is not a root, check for access.
                  */
                 const folder = await context.aco.folder.get(folderId);
                 await folderLevelPermissions.ensureCanAccessFolderContent({
