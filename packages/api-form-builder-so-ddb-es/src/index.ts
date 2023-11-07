@@ -179,8 +179,8 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
             table,
             entity: entities.settings
         }),
-        ...createFormStorageOperations(),
-        ...createSubmissionStorageOperations({
+        forms: createFormStorageOperations(),
+        submissions: createSubmissionStorageOperations({
             elasticsearch,
             table,
             entity: entities.submission,

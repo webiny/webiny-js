@@ -89,9 +89,9 @@ export type Entities = "form" | "submission" | "system" | "settings";
 export interface FormBuilderStorageOperations
     extends BaseFormBuilderStorageOperations,
         FormBuilderSettingsStorageOperations,
-        FormBuilderSubmissionStorageOperations,
-        FormBuilderFormStorageOperations,
         FormBuilderSystemStorageOperations {
+    forms: FormBuilderFormStorageOperations;
+    submissions: FormBuilderSubmissionStorageOperations;
     getTable(): Table;
     getEntities(): Record<Entities, Entity<any>>;
 }
