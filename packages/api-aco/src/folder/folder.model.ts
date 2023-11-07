@@ -102,6 +102,10 @@ const permissionsField = () =>
                             {
                                 label: "Owner",
                                 value: "owner"
+                            },
+                            {
+                                label: "Public",
+                                value: "public"
                             }
                         ]
                     }
