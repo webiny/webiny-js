@@ -4,6 +4,7 @@ export * from "./FieldMapper";
 export * from "./Filter";
 export * from "./FilterMapper";
 export * from "./FilterRepository";
+export * from "./FilterRepositoryFactory";
 export * from "./Loading";
 export * from "./Operation";
 export * from "./Sorter";
