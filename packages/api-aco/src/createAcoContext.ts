@@ -123,8 +123,16 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         });
     }
 
-    const listAdminUsers = () => context.adminUsers.listUsers();
-    const listTeams = () => context.security.listTeams();
+    const listAdminUsers = () => {
+        return security.withoutAuthorization(async () => {
+            return context.adminUsers.listUsers();
+        });
+    };
+    const listTeams = () => {
+        return security.withoutAuthorization(async () => {
+            return context.security.listTeams();
+        });
+    };
 
     context.aco = {
         folder: createFolderCrudMethods({
