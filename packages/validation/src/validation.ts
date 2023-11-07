@@ -128,7 +128,6 @@ class Validation {
 
         for (const [name, params] of entries(parsedValidateProperty)) {
             const validator = this.getValidator(name);
-            console.log("validator name", validator.validatorName);
             try {
                 validator(value, params);
             } catch (e) {
