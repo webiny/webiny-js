@@ -199,8 +199,12 @@ export class FolderLevelPermissions {
             // if not already. Let's also ensure the user is the first item in the array.
             let identityFirstPermission: FolderPermission | undefined;
 
-            // 1. If current identity is already listed as the first permission, we don't need to do anything.
-            if (!isPublicRootFolder) {
+            // The first two checks don't need to be made if we're dealing with a public root folder. In the
+            // above code (`isPublicRootFolder`), we can see that these folders do not have any permissions.
+            const performFirstTwoChecks = !isPublicRootFolder;
+
+            if (performFirstTwoChecks) {
+                // 1. If current identity is already listed as the first permission, we don't need to do anything.
                 const [firstPermission] = currentFolderPermissions.permissions;
                 if (firstPermission?.target === `admin:${identity.id}`) {
                     identityFirstPermission = firstPermission;
