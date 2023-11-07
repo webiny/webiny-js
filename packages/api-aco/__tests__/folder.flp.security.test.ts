@@ -68,25 +68,61 @@ describe("Folder Level Permissions - Security Checks", () => {
             {
                 id: createdFolders[0].id,
                 parentId: null,
-                permissions: [],
+                permissions: [
+                    {
+                        inheritedFrom: "public",
+                        level: "public",
+                        target: "admin:2"
+                    }
+                ],
+                canManageStructure: true,
+                canManagePermissions: false,
+                hasNonInheritedPermissions: false,
                 slug: "folder-1"
             },
             {
                 id: createdFolders[1].id,
                 parentId: null,
-                permissions: [],
+                permissions: [
+                    {
+                        inheritedFrom: "public",
+                        level: "public",
+                        target: "admin:2"
+                    }
+                ],
+                canManageStructure: true,
+                canManagePermissions: false,
+                hasNonInheritedPermissions: false,
                 slug: "folder-2"
             },
             {
                 id: createdFolders[2].id,
                 parentId: null,
-                permissions: [],
+                permissions: [
+                    {
+                        inheritedFrom: "public",
+                        level: "public",
+                        target: "admin:2"
+                    }
+                ],
+                canManageStructure: true,
+                canManagePermissions: false,
+                hasNonInheritedPermissions: false,
                 slug: "folder-3"
             },
             {
                 id: createdFolders[3].id,
                 parentId: null,
-                permissions: [],
+                permissions: [
+                    {
+                        inheritedFrom: "public",
+                        level: "public",
+                        target: "admin:2"
+                    }
+                ],
+                canManageStructure: true,
+                canManagePermissions: false,
+                hasNonInheritedPermissions: false,
                 slug: "folder-4"
             }
         ]);
@@ -143,7 +179,11 @@ describe("Folder Level Permissions - Security Checks", () => {
             acoIdentityB
                 .updateFolder({
                     id: folderA.id,
-                    data: { permissions: [] }
+                    data: {
+                        permissions: [
+                            { level: "owner", target: `admin:${identityA.id}` } // Include previous permissions.
+                        ]
+                    }
                 })
                 .then(([response]) => {
                     return response.data.aco.updateFolder.error;
@@ -152,6 +192,97 @@ describe("Folder Level Permissions - Security Checks", () => {
             code: "CANNOT_LOOSE_FOLDER_ACCESS",
             data: null,
             message: "Cannot continue because you would loose access to this folder."
+        });
+    });
+
+    it(`should reset folder access level back to "public"`, async () => {
+        const folderA = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: {
+                permissions: [{ level: "owner", target: `admin:${identityB.id}` }]
+            }
+        });
+
+        // Should be allowed because the user is not loosing access.
+        await expect(
+            acoIdentityB
+                .updateFolder({
+                    id: folderA.id,
+                    data: {
+                        permissions: [
+                            { level: "owner", target: `admin:${identityB.id}` }, // Include previous permissions.
+                            { level: "owner", target: `admin:random-id` } // Include new permissions.
+                        ]
+                    }
+                })
+                .then(([response]) => {
+                    return response.data.aco.updateFolder.data;
+                })
+        ).resolves.toMatchObject({
+            canManagePermissions: true,
+            hasNonInheritedPermissions: true,
+            id: folderA.id,
+            parentId: null,
+            permissions: [
+                { inheritedFrom: null, level: "owner", target: "admin:2" },
+                { inheritedFrom: null, level: "owner", target: "admin:random-id" }
+            ]
+        });
+
+        await expect(
+            acoIdentityA
+                .updateFolder({
+                    id: folderA.id,
+                    data: {
+                        permissions: []
+                    }
+                })
+                .then(([response]) => {
+                    return response.data.aco.updateFolder.data;
+                })
+        ).resolves.toMatchObject({
+            canManagePermissions: true,
+            hasNonInheritedPermissions: false,
+            id: folderA.id,
+            parentId: null,
+            permissions: [
+                {
+                    inheritedFrom: "role:full-access",
+                    level: "owner",
+                    target: "admin:1"
+                }
+            ]
+        });
+
+        // Should not be allowed because the user is loosing access.
+        await expect(
+            acoIdentityB.getFolder({ id: folderA.id }).then(([response]) => {
+                return response.data.aco.getFolder.data;
+            })
+        ).resolves.toMatchObject({
+            canManagePermissions: false,
+            hasNonInheritedPermissions: false,
+            id: folderA.id,
+            parentId: null,
+            permissions: [
+                {
+                    inheritedFrom: "public",
+                    level: "public",
+                    target: "admin:2"
+                }
+            ]
         });
     });
 
@@ -326,7 +457,13 @@ describe("Folder Level Permissions - Security Checks", () => {
                 canManagePermissions: false,
                 hasNonInheritedPermissions: false,
                 id: folderC.id,
-                permissions: []
+                permissions: [
+                    {
+                        target: "admin:2",
+                        level: "public",
+                        inheritedFrom: "public"
+                    }
+                ]
             }
         ]);
     });

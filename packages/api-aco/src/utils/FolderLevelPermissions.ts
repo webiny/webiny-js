@@ -4,7 +4,7 @@ import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import structuredClone from "@ungap/structured-clone";
 
-export type FolderAccessLevel = "owner" | "viewer" | "editor";
+export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 
 export interface FolderPermission {
     target: string;
@@ -19,10 +19,14 @@ export interface FolderPermissionsListItem {
 
 export type FolderPermissionsList = FolderPermissionsListItem[];
 
-export interface CanAccessFolderParams {
+export interface CanAccessFolderContentParams {
     folder: Pick<Folder, "id" | "type" | "parentId">;
     rwd?: "r" | "w" | "d";
     foldersList?: Folder[];
+}
+
+export interface CanAccessFolderParams extends CanAccessFolderContentParams {
+    managePermissions?: boolean;
 }
 
 interface FilterFoldersParams {
@@ -132,6 +136,9 @@ export class FolderLevelPermissions {
                 permissions: folder.permissions?.map(permission => ({ ...permission })) || []
             };
 
+            let isPublicRootFolder = false;
+            let shouldAddPublicPermission = false;
+
             // Check for permissions inherited from parent folder.
             if (folder.parentId) {
                 const parentFolder = allFolders!.find(f => f.id === folder.parentId)!;
@@ -151,85 +158,118 @@ export class FolderLevelPermissions {
 
                     // If the parent folder has permissions, let's add them to the current folder.
                     if (processedParentFolderPermissions) {
-                        const inheritedPermissions =
-                            processedParentFolderPermissions.permissions.map(p => {
-                                return {
-                                    ...p,
-                                    inheritedFrom:
-                                        "parent:" + processedParentFolderPermissions!.folderId
-                                };
-                            });
+                        const isPublicParentFolder =
+                            processedParentFolderPermissions.permissions.some(
+                                p => p.level === "public"
+                            );
 
-                        currentFolderPermissions.permissions.push(...inheritedPermissions);
+                        // We inherit parent permissions if:
+                        // 1. the parent folder is not public or...
+                        // 2. ...the parent folder is public, but the current folder doesn't have any permissions set
+                        const mustInherit =
+                            !isPublicParentFolder ||
+                            currentFolderPermissions.permissions.length === 0;
+
+                        if (mustInherit) {
+                            const inheritedPermissions =
+                                processedParentFolderPermissions.permissions.map(p => {
+                                    return {
+                                        ...p,
+                                        inheritedFrom:
+                                            "parent:" + processedParentFolderPermissions!.folderId
+                                    };
+                                });
+
+                            currentFolderPermissions.permissions.push(...inheritedPermissions);
+                        }
                     }
                 }
+            } else {
+                // If the folder doesn't have a parent, it means it's the root folder.
+                // Let's check if the root folder has any permissions set. If not, let's
+                // add the "public" permission. This permission will be inherited by all
+                // child folders.
+                isPublicRootFolder = currentFolderPermissions.permissions.length === 0;
+                if (isPublicRootFolder) {
+                    shouldAddPublicPermission = true;
+                }
             }
-
-            // Before continuing, let's check if the folder has any permissions set. If no,
-            // we can set the current folder permissions to an empty array and return.
-            if (currentFolderPermissions.permissions.length === 0) {
-                currentFolderPermissions.permissions = [];
-                processedFolderPermissions.push(currentFolderPermissions);
-                return;
-            }
-
 
             // Finally, let's also ensure that the current user is included in the permissions,
             // if not already. Let's also ensure the user is the first item in the array.
-            const [firstPermission] = currentFolderPermissions.permissions;
-
             let identityFirstPermission: FolderPermission | undefined;
 
-            // If current identity is already listed as the first permission, we don't need to do anything.
-            if (firstPermission?.target === `admin:${identity.id}`) {
-                identityFirstPermission = firstPermission;
-            }
+            // 1. If current identity is already listed as the first permission, we don't need to do anything.
+            if (!isPublicRootFolder) {
+                const [firstPermission] = currentFolderPermissions.permissions;
+                if (firstPermission?.target === `admin:${identity.id}`) {
+                    identityFirstPermission = firstPermission;
+                }
 
-            if (!identityFirstPermission) {
-                const currentIdentityPermissionIndex =
-                    currentFolderPermissions.permissions.findIndex(
-                        p => p.target === `admin:${identity.id}`
-                    );
+                // 2. If the current identity is not the first permission, let's check if it's in the+
+                // permissions at all (inherited from parent folder). If it is, let's move it to the first position.
+                if (!identityFirstPermission) {
+                    const currentIdentityPermissionIndex =
+                        currentFolderPermissions.permissions.findIndex(
+                            p => p.target === `admin:${identity.id}`
+                        );
 
-                if (currentIdentityPermissionIndex >= 0) {
-                    const [identityPermission] = currentFolderPermissions.permissions.splice(
-                        currentIdentityPermissionIndex,
-                        1
-                    );
-                    currentFolderPermissions.permissions.unshift(identityPermission);
-                    identityFirstPermission = identityPermission;
-                } else {
-                    // If the current identity is not in the permissions, let's add it.
-                    // If the user has full access, we'll add it as "owner".
-                    const hasFullAccess = permissions.some(p => p.name === "*");
-                    if (hasFullAccess) {
-                        identityFirstPermission = {
-                            target: `admin:${identity.id}`,
-                            level: "owner",
-                            inheritedFrom: "role:full-access"
-                        };
-                        currentFolderPermissions.permissions.unshift(identityFirstPermission);
+                    if (currentIdentityPermissionIndex >= 0) {
+                        // Move the current identity permission to the first position.
+                        const [identityPermission] = currentFolderPermissions.permissions.splice(
+                            currentIdentityPermissionIndex,
+                            1
+                        );
+                        currentFolderPermissions.permissions.unshift(identityPermission);
+                        identityFirstPermission = identityPermission;
                     }
                 }
             }
 
-            // Let's check if there is a team associated with the current identity.
+            // 3. Still not found? Let's check if the current identity has full access.
+            // If so, we'll add it as "owner", as the first permission.
             if (!identityFirstPermission) {
-                if (identityTeam) {
-                    const teamPermission = currentFolderPermissions.permissions.find(
-                        p => p.target === `team:${identityTeam!.id}`
-                    );
-
-                    if (teamPermission) {
-                        identityFirstPermission = {
-                            target: `admin:${identity.id}`,
-                            level: teamPermission.level,
-                            inheritedFrom: "team:" + identityTeam!.id
-                        };
-
-                        currentFolderPermissions.permissions.unshift(identityFirstPermission);
-                    }
+                const hasFullAccess = permissions.some(p => p.name === "*");
+                if (hasFullAccess) {
+                    identityFirstPermission = {
+                        target: `admin:${identity.id}`,
+                        level: "owner",
+                        inheritedFrom: "role:full-access"
+                    };
+                    currentFolderPermissions.permissions.unshift(identityFirstPermission);
+                    shouldAddPublicPermission = false;
                 }
+            }
+
+            // 4. And yet again, still not found? Let's check if there is a team associated
+            // with the current identity. If so, let's check if the team has access to the folder.
+            if (!identityFirstPermission && identityTeam) {
+                const teamPermission = currentFolderPermissions.permissions.find(
+                    p => p.target === `team:${identityTeam!.id}`
+                );
+
+                if (teamPermission) {
+                    identityFirstPermission = {
+                        target: `admin:${identity.id}`,
+                        level: teamPermission.level,
+                        inheritedFrom: "team:" + identityTeam!.id
+                    };
+
+                    currentFolderPermissions.permissions.unshift(identityFirstPermission);
+                    shouldAddPublicPermission = false;
+                }
+            }
+
+            // 5. Alright, we didn't find the current identity in the permissions.
+            // But, if the folder is public, let's add the current identity as a user with "public" access.
+            if (shouldAddPublicPermission) {
+                currentFolderPermissions.permissions = [
+                    {
+                        target: `admin:${identity.id}`,
+                        level: "public",
+                        inheritedFrom: "public"
+                    }
+                ];
             }
 
             processedFolderPermissions.push(currentFolderPermissions);
@@ -260,6 +300,10 @@ export class FolderLevelPermissions {
             return true;
         }
 
+        if (params.managePermissions && params.rwd !== "w") {
+            throw new Error(`Cannot check for "managePermissions" access without "w" access.`);
+        }
+
         const { folder } = params;
 
         // We check for parent folder access first because the passed folder should be
@@ -287,6 +331,13 @@ export class FolderLevelPermissions {
             folder,
             foldersList: params.foldersList
         });
+
+        // If dealing with a public folder, we only care if we're checking for "managePermissions" access.
+        // If we are, we can return false, because public folders cannot have permissions managed.
+        const isPublicFolder = folderPermissions?.permissions.some(p => p.level === "public");
+        if (isPublicFolder) {
+            return !params.managePermissions;
+        }
 
         const identity = this.getIdentity();
 
@@ -317,13 +368,6 @@ export class FolderLevelPermissions {
             return true;
         }
 
-        // If the user doesn't have any access level, let's check if the folder has any permissions set.
-        // Folders that don't have any permissions set are considered "public".
-        const hasPermissions = folderPermissions && folderPermissions.permissions.length > 0;
-        if (!hasPermissions) {
-            return true;
-        }
-
         // No conditions were met, so we can return false.
         return false;
     }
@@ -340,7 +384,7 @@ export class FolderLevelPermissions {
             return false;
         }
 
-        return this.canAccessFolder({ folder, rwd: "w" });
+        return this.canAccessFolder({ folder, rwd: "w", managePermissions: true });
     }
 
     canManageFolderStructure(folder: Folder) {
@@ -351,7 +395,7 @@ export class FolderLevelPermissions {
         return this.canAccessFolder({ folder, rwd: "w" });
     }
 
-    async canAccessFolderContent(params: CanAccessFolderParams) {
+    async canAccessFolderContent(params: CanAccessFolderContentParams) {
         if (!this.canUseFolderLevelPermissions()) {
             return true;
         }
@@ -362,6 +406,13 @@ export class FolderLevelPermissions {
             folder,
             foldersList
         });
+
+        // If dealing with a public folder, we only care if we're checking for "managePermissions" access.
+        // If we are, we can return false, because public folders cannot have permissions managed.
+        const isPublicFolder = folderPermissions?.permissions.some(p => p.level === "public");
+        if (isPublicFolder) {
+            return true;
+        }
 
         const identity = this.getIdentity();
 
@@ -393,18 +444,11 @@ export class FolderLevelPermissions {
             return true;
         }
 
-        // If the user doesn't have any access level, let's check if the folder has any permissions set.
-        // Folders that don't have any permissions set are considered "public".
-        const hasPermissions = folderPermissions && folderPermissions.permissions.length > 0;
-        if (!hasPermissions) {
-            return true;
-        }
-
         // No conditions were met, so we can return false.
         return false;
     }
 
-    async ensureCanAccessFolderContent(params: CanAccessFolderParams) {
+    async ensureCanAccessFolderContent(params: CanAccessFolderContentParams) {
         const canAccessFolderContent = await this.canAccessFolderContent(params);
         if (!canAccessFolderContent) {
             throw new NotAuthorizedError();
