@@ -3,6 +3,7 @@ import { useInViewport } from "react-in-viewport";
 import styled from "@emotion/styled";
 import BlockPreview from "./BlockPreview";
 import { PbEditorBlockPlugin } from "~/types";
+import { ResponsiveElementsProvider } from "~/admin/components/ResponsiveElementsProvider";
 
 interface RenderRowProps {
     index: number;
@@ -47,6 +48,11 @@ const BlockRow = (props: RenderRowProps) => {
     );
 };
 
+const BlocksResponsiveContainer = styled.div`
+    flex: 1 1 auto;
+    width: 100%;
+`;
+
 interface BlocksListProps extends Omit<RenderRowProps, "index" | "key" | "style"> {
     category: string;
 }
@@ -87,11 +93,8 @@ const BlocksList: React.FC<BlocksListProps> = props => {
     }
 
     return (
-        <div style={{ flex: "1 1 auto" }}>
-            <div
-                style={{ width: "800px", margin: "0 auto" }}
-                data-testid={"pb-editor-page-blocks-list"}
-            >
+        <BlocksResponsiveContainer data-testid={"pb-editor-page-blocks-list"}>
+            <ResponsiveElementsProvider>
                 {blocks.map((block, index) => (
                     <BlockRow
                         key={block.name}
@@ -102,8 +105,8 @@ const BlocksList: React.FC<BlocksListProps> = props => {
                         onDelete={props.onDelete}
                     />
                 ))}
-            </div>
-        </div>
+            </ResponsiveElementsProvider>
+        </BlocksResponsiveContainer>
     );
 };
 

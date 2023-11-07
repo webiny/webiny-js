@@ -15,7 +15,6 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
-import { addElementId } from "~/editor/helpers";
 
 import { PbPageBlock } from "~/types";
 import {
@@ -25,20 +24,20 @@ import {
     DELETE_PAGE_BLOCK
 } from "./graphql";
 import { CreatableItem } from "./PageBlocks";
-import { Content } from "@webiny/app-page-builder-elements/components/Content";
-import { Content as ContentType } from "@webiny/app-page-builder-elements/types";
+import { PreviewBlock } from "~/admin/components/PreviewBlock";
+import { ResponsiveElementsProvider } from "~/admin/components/ResponsiveElementsProvider";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
-const List = styled("div")({
-    display: "flex",
-    flexDirection: "column",
-    padding: "8px",
-    margin: "17px 50px",
-    backgroundColor: "white",
-    boxShadow:
-        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)"
-});
+const List = styled("div")`
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin: 17px 50px;
+    background-color: white;
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%),
+        0px 1px 3px 0px rgb(0 0 0 / 12%);
+`;
 
 const ListItem = styled.div`
     position: relative;
@@ -50,10 +49,6 @@ const ListItem = styled.div`
     margin-bottom: 10px;
     :last-of-type {
         margin-bottom: 0;
-    }
-    img {
-        position: relative;
-        width: 100%;
     }
 `;
 
@@ -248,12 +243,12 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     }
 
     return (
-        <>
-            <List>
-                {isLoading && <CircularProgress />}
+        <List>
+            {isLoading && <CircularProgress label={"Loading blocks..."} />}
+            <ResponsiveElementsProvider>
                 {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
-                        <Content content={addElementId(pageBlock.content) as ContentType} />
+                        <PreviewBlock element={pageBlock} />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             <ExportButton
@@ -285,8 +280,8 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                         </Controls>
                     </ListItem>
                 ))}
-            </List>
-        </>
+            </ResponsiveElementsProvider>
+        </List>
     );
 };
 
