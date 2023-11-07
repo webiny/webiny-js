@@ -165,6 +165,15 @@ export class FolderLevelPermissions {
                 }
             }
 
+            // Before continuing, let's check if the folder has any permissions set. If no,
+            // we can set the current folder permissions to an empty array and return.
+            if (currentFolderPermissions.permissions.length === 0) {
+                currentFolderPermissions.permissions = [];
+                processedFolderPermissions.push(currentFolderPermissions);
+                return;
+            }
+
+
             // Finally, let's also ensure that the current user is included in the permissions,
             // if not already. Let's also ensure the user is the first item in the array.
             const [firstPermission] = currentFolderPermissions.permissions;
