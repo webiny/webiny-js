@@ -35,9 +35,7 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
             clientOptions,
             createAwsElasticsearchConnector({
                 region: process.env.AWS_REGION,
-                // aws-elasticsearch-connector still uses aws-sdk v2 types.
-                // TODO fix types
-                // @ts-expect-error
+                // @ts-ignore
                 credentials
             })
         );

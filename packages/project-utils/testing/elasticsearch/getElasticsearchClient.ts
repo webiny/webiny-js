@@ -67,7 +67,7 @@ export class ElasticsearchClientConfig {
         logger.debug(`ES index prefix = "%s"`, process.env.ELASTIC_SEARCH_INDEX_PREFIX);
 
         const documentClient = getDocumentClient();
-        this.elasticsearchClient = createElasticsearchClient() as ElasticsearchClient;
+        this.elasticsearchClient = createElasticsearchClient();
         const elasticsearchClientContext = elasticsearchClientContextPlugin(
             this.elasticsearchClient
         );
