@@ -2,10 +2,10 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../api-admin-users/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../error/tsconfig.build.json" }
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

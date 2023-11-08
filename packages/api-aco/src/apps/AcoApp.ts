@@ -5,7 +5,6 @@ import {
     AcoRequestAction,
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
-    GenericSearchData,
     IAcoApp,
     IAcoAppModifyFieldCallableCallback,
     IAcoAppOnAnyRequest,
@@ -44,12 +43,6 @@ export class AcoApp implements IAcoApp {
                 }
                 return this.onEntry(result);
             },
-            /**
-             * TODO: determine correct return type
-             * @param id
-             * @param data
-             */
-            // @ts-expect-error
             update: async <TData>(id: string, data: SearchRecord<TData>) => {
                 await this.execOnAnyRequest("update");
                 /**

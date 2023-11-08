@@ -20,7 +20,7 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { createTable } from "~/definitions/table";
 import { createImportExportTaskEntity } from "~/definitions/importExportTaskEntity";
 import { CreateStorageOperations } from "./types";
-import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
+import { deleteItem, getClean, put, update } from "@webiny/db-dynamodb";
 
 interface PartitionKeyOptions {
     tenant: string;
@@ -258,8 +258,9 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.update(
-                    {
+                await update({
+                    entity,
+                    item: {
                         TYPE: createType(),
                         ...keys,
                         stats: {
@@ -268,11 +269,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                                 [nextStatus]: { $add: 1 }
                             }
                         }
-                    },
-                    {
-                        execute: true
                     }
-                );
+                });
                 return original;
             } catch (ex) {
                 throw new WebinyError(
