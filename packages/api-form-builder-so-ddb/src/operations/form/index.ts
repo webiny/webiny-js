@@ -16,61 +16,61 @@ export const createFormStorageOperations = (): FormBuilderFormStorageOperations 
 
     const createForm = () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const createFormFrom = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const updateForm = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const getForm = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const listForms = () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const listFormRevisions = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const deleteForm = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const deleteFormRevision = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const publishForm = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 
     const unpublishForm = async () => {
         throw new Error(
-            "api-form-builder-ddb does not implement the Form Builder storage operations."
+            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
         );
     };
 

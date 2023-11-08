@@ -109,10 +109,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
             entity: entities.settings
         }),
         forms: createFormStorageOperations(),
-        submissions: createSubmissionStorageOperations({
-            table,
-            entity: entities.submission,
-            plugins
-        })
+        submissions: createSubmissionStorageOperations()
     };
 };

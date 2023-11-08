@@ -788,9 +788,7 @@ export interface FormBuilderSubmissionStorageOperations {
     updateSubmission(
         params: FormBuilderStorageOperationsUpdateSubmissionParams
     ): Promise<FbSubmission>;
-    deleteSubmission(
-        params: FormBuilderStorageOperationsDeleteSubmissionParams
-    ): Promise<FbSubmission | null>;
+    deleteSubmission(params: FormBuilderStorageOperationsDeleteSubmissionParams): Promise<void>;
     beforeInit?: (context: FormBuilderContext) => Promise<void>;
     init?: (context: FormBuilderContext) => Promise<void>;
 }
