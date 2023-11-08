@@ -150,6 +150,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
+                    // If the user cannot manage folder structure, no need to show the menu.
+                    if (!record.original.canManageStructure) {
+                        return null;
+                    }
+
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit

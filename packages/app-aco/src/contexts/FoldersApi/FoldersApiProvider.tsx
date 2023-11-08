@@ -44,6 +44,7 @@ export interface FoldersApiContext {
             FolderItem,
             | "type"
             | "canManagePermissions"
+            | "canManageStructure"
             | "hasNonInheritedPermissions"
             | "createdOn"
             | "createdBy"
@@ -79,6 +80,7 @@ const rootFolder: FolderItem = {
     },
     hasNonInheritedPermissions: false,
     canManagePermissions: false,
+    canManageStructure: false,
     savedOn: "",
     type: "$ROOT"
 };

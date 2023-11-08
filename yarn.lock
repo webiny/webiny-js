@@ -14307,6 +14307,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -14557,6 +14558,7 @@ __metadata:
     "@svgr/webpack": ^6.1.1
     "@types/bytes": ^3.1.1
     "@types/graphlib": ^2.1.8
+    "@types/is-hotkey": ^0.1.7
     "@types/mime": ^2.0.3
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
@@ -14574,6 +14576,7 @@ __metadata:
     "@webiny/telemetry": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/ui-composer": 0.0.0
+    "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-cache: ^1.3.5
     apollo-client: ^2.6.10
@@ -14586,9 +14589,9 @@ __metadata:
     emotion: ^10.0.17
     graphlib: ^2.1.7
     graphql: ^15.7.2
+    is-hotkey: ^0.1.3
     lodash: ^4.17.11
     mobx: ^6.9.0
-    nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
     react-dom: 17.0.2
@@ -33538,7 +33541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23, nanoid@npm:^3.1.30, nanoid@npm:^3.3.4":
+"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.30, nanoid@npm:^3.3.4":
   version: 3.3.4
   resolution: "nanoid@npm:3.3.4"
   bin:
