@@ -357,7 +357,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             stateRef.current.data,
             name,
             inputs.current[name].defaultValue
-        ) as any;
+        );
         const { validators: initialValidators } = inputs.current[name];
         /**
          * We need to filter out validators which are being skipped

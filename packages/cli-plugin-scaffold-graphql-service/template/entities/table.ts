@@ -1,7 +1,7 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 
 // https://github.com/jeremydaly/dynamodb-toolbox
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 
 const DocumentClient = getDocumentClient();
 
@@ -17,5 +17,7 @@ export default new Table({
     partitionKey: "PK",
     sortKey: "SK",
     entityField: "TYPE",
-    DocumentClient
+    DocumentClient,
+    autoExecute: true,
+    autoParse: true
 });

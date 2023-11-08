@@ -9,7 +9,7 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
@@ -45,6 +45,7 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import { configurations as cmsConfigurations } from "@webiny/api-headless-cms-ddb-es/configurations";
 import { SEARCH_RECORD_MODEL_ID } from "@webiny/api-aco/record/record.model";
 import { FOLDER_MODEL_ID } from "@webiny/api-aco/folder/folder.model";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     plugins?: PluginCollection;
@@ -53,13 +54,11 @@ interface Params {
 
 export const useHandler = (params: Params) => {
     const elasticsearch = createElasticsearchClient();
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
+    const documentClient = getDocumentClient({
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-        sslEnabled: false,
+        tls: false,
         region: "local",
-        accessKeyId: "test",
-        secretAccessKey: "test"
+        credentials: { accessKeyId: "test", secretAccessKey: "test" }
     });
 
     const storageOperations = createStorageOperations({
@@ -171,7 +170,7 @@ export const useHandler = (params: Params) => {
                 body: JSON.stringify(body),
                 ...rest
             },
-            {} as any
+            {} as LambdaContext
         );
 
         return [JSON.parse(response.body), response];

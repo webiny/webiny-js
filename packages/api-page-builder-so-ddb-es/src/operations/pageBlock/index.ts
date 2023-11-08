@@ -7,7 +7,7 @@ import {
     PageBlockStorageOperationsListParams,
     PageBlockStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -15,8 +15,9 @@ import { PageBlockDataLoader } from "./dataLoader";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { createPartitionKey, createSortKey, createGSIPartitionKey, createGSISortKey } from "./keys";
+import { createGSIPartitionKey, createGSISortKey, createPartitionKey, createSortKey } from "./keys";
 import { PageBlockStorageOperations } from "~/types";
+import { put } from "@webiny/db-dynamodb";
 import { compress, decompress } from "./compression";
 
 const createType = (): string => {
@@ -125,11 +126,14 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys,
-                content: await compress(pageBlock.content)
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys,
+                    content: await compress(pageBlock.content)
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -162,11 +166,14 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys,
-                content: await compress(pageBlock.content)
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys,
+                    content: await compress(pageBlock.content)
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -199,9 +206,9 @@ export const createPageBlockStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                ...pageBlock,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.

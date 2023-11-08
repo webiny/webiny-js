@@ -38,6 +38,7 @@ import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import {
     CMS_EXPORT_STRUCTURE_QUERY,
     CmsExportStructureQueryVariables,
@@ -100,8 +101,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as unknown as LambdaContext
         );
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];

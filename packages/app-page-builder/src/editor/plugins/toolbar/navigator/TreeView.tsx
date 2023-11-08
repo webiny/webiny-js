@@ -98,15 +98,16 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                 return;
             }
             ev.stopPropagation();
-            /**
-             * TODO @ts-refactor @ashutosh
-             * We do not have, or expect, isHighlighted to be on the element. Or?
-             */
-            // @ts-ignore
-            if (elementAtomValue && elementAtomValue.isHighlighted) {
+
+            if (elementAtomValue?.isHighlighted) {
                 return;
             }
-            setElementAtomValue({ isHighlighted: true } as any);
+            /**
+             * Error is due to the setElementAtomValue thinking it needs the whole element object.
+             * It does not because it merges existing state with new one.
+             */
+            // @ts-expect-error
+            setElementAtomValue({ isHighlighted: true });
         },
         [elementId]
     );
@@ -115,7 +116,12 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
         if (!element || element.type === "document") {
             return;
         }
-        setElementAtomValue({ isHighlighted: false } as any);
+        /**
+         * Error is due to the setElementAtomValue thinking it needs the whole element object.
+         * It does not because it merges existing state with new one.
+         */
+        // @ts-expect-error
+        setElementAtomValue({ isHighlighted: false });
     }, [elementId]);
 
     const handleOnClick = useCallback(() => {

@@ -1,6 +1,13 @@
-import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
+import {
+    APIGatewayEvent,
+    APIGatewayEventRequestContextWithAuthorizer,
+    Context as LambdaContext
+} from "aws-lambda";
 import "fastify";
+
 export * from "@webiny/handler/types";
+
+export { APIGatewayEvent, LambdaContext, APIGatewayEventRequestContextWithAuthorizer };
 
 export enum Base64EncodeHeader {
     encoded = "x-webiny-base64-encoded",

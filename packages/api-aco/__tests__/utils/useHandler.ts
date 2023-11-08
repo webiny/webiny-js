@@ -11,6 +11,7 @@ import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -52,8 +53,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                         ["x-tenant"]: "root",
                         ["Content-Type"]: "application/json"
                     }
-                },
-                {} as any
+                } as unknown as APIGatewayEvent,
+                {} as unknown as LambdaContext
             );
         }
     };

@@ -9,7 +9,7 @@ import {
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import {
     createGSIPartitionKey,
     createGSISortKey,

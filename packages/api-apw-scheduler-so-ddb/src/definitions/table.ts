@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface Params {
@@ -17,6 +17,8 @@ export const createTable = ({ table, documentClient }: Params) => {
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     });
 };

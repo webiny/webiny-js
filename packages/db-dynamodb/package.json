@@ -18,6 +18,7 @@
     "@webiny/plugins": "0.0.0",
     "date-fns": "^2.22.1",
     "dot-prop": "^6.0.1",
+    "dynamodb-toolbox": "^0.9.2",
     "fuse.js": "^6.4.6",
     "is-number": "^7.0.0",
     "lodash": "^4.17.21"
@@ -28,7 +29,6 @@
     "@types/is-number": "^7.0.2",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "dynamodb-toolbox": "^0.3.5",
     "jest": "^29.5.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",

@@ -6,8 +6,10 @@ import {
     HeadObjectOutput,
     getSignedUrl,
     GetObjectCommand,
-    PutObjectCommand
+    PutObjectCommand,
+    PutObjectCommandInput
 } from "@webiny/aws-sdk/client-s3";
+import { Upload } from "@webiny/aws-sdk/lib-storage";
 
 const ARCHIVE_CONTENT_TYPE = "application/zip";
 
@@ -63,12 +65,17 @@ class S3Stream {
     writeStream(Key: string, contentType: string = ARCHIVE_CONTENT_TYPE) {
         const streamPassThrough = new Stream.PassThrough();
 
-        const params = new PutObjectCommand({
+        const params: PutObjectCommandInput = {
             ACL: "private",
             Body: streamPassThrough,
             Bucket: this.bucket,
             ContentType: contentType,
             Key
+        };
+
+        const upload = new Upload({
+            client: this.s3,
+            params
         });
 
         return {
@@ -76,7 +83,7 @@ class S3Stream {
             /**
              * We're not using the `FileManager` storage plugin here because it currently doesn't support streams.
              */
-            streamPassThroughUploadPromise: this.s3.send(params)
+            streamPassThroughUploadPromise: upload.done()
         };
     }
 

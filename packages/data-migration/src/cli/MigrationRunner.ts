@@ -1,4 +1,4 @@
-import { LambdaClient, InvokeCommand } from "@webiny/aws-sdk/client-lambda";
+import { InvokeCommand, LambdaClient } from "@webiny/aws-sdk/client-lambda";
 import { MigrationStatusReporter } from "~/cli/MigrationStatusReporter";
 import {
     MigrationEventHandlerResponse,
@@ -55,11 +55,15 @@ export class MigrationRunnerResult {
     }
 
     async process(): Promise<void> {
-        const branch = this.result.error ? this.errorBranch : this.successBranch;
-        const input = this.result.error ? this.result.error : this.result.data;
+        if (this.result.error) {
+            for (const handler of this.errorBranch) {
+                await handler(this.result.error);
+            }
+            return;
+        }
 
-        for (const handler of branch) {
-            await handler(input as any);
+        for (const handler of this.successBranch) {
+            await handler(this.result.data);
         }
     }
 }
