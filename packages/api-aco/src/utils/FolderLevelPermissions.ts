@@ -136,11 +136,21 @@ export class FolderLevelPermissions {
                 permissions: folder.permissions?.map(permission => ({ ...permission })) || []
             };
 
-            let isPublicRootFolder = false;
-            let shouldAddPublicPermission = false;
+            const isRootFolder = !folder.parentId;
+            let isPublicRootFolder = false,
+                shouldAddPublicPermission = false;
 
             // Check for permissions inherited from parent folder.
-            if (folder.parentId) {
+            if (isRootFolder) {
+                // If the folder doesn't have a parent, it means it's the root folder.
+                // Let's check if the root folder has any permissions set. If not, let's
+                // add the "public" permission. This permission will be inherited by all
+                // child folders.
+                isPublicRootFolder = currentFolderPermissions.permissions.length === 0;
+                if (isPublicRootFolder) {
+                    shouldAddPublicPermission = true;
+                }
+            } else {
                 const parentFolder = allFolders!.find(f => f.id === folder.parentId)!;
                 if (parentFolder) {
                     // First check if the parent folder has already been processed.
@@ -183,15 +193,6 @@ export class FolderLevelPermissions {
                             currentFolderPermissions.permissions.push(...inheritedPermissions);
                         }
                     }
-                }
-            } else {
-                // If the folder doesn't have a parent, it means it's the root folder.
-                // Let's check if the root folder has any permissions set. If not, let's
-                // add the "public" permission. This permission will be inherited by all
-                // child folders.
-                isPublicRootFolder = currentFolderPermissions.permissions.length === 0;
-                if (isPublicRootFolder) {
-                    shouldAddPublicPermission = true;
                 }
             }
 
