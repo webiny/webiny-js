@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex } from "~/helpers";
 import { configurations } from "~/configurations";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb/utils/batchWrite";
@@ -31,7 +31,7 @@ import {
     decompress,
     encodeCursor
 } from "@webiny/api-elasticsearch";
-import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import {
@@ -43,7 +43,7 @@ import { createElasticsearchBody } from "./elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
-import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
+import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
 
@@ -183,7 +183,7 @@ export const createEntriesStorageOperations = (
         }
 
         const esLatestData = await transformer.getElasticsearchLatestEntryData();
-        const esItems = [
+        const esItems: BatchWriteItem[] = [
             esEntity.putBatch({
                 ...latestKeys,
                 index: esIndex,
@@ -294,10 +294,13 @@ export const createEntriesStorageOperations = (
          * Update the "latest" entry item in the Elasticsearch
          */
         try {
-            await esEntity.put({
-                ...latestKeys,
-                index,
-                data: esLatestData
+            await put({
+                entity: esEntity,
+                item: {
+                    ...latestKeys,
+                    index,
+                    data: esLatestData
+                }
             });
         } catch (ex) {
             throw new WebinyError(
@@ -389,7 +392,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const esItems = [];
+        const esItems: BatchWriteItem[] = [];
 
         const { index: esIndex } = configurations.es({
             model
@@ -1059,14 +1062,14 @@ export const createEntriesStorageOperations = (
 
         let latestEsEntry: ElasticsearchDbRecord | null = null;
         try {
-            latestEsEntry = await getRecord<ElasticsearchDbRecord>({
+            latestEsEntry = await getClean<ElasticsearchDbRecord>({
                 entity: esEntity,
                 keys: latestKeys
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not read Elasticsearch latest or published data.",
-                ex.code || "PUBLISH_BATCH_READ",
+                ex.message || "Could not read Elasticsearch latest data.",
+                ex.code || "PUBLISH_LATEST_READ",
                 {
                     error: ex,
                     latestKeys: latestKeys,
@@ -1082,7 +1085,7 @@ export const createEntriesStorageOperations = (
                 TYPE: createRecordType()
             })
         ];
-        const esItems = [];
+        const esItems: BatchWriteItem[] = [];
 
         const { index } = configurations.es({
             model
@@ -1150,10 +1153,10 @@ export const createEntriesStorageOperations = (
              *
              * No need to transform it for the storage because it was fetched directly from the Elasticsearch table, where it sits transformed.
              */
-            const latestEsEntryDataDecompressed: CmsIndexEntry = (await decompress(
+            const latestEsEntryDataDecompressed = (await decompress(
                 plugins,
                 latestEsEntry.data
-            )) as any;
+            )) as CmsIndexEntry;
 
             const latestTransformer = createTransformer({
                 plugins,
@@ -1275,7 +1278,7 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        const esItems = [
+        const esItems: BatchWriteItem[] = [
             esEntity.deleteBatch({
                 PK: partitionKey,
                 SK: createPublishedSortKey()

@@ -270,7 +270,7 @@ export interface AdminUsersStorageOperations {
         params: StorageOperationsDeleteUserParams<TUser>
     ): Promise<void>;
 
-    getSystemData(params: StorageOperationsGetSystemParams): Promise<System>;
+    getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
 
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
 

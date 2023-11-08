@@ -117,7 +117,7 @@ describe("Page blocks Security Test", () => {
             data: new Mock("list-page-blocks-four-")
         });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", rwd: "wd" }], identityA],
@@ -133,13 +133,13 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { listPageBlocks } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listPageBlocks();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPageBlocks"));
         }
 
-        const sufficientPermissionsAll = [
+        const sufficientPermissionsAll: [SecurityPermission[], SecurityIdentity][] = [
             [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.block" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
@@ -152,7 +152,7 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listPageBlocks } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listPageBlocks();
             expect(response).toMatchObject({
@@ -271,7 +271,7 @@ describe("Page blocks Security Test", () => {
             }
         });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", own: false, rwd: "r" }], identityA],
@@ -287,14 +287,14 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createPageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             const [response] = await createPageBlock({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createPageBlock"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [
                 [
                     { name: "content.i18n" },
@@ -341,11 +341,11 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { createBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const { createPageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             await createBlockCategory({
@@ -387,7 +387,7 @@ describe("Page blocks Security Test", () => {
 
         const id = createPageBlockResponse.data.pageBuilder.createPageBlock.data.id;
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", rwd: "r" }], identityA],
@@ -404,13 +404,13 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { updatePageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updatePageBlock({ id, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updatePageBlock"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [
                 [
                     { name: "content.i18n" },
@@ -457,7 +457,7 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { updatePageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updatePageBlock({ id, data: mock });
             expect(response).toMatchObject({

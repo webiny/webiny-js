@@ -60,7 +60,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 return result;
             }
 
-            (app as any).__webiny_raw_result = result;
+            app.__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({

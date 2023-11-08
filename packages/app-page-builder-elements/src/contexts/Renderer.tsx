@@ -2,7 +2,9 @@ import React, { createContext } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { RendererContextValue, RendererProviderProps } from "~/types";
 
-export const RendererContext = createContext<RendererContextValue>(null as unknown as any);
+export const RendererContext = createContext<RendererContextValue>(
+    null as unknown as RendererContextValue
+);
 
 export const RendererProvider: React.FC<RendererProviderProps> = ({
     children,

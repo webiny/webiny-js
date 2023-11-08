@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
@@ -22,7 +22,7 @@ import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbDataMigrationConfig {
     migrations: Constructor<DataMigration>[];
-    primaryTable: Table;
+    primaryTable: Table<string, string, string>;
     repository?: MigrationRepository;
     isMigrationApplicable?: IsMigrationApplicable;
     timeLimiter?: ExecutionTimeLimiter;

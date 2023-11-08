@@ -1,13 +1,48 @@
 import { createEventHandler } from "~/index";
 import { PluginsContainer } from "@webiny/plugins";
-import { DynamoDBStreamEvent } from "aws-lambda";
+import { marshall as baseMarshall } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBRecord } from "aws-lambda";
 
-const event: DynamoDBStreamEvent = {
+interface Event {
+    Records: DynamoDBRecord[];
+}
+
+const marshall = (item: Record<string, any>): any => {
+    return baseMarshall(item, {
+        convertEmptyValues: true,
+        removeUndefinedValues: true
+    });
+};
+
+const event: Event = {
     Records: [
         {
             eventID: "123",
             dynamodb: {
-                NewImage: {}
+                Keys: marshall({
+                    PK: "s1",
+                    SK: "s2"
+                }),
+                OldImage: marshall({
+                    data: {
+                        id: {
+                            S: "1"
+                        },
+                        title: {
+                            S: "T"
+                        }
+                    }
+                }),
+                NewImage: marshall({
+                    data: {
+                        id: {
+                            S: "123"
+                        },
+                        title: {
+                            S: "Test"
+                        }
+                    }
+                })
             }
         }
     ]
@@ -15,6 +50,7 @@ const event: DynamoDBStreamEvent = {
 
 const lambdaContext: any = {};
 const request: any = {};
+const reply: any = {};
 const context: any = {
     plugins: new PluginsContainer(),
     elasticsearch: {
@@ -36,7 +72,8 @@ describe("event", () => {
                 Records: []
             },
             lambdaContext,
-            request
+            request,
+            reply
         });
 
         expect(result).toEqual(null);
@@ -48,7 +85,8 @@ describe("event", () => {
             context,
             event,
             lambdaContext,
-            request
+            request,
+            reply
         });
 
         expect(result).toEqual(null);
