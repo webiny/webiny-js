@@ -18,7 +18,9 @@ export const createTable = ({ table, documentClient }: Params): Table<string, st
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

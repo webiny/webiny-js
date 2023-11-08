@@ -21,7 +21,9 @@ export const createTable = (params: CreateTableParams): Table<string, string, st
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

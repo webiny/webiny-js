@@ -97,10 +97,13 @@ export const createPageStorageOperations = (
                 table: entity.table,
                 items: items
             });
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
             return page;
         } catch (ex) {

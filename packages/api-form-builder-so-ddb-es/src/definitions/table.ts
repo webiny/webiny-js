@@ -13,6 +13,8 @@ export const createTable = (params: Params): Table<string, string, string> => {
         name: tableName || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient
+        DocumentClient: documentClient,
+        autoExecute: true,
+        autoParse: true
     });
 };

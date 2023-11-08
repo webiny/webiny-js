@@ -17,5 +17,7 @@ export default new Table({
     partitionKey: "PK",
     sortKey: "SK",
     entityField: "TYPE",
-    DocumentClient
+    DocumentClient,
+    autoExecute: true,
+    autoParse: true
 });

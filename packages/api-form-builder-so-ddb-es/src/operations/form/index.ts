@@ -28,7 +28,7 @@ import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
-import { getClean } from "@webiny/db-dynamodb";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 export type DbRecord<T = any> = T & {
     PK: string;
@@ -157,11 +157,14 @@ export const createFormStorageOperations = (
                 tenant: form.tenant,
                 locale: form.locale
             });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormType(),
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index,
+                    data: getESDataForLatestRevision(form),
+                    TYPE: createFormType(),
+                    ...latestKeys
+                }
             });
         } catch (ex) {
             throw new WebinyError(
@@ -229,11 +232,14 @@ export const createFormStorageOperations = (
                 tenant: form.tenant,
                 locale: form.locale
             });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormLatestType(),
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index,
+                    data: getESDataForLatestRevision(form),
+                    TYPE: createFormLatestType(),
+                    ...latestKeys
+                }
             });
         } catch (ex) {
             throw new WebinyError(
@@ -323,11 +329,14 @@ export const createFormStorageOperations = (
                 tenant: form.tenant,
                 locale: form.locale
             });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormLatestType(),
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index,
+                    data: getESDataForLatestRevision(form),
+                    TYPE: createFormLatestType(),
+                    ...latestKeys
+                }
             });
         } catch (ex) {
             throw new WebinyError(
@@ -561,7 +570,10 @@ export const createFormStorageOperations = (
             SK: createLatestSortKey()
         };
         try {
-            await esEntity.delete(latestKeys);
+            await deleteItem({
+                entity: esEntity,
+                keys: latestKeys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete latest form record from Elasticsearch.",
@@ -686,7 +698,10 @@ export const createFormStorageOperations = (
             return form;
         }
         try {
-            await esEntity.put(esDataItem);
+            await put({
+                entity: esEntity,
+                item: esDataItem
+            });
             return form;
         } catch (ex) {
             throw new WebinyError(
@@ -797,11 +812,14 @@ export const createFormStorageOperations = (
         });
         const esData = getESDataForLatestRevision(form);
         try {
-            await esEntity.put({
-                ...latestKeys,
-                index,
-                TYPE: createFormLatestType(),
-                data: esData
+            await put({
+                entity: esEntity,
+                item: {
+                    ...latestKeys,
+                    index,
+                    TYPE: createFormLatestType(),
+                    data: esData
+                }
             });
             return form;
         } catch (ex) {
@@ -940,11 +958,14 @@ export const createFormStorageOperations = (
             locale: form.locale
         });
         try {
-            await esEntity.put({
-                ...latestKeys,
-                index,
-                TYPE: createFormLatestType(),
-                data: esData
+            await put({
+                entity: esEntity,
+                item: {
+                    ...latestKeys,
+                    index,
+                    TYPE: createFormLatestType(),
+                    data: esData
+                }
             });
             return form;
         } catch (ex) {

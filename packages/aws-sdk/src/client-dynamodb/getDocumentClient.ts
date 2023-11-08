@@ -7,9 +7,10 @@ const DEFAULT_CONFIG = {
 
 export const getDocumentClient = (config?: DynamoDBClientConfig) => {
     const client = new DynamoDBClient(config || DEFAULT_CONFIG);
-    const documentClient = DynamoDBDocument.from(client, {
-        marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true }
+    return DynamoDBDocument.from(client, {
+        marshallOptions: {
+            convertEmptyValues: true,
+            removeUndefinedValues: true
+        }
     });
-
-    return documentClient;
 };

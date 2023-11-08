@@ -45,28 +45,6 @@ describe("search", () => {
         return createFruits(input);
     };
 
-    it.skip("should find record with dash in the middle of two words", async () => {
-        await setupFruits();
-        const [response] = await listFruits({
-            where: {
-                name_contains: "straw-berry"
-            }
-        });
-
-        expect(response).toMatchObject({
-            data: {
-                listFruits: {
-                    data: [
-                        {
-                            name: createName("straw-berry")
-                        }
-                    ],
-                    error: null
-                }
-            }
-        });
-    });
-
     it("should find record with w/ in title", async () => {
         const fruits = {
             apple: "app w/ le",

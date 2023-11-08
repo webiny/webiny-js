@@ -15,7 +15,9 @@ export const createElasticsearchTable = ({
         name: process.env.DB_TABLE_ELASTICSEARCH as string,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient
+        DocumentClient: documentClient,
+        autoExecute: true,
+        autoParse: true
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

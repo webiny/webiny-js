@@ -7,7 +7,7 @@ import {
 import { Entity, Table } from "dynamodb-toolbox";
 import { FormBuilderSystemCreateKeysParams, FormBuilderSystemStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
-import { getClean } from "@webiny/db-dynamodb";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
@@ -41,9 +41,12 @@ export const createSystemStorageOperations = (
         const keys = createKeys(system);
 
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {
@@ -86,9 +89,12 @@ export const createSystemStorageOperations = (
         const keys = createKeys(system);
 
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {

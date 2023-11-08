@@ -258,16 +258,21 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.update({
-                    TYPE: createType(),
-                    ...keys,
-                    stats: {
-                        $set: {
-                            [prevStatus]: { $add: -1 },
-                            [nextStatus]: { $add: 1 }
+                await entity.update(
+                    {
+                        TYPE: createType(),
+                        ...keys,
+                        stats: {
+                            $set: {
+                                [prevStatus]: { $add: -1 },
+                                [nextStatus]: { $add: 1 }
+                            }
                         }
+                    },
+                    {
+                        execute: true
                     }
-                });
+                );
                 return original;
             } catch (ex) {
                 throw new WebinyError(

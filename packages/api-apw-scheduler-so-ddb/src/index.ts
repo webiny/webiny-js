@@ -157,10 +157,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entity.put({
-                    ...item,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...item,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return item;
             } catch (ex) {

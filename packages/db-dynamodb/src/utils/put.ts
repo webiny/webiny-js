@@ -9,8 +9,10 @@ interface Params {
     };
 }
 
-export const put = async (params: Params): Promise<void> => {
+export const put = async (params: Params) => {
     const { entity, item } = params;
 
-    await entity.put(item);
+    return await entity.put(item, {
+        execute: true
+    });
 };

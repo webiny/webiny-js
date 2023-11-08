@@ -15,6 +15,7 @@ import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import { PluginCollection } from "../environment";
+import { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
 
 interface GetElasticsearchClientParams {
     name: string;
@@ -75,17 +76,15 @@ export class ElasticsearchClientConfig {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const gzipCompression = createGzipCompression();
-        const simulationContext = new ContextPlugin(async context => {
+        const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
             context.plugins.register(gzipCompression);
             await elasticsearchClientContext.apply(context);
         });
 
-        simulateStream(
-            documentClient,
-            createDynamoDBHandler({
-                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
-            })
-        );
+        const dynamoDbHandler = createDynamoDBHandler({
+            plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+        });
+        simulateStream(documentClient, dynamoDbHandler);
 
         elasticIndexManager({
             global: global,

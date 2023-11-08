@@ -19,6 +19,8 @@ export const createTable = (params: Params): Table<string, string, string> => {
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     });
 };

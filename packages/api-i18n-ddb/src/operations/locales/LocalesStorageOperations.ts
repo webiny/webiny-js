@@ -21,7 +21,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { LocaleDynamoDbFieldPlugin } from "~/plugins/LocaleDynamoDbFieldPlugin";
-import { getClean, put } from "@webiny/db-dynamodb";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 interface ConstructorParams {
     context: I18NContext;
@@ -117,9 +117,12 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             SK: this.getSortKey(locale)
         };
         try {
-            await this.entity.put({
-                ...locale,
-                ...keys
+            await put({
+                entity: this.entity,
+                item: {
+                    ...locale,
+                    ...keys
+                }
             });
             return locale;
         } catch (ex) {
@@ -187,7 +190,10 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             SK: this.getSortKey(locale)
         };
         try {
-            await this.entity.delete(keys);
+            await deleteItem({
+                entity: this.entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Cannot delete I18N locale.",

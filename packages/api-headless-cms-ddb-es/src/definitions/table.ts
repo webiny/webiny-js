@@ -15,7 +15,9 @@ export const createTable = ({
         name: process.env.DB_TABLE_HEADLESS_CMS || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient
+        DocumentClient: documentClient,
+        autoExecute: true,
+        autoParse: true
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

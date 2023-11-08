@@ -8,6 +8,8 @@ export default (params: { context: I18NContext }): Table<string, string, string>
         name: process.env.DB_TABLE || getTable(context),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context)
+        DocumentClient: getDocumentClient(context),
+        autoExecute: true,
+        autoParse: true
     });
 };

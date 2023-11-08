@@ -30,7 +30,9 @@ export const getPrimaryDynamoDbTable = (params?: CreateTableParams) => {
             //     partitionKey: "GSI2_PK",
             //     sortKey: "GSI2_SK"
             // }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     });
 };
 

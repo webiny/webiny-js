@@ -17,6 +17,8 @@ export const createTable = ({ table, documentClient }: Params) => {
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        }
+        },
+        autoExecute: true,
+        autoParse: true
     });
 };

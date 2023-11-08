@@ -11,7 +11,7 @@ import {
     FormBuilderSettingsStorageOperationsCreatePartitionKeyParams
 } from "~/types";
 import WebinyError from "@webiny/error";
-import { getClean } from "@webiny/db-dynamodb";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
@@ -48,9 +48,12 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(settings);
 
         try {
-            await entity.put({
-                ...settings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...settings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -93,9 +96,12 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(settings);
 
         try {
-            await entity.put({
-                ...settings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...settings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -117,7 +123,10 @@ export const createSettingsStorageOperations = (
         const { settings } = params;
         const keys = createKeys(settings);
         try {
-            await entity.delete(keys);
+            await deleteItem({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete the settings record by given keys.",

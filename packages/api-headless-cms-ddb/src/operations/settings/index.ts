@@ -6,9 +6,9 @@ import {
     CmsSettingsStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
 import WebinyError from "@webiny/error";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { put } from "@webiny/db-dynamodb";
 
 interface CmsSettingsDb extends Omit<CmsSettings, "contentModelLastChange"> {
     contentModelLastChange: string;
@@ -74,12 +74,15 @@ export const createSettingsStorageOperations = (
         const { settings } = params;
         const keys = createKeys(settings);
 
-        const dbSettings: CmsSettingsDb = convertToDbData(settings);
+        const dbSettings = convertToDbData(settings);
 
         try {
-            await entity.put({
-                ...dbSettings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...dbSettings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -101,12 +104,15 @@ export const createSettingsStorageOperations = (
 
         const keys = createKeys(settings);
 
-        const dbSettings: CmsSettingsDb = convertToDbData(settings);
+        const dbSettings = convertToDbData(settings);
 
         try {
-            await entity.put({
-                ...dbSettings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...dbSettings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -126,15 +132,14 @@ export const createSettingsStorageOperations = (
     const get = async (params: CmsSettingsStorageOperationsGetParams) => {
         const keys = createKeys(params);
         try {
-            const record = await getRecord<CmsSettingsDb>({
+            const item = await getClean<CmsSettingsDb>({
                 entity,
                 keys
             });
-            if (!record) {
+            if (!item) {
                 return null;
             }
-            const settings = cleanupItem(entity, record) as CmsSettingsDb;
-            return convertFromDbData(settings);
+            return convertFromDbData(item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get settings.",

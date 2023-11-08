@@ -12,6 +12,8 @@ export const createElasticsearchTable = (params: Params): Table<string, string, 
         name: tableName || (process.env.DB_TABLE_ELASTICSEARCH as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient
+        DocumentClient: documentClient,
+        autoExecute: true,
+        autoParse: true
     });
 };

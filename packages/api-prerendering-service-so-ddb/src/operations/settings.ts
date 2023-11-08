@@ -6,6 +6,7 @@ import {
 } from "@webiny/api-prerendering-service/types";
 import { Entity } from "dynamodb-toolbox";
 import { get } from "@webiny/db-dynamodb/utils/get";
+import { put } from "@webiny/db-dynamodb";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
@@ -53,10 +54,13 @@ export const createSettingsStorageOperations = (
         };
 
         try {
-            await entity.put({
-                ...keys,
-                TYPE: "ps.settings",
-                data: settings
+            await put({
+                entity,
+                item: {
+                    ...keys,
+                    TYPE: "ps.settings",
+                    data: settings
+                }
             });
 
             return settings;
