@@ -117,12 +117,12 @@ export class FolderLevelPermissions {
         const identity = this.getIdentity();
         const permissions = await this.listPermissions();
 
-        const processedFolderPermissions: FolderPermissionsListItem[] = [];
-
         let identityTeam: Team | null;
         if (this.canUseTeams()) {
             identityTeam = await this.getIdentityTeam();
         }
+
+        const processedFolderPermissions: FolderPermissionsListItem[] = [];
 
         const processFolderPermissions = (folder: Folder) => {
             if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
@@ -136,21 +136,8 @@ export class FolderLevelPermissions {
                 permissions: folder.permissions?.map(permission => ({ ...permission })) || []
             };
 
-            const isRootFolder = !folder.parentId;
-            let isPublicRootFolder = false,
-                shouldAddPublicPermission = false;
-
             // Check for permissions inherited from parent folder.
-            if (isRootFolder) {
-                // If the folder doesn't have a parent, it means it's the root folder.
-                // Let's check if the root folder has any permissions set. If not, let's
-                // add the "public" permission. This permission will be inherited by all
-                // child folders.
-                isPublicRootFolder = currentFolderPermissions.permissions.length === 0;
-                if (isPublicRootFolder) {
-                    shouldAddPublicPermission = true;
-                }
-            } else {
+            if (folder.parentId) {
                 const parentFolder = allFolders!.find(f => f.id === folder.parentId)!;
                 if (parentFolder) {
                     // First check if the parent folder has already been processed.
@@ -196,78 +183,65 @@ export class FolderLevelPermissions {
                 }
             }
 
-            // Finally, let's also ensure that the current user is included in the permissions,
-            // if not already. Let's also ensure the user is the first item in the array.
-            let identityFirstPermission: FolderPermission | undefined;
+            // Let's ensure current identity's permission is included in the permissions array.
+            // We first check if the current identity is already included in the permissions array.
+            // If not, we check if the user has full access or if the team user belongs to has access.
+            const currentIdentityIncludedInPermissions = currentFolderPermissions.permissions.some(
+                p => p.target === `admin:${identity.id}`
+            );
 
-            // The first two checks don't need to be made if we're dealing with a public root folder. In the
-            // above code (`isPublicRootFolder`), we can see that these folders do not have any permissions.
-            const performFirstTwoChecks = !isPublicRootFolder;
+            if (currentIdentityIncludedInPermissions) {
+                // Ensure existing identity permission is always the first one in the array.
+                const currentIdentityPermissionIndex =
+                    currentFolderPermissions.permissions.findIndex(
+                        p => p.target === `admin:${identity.id}`
+                    );
 
-            if (performFirstTwoChecks) {
-                // 1. If current identity is already listed as the first permission, we don't need to do anything.
-                const [firstPermission] = currentFolderPermissions.permissions;
-                if (firstPermission?.target === `admin:${identity.id}`) {
-                    identityFirstPermission = firstPermission;
+                if (currentIdentityPermissionIndex > 0) {
+                    const [currentIdentityPermission] = currentFolderPermissions.permissions.splice(
+                        currentIdentityPermissionIndex,
+                        1
+                    );
+                    currentFolderPermissions.permissions.unshift(currentIdentityPermission);
                 }
+            } else {
+                // Current identity not included in permissions? Let's add it.
+                let currentIdentityPermission: FolderPermission | null = null;
 
-                // 2. If the current identity is not the first permission, let's check if it's in the+
-                // permissions at all (inherited from parent folder). If it is, let's move it to the first position.
-                if (!identityFirstPermission) {
-                    const currentIdentityPermissionIndex =
-                        currentFolderPermissions.permissions.findIndex(
-                            p => p.target === `admin:${identity.id}`
-                        );
-
-                    if (currentIdentityPermissionIndex >= 0) {
-                        // Move the current identity permission to the first position.
-                        const [identityPermission] = currentFolderPermissions.permissions.splice(
-                            currentIdentityPermissionIndex,
-                            1
-                        );
-                        currentFolderPermissions.permissions.unshift(identityPermission);
-                        identityFirstPermission = identityPermission;
-                    }
-                }
-            }
-
-            // 3. Still not found? Let's check if the current identity has full access.
-            // If so, we'll add it as "owner", as the first permission.
-            if (!identityFirstPermission) {
+                // 1. Check if the user has full access.
                 const hasFullAccess = permissions.some(p => p.name === "*");
                 if (hasFullAccess) {
-                    identityFirstPermission = {
+                    currentIdentityPermission = {
                         target: `admin:${identity.id}`,
                         level: "owner",
                         inheritedFrom: "role:full-access"
                     };
-                    currentFolderPermissions.permissions.unshift(identityFirstPermission);
-                    shouldAddPublicPermission = false;
+                } else if (identityTeam) {
+                    // 2. Check the team user belongs to grants access to the folder.
+                    const teamPermission = currentFolderPermissions.permissions.find(
+                        p => p.target === `team:${identityTeam!.id}`
+                    );
+
+                    if (teamPermission) {
+                        currentIdentityPermission = {
+                            target: `admin:${identity.id}`,
+                            level: teamPermission.level,
+                            inheritedFrom: "team:" + identityTeam!.id
+                        };
+                    }
+                }
+
+                if (currentIdentityPermission) {
+                    // If permission is found, let's add it to the beginning of the array.
+                    // We're doing this just because it looks nicer in the UI.
+                    currentFolderPermissions.permissions.unshift(currentIdentityPermission);
                 }
             }
 
-            // 4. And yet again, still not found? Let's check if there is a team associated
-            // with the current identity. If so, let's check if the team has access to the folder.
-            if (!identityFirstPermission && identityTeam) {
-                const teamPermission = currentFolderPermissions.permissions.find(
-                    p => p.target === `team:${identityTeam!.id}`
-                );
-
-                if (teamPermission) {
-                    identityFirstPermission = {
-                        target: `admin:${identity.id}`,
-                        level: teamPermission.level,
-                        inheritedFrom: "team:" + identityTeam!.id
-                    };
-
-                    currentFolderPermissions.permissions.unshift(identityFirstPermission);
-                    shouldAddPublicPermission = false;
-                }
-            }
-
-            // 5. Alright, we didn't find the current identity in the permissions.
-            // But, if the folder is public, let's add the current identity as a user with "public" access.
-            if (shouldAddPublicPermission) {
+            // Note that this can only happen with root folders. All other (child) folders will
+            // always have at least one permission (inherited from parent).
+            const mustAddPublicPermission = currentFolderPermissions.permissions.length === 0;
+            if (mustAddPublicPermission) {
                 currentFolderPermissions.permissions = [
                     {
                         target: `admin:${identity.id}`,
