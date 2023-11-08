@@ -7,6 +7,7 @@ import {
     FormBuilderStorageOperationsCreateSubmissionParams,
     FormBuilderStorageOperationsUpdateSubmissionParams,
     FormBuilderStorageOperationsListSubmissionsParams,
+    FormBuilderSubmissionStorageOperations,
     FbSubmission
 } from "~/types";
 
@@ -15,7 +16,7 @@ interface ModelContext {
     locale: string;
 }
 
-export class CmsSubmissionsStorage {
+export class CmsSubmissionsStorage implements FormBuilderSubmissionStorageOperations {
     private readonly cms: HeadlessCms;
     private readonly security: Security;
     private readonly model: CmsModel;
