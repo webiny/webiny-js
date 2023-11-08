@@ -1,5 +1,5 @@
 import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
-import { Entity, Table, ScanOptions } from "~/toolbox";
+import { Entity, ScanOptions, Table } from "~/toolbox";
 
 export interface BaseScanParams {
     options?: ScanOptions;
@@ -7,12 +7,12 @@ export interface BaseScanParams {
 }
 
 export interface ScanWithTable extends BaseScanParams {
-    table: Table<string, string, string>;
+    table: Table<any, any, any>;
     entity?: never;
 }
 
 export interface ScanWithEntity extends BaseScanParams {
-    entity: Entity & ScanWithTable;
+    entity: Entity;
     table?: never;
 }
 
@@ -75,6 +75,9 @@ export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
     const { options } = params;
 
     const table = params.table ? params.table : params.entity.table;
+    if (!table) {
+        throw new Error(`Missing table for scan: ${JSON.stringify(options)}`);
+    }
 
     const result = await table.scan(
         {

@@ -1,5 +1,5 @@
 export { QueryCommand, ScanInput, ScanOutput, WriteRequest } from "@aws-sdk/client-dynamodb";
-export type { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+export type { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 
 export type { StreamRecord } from "@aws-sdk/client-dynamodb-streams";
 

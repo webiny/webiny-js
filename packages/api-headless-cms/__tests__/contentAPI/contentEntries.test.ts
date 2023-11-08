@@ -148,7 +148,7 @@ describe("Content entries", () => {
         await setupContentModels(mainManager, group, ["fruit"]);
         return createFruits();
     };
-    it.skip("should get content entry by modelId and id", async () => {
+    it("should get content entry by modelId and id", async () => {
         const { apple, banana, strawberry } = await setupFruits();
 
         const [secondBananaResponse] = await createFruitFrom({

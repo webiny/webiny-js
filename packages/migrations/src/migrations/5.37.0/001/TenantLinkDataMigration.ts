@@ -5,7 +5,7 @@ import { createTenantEntity } from "./entities/createTenantEntity";
 import { queryAll } from "~/utils";
 import { Tenant, TenantLink } from "./types";
 import { isMigratedTenantLink } from "~/migrations/5.37.0/001/utils/isMigratedTenantLink";
-import { put } from "@webiny/db-dynamodb";
+import { update } from "@webiny/db-dynamodb";
 
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
@@ -70,7 +70,7 @@ export class TenantLinkRecords_5_37_0_001_FileData
 
                 logger.info(`Updating tenant link ${tenantLink.PK}.`);
 
-                await put({
+                await update({
                     entity: this.tenantLinkEntity,
                     item: {
                         PK: tenantLink.PK,
