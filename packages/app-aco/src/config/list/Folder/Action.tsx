@@ -22,7 +22,7 @@ export const BaseAction: React.FC<ActionProps> = ({
     remove = false,
     element
 }) => {
-    const getId = useIdGenerator("menuItemAction");
+    const getId = useIdGenerator("folderAction");
 
     const placeAfter = after !== undefined ? getId(after) : undefined;
     const placeBefore = before !== undefined ? getId(before) : undefined;

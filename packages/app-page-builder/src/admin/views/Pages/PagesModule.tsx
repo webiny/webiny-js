@@ -8,10 +8,10 @@ import {
     ActionPublish,
     ActionUnpublish
 } from "~/admin/components/BulkActions";
-import { AcoListConfig, DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+// import { AcoListConfig, DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 
 const { Browser } = PageListConfig;
-const { Folder } = AcoListConfig;
+// const { Folder } = AcoListConfig;
 
 export const PagesModule: React.FC = () => {
     return (
@@ -23,11 +23,11 @@ export const PagesModule: React.FC = () => {
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
             </PageListConfig>
-            <AcoListConfig>
-                <Folder.Action name={"edit"} element={<EditFolder />} />
-                <Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
-                <Folder.Action name={"delete"} element={<DeleteFolder />} />
-            </AcoListConfig>
+            {/*<AcoListConfig>*/}
+            {/*    <Folder.Action name={"edit"} element={<EditFolder />} />*/}
+            {/*    <Folder.Action name={"permissions"} element={<SetFolderPermissions />} />*/}
+            {/*    <Folder.Action name={"delete"} element={<DeleteFolder />} />*/}
+            {/*</AcoListConfig>*/}
         </>
     );
 };

@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useMemo } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { FolderProvider, useAcoListConfig, useNavigateFolder } from "@webiny/app-aco";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -22,6 +22,7 @@ import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import { OptionsMenu } from "@webiny/app-admin";
 
 export interface TableProps {
     folders: FolderEntry[];
@@ -34,11 +35,11 @@ export interface TableProps {
 }
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
-    const { currentFolderId } = useNavigateFolder();
     const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
         props;
+    const { currentFolderId } = useNavigateFolder();
+    const { folder } = useAcoListConfig();
     const { model } = useModel();
-
     const { history } = useRouter();
     const { canEdit: baseCanEdit } = usePermission();
 
@@ -136,32 +137,14 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    return <></>;
-
-                    // return (
-                    //     <Menu handle={<IconButton icon={<More />} />}>
-                    //         <FolderActionEdit
-                    //             onClick={() => {
-                    //                 setUpdateDialogOpen(true);
-                    //                 setSelectedFolder(record.original);
-                    //             }}
-                    //         />
-                    //         {record.original.canManagePermissions && (
-                    //             <FolderActionManagePermissions
-                    //                 onClick={() => {
-                    //                     setManagePermissionsDialogOpen(true);
-                    //                     setSelectedFolder(record.original);
-                    //                 }}
-                    //             />
-                    //         )}
-                    //         <FolderActionDelete
-                    //             onClick={() => {
-                    //                 setDeleteDialogOpen(true);
-                    //                 setSelectedFolder(record.original);
-                    //             }}
-                    //         />
-                    //     </Menu>
-                    // );
+                    return (
+                        <FolderProvider folder={record.original}>
+                            <OptionsMenu
+                                actions={folder.actions}
+                                data-testid={"table.row.folder.menu-action"}
+                            />
+                        </FolderProvider>
+                    );
                 }
             }
         };

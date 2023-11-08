@@ -6,10 +6,10 @@ import { ActionDelete, ActionMove } from "~/components/BulkActions";
 import { Name } from "~/components/FileDetails/components/Name";
 import { Tags } from "~/components/FileDetails/components/Tags";
 import { Aliases } from "~/components/FileDetails/components/Aliases";
-import { AcoListConfig, DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+// import { AcoListConfig, DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 
 const { Browser, FileDetails } = FileManagerConfig;
-const { Folder } = AcoListConfig;
+// const { Folder } = AcoListConfig;
 
 export const FileManagerRendererModule = () => {
     return (
@@ -24,11 +24,11 @@ export const FileManagerRendererModule = () => {
                 <FileDetails.Field name={"tags"} element={<Tags />} />
                 <FileDetails.Field name={"aliases"} element={<Aliases />} />
             </FileManagerConfig>
-            <AcoListConfig>
-                <Folder.Action name={"edit"} element={<EditFolder />} />
-                <Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
-                <Folder.Action name={"delete"} element={<DeleteFolder />} />
-            </AcoListConfig>
+            {/*<AcoListConfig>*/}
+            {/*    <Folder.Action name={"edit"} element={<EditFolder />} />*/}
+            {/*    <Folder.Action name={"permissions"} element={<SetFolderPermissions />} />*/}
+            {/*    <Folder.Action name={"delete"} element={<DeleteFolder />} />*/}
+            {/*</AcoListConfig>*/}
         </>
     );
 };
