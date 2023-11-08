@@ -1,12 +1,6 @@
-import React, { forwardRef, useCallback, useMemo, useState } from "react";
+import React, { forwardRef, useCallback, useMemo } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import {
-    FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions,
-    useNavigateFolder
-} from "@webiny/app-aco";
-import { FolderItem } from "@webiny/app-aco/types";
+import { useNavigateFolder } from "@webiny/app-aco";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -16,9 +10,6 @@ import { Menu } from "@webiny/ui/Menu";
 // @ts-ignore
 import TimeAgo from "timeago-react";
 import { EntryName, FolderName } from "./Row/Name";
-import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
-import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
-import { FolderActionManagePermissions } from "./Row/Folder/FolderActionManagePermissions";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
@@ -50,11 +41,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
     const { history } = useRouter();
     const { canEdit: baseCanEdit } = usePermission();
-
-    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return (folders as Entry[]).concat(records as Entry[]);
@@ -150,30 +136,32 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(record.original);
-                                }}
-                            />
-                            {record.original.canManagePermissions && (
-                                <FolderActionManagePermissions
-                                    onClick={() => {
-                                        setManagePermissionsDialogOpen(true);
-                                        setSelectedFolder(record.original);
-                                    }}
-                                />
-                            )}
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(record.original);
-                                }}
-                            />
-                        </Menu>
-                    );
+                    return <></>;
+
+                    // return (
+                    //     <Menu handle={<IconButton icon={<More />} />}>
+                    //         <FolderActionEdit
+                    //             onClick={() => {
+                    //                 setUpdateDialogOpen(true);
+                    //                 setSelectedFolder(record.original);
+                    //             }}
+                    //         />
+                    //         {record.original.canManagePermissions && (
+                    //             <FolderActionManagePermissions
+                    //                 onClick={() => {
+                    //                     setManagePermissionsDialogOpen(true);
+                    //                     setSelectedFolder(record.original);
+                    //                 }}
+                    //             />
+                    //         )}
+                    //         <FolderActionDelete
+                    //             onClick={() => {
+                    //                 setDeleteDialogOpen(true);
+                    //                 setSelectedFolder(record.original);
+                    //             }}
+                    //         />
+                    //     </Menu>
+                    // );
                 }
             }
         };
@@ -198,25 +186,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onSortingChange={onSortingChange}
                 selectedRows={data.filter(record => selectedRows.find(row => row.id === record.id))}
             />
-            {selectedFolder && (
-                <>
-                    <FolderDialogUpdate
-                        folder={selectedFolder}
-                        open={updateDialogOpen}
-                        onClose={() => setUpdateDialogOpen(false)}
-                    />
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={managePermissionsDialogOpen}
-                        onClose={() => setManagePermissionsDialogOpen(false)}
-                    />
-                    <FolderDialogDelete
-                        folder={selectedFolder}
-                        open={deleteDialogOpen}
-                        onClose={() => setDeleteDialogOpen(false)}
-                    />
-                </>
-            )}
         </div>
     );
 });

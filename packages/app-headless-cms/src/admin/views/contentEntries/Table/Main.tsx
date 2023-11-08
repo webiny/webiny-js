@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { useCreateDialog } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Filters } from "~/admin/components/ContentEntries/Filters";
@@ -22,10 +22,7 @@ interface Props {
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const list = useContentEntriesList();
-
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const { history } = useRouter();
     const { canCreate, contentModel } = useContentEntry();
@@ -53,6 +50,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, 200);
 
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
+
     const { showEmptyView } = useContentEntry();
 
     if (!showEmptyView) {
@@ -66,7 +67,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     title={!list.isListLoading ? list.listTitle : undefined}
                     canCreate={canCreate}
                     onCreateEntry={createEntry}
-                    onCreateFolder={openFoldersDialog}
+                    onCreateFolder={onCreateFolder}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
@@ -80,7 +81,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             isSearch={list.isSearch}
                             canCreate={canCreate}
                             onCreateEntry={createEntry}
-                            onCreateFolder={openFoldersDialog}
+                            onCreateFolder={onCreateFolder}
                         />
                     ) : (
                         <>
@@ -111,11 +112,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     )}
                 </Wrapper>
             </MainContainer>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
-            />
         </>
     );
 };

@@ -3,17 +3,16 @@ import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Typography } from "@webiny/ui/Typography";
 
+import { useCreateDialog } from "~/dialogs";
 import { Button, Icon, IconContainer } from "./styled";
-
-type CreateButtonProps = {
-    onClick: () => void;
-};
 
 const t = i18n.ns("app-aco/components/folder-tree/button-create");
 
-export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick }) => {
+export const CreateButton = () => {
+    const { showDialog } = useCreateDialog();
+
     return (
-        <Button onClick={onClick}>
+        <Button onClick={() => showDialog({})}>
             <IconContainer>
                 <Icon />
             </IconContainer>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { useCreateDialog } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -45,15 +45,12 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
-
     const [showPreviewDrawer, setPreviewDrawer] = useState(false);
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
     const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
     const { canCreate } = usePagesPermissions();
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -97,6 +94,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, [showPreviewDrawer]);
 
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
+
     return (
         <>
             <MainContainer>
@@ -105,7 +106,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     canCreate={canCreate()}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
-                    onCreateFolder={openFoldersDialog}
+                    onCreateFolder={onCreateFolder}
                     selected={list.selected}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
@@ -119,7 +120,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             isSearch={list.isSearch}
                             canCreate={canCreate()}
                             onCreatePage={openTemplatesDialog}
-                            onCreateFolder={openFoldersDialog}
+                            onCreateFolder={onCreateFolder}
                         />
                     ) : (
                         <>
@@ -157,11 +158,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     )}
                 </Wrapper>
             </MainContainer>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
-            />
             <CategoriesDialog
                 open={showCategoriesDialog}
                 onClose={closeCategoriesDialog}

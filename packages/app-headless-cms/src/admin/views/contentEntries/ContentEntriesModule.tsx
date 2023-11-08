@@ -13,7 +13,9 @@ import {
     SaveAndPublishButton,
     SaveContentButton
 } from "~/admin/components/ContentEntryForm/Header";
+import { AcoListConfig, DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 
+const { Folder } = AcoListConfig;
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
@@ -32,6 +34,11 @@ export const ContentEntriesModule: React.FC = () => {
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntry />} />
             </ContentEntryEditorConfig>
+            <AcoListConfig>
+                <Folder.Action name={"edit"} element={<EditFolder />} />
+                <Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
+                <Folder.Action name={"delete"} element={<DeleteFolder />} />
+            </AcoListConfig>
         </>
     );
 };

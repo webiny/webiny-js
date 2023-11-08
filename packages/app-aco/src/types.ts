@@ -161,7 +161,7 @@ export interface DeleteFolderResponse {
     };
 }
 
-export interface DndFolderItem extends FolderItem {
+export interface DndFolderItemData {
     isFocused?: boolean;
 }
 

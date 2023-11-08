@@ -1,14 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
-import {
-    FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions
-} from "~/components";
-
+import { FolderProvider } from "~/contexts/folder";
 import { Folder } from "~/components/FolderGrid/Folder";
 import { Grid } from "~/components/FolderGrid/styled";
-
+import { AcoListWithConfig } from "~/config";
 import { FolderItem } from "~/types";
 
 interface FolderGridProps {
@@ -17,57 +12,19 @@ interface FolderGridProps {
 }
 
 export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick }) => {
-    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
-
     if (folders.length === 0) {
         return null;
     }
 
     return (
-        <>
+        <AcoListWithConfig>
             <Grid>
                 {folders.map(folder => (
-                    <Folder
-                        key={folder.id}
-                        folder={folder}
-                        onFolderClick={onFolderClick}
-                        onMenuEditClick={() => {
-                            setUpdateDialogOpen(true);
-                            setSelectedFolder(folder);
-                        }}
-                        onMenuDeleteClick={() => {
-                            setDeleteDialogOpen(true);
-                            setSelectedFolder(folder);
-                        }}
-                        onMenuManagePermissionsClick={() => {
-                            setManagePermissionsDialogOpen(true);
-                            setSelectedFolder(folder);
-                        }}
-                    />
+                    <FolderProvider key={folder.id} folder={folder}>
+                        <Folder onClick={onFolderClick} />
+                    </FolderProvider>
                 ))}
             </Grid>
-            {selectedFolder && (
-                <>
-                    <FolderDialogUpdate
-                        folder={selectedFolder}
-                        open={updateDialogOpen}
-                        onClose={() => setUpdateDialogOpen(false)}
-                    />
-                    <FolderDialogDelete
-                        folder={selectedFolder}
-                        open={deleteDialogOpen}
-                        onClose={() => setDeleteDialogOpen(false)}
-                    />
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={managePermissionsDialogOpen}
-                        onClose={() => setManagePermissionsDialogOpen(false)}
-                    />
-                </>
-            )}
-        </>
+        </AcoListWithConfig>
     );
 };

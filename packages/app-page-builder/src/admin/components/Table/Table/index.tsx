@@ -1,10 +1,6 @@
-import React, { forwardRef, useMemo, useState } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import {
-    FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions
-} from "@webiny/app-aco";
+import { FolderProvider, useAcoListConfig } from "@webiny/app-aco";
 import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -15,9 +11,6 @@ import { Menu } from "@webiny/ui/Menu";
 // @ts-ignore
 import TimeAgo from "timeago-react";
 import { FolderName, PageName } from "./Row/Name";
-import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
-import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
-import { FolderActionManagePermissions } from "./Row/Folder/FolderActionManagePermissions";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
@@ -26,6 +19,7 @@ import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants";
 import { PbPageDataItem, PbPageDataStatus } from "~/types";
 import { menuStyles } from "./styled";
+import { OptionsMenu } from "@webiny/app-admin";
 
 export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -110,10 +104,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         onSortingChange,
         selectedRows
     } = props;
-    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
+
+    const { folder: folderConfig } = useAcoListConfig();
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records)];
@@ -184,31 +176,15 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
+                    console.log("folderConfig.actions", folderConfig);
+
                     return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(entry.original);
-                                }}
+                        <FolderProvider folder={entry.original}>
+                            <OptionsMenu
+                                actions={folderConfig.actions}
+                                data-testid={"table.row.folder.menu-action"}
                             />
-
-                            {entry.original.canManagePermissions && (
-                                <FolderActionManagePermissions
-                                    onClick={() => {
-                                        setManagePermissionsDialogOpen(true);
-                                        setSelectedFolder(entry.original);
-                                    }}
-                                />
-                            )}
-
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(entry.original);
-                                }}
-                            />
-                        </Menu>
+                        </FolderProvider>
                     );
                 }
             }
@@ -236,25 +212,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                 ]}
             />
-            {selectedFolder && (
-                <>
-                    <FolderDialogUpdate
-                        folder={selectedFolder}
-                        open={updateDialogOpen}
-                        onClose={() => setUpdateDialogOpen(false)}
-                    />
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={managePermissionsDialogOpen}
-                        onClose={() => setManagePermissionsDialogOpen(false)}
-                    />{" "}
-                    <FolderDialogDelete
-                        folder={selectedFolder}
-                        open={deleteDialogOpen}
-                        onClose={() => setDeleteDialogOpen(false)}
-                    />
-                </>
-            )}
         </div>
     );
 });

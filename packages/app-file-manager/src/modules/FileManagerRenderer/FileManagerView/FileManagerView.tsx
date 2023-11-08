@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
@@ -74,6 +74,7 @@ const FileManagerView = () => {
     const fileManager = useFileManagerApi();
     const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(view.uploadFile),
@@ -81,9 +82,6 @@ const FileManagerView = () => {
     );
 
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
     const [currentFile, setCurrentFile] = useState<FileItem>();
 
     useEffect(() => {
@@ -247,6 +245,10 @@ const FileManagerView = () => {
         [view.meta, view.loadMoreFiles]
     );
 
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: view.folderId });
+    }, [view.folderId]);
+
     return (
         <>
             <Files
@@ -286,7 +288,7 @@ const FileManagerView = () => {
                                 )}
                                 <ButtonSecondary
                                     data-testid={"file-manager.create-folder-button"}
-                                    onClick={openFoldersDialog}
+                                    onClick={onCreateFolder}
                                     small={true}
                                     style={{ margin: "0 8px" }}
                                 >
@@ -350,11 +352,6 @@ const FileManagerView = () => {
                     </OverlayLayout>
                 )}
             </Files>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={view.folderId || null}
-            />
         </>
     );
 };
