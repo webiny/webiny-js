@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createdBy, createLocalesData, createTenantsData } from "./006.data";
 import { createId, insertDynamoDbTestData } from "~tests/utils";
 import { OriginalPageRecord } from "./types";

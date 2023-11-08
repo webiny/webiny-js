@@ -1,4 +1,4 @@
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "~/toolbox";
 import { cleanupItem } from "~/utils/cleanup";
 
 export interface GetRecordParams {

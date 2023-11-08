@@ -1,4 +1,4 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 
 const createEntity = (
     entityName: string,

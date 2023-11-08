@@ -1,4 +1,4 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { MigrationItem, MigrationRepository, MigrationRun } from "~/types";
 import { inject, makeInjectable } from "@webiny/ioc";

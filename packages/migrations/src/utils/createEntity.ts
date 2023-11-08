@@ -1,5 +1,5 @@
-import { Entity, Table } from "dynamodb-toolbox";
-import { AttributeDefinitions } from "dynamodb-toolbox/dist/classes/Entity";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinitions } from "@webiny/db-dynamodb/toolbox";
 
 export const createLegacyEntity = (
     table: Table<string, string, string>,

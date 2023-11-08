@@ -5,10 +5,10 @@ import {
     CmsModelField,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
-import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 
 interface CmsFieldFilterValueTransformParams {
     /**

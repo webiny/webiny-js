@@ -1,6 +1,7 @@
-import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { Plugin } from "@webiny/plugins";
+import { AttributeDefinition } from "~/toolbox";
+
 const reservedFields = ["PK", "SK", "index", "data"];
 
 export interface AttributePluginParams {

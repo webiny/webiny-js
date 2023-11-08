@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";

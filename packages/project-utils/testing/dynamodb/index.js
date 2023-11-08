@@ -30,13 +30,14 @@ const simulateStream = (documentClient, handler) => {
 
 let documentClient = null;
 
-const getClient = () => {
+const getClient = (params = {}) => {
     if (!documentClient) {
         documentClient = getDocumentClient({
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
             tls: false,
             region: "local",
-            credentials: { accessKeyId: "test", secretAccessKey: "test" }
+            credentials: { accessKeyId: "test", secretAccessKey: "test" },
+            ...params
         });
     }
 

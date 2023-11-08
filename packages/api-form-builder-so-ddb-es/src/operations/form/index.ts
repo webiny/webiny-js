@@ -13,7 +13,7 @@ import {
     FormBuilderStorageOperationsUnpublishFormParams,
     FormBuilderStorageOperationsUpdateFormParams
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";

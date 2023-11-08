@@ -1,4 +1,4 @@
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "~/toolbox";
 
 interface Params {
     entity: Entity;

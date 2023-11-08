@@ -5,7 +5,7 @@ import {
     CmsSettingsStorageOperationsGetParams,
     CmsSettingsStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { getClean } from "@webiny/db-dynamodb/utils/get";
 import WebinyError from "@webiny/error";
 import { put } from "@webiny/db-dynamodb";

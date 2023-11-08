@@ -8,7 +8,7 @@ import {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { getClean } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";

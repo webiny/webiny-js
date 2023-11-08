@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";

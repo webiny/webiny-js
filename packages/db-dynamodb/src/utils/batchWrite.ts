@@ -1,5 +1,5 @@
 import lodashChunk from "lodash/chunk";
-import { TableDef } from "dynamodb-toolbox/dist/classes/Table";
+import { TableDef } from "~/toolbox";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface BatchWriteItem {

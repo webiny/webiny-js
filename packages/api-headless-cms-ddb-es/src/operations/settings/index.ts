@@ -6,7 +6,7 @@ import {
     CmsSettingsStorageOperationsGetParams,
     CmsSettingsStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { getClean, put } from "@webiny/db-dynamodb";
 
 interface CmsSettingsDb extends Omit<CmsSettings, "contentModelLastChange"> {

@@ -14,7 +14,7 @@ import {
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";

@@ -11,7 +11,7 @@ import {
     I18NLocalesStorageOperationsUpdateDefaultParams,
     I18NLocalesStorageOperationsUpdateParams
 } from "@webiny/api-i18n/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineLocaleEntity from "~/definitions/localeEntity";

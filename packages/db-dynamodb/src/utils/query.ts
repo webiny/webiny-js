@@ -1,16 +1,16 @@
-import { EntityQueryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Entity";
 import WebinyError from "@webiny/error";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "~/toolbox";
+import { EntityQueryOptions } from "~/toolbox";
 import { cleanupItem, cleanupItems } from "~/utils/cleanup";
 
 export interface QueryAllParams {
     entity: Entity<any>;
     partitionKey: string;
-    options?: DynamoDBToolboxQueryOptions;
+    options?: EntityQueryOptions;
 }
 
 export interface QueryOneParams extends QueryAllParams {
-    options?: Omit<DynamoDBToolboxQueryOptions, "limit">;
+    options?: Omit<EntityQueryOptions, "limit">;
 }
 
 export interface QueryParams extends QueryAllParams {

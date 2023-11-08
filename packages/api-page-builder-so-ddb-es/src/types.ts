@@ -5,12 +5,12 @@ import {
     PageBuilderStorageOperations as BasePageBuilderStorageOperations,
     PageTemplateStorageOperations as BasePageTemplateStorageOperations
 } from "@webiny/api-page-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
-import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 
 export type Attributes = Record<string, AttributeDefinition>;
 

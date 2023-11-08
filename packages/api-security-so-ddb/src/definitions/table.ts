@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 
 export interface CreateTableParams {
     table?: string;

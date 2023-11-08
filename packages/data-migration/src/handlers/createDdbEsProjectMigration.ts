@@ -1,5 +1,5 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import {

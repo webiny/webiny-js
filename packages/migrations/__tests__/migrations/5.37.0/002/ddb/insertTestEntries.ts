@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { CmsEntry, Identity } from "~/migrations/5.37.0/002/types";
 import { insertDynamoDbTestData } from "~tests/utils";
 

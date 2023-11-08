@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createStandardEntity } from "~/utils";
 
 const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {

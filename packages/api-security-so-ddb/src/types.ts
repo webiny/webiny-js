@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 
 /**
  * @internal

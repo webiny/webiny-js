@@ -7,7 +7,7 @@ import {
     PageElementStorageOperationsListParams,
     PageElementStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";

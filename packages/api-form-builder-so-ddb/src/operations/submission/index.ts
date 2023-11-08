@@ -7,7 +7,7 @@ import {
     FormBuilderStorageOperationsListSubmissionsResponse,
     FormBuilderStorageOperationsUpdateSubmissionParams
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import { PluginsContainer } from "@webiny/plugins";
 import {

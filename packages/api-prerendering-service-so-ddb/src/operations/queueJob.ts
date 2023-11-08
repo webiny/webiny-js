@@ -5,7 +5,7 @@ import {
     PrerenderingServiceStorageOperationsDeleteQueueJobsParams,
     QueueJob
 } from "@webiny/api-prerendering-service/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { put } from "@webiny/db-dynamodb";

@@ -7,7 +7,7 @@ import {
     PageTemplateStorageOperationsListParams,
     PageTemplateStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";

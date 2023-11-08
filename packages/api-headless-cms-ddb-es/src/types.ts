@@ -8,11 +8,11 @@ import {
     CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
-import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
+import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { PluginsContainer } from "@webiny/plugins";
 
 /**

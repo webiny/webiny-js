@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigrationContext } from "@webiny/data-migration";
 import { createStandardEntity, queryAll, queryOne } from "~/utils";
 import { createTenantEntity } from "./entities/createTenantEntity";

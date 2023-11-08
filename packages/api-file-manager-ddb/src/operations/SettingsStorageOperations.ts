@@ -1,4 +1,4 @@
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import {
     FileManagerSettings,

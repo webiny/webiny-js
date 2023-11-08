@@ -7,7 +7,7 @@ import {
     MenuStorageOperationsListParams,
     MenuStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";

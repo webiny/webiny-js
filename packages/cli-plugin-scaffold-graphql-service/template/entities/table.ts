@@ -1,7 +1,7 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 
 // https://github.com/jeremydaly/dynamodb-toolbox
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 
 const DocumentClient = getDocumentClient();
 

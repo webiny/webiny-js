@@ -1,5 +1,5 @@
 import chunk from "lodash/chunk";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import {
     DataMigration,

@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import {
     FileManagerAliasesStorageOperations,
     File,

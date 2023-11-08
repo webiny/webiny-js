@@ -21,8 +21,7 @@
     "@babel/runtime": "^7.22.6",
     "@webiny/api-prerendering-service": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "dynamodb-toolbox": "^0.8.5"
+    "@webiny/error": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

@@ -6,8 +6,8 @@ import {
     FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations
 } from "@webiny/api-form-builder/types";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Table, Entity } from "dynamodb-toolbox";
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Plugin } from "@webiny/plugins";
 
 export type Attributes = Record<string, AttributeDefinition>;

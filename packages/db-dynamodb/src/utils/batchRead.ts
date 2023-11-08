@@ -1,6 +1,6 @@
-import { TableDef } from "dynamodb-toolbox/dist/classes/Table";
 import lodashChunk from "lodash/chunk";
 import WebinyError from "@webiny/error";
+import { TableDef } from "~/toolbox";
 
 export interface BatchReadItem {
     Table?: TableDef;

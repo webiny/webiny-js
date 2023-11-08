@@ -13568,7 +13568,6 @@ __metadata:
     "@webiny/handler-db": 0.0.0
     "@webiny/project-utils": 0.0.0
     apollo-graphql: ^0.9.5
-    dynamodb-toolbox: ^0.8.5
     get-yarn-workspaces: ^1.0.2
     jest: ^29.5.0
     jest-dynalite: ^3.6.1
@@ -13592,7 +13591,6 @@ __metadata:
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -13629,7 +13627,6 @@ __metadata:
     "@webiny/validation": 0.0.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.8.5
     lodash: ^4.5.0
     md5: ^2.3.0
     rimraf: ^3.0.2
@@ -13658,7 +13655,6 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -13846,7 +13842,6 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -13947,7 +13942,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.8.5
     elastic-ts: ^0.8.0
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
@@ -13976,7 +13970,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     csvtojson: ^2.0.10
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -14063,7 +14056,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -14096,7 +14088,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     dataloader: ^2.0.0
     dot-prop: ^6.0.1
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -14196,7 +14187,6 @@ __metadata:
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -14325,7 +14315,6 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -14424,7 +14413,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.8.5
     elastic-ts: ^0.8.0
     graphql: ^15.8.0
     jest: ^29.5.0
@@ -14459,7 +14447,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     dataloader: ^2.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     lodash: ^4.17.21
@@ -14562,7 +14549,6 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest-dynalite: ^3.3.1
     prettier: ^2.8.3
     rimraf: ^3.0.2
@@ -14690,7 +14676,6 @@ __metadata:
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -14728,7 +14713,6 @@ __metadata:
     "@webiny/wcp": 0.0.0
     commodo-fields-object: ^1.0.6
     deep-equal: ^2.0.5
-    dynamodb-toolbox: ^0.8.5
     minimatch: ^5.1.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -14748,7 +14732,6 @@ __metadata:
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -16625,7 +16608,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     center-align: ^1.0.1
     chalk: ^4.1.2
-    dynamodb-toolbox: ^0.8.5
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
     jest-mock-console: ^1.0.0
@@ -16654,7 +16636,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     date-fns: ^2.22.1
     dot-prop: ^6.0.1
-    dynamodb-toolbox: ^0.8.5
+    dynamodb-toolbox: ^0.9.2
     fuse.js: ^6.4.6
     is-number: ^7.0.0
     jest: ^29.5.0
@@ -17044,7 +17026,6 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
-    dynamodb-toolbox: ^0.8.5
     elastic-ts: ^0.8.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -24709,16 +24690,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:^0.8.5":
-  version: 0.8.5
-  resolution: "dynamodb-toolbox@npm:0.8.5"
+"dynamodb-toolbox@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "dynamodb-toolbox@npm:0.9.2"
   dependencies:
     deep-copy: ^1.4.2
     ts-toolbelt: ^9.6.0
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.0.0
     "@aws-sdk/lib-dynamodb": ^3.0.0
-  checksum: 96fef9181bfff4fbfa092396a0a65e195c12915aad013f840b317d9135dcf9d007e6a592bd3a68349d18227bef55762480c8c89fb57933a23ce31e4b405f9a5b
+  checksum: 405ced4ababc769035537e8fd1c3f07d2d92cb496bafd0d51be5a1027a27a672ea0b3aae31e8e893872202f85ef2936694c018a141c247a5fa2df6acfa5a90dd
   languageName: node
   linkType: hard
 

@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { getDocumentClient, getTable } from "~/operations/utils";
 import { I18NContext } from "@webiny/api-i18n/types";
 

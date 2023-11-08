@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { inject, makeInjectable } from "@webiny/ioc";
 import {
     DataMigration,

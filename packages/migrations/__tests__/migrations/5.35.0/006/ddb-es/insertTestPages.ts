@@ -3,7 +3,7 @@ import { createId, insertDynamoDbTestData } from "~tests/utils";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { Page } from "~/migrations/5.35.0/006/types";
 import { esGetIndexName } from "~/utils";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     OriginalDynamoDbPageRecord,
     OriginalDynamoElasticsearchDbPageRecord,

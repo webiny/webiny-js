@@ -14,7 +14,7 @@ import {
     FormBuilderStorageOperationsUnpublishFormParams,
     FormBuilderStorageOperationsUpdateFormParams
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";

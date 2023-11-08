@@ -18,7 +18,7 @@ import {
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { getClean } from "@webiny/db-dynamodb/utils/get";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import {
     DbItem,

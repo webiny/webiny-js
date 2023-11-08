@@ -5,7 +5,7 @@ import {
     I18NSystemStorageOperationsCreate,
     I18NSystemStorageOperationsUpdate
 } from "@webiny/api-i18n/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
 import defineTable from "~/definitions/table";

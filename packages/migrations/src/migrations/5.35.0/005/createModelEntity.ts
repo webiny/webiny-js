@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createLegacyEntity } from "~/utils";
 
 const attributes: Parameters<typeof createLegacyEntity>[2] = {

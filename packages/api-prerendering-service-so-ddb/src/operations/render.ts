@@ -12,13 +12,12 @@ import {
     Tag,
     TagPathLink
 } from "@webiny/api-prerendering-service/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox";
 import { get } from "@webiny/db-dynamodb/utils/get";
 import { queryAll, queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
-import { EntityQueryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Entity";
 import { DataContainer } from "~/types";
 import { deleteItem, put } from "@webiny/db-dynamodb";
 
@@ -359,7 +358,9 @@ export const createRenderStorageOperations = (
             tag
         });
 
-        const options: DynamoDBToolboxQueryOptions = { index: "GSI1" };
+        const options: EntityQueryOptions = {
+            index: "GSI1"
+        };
 
         if (tag.value) {
             options.beginsWith = `${tag.key}#${tag.value}#`;

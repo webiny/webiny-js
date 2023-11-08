@@ -1,4 +1,4 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 

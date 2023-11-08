@@ -1,5 +1,4 @@
-import { Entity, Table } from "dynamodb-toolbox";
-import { AttributeDefinitions } from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinitions, Entity, Table } from "~/toolbox";
 
 interface CreateStandardEntityParams {
     table: Table<string, string, string>;

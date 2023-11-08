@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex } from "~/helpers";
 import { configurations } from "~/configurations";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb/utils/batchWrite";

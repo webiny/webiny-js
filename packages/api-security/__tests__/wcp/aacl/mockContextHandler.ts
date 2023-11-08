@@ -4,7 +4,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createWcpContext } from "@webiny/api-wcp";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { SecurityContext, SecurityStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTenancyContext } from "@webiny/api-tenancy";

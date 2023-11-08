@@ -5,7 +5,7 @@ import {
     FormBuilderStorageOperationsUpdateSettingsParams,
     Settings
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import {
     FormBuilderSettingsStorageOperations,
     FormBuilderSettingsStorageOperationsCreatePartitionKeyParams

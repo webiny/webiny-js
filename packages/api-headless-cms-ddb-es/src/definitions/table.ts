@@ -1,7 +1,6 @@
 import { TableModifier } from "~/types";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Table } from "dynamodb-toolbox";
-import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
+import { Table, TableConstructor } from "@webiny/db-dynamodb/toolbox";
 
 export interface CreateTableParams {
     table?: TableModifier;

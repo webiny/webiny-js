@@ -1,4 +1,4 @@
-import { AttributeDefinition } from "dynamodb-toolbox/dist/classes/Entity";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { ImportExportTaskStorageOperations } from "@webiny/api-page-builder-import-export/types";
 

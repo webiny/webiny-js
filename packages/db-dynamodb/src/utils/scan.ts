@@ -1,9 +1,8 @@
 import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
-import { ScanOptions as DynamoDBToolboxScanOptions } from "dynamodb-toolbox/dist/classes/Table";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table, ScanOptions } from "~/toolbox";
 
 export interface BaseScanParams {
-    options?: DynamoDBToolboxScanOptions;
+    options?: ScanOptions;
     params?: Partial<ScanInput>;
 }
 
