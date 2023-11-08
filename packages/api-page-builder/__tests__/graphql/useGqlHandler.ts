@@ -12,67 +12,67 @@ import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
     CREATE_MENU,
     DELETE_MENU,
-    LIST_MENUS,
-    UPDATE_MENU,
     GET_MENU,
-    GET_PUBLIC_MENU
+    GET_PUBLIC_MENU,
+    LIST_MENUS,
+    UPDATE_MENU
 } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
     DELETE_PAGE_ELEMENT,
+    GET_PAGE_ELEMENT,
     LIST_PAGE_ELEMENTS,
-    UPDATE_PAGE_ELEMENT,
-    GET_PAGE_ELEMENT
+    UPDATE_PAGE_ELEMENT
 } from "./graphql/pageElements";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
-    LIST_PAGES,
-    LIST_PUBLISHED_PAGES,
-    LIST_PAGE_TAGS,
-    UPDATE_PAGE,
     GET_PAGE,
     GET_PUBLISHED_PAGE,
+    LIST_PAGE_TAGS,
+    LIST_PAGES,
+    LIST_PUBLISHED_PAGES,
+    OEMBED_DATA,
     PUBLISH_PAGE,
-    UNPUBLISH_PAGE,
     UNLINK_PAGE_FROM_TEMPLATE,
-    OEMBED_DATA
+    UNPUBLISH_PAGE,
+    UPDATE_PAGE
 } from "./graphql/pages";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
+    GET_CATEGORY,
     LIST_CATEGORIES,
-    UPDATE_CATEGORY,
-    GET_CATEGORY
+    UPDATE_CATEGORY
 } from "./graphql/categories";
 
-import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { GET_DEFAULT_SETTINGS, GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 
 import {
     CREATE_BLOCK_CATEGORY,
     DELETE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY,
     LIST_BLOCK_CATEGORIES,
-    UPDATE_BLOCK_CATEGORY,
-    GET_BLOCK_CATEGORY
+    UPDATE_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
 import {
     CREATE_PAGE_BLOCK,
-    UPDATE_PAGE_BLOCK,
     DELETE_PAGE_BLOCK,
+    GET_PAGE_BLOCK,
     LIST_PAGE_BLOCKS,
-    GET_PAGE_BLOCK
+    UPDATE_PAGE_BLOCK
 } from "./graphql/pageBlocks";
 
 import {
+    CREATE_PAGE_FROM_TEMPLATE,
     CREATE_PAGE_TEMPLATE,
-    UPDATE_PAGE_TEMPLATE,
     DELETE_PAGE_TEMPLATE,
-    LIST_PAGE_TEMPLATES,
     GET_PAGE_TEMPLATE,
-    CREATE_PAGE_FROM_TEMPLATE
+    LIST_PAGE_TEMPLATES,
+    UPDATE_PAGE_TEMPLATE
 } from "./graphql/pageTemplates";
 
 import path from "path";
@@ -109,7 +109,6 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
             i18nStorage.storageOperations,
-            ,
             mockLocalesPlugins(),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
