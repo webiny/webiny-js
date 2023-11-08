@@ -16,6 +16,15 @@ interface S3Object {
 
 export const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 
+const getS3ObjectHead = async (s3: S3, params: ObjectParamsResponse) => {
+    try {
+        return await s3.headObject(params);
+    } catch (ex) {
+        console.log(`Something is wrong with s3.headObject(${JSON.stringify(params)})`);
+        throw ex;
+    }
+};
+
 export const getS3Object = async (
     fileInfo: ReturnType<typeof extractFileInformation>,
     s3: S3,
@@ -24,7 +33,7 @@ export const getS3Object = async (
     const { filename, options, extension } = fileInfo;
     const params = getObjectParams(filename);
 
-    const objectHead = await s3.headObject(params);
+    const objectHead = await getS3ObjectHead(s3, params);
     const contentLength = objectHead.ContentLength ? objectHead.ContentLength : 0;
 
     const applyLoaders = options.original === undefined;

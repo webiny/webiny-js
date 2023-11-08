@@ -1,5 +1,5 @@
-import { S3, getSignedUrl, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
-import { DynamoDBClient, QueryCommand } from "@webiny/aws-sdk/client-dynamodb";
+import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
+import { DynamoDBClient, QueryCommand, unmarshall } from "@webiny/aws-sdk/client-dynamodb";
 import { getEnvironment } from "../utils";
 import { RoutePlugin } from "@webiny/handler-aws/gateway";
 import { extractFileInformation } from "./extractFileInformation";
@@ -17,7 +17,7 @@ export interface DownloadByFileAliasConfig {
 
 export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByFileAliasConfig) => {
     async function getFileByAlias(tenant: string, alias: string): Promise<string | null> {
-        const { Items, Count } = await documentClient.send(
+        const { Items } = await documentClient.send(
             new QueryCommand({
                 TableName: String(process.env.DB_TABLE),
                 IndexName: "GSI1",
@@ -30,11 +30,16 @@ export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByF
             })
         );
 
-        if (!Items || Count === 0) {
+        if (!Array.isArray(Items)) {
             return null;
         }
+        const [item] = Items;
+        if (!item) {
+            return null;
+        }
+        const { data } = unmarshall(item);
 
-        return Items[0].data.S ?? null;
+        return data?.key ?? null;
     }
 
     return [
