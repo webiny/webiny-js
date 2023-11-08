@@ -11,6 +11,7 @@ export {
     GetCommandOutput,
     BatchWriteCommand,
     PutCommand,
+    GetCommand,
     UpdateCommand,
     DeleteCommand
 } from "@aws-sdk/lib-dynamodb";
