@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { unmarshall, StreamRecord } from "@webiny/aws-sdk/client-dynamodb";
+import { AttributeValue, unmarshall as baseUnmarshall } from "@webiny/aws-sdk/client-dynamodb";
 import { decompress } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
@@ -78,6 +78,13 @@ interface RecordDynamoDbKeys {
     SK: string;
 }
 
+const unmarshall = <T>(value?: Record<string, AttributeValue>): T | undefined => {
+    if (!value) {
+        return undefined;
+    }
+    return baseUnmarshall(value) as T;
+};
+
 export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx }) => {
         const context = ctx as unknown as ElasticsearchContext;
@@ -93,21 +100,33 @@ export const createEventHandler = () => {
             const operations = [];
 
             for (const record of event.Records) {
-                const dynamodb = record.dynamodb as Required<
-                    Omit<StreamRecord, "ApproximateCreationDateTime">
-                >;
+                const dynamodb = record.dynamodb;
                 if (!dynamodb) {
                     continue;
                 }
-                const newImage = unmarshall(dynamodb.NewImage) as RecordDynamoDbImage;
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
+                const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
 
-                if (newImage.ignore === true) {
+                if (!newImage || newImage.ignore === true) {
                     continue;
                 }
-
-                const oldImage = unmarshall(dynamodb.OldImage) as RecordDynamoDbImage;
-                const keys = unmarshall(dynamodb.Keys) as RecordDynamoDbKeys;
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
+                const keys = unmarshall<RecordDynamoDbKeys>(dynamodb.Keys);
+                if (!keys?.PK || !keys.SK) {
+                    continue;
+                }
                 const _id = `${keys.PK}:${keys.SK}`;
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
+                const oldImage = unmarshall<RecordDynamoDbImage>(dynamodb.OldImage);
                 const operation = record.eventName;
 
                 /**
@@ -138,10 +157,23 @@ export const createEventHandler = () => {
                 switch (record.eventName) {
                     case Operations.INSERT:
                     case Operations.MODIFY:
-                        operations.push({ index: { _id, _index: newImage.index } }, data);
+                        operations.push(
+                            {
+                                index: {
+                                    _id,
+                                    _index: newImage.index
+                                }
+                            },
+                            data
+                        );
                         break;
                     case Operations.REMOVE:
-                        operations.push({ delete: { _id, _index: oldImage.index } });
+                        operations.push({
+                            delete: {
+                                _id,
+                                _index: oldImage?.index || "unknown"
+                            }
+                        });
                         break;
                     default:
                         break;

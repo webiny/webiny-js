@@ -495,7 +495,7 @@ export const createFormStorageOperations = (
             entity,
             partitionKey: createFormPartitionKey(form),
             options: {
-                beginsWith: form.formId
+                beginsWith: form.formId || undefined
             }
         };
         try {

@@ -315,7 +315,7 @@ describe("Schedule action CRUD Test - Page type", () => {
         expect(listItemSecondDateResult.length).toBe(2);
     });
 
-    test("Should able to get and update current  schedule action item", async () => {
+    it("should be able to get and update current  schedule action item", async () => {
         const context = await handler(
             {
                 headers: {

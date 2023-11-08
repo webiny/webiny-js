@@ -90,9 +90,7 @@ export const createStorageOperations = (
                 entity: entity,
                 partitionKey: PK,
                 options: {
-                    beginsWith: initialWhere.datetime_startsWith
-                        ? initialWhere.datetime_startsWith
-                        : "",
+                    beginsWith: initialWhere?.datetime_startsWith || undefined,
                     index: "GSI1",
                     limit: limit || undefined,
                     reverse: sort[0] === "datetime_DESC"
