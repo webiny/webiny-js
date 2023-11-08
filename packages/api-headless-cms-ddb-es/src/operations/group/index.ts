@@ -15,7 +15,7 @@ import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { PluginsContainer } from "@webiny/plugins";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { deleteItem, put } from "@webiny/db-dynamodb";
+import { deleteItem, put, cleanupItems } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;

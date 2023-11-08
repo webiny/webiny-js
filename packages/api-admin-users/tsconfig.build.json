@@ -5,8 +5,6 @@
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
-    { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },

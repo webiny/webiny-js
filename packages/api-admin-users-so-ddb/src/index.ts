@@ -12,6 +12,7 @@ import {
     cleanupItem,
     deleteItem,
     get,
+    getClean,
     put,
     queryAll,
     queryOne,
@@ -19,7 +20,6 @@ import {
 } from "@webiny/db-dynamodb";
 
 const reservedFields = ["PK", "SK", "index", "data"];
-const cleanupAttributes = ["TYPE"];
 
 const isReserved = (name: string): void => {
     if (reservedFields.includes(name)) {

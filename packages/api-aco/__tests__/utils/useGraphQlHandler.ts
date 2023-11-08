@@ -34,11 +34,11 @@ import {
 import {
     CREATE_FILE,
     CREATE_FILES,
-    UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
     LIST_FILES,
-    LIST_TAGS as LIST_FILE_TAGS
+    LIST_TAGS as LIST_FILE_TAGS,
+    UPDATE_FILE
 } from "~tests/graphql/file";
 import {
     CREATE_CONTENT_MODEL,
@@ -55,7 +55,6 @@ import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import {
