@@ -8,10 +8,11 @@ import { esPutIndexSettings } from "~/utils";
 export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
 >(
-    elasticsearch: ElasticsearchClient,
+    initialElasticsearch: Promise<ElasticsearchClient> | ElasticsearchClient,
     table: Table<string, string, string>,
     getIndexName: (item: TItem) => string
 ) => {
+    const elasticsearch = await initialElasticsearch;
     const records: TItem[] = await Promise.all(
         (
             await scanTable(table)
@@ -98,11 +99,15 @@ export const transferDynamoDbToElasticsearch = async <
 export const insertElasticsearchTestData = async <
     TItem extends Record<string, any> = Record<string, any>
 >(
-    elasticsearch: ElasticsearchClient,
+    initialElasticsearchClient: ElasticsearchClient | Promise<ElasticsearchClient>,
     data: TItem[],
     getIndexName: (item: TItem) => string
 ) => {
     const operations = [];
+    const elasticsearch =
+        initialElasticsearchClient instanceof Promise
+            ? await initialElasticsearchClient
+            : initialElasticsearchClient;
 
     for (const record of data) {
         const index = getIndexName(record);

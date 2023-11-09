@@ -1,6 +1,7 @@
 import { getBaseConfiguration, getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient, ElasticsearchClient } from "./helpers";
+import { runElasticsearchClientCommand } from "~/client";
 
 /**
  * Add configurations when added to the code.
@@ -11,27 +12,29 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 ];
 
 describe("Elasticsearch Index Mapping And Settings", () => {
-    let client: ElasticsearchClient;
+    const elasticsearch = createElasticsearchClient();
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     const testIndexName = `${prefix}dummy-index-test`;
 
-    beforeAll(async () => {
-        client = await createElasticsearchClient();
-    });
-
     beforeEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     afterEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     it.each(settings)(
         "should create index with correct settings - %s",
         async (_: string, setting: ElasticsearchIndexRequestBody) => {
+            const client = await elasticsearch;
+
             const createResponse = await client.indices.create({
                 index: testIndexName,
                 body: {

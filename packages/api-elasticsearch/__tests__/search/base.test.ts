@@ -6,9 +6,10 @@ import { people } from "./base.entries";
 import { getBaseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
+import { runElasticsearchClientCommand } from "~/client";
 
 describe("Elasticsearch Base Search", () => {
-    let client: ElasticsearchClient;
+    const elasticsearch = createElasticsearchClient();
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -16,7 +17,7 @@ describe("Elasticsearch Base Search", () => {
 
     const searchPlugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
 
-    const insertAllData = async () => {
+    const insertAllData = async (client: ElasticsearchClient) => {
         const operations = [];
 
         for (const index in people) {
@@ -39,14 +40,14 @@ describe("Elasticsearch Base Search", () => {
         });
     };
 
-    const createIndex = async () => {
+    const createIndex = async (client: ElasticsearchClient) => {
         return client.indices.create({
             index: indexTestName,
             body: getBaseConfiguration()
         });
     };
 
-    const refreshIndex = async () => {
+    const refreshIndex = async (client: ElasticsearchClient) => {
         try {
             return await client.indices.refresh({
                 index: indexTestName
@@ -58,7 +59,7 @@ describe("Elasticsearch Base Search", () => {
             throw ex;
         }
     };
-    const fetchAllData = async () => {
+    const fetchAllData = async (client: ElasticsearchClient) => {
         try {
             return await client.search({
                 index: indexTestName,
@@ -78,20 +79,21 @@ describe("Elasticsearch Base Search", () => {
         }
     };
 
-    beforeAll(async () => {
-        client = await createElasticsearchClient();
-    });
-
     beforeEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     afterEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     it("should prepare entries - pre-created indexes", async () => {
-        const createResponse = await createIndex();
+        const client = await elasticsearch;
+        const createResponse = await createIndex(client);
 
         expect(createResponse).toMatchObject({
             body: {
@@ -101,7 +103,7 @@ describe("Elasticsearch Base Search", () => {
             statusCode: 200
         });
 
-        const insertResponse = await insertAllData();
+        const insertResponse = await insertAllData(client);
         expect(insertResponse).toMatchObject({
             body: {
                 errors: false,
@@ -117,7 +119,7 @@ describe("Elasticsearch Base Search", () => {
             statusCode: 200
         });
 
-        const refreshResponse = await refreshIndex();
+        const refreshResponse = await refreshIndex(client);
         expect(refreshResponse).toMatchObject({
             body: {
                 _shards: {
@@ -129,7 +131,7 @@ describe("Elasticsearch Base Search", () => {
             statusCode: 200
         });
 
-        const fetchResponse = await fetchAllData();
+        const fetchResponse = await fetchAllData(client);
 
         expect(fetchResponse).toMatchObject({
             body: {
@@ -171,9 +173,10 @@ describe("Elasticsearch Base Search", () => {
     it.each(keywords)(
         "should find entries with target keywords - pre-created indexes - %s",
         async (keyword, names) => {
-            await createIndex();
-            await insertAllData();
-            await refreshIndex();
+            const client = await elasticsearch;
+            await createIndex(client);
+            await insertAllData(client);
+            await refreshIndex(client);
 
             const query: ElasticsearchBoolQueryConfig = {
                 must: [],

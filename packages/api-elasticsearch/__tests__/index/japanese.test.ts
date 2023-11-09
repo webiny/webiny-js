@@ -1,26 +1,28 @@
 import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { createElasticsearchClient, ElasticsearchClient } from "../helpers";
+import { runElasticsearchClientCommand } from "~/client";
 
 describe("Elasticsearch Japanese", () => {
-    let client: ElasticsearchClient;
+    const elasticsearch = createElasticsearchClient();
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     const indexTestName = `${prefix}index-japanese-index-test`;
 
-    beforeAll(async () => {
-        client = await createElasticsearchClient();
-    });
-
     beforeEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     afterEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     it("should create index", async () => {
+        const client = await elasticsearch;
         const japanese = getJapaneseConfiguration();
 
         const createResponse = await client.indices.create({

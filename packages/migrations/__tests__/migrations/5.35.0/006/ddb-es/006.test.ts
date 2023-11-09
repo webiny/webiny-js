@@ -19,6 +19,7 @@ import { esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "~/migrations/5.35.0/006/constants";
 import { insertTestPages } from "./insertTestPages";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -26,20 +27,20 @@ jest.setTimeout(900000);
 describe("5.35.0-006", () => {
     const ddbTable = getPrimaryDynamoDbTable();
     const ddbToEsTable = getDynamoToEsTable();
-    let elasticsearchClient: ElasticsearchClient;
-
-    beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
-    });
+    const elasticsearchClient = createElasticsearchClient();
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     logTestNameBeforeEachTest();

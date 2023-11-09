@@ -9,7 +9,7 @@ import { runResumableMigration } from "./runResumableMigration";
 interface DdbEsMigrationHandlerConfig {
     primaryTable: ReturnType<typeof getPrimaryDynamoDbTable>;
     dynamoToEsTable: ReturnType<typeof getPrimaryDynamoDbTable>;
-    elasticsearchClient?: Client;
+    elasticsearchClient?: Promise<Client>;
     migrations: Constructor<DataMigration>[];
 }
 

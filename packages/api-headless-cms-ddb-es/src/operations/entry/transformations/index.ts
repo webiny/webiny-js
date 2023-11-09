@@ -61,8 +61,8 @@ export const createTransformer = (
     let transformedEntryKeys: TransformedKeysEntry | undefined = undefined;
     let transformedEntryToIndex: CmsIndexEntry | undefined = initialTransformedEntryToIndex;
     let modifiedEntryValues: ModifiedEntryValues | undefined = undefined;
-    let elasticsearchLatestEntry: any = undefined;
-    let elasticsearchPublishedEntry: any = undefined;
+    let elasticsearchLatestEntry: Record<string, any> | undefined = undefined;
+    let elasticsearchPublishedEntry: Record<string, any> | undefined = undefined;
 
     const modifierPlugins = plugins
         .byType<CmsEntryElasticsearchValuesModifier>(CmsEntryElasticsearchValuesModifier.type)

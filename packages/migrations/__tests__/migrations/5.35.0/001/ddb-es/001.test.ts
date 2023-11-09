@@ -2,17 +2,17 @@ import {
     createElasticsearchClient,
     ElasticsearchClient
 } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { FileManager_5_35_0_001, File } from "~/migrations/5.35.0/001/ddb-es";
+import { File, FileManager_5_35_0_001 } from "~/migrations/5.35.0/001/ddb-es";
 import {
     assertNotError,
-    getPrimaryDynamoDbTable,
-    insertDynamoDbTestData,
-    scanTable,
-    logTestNameBeforeEachTest,
     createDdbEsMigrationHandler,
     createId,
     delay,
-    groupMigrations
+    getPrimaryDynamoDbTable,
+    groupMigrations,
+    insertDynamoDbTestData,
+    logTestNameBeforeEachTest,
+    scanTable
 } from "~tests/utils";
 import { testData } from "./001.data";
 import {
@@ -21,6 +21,7 @@ import {
 } from "~/migrations/5.35.0/001/entities/createSettingsEntity";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(1200000);
@@ -34,17 +35,20 @@ let numberOfGeneratedFiles = 0;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
-    let elasticsearchClient: ElasticsearchClient;
+    const elasticsearchClient = createElasticsearchClient();
 
     beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {
@@ -200,9 +204,9 @@ describe("5.35.0-001", () => {
         });
 
         expect(legacyRecord).toBeTruthy();
-        expect(legacyRecord.SK).toEqual("default");
-        expect(legacyRecord.uploadMaxFileSize).toEqual(26214401);
-        expect(legacyRecord.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
+        expect(legacyRecord!.SK).toEqual("default");
+        expect(legacyRecord!.uploadMaxFileSize).toEqual(26214401);
+        expect(legacyRecord!.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
 
         const newSettings = createSettingsEntity(table);
         const { Item: newRecord } = await newSettings.get({
@@ -211,9 +215,9 @@ describe("5.35.0-001", () => {
         });
 
         expect(newRecord).toBeTruthy();
-        expect(newRecord.SK).toEqual("A");
-        expect(newRecord.data.uploadMaxFileSize).toEqual(26214401);
-        expect(newRecord.data.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
+        expect(newRecord!.SK).toEqual("A");
+        expect(newRecord!.data.uploadMaxFileSize).toEqual(26214401);
+        expect(newRecord!.data.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

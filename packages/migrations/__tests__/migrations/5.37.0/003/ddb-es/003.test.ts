@@ -28,6 +28,7 @@ import {
 import { getDecompressedData } from "./getDecompressedData";
 import { esGetIndexName } from "~/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -40,20 +41,21 @@ describe("5.37.0-003", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    let elasticsearchClient: ElasticsearchClient;
 
-    beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
-    });
+    const elasticsearchClient = createElasticsearchClient();
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     logTestNameBeforeEachTest();
@@ -166,7 +168,9 @@ describe("5.37.0-003", () => {
         });
         const { data, error } = await handler();
 
-        await elasticsearchClient.indices.refreshAll();
+        await runElasticsearchClientCommand(elasticsearchClient, client => {
+            return (client as ElasticsearchClient).indices.refreshAll();
+        });
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
@@ -245,17 +249,22 @@ describe("5.37.0-003", () => {
         for (const item of tenants) {
             const tenant = item.tenant;
             for (const locale of item.locales) {
-                const response = await elasticsearchClient.search({
-                    index: esGetIndexName({
-                        tenant,
-                        locale,
-                        type: ACO_FOLDER_MODEL_ID,
-                        isHeadlessCmsModel: true
-                    }),
-                    body: {
-                        size: 10000
+                const response = await runElasticsearchClientCommand(
+                    elasticsearchClient,
+                    client => {
+                        return client.search({
+                            index: esGetIndexName({
+                                tenant,
+                                locale,
+                                type: ACO_FOLDER_MODEL_ID,
+                                isHeadlessCmsModel: true
+                            }),
+                            body: {
+                                size: 10000
+                            }
+                        });
                     }
-                });
+                );
                 const folders = response.body.hits.hits.map((item: any) => item._source);
                 expect(folders).toHaveLength(14);
             }
@@ -281,7 +290,9 @@ describe("5.37.0-003", () => {
         {
             process.stdout.write("[First run]\n");
             const { data, error } = await handler();
-            await elasticsearchClient.indices.refreshAll();
+            await runElasticsearchClientCommand(elasticsearchClient, client => {
+                return (client as ElasticsearchClient).indices.refreshAll();
+            });
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
             expect(grouped.executed.length).toBe(1);

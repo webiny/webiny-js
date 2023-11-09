@@ -19,6 +19,7 @@ import { createSourceFileRecords } from "./primaryTable.data";
 import { createSourceEsTableRecords } from "./esTable.data";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -29,11 +30,7 @@ describe("5.37.0-005", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    let elasticsearchClient: ElasticsearchClient;
-
-    beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
-    });
+    const elasticsearchClient = createElasticsearchClient();
 
     const transferDataToEs = () => {
         return transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {
@@ -53,10 +50,14 @@ describe("5.37.0-005", () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     logTestNameBeforeEachTest();

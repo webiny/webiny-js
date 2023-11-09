@@ -5,9 +5,10 @@ import { ElasticsearchBoolQueryConfig } from "~/types";
 import { entries, searchTargets } from "./japanese.entries";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import WebinyError from "@webiny/error";
+import { runElasticsearchClientCommand } from "~/client";
 
 describe("Japanese search", () => {
-    let client: ElasticsearchClient;
+    const elasticsearch = createElasticsearchClient();
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -17,7 +18,7 @@ describe("Japanese search", () => {
 
     const japaneseIndexConfiguration = getJapaneseConfiguration();
 
-    const createIndex = async () => {
+    const createIndex = async (client: ElasticsearchClient) => {
         try {
             const responseExists1 = await client.indices.exists({
                 index: indexName
@@ -51,7 +52,7 @@ describe("Japanese search", () => {
         }
     };
 
-    const insertAllData = async (items: string[]) => {
+    const insertAllData = async (client: ElasticsearchClient, items: string[]) => {
         const operations = [];
 
         for (const index in items) {
@@ -74,15 +75,15 @@ describe("Japanese search", () => {
         });
     };
 
-    const refreshIndex = async () => {
+    const refreshIndex = async (client: ElasticsearchClient) => {
         // console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
         return await client.indices.refresh({
             index: indexName
         });
     };
-    const fetchAllData = async () => {
+    const fetchAllData = async (client: ElasticsearchClient) => {
         // console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
-        return await clientSearch({
+        return await clientSearch(client, {
             index: indexName,
             body: {
                 sort: {
@@ -94,12 +95,12 @@ describe("Japanese search", () => {
         });
     };
 
-    const prepareWithIndex = async (items: string[]) => {
+    const prepareWithIndex = async (client: ElasticsearchClient, items: string[]) => {
         try {
-            await createIndex();
-            await insertAllData(items);
-            await refreshIndex();
-            await fetchAllData();
+            await createIndex(client);
+            await insertAllData(client, items);
+            await refreshIndex(client);
+            await fetchAllData(client);
         } catch (ex) {
             const response = await client.cat.indices({
                 format: "json"
@@ -121,7 +122,7 @@ describe("Japanese search", () => {
         }
     };
 
-    const clientSearch = async (request: RequestParams.Search) => {
+    const clientSearch = async (client: ElasticsearchClient, request: RequestParams.Search) => {
         // console.log(`Searching index "${indexName}" @${new Date().getTime()}`);
         try {
             return await client.search(request);
@@ -132,25 +133,26 @@ describe("Japanese search", () => {
         }
     };
 
-    beforeAll(async () => {
-        client = await createElasticsearchClient();
-    });
-
     beforeEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     afterEach(async () => {
-        return client.indices.deleteAll();
+        return runElasticsearchClientCommand(elasticsearch, client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     it("should verify that all data is prepared", async () => {
+        const client = await elasticsearch;
         /**
          * first we need to create an index with japanese configuration
          */
         let createIndexResponse;
         try {
-            createIndexResponse = await createIndex();
+            createIndexResponse = await createIndex(client);
         } catch (ex) {
             throw ex;
         }
@@ -164,7 +166,7 @@ describe("Japanese search", () => {
          * Then insert some data...
          */
 
-        const bulkInsertResponse = await insertAllData(entries);
+        const bulkInsertResponse = await insertAllData(client, entries);
         expect(bulkInsertResponse).toMatchObject({
             body: {
                 errors: false,
@@ -185,7 +187,7 @@ describe("Japanese search", () => {
         /**
          * We need to wait for the index refresh so we are positive that items are indexed.
          */
-        const refreshIndexResponse = await refreshIndex();
+        const refreshIndexResponse = await refreshIndex(client);
         expect(refreshIndexResponse).toMatchObject({
             body: {
                 _shards: {
@@ -200,7 +202,7 @@ describe("Japanese search", () => {
         /**
          * Verify that all items are present in the index.
          */
-        const fetchAllResponse = await fetchAllData();
+        const fetchAllResponse = await fetchAllData(client);
 
         expect(fetchAllResponse).toMatchObject({
             body: {
@@ -230,7 +232,8 @@ describe("Japanese search", () => {
     it.each(searchTargets)(
         "should get proper search results for - %s",
         async (search, positions) => {
-            await prepareWithIndex(entries);
+            const client = await elasticsearch;
+            await prepareWithIndex(client, entries);
 
             const query: ElasticsearchBoolQueryConfig = {
                 must: [],
@@ -247,7 +250,7 @@ describe("Japanese search", () => {
                 keyword: true
             });
 
-            const response = await clientSearch({
+            const response = await clientSearch(client, {
                 index: indexName,
                 body: {
                     query: {

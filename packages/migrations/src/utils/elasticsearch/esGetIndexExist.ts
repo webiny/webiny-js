@@ -2,7 +2,7 @@ import { Client } from "@elastic/elasticsearch";
 import { esGetIndexName } from "~/utils";
 
 export interface GetIndexExistParams {
-    elasticsearchClient: Client;
+    elasticsearchClient: Promise<Client> | Client;
     tenant: string;
     locale: string;
     type: string;
@@ -10,8 +10,15 @@ export interface GetIndexExistParams {
 }
 
 export const esGetIndexExist = async (params: GetIndexExistParams) => {
-    const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
+    const {
+        elasticsearchClient: initialElasticsearchClient,
+        tenant,
+        locale,
+        type,
+        isHeadlessCmsModel
+    } = params;
 
+    const elasticsearchClient = await initialElasticsearchClient;
     try {
         const index = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
 

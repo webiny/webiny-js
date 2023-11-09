@@ -21,6 +21,7 @@ import {
     ElasticsearchClient
 } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createMigratedEsData } from "~tests/migrations/5.38.0/002/ddb-es/002.migratedEsData";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -29,17 +30,20 @@ describe("5.38.0-002", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
 
-    let elasticsearchClient: ElasticsearchClient;
+    const elasticsearchClient = createElasticsearchClient();
 
     beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     logTestNameBeforeEachTest();
@@ -75,7 +79,9 @@ describe("5.38.0-002", () => {
             });
         });
 
-        await elasticsearchClient.indices.refreshAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.refreshAll();
+        });
 
         const handler = createDdbEsMigrationHandler({
             primaryTable,
@@ -129,7 +135,9 @@ describe("5.38.0-002", () => {
             });
         });
 
-        await elasticsearchClient.indices.refreshAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.refreshAll();
+        });
 
         const handler = createDdbEsMigrationHandler({
             primaryTable,

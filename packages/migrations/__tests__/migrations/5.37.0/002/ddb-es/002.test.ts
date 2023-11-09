@@ -21,6 +21,7 @@ import { esGetIndexSettings } from "~/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
 import { listElasticsearchItems } from "~tests/utils/listElasticsearchItems";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(9000000);
@@ -33,20 +34,20 @@ describe("5.37.0-002", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    let elasticsearchClient: ElasticsearchClient;
-
-    beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
-    });
+    const elasticsearchClient = createElasticsearchClient();
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     logTestNameBeforeEachTest();
@@ -78,7 +79,7 @@ describe("5.37.0-002", () => {
             totalEntries = await insertTestEntries({
                 ddbTable,
                 ddbToEsTable,
-                elasticsearchClient,
+                elasticsearchClient: await elasticsearchClient,
                 options: {
                     maxItems: 100,
                     maxTenants: 2,
@@ -108,7 +109,7 @@ describe("5.37.0-002", () => {
         expect(grouped.notApplicable.length).toBe(0);
 
         await transferDynamoDbToElasticsearch(
-            elasticsearchClient,
+            await elasticsearchClient,
             ddbToEsTable,
             getRecordIndexName
         );
@@ -160,7 +161,7 @@ describe("5.37.0-002", () => {
          */
         for (const index of indexes) {
             const allItems = await listElasticsearchItems({
-                client: elasticsearchClient,
+                client: await elasticsearchClient,
                 index
             });
             expect(allItems.length).toBeGreaterThanOrEqual(1);
@@ -168,7 +169,7 @@ describe("5.37.0-002", () => {
                 expect(item.location?.folderId).toEqual("root");
             }
             const filteredItems = await listElasticsearchItems({
-                client: elasticsearchClient,
+                client: await elasticsearchClient,
                 index,
                 body: {
                     query: {
@@ -191,7 +192,7 @@ describe("5.37.0-002", () => {
          */
         for (const index of indexes) {
             const settings = await esGetIndexSettings({
-                elasticsearchClient,
+                elasticsearchClient: await elasticsearchClient,
                 index,
                 fields: ["number_of_replicas", "refresh_interval"]
             });
@@ -212,7 +213,7 @@ describe("5.37.0-002", () => {
                 maxTenants: 1,
                 maxLocales: 1
             },
-            elasticsearchClient
+            elasticsearchClient: await elasticsearchClient
         });
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,

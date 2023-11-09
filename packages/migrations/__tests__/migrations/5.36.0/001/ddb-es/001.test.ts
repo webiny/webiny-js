@@ -25,6 +25,7 @@ import { esCreateIndex, esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "~/migrations/5.36.0/001/constants";
 import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -39,24 +40,24 @@ let numberOfGeneratedFiles = 0;
 describe("5.36.0-001", () => {
     const ddbTable = getPrimaryDynamoDbTable();
     const ddbToEsTable = getDynamoToEsTable();
-    let elasticsearchClient: ElasticsearchClient;
+    const elasticsearchClient = createElasticsearchClient();
 
     const ddbFiles: Record<string, any>[] = [];
     const ddbEsFiles: Record<string, any>[] = [];
     const esFiles: any[] = [];
 
-    beforeAll(async () => {
-        elasticsearchClient = await createElasticsearchClient();
-    });
-
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
     afterEach(async () => {
-        await elasticsearchClient.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
     });
 
     const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES, privateFile = false) => {
@@ -142,7 +143,9 @@ describe("5.36.0-001", () => {
                 type: INDEX_TYPE
             });
         });
-        await elasticsearchClient.indices.refreshAll();
+        await runElasticsearchClientCommand(elasticsearchClient, async client => {
+            return await (client as ElasticsearchClient).indices.refreshAll();
+        });
     };
 
     const insertEmptyFileIndexes = async () => {

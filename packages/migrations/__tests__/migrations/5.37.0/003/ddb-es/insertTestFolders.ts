@@ -26,13 +26,14 @@ interface Response {
 }
 
 interface Params {
-    elasticsearchClient: ElasticsearchClient;
+    elasticsearchClient: Promise<ElasticsearchClient>;
     table: Table<string, string, string>;
     esTable: Table<string, string, string>;
 }
 
 export const insertTestFolders = async (params: Params): Promise<Response> => {
-    const { table, esTable, elasticsearchClient } = params;
+    const { table, esTable, elasticsearchClient: initialElasticsearchClient } = params;
+    const elasticsearchClient = await initialElasticsearchClient;
     const folders = createOldFoldersData();
     const testLocales = createLocalesData();
     const tenants = createTenantsData()
@@ -165,7 +166,10 @@ export const insertTestFolders = async (params: Params): Promise<Response> => {
     };
 };
 
-export const insertEmptyIndexes = async (client: ElasticsearchClient): Promise<any> => {
+export const insertEmptyIndexes = async (
+    elasticsearchClient: Promise<ElasticsearchClient>
+): Promise<any> => {
+    const client = await elasticsearchClient;
     const testLocales = createLocalesData();
     const tenants = createTenantsData()
         .map(tenant => tenant.data.id)

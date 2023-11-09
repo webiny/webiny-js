@@ -19,13 +19,15 @@ const INDEX_TYPE = "page-builder";
 
 interface InsertTestPagesParams {
     numberOfPages?: number;
-    elasticsearchClient: ElasticsearchClient;
+    elasticsearchClient: Promise<ElasticsearchClient>;
     ddbTable: Table<string, string, string>;
     esTable: Table<string, string, string>;
 }
 
 export const insertTestPages = async (params: InsertTestPagesParams) => {
     const { numberOfPages = NUMBER_OF_PAGES, ddbTable, esTable, elasticsearchClient } = params;
+
+    const client = await elasticsearchClient;
 
     const ddbPages: OriginalDynamoDbPageRecord[] = [];
     const ddbEsPages: OriginalDynamoElasticsearchDbPageRecord[] = [];
@@ -141,7 +143,7 @@ export const insertTestPages = async (params: InsertTestPagesParams) => {
         });
     });
 
-    await elasticsearchClient.indices.refreshAll();
+    await client.indices.refreshAll();
 
     return {
         ddbPages,

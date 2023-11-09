@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
-import { esGetIndexName, esGetIndexExist } from "~/utils";
+import { esGetIndexExist, esGetIndexName } from "~/utils";
 import { elasticsearchIndexPlugins } from "~/utils/elasticsearch/plugins";
 
 export interface EsCreateIndexParams {
-    elasticsearchClient: Client;
+    elasticsearchClient: Promise<Client> | Client;
     tenant: string;
     locale: string;
     type: string;
@@ -12,7 +12,15 @@ export interface EsCreateIndexParams {
 }
 
 export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string> => {
-    const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
+    const {
+        elasticsearchClient: initialElasticsearchClient,
+        tenant,
+        locale,
+        type,
+        isHeadlessCmsModel
+    } = params;
+
+    const elasticsearchClient = await initialElasticsearchClient;
 
     const indexName = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
 
