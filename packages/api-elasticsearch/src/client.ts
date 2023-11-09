@@ -35,20 +35,25 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
+            /**
+             * If no `auth` configuration is present, we setup AWS connector.
+             */
+            const credentials = fromTemporaryCredentials({
+                params: {
+                    RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
+                    RoleSessionName: "temporary-session",
+                    DurationSeconds: 3600
+                }
+            })();
+
             Object.assign(
                 clientOptions,
-                // @ts-expect-error
                 createAwsElasticsearchConnector({
                     region: process.env.AWS_REGION,
-                    getCredentials: async () => {
-                        return fromTemporaryCredentials({
-                            params: {
-                                RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
-                                RoleSessionName: "temporary-session",
-                                DurationSeconds: 3600
-                            }
-                        })();
-                    }
+                    // aws-elasticsearch-connector still uses aws-sdk v2 types.
+                    // TODO fix types
+                    // @ts-expect-error
+                    credentials
                 })
             );
         }
