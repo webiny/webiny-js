@@ -161,7 +161,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         init: async (context: FormBuilderContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    elasticsearch: await elasticsearch,
                     plugins,
                     tenant,
                     locale: locale.code

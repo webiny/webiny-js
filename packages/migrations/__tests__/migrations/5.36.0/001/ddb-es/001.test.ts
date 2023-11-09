@@ -1,4 +1,7 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 
 import {
     assertNotError,
@@ -36,11 +39,15 @@ let numberOfGeneratedFiles = 0;
 describe("5.36.0-001", () => {
     const ddbTable = getPrimaryDynamoDbTable();
     const ddbToEsTable = getDynamoToEsTable();
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
 
     const ddbFiles: Record<string, any>[] = [];
     const ddbEsFiles: Record<string, any>[] = [];
     const esFiles: any[] = [];
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =

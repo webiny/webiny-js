@@ -26,7 +26,7 @@ export { createGzipCompression } from "./plugins/GzipCompression";
  * We must accept either Elasticsearch client or options that create the client.
  */
 export default (
-    params: ElasticsearchClientOptions | Client
+    params: ElasticsearchClientOptions | Client | Promise<Client>
 ): ContextPlugin<ElasticsearchContext> => {
     return new ContextPlugin<ElasticsearchContext>(async context => {
         if (context.elasticsearch) {
@@ -37,9 +37,20 @@ export default (
         }
         /**
          * Initialize the Elasticsearch client.
+         * We need to take care of:
+         * * Promise of a client
+         * * A constructed client
+         * * Options that create the client
          */
-        context.elasticsearch =
-            params instanceof Client ? params : createElasticsearchClient(params);
+        let client: Client;
+        if (params instanceof Promise) {
+            client = await params;
+        } else if (params instanceof Client) {
+            client = params;
+        } else {
+            client = await createElasticsearchClient(params);
+        }
+        context.elasticsearch = client;
 
         context.plugins.register(getElasticsearchOperators());
     });

@@ -132,7 +132,11 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
 };
 
 export const createBaseSchema = () => {
-    return new ContextPlugin(async context => {
+    const plugin = new ContextPlugin(async context => {
         context.plugins.register(...createSchema(context.plugins));
     });
+
+    plugin.name = "headless-cms.context.graphql.schema.base";
+
+    return plugin;
 };

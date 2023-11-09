@@ -6,6 +6,7 @@ const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const { setStorageOps } = require("@webiny/project-utils/testing/environment");
 const { getElasticsearchClient } = require("@webiny/project-utils/testing/elasticsearch");
+const { runElasticsearchClientCommand } = require("@webiny/api-elasticsearch");
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 if (!prefix.includes("api-")) {
@@ -23,11 +24,13 @@ module.exports = () => {
                     locale: "en-US",
                     tenant: "root"
                 });
-                await elasticsearchClient.indices.create({
-                    index,
-                    body: {
-                        ...baseConfigurationPlugin.body
-                    }
+                await runElasticsearchClientCommand(elasticsearchClient, client => {
+                    return client.indices.create({
+                        index,
+                        body: {
+                            ...baseConfigurationPlugin.body
+                        }
+                    });
                 });
             }
         });

@@ -4,7 +4,7 @@ module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
     const clearEsIndices = async () => {
         logger.debug(`Started clearing Elasticsearch indices.`);
         try {
-            await client.indices.deleteAll();
+            await (await client).indices.deleteAll();
         } catch (ex) {
             logger.warn(`Could not delete all indexes: ${ex.message}.`);
             // throw ex;

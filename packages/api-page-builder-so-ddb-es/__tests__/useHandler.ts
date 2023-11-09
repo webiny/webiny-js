@@ -8,7 +8,10 @@ import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -30,7 +33,8 @@ import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dyna
 import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import elasticsearchClientContextPlugin, {
     createGzipCompression,
-    getElasticsearchOperators
+    getElasticsearchOperators,
+    runElasticsearchClientCommand
 } from "@webiny/api-elasticsearch";
 /**
  * File does not have types.
@@ -54,8 +58,38 @@ interface Params {
     withFields?: string[];
 }
 
+const getPageBuilderIndexName = () => {
+    const { index } = configurations.es({
+        tenant: "root",
+        locale: "en-US"
+    });
+    return index;
+};
+const getAcoRecordsIndexName = () => {
+    const { index } = cmsConfigurations.es({
+        model: {
+            modelId: SEARCH_RECORD_MODEL_ID,
+            tenant: "root",
+            locale: "en-US"
+        }
+    });
+    return index;
+};
+const getAcoFoldersIndexName = () => {
+    const { index } = cmsConfigurations.es({
+        model: {
+            modelId: FOLDER_MODEL_ID,
+            tenant: "root",
+            locale: "en-US"
+        }
+    });
+    return index;
+};
+
 export const useHandler = (params: Params) => {
-    const elasticsearch = createElasticsearchClient();
+    const elasticsearch = createElasticsearchClient({
+        indexes: [getPageBuilderIndexName(), getAcoRecordsIndexName(), getAcoFoldersIndexName()]
+    });
     const documentClient = getDocumentClient({
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
         tls: false,
@@ -70,39 +104,13 @@ export const useHandler = (params: Params) => {
 
     const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
 
-    const getPageBuilderIndexName = () => {
-        const { index } = configurations.es({
-            tenant: "root",
-            locale: "en-US"
-        });
-        return index;
-    };
-    const getAcoRecordsIndexName = () => {
-        const { index } = cmsConfigurations.es({
-            model: {
-                modelId: SEARCH_RECORD_MODEL_ID,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
-        return index;
-    };
-    const getAcoFoldersIndexName = () => {
-        const { index } = cmsConfigurations.es({
-            model: {
-                modelId: FOLDER_MODEL_ID,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
-        return index;
-    };
-
     const refreshIndex = async (): Promise<void> => {
         const index = getPageBuilderIndexName();
 
         try {
-            await elasticsearch.indices.refresh({ index });
+            await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.indices.refresh({ index });
+            });
         } catch (ex) {
             console.log(`Could not reindex elasticsearch index: ${index}`);
             console.log(ex.message);
@@ -210,14 +218,10 @@ export const useHandler = (params: Params) => {
         return [JSON.parse(response.body), response];
     };
 
-    elasticsearch.indices.registerIndex([
-        getPageBuilderIndexName(),
-        getAcoRecordsIndexName(),
-        getAcoFoldersIndexName()
-    ]);
-
     const clearElasticsearch = async () => {
-        await elasticsearch.indices.deleteAll();
+        await runElasticsearchClientCommand(elasticsearch, client => {
+            return (client as ElasticsearchClient).indices.deleteAll();
+        });
         return null;
     };
 

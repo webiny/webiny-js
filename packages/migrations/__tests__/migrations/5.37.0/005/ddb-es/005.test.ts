@@ -11,7 +11,10 @@ import {
 import { FileManager_5_37_0_005 } from "~/migrations/5.37.0/005/ddb-es";
 import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createSourceFileRecords } from "./primaryTable.data";
 import { createSourceEsTableRecords } from "./esTable.data";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
@@ -26,7 +29,11 @@ describe("5.37.0-005", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     const transferDataToEs = () => {
         return transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {

@@ -15,7 +15,10 @@ import {
     UPPERCASE_ROOT_FOLDER
 } from "~/migrations/5.37.0/003/constants";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createLocalesData, createTenantsData } from "../common";
 import { insertEmptyIndexes, insertTestFolders } from "./insertTestFolders";
 import {
@@ -37,7 +40,11 @@ describe("5.37.0-003", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =

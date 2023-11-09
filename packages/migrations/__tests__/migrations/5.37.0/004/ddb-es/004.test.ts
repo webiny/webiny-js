@@ -21,7 +21,10 @@ import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
 import { insertTestPages } from "~tests/migrations/5.35.0/006/ddb-es/insertTestPages";
 import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -32,7 +35,11 @@ describe("5.37.0-004", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =

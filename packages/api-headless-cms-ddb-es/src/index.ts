@@ -127,7 +127,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * Attach the elasticsearch into context if it is not already attached.
              */
             if (!context.elasticsearch) {
-                context.elasticsearch = elasticsearch;
+                context.elasticsearch = await elasticsearch;
             }
             /**
              * Pass the plugins to the parent context.
@@ -160,40 +160,41 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         init: async context => {
+            const client = context.elasticsearch;
             /**
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
             await createElasticsearchIndexesOnLocaleAfterCreate({
                 context,
-                client: elasticsearch,
+                client,
                 plugins
             });
 
             context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    client: elasticsearch,
+                    client,
                     model,
                     plugins
                 });
             });
             context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    client: elasticsearch,
+                    client,
                     model,
                     plugins
                 });
             });
             context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
-                    client: elasticsearch,
+                    client,
                     model
                 });
             });
 
             context.cms.onModelInitialize.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    client: elasticsearch,
+                    client,
                     model,
                     plugins
                 });

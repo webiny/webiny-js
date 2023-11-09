@@ -24,7 +24,7 @@ import { createPatternMatcher } from "~/handlers/createPatternMatcher";
 import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbEsDataMigrationConfig {
-    elasticsearchClient: ElasticsearchClient;
+    elasticsearchClient: ElasticsearchClient | Promise<ElasticsearchClient>;
     primaryTable: Table<string, string, string>;
     dynamoToEsTable: Table<string, string, string>;
     migrations: Constructor<DataMigration>[];
@@ -35,7 +35,7 @@ interface CreateDdbEsDataMigrationConfig {
 
 export const createDdbEsProjectMigration = ({
     migrations,
-    elasticsearchClient,
+    elasticsearchClient: elastisearchClientPromise,
     primaryTable,
     dynamoToEsTable,
     isMigrationApplicable = undefined,
@@ -50,6 +50,11 @@ export const createDdbEsProjectMigration = ({
             if (version?.version === "0.0.0") {
                 return devVersionErrorResponse();
             }
+
+            const elasticsearchClient =
+                elastisearchClientPromise instanceof Promise
+                    ? await elastisearchClientPromise
+                    : elastisearchClientPromise;
 
             // COMPOSITION ROOT
             const container = createContainer();

@@ -12,7 +12,12 @@ import { Client } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { createLimit, decodeCursor, encodeCursor } from "@webiny/api-elasticsearch";
+import {
+    createLimit,
+    decodeCursor,
+    encodeCursor,
+    runElasticsearchClientCommand
+} from "@webiny/api-elasticsearch";
 import {
     createElasticsearchBody,
     createSubmissionElasticType
@@ -32,7 +37,7 @@ export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     table: Table<string, string, string>;
-    elasticsearch: Client;
+    elasticsearch: Promise<Client> | Client;
     plugins: PluginsContainer;
 }
 
@@ -294,7 +299,9 @@ export const createSubmissionStorageOperations = (
 
         let response: ElasticsearchSearchResponse<FbSubmission>;
         try {
-            response = await elasticsearch.search(query);
+            response = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.search(query);
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could list form submissions.",

@@ -1,4 +1,4 @@
-import { createElasticsearchClient } from "../helpers";
+import { createElasticsearchClient, ElasticsearchClient } from "../helpers";
 import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
@@ -7,7 +7,7 @@ import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import WebinyError from "@webiny/error";
 
 describe("Japanese search", () => {
-    const client = createElasticsearchClient();
+    let client: ElasticsearchClient;
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -131,6 +131,10 @@ describe("Japanese search", () => {
             throw ex;
         }
     };
+
+    beforeAll(async () => {
+        client = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         return client.indices.deleteAll();

@@ -51,7 +51,7 @@ interface OnBeforeEach {
 }
 
 export class ElasticsearchClientConfig {
-    public elasticsearchClient: ElasticsearchClient;
+    public elasticsearchClient: Promise<ElasticsearchClient>;
     public plugins: PluginCollection;
     private onBeforeEach: { name: string; cb: OnBeforeEach }[] = [];
 

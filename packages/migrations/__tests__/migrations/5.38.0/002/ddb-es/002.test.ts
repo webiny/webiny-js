@@ -16,7 +16,10 @@ import { migratedDdbPrimaryTableData } from "./002.migratedDdbPrimaryTableData";
 import { migratedDdbEsTableData } from "./002.migratedDdbEsTableData";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createMigratedEsData } from "~tests/migrations/5.38.0/002/ddb-es/002.migratedEsData";
 
 jest.retryTimes(0);
@@ -25,9 +28,11 @@ jest.setTimeout(900000);
 describe("5.38.0-002", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
-    const elasticsearchClient = createElasticsearchClient();
+
+    let elasticsearchClient: ElasticsearchClient;
 
     beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
 

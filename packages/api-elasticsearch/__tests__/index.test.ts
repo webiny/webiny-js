@@ -1,6 +1,6 @@
 import { getBaseConfiguration, getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { createElasticsearchClient } from "./helpers";
+import { createElasticsearchClient, ElasticsearchClient } from "./helpers";
 
 /**
  * Add configurations when added to the code.
@@ -11,11 +11,15 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 ];
 
 describe("Elasticsearch Index Mapping And Settings", () => {
-    const client = createElasticsearchClient();
+    let client: ElasticsearchClient;
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     const testIndexName = `${prefix}dummy-index-test`;
+
+    beforeAll(async () => {
+        client = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         return client.indices.deleteAll();

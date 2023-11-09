@@ -29,7 +29,7 @@ const operators = [
 
 describe("ElasticsearchContext", () => {
     it("should connect to the elasticsearch", async () => {
-        const client = createElasticsearchClient();
+        const client = await createElasticsearchClient();
 
         const response = await client.cat.health({
             format: "json"
@@ -51,7 +51,7 @@ describe("ElasticsearchContext", () => {
         const context: any = {
             plugins: new PluginsContainer()
         };
-        const client = createElasticsearchClient();
+        const client = await createElasticsearchClient();
         const plugin = elasticsearchContext(client);
         /**
          * A context plugin must be created.
@@ -71,7 +71,7 @@ describe("ElasticsearchContext", () => {
         const context = {
             plugins: new PluginsContainer()
         } as unknown as ElasticsearchContext;
-        const client = createElasticsearchClient();
+        const client = await createElasticsearchClient();
         const plugin = elasticsearchContext(client);
 
         expect(plugin).toBeInstanceOf(ContextPlugin);

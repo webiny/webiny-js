@@ -11,6 +11,7 @@ const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch
 const { setStorageOps } = require("@webiny/project-utils/testing/environment");
 const { getElasticsearchClient } = require("@webiny/project-utils/testing/elasticsearch");
 const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
+const { runElasticsearchClientCommand } = require("@webiny/api-elasticsearch");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -36,10 +37,12 @@ module.exports = () => {
             return index;
         };
 
-        const refreshIndex = model => {
+        const refreshIndex = async model => {
             const index = createIndexName(model);
-            return elasticsearchClient.indices.refresh({
-                index
+            return runElasticsearchClientCommand(elasticsearchClient, client => {
+                return client.indices.refresh({
+                    index
+                });
             });
         };
         /**
@@ -53,17 +56,24 @@ module.exports = () => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                     const index = createIndexName(model);
                     try {
-                        const response = await elasticsearchClient.indices.exists({
-                            index
-                        });
+                        const response = await runElasticsearchClientCommand(
+                            elasticsearchClient,
+                            client => {
+                                return client.indices.exists({
+                                    index
+                                });
+                            }
+                        );
                         if (response.body) {
                             return;
                         }
-                        await elasticsearchClient.indices.create({
-                            index,
-                            body: {
-                                ...baseIndexConfigurationPlugin.body
-                            }
+                        await runElasticsearchClientCommand(elasticsearchClient, client => {
+                            return client.indices.create({
+                                index,
+                                body: {
+                                    ...baseIndexConfigurationPlugin.body
+                                }
+                            });
                         });
                         await refreshIndex(model);
                     } catch (ex) {

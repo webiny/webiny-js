@@ -58,7 +58,7 @@ const getMockData = () => {
     return {
         model: structuredClone<CmsModel>(mockModel),
         entry: structuredClone<CmsEntry<MockCmsEntryValues>>(mockEntry),
-        values: structuredClone<MockCmsEntryValues>(mockEntry.values)
+        values: structuredClone<Partial<MockCmsEntryValues>>(mockEntry.values)
     };
 };
 

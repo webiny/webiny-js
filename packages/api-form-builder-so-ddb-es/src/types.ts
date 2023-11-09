@@ -24,7 +24,7 @@ export enum ENTITIES {
 
 export interface FormBuilderStorageOperationsFactoryParams {
     documentClient: DynamoDBClient;
-    elasticsearch: Client;
+    elasticsearch: Promise<Client> | Client;
     table?: string;
     esTable?: string;
     attributes?: Record<ENTITIES, Attributes>;

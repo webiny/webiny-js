@@ -8,12 +8,16 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import elasticsearchClientContextPlugin, {
     createGzipCompression,
-    getElasticsearchOperators
+    getElasticsearchOperators,
+    runElasticsearchClientCommand
 } from "@webiny/api-elasticsearch";
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
@@ -102,10 +106,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         return index;
     };
 
-    const refreshIndex = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
+    const refreshIndex = async (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
         const index = createIndexName(model);
-        return elasticsearch.indices.refresh({
-            index
+        return runElasticsearchClientCommand(elasticsearch, client => {
+            return client.indices.refresh({
+                index
+            });
         });
     };
 
@@ -132,7 +138,11 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             new ContextPlugin<CmsContext>(async context => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
-                    elasticsearch.indices.registerIndex(createIndexName(model));
+                    return runElasticsearchClientCommand(elasticsearch, async client => {
+                        return (client as ElasticsearchClient).indices.registerIndex(
+                            createIndexName(model)
+                        );
+                    });
                 });
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);

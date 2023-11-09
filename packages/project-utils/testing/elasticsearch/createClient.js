@@ -183,12 +183,12 @@ const attachCustomEvents = client => {
 };
 
 module.exports = {
-    createElasticsearchClient: (options = {}) => {
+    createElasticsearchClient: async (options = {}) => {
         const config = {
             ...defaultOptions,
             ...options
         };
-        const client = createElasticsearchClient(config);
+        const client = await createElasticsearchClient(config);
         return attachCustomEvents(client);
     }
 };

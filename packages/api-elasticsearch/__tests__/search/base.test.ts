@@ -1,11 +1,14 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { people } from "./base.entries";
 import { getBaseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
 
 describe("Elasticsearch Base Search", () => {
-    const client = createElasticsearchClient();
+    let client: ElasticsearchClient;
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -74,6 +77,10 @@ describe("Elasticsearch Base Search", () => {
             throw ex;
         }
     };
+
+    beforeAll(async () => {
+        client = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         return client.indices.deleteAll();

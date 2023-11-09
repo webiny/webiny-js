@@ -9,6 +9,7 @@ const { configurations } = require("@webiny/api-page-builder-so-ddb-es/configura
 const {
     base: baseConfigurationPlugin
 } = require("@webiny/api-page-builder-so-ddb-es/elasticsearch/indices/base");
+const { runElasticsearchClientCommand } = require("@webiny/api-elasticsearch");
 
 module.exports = () => {
     logger.debug(`Execute "setupFile" in "api-page-builder-so-ddb-es"`);
@@ -25,11 +26,13 @@ module.exports = () => {
                     locale: "en-US",
                     tenant: "root"
                 });
-                await elasticsearchClient.indices.create({
-                    index,
-                    body: {
-                        ...baseConfigurationPlugin.body
-                    }
+                await runElasticsearchClientCommand(elasticsearchClient, client => {
+                    return client.indices.create({
+                        index,
+                        body: {
+                            ...baseConfigurationPlugin.body
+                        }
+                    });
                 });
                 logger.debug(`Finish PB "onBeforeEach".`);
             }

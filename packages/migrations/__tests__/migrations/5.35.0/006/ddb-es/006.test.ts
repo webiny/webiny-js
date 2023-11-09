@@ -1,4 +1,7 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import {
     assertNotError,
     createDdbEsMigrationHandler,
@@ -23,7 +26,11 @@ jest.setTimeout(900000);
 describe("5.35.0-006", () => {
     const ddbTable = getPrimaryDynamoDbTable();
     const ddbToEsTable = getDynamoToEsTable();
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =

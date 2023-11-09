@@ -14,6 +14,7 @@ import { Client } from "@elastic/elasticsearch";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
+import { runElasticsearchClientCommand } from "@webiny/api-elasticsearch";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -51,7 +52,7 @@ const createType = (): string => {
 
 export interface CreateModelsStorageOperationsParams {
     entity: Entity<any>;
-    elasticsearch: Client;
+    elasticsearch: Client | Promise<Client>;
 }
 
 export const createModelsStorageOperations = (
@@ -86,9 +87,11 @@ export const createModelsStorageOperations = (
          * In case of DynamoDB error we need to remove the index we created.
          */
         try {
-            await elasticsearch.indices.delete({
-                index,
-                ignore_unavailable: true
+            await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.indices.delete({
+                    index,
+                    ignore_unavailable: true
+                });
             });
         } catch (ex) {
             throw new WebinyError(
@@ -159,9 +162,11 @@ export const createModelsStorageOperations = (
          * Always delete the model index after deleting the model.
          */
         try {
-            await elasticsearch.indices.delete({
-                index,
-                ignore_unavailable: true
+            await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.indices.delete({
+                    index,
+                    ignore_unavailable: true
+                });
             });
         } catch (ex) {
             throw new WebinyError(

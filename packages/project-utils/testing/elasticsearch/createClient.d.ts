@@ -1,5 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchClientOptions } from "../../../api-elasticsearch/src/client";
+import { ElasticsearchClientOptions as BaseElasticsearchClientOptions } from "../../../api-elasticsearch/src/client";
 
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {
@@ -9,8 +9,12 @@ interface ElasticsearchClient extends Client {
     };
 }
 
+interface ElasticsearchClientOptions extends BaseElasticsearchClientOptions {
+    indexes: string[];
+}
+
 export { ElasticsearchClientOptions, ElasticsearchClient };
 
 export declare function createElasticsearchClient(
     options?: Partial<ElasticsearchClientOptions>
-): ElasticsearchClient;
+): Promise<ElasticsearchClient>;

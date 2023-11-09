@@ -29,7 +29,8 @@ import {
     createLimit,
     decodeCursor,
     decompress,
-    encodeCursor
+    encodeCursor,
+    runElasticsearchClientCommand
 } from "@webiny/api-elasticsearch";
 import { getClean } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
@@ -55,7 +56,7 @@ interface ElasticsearchDbRecord {
 export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    elasticsearch: Client;
+    elasticsearch: Client | Promise<Client>;
     plugins: PluginsContainer;
 }
 export const createEntriesStorageOperations = (
@@ -924,8 +925,10 @@ export const createEntriesStorageOperations = (
         });
 
         try {
-            const result = await elasticsearch.indices.exists({
-                index
+            const result = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.indices.exists({
+                    index
+                });
             });
             if (!result?.body) {
                 return {
@@ -958,9 +961,11 @@ export const createEntriesStorageOperations = (
 
         let response: ElasticsearchSearchResponse<CmsIndexEntry>;
         try {
-            response = await elasticsearch.search({
-                index,
-                body
+            response = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.search({
+                    index,
+                    body
+                });
             });
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
@@ -1543,8 +1548,10 @@ export const createEntriesStorageOperations = (
         });
 
         try {
-            const result = await elasticsearch.indices.exists({
-                index
+            const result = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.indices.exists({
+                    index
+                });
             });
             if (!result?.body) {
                 return [];
@@ -1599,9 +1606,11 @@ export const createEntriesStorageOperations = (
         let response: ElasticsearchSearchResponse<string> | undefined = undefined;
 
         try {
-            response = await elasticsearch.search({
-                index,
-                body
+            response = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.search({
+                    index,
+                    body
+                });
             });
         } catch (ex) {
             throw new WebinyError(

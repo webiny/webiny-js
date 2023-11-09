@@ -173,10 +173,14 @@ const plugin = new CmsGraphQLSchemaPlugin({
 plugin.name = "headless-cms.graphql.export";
 
 export const createExportGraphQL = () => {
-    return new ContextPlugin<CmsContext>(async context => {
+    const contextPlugin = new ContextPlugin<CmsContext>(async context => {
         if (!context.cms.MANAGE) {
             return;
         }
         context.plugins.register(plugin);
     });
+
+    contextPlugin.name = "headless-cms.context.graphql.export";
+
+    return contextPlugin;
 };

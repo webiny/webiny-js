@@ -11,7 +11,10 @@ import {
 import { CmsEntriesRootFolder_5_37_0_002 } from "~/migrations/5.37.0/002/ddb-es";
 import { ddbItemPushes, insertTestEntries } from "./insertTestEntries";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import {
+    createElasticsearchClient,
+    ElasticsearchClient
+} from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
 import { esGetIndexSettings } from "~/utils";
@@ -30,7 +33,11 @@ describe("5.37.0-002", () => {
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
-    const elasticsearchClient = createElasticsearchClient();
+    let elasticsearchClient: ElasticsearchClient;
+
+    beforeAll(async () => {
+        elasticsearchClient = await createElasticsearchClient();
+    });
 
     beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =

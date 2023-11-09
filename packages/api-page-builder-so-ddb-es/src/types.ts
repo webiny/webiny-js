@@ -51,7 +51,7 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
 
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBClient;
-    elasticsearch: Client;
+    elasticsearch: Promise<Client> | Client;
     table?: TableModifier;
     esTable?: TableModifier;
     attributes?: Record<ENTITIES, Attributes>;

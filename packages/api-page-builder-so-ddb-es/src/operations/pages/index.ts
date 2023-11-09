@@ -24,7 +24,11 @@ import {
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
 import { configurations } from "~/configurations";
-import { createLimit, encodeCursor } from "@webiny/api-elasticsearch";
+import {
+    createLimit,
+    encodeCursor,
+    runElasticsearchClientCommand
+} from "@webiny/api-elasticsearch";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";
 import { SearchLatestPagesPlugin } from "~/plugins/definitions/SearchLatestPagesPlugin";
 import { SearchPublishedPagesPlugin } from "~/plugins/definitions/SearchPublishedPagesPlugin";
@@ -59,7 +63,7 @@ function removePageAttributes(item: Page): Page {
 export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    elasticsearch: Client;
+    elasticsearch: Promise<Client> | Client;
     plugins: PluginsContainer;
 }
 export const createPageStorageOperations = (
@@ -784,9 +788,11 @@ export const createPageStorageOperations = (
         let response: ElasticsearchSearchResponse<Page>;
         const esConfig = configurations.es(params.where);
         try {
-            response = await elasticsearch.search({
-                ...esConfig,
-                body
+            response = await runElasticsearchClientCommand(elasticsearch, client => {
+                return client.search({
+                    ...esConfig,
+                    body
+                });
             });
         } catch (ex) {
             /**
@@ -859,23 +865,27 @@ export const createPageStorageOperations = (
         const esConfig = configurations.es(where);
 
         try {
-            const response: ElasticsearchSearchResponse<string> = await elasticsearch.search({
-                ...esConfig,
-                body: {
-                    ...body,
-                    sort: undefined,
-                    limit: undefined,
-                    size: 0,
-                    aggs: {
-                        tags: {
-                            terms: {
-                                field: "tags.keyword",
-                                include: `.*${where.search}.*`,
-                                size: 10
+            const response = await runElasticsearchClientCommand<
+                ElasticsearchSearchResponse<string>
+            >(elasticsearch, client => {
+                return client.search({
+                    ...esConfig,
+                    body: {
+                        ...body,
+                        sort: undefined,
+                        limit: undefined,
+                        size: 0,
+                        aggs: {
+                            tags: {
+                                terms: {
+                                    field: "tags.keyword",
+                                    include: `.*${where.search}.*`,
+                                    size: 10
+                                }
                             }
                         }
                     }
-                }
+                });
             });
 
             const tags = response.body.aggregations["tags"];
