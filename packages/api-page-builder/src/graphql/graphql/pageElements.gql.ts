@@ -12,7 +12,6 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     createdOn: DateTime
                     createdBy: PbCreatedBy
                     name: String
-                    category: String
                     type: String
                     content: JSON
                 }
@@ -20,14 +19,12 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 input PbCreatePageElementInput {
                     name: String!
                     type: String!
-                    category: String!
                     content: JSON!
                 }
 
                 input PbUpdatePageElementInput {
                     name: String
                     type: String
-                    category: String
                     content: JSON
                 }
 

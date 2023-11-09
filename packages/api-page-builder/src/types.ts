@@ -9,7 +9,6 @@ export interface PageElement {
     id: string;
     name: string;
     type: "element" | "block";
-    category: string;
     content: any;
     preview?: Partial<File>;
     createdOn: string;
@@ -701,6 +700,7 @@ export interface BlockCategory {
     slug: string;
     icon: string;
     description: string;
+    blockCount: number;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -822,6 +822,7 @@ export interface PageBlockStorageOperationsListParams {
         tenant: string;
         locale: string;
         createdBy?: string;
+        blockCategory?: string;
     };
     sort?: string[];
     limit?: number;
@@ -879,7 +880,7 @@ export interface PageBlockStorageOperations {
 
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
     update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
-    delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
+    delete(params: PageBlockStorageOperationsDeleteParams): Promise<void>;
 }
 
 /**

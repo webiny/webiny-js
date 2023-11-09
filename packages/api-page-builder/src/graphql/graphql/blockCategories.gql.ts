@@ -22,6 +22,7 @@ export const createBlockCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => 
                     slug: String
                     icon: String
                     description: String
+                    blockCount: Int
                 }
 
                 input PbBlockCategoryInput {
