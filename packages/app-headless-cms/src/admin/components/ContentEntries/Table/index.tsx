@@ -10,11 +10,7 @@ import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { EntryName, FolderName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
