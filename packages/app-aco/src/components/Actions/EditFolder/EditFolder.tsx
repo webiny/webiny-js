@@ -14,7 +14,7 @@ export const EditFolder = () => {
         showDialog({
             folder
         });
-    }, [folder.id]);
+    }, [folder]);
 
     if (!folder) {
         return null;

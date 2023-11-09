@@ -26,7 +26,7 @@ interface FormComponentProps {
 }
 
 const FormComponent = ({ folder }: FormComponentProps) => {
-    const [parentId, setParentId] = useState<string>(folder.parentId || ROOT_FOLDER);
+    const [parentId, setParentId] = useState<string | null>(folder.parentId);
 
     return (
         <Grid>
@@ -54,7 +54,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
                     <Bind name={"parentId"} defaultValue={parentId}>
                         {({ onChange }) => (
                             <FolderTree
-                                focusedFolderId={parentId}
+                                focusedFolderId={parentId || ROOT_FOLDER}
                                 hiddenFolderIds={[folder.id]}
                                 onFolderClick={folder => {
                                     setParentId(folder.id);

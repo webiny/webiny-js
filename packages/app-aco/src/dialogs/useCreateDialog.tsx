@@ -29,7 +29,7 @@ interface FormComponentProps {
 type SubmitData = Omit<FolderItem, "id">;
 
 const FormComponent = ({ currentParentId }: FormComponentProps) => {
-    const [parentId, setParentId] = useState<string>(currentParentId || ROOT_FOLDER);
+    const [parentId, setParentId] = useState<string | null>(currentParentId || null);
 
     const generateSlug = (form: FormAPI) => {
         return () => {
@@ -70,7 +70,7 @@ const FormComponent = ({ currentParentId }: FormComponentProps) => {
                     <Bind name={"parentId"} defaultValue={parentId}>
                         {({ onChange }) => (
                             <FolderTree
-                                focusedFolderId={parentId}
+                                focusedFolderId={parentId || ROOT_FOLDER}
                                 onFolderClick={folder => {
                                     setParentId(folder.id);
                                     onChange(folder.id === ROOT_FOLDER ? null : folder.id);
