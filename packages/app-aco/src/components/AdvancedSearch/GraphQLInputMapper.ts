@@ -25,6 +25,6 @@ export class GraphQLInputMapper {
             return false;
         }
 
-        return value || "";
+        return value ?? "";
     }
 }
