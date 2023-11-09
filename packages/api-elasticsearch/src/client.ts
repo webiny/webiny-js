@@ -1,8 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-// eslint-disable-next-line
-import { fromTemporaryCredentials } from "@webiny/aws-sdk/credential-providers";
-// eslint-disable-next-line
+import { fromProcess } from "@webiny/aws-sdk/credential-providers";
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -17,30 +15,22 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
         ...rest
     };
 
-    if (Object.getOwnPropertyNames(clientOptions?.auth || {}).length === 0) {
-        clientOptions.auth = undefined;
-    }
-
-    // if (!clientOptions.auth) {
-    //     /**
-    //      * If no `auth` configuration is present, we setup AWS connector.
-    //      */
-    //     const credentials = fromTemporaryCredentials({
-    //         params: {
-    //             RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
-    //             RoleSessionName: "temporary-session",
-    //             DurationSeconds: 3600
-    //         }
-    //     })();
-    //
-    //     Object.assign(
-    //         clientOptions,
-    //         // @ts-ignore
-    //         createAwsElasticsearchConnector({
-    //             region: process.env.AWS_REGION
-    //         })
-    //     );
+    // if (Object.getOwnPropertyNames(clientOptions?.auth || {}).length === 0) {
+    //     clientOptions.auth = undefined;
     // }
+
+    if (!clientOptions.auth) {
+        const credentials = fromProcess()();
+
+        Object.assign(
+            clientOptions,
+            createAwsElasticsearchConnector({
+                region: process.env.AWS_REGION,
+                // @ts-expect-error
+                credentials
+            })
+        );
+    }
 
     try {
         return new Client(clientOptions);

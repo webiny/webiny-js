@@ -28,7 +28,7 @@ export { createGzipCompression } from "./plugins/GzipCompression";
 export default (
     params: ElasticsearchClientOptions | Client
 ): ContextPlugin<ElasticsearchContext> => {
-    return new ContextPlugin<ElasticsearchContext>(context => {
+    return new ContextPlugin<ElasticsearchContext>(async context => {
         if (context.elasticsearch) {
             throw new WebinyError(
                 "Elasticsearch client is already initialized, no need to define it again. Check your code for duplicate initializations.",
