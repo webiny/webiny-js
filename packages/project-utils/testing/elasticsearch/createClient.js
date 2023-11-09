@@ -188,7 +188,6 @@ module.exports = {
             ...defaultOptions,
             ...options
         };
-        console.log("Creating ES Client", JSON.stringify(config));
         const client = createElasticsearchClient(config);
         return attachCustomEvents(client);
     }
