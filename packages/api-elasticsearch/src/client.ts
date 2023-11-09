@@ -38,7 +38,7 @@ export const createElasticsearchClient = async (
             /**
              * If no `auth` configuration is present, we setup AWS connector.
              */
-            const credentials = fromTemporaryCredentials({
+            const credentials = await fromTemporaryCredentials({
                 params: {
                     RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
                     RoleSessionName: "temporary-session",
@@ -48,11 +48,9 @@ export const createElasticsearchClient = async (
 
             Object.assign(
                 clientOptions,
+                // @ts-expect-error
                 createAwsElasticsearchConnector({
                     region: process.env.AWS_REGION,
-                    // aws-elasticsearch-connector still uses aws-sdk v2 types.
-                    // TODO fix types
-                    // @ts-expect-error
                     credentials
                 })
             );
