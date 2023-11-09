@@ -6,6 +6,14 @@ import { useFoldersApi } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
 import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
 
+export interface FoldersContextFolderLevelPermissions {
+    canManageStructure(folderId: string): boolean;
+
+    canManagePermissions(folderId: string): boolean;
+
+    canManageContent(folderId: string): boolean;
+}
+
 interface FoldersContext {
     folders?: FolderItem[] | null;
     loading: Loading<LoadingActions>;
@@ -23,7 +31,7 @@ interface FoldersContext {
 
     getDescendantFolders(id?: string): FolderItem[];
 
-    canManageFolderStructure(id: string): boolean;
+    folderLevelPermissions: FoldersContextFolderLevelPermissions;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
@@ -63,6 +71,28 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             setFolders(folders);
         });
     }, []);
+
+    const folderLevelPermissions: FoldersContextFolderLevelPermissions = useMemo(() => {
+        const createCanManage =
+            (callback: (folder: FolderItem) => boolean) => (folderId: string) => {
+                if (!canUseFolderLevelPermissions() || folderId === ROOT_FOLDER) {
+                    return true;
+                }
+
+                const folder = folders?.find(folder => folder.id === folderId);
+                if (!folder) {
+                    return false;
+                }
+
+                return callback(folder);
+            };
+
+        return {
+            canManageStructure: createCanManage(folder => folder.canManageStructure),
+            canManagePermissions: createCanManage(folder => folder.canManagePermissions),
+            canManageContent: createCanManage(folder => folder.canManageContent)
+        };
+    }, [folders]);
 
     const context = useMemo<FoldersContext>(() => {
         return {
@@ -136,20 +166,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                 return foldersApi.getDescendantFolders(type, id);
             },
 
-            canManageFolderStructure(id) {
-                // If FLP is not enabled, all users can manage folder structure.
-                if (!canUseFolderLevelPermissions()) {
-                    return true;
-                }
-
-                // FLP doesn't apply to root folder.
-                if (id === ROOT_FOLDER) {
-                    return true;
-                }
-
-                const folder = folders?.find(folder => folder.id === id);
-                return !!folder?.canManageStructure;
-            }
+            folderLevelPermissions
         };
     }, [folders, loading, setLoading, setFolders]);
 

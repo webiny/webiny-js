@@ -29,7 +29,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     onFolderClick,
     rootFolderLabel
 }) => {
-    const { folders, canManageFolderStructure } = useFolders();
+    const { folders, folderLevelPermissions: flp } = useFolders();
     const localFolders = useMemo(() => {
         if (!folders) {
             return [];
@@ -52,7 +52,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
 
         let createButton = null;
         if (enableCreate) {
-            const canCreate = canManageFolderStructure(focusedFolderId!);
+            const canCreate = flp.canManageStructure(focusedFolderId!);
 
             createButton = (
                 <CreateButton disabled={!canCreate} onClick={() => setCreateDialogOpen(true)} />

@@ -37,7 +37,7 @@ export const List: React.VFC<ListProps> = ({
     hiddenFolderIds,
     enableActions
 }) => {
-    const { updateFolder, canManageFolderStructure } = useFolders();
+    const { updateFolder, folderLevelPermissions: flp } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
@@ -102,9 +102,9 @@ export const List: React.VFC<ListProps> = ({
     const canDrag = useCallback(
         (folderId: string) => {
             const isRootFolder = folderId === ROOT_FOLDER;
-            return !isRootFolder && canManageFolderStructure(folderId);
+            return !isRootFolder && flp.canManageStructure(folderId);
         },
-        [canManageFolderStructure]
+        [flp.canManageStructure]
     );
 
     return (
