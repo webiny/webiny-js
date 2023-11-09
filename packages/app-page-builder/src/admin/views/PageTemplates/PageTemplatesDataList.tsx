@@ -4,11 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 
 import {
     DataList,
