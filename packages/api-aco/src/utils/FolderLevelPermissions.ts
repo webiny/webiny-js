@@ -341,14 +341,9 @@ export class FolderLevelPermissions {
             return accessLevels.includes("owner");
         }
 
-        // If we are here, it means we are checking for "read" access.
-        // For starters, let's check if the user has any access level.
-        if (accessLevels.length > 0) {
-            return true;
-        }
-
-        // No conditions were met, so we can return false.
-        return false;
+        // If we are here, it means we are checking for "read" access. Any access level
+        // will do, so we can return true if there is at least one access level.
+        return accessLevels.length > 0;
     }
 
     async ensureCanAccessFolder(params: CanAccessFolderParams) {
@@ -416,14 +411,9 @@ export class FolderLevelPermissions {
             return accessLevels.includes("owner") || accessLevels.includes("editor");
         }
 
-        // If we are here, it means we are checking for "read" access.
-        // For starters, let's check if the user has any access level.
-        if (accessLevels.length > 0) {
-            return true;
-        }
-
-        // No conditions were met, so we can return false.
-        return false;
+        // If we are here, it means we are checking for "read" access. Any access level
+        // will do, so we can return true if there is at least one access level.
+        return accessLevels.length > 0;
     }
 
     async ensureCanAccessFolderContent(params: CanAccessFolderContentParams) {
