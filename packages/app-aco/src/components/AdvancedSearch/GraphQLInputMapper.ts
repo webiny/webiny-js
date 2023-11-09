@@ -19,10 +19,12 @@ export class GraphQLInputMapper {
     private static convertToBooleanOrString(value: string | boolean): string | boolean {
         if (value === "true") {
             return true;
-        } else if (value === "false") {
-            return false;
-        } else {
-            return value || "";
         }
+
+        if (value === "false") {
+            return false;
+        }
+
+        return value || "";
     }
 }
