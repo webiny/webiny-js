@@ -2,7 +2,7 @@ import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-import { fromTemporaryCredentials } from "@webiny/aws-sdk/credential-providers";
+import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -15,6 +15,21 @@ const createClientKey = (options: ElasticsearchClientOptions) => {
     const hash = crypto.createHash("sha1");
     hash.update(key);
     return hash.digest("hex");
+};
+
+const assumeRole = async (roleArn: string, region?: string) => {
+    const client = new STSClient({ region });
+    const response = await client.send(
+        new AssumeRoleCommand({
+            RoleArn: roleArn,
+            RoleSessionName: "aws-es-connection"
+        })
+    );
+    return {
+        accessKeyId: response.Credentials!.AccessKeyId as string,
+        secretAccessKey: response.Credentials!.SecretAccessKey as string,
+        sessionToken: response.Credentials!.SessionToken as string
+    };
 };
 
 export const createElasticsearchClient = async (
@@ -35,16 +50,10 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
-            /**
-             * If no `auth` configuration is present, we setup AWS connector.
-             */
-            const credentials = await fromTemporaryCredentials({
-                params: {
-                    RoleArn: "arn:aws:iam::0123456789012:role/Administrator",
-                    RoleSessionName: "temporary-session",
-                    DurationSeconds: 3600
-                }
-            })();
+            const credentials = await assumeRole(
+                "arn:aws:iam::0123456789012:role/Administrator",
+                process.env.AWS_REGION
+            );
 
             Object.assign(
                 clientOptions,

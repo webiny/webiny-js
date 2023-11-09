@@ -1,1 +1,1 @@
-export { STS } from "@aws-sdk/client-sts";
+export { STS, STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
