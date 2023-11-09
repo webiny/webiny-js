@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-import { fromProcess } from "@webiny/aws-sdk/credential-providers";
+import { fromEnv } from "@webiny/aws-sdk/credential-providers";
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -15,12 +15,12 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
         ...rest
     };
 
-    // if (Object.getOwnPropertyNames(clientOptions?.auth || {}).length === 0) {
-    //     clientOptions.auth = undefined;
-    // }
+    if (Object.getOwnPropertyNames(clientOptions?.auth || {}).length === 0) {
+        clientOptions.auth = undefined;
+    }
 
     if (!clientOptions.auth) {
-        const credentials = fromProcess()();
+        const credentials = fromEnv()();
 
         Object.assign(
             clientOptions,
