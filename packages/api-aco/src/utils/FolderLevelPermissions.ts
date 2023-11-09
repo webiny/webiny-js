@@ -386,8 +386,7 @@ export class FolderLevelPermissions {
             foldersList
         });
 
-        // If dealing with a public folder, we only care if we're checking for "managePermissions" access.
-        // If we are, we can return false, because public folders cannot have permissions managed.
+        // If dealing with a public folder, that means we can access its content.
         const isPublicFolder = folderPermissions?.permissions.some(p => p.level === "public");
         if (isPublicFolder) {
             return true;
