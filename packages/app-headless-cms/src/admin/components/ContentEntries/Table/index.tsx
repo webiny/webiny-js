@@ -38,7 +38,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
         props;
     const { currentFolderId } = useNavigateFolder();
-    const { folder } = useAcoListConfig();
+    const { folder: folderConfig } = useAcoListConfig();
     const { model } = useModel();
     const { history } = useRouter();
     const { canEdit: baseCanEdit } = usePermission();
@@ -140,7 +140,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     return (
                         <FolderProvider folder={record.original}>
                             <OptionsMenu
-                                actions={folder.actions}
+                                actions={folderConfig.actions}
                                 data-testid={"table.row.folder.menu-action"}
                             />
                         </FolderProvider>
@@ -148,7 +148,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 }
             }
         };
-    }, []);
+    }, [folderConfig.actions]);
 
     return (
         <div ref={ref}>

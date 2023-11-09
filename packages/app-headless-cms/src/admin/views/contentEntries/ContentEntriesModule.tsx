@@ -14,14 +14,13 @@ import {
     SaveContentButton
 } from "~/admin/components/ContentEntryForm/Header";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
-import { CompositionScope } from "@webiny/react-composition";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
 export const ContentEntriesModule: React.FC = () => {
     return (
-        <CompositionScope name={"cms"}>
+        <>
             <ContentEntryListConfig>
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
                 <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
@@ -37,6 +36,6 @@ export const ContentEntriesModule: React.FC = () => {
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntry />} />
             </ContentEntryEditorConfig>
-        </CompositionScope>
+        </>
     );
 };
