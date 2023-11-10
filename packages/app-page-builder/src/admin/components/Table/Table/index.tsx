@@ -176,8 +176,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    console.log("folderConfig.actions", folderConfig);
-
                     return (
                         <FolderProvider folder={entry.original}>
                             <OptionsMenu
@@ -189,7 +187,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 }
             }
         };
-    }, []);
+    }, [folderConfig]);
 
     return (
         <div ref={ref}>

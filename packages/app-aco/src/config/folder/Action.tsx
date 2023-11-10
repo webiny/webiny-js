@@ -9,10 +9,10 @@ export interface ActionConfig {
 
 export interface ActionProps {
     name: string;
+    element?: React.ReactElement;
     remove?: boolean;
     before?: string;
     after?: string;
-    element: React.ReactElement;
 }
 
 export const BaseAction: React.FC<ActionProps> = ({
