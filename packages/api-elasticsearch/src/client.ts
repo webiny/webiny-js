@@ -47,6 +47,7 @@ export const createElasticsearchClient = async (
                 secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
                 sessionToken: String(process.env.AWS_SESSION_TOKEN)
             };
+            console.log("credentials", JSON.stringify(credentials));
 
             clientOptions = {
                 ...clientOptions,
