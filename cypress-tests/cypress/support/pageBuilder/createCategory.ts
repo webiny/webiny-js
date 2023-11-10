@@ -58,6 +58,3 @@ Cypress.Commands.add("createCategory", data => {
         });
     });
 });
-
-
-

@@ -4,8 +4,8 @@ context("Categories Module", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const category_name = nanoid(6);
     const category_slug = nanoid(6);
-    const category_url = "/" + nanoid(6) + "/" ;
-    
+    const category_url = "/" + nanoid(6) + "/";
+
     const categoryData1 = {
         name: "ABC",
         slug: "ABC",
@@ -104,7 +104,9 @@ context("Categories Module", () => {
         cy.contains(categoryData3.url).should("not.exist");
         cy.contains(categoryData4.url).should("exist");
 
-        cy.findByPlaceholderText("Search categories").clear().type("This string should not return any results");
+        cy.findByPlaceholderText("Search categories")
+            .clear()
+            .type("This string should not return any results");
         cy.contains(categoryData1.url).should("not.exist");
         cy.contains(categoryData2.url).should("not.exist");
         cy.contains(categoryData3.url).should("not.exist");
@@ -127,10 +129,10 @@ context("Categories Module", () => {
         cy.get(".webiny-ui-select select").select("Oldest to newest");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li .mdc-list-item__text")
-            .eq(1) // Select the second item (0-based index)
-            .each($span => {
-                cy.wrap($span).invoke("text").should("include", categoryData1.name);
-            });
+                .eq(1) // Select the second item (0-based index)
+                .each($span => {
+                    cy.wrap($span).invoke("text").should("include", categoryData1.name);
+                });
         });
 
         cy.get(".webiny-ui-select select").select("Name A-Z");
@@ -144,14 +146,13 @@ context("Categories Module", () => {
                     });
             });
 
-
         cy.get(".webiny-ui-select select").select("Name Z-A");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li .mdc-list-item__text")
-            .eq(1) // Select the second item (0-based index)
-            .each($span => {
-                cy.wrap($span).invoke("text").should("include", categoryData3.name);
-            });
+                .eq(1) // Select the second item (0-based index)
+                .each($span => {
+                    cy.wrap($span).invoke("text").should("include", categoryData3.name);
+                });
         });
     });
 });

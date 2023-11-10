@@ -5,9 +5,9 @@ context("Categories Module", () => {
     const category_name = nanoid(6);
     const category_name_edited = nanoid(6);
     const category_slug = nanoid(6);
-    const category_url = "/" + nanoid(6) + "/" ;
-    const category_url_edited = "/" + nanoid(6) + "/" ;
-    
+    const category_url = "/" + nanoid(6) + "/";
+    const category_url_edited = "/" + nanoid(6) + "/";
+
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllCategories();
@@ -37,10 +37,10 @@ context("Categories Module", () => {
         });
 
         //Assert that the title on top and the other form fields below display correct values on the right side of the screen.
-        cy.get('.mdc-typography--headline5').should('contain', category_name);
-        cy.findByTestId("pb.category.new.form.name").invoke('val').should('eq', category_name);
-        cy.findByTestId("pb.category.new.form.slug").invoke('val').should('eq', category_slug);
-        cy.findByTestId("pb.category.new.form.url").invoke('val').should('eq', category_url);
+        cy.get(".mdc-typography--headline5").should("contain", category_name);
+        cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", category_name);
+        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
+        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url);
 
         //Tests editing category fields.
         cy.findByTestId("pb.category.new.form.name").clear().type(category_name_edited);
@@ -56,10 +56,12 @@ context("Categories Module", () => {
             cy.findByText(category_url_edited).should("exist");
             cy.findByText(category_url_edited).click();
         });
-        cy.get('.mdc-typography--headline5').should('contain', category_name_edited);
-        cy.findByTestId("pb.category.new.form.name").invoke('val').should('eq', category_name_edited);
-        cy.findByTestId("pb.category.new.form.slug").invoke('val').should('eq', category_slug);
-        cy.findByTestId("pb.category.new.form.url").invoke('val').should('eq', category_url_edited);
+        cy.get(".mdc-typography--headline5").should("contain", category_name_edited);
+        cy.findByTestId("pb.category.new.form.name")
+            .invoke("val")
+            .should("eq", category_name_edited);
+        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
+        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url_edited);
 
         //Asserts that the created category is being correctly displayed in menu item creation.
         cy.visit("/page-builder/menus?slug=main-menu");
@@ -70,7 +72,9 @@ context("Categories Module", () => {
         });
         cy.findByTestId("pb.menu.new.listitem.category").type(category_name_edited);
         cy.findByText(category_name_edited).click();
-        cy.findByTestId("pb.menu.new.listitem.category").invoke('val').should('eq', category_name_edited)
+        cy.findByTestId("pb.menu.new.listitem.category")
+            .invoke("val")
+            .should("eq", category_name_edited);
 
         //Deletes the previously created category and asserts it is no longer being displayed.
         cy.visit("/page-builder/categories");
@@ -88,6 +92,5 @@ context("Categories Module", () => {
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(category_name_edited).should("not.exist");
         });
-
     });
 });

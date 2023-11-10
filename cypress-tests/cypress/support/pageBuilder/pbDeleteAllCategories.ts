@@ -56,19 +56,24 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
             // Step 2: Filter and delete categories
             categories.forEach(category => {
                 // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
-                if (category.name.toLowerCase().includes("static") || category.url.toLowerCase().includes("/static/")) {
+                if (
+                    category.name.toLowerCase().includes("static") ||
+                    category.url.toLowerCase().includes("/static/")
+                ) {
                     // Skip this category
                     return;
                 }
 
                 // Delete the category that doesn't meet the criteria
-                client.request(DELETE_CATEGORY_MUTATION, { slug: category.slug }).then(deletionResponse => {
-                    if (deletionResponse.pageBuilder.deleteCategory.error) {
-                        // Handle any errors that occurred during deletion
-                        // You can log the error or perform other actions as needed
-                        console.error(deletionResponse.pageBuilder.deleteCategory.error);
-                    }
-                });
+                client
+                    .request(DELETE_CATEGORY_MUTATION, { slug: category.slug })
+                    .then(deletionResponse => {
+                        if (deletionResponse.pageBuilder.deleteCategory.error) {
+                            // Handle any errors that occurred during deletion
+                            // You can log the error or perform other actions as needed
+                            console.error(deletionResponse.pageBuilder.deleteCategory.error);
+                        }
+                    });
             });
         });
     });
