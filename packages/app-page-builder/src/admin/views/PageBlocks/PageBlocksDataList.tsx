@@ -34,16 +34,16 @@ const List = styled("div")`
 `;
 
 const ListItem = styled.div`
-    position: relative;
-    border: 1px solid rgba(212, 212, 212, 0.5);
-    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%),
-        0px 1px 3px 0px rgb(0 0 0 / 12%);
-    min-height: 70px;
-    padding: 15px;
-    margin-bottom: 10px;
-    :last-of-type {
-        margin-bottom: 0;
-    }
+  position: relative;
+  border: 1px solid rgba(212, 212, 212, 0.5);
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%),
+  0px 1px 3px 0px rgb(0 0 0 / 12%);
+  min-height: 70px;
+  padding: 15px;
+  margin-bottom: 10px;
+  :last-of-type {
+    margin-bottom: 0;
+  }
 `;
 
 const ListItemText = styled("div")({
@@ -135,7 +135,6 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
     useEffect(() => {
-        console.log("update current blocks", pageBlocks.pageBlocks);
         if (selectedBlocksCategory) {
             pageBlocks.listBlocks(selectedBlocksCategory).then(pageBlocks => {
                 setPageBlocks(pageBlocks);
