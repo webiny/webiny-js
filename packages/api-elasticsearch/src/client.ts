@@ -49,7 +49,7 @@ export const createElasticsearchClient = async (
             const connection = createAWSConnection(credentials);
 
             // @ts-ignore
-            Object.assign(clientOptions, ...connection);
+            Object.assign(clientOptions, connection);
         }
 
         try {
