@@ -72,7 +72,6 @@
     "react-helmet": "^6.1.0",
     "react-hotkeyz": "^1.0.4",
     "react-virtualized": "^9.21.2",
-    "timeago-react": "^2.0.0",
     "use-deep-compare-effect": "^1.6.1"
   },
   "devDependencies": {
