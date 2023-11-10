@@ -2,7 +2,8 @@ import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
+// import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
+import { fromNodeProviderChain } from "@webiny/aws-sdk/credential-providers";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -17,20 +18,22 @@ const createClientKey = (options: ElasticsearchClientOptions) => {
     return hash.digest("hex");
 };
 
-const assumeRole = async (roleArn: string, region?: string) => {
-    const client = new STSClient({ region });
-    const response = await client.send(
-        new AssumeRoleCommand({
-            RoleArn: roleArn,
-            RoleSessionName: "aws-es-connection"
-        })
-    );
-    return {
-        accessKeyId: response.Credentials!.AccessKeyId as string,
-        secretAccessKey: response.Credentials!.SecretAccessKey as string,
-        sessionToken: response.Credentials!.SessionToken as string
-    };
-};
+// const assumeRole = async (roleArn: string, region: string) => {
+//     const client = new STSClient({
+//         region
+//     });
+//     const response = await client.send(
+//         new AssumeRoleCommand({
+//             RoleArn: roleArn,
+//             RoleSessionName: "aws-es-connection"
+//         })
+//     );
+//     return {
+//         accessKeyId: response.Credentials!.AccessKeyId as string,
+//         secretAccessKey: response.Credentials!.SecretAccessKey as string,
+//         sessionToken: response.Credentials!.SessionToken as string
+//     };
+// };
 
 export const createElasticsearchClient = async (
     options: ElasticsearchClientOptions
@@ -50,16 +53,22 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
-            const credentials = await assumeRole(
-                "arn:aws:iam::0123456789012:role/Administrator",
-                process.env.AWS_REGION
-            );
+            const region = String(process.env.AWS_REGION);
+            // const credentials = await assumeRole(
+            //     "arn:aws:iam::0123456789012:role/Administrator",
+            //     region
+            // );
+            const credentials = await fromNodeProviderChain({
+                clientConfig: {
+                    region
+                }
+            })();
 
             Object.assign(
                 clientOptions,
                 // @ts-expect-error
                 createAwsElasticsearchConnector({
-                    region: process.env.AWS_REGION,
+                    region,
                     credentials
                 })
             );
