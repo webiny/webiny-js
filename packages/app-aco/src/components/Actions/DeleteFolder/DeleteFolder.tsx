@@ -1,14 +1,14 @@
 import React, { useCallback } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 
-import { AcoListConfig } from "~/config";
+import { AcoConfig } from "~/config";
 import { useDeleteDialog } from "~/dialogs";
 import { useFolder } from "~/hooks";
 
 export const DeleteFolder = () => {
     const { folder } = useFolder();
     const { showDialog } = useDeleteDialog();
-    const { OptionsMenuItem } = AcoListConfig.Folder.Action.useOptionsMenuItem();
+    const { OptionsMenuItem } = AcoConfig.Folder.Action.useOptionsMenuItem();
 
     const onAction = useCallback(() => {
         showDialog({

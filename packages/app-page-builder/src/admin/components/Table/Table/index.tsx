@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderProvider, useAcoListConfig } from "@webiny/app-aco";
+import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -105,7 +105,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         selectedRows
     } = props;
 
-    const { folder: folderConfig } = useAcoListConfig();
+    const { folder: folderConfig } = useAcoConfig();
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records)];

@@ -5,7 +5,7 @@ import { ReactComponent as FolderSharedIcon } from "@material-design-icons/svg/o
 import { OptionsMenu } from "@webiny/app-admin";
 
 import { useFolder } from "~/hooks";
-import { useAcoListConfig } from "~/config";
+import { useAcoConfig } from "~/config";
 
 import { FolderContainer, FolderContent, Text } from "./styled";
 
@@ -15,7 +15,7 @@ export interface FolderProps {
 
 export const Folder: React.VFC<FolderProps> = ({ onClick }) => {
     const { folder } = useFolder();
-    const { folder: folderConfig } = useAcoListConfig();
+    const { folder: folderConfig } = useAcoConfig();
     const { id, title, hasNonInheritedPermissions, canManagePermissions } = folder;
 
     let icon = <FolderIcon />;

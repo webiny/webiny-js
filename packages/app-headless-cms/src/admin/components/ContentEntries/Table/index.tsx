@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useMemo } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderProvider, useAcoListConfig, useNavigateFolder } from "@webiny/app-aco";
+import { FolderProvider, useAcoConfig, useNavigateFolder } from "@webiny/app-aco";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -38,7 +38,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
         props;
     const { currentFolderId } = useNavigateFolder();
-    const { folder: folderConfig } = useAcoListConfig();
+    const { folder: folderConfig } = useAcoConfig();
     const { model } = useModel();
     const { history } = useRouter();
     const { canEdit: baseCanEdit } = usePermission();
@@ -148,7 +148,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 }
             }
         };
-    }, [folderConfig.actions]);
+    }, [folderConfig]);
 
     return (
         <div ref={ref}>

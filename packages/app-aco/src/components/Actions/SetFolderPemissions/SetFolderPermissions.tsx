@@ -1,14 +1,14 @@
 import React, { useCallback } from "react";
 import { ReactComponent as Security } from "@material-design-icons/svg/outlined/add_moderator.svg";
 
-import { AcoListConfig } from "~/config";
+import { AcoConfig } from "~/config";
 import { useSetPermissionsDialog } from "~/dialogs";
 import { useFolder } from "~/hooks";
 
 export const SetFolderPermissions = () => {
     const { folder } = useFolder();
     const { showDialog } = useSetPermissionsDialog();
-    const { OptionsMenuItem } = AcoListConfig.Folder.Action.useOptionsMenuItem();
+    const { OptionsMenuItem } = AcoConfig.Folder.Action.useOptionsMenuItem();
 
     const onAction = useCallback(() => {
         showDialog({

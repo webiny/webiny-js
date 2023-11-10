@@ -3,7 +3,7 @@ import React from "react";
 import { FolderProvider } from "~/contexts/folder";
 import { Folder } from "~/components/FolderGrid/Folder";
 import { Grid } from "~/components/FolderGrid/styled";
-import { AcoListWithConfig } from "~/config";
+import { AcoWithConfig } from "~/config";
 import { FolderItem } from "~/types";
 
 interface FolderGridProps {
@@ -17,7 +17,7 @@ export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick 
     }
 
     return (
-        <AcoListWithConfig>
+        <AcoWithConfig>
             <Grid>
                 {folders.map(folder => (
                     <FolderProvider key={folder.id} folder={folder}>
@@ -25,6 +25,6 @@ export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick 
                     </FolderProvider>
                 ))}
             </Grid>
-        </AcoListWithConfig>
+        </AcoWithConfig>
     );
 };

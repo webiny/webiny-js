@@ -7,7 +7,7 @@ import { List } from "./List";
 import { Container } from "./styled";
 import { FolderItem } from "~/types";
 import { ROOT_FOLDER } from "~/constants";
-import { AcoListWithConfig } from "~/config";
+import { AcoWithConfig } from "~/config";
 
 export { Loader };
 
@@ -49,7 +49,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
 
         if (localFolders.length > 0) {
             return (
-                <AcoListWithConfig>
+                <AcoWithConfig>
                     <List
                         folders={localFolders}
                         onFolderClick={onFolderClick}
@@ -58,7 +58,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
                         enableActions={enableActions}
                     />
                     {enableCreate && <CreateButton />}
-                </AcoListWithConfig>
+                </AcoWithConfig>
             );
         }
 

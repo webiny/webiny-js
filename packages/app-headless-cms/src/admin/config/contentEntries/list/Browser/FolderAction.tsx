@@ -1,14 +1,13 @@
 import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
-import { AcoListConfig, FolderActionConfig } from "@webiny/app-aco";
+import { AcoConfig, FolderActionConfig } from "@webiny/app-aco";
 import { useModel } from "~/admin/hooks";
 
-const { Folder } = AcoListConfig;
+const { Folder } = AcoConfig;
 
 export { FolderActionConfig };
 
-export interface FolderActionProps
-    extends React.ComponentProps<typeof AcoListConfig.Folder.Action> {
+export interface FolderActionProps extends React.ComponentProps<typeof AcoConfig.Folder.Action> {
     modelIds?: string[];
 }
 
@@ -21,9 +20,9 @@ export const FolderAction: React.FC<FolderActionProps> = ({ modelIds = [], ...pr
 
     return (
         <CompositionScope name={"cms"}>
-            <AcoListConfig>
+            <AcoConfig>
                 <Folder.Action {...props} />
-            </AcoListConfig>
+            </AcoConfig>
         </CompositionScope>
     );
 };

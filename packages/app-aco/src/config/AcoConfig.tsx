@@ -1,17 +1,19 @@
 import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { Folder, FolderConfig } from "./Folder";
+import { Folder, FolderConfig } from "./folder";
 
-const base = createConfigurableComponent<AcoListConfig>("AcoListConfig");
+export { ActionConfig as FolderActionConfig } from "./folder/Action";
 
-export const AcoListConfig = Object.assign(base.Config, { Folder });
-export const AcoListWithConfig = base.WithConfig;
+const base = createConfigurableComponent<AcoConfig>("AcoConfig");
 
-interface AcoListConfig {
+export const AcoConfig = Object.assign(base.Config, { Folder });
+export const AcoWithConfig = base.WithConfig;
+
+interface AcoConfig {
     folder: FolderConfig;
 }
 
-export function useAcoListConfig() {
+export function useAcoConfig() {
     const config = base.useConfig();
 
     const folder = config.folder || {};
