@@ -33,7 +33,8 @@ export const createElasticsearchClient = async (
             ...rest
         };
 
-        if (!clientOptions.auth) {
+        // @ts-ignore
+        if (!clientOptions.auth && 1 === 2) {
             const region = String(process.env.AWS_REGION);
             const keys = {
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
@@ -48,6 +49,11 @@ export const createElasticsearchClient = async (
                 refreshCallbacks: []
             };
 
+            const config = {
+                credentials,
+                region
+            };
+
             for (const key in keys) {
                 // @ts-ignore
                 const value = keys[key];
@@ -59,11 +65,7 @@ export const createElasticsearchClient = async (
             Object.assign(
                 clientOptions,
                 // @ts-ignore
-                createAwsElasticsearchConnector({
-                    region,
-                    // @ts-ignore
-                    credentials
-                })
+                createAwsElasticsearchConnector(config)
             );
         }
 
