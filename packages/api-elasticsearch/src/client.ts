@@ -3,6 +3,7 @@ import crypto from "crypto";
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 // import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
+// eslint-disable-next-line
 import { fromEnv } from "@webiny/aws-sdk/credential-providers";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -58,14 +59,14 @@ export const createElasticsearchClient = async (
             //     "arn:aws:iam::0123456789012:role/Administrator",
             //     region
             // );
-            const credentials = await fromEnv()();
+            // const credentials = await fromEnv()();
 
             Object.assign(
                 clientOptions,
                 // @ts-expect-error
                 createAwsElasticsearchConnector({
                     region,
-                    credentials
+                    credentials: undefined
                 })
             );
         }
