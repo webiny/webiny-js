@@ -6,6 +6,7 @@ import { Client, ClientOptions } from "@elastic/elasticsearch";
 // import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
 // eslint-disable-next-line
 import { fromProcess } from "@webiny/aws-sdk/credential-providers";
+// eslint-disable-next-line
 import { createAWSConnection, awsGetCredentials } from "@acuris/aws-es-connection";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -20,23 +21,6 @@ const createClientKey = (options: ElasticsearchClientOptions) => {
     hash.update(key);
     return hash.digest("hex");
 };
-
-// const assumeRole = async (roleArn: string, region: string) => {
-//     const client = new STSClient({
-//         region
-//     });
-//     const response = await client.send(
-//         new AssumeRoleCommand({
-//             RoleArn: roleArn,
-//             RoleSessionName: "aws-es-connection"
-//         })
-//     );
-//     return {
-//         accessKeyId: response.Credentials!.AccessKeyId as string,
-//         secretAccessKey: response.Credentials!.SecretAccessKey as string,
-//         sessionToken: response.Credentials!.SessionToken as string
-//     };
-// };
 
 export const createElasticsearchClient = async (
     options: ElasticsearchClientOptions
@@ -56,8 +40,13 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
-            const awsCredentials = await awsGetCredentials();
-            const connection = createAWSConnection(awsCredentials);
+            const credentials = {
+                accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
+                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+            };
+            // @ts-ignore
+            const connection = createAWSConnection(credentials);
 
             // @ts-ignore
             Object.assign(clientOptions, ...connection);
