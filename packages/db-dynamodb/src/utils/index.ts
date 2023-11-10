@@ -11,6 +11,7 @@ export * from "./put";
 export * from "./listResponse";
 export * from "./query";
 export * from "./count";
+export * from "./scan";
 export * from "./sort";
 export * from "./table";
 export * from "./update";

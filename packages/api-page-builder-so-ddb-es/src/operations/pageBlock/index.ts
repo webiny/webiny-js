@@ -17,7 +17,7 @@ import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDyn
 import { PluginsContainer } from "@webiny/plugins";
 import { createGSIPartitionKey, createGSISortKey, createPartitionKey, createSortKey } from "./keys";
 import { PageBlockStorageOperations } from "~/types";
-import { put } from "@webiny/db-dynamodb";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 import { compress, decompress } from "./compression";
 
 const createType = (): string => {
