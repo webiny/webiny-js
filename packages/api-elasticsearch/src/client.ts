@@ -1,13 +1,7 @@
-// eslint-disable-next-line
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
-// import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
-// eslint-disable-next-line
-import { fromProcess } from "@webiny/aws-sdk/credential-providers";
-// eslint-disable-next-line
-import { createAWSConnection, awsGetCredentials } from "@acuris/aws-es-connection";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -40,20 +34,31 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
+            const region = String(process.env.AWS_REGION);
             const credentials = {
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
                 secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+                sessionToken: String(process.env.AWS_SESSION_TOKEN),
+                envPrefix: "AWS",
+                expired: false,
+                expireTime: null,
+                refreshCallbacks: []
             };
-            // @ts-ignore
-            const connection = createAWSConnection(credentials);
 
-            // @ts-ignore
-            Object.assign(clientOptions, connection);
+            Object.assign(
+                clientOptions,
+                // @ts-ignore
+                createAwsElasticsearchConnector({
+                    region,
+                    credentials
+                })
+            );
         }
 
         try {
-            return new Client(clientOptions);
+            return new Client({
+                ...clientOptions
+            });
         } catch (ex) {
             const data = {
                 error: ex,

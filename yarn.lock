@@ -14,18 +14,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@acuris/aws-es-connection@npm:^1.0.0":
-  version: 1.1.2
-  resolution: "@acuris/aws-es-connection@npm:1.1.2"
-  dependencies:
-    aws4: ^1.8.0
-  peerDependencies:
-    "@elastic/elasticsearch": ">=5.6.16 <=7.9.0"
-    aws-sdk: ">=2"
-  checksum: 3fe9abf4e324aeead2cecf783b4f9c60a88e556f4fc8718b10b895d09e49dae79a9926fee18cb0f17f6d342acdd8320b7674185582247a88d3e3730ff254cbb2
-  languageName: node
-  linkType: hard
-
 "@ampproject/remapping@npm:^2.1.0":
   version: 2.2.0
   resolution: "@ampproject/remapping@npm:2.2.0"
@@ -14024,12 +14012,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-elasticsearch@workspace:packages/api-elasticsearch"
   dependencies:
-    "@acuris/aws-es-connection": ^1.0.0
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
     "@elastic/elasticsearch": 7.12.0
     "@webiny/api": 0.0.0
-    "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/plugins": 0.0.0
