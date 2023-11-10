@@ -52,9 +52,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
         if (enableCreate) {
             const canCreate = flp.canManageStructure(focusedFolderId!);
 
-            createButton = (
-                <CreateButton disabled={!canCreate}/>
-            );
+            createButton = <CreateButton disabled={!canCreate} />;
 
             if (!canCreate) {
                 createButton = (

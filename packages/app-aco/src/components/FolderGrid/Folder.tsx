@@ -16,7 +16,8 @@ export interface FolderProps {
 export const Folder: React.VFC<FolderProps> = ({ onClick }) => {
     const { folder } = useFolder();
     const { folder: folderConfig } = useAcoConfig();
-    const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } = folder;
+    const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } =
+        folder;
 
     let icon = <FolderIcon />;
     if (hasNonInheritedPermissions && canManagePermissions) {
@@ -30,7 +31,10 @@ export const Folder: React.VFC<FolderProps> = ({ onClick }) => {
                 <Text use={"subtitle2"}>{title}</Text>
             </FolderContent>
             {canManageStructure && (
-                <OptionsMenu actions={folderConfig.actions} data-testid={"folder.grid.menu-action"} />
+                <OptionsMenu
+                    actions={folderConfig.actions}
+                    data-testid={"folder.grid.menu-action"}
+                />
             )}
         </FolderContainer>
     );
