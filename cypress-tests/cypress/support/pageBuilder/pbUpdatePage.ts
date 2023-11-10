@@ -16,7 +16,7 @@ interface PbUpdatePageInput {
 }
 
 declare global {
-        // eslint-disable-next-line @typescript-eslint/no-namespace
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbUpdatePage(data: PbUpdatePageInput): Chainable<Promise<string>>;

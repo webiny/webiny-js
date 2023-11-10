@@ -1,4 +1,3 @@
-
 context("Menus Module", () => {
     const menuName = "Test menu";
     const menuSlug = "test-slug";
