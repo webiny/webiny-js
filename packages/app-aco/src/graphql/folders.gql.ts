@@ -21,6 +21,7 @@ const DATA_FIELD = /* GraphQL */ `
         hasNonInheritedPermissions
         canManagePermissions
         canManageStructure
+        canManageContent
         parentId
         type
         savedOn

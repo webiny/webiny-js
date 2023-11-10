@@ -6,7 +6,7 @@ import {
 
 export * from "~/graphql/records/types";
 
-export type FolderAccessLevel = "owner" | "viewer" | "editor";
+export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 
 export interface FolderPermission {
     target: `admin:${string}` | `team:${string}`;
@@ -30,6 +30,7 @@ export interface FolderItem {
     hasNonInheritedPermissions: boolean;
     canManagePermissions: boolean;
     canManageStructure: boolean;
+    canManageContent: boolean;
     type: string;
     parentId: string | null;
     createdOn: string;
