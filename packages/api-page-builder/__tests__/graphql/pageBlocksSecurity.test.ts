@@ -1,6 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { expectCompressed } from "./utils/expectCompressed";
 
 class Mock {
     public name: string;
@@ -165,28 +166,36 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-one-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-one-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-one-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityA,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-two-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-two-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-two-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-three-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-three-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-three-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-four-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-four-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-four-content"
+                                    })
                                 }
                             ],
                             error: null
@@ -212,14 +221,14 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-one-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-one-content" }
+                                content: expectCompressed({ some: "list-page-blocks-one-content" })
                             },
                             {
                                 createdBy: identityA,
                                 createdOn: /^20/,
                                 name: "list-page-blocks-two-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-two-content" }
+                                content: expectCompressed({ some: "list-page-blocks-two-content" })
                             }
                         ],
                         error: null
@@ -244,14 +253,16 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-three-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-three-content" }
+                                content: expectCompressed({
+                                    some: "list-page-blocks-three-content"
+                                })
                             },
                             {
                                 createdBy: identityB,
                                 createdOn: /^20/,
                                 name: "list-page-blocks-four-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-four-content" }
+                                content: expectCompressed({ some: "list-page-blocks-four-content" })
                             }
                         ],
                         error: null
@@ -362,7 +373,10 @@ describe("Page blocks Security Test", () => {
                 data: {
                     pageBuilder: {
                         createPageBlock: {
-                            data,
+                            data: {
+                                ...data,
+                                content: expectCompressed(data.content)
+                            },
                             error: null
                         }
                     }
@@ -464,7 +478,10 @@ describe("Page blocks Security Test", () => {
                 data: {
                     pageBuilder: {
                         updatePageBlock: {
-                            data: mock,
+                            data: {
+                                ...mock,
+                                content: expectCompressed(mock.content)
+                            },
                             error: null
                         }
                     }
@@ -569,7 +586,7 @@ describe("Page blocks Security Test", () => {
                 data: {
                     pageBuilder: {
                         deletePageBlock: {
-                            data: mock,
+                            data: true,
                             error: null
                         }
                     }
@@ -650,6 +667,7 @@ describe("Page blocks Security Test", () => {
                         getPageBlock: {
                             data: {
                                 ...mock,
+                                content: expectCompressed(mock.content),
                                 createdBy: identityA,
                                 createdOn: /^20/
                             },

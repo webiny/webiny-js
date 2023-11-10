@@ -43,7 +43,7 @@ export class PageBlockDataLoader implements DataLoaderInterface {
                     const batched = items.map(item => {
                         return this.entity.getBatch({
                             PK: createPartitionKey(item),
-                            SK: createSortKey(item)
+                            SK: createSortKey()
                         });
                     });
 

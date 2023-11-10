@@ -1,7 +1,9 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { compress } from "@webiny/utils/compression/gzip";
 
 import resolve from "./utils/resolve";
 import { PbContext } from "../types";
+import { PageBlock } from "~/types";
 
 export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
     typeDefs: /* GraphQL */ `
@@ -49,7 +51,7 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
         extend type PbMutation {
             createPageBlock(data: PbCreatePageBlockInput!): PbPageBlockResponse
             updatePageBlock(id: ID!, data: PbUpdatePageBlockInput!): PbPageBlockResponse
-            deletePageBlock(id: ID!): PbPageBlockResponse
+            deletePageBlock(id: ID!): PbDeleteResponse
         }
     `,
     resolvers: {
@@ -61,7 +63,9 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
             },
             listPageBlocks: async (_, args: any, context) => {
                 return resolve(() => {
-                    return context.pageBuilder.listPageBlocks(args);
+                    return context.benchmark.measure("pageBuilder.listPageBlocks", () => {
+                        return context.pageBuilder.listPageBlocks(args);
+                    });
                 });
             }
         },
@@ -80,6 +84,15 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
                 return resolve(() => {
                     return context.pageBuilder.deletePageBlock(args.id);
                 });
+            }
+        },
+        PbPageBlock: {
+            content: async (block: PageBlock) => {
+                const value = await compress(JSON.stringify(block.content));
+                return {
+                    compression: "gzip",
+                    value: value.toString("base64")
+                };
             }
         }
     }
