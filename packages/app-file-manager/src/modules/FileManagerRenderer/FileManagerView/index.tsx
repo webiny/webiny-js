@@ -15,7 +15,8 @@ import { FM_ACO_APP } from "~/constants";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
 import { NavigateFolderProvider } from "./NavigateFolderProvider";
-import { DialogsProvider } from "@webiny/app-aco";
+import { AcoWithConfig, DialogsProvider } from "@webiny/app-aco";
+import { CompositionScope } from "@webiny/react-composition";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -70,17 +71,21 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
         };
 
         return (
-            <FoldersProvider type={FM_ACO_APP}>
-                <NavigateFolderProvider>
-                    <DialogsProvider>
-                        <FileManagerViewProvider {...viewProps}>
-                            <FileManagerViewWithConfig>
-                                <FileManagerView />
-                            </FileManagerViewWithConfig>
-                        </FileManagerViewProvider>
-                    </DialogsProvider>
-                </NavigateFolderProvider>
-            </FoldersProvider>
+            <CompositionScope name={"fm"}>
+                <FoldersProvider type={FM_ACO_APP}>
+                    <NavigateFolderProvider>
+                        <DialogsProvider>
+                            <FileManagerViewProvider {...viewProps}>
+                                <FileManagerViewWithConfig>
+                                    <AcoWithConfig>
+                                        <FileManagerView />
+                                    </AcoWithConfig>
+                                </FileManagerViewWithConfig>
+                            </FileManagerViewProvider>
+                        </DialogsProvider>
+                    </NavigateFolderProvider>
+                </FoldersProvider>
+            </CompositionScope>
         );
     };
 });
