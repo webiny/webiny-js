@@ -177,6 +177,7 @@ export interface PbElementDataTypeSource {
 
 export type PbElementDataType = {
     blockId?: string;
+    variables?: PbBlockVariable[];
     action?: {
         href: string;
         newTab: boolean;
