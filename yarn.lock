@@ -14338,7 +14338,6 @@ __metadata:
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     zod: ^3.21.4
@@ -14799,7 +14798,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-lazy-load: ^3.1.14
     rimraf: ^3.0.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.13
     typescript: 4.7.4
   languageName: unknown
@@ -14863,7 +14861,6 @@ __metadata:
     react-sortable-hoc: ^1.9.1
     rimraf: ^3.0.2
     shortid: ^2.2.14
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
   languageName: unknown
@@ -15008,7 +15005,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     use-deep-compare-effect: ^1.6.1
@@ -15309,7 +15305,6 @@ __metadata:
     slugify: ^1.2.9
     store: ^2.0.12
     swiper: ^9.3.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     uniqid: ^5.0.3
@@ -17078,6 +17073,7 @@ __metadata:
     sass: ^1.38.0
     sass-loader: ^12.1.0
     shortid: ^2.2.16
+    timeago-react: ^3.0.6
     ttypescript: ^1.5.13
     typescript: 4.7.4
     webpack: ^4.46.0
@@ -42061,19 +42057,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"timeago-react@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "timeago-react@npm:2.0.1"
+"timeago-react@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "timeago-react@npm:3.0.6"
   dependencies:
-    timeago.js: ^4.0.0-beta.2
+    timeago.js: ^4.0.0
   peerDependencies:
-    prop-types: ^15.0.0
-    react: ">=0.13.2 || ^0.14.0 || ^15.0.0 || ^16.0.0"
-  checksum: c3bbfb3fdf7c9226d9c1fb536bc61e71f040f5d901b6ad374672ba9d9ea1847346b3e286e314f87634c8d0569c2008877903c18ea016f02bfb608919c98d8e11
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: be9945194eca4ae01fc5d3d15b9d84dcf4d2cf5fe52f7956d8163842bf03d055a6bec3d347b33cf5fc26c88b571edcd4a2cf2dab55442cd1f197abdd339ba2f7
   languageName: node
   linkType: hard
 
-"timeago.js@npm:^4.0.0-beta.2":
+"timeago.js@npm:^4.0.0":
   version: 4.0.2
   resolution: "timeago.js@npm:4.0.2"
   checksum: c785a06988717cb5a00bb96b00ebaa56e83f4b5ed5d87c4c3931fb1bb2591a0e13a7ddc4b6c12c6ee7de64b440ed903c7bd4e0edddb37aade9bfc9ceab5d0db3

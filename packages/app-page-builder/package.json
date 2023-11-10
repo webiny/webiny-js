@@ -81,7 +81,6 @@
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "swiper": "^9.3.2",
-    "timeago-react": "^2.0.0",
     "uniqid": "^5.0.3"
   },
   "devDependencies": {

@@ -99,10 +99,13 @@ export const List: React.VFC<ListProps> = ({
         setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
 
-    const canDrag = useCallback((folderId: string) => {
-        const isRootFolder = folderId === ROOT_FOLDER;
-        return !isRootFolder && canManageFolderStructure(folderId);
-    }, []);
+    const canDrag = useCallback(
+        (folderId: string) => {
+            const isRootFolder = folderId === ROOT_FOLDER;
+            return !isRootFolder && canManageFolderStructure(folderId);
+        },
+        [canManageFolderStructure]
+    );
 
     return (
         <>
