@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DropOptions,
     getBackendOptions,
@@ -33,7 +33,7 @@ export const List: React.VFC<ListProps> = ({
     hiddenFolderIds,
     enableActions
 }) => {
-    const { updateFolder } = useFolders();
+    const { updateFolder, folderLevelPermissions: flp } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItemData>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
@@ -91,6 +91,14 @@ export const List: React.VFC<ListProps> = ({
         setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
 
+    const canDrag = useCallback(
+        (folderId: string) => {
+            const isRootFolder = folderId === ROOT_FOLDER;
+            return !isRootFolder && flp.canManageStructure(folderId);
+        },
+        [flp.canManageStructure]
+    );
+
     return (
         <>
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
@@ -100,7 +108,7 @@ export const List: React.VFC<ListProps> = ({
                     onDrop={handleDrop}
                     onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
-                    canDrag={item => item!.id !== ROOT_FOLDER}
+                    canDrag={item => canDrag(item!.id as string)}
                     render={(node, { depth, isOpen, onToggle }) => {
                         const folder = folders.find(folder => folder.id === node.id);
 

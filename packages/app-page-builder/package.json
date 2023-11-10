@@ -59,8 +59,10 @@
     "is-hotkey": "^0.1.3",
     "lodash": "^4.17.10",
     "medium-editor": "^5.23.3",
+    "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "nanoid": "^3.1.20",
+    "pako": "^2.1.0",
     "platform": "^1.3.5",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
@@ -79,7 +81,6 @@
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "swiper": "^9.3.2",
-    "timeago-react": "^2.0.0",
     "uniqid": "^5.0.3"
   },
   "devDependencies": {
@@ -91,6 +92,7 @@
     "@babel/preset-typescript": "^7.22.5",
     "@types/aos": "^3.0.4",
     "@types/is-hotkey": "^0.1.7",
+    "@types/pako": "^2.0.3",
     "@types/platform": "^1.3.4",
     "@types/react-images": "^0.5.3",
     "@types/react-virtualized": "^9.21.16",

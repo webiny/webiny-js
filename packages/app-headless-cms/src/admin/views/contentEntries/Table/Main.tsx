@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { useCreateDialog } from "@webiny/app-aco";
+import { useCreateDialog, useFolders } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Filters } from "~/admin/components/ContentEntries/Filters";
@@ -25,7 +25,18 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const { history } = useRouter();
+
+    // We check permissions on two layers - security and folder level permissions.
     const { canCreate, contentModel } = useContentEntry();
+    const { folderLevelPermissions: flp } = useFolders();
+
+    const canCreateFolder = useMemo(() => {
+        return flp.canManageStructure(folderId);
+    }, [flp, folderId]);
+
+    const canCreateContent = useMemo(() => {
+        return canCreate && flp.canManageContent(folderId);
+    }, [flp, folderId]);
 
     const createEntry = useCallback(() => {
         const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
@@ -65,7 +76,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreate={canCreate}
+                    canCreateFolder={canCreateFolder}
+                    canCreateContent={canCreateContent}
                     onCreateEntry={createEntry}
                     onCreateFolder={onCreateFolder}
                     searchValue={list.search}
@@ -79,7 +91,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreate={canCreate}
+                            canCreateFolder={canCreateFolder}
+                            canCreateContent={canCreateContent}
                             onCreateEntry={createEntry}
                             onCreateFolder={onCreateFolder}
                         />

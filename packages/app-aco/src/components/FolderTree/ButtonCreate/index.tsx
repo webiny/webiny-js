@@ -6,13 +6,17 @@ import { Typography } from "@webiny/ui/Typography";
 import { useCreateDialog } from "~/dialogs";
 import { Button, Icon, IconContainer } from "./styled";
 
+type CreateButtonProps = {
+    disabled?: boolean;
+};
+
 const t = i18n.ns("app-aco/components/folder-tree/button-create");
 
-export const CreateButton = () => {
+export const CreateButton = (props: CreateButtonProps) => {
     const { showDialog } = useCreateDialog();
 
     return (
-        <Button onClick={() => showDialog({})}>
+        <Button onClick={() => showDialog({})} disabled={props.disabled}>
             <IconContainer>
                 <Icon />
             </IconContainer>

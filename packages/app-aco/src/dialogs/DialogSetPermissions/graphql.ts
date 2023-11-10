@@ -11,6 +11,11 @@ export const LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS = gql`
                     name
                     meta
                 }
+                error {
+                    code
+                    data
+                    message
+                }
             }
         }
     }

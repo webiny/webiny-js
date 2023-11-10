@@ -11858,6 +11858,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pako@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/pako@npm:2.0.3"
+  checksum: 0746dd5d29eccf5b2e6cceb3ccb093851219e78bd2e2e20d25757e247987139e061e5d4ba37cb5295493f06e3c683c74f8876011cd8a3f3748a09244fbc841d9
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -12963,6 +12970,18 @@ __metadata:
     sinon: ^9.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito"
   languageName: unknown
   linkType: soft
 
@@ -14295,6 +14314,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -14319,7 +14339,6 @@ __metadata:
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     zod: ^3.21.4
@@ -14546,6 +14565,7 @@ __metadata:
     "@svgr/webpack": ^6.1.1
     "@types/bytes": ^3.1.1
     "@types/graphlib": ^2.1.8
+    "@types/is-hotkey": ^0.1.7
     "@types/mime": ^2.0.3
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
@@ -14563,6 +14583,7 @@ __metadata:
     "@webiny/telemetry": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/ui-composer": 0.0.0
+    "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-cache: ^1.3.5
     apollo-client: ^2.6.10
@@ -14575,9 +14596,9 @@ __metadata:
     emotion: ^10.0.17
     graphlib: ^2.1.7
     graphql: ^15.7.2
+    is-hotkey: ^0.1.3
     lodash: ^4.17.11
     mobx: ^6.9.0
-    nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
     react-dom: 17.0.2
@@ -14778,7 +14799,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-lazy-load: ^3.1.14
     rimraf: ^3.0.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.13
     typescript: 4.7.4
   languageName: unknown
@@ -14842,7 +14862,6 @@ __metadata:
     react-sortable-hoc: ^1.9.1
     rimraf: ^3.0.2
     shortid: ^2.2.14
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
   languageName: unknown
@@ -14987,7 +15006,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     use-deep-compare-effect: ^1.6.1
@@ -15220,6 +15238,7 @@ __metadata:
     "@types/aos": ^3.0.4
     "@types/is-hotkey": ^0.1.7
     "@types/medium-editor": ^5.0.3
+    "@types/pako": ^2.0.3
     "@types/platform": ^1.3.4
     "@types/react": 17.0.39
     "@types/react-images": ^0.5.3
@@ -15264,8 +15283,10 @@ __metadata:
     is-hotkey: ^0.1.3
     lodash: ^4.17.10
     medium-editor: ^5.23.3
+    mobx: ^6.9.0
     mobx-react-lite: ^3.4.3
     nanoid: ^3.1.20
+    pako: ^2.1.0
     platform: ^1.3.5
     prop-types: ^15.7.2
     react: 17.0.2
@@ -15285,7 +15306,6 @@ __metadata:
     slugify: ^1.2.9
     store: ^2.0.12
     swiper: ^9.3.2
-    timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
     uniqid: ^5.0.3
@@ -17054,6 +17074,7 @@ __metadata:
     sass: ^1.38.0
     sass-loader: ^12.1.0
     shortid: ^2.2.16
+    timeago-react: ^3.0.6
     ttypescript: ^1.5.13
     typescript: 4.7.4
     webpack: ^4.46.0
@@ -33527,7 +33548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23, nanoid@npm:^3.1.30, nanoid@npm:^3.3.4":
+"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.30, nanoid@npm:^3.3.4":
   version: 3.3.4
   resolution: "nanoid@npm:3.3.4"
   bin:
@@ -34978,6 +34999,13 @@ __metadata:
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
   checksum: 055f9487cd57fbb78df84315873bbdd089ba286f3499daed47d2effdc6253e981f5db6898c23486de76d4a781559f890d643bd3a49f70f1b4a18019c98aa5125
+  languageName: node
+  linkType: hard
+
+"pako@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
   languageName: node
   linkType: hard
 
@@ -42030,19 +42058,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"timeago-react@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "timeago-react@npm:2.0.1"
+"timeago-react@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "timeago-react@npm:3.0.6"
   dependencies:
-    timeago.js: ^4.0.0-beta.2
+    timeago.js: ^4.0.0
   peerDependencies:
-    prop-types: ^15.0.0
-    react: ">=0.13.2 || ^0.14.0 || ^15.0.0 || ^16.0.0"
-  checksum: c3bbfb3fdf7c9226d9c1fb536bc61e71f040f5d901b6ad374672ba9d9ea1847346b3e286e314f87634c8d0569c2008877903c18ea016f02bfb608919c98d8e11
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: be9945194eca4ae01fc5d3d15b9d84dcf4d2cf5fe52f7956d8163842bf03d055a6bec3d347b33cf5fc26c88b571edcd4a2cf2dab55442cd1f197abdd339ba2f7
   languageName: node
   linkType: hard
 
-"timeago.js@npm:^4.0.0-beta.2":
+"timeago.js@npm:^4.0.0":
   version: 4.0.2
   resolution: "timeago.js@npm:4.0.2"
   checksum: c785a06988717cb5a00bb96b00ebaa56e83f4b5ed5d87c4c3931fb1bb2591a0e13a7ddc4b6c12c6ee7de64b440ed903c7bd4e0edddb37aade9bfc9ceab5d0db3

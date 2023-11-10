@@ -35,6 +35,16 @@ describe("GraphQLInputMapper", () => {
                             field: "field-4",
                             condition: "_not_contains",
                             value: "value-4"
+                        },
+                        {
+                            field: "boolean-field-true",
+                            condition: " ",
+                            value: "true"
+                        },
+                        {
+                            field: "boolean-field-false",
+                            condition: " ",
+                            value: "false"
                         }
                     ]
                 }
@@ -62,6 +72,12 @@ describe("GraphQLInputMapper", () => {
                         },
                         {
                             "field-4_not_contains": "value-4"
+                        },
+                        {
+                            "boolean-field-true": true
+                        },
+                        {
+                            "boolean-field-false": false
                         }
                     ]
                 }

@@ -41,6 +41,7 @@ const filterEntriesByFolderFactory = (context: Context, permissions: FolderLevel
                 if (!folderId || folderId === ROOT_FOLDER) {
                     return entry;
                 }
+
                 const folder = folders.find(folder => folder.id === folderId);
                 if (!folder) {
                     throw new NotFoundError(`Folder "${folderId}" not found.`);

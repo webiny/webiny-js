@@ -5,11 +5,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 import bytes from "bytes";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileName, FolderName } from "./Name";
 import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
@@ -28,6 +24,7 @@ export interface TableProps {
     onRecordClick: (id: string) => void;
     onFolderClick: (id: string) => void;
     onSelectRow: ((rows: Entry[] | []) => void) | undefined;
+    onToggleRow: ((row: Entry) => void) | undefined;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
@@ -99,6 +96,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         records,
         selectedRecords,
         onSelectRow,
+        onToggleRow,
         loading,
         onRecordClick,
         onFolderClick,
@@ -209,6 +207,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                onToggleRow={onToggleRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
                 initialSorting={[

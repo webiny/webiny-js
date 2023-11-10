@@ -5,11 +5,7 @@ import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FolderName, PageName } from "./Row/Name";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
@@ -174,6 +170,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                 <RecordActionDelete record={entry.original} />
                             </Menu>
                         );
+                    }
+
+                    // If the user cannot manage folder structure, no need to show the menu.
+                    if (!entry.original.canManageStructure) {
+                        return null;
                     }
 
                     return (

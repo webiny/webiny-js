@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { useFolders } from "~/hooks/useFolders";
 import { CreateButton } from "./ButtonCreate";
 import { Empty } from "./Empty";
@@ -28,7 +29,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     onFolderClick,
     rootFolderLabel
 }) => {
-    const { folders } = useFolders();
+    const { folders, folderLevelPermissions: flp } = useFolders();
     const localFolders = useMemo(() => {
         if (!folders) {
             return [];
@@ -47,6 +48,23 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
             return <Loader />;
         }
 
+        let createButton = null;
+        if (enableCreate) {
+            const canCreate = flp.canManageStructure(focusedFolderId!);
+
+            createButton = (
+                <CreateButton disabled={!canCreate}/>
+            );
+
+            if (!canCreate) {
+                createButton = (
+                    <Tooltip content={`Cannot create folder because you're not an owner.`}>
+                        {createButton}
+                    </Tooltip>
+                );
+            }
+        }
+
         if (localFolders.length > 0) {
             return (
                 <AcoWithConfig>
@@ -57,7 +75,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
                         hiddenFolderIds={hiddenFolderIds}
                         enableActions={enableActions}
                     />
-                    {enableCreate && <CreateButton />}
+                    {enableCreate && createButton}
                 </AcoWithConfig>
             );
         }
@@ -65,7 +83,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
         return (
             <>
                 <Empty />
-                <CreateButton />
+                {createButton}
             </>
         );
     };

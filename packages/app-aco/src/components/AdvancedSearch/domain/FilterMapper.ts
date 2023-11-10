@@ -12,7 +12,7 @@ export class FilterMapper {
                 operation: group.operation,
                 filters: group.filters.map(filter => ({
                     field: filter.field || "",
-                    value: filter.value || "",
+                    value: (filter.value ?? "").toString(),
                     condition: filter.condition || ""
                 }))
             }))
@@ -29,7 +29,7 @@ export class FilterMapper {
                 operation: group.operation,
                 filters: group.filters.map(filter => ({
                     field: filter.field || "",
-                    value: filter.value || "",
+                    value: (filter.value ?? "").toString(),
                     condition: filter.condition || ""
                 }))
             }))
