@@ -35,15 +35,26 @@ export const createElasticsearchClient = async (
 
         if (!clientOptions.auth) {
             const region = String(process.env.AWS_REGION);
-            const credentials = {
+            const keys = {
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                // secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                sessionToken: String(process.env.AWS_SESSION_TOKEN),
+                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+            };
+            const credentials = {
+                ...keys,
                 envPrefix: "AWS",
                 expired: false,
                 expireTime: null,
                 refreshCallbacks: []
             };
+
+            for (const key in keys) {
+                // @ts-ignore
+                const value = keys[key];
+                const has = !!value;
+                const length = value?.length;
+                console.log(`${key}: ${has} / ${typeof value} / ${length}`);
+            }
 
             Object.assign(
                 clientOptions,
