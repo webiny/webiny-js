@@ -1,7 +1,8 @@
+// eslint-disable-next-line
+import { fromProcess } from "@webiny/aws-sdk/credential-providers";
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
-import { fromEnv } from "@webiny/aws-sdk/credential-providers";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -29,61 +30,33 @@ export const createElasticsearchClient = async (
     const cached = async () => {
         const { endpoint, node, ...rest } = options;
 
-        const clientOptions: ClientOptions = {
+        let clientOptions: ClientOptions = {
             node: endpoint || node,
             ...rest
         };
 
-        // @ts-ignore
         if (!clientOptions.auth) {
             const region = String(process.env.AWS_REGION);
 
-            const creds = await fromEnv()();
-
-            console.log("creds from env");
-            for (const key in creds) {
-                // @ts-ignore
-                const value = creds[key];
-                console.log(`${key}: ${!!value} / ${typeof value} / ${value?.length}`);
-            }
-
-            const keys = {
+            const credentials = {
+                expired: false,
+                expireTime: null,
+                refreshCallbacks: [],
+                envPrefix: "AWS",
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
                 secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
                 sessionToken: String(process.env.AWS_SESSION_TOKEN)
             };
-            const credentials = {
-                ...keys,
-                envPrefix: "AWS",
-                expired: false,
-                expireTime: null,
-                refreshCallbacks: []
-            };
 
-            const config = {
-                credentials,
-                region
+            clientOptions = {
+                ...clientOptions,
+                // @ts-expect-error
+                ...createAwsElasticsearchConnector({ region, credentials })
             };
-            console.log("assigned creds");
-            for (const key in keys) {
-                // @ts-ignore
-                const value = keys[key];
-                const has = !!value;
-                const length = value?.length;
-                console.log(`${key}: ${has} / ${typeof value} / ${length}`);
-            }
-
-            Object.assign(
-                clientOptions,
-                // @ts-ignore
-                createAwsElasticsearchConnector(config)
-            );
         }
 
         try {
-            return new Client({
-                ...clientOptions
-            });
+            return new Client(clientOptions);
         } catch (ex) {
             const data = {
                 error: ex,
