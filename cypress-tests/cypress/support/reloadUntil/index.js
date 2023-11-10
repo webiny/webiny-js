@@ -8,7 +8,6 @@ const sleep = (ms = WAIT_BETWEEN_RETRIES) =>
         setTimeout(resolve, ms);
     });
 
-
 Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
     return cy.log(`Reloading until a condition is met...`).then(() => {
         let retries = -1;

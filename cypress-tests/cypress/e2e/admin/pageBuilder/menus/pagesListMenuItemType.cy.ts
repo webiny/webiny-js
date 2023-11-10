@@ -1,4 +1,3 @@
-
 describe("Menus Module", () => {
     const id = 4;
     const idEdited = `X-${id}-Y`;
@@ -31,7 +30,7 @@ describe("Menus Module", () => {
             });
         }
     });
-    
+
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
         cy.pbClearMainMenu();
         cy.wait(500);
@@ -86,22 +85,22 @@ describe("Menus Module", () => {
         cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.");
     });
-        it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
-            cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-    
-            cy.reloadUntil(() => {
-                // We wait until the document contains the newly added menu.
-                return Cypress.$(`:contains(added-menu-${id})`).length > 0;
-            });
-    
-            cy.findByTestId("pb-desktop-header").within(() => {
-                // Let's check the links and the order.
-                cy.findByText(`added-menu-${id}`).within(() => {
-                    cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
-                    cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
-                });
+    it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
+
+        cy.reloadUntil(() => {
+            // We wait until the document contains the newly added menu.
+            return Cypress.$(`:contains(added-menu-${id})`).length > 0;
+        });
+
+        cy.findByTestId("pb-desktop-header").within(() => {
+            // Let's check the links and the order.
+            cy.findByText(`added-menu-${id}`).within(() => {
+                cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
+                cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
             });
         });
+    });
 
     it(`Step 3: change the order of pages`, () => {
         cy.visit("/page-builder/menus");
@@ -112,9 +111,11 @@ describe("Menus Module", () => {
 
         cy.wait(500);
 
-        cy.findByTestId(`pb-menu-item-render-added-menu-${id}`).eq(0).within(() => {
-            cy.findByTestId("pb-edit-icon-button").click();
-        });
+        cy.findByTestId(`pb-menu-item-render-added-menu-${id}`)
+            .eq(0)
+            .within(() => {
+                cy.findByTestId("pb-edit-icon-button").click();
+            });
 
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
         cy.findByTestId("pb.menu.new.listitem.title").clear().type(`added-menu-${idEdited}`);
@@ -173,7 +174,7 @@ describe("Menus Module", () => {
         // List pages
         cy.pbListPages({
             sort: ["publishedOn_DESC"]
-        }).then((pages) => {
+        }).then(pages => {
             // Delete first X pages
             for (let i = 0; i < totalPages; i++) {
                 // Use then to handle the promise
@@ -181,6 +182,4 @@ describe("Menus Module", () => {
             }
         });
     });
-    
-    
-    });  
+});

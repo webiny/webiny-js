@@ -1,11 +1,11 @@
 import { gqlClient } from "../utils";
 
 declare global {
-  namespace Cypress {
-    interface Chainable {
-      pbListPages(data: any): Chainable<Promise<any[]>>;
+    namespace Cypress {
+        interface Chainable {
+            pbListPages(data: any): Chainable<Promise<any[]>>;
+        }
     }
-  }
 }
 
 const ERROR_FIELDS = `
@@ -38,14 +38,14 @@ const LIST_PAGES = /* GraphQL */ `
   }
 `;
 
-Cypress.Commands.add("pbListPages", (data) => {
-  cy.login().then((user) => {
-    return gqlClient
-      .request<any>({
-        query: LIST_PAGES,
-        variables: data,
-        authToken: user.idToken.jwtToken,
-      })
-      .then((response) => response.pageBuilder.listPages.data);
-  });
+Cypress.Commands.add("pbListPages", data => {
+    cy.login().then(user => {
+        return gqlClient
+            .request<any>({
+                query: LIST_PAGES,
+                variables: data,
+                authToken: user.idToken.jwtToken
+            })
+            .then(response => response.pageBuilder.listPages.data);
+    });
 });
