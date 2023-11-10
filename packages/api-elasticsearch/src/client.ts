@@ -59,18 +59,19 @@ export const createElasticsearchClient = async (
             //     "arn:aws:iam::0123456789012:role/Administrator",
             //     region
             // );
-            // const credentials = await fromProcess()();
+            // const credentials2 = await fromProcess()();
 
             const credentials = {
-                accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+                // accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
+                // secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                // sessionToken: String(process.env.AWS_SESSION_TOKEN)
             };
             Object.assign(
                 clientOptions,
-                // @ts-expect-error
+
                 createAwsElasticsearchConnector({
                     region,
+                    // @ts-expect-error
                     credentials,
                     ...credentials
                 })
