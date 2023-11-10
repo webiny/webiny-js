@@ -8,9 +8,10 @@ import {
     scanTable
 } from "~tests/utils";
 import { PageBlocks_5_38_0_003 } from "~/migrations/5.38.0/003/ddb";
-import { createBlocksData } from "./003.data";
+import { createBlocksData, rawContent } from "./003.data";
 import { createMigratedData } from "./003.data.migrated";
 import { PbPageBlock } from "~/migrations/5.38.0/003/types";
+import { compressContent } from "~/migrations/5.38.0/003/ddb/compressContent";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -81,7 +82,11 @@ describe("5.38.0-003", () => {
             ]
         });
 
-        expect(newData.sort(ascending)).toEqual(createMigratedData(NUMBER_OF_RECORDS));
+        const compressedContent = await compressContent(rawContent);
+
+        expect(newData.sort(ascending)).toEqual(
+            createMigratedData(compressedContent, NUMBER_OF_RECORDS)
+        );
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

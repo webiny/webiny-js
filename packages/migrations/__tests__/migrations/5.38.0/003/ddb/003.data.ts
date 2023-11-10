@@ -1,38 +1,193 @@
-export const createBlocksData = (amount = 100) => {
-    return [
-        ...Array.from({ length: amount }).map((_, index) => {
-            const id = `65415260b431680008ad4598${index.toString().padStart(4, "0")}`;
-
-            return {
-                content: {
-                    path: ["vYyuUH3RPN"],
-                    type: "block",
+export const rawContent = {
+    path: ["vYyuUH3RPN"],
+    type: "block",
+    data: {
+        settings: {
+            width: {
+                desktop: {
+                    value: "100%"
+                }
+            },
+            padding: {
+                "mobile-portrait": {
+                    top: "20px",
+                    advanced: true,
+                    bottom: "20px"
+                },
+                desktop: {
+                    all: "10px",
+                    right: "10px",
+                    top: "40px",
+                    advanced: true,
+                    left: "10px",
+                    bottom: "20px"
+                }
+            },
+            horizontalAlignFlex: {
+                desktop: "center"
+            },
+            verticalAlign: {
+                desktop: "flex-start"
+            },
+            margin: {
+                desktop: {
+                    right: "0px",
+                    top: "0px",
+                    left: "0px",
+                    advanced: true,
+                    bottom: "0px"
+                }
+            },
+            background: {
+                desktop: {
+                    color: null
+                }
+            }
+        },
+        variables: [
+            {
+                id: "e0LV1SGW8E",
+                label: "Title",
+                type: "heading",
+                value: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 18px;","text":"LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT","type":"font-color-node","version":1,"themeColor":"color4","color":"#616161"}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h3","styles":[{"styleId":"heading3","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+            },
+            {
+                id: "RN9CtkSL0b",
+                label: "Logo Image",
+                type: "image",
+                value: {
+                    src: "https://d2b8of00q5koup.cloudfront.net/files/648c2584fc82b0000881f865/LogoCloudV1.svg",
+                    id: "648c2584fc82b0000881f865"
+                }
+            }
+        ]
+    },
+    elements: [
+        {
+            path: ["vYyuUH3RPN", "6JBEyzzdUY"],
+            type: "grid",
+            data: {
+                settings: {
+                    gridSettings: {
+                        tablet: {
+                            flexDirection: "column"
+                        },
+                        "mobile-landscape": {
+                            flexDirection: "column"
+                        },
+                        desktop: {
+                            flexDirection: "column"
+                        }
+                    },
+                    padding: {
+                        desktop: {
+                            all: "10px"
+                        }
+                    },
+                    horizontalAlignFlex: {
+                        desktop: "flex-start"
+                    },
+                    verticalAlign: {
+                        tablet: "stretch",
+                        desktop: "stretch",
+                        "mobile-landscape": "flex-start",
+                        "mobile-portrait": "flex-start"
+                    },
+                    margin: {
+                        desktop: {
+                            right: "0px",
+                            top: "0px",
+                            left: "0px",
+                            advanced: true,
+                            bottom: "0px"
+                        }
+                    },
+                    grid: {
+                        cellsType: "12",
+                        rowCount: 2
+                    },
+                    width: {
+                        desktop: {
+                            value: "1100px"
+                        }
+                    }
+                }
+            },
+            elements: [
+                {
+                    path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M"],
+                    type: "cell",
                     data: {
                         settings: {
-                            width: {
-                                desktop: {
-                                    value: "100%"
-                                }
-                            },
                             padding: {
-                                "mobile-portrait": {
-                                    top: "20px",
-                                    advanced: true,
-                                    bottom: "20px"
-                                },
                                 desktop: {
-                                    all: "10px",
-                                    right: "10px",
-                                    top: "40px",
-                                    advanced: true,
-                                    left: "10px",
-                                    bottom: "20px"
+                                    all: "0px"
                                 }
                             },
                             horizontalAlignFlex: {
-                                desktop: "center"
+                                desktop: "flex-start"
                             },
                             verticalAlign: {
+                                desktop: "center"
+                            },
+                            margin: {
+                                desktop: {
+                                    right: "0px",
+                                    top: "0px",
+                                    left: "0px",
+                                    advanced: true,
+                                    bottom: "0px"
+                                }
+                            },
+                            grid: {
+                                size: 12
+                            }
+                        }
+                    },
+                    elements: [
+                        {
+                            path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M", "h8QcsWnLnp"],
+                            type: "heading",
+                            data: {
+                                settings: {
+                                    padding: {
+                                        desktop: {
+                                            all: "0px"
+                                        }
+                                    },
+                                    margin: {
+                                        desktop: {
+                                            all: "0px"
+                                        }
+                                    }
+                                },
+                                variableId: "e0LV1SGW8E",
+                                text: {
+                                    data: {
+                                        text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 18px;","text":"LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT","type":"font-color-node","version":1,"themeColor":"color4","color":"#616161"}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h3","styles":[{"styleId":"heading3","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+                                    },
+                                    desktop: {
+                                        type: "heading",
+                                        alignment: "center",
+                                        tag: "h1"
+                                    }
+                                }
+                            },
+                            elements: []
+                        }
+                    ]
+                },
+                {
+                    path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M"],
+                    type: "cell",
+                    data: {
+                        settings: {
+                            padding: {
+                                desktop: {
+                                    all: "0px"
+                                }
+                            },
+                            horizontalAlignFlex: {
                                 desktop: "flex-start"
                             },
                             margin: {
@@ -44,223 +199,60 @@ export const createBlocksData = (amount = 100) => {
                                     bottom: "0px"
                                 }
                             },
-                            background: {
-                                desktop: {
-                                    color: null
-                                }
+                            grid: {
+                                size: 12
                             }
-                        },
-                        variables: [
-                            {
-                                id: "e0LV1SGW8E",
-                                label: "Title",
-                                type: "heading",
-                                value: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 18px;","text":"LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT","type":"font-color-node","version":1,"themeColor":"color4","color":"#616161"}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h3","styles":[{"styleId":"heading3","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-                            },
-                            {
-                                id: "RN9CtkSL0b",
-                                label: "Logo Image",
-                                type: "image",
-                                value: {
-                                    src: "https://d2b8of00q5koup.cloudfront.net/files/648c2584fc82b0000881f865/LogoCloudV1.svg",
-                                    id: "648c2584fc82b0000881f865"
-                                }
-                            }
-                        ]
+                        }
                     },
                     elements: [
                         {
-                            path: ["vYyuUH3RPN", "6JBEyzzdUY"],
-                            type: "grid",
+                            path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M", "XUrIerQSDG"],
+                            type: "image",
                             data: {
+                                link: {
+                                    href: null
+                                },
                                 settings: {
-                                    gridSettings: {
-                                        tablet: {
-                                            flexDirection: "column"
-                                        },
-                                        "mobile-landscape": {
-                                            flexDirection: "column"
-                                        },
-                                        desktop: {
-                                            flexDirection: "column"
-                                        }
+                                    horizontalAlignFlex: {
+                                        desktop: "center"
                                     },
                                     padding: {
                                         desktop: {
-                                            all: "10px"
+                                            all: "0px"
                                         }
-                                    },
-                                    horizontalAlignFlex: {
-                                        desktop: "flex-start"
-                                    },
-                                    verticalAlign: {
-                                        tablet: "stretch",
-                                        desktop: "stretch",
-                                        "mobile-landscape": "flex-start",
-                                        "mobile-portrait": "flex-start"
                                     },
                                     margin: {
                                         desktop: {
-                                            right: "0px",
-                                            top: "0px",
-                                            left: "0px",
-                                            advanced: true,
-                                            bottom: "0px"
-                                        }
-                                    },
-                                    grid: {
-                                        cellsType: "12",
-                                        rowCount: 2
-                                    },
-                                    width: {
-                                        desktop: {
-                                            value: "1100px"
+                                            all: "0px"
                                         }
                                     }
-                                }
-                            },
-                            elements: [
-                                {
-                                    path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M"],
-                                    type: "cell",
-                                    data: {
-                                        settings: {
-                                            padding: {
-                                                desktop: {
-                                                    all: "0px"
-                                                }
-                                            },
-                                            horizontalAlignFlex: {
-                                                desktop: "flex-start"
-                                            },
-                                            verticalAlign: {
-                                                desktop: "center"
-                                            },
-                                            margin: {
-                                                desktop: {
-                                                    right: "0px",
-                                                    top: "0px",
-                                                    left: "0px",
-                                                    advanced: true,
-                                                    bottom: "0px"
-                                                }
-                                            },
-                                            grid: {
-                                                size: 12
-                                            }
-                                        }
-                                    },
-                                    elements: [
-                                        {
-                                            path: [
-                                                "vYyuUH3RPN",
-                                                "6JBEyzzdUY",
-                                                "j3XI0MiQ3M",
-                                                "h8QcsWnLnp"
-                                            ],
-                                            type: "heading",
-                                            data: {
-                                                settings: {
-                                                    padding: {
-                                                        desktop: {
-                                                            all: "0px"
-                                                        }
-                                                    },
-                                                    margin: {
-                                                        desktop: {
-                                                            all: "0px"
-                                                        }
-                                                    }
-                                                },
-                                                variableId: "e0LV1SGW8E",
-                                                text: {
-                                                    data: {
-                                                        text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 18px;","text":"LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT","type":"font-color-node","version":1,"themeColor":"color4","color":"#616161"}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h3","styles":[{"styleId":"heading3","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-                                                    },
-                                                    desktop: {
-                                                        type: "heading",
-                                                        alignment: "center",
-                                                        tag: "h1"
-                                                    }
-                                                }
-                                            },
-                                            elements: []
-                                        }
-                                    ]
                                 },
-                                {
-                                    path: ["vYyuUH3RPN", "6JBEyzzdUY", "j3XI0MiQ3M"],
-                                    type: "cell",
-                                    data: {
-                                        settings: {
-                                            padding: {
-                                                desktop: {
-                                                    all: "0px"
-                                                }
-                                            },
-                                            horizontalAlignFlex: {
-                                                desktop: "flex-start"
-                                            },
-                                            margin: {
-                                                desktop: {
-                                                    right: "0px",
-                                                    top: "0px",
-                                                    left: "0px",
-                                                    advanced: true,
-                                                    bottom: "0px"
-                                                }
-                                            },
-                                            grid: {
-                                                size: 12
-                                            }
-                                        }
-                                    },
-                                    elements: [
-                                        {
-                                            path: [
-                                                "vYyuUH3RPN",
-                                                "6JBEyzzdUY",
-                                                "j3XI0MiQ3M",
-                                                "XUrIerQSDG"
-                                            ],
-                                            type: "image",
-                                            data: {
-                                                link: {
-                                                    href: null
-                                                },
-                                                settings: {
-                                                    horizontalAlignFlex: {
-                                                        desktop: "center"
-                                                    },
-                                                    padding: {
-                                                        desktop: {
-                                                            all: "0px"
-                                                        }
-                                                    },
-                                                    margin: {
-                                                        desktop: {
-                                                            all: "0px"
-                                                        }
-                                                    }
-                                                },
-                                                image: {
-                                                    file: {
-                                                        name: "Logo Cloud V1.svg",
-                                                        id: "65415260b431680008ad4596",
-                                                        src: "https://d26watk6chcr2b.cloudfront.net/files/65415260b431680008ad4596/LogoCloudV1.svg",
-                                                        key: "65415260b431680008ad4596/LogoCloudV1.svg"
-                                                    }
-                                                },
-                                                variableId: "RN9CtkSL0b"
-                                            },
-                                            elements: []
-                                        }
-                                    ]
-                                }
-                            ]
+                                image: {
+                                    file: {
+                                        name: "Logo Cloud V1.svg",
+                                        id: "65415260b431680008ad4596",
+                                        src: "https://d26watk6chcr2b.cloudfront.net/files/65415260b431680008ad4596/LogoCloudV1.svg",
+                                        key: "65415260b431680008ad4596/LogoCloudV1.svg"
+                                    }
+                                },
+                                variableId: "RN9CtkSL0b"
+                            },
+                            elements: []
                         }
                     ]
-                },
+                }
+            ]
+        }
+    ]
+};
+
+export const createBlocksData = (amount = 100) => {
+    return [
+        ...Array.from({ length: amount }).map((_, index) => {
+            const id = `65415260b431680008ad4598${index.toString().padStart(4, "0")}`;
+
+            return {
+                content: rawContent,
                 locale: "en-US",
                 preview: {
                     src: "https://d26watk6chcr2b.cloudfront.net/files/64b0f8a3445a6d00084c8730/pb-editor-page-element-oOWuv3xSdP.png",
