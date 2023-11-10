@@ -1,12 +1,40 @@
 
 describe("Menus Module", () => {
-    const id = 3;
+    const id = 4;
     const idEdited = `X-${id}-Y`;
     const totalPages = 3;
+    beforeEach(() => {
+        cy.login();
+    });
 
-    beforeEach(() =>{ cy.login(), cy.pbCreateAndPublishPages(3, "test")});
-
+    it(`Step 0: create and publish ${totalPages} pages (pseudo "beforeAll" hook)`, () => {
+        for (let i = 0; i < totalPages; i++) {
+            // eslint-disable-next-line
+            cy.pbCreatePage({ category: "static" }).then(page => {
+                // eslint-disable-next-line jest/valid-expect-in-promise
+                cy.pbUpdatePage({
+                    id: page.id,
+                    data: {
+                        category: "static",
+                        path: `/page-${id}-${i}`,
+                        title: `Page-${id}-${i}`,
+                        settings: {
+                            general: {
+                                layout: "static",
+                                tags: [`page-${id}`, `page-${id}-${i}`]
+                            }
+                        }
+                    }
+                }).then(page => {
+                    cy.pbPublishPage(page.id);
+                });
+            });
+        }
+    });
+    
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
+        cy.pbClearMainMenu();
+        cy.wait(500);
         cy.visit("/page-builder/menus");
 
         cy.wait(500);
@@ -140,14 +168,19 @@ describe("Menus Module", () => {
             // Let's check the links and the order.
             cy.findByText(`added-menu-${idEdited}`).should("not.exist");
         });
+    });
+    it(`Step 7: delete all ${totalPages} pages (pseudo "afterAll" hook)`, () => {
+        // List pages
         cy.pbListPages({
             sort: ["publishedOn_DESC"]
-        }).then(pages => {
+        }).then((pages) => {
             // Delete first X pages
             for (let i = 0; i < totalPages; i++) {
-                const page = pages[i];
-                cy.pbDeletePage({ id: page.id });
-                }
-            });
+                // Use then to handle the promise
+                cy.pbDeletePage({ id: pages[i].id });
+            }
         });
-    });    
+    });
+    
+    
+    });  
