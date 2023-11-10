@@ -1,6 +1,7 @@
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
+import { fromEnv } from "@webiny/aws-sdk/credential-providers";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
@@ -34,8 +35,18 @@ export const createElasticsearchClient = async (
         };
 
         // @ts-ignore
-        if (!clientOptions.auth && 1 === 2) {
+        if (!clientOptions.auth) {
             const region = String(process.env.AWS_REGION);
+
+            const creds = await fromEnv()();
+
+            console.log("creds from env");
+            for (const key in creds) {
+                // @ts-ignore
+                const value = creds[key];
+                console.log(`${key}: ${!!value} / ${typeof value} / ${value?.length}`);
+            }
+
             const keys = {
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
                 secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
@@ -53,7 +64,7 @@ export const createElasticsearchClient = async (
                 credentials,
                 region
             };
-
+            console.log("assigned creds");
             for (const key in keys) {
                 // @ts-ignore
                 const value = keys[key];
