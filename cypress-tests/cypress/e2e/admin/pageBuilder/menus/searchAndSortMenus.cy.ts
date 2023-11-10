@@ -1,4 +1,3 @@
-import { customAlphabet } from "nanoid";
 
 context("Menus Module", () => {
     const menuData1 = {

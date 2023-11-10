@@ -1,5 +1,3 @@
-import { customAlphabet } from "nanoid";
-
 context("Menus Module", () => {
     const pageListName = "Testing page list";
     const pageListNameEdit = "Testing editing page list name";

@@ -1,9 +1,7 @@
-import { customAlphabet } from "nanoid";
 
 context("Menus Module", () => {
     const menuName = "Test menu";
     const menuSlug = "test-slug";
-    const menuDesc = "This is a description.";
 
     const menuNameEdit = "Testing Menu123";
     const menuDescEdit = "This is an edited description.";
