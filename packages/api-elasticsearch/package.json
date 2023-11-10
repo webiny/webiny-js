@@ -12,6 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@acuris/aws-es-connection": "^1.0.0",
     "@elastic/elasticsearch": "7.12.0",
     "@webiny/api": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",

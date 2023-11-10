@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
@@ -5,6 +6,7 @@ import { Client, ClientOptions } from "@elastic/elasticsearch";
 // import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
 // eslint-disable-next-line
 import { fromProcess } from "@webiny/aws-sdk/credential-providers";
+import { createAWSConnection, awsGetCredentials } from "@acuris/aws-es-connection";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -54,28 +56,11 @@ export const createElasticsearchClient = async (
         };
 
         if (!clientOptions.auth) {
-            const region = String(process.env.AWS_REGION);
-            // const credentials = await assumeRole(
-            //     "arn:aws:iam::0123456789012:role/Administrator",
-            //     region
-            // );
-            // const credentials2 = await fromProcess()();
+            const awsCredentials = await awsGetCredentials();
+            const connection = createAWSConnection(awsCredentials);
 
-            const credentials = {
-                // accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                // secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                // sessionToken: String(process.env.AWS_SESSION_TOKEN)
-            };
-            Object.assign(
-                clientOptions,
-
-                createAwsElasticsearchConnector({
-                    region,
-                    // @ts-expect-error
-                    credentials,
-                    ...credentials
-                })
-            );
+            // @ts-ignore
+            Object.assign(clientOptions, ...connection);
         }
 
         try {
