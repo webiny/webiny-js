@@ -9,10 +9,22 @@ export class GraphQLInputMapper {
                         const { field, condition, value } = filter;
                         const key = `${field}${condition}`.trim();
 
-                        return { [key]: value };
+                        return { [key]: this.convertToBooleanOrString(value) };
                     })
                 };
             })
         };
+    }
+
+    private static convertToBooleanOrString(value: string | boolean): string | boolean {
+        if (value === "true") {
+            return true;
+        }
+
+        if (value === "false") {
+            return false;
+        }
+
+        return value ?? "";
     }
 }

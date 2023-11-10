@@ -10,23 +10,23 @@ interface BooleanProps {
 export const Boolean = ({ name }: BooleanProps) => {
     return (
         <Bind name={name}>
-            {({ value, onChange }) => (
-                <RadioGroup>
+            {({ value, onChange, validation }) => (
+                <RadioGroup validation={validation}>
                     {() => {
                         return (
                             <>
                                 <Radio
                                     label="True"
-                                    value={value}
+                                    value={value === "true"}
                                     onChange={() => {
-                                        onChange(true);
+                                        onChange("true");
                                     }}
                                 />
                                 <Radio
                                     label="False"
-                                    value={!value}
+                                    value={value === "false"}
                                     onChange={() => {
-                                        onChange(false);
+                                        onChange("false");
                                     }}
                                 />
                             </>
