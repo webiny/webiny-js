@@ -54,6 +54,10 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         getIdentityTeam: async () => {
             return security.withoutAuthorization(async () => {
                 const identity = security.getIdentity();
+                if (!identity) {
+                    return null;
+                }
+
                 const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
                 if (!adminUser) {
                     return null;
