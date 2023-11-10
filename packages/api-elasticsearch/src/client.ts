@@ -4,7 +4,7 @@ import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 // import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
 // eslint-disable-next-line
-import { fromEnv } from "@webiny/aws-sdk/credential-providers";
+import { fromProcess } from "@webiny/aws-sdk/credential-providers";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -59,14 +59,19 @@ export const createElasticsearchClient = async (
             //     "arn:aws:iam::0123456789012:role/Administrator",
             //     region
             // );
-            // const credentials = await fromEnv()();
+            // const credentials = await fromProcess()();
 
             Object.assign(
                 clientOptions,
+
                 // @ts-expect-error
                 createAwsElasticsearchConnector({
                     region,
-                    credentials: undefined
+                    credentials: {
+                        accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
+                        secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                        sessionToken: String(process.env.AWS_SESSION_TOKEN)
+                    }
                 })
             );
         }
