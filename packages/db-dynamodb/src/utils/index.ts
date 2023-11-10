@@ -7,6 +7,7 @@ export * from "./filter";
 export * from "./get";
 export * from "./listResponse";
 export * from "./query";
+export * from "./count";
 export * from "./sort";
 export * from "./createTable";
 export * from "./table";
