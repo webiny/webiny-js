@@ -29,7 +29,7 @@ export const Folder: React.VFC<FolderProps> = ({
 }) => {
     const { id, title } = folder;
 
-    const { hasNonInheritedPermissions, canManagePermissions } = folder;
+    const { hasNonInheritedPermissions, canManagePermissions, canManageStructure } = folder;
 
     let icon = <FolderIcon />;
     if (hasNonInheritedPermissions && canManagePermissions) {
@@ -42,13 +42,17 @@ export const Folder: React.VFC<FolderProps> = ({
                 <div>{icon}</div>
                 <Text use={"subtitle2"}>{title}</Text>
             </FolderContent>
-            <Actions handle={<IconButton icon={<MoreIcon />} />}>
-                <ActionEdit onClick={() => onMenuEditClick(folder)} />
-                <ActionDelete onClick={() => onMenuDeleteClick(folder)} />
-                {canManagePermissions && (
-                    <ActionManagePermissions onClick={() => onMenuManagePermissionsClick(folder)} />
-                )}
-            </Actions>
+            {canManageStructure && (
+                <Actions handle={<IconButton icon={<MoreIcon />} />}>
+                    <ActionEdit onClick={() => onMenuEditClick(folder)} />
+                    <ActionDelete onClick={() => onMenuDeleteClick(folder)} />
+                    {canManagePermissions && (
+                        <ActionManagePermissions
+                            onClick={() => onMenuManagePermissionsClick(folder)}
+                        />
+                    )}
+                </Actions>
+            )}
         </FolderContainer>
     );
 };

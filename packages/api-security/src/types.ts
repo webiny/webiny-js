@@ -138,6 +138,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteApiKey(id: string): Promise<boolean>;
 
+    onApiKeyBeforeCreate: Topic<{ apiKey: ApiKey }>;
+    onApiKeyAfterCreate: Topic<{ apiKey: ApiKey }>;
+    onApiKeyBeforeUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
+    onApiKeyAfterUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
+    onApiKeyBeforeDelete: Topic<{ apiKey: ApiKey }>;
+    onApiKeyAfterDelete: Topic<{ apiKey: ApiKey }>;
+
     // Groups
     getGroup(params: GetGroupParams): Promise<Group>;
 
@@ -149,6 +156,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteGroup(id: string): Promise<void>;
 
+    onGroupBeforeCreate: Topic<{ group: Group }>;
+    onGroupAfterCreate: Topic<{ group: Group }>;
+    onGroupBeforeUpdate: Topic<{ original: Group; group: Group }>;
+    onGroupAfterUpdate: Topic<{ original: Group; group: Group }>;
+    onGroupBeforeDelete: Topic<{ group: Group }>;
+    onGroupAfterDelete: Topic<{ group: Group }>;
+
     // Teams
     getTeam(params: GetTeamParams): Promise<Team>;
 
@@ -159,6 +173,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
 
     deleteTeam(id: string): Promise<void>;
+
+    onTeamBeforeCreate: Topic<{ team: Team }>;
+    onTeamAfterCreate: Topic<{ team: Team }>;
+    onTeamBeforeUpdate: Topic<{ original: Team; team: Team }>;
+    onTeamAfterUpdate: Topic<{ original: Team; team: Team }>;
+    onTeamBeforeDelete: Topic<{ team: Team }>;
+    onTeamAfterDelete: Topic<{ team: Team }>;
 
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;

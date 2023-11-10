@@ -7,7 +7,7 @@ import React, {
     useState,
     useContext
 } from "react";
-import { nanoid } from "nanoid";
+import { generateId } from "@webiny/utils";
 import { makeComposable, Plugins } from "@webiny/app";
 import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
 import { plugins } from "@webiny/plugins";
@@ -40,7 +40,11 @@ export function useNavigation() {
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
 const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     return (
-        <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
+        <Menu
+            {...props}
+            name={(props as MenuProps).name || generateId()}
+            label={props.label as string}
+        >
             {props.children}
         </Menu>
     );

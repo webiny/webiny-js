@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import omit from "lodash/omit";
+import { useShiftKey } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileTag } from "~/types";
 import { useFileManagerApi } from "~/index";
@@ -11,6 +12,7 @@ import { useFolders, useNavigateFolder } from "@webiny/app-aco";
 import { ListFilesQueryVariables } from "~/modules/FileManagerApiProvider/graphql";
 import { useListFiles } from "./useListFiles";
 import { useTags } from "./useTags";
+import { setSelection } from "./setSelection";
 import { ROOT_FOLDER } from "~/constants";
 
 type PublicState = Omit<State, "activeTags">;
@@ -56,6 +58,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         loading: boolean;
     };
     toggleSelected: (file: TFileItem) => void;
+    deselectAll: () => void;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
 }
@@ -103,6 +106,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     children,
     ...props
 }) => {
+    const shiftKeyPressed = useShiftKey();
     const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();
     const { folders: originalFolders, loading: foldersLoading } = useFolders();
@@ -113,13 +117,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     const { loading, files, meta, listFiles, setFiles, getListVariables } = useListFiles({
         folderId: currentFolderId,
         modifiers,
-        state,
-        onFirstLoad(meta) {
-            setState(state => ({
-                ...state,
-                hasPreviouslyUploadedFiles: meta.totalCount > 0
-            }));
-        }
+        state
     });
 
     useEffect(() => {
@@ -154,6 +152,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         setState(state => ({
             ...state,
+            selection: {},
             filters: undefined,
             searchQuery: "",
             activeTags: [],
@@ -428,7 +427,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             setState(state => ({
                 ...state,
                 selected: [],
-                filters: data
+                filters: data,
+                selection: {}
             }));
         },
         setFolderId(folderId) {
@@ -490,21 +490,17 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             }
         },
         toggleSelected(file: FileItem) {
-            setState(state => {
-                const existingIndex = state.selected.findIndex(item => item.id === file.id);
-                const selected = [...state.selected];
-
-                if (existingIndex < 0) {
-                    selected.push(file);
-                } else {
-                    selected.splice(existingIndex, 1);
-                }
-
-                return {
-                    ...state,
-                    selected
-                };
-            });
+            setState(state =>
+                setSelection({
+                    state,
+                    files,
+                    toggledFile: file,
+                    shiftKeyPressed
+                })
+            );
+        },
+        deselectAll() {
+            setState(state => ({ ...state, selected: [] }));
         },
         updateFile,
         uploadFile

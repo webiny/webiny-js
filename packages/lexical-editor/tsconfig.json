@@ -4,8 +4,8 @@
   "references": [
     { "path": "../lexical-nodes" },
     { "path": "../lexical-theme" },
-    { "path": "../react-properties" },
-    { "path": "../react-composition" }
+    { "path": "../react-composition" },
+    { "path": "../react-properties" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -18,10 +18,10 @@
       "@webiny/lexical-nodes": ["../lexical-nodes/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"],
-      "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
-      "@webiny/react-composition": ["../react-composition/src"]
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"]
     },
     "baseUrl": "."
   }

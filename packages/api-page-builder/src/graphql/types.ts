@@ -341,34 +341,7 @@ export interface PageElementsCrud {
     listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
     createPageElement(data: Record<string, any>): Promise<PageElement>;
     updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
-    deletePageElement(id: string): Promise<PageElement>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforePageElementCreate: Topic<OnPageElementBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageElementCreate: Topic<OnPageElementAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageElementUpdate: Topic<OnPageElementBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageElementUpdate: Topic<OnPageElementAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageElementDelete: Topic<OnPageElementBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageElementDelete: Topic<OnPageElementAfterDeleteTopicParams>;
+    deletePageElement(id: string): Promise<void>;
     /**
      * Lifecycle events
      */
@@ -802,7 +775,7 @@ export interface PageBlocksCrud {
     listPageBlocks(params?: ListPageBlocksParams): Promise<PageBlock[]>;
     createPageBlock(data: PageBlockCreateInput): Promise<PageBlock>;
     updatePageBlock(id: string, data: PageBlockUpdateInput): Promise<PageBlock>;
-    deletePageBlock(id: string): Promise<PageBlock>;
+    deletePageBlock(id: string): Promise<boolean>;
     resolvePageBlocks(content: Record<string, any> | null): Promise<any>;
 
     /**

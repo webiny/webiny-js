@@ -108,7 +108,6 @@ export const createPageElementStorageOperations = ({
 
         try {
             await entity.delete(keys);
-            return pageElement;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete pageElement.",

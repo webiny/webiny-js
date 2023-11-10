@@ -187,7 +187,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         const getters = Object.keys(entriesByModel).map(async modelId => {
                             const idList = entriesByModel[modelId];
                             // Get model manager, to get access to CRUD methods
-                            const model = await cms.getModelManager(modelId);
+                            const model = await cms.getEntryManager(modelId);
 
                             let entries: CmsEntry[];
                             // `read` API works with `published` data

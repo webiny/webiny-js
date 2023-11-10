@@ -13,6 +13,7 @@ import { object } from "commodo-fields-object";
  */
 // @ts-ignore
 import { withFields, string } from "@commodo/fields";
+import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import { mdbid } from "@webiny/utils";
 import WebinyError from "@webiny/error";
@@ -159,6 +160,15 @@ export const createGroupsMethods = ({
         return tenant;
     };
     return {
+        onGroupBeforeCreate: createTopic("security.onGroupBeforeCreate"),
+        onGroupAfterCreate: createTopic("security.onGroupAfterCreate"),
+        onGroupBeforeBatchCreate: createTopic("security.onGroupBeforeBatchCreate"),
+        onGroupAfterBatchCreate: createTopic("security.onGroupAfterBatchCreate"),
+        onGroupBeforeUpdate: createTopic("security.onGroupBeforeUpdate"),
+        onGroupAfterUpdate: createTopic("security.onGroupAfterUpdate"),
+        onGroupBeforeDelete: createTopic("security.onGroupBeforeDelete"),
+        onGroupAfterDelete: createTopic("security.onGroupAfterDelete"),
+
         async getGroup(this: Security, { where }: GetGroupParams): Promise<Group> {
             await checkPermission(this);
 
@@ -237,7 +247,11 @@ export const createGroupsMethods = ({
             };
 
             try {
-                return await storageOperations.createGroup({ group });
+                await this.onGroupBeforeCreate.publish({ group });
+                const result = await storageOperations.createGroup({ group });
+                await this.onGroupAfterCreate.publish({ group: result });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create group.",
@@ -271,10 +285,13 @@ export const createGroupsMethods = ({
                 ...data
             };
             try {
+                await this.onGroupBeforeUpdate.publish({ original, group });
                 const result = await storageOperations.updateGroup({ original, group });
                 if (permissionsChanged) {
                     await updateTenantLinks(this, getTenant(), result);
                 }
+                await this.onGroupAfterUpdate.publish({ original, group: result });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -372,7 +389,9 @@ export const createGroupsMethods = ({
 
             // Delete the group if none of the above conditions are met.
             try {
+                await this.onGroupBeforeDelete.publish({ group });
                 await storageOperations.deleteGroup({ group });
+                await this.onGroupAfterDelete.publish({ group });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete group.",

@@ -24,6 +24,16 @@ describe("5.38.0-001", () => {
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
 
+    beforeAll(async () => {
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX =
+            new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        await elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
+    });
+
     logTestNameBeforeEachTest();
 
     it("should not run if no forms found", async () => {
@@ -96,6 +106,17 @@ describe("5.38.0-001", () => {
             ...createTenantsData(),
             ...createLocalesData()
         ]);
+
+        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                isHeadlessCmsModel: false,
+                type: "form-builder"
+            });
+        });
+
+        await elasticsearchClient.indices.refreshAll();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable,

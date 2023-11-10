@@ -54,6 +54,10 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         getIdentityTeam: async () => {
             return security.withoutAuthorization(async () => {
                 const identity = security.getIdentity();
+                if (!identity) {
+                    return null;
+                }
+
                 const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
                 if (!adminUser) {
                     return null;
@@ -123,8 +127,16 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         });
     }
 
-    const listAdminUsers = () => context.adminUsers.listUsers();
-    const listTeams = () => context.security.listTeams();
+    const listAdminUsers = () => {
+        return security.withoutAuthorization(async () => {
+            return context.adminUsers.listUsers();
+        });
+    };
+    const listTeams = () => {
+        return security.withoutAuthorization(async () => {
+            return context.security.listTeams();
+        });
+    };
 
     context.aco = {
         folder: createFolderCrudMethods({

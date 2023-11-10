@@ -32,6 +32,9 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             # Tells us if the current user can manage folder permissions.
             canManagePermissions: Boolean
 
+            # Tells us if the current user can manage folder content.
+            canManageContent: Boolean
+
             # Tells us if the folder contains non-inherited permissions.
             hasNonInheritedPermissions: Boolean
 
@@ -122,6 +125,9 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             },
             canManagePermissions: (folder, _, context) => {
                 return context.aco.folderLevelPermissions.canManageFolderPermissions(folder);
+            },
+            canManageContent: (folder, _, context) => {
+                return context.aco.folderLevelPermissions.canManageFolderContent(folder);
             }
         },
         AcoQuery: {
