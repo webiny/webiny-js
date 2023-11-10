@@ -48,7 +48,7 @@ context("Page Builder - Blocks", () => {
         cy.contains(pageTemplateData3.title).should("exist");
         cy.contains(pageTemplateData3.description).should("exist");
 
-        cy.get(".css-1rl9ll7-listStyle .css-5bicyh-listItem").each((item, index) => {
+        cy.get(".css-1rl9ll7-listStyle .css-5bicyh-listItem").each((item) => {
             // Click on the current item
             cy.wrap(item).click();
 

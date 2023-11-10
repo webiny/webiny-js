@@ -7,8 +7,6 @@ context("Page Builder - Blocks", () => {
     const titleString3 = "GHI";
     const titleString4 = "!#$%&/()=?*";
 
-    const titleSlug = "TKL";
-
     const pageTemplateData1 = {
         title: titleString1,
         slug: nanoid(6),

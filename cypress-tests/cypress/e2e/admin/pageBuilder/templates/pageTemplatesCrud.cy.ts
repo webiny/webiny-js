@@ -1,7 +1,6 @@
 import { customAlphabet } from "nanoid";
 
 context("Page Builder - Blocks", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
 
     beforeEach(() => {
         cy.login();
