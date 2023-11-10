@@ -3,7 +3,7 @@ import crypto from "crypto";
 import WebinyError from "@webiny/error";
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 // import { AssumeRoleCommand, STSClient } from "@webiny/aws-sdk/client-sts";
-import { fromNodeProviderChain } from "@webiny/aws-sdk/credential-providers";
+import { fromEnv } from "@webiny/aws-sdk/credential-providers";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -58,11 +58,7 @@ export const createElasticsearchClient = async (
             //     "arn:aws:iam::0123456789012:role/Administrator",
             //     region
             // );
-            const credentials = await fromNodeProviderChain({
-                clientConfig: {
-                    region
-                }
-            })();
+            const credentials = await fromEnv()();
 
             Object.assign(
                 clientOptions,
