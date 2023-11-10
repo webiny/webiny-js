@@ -37,7 +37,7 @@ export const createElasticsearchClient = async (
             const region = String(process.env.AWS_REGION);
             const credentials = {
                 accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                // secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
                 sessionToken: String(process.env.AWS_SESSION_TOKEN),
                 envPrefix: "AWS",
                 expired: false,
@@ -50,6 +50,7 @@ export const createElasticsearchClient = async (
                 // @ts-ignore
                 createAwsElasticsearchConnector({
                     region,
+                    // @ts-ignore
                     credentials
                 })
             );
