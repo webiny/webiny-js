@@ -61,17 +61,25 @@ export const createElasticsearchClient = async (
             // );
             // const credentials = await fromProcess()();
 
+            const credentials = {
+                accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
+                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
+                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+            };
+
+            for (const key in credentials) {
+                // @ts-ignore
+                console.log(`${key}: ${!!credentials[key] ? "has" : "not set"}`);
+            }
+
             Object.assign(
                 clientOptions,
 
                 // @ts-expect-error
                 createAwsElasticsearchConnector({
                     region,
-                    credentials: {
-                        accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                        secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                        sessionToken: String(process.env.AWS_SESSION_TOKEN)
-                    }
+                    credentials,
+                    getCredentials: () => credentials
                 })
             );
         }
