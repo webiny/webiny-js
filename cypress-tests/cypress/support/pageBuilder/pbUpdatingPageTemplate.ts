@@ -55,7 +55,6 @@ Cypress.Commands.add("pbUpdatingPageTemplate", (id, data) => {
     });
 });
 
-
 //Example of usage
 // Suppose you have a page template ID and updated data
 //const pageTemplateId = "your-page-template-id";

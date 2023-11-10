@@ -70,7 +70,7 @@ context("Page Builder - Blocks", () => {
                 cy.contains("Continue").click();
                 // Validation of imported blocks and categories.
 
-                cy.findByPlaceholderText("Search templates").should("exist"); 
+                cy.findByPlaceholderText("Search templates").should("exist");
                 cy.contains(pageTemplateData1.title).should("exist");
                 cy.contains(pageTemplateData2.title).should("exist");
                 cy.contains(pageTemplateData3.title).should("exist");

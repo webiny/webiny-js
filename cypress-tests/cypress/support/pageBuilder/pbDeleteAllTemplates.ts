@@ -47,7 +47,7 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
                 const templates = listResponse.pageBuilder.listPageTemplates.data;
 
                 // Loop through the templates and delete each one
-                templates.forEach((template: { id: any; }) => {
+                templates.forEach((template: { id: any }) => {
                     gqlClient
                         .request({
                             query: DELETE_MUTATION,
