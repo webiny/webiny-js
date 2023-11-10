@@ -342,7 +342,7 @@ export interface PageElementStorageOperations {
     ): Promise<PageElementStorageOperationsListResponse>;
     create(params: PageElementStorageOperationsCreateParams): Promise<PageElement>;
     update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement>;
-    delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
+    delete(params: PageElementStorageOperationsDeleteParams): Promise<void>;
 }
 
 /**
@@ -700,7 +700,6 @@ export interface BlockCategory {
     slug: string;
     icon: string;
     description: string;
-    blockCount: number;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;

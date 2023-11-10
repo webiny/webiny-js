@@ -50,7 +50,7 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         id: ID!
                         data: PbUpdatePageElementInput!
                     ): PbPageElementResponse
-                    deletePageElement(id: ID!): PbPageElementResponse
+                    deletePageElement(id: ID!): PbDeleteResponse
                 }
             `,
             resolvers: {
@@ -78,8 +78,9 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         });
                     },
                     deletePageElement: async (_, args: any, context) => {
-                        return resolve(() => {
-                            return context.pageBuilder.deletePageElement(args.id);
+                        return resolve(async () => {
+                            await context.pageBuilder.deletePageElement(args.id);
+                            return true;
                         });
                     }
                 }

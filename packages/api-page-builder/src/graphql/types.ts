@@ -341,7 +341,7 @@ export interface PageElementsCrud {
     listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
     createPageElement(data: Record<string, any>): Promise<PageElement>;
     updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
-    deletePageElement(id: string): Promise<PageElement>;
+    deletePageElement(id: string): Promise<void>;
     /**
      * Lifecycle events
      */

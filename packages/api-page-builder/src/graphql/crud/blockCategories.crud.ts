@@ -156,7 +156,6 @@ export const createBlockCategoriesCrud = (
 
             const blockCategory: BlockCategory = {
                 ...data,
-                blockCount: 0,
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,

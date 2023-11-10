@@ -243,13 +243,14 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                 await onPageElementBeforeDelete.publish({
                     pageElement
                 });
-                const result = await storageOperations.pageElements.delete({
+
+                await storageOperations.pageElements.delete({
                     pageElement
                 });
+
                 await onPageElementAfterDelete.publish({
-                    pageElement: result
+                    pageElement
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page element.",
