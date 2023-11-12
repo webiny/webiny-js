@@ -54,17 +54,3 @@ Cypress.Commands.add("pbUpdatingPageTemplate", (id, data) => {
             .then(response => response.pageBuilder.pageTemplate);
     });
 });
-
-//Example of usage
-// Suppose you have a page template ID and updated data
-//const pageTemplateId = "your-page-template-id";
-//const updatedData = {
-//    title: "Updated Page Title",
-//    description: "Updated Page Description",
-//    tags: ["tag1", "tag2"],
-//    layout: "updated-layout",
-//};
-//
-//cy.pbUpdatePageTemplate(pageTemplateId, updatedData).then(updatedPageTemplate => {
-//    cy.log("Updated Page Template:", updatedPageTemplate);
-//});

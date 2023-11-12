@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Blocks", () => {
+context("Page Builder - Templates", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const pageTemplateData1 = {
         title: nanoid(6),
@@ -49,11 +49,11 @@ context("Page Builder - Blocks", () => {
         cy.contains(pageTemplateData3.description).should("exist");
 
         cy.get(".css-1rl9ll7-listStyle .css-5bicyh-listItem").each(item => {
-            // Click on the current item
+            // Click on the current item.
             cy.wrap(item).click();
 
-            // Wait for the right panel to load (adjust this timeout if needed)
-            cy.get(".webiny-split-view__right-panel").should("be.visible", { timeout: 10000 });
+            // Wait for the right panel to load.
+            cy.get(".webiny-split-view__right-panel").should("be.visible");
             cy.contains(
                 (pageTemplateData1.title && pageTemplateData1.description) ||
                     (pageTemplateData2.title && pageTemplateData2.description) ||

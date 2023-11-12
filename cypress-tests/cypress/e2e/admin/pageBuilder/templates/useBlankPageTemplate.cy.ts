@@ -1,10 +1,10 @@
-context("Page Builder - Blocks", () => {
+context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
     });
 
-    it("Should be able to create a page and view all existing templates in it", () => {
+    it("Should be able to view and assert the blank page is being displayed properly", () => {
         cy.visit("/page-builder/pages?folderId=root");
         cy.findByTestId("new-page-button").click();
 

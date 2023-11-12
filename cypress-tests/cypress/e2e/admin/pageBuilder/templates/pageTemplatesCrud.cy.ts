@@ -1,4 +1,4 @@
-context("Page Builder - Blocks", () => {
+context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
@@ -6,7 +6,7 @@ context("Page Builder - Blocks", () => {
 
     it("Should be able to create a template and then edit and delete it", () => {
         cy.visit("/page-builder/page-templates");
-        //Creates a template using the UI.
+        // Creates a template using the UI.
         cy.findAllByTestId("pb-templates-list-new-template-btn").eq(0).click();
         cy.findByRole("textbox", { name: "Title" }).type("testingfunctionality");
         cy.findByRole("textbox", { name: "Slug" }).type("testingfunctionality");
@@ -16,7 +16,7 @@ context("Page Builder - Blocks", () => {
 
         cy.contains("testingfunctionality").should("exist");
 
-        //Edits the template name using the UI.
+        // Edits the template name using the UI.
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
                 .first()
@@ -31,7 +31,7 @@ context("Page Builder - Blocks", () => {
         cy.findByRole("button", { name: "Save Changes" }).should("exist").click();
         cy.contains("testingfunctionality1").should("exist");
 
-        //Deletes the template using the UI.
+        // Deletes the template using the UI.
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
                 .first()
@@ -45,17 +45,5 @@ context("Page Builder - Blocks", () => {
 
         cy.visit("/page-builder/page-templates");
         cy.contains("testingfunctionality1").should("not.exist");
-    });
-
-    it.skip("Testing graphQL commands", () => {
-        cy.visit("/page-builder/page-templates");
-        //cy.pbCreatePageTemplate(pageTemplateData1);
-        //cy.pbCreatePageTemplate(pageTemplateData2);
-        //cy.pbListPageTemplates().then((responseData) => {
-        //    responseData.forEach((template) => {
-        //      cy.log("Page Template Title:", template.title);
-        //    });
-        //  });
-        //cy.pbDeleteAllTemplates();
     });
 });

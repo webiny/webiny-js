@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Blocks", () => {
+context("Page Builder - Templates", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = "ABC";
     const titleString2 = "DEF";
