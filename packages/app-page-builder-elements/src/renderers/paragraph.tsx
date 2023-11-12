@@ -5,13 +5,47 @@ import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor"
 import { usePageElements } from "~/hooks/usePageElements";
 import { assignStyles } from "~/utils";
 
-export const createParagraph = () => {
+const getDynamicParagraphValue = (content?: string, dynamicValue?: string) => {
+    if (!dynamicValue || !content) {
+        return content;
+    }
+
+    const contentObject = JSON.parse(content);
+    const firstChild = contentObject.root.children[0];
+    firstChild.children = [
+        {
+            detail: 0,
+            format: 0,
+            mode: "normal",
+            style: "",
+            text: dynamicValue,
+            type: "text",
+            version: 1
+        }
+    ];
+
+    contentObject.root.children = [firstChild];
+
+    return JSON.stringify(contentObject);
+};
+
+type CreateParagraphProps = {
+    dynamicSourceContext: React.Context<any>;
+};
+
+export const createParagraph = (props: CreateParagraphProps) => {
     return createRenderer(() => {
         const { getElement } = useRenderer();
         const element = getElement();
-        const { theme } = usePageElements();
+        const elementContent = element?.data?.text?.data?.text;
+        const { theme, useDynamicValue } = usePageElements();
+        const dynamicValue = useDynamicValue(
+            props.dynamicSourceContext,
+            element.data?.dynamicSource?.resolvedPath
+        );
+        const dynamicParagraphValue = getDynamicParagraphValue(elementContent, dynamicValue);
 
-        const __html = element.data.text.data.text;
+        const __html = dynamicParagraphValue || elementContent;
         if (isValidLexicalData(__html)) {
             return (
                 <LexicalHtmlRenderer

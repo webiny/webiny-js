@@ -87,7 +87,7 @@ export const TemplateEditor: React.FC = () => {
                 },
                 fetchPolicy: "network-only"
             })
-            .then(({ data }) => {
+            .then(async ({ data }) => {
                 const errorData = get(
                     data,
                     "pageBuilder.getPageTemplate.error"
@@ -113,7 +113,17 @@ export const TemplateEditor: React.FC = () => {
 
                 setTemplate({
                     ...restOfTemplateData,
-                    content: existingContent || createElement("document")
+                    content:
+                        {
+                            ...existingContent,
+                            data: {
+                                ...existingContent.data,
+                                dynamicSource: {
+                                    modelId: pageTemplateData?.dynamicSource?.modelId,
+                                    entryId: pageTemplateData?.dynamicSource?.entryId
+                                }
+                            }
+                        } || createElement("document")
                 });
             });
 

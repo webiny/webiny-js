@@ -561,6 +561,11 @@ export type PbEditorPageElementPlugin = Plugin & {
         width: number;
         height: number;
     }) => ReactElement;
+    // Can the element have dynamic data source? And which field types are allowed.
+    dynamicDataSource?: {
+        enabled: boolean;
+        allowedFields: string[];
+    };
 };
 
 export enum OnCreateActions {
@@ -668,6 +673,25 @@ export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
 
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
+    elementType: string;
+    render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
+    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
+};
+
+export type PbEditorPageElementDataSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-data-settings";
+    elementType: string;
+    render(params: {
+        Bind: BindComponent;
+        data: any;
+        submit: () => void;
+        sourceModelId?: string;
+    }): ReactElement;
+    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
+};
+
+export type PbEditorPageElementParentDataSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-parent-data-settings";
     elementType: string;
     render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: GenericFormData) => Promise<GenericFormData>;
@@ -889,6 +913,10 @@ export interface PbPageTemplate {
     description: string;
     layout: string;
     content: any;
+    dynamicSource?: {
+        modelId?: string;
+        entryId?: string;
+    };
     createdOn: string;
     savedOn: string;
     createdBy: PbIdentity;

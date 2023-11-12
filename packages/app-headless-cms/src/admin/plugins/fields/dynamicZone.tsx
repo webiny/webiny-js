@@ -76,6 +76,12 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
                 });
                 return `{ ${fragments.join("\n")} }`;
             }
+        },
+        async getChildFields(_, field, gqlTypeName) {
+            return (
+                field.settings?.templates?.find(template => template.gqlTypeName === gqlTypeName)
+                    ?.fields || []
+            );
         }
     }
 };

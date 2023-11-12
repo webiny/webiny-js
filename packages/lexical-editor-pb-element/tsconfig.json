@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../app-admin" },
+    { "path": "../app-dynamic-pages" },
     { "path": "../app-page-builder" },
     { "path": "../app-page-builder-elements" },
     { "path": "../lexical-editor" },
@@ -21,6 +22,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-dynamic-pages/*": ["../app-dynamic-pages/src/*"],
+      "@webiny/app-dynamic-pages": ["../app-dynamic-pages/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],

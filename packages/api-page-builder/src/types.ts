@@ -899,11 +899,22 @@ export interface PageTemplate {
     createdBy: CreatedBy;
     tenant: string;
     locale: string;
+    dynamicSource?: {
+        modelId: string;
+        entryId?: string;
+    };
 }
 
 export type PageTemplateInput = Pick<
     PageTemplate,
-    "title" | "description" | "content" | "slug" | "tags" | "layout" | "pageCategory"
+    | "title"
+    | "description"
+    | "content"
+    | "slug"
+    | "tags"
+    | "layout"
+    | "pageCategory"
+    | "dynamicSource"
 > & { id?: string };
 
 /**

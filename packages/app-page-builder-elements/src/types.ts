@@ -86,6 +86,7 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setAssignStylesCallback: SetAssignStylesCallback;
     setElementStylesCallback: SetElementStylesCallback;
     setStylesCallback: SetStylesCallback;
+    useDynamicValue: (dynamicSourceContext: React.Context<any>, path?: string) => string;
 }
 
 type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
@@ -153,3 +154,10 @@ declare global {
         }
     }
 }
+
+export type DynamicSourceProviderProps = {
+    children: React.ReactNode;
+    element?: Element;
+    refreshDynamicContainer?: () => void;
+    templateWhereField?: Record<string, string>;
+};

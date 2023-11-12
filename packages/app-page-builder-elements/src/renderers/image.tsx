@@ -18,43 +18,87 @@ export interface ImageElementData {
         newTab: boolean;
         href: string;
     };
+    dynamicSource?: {
+        resolvedPath: string;
+    };
 }
 
 export interface ImageRendererComponentProps extends Props, CreateImageParams {}
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
+const getImageDynamicValue = (element?: any, dynamicValue?: string) => {
+    if (!dynamicValue || !element) {
+        return element;
+    }
+
+    const matcher = /(www|http:|https:)+[^\s]+[\w]/;
+    const isUrlValue = dynamicValue.match(matcher);
+    const src = isUrlValue !== null && dynamicValue;
+
+    const newElement = {
+        ...element,
+        data: {
+            ...element.data,
+            image: {
+                file: {
+                    src
+                }
+            }
+        }
+    };
+
+    return newElement;
+};
+
 export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
     onClick,
     renderEmpty,
     value,
     link,
-    linkComponent
+    linkComponent,
+    dynamicSourceContext
 }) => {
     const LinkComponent = linkComponent || DefaultLinkComponent;
 
-    const { getElement } = useRenderer();
+    const { getElement, useDynamicValue } = useRenderer();
 
     const element = getElement<ImageElementData>();
+    const dynamicValue = useDynamicValue(
+        dynamicSourceContext,
+        element.data?.dynamicSource?.resolvedPath
+    );
+    const dynamicElement = getImageDynamicValue(element, dynamicValue);
+    const isDynamic = Boolean(element.data.dynamicSource);
+
+    const elementToUse = isDynamic ? dynamicElement : element;
+    const isEditable = !isDynamic;
+
+    const handleOnClick = (params: any) => {
+        if (isEditable && onClick) {
+            onClick(params);
+        }
+    };
 
     let content;
-    if (element.data?.image?.file?.src) {
+
+    if (elementToUse?.data?.image?.file?.src) {
         // Image has its width / height set from its own settings.
         const PbImg = styled.img({
-            width: element.data.image.width,
-            height: element.data.image.height,
+            width: elementToUse.data.image.width,
+            height: elementToUse.data.image.height,
             maxWidth: "100%"
         });
 
-        const { title } = element.data.image;
-        const { src } = value || element.data?.image?.file;
+        const { title } = elementToUse.data.image;
+        const { src } = value || elementToUse.data.image.file;
 
         // If a fixed image width in pixels was set, let's filter out unneeded
         // image resize widths. For example, if 155px was set as the fixed image
         // width, then we want the `srcset` attribute to only contain 100w and 300w.
         let srcSetWidths: number[] = [];
 
-        const imageWidth = element.data.image.width;
+        const imageWidth = elementToUse.data.image.width;
         if (imageWidth && imageWidth.endsWith("px")) {
             const imageWidthInt = parseInt(imageWidth);
             for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
@@ -78,12 +122,14 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
             })
             .join(", ");
 
-        content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
+        content = (
+            <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={handleOnClick} />
+        );
     } else {
         content = renderEmpty || null;
     }
 
-    const linkProps = link || element.data?.link;
+    const linkProps = link || elementToUse.data?.link;
     if (linkProps) {
         const { href, newTab } = linkProps;
         if (href) {
@@ -116,9 +162,10 @@ interface Props {
 
 export interface CreateImageParams {
     linkComponent?: LinkComponentType;
+    dynamicSourceContext: React.Context<any>;
 }
 
-export const createImage = (params: CreateImageParams = {}) => {
+export const createImage = (params: CreateImageParams) => {
     return createRenderer<Props>(props => {
         return <ImageRendererComponent {...params} {...props} />;
     }, imageRendererOptions);

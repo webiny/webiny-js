@@ -3,6 +3,7 @@ import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { DeleteElementActionEvent } from "../../../recoil/actions";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { PbEditorPageElementPlugin, PbBlockVariable, PbEditorElement } from "~/types";
 import { useRecoilValue } from "recoil";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
@@ -31,8 +32,13 @@ const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));
+    const parentElement = useRecoilValue(elementByIdSelector(element?.parent || null));
     const block = useParentBlock(activeElementId as string);
     const updateElement = useUpdateElement();
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Delete variant block",
+        message: "You are about to delete the entire variant block and all of its variants!"
+    });
 
     if (!element) {
         return null;
@@ -45,12 +51,24 @@ const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
 
             updateElement(updatedBlock);
         }
+
+        if (parentElement && parentElement.data?.isVariantBlock) {
+            showConfirmation(() => {
+                eventActionHandler.trigger(
+                    new DeleteElementActionEvent({
+                        element: parentElement
+                    })
+                );
+            });
+            return;
+        }
+
         eventActionHandler.trigger(
             new DeleteElementActionEvent({
                 element
             })
         );
-    }, [activeElementId]);
+    }, [activeElementId, parentElement]);
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")

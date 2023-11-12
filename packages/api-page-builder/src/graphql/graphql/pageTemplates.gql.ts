@@ -25,6 +25,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             createdBy: PbCreatedBy!
             layout: String
             pageCategory: String
+            dynamicSource: JSON
         }
 
         input PbCreatePageTemplateInput {
@@ -34,6 +35,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             tags: [String!]
             layout: String
             pageCategory: String
+            dynamicSource: JSON
             content: JSON
         }
 
@@ -45,6 +47,7 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             pageCategory: String
             content: JSON
             tags: [String!]
+            dynamicSource: JSON
         }
 
         input PbCreateTemplateFromPageInput {

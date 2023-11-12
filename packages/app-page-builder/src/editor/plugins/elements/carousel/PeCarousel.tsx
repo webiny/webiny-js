@@ -1,10 +1,13 @@
 import React, { useRef, useEffect } from "react";
+import { register } from "swiper/element/bundle";
 import styled from "@emotion/styled";
+
 import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-elements";
 import { Element } from "@webiny/app-page-builder-elements/types";
-import { useRecoilValue } from "recoil";
-import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
-import { register } from "swiper/element/bundle";
+import { useIsDynamicElement } from "@webiny/app-dynamic-pages/hooks/useIsDynamicElement";
+
+import { DynamicElementWrapper } from "~/editor/components/DynamicElementWrapper";
+import { useElementWithChildrenById } from "~/editor/hooks/useElementById";
 
 declare global {
     // eslint-disable-next-line
@@ -19,6 +22,7 @@ declare global {
 const PeCarouselWrapper = styled.div`
     display: flex;
     justify-content: center;
+
     & swiper-slide {
         text-align: center;
         font-size: 16px;
@@ -27,6 +31,7 @@ const PeCarouselWrapper = styled.div`
         justify-content: center;
         align-items: center;
     }
+
     & swiper-container {
         padding: 20px 0;
         max-width: 1100px;
@@ -35,6 +40,7 @@ const PeCarouselWrapper = styled.div`
         --swiper-pagination-color: ${props => props.theme.styles.colors.color1};
         --swiper-pagination-bottom: 0;
     }
+
     & .carousel-element-wrapper {
         width: 100%;
         max-width: calc(95% - 41px);
@@ -45,9 +51,8 @@ const PeCarousel = createRenderer(() => {
     const swiperRef = useRef<any>(null);
     const { getElement, meta } = useRenderer();
     const element = getElement();
-    const elementWithChildren = useRecoilValue(
-        elementWithChildrenByIdSelector(element.id)
-    ) as Element;
+    const isDynamic = useIsDynamicElement(element);
+    const elementWithChildren = useElementWithChildrenById(element.id) as Element;
     const childrenElements = elementWithChildren?.elements;
 
     const { arrowsToggle = true, bulletsToggle = true } = element?.data?.settings?.carousel;
@@ -79,23 +84,27 @@ const PeCarousel = createRenderer(() => {
 
     const navProps = {
         navigation: arrowsToggle,
-        pagination: bulletsToggle
+        pagination: bulletsToggle,
+        "allow-slide-next": isDynamic ? false : true,
+        "allow-slide-prev": isDynamic ? false : true
     };
 
     return (
         <PeCarouselWrapper>
-            <swiper-container ref={swiperRef} style={{ zIndex }} {...navProps}>
-                {childrenElements.map((carousel, index) => {
-                    return (
-                        <swiper-slide key={index}>
-                            <div className="carousel-element-wrapper">
-                                <Elements
-                                    element={{ ...elementWithChildren, elements: [carousel] }}
-                                />
-                            </div>
-                        </swiper-slide>
-                    );
-                })}
+            <swiper-container ref={swiperRef} style={{ zIndex }} init="false" {...navProps}>
+                <DynamicElementWrapper element={element}>
+                    {childrenElements.map((carousel, index) => {
+                        return (
+                            <swiper-slide key={index}>
+                                <div className="carousel-element-wrapper">
+                                    <Elements
+                                        element={{ ...elementWithChildren, elements: [carousel] }}
+                                    />
+                                </div>
+                            </swiper-slide>
+                        );
+                    })}
+                </DynamicElementWrapper>
             </swiper-container>
         </PeCarouselWrapper>
     );

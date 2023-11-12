@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-file-manager" },
+    { "path": "../api-headless-cms" },
     { "path": "../api-i18n" },
     { "path": "../api-prerendering-service" },
     { "path": "../api-security" },
@@ -30,6 +31,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],

@@ -2,6 +2,7 @@ import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
+import { DynamicSourceContext } from "@webiny/app-dynamic-pages/contexts/DynamicSource";
 
 import { Link } from "@webiny/react-router";
 
@@ -19,7 +20,8 @@ export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => 
                         {children}
                     </Link>
                 );
-            }
+            },
+            dynamicSourceContext: DynamicSourceContext
         })
     };
 };

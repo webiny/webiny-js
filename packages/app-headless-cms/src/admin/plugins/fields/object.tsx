@@ -41,6 +41,9 @@ const plugin: CmsModelFieldTypePlugin = {
                 const fields = (field.settings ? field.settings.fields : []) as CmsModelField[];
                 return `{ ${createFieldsList({ model, fields, graphQLTypePrefix: typePrefix })} }`;
             }
+        },
+        async getChildFields(_, field) {
+            return field.settings?.fields || [];
         }
     }
 };

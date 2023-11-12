@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useContext, useCallback, useEffect, useState } from "react";
+import get from "lodash/get";
 import { ThemeProvider } from "@emotion/react";
 import {
     PageElementsContextValue,
@@ -20,6 +21,16 @@ import {
     defaultElementStylesCallback,
     defaultStylesCallback
 } from "~/utils";
+
+export function useDynamicValue(dynamicSourceContext: React.Context<any>, path?: string) {
+    const context = useContext(dynamicSourceContext || {});
+
+    if (!context) {
+        return null;
+    }
+
+    return get(context.data, path || "", null) || path;
+}
 
 export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
 
@@ -119,6 +130,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         setAssignStylesCallback,
         setElementStylesCallback,
         setStylesCallback,
+        useDynamicValue,
         beforeRenderer,
         afterRenderer
     };

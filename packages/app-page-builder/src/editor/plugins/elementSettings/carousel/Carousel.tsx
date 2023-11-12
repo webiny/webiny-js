@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
@@ -8,6 +8,7 @@ import { moveInPlace, useSortableList } from "~/hooks/useSortableList";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useIsDynamicElement } from "@webiny/app-dynamic-pages/hooks/useIsDynamicElement";
 import { ReactComponent as DeleteIcon } from "~/editor/assets/icons/delete.svg";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
@@ -124,11 +125,13 @@ const CarouselItem = ({
         elementType: "carousel-element"
     });
 
+    const isDynamic = useIsDynamicElement(element);
+
     return (
         <Collapsable ref={dragAndDropRef} data-handler-id={handlerId} highlightItem={highlightItem}>
             <CarouselListStyled>
                 {element?.data?.settings?.carouselElement?.label}
-                {canRemove && (
+                {canRemove && !isDynamic && (
                     <DeleteIconWrapper>
                         <DeleteIcon onClick={() => onRemove(element.id)} />
                     </DeleteIconWrapper>
@@ -146,6 +149,8 @@ const CarouselItems: React.FC = () => {
     ) as PbEditorElement;
     const updateElement = useUpdateElement();
 
+    const isDynamic = useIsDynamicElement(element);
+
     const { showConfirmation } = useConfirmationDialog({
         title: "Remove slide",
         message: <p>Are you sure you want to remove this slide?</p>
@@ -153,36 +158,51 @@ const CarouselItems: React.FC = () => {
 
     const onMove = useCallback(
         (current: number, next: number) => {
-            const reorderedElements = moveInPlace(element?.elements, current, next);
+            if (!isDynamic) {
+                const reorderedElements = moveInPlace(element?.elements, current, next);
 
-            updateElement({
-                ...element,
-                elements: reorderedElements
-            });
+                updateElement({
+                    ...element,
+                    elements: reorderedElements
+                });
+            }
         },
         [element]
     );
 
     const onRemove = useCallback(
         (elementId: string) => {
-            showConfirmation(async () => {
-                updateElement({
-                    ...element,
-                    elements: (element.elements as PbEditorElement[]).filter(
-                        element => element.id !== elementId
-                    )
+            if (!isDynamic) {
+                showConfirmation(async () => {
+                    updateElement({
+                        ...element,
+                        elements: (element.elements as PbEditorElement[]).filter(
+                            element => element.id !== elementId
+                        )
+                    });
                 });
-            });
+            }
         },
         [element]
     );
 
     const onCreate = useCallback(() => {
-        updateElement({
-            ...element,
-            elements: [...element.elements, createElement("carousel-element")]
-        });
+        if (!isDynamic) {
+            updateElement({
+                ...element,
+                elements: [...element.elements, createElement("carousel-element")]
+            });
+        }
     }, [element]);
+
+    useEffect(() => {
+        if (isDynamic) {
+            updateElement({
+                ...element,
+                elements: element.elements.slice(0, 1)
+            });
+        }
+    }, [isDynamic]);
 
     return (
         <Accordion title={"Slides"} defaultValue={true} className={accordionStyles}>

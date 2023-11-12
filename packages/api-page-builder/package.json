@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.22.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-prerendering-service": "0.0.0",
     "@webiny/api-security": "0.0.0",

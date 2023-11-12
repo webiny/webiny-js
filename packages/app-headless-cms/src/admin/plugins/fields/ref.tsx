@@ -1,6 +1,10 @@
 import React, { useCallback, useMemo } from "react";
 import get from "lodash/get";
-import { LIST_CONTENT_MODELS, ListCmsModelsQueryResponse } from "../../viewsGraphql";
+import {
+    LIST_CONTENT_MODELS,
+    ListCmsModelsQueryResponse,
+    GET_CONTENT_MODEL
+} from "../../viewsGraphql";
 import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
@@ -115,7 +119,21 @@ const plugin: CmsModelFieldTypePlugin = {
                 }
             `
         },
-        renderInfo
+        renderInfo,
+        async getChildFields(client, field) {
+            const modelId = field.settings?.models?.[0]?.modelId;
+
+            if (!modelId) {
+                return [];
+            }
+
+            const { data } = await client.query({
+                query: GET_CONTENT_MODEL,
+                variables: { modelId }
+            });
+
+            return data.getContentModel.data?.fields || [];
+        }
     }
 };
 

@@ -13,6 +13,7 @@ export interface PageTemplate {
     description?: string;
     layout?: string;
     pageCategory?: string;
+    dynamicSource?: { modelId?: string; entryId?: string };
     savedOn?: string;
     createdBy: {
         id: string | null;

@@ -1,0 +1,37 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-headless-cms" },
+    { "path": "../app-headless-cms-common" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../ui" },
+    { "path": "../utils" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
+      "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
+      "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
+    },
+    "baseUrl": "."
+  }
+}

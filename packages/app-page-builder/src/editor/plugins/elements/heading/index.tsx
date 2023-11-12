@@ -49,6 +49,18 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
+        dynamicDataSource: {
+            enabled: true,
+            allowedFields: [
+                "text",
+                "number",
+                "datetime",
+                "long-text",
+                "object",
+                "ref",
+                "dynamicZone"
+            ]
+        },
         create({ content = {}, ...options }) {
             const previewText = content.text || defaultText;
 
