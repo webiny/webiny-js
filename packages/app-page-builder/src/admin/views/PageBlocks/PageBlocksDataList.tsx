@@ -135,7 +135,6 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
     useEffect(() => {
-        console.log("update current blocks", pageBlocks.pageBlocks);
         if (selectedBlocksCategory) {
             pageBlocks.listBlocks(selectedBlocksCategory).then(pageBlocks => {
                 setPageBlocks(pageBlocks);

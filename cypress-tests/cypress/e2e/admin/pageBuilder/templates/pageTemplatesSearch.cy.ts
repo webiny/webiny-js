@@ -42,10 +42,10 @@ context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.pbCreatePageTemplate(pageTemplateData1);
-        cy.pbCreatePageTemplate(pageTemplateData2);
-        cy.pbCreatePageTemplate(pageTemplateData3);
-        cy.pbCreatePageTemplate(pageTemplateData4);
+        cy.createPageTemplate(pageTemplateData1);
+        cy.createPageTemplate(pageTemplateData2);
+        cy.createPageTemplate(pageTemplateData3);
+        cy.createPageTemplate(pageTemplateData4);
     });
 
     it("Should be able to create templates and then search for them", () => {

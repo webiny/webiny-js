@@ -30,9 +30,9 @@ context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.pbCreatePageTemplate(pageTemplateData1);
-        cy.pbCreatePageTemplate(pageTemplateData2);
-        cy.pbCreatePageTemplate(pageTemplateData3);
+        cy.createPageTemplate(pageTemplateData1);
+        cy.createPageTemplate(pageTemplateData2);
+        cy.createPageTemplate(pageTemplateData3);
     });
 
     it("Should be able to create a page and view all existing templates in it", () => {
@@ -48,7 +48,7 @@ context("Page Builder - Templates", () => {
         cy.contains(pageTemplateData3.title).should("exist");
         cy.contains(pageTemplateData3.description).should("exist");
 
-        cy.get(".css-1rl9ll7-listStyle .css-5bicyh-listItem").each(item => {
+        cy.findByTestId("pb-pages-list-use-blank-template-btn").each(item => {
             // Click on the current item.
             cy.wrap(item).click();
 

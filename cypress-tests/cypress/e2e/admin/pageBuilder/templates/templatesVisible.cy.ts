@@ -14,7 +14,7 @@ context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.pbCreatePageTemplate(pageTemplateData1);
+        cy.createPageTemplate(pageTemplateData1);
     });
 
     it("Should be able to see one newly created template in the new page page", () => {

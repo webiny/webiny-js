@@ -10,7 +10,7 @@ context("Page Builder - Templates", () => {
 
         cy.contains("Pick a template for your new page").should("exist");
 
-        cy.get("button.webiny-ui-button--secondary").eq(1).click();
+        cy.findByTestId("pb-pages-list-use-blank-template-btn").click();
         cy.findByTestId("pb-content-add-block-button").should("exist");
         cy.contains("to start adding content").should("exist");
     });

@@ -44,10 +44,10 @@ context("Page Builder - Templates", () => {
         cy.login();
         cy.pbDeleteAllTemplates();
         cy.wait(1000);
-        cy.pbCreatePageTemplate(pageTemplateData1);
-        cy.pbCreatePageTemplate(pageTemplateData2);
-        cy.pbCreatePageTemplate(pageTemplateData3);
-        cy.pbCreatePageTemplate(pageTemplateData4);
+        cy.createPageTemplate(pageTemplateData1);
+        cy.createPageTemplate(pageTemplateData2);
+        cy.createPageTemplate(pageTemplateData3);
+        cy.createPageTemplate(pageTemplateData4);
     });
 
     it("Should be able to create templates and then sort them correctly", () => {
