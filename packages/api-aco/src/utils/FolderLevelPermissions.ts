@@ -351,8 +351,12 @@ export class FolderLevelPermissions {
     }
 
     canManageFolderPermissions(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
+        if (!this.canUseFolderLevelPermissions()) {
             return false;
+        }
+
+        if (!this.isAuthorizationEnabled()) {
+            return true;
         }
 
         return this.canAccessFolder({ folder, rwd: "w", managePermissions: true });
