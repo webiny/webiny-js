@@ -51,6 +51,7 @@ export interface FolderLevelPermissionsParams {
     listAllFolders: (folderType: string) => Promise<Folder[]>;
     canUseTeams: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
+    isAuthorizationEnabled: () => boolean;
 }
 
 export class FolderLevelPermissions {
@@ -60,6 +61,7 @@ export class FolderLevelPermissions {
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
     private readonly canUseTeams: () => boolean;
     private readonly canUseFolderLevelPermissions: () => boolean;
+    private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
@@ -69,6 +71,16 @@ export class FolderLevelPermissions {
         this.listAllFoldersCallback = params.listAllFolders;
         this.canUseTeams = params.canUseTeams;
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
+
+        this.isAuthorizationEnabled = params.isAuthorizationEnabled;
+
+        // TODO: resolve this issue.
+        // We immediately enable authorization, because, at the moment, the rest of the system
+        // requires us to have FLP always enabled. We must now disable it, even if the security's
+        // `isAuthorizationEnabled` is set to false. To resolve this, we'll need to refactor CMS-based
+        // CRUD files and have them use CMS storage operations instead of CMS CRUD methods.
+        // We'll be handling this in the near future.
+        this.isAuthorizationEnabled = () => true;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
@@ -107,7 +119,7 @@ export class FolderLevelPermissions {
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return [];
         }
 
@@ -275,7 +287,7 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolder(params: CanAccessFolderParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -343,11 +355,15 @@ export class FolderLevelPermissions {
             return false;
         }
 
+        if (!this.isAuthorizationEnabled()) {
+            return true;
+        }
+
         return this.canAccessFolder({ folder, rwd: "w", managePermissions: true });
     }
 
     canManageFolderStructure(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -355,7 +371,7 @@ export class FolderLevelPermissions {
     }
 
     canManageFolderContent(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -363,7 +379,7 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolderContent(params: CanAccessFolderContentParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
