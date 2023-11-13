@@ -52,54 +52,76 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         context
     } = params;
 
-    const listAllGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
-    const listPluginGroupsCache = createMemoryCache<CmsGroup[]>();
-    const clearGroupsCache = (): void => {
-        listPluginGroupsCache.clear();
-        listAllGroupsCache.clear();
+    const filterGroup = async (group?: CmsGroup) => {
+        if (!group) {
+            return false;
+        }
+        const ownsGroup = await modelGroupsPermissions.ensure(
+            { owns: group.createdBy },
+            { throw: false }
+        );
+
+        if (!ownsGroup) {
+            return false;
+        }
+
+        return await modelGroupsPermissions.canAccessGroup({
+            group
+        });
     };
 
-    const fetchPluginGroups = (tenant: string, locale: string): CmsGroup[] => {
+    const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const listFilteredDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const listPluginGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const clearGroupsCache = (): void => {
+        listPluginGroupsCache.clear();
+        listDatabaseGroupsCache.clear();
+        listFilteredDatabaseGroupsCache.clear();
+    };
+
+    const fetchPluginGroups = (tenant: string, locale: string): Promise<CmsGroup[]> => {
         const pluginGroups = context.plugins.byType<CmsGroupPlugin>(CmsGroupPlugin.type);
 
         const cacheKey = createCacheKey({
             tenant,
             locale,
-            groups: pluginGroups.map(({ contentModelGroup: group }) => {
-                return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
-            })
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
+            groups: pluginGroups
+                .map(({ contentModelGroup: group }) => {
+                    return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
+                })
+                .join("/")
         });
 
-        return listPluginGroupsCache.getOrSet(cacheKey, () => {
-            return (
-                pluginGroups
-                    /**
-                     * We need to filter out groups that are not for this tenant or locale.
-                     * If it does not have tenant or locale define, it is for every locale and tenant
-                     */
-                    .filter(plugin => {
-                        const { tenant: t, locale: l } = plugin.contentModelGroup;
-                        if (t && t !== tenant) {
-                            return false;
-                        } else if (l && l !== locale) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .map(plugin => {
-                        return {
-                            ...plugin.contentModelGroup,
-                            tenant,
-                            locale,
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    })
-            );
+        return listPluginGroupsCache.getOrSet(cacheKey, async (): Promise<CmsGroup[]> => {
+            const groups = pluginGroups
+                /**
+                 * We need to filter out groups that are not for this tenant or locale.
+                 * If it does not have tenant or locale define, it is for every locale and tenant
+                 */
+                .filter(plugin => {
+                    const { tenant: t, locale: l } = plugin.contentModelGroup;
+                    if (t && t !== tenant) {
+                        return false;
+                    } else if (l && l !== locale) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(plugin => {
+                    return {
+                        ...plugin.contentModelGroup,
+                        tenant,
+                        locale,
+                        webinyVersion: context.WEBINY_VERSION
+                    };
+                });
+            return filterAsync(groups, filterGroup);
         });
     };
 
     const fetchGroups = async (tenant: string, locale: string) => {
-        const pluginGroups = fetchPluginGroups(tenant, locale);
+        const pluginGroups = await fetchPluginGroups(tenant, locale);
         /**
          * Maybe we can cache based on permissions, not the identity id?
          *
@@ -107,36 +129,28 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
          */
         const cacheKey = createCacheKey({
             tenant,
-            locale,
-            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
-            groups: pluginGroups.map(group => {
-                return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
-            })
+            locale
         });
-
-        return listAllGroupsCache.getOrSet(cacheKey, async () => {
-            const databaseGroups = await listGroupsFromDatabase({
+        const databaseGroups = await listDatabaseGroupsCache.getOrSet(cacheKey, async () => {
+            return await listGroupsFromDatabase({
                 storageOperations,
                 tenant,
                 locale
             });
-            const groups = databaseGroups.concat(pluginGroups);
-
-            return filterAsync(groups, async group => {
-                const ownsGroup = await modelGroupsPermissions.ensure(
-                    { owns: group.createdBy },
-                    { throw: false }
-                );
-
-                if (!ownsGroup) {
-                    return false;
-                }
-
-                return await modelGroupsPermissions.canAccessGroup({
-                    group
-                });
-            });
         });
+        const filteredCacheKey = createCacheKey({
+            dbCacheKey: cacheKey.get(),
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
+        });
+
+        const groups = await listFilteredDatabaseGroupsCache.getOrSet(
+            filteredCacheKey,
+            async () => {
+                return filterAsync(databaseGroups, filterGroup);
+            }
+        );
+
+        return groups.concat(pluginGroups);
     };
 
     /**

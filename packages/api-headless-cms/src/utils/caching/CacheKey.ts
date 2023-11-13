@@ -1,9 +1,7 @@
 import crypto from "crypto";
-import { ICacheKey } from "./types";
+import { ICacheKey, ICacheKeyKeys } from "./types";
 
-export type CacheKeyInput = Record<string, any> | string | number;
-
-const getCacheKey = (input: CacheKeyInput): string => {
+const getCacheKey = (input: ICacheKeyKeys): string => {
     if (typeof input === "string") {
         return input;
     } else if (typeof input === "number") {
@@ -12,7 +10,7 @@ const getCacheKey = (input: CacheKeyInput): string => {
     return JSON.stringify(input);
 };
 
-const createHash = (input: CacheKeyInput): string => {
+const createHash = (input: ICacheKeyKeys): string => {
     const key = getCacheKey(input);
     const hash = crypto.createHash("sha1");
     hash.update(key);
@@ -20,21 +18,23 @@ const createHash = (input: CacheKeyInput): string => {
 };
 
 class CacheKey implements ICacheKey {
-    private readonly _key: string;
+    private readonly key: string;
+    public readonly keys: ICacheKeyKeys;
 
-    private constructor(key: CacheKeyInput) {
-        this._key = createHash(key);
+    private constructor(keys: ICacheKeyKeys) {
+        this.keys = keys;
+        this.key = createHash(keys);
     }
 
-    public static create(key: CacheKeyInput): ICacheKey {
+    public static create(key: ICacheKeyKeys): ICacheKey {
         return new CacheKey(key);
     }
 
     public get(): string {
-        return this._key;
+        return this.key;
     }
 }
 
-export const createCacheKey = (key: CacheKeyInput) => {
+export const createCacheKey = (key: ICacheKeyKeys) => {
     return CacheKey.create(key);
 };
