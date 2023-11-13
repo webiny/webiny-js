@@ -54,7 +54,7 @@ export const handler = createHandler({
                 locale
             };
         }),
-        createAco(),
+        createAco({ useFolderLevelPermissions: false }),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({ documentClient })
         }),
