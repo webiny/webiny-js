@@ -106,7 +106,7 @@ export class BlocksRepository {
         const decompressed = this.decompressPageBlock(pageBlock);
 
         runInAction(() => {
-            this.pageBlocks.push(decompressed);
+            this.pageBlocks = [...this.pageBlocks, decompressed];
         });
 
         this.createBlockPlugin(decompressed);

@@ -31,7 +31,6 @@ import { assignModelBeforeCreate } from "./contentModel/beforeCreate";
 import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate";
 import { assignModelBeforeDelete } from "./contentModel/beforeDelete";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { filterAsync } from "~/utils/filterAsync";
 import {
     createModelCreateFromValidation,
     createModelCreateValidation,
@@ -43,6 +42,7 @@ import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { createCacheKey, createMemoryCache } from "~/utils";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
+import { filterAsync } from "~/utils/filterAsync";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -57,11 +57,12 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     const { getTenant, getIdentity, getLocale, storageOperations, modelsPermissions, context } =
         params;
 
-    const listPluginModelsCache = createMemoryCache<CmsModel[]>();
-    const listAllModelsCache = createMemoryCache<Promise<CmsModel[]>>();
+    const listPluginModelsCache = createMemoryCache<Promise<CmsModel[]>>();
+    const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
+    const listDatabaseModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const clearModelsCache = (): void => {
-        listAllModelsCache.clear();
-        listPluginModelsCache.clear();
+        listDatabaseModelsCache.clear();
+        listFilteredModelsCache.clear();
     };
 
     const managers = new Map<string, CmsModelManager>();
@@ -78,43 +79,60 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return modelsPermissions.ensure({ rwd });
     };
 
-    const getModelsAsPlugins = (tenant: string, locale: string): CmsModel[] => {
+    const filterModel = async (model: CmsModel): Promise<boolean> => {
+        const ownsModel = await modelsPermissions.ensure(
+            { owns: model.createdBy },
+            { throw: false }
+        );
+
+        if (!ownsModel) {
+            return false;
+        }
+
+        return modelsPermissions.canAccessModel({
+            model
+        });
+    };
+
+    const listPluginModels = async (tenant: string, locale: string): Promise<CmsModel[]> => {
         const modelPlugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
         const cacheKey = createCacheKey({
             tenant,
             locale,
-            models: modelPlugins.map(({ contentModel: model }) => {
-                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
-                    model.savedOn || "unknown"
-                }`;
-            })
+            models: modelPlugins
+                .map(({ contentModel: model }) => {
+                    return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
+                        model.savedOn || "unknown"
+                    }`;
+                })
+                .join("/"),
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
         });
-        return listPluginModelsCache.getOrSet(cacheKey, () => {
-            return (
-                modelPlugins
-                    /**
-                     * We need to filter out models that are not for this tenant or locale.
-                     * If it does not have tenant or locale define, it is for every locale and tenant
-                     */
-                    .filter(plugin => {
-                        const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
-                        if (modelTenant && modelTenant !== tenant) {
-                            return false;
-                        } else if (modelLocale && modelLocale !== locale) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .map(plugin => {
-                        return {
-                            ...plugin.contentModel,
-                            tags: ensureTypeTag(plugin.contentModel),
-                            tenant,
-                            locale,
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    })
-            );
+        return listPluginModelsCache.getOrSet(cacheKey, async () => {
+            const models = modelPlugins
+                /**
+                 * We need to filter out models that are not for this tenant or locale.
+                 * If it does not have tenant or locale define, it is for every locale and tenant
+                 */
+                .filter(plugin => {
+                    const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
+                    if (modelTenant && modelTenant !== tenant) {
+                        return false;
+                    } else if (modelLocale && modelLocale !== locale) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(plugin => {
+                    return {
+                        ...plugin.contentModel,
+                        tags: ensureTypeTag(plugin.contentModel),
+                        tenant,
+                        locale,
+                        webinyVersion: context.WEBINY_VERSION
+                    };
+                }) as unknown as CmsModel[];
+            return filterAsync(models, filterModel);
         });
     };
 
@@ -135,49 +153,41 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     /**
      * The list models cache is a key -> Promise pair so it the listModels() can be called multiple times but executed only once.
+     *
+     * We always fetch the plugins and database models separately.
+     * Then we combine them and run access filtering on them
      */
     const listModels = async () => {
-        /**
-         * Maybe we can cache based on permissions, not the identity id?
-         *
-         * TODO: @adrian please check if possible.
-         */
-        const tenant = getTenant().id;
-        const locale = getLocale().code;
-        const pluginModels = getModelsAsPlugins(tenant, locale);
-        const cacheKey = createCacheKey({
-            tenant,
-            locale,
-            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
-            plugins: pluginModels.map(model => {
-                return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
-                    model.savedOn || "unknown"
-                }`;
-            })
-        });
-
-        return listAllModelsCache.getOrSet(cacheKey, async () => {
-            return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-                const databaseModels = await listModelsFromDatabase(params);
-                const models = databaseModels.concat(pluginModels);
-                /**
-                 * Filter models based on permissions.
-                 */
-                return filterAsync(models, async model => {
-                    const ownsModel = await modelsPermissions.ensure(
-                        { owns: model.createdBy },
-                        { throw: false }
-                    );
-
-                    if (!ownsModel) {
-                        return false;
-                    }
-
-                    return modelsPermissions.canAccessModel({
-                        model
-                    });
-                });
+        return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
+            /**
+             * Maybe we can cache based on permissions, not the identity id?
+             *
+             * TODO: @adrian please check if possible.
+             */
+            const tenant = getTenant().id;
+            const locale = getLocale().code;
+            const pluginModels = await listPluginModels(tenant, locale);
+            const dbCacheKey = createCacheKey({
+                tenant,
+                locale
             });
+            const databaseModels = await listDatabaseModelsCache.getOrSet(dbCacheKey, async () => {
+                return await listModelsFromDatabase(params);
+            });
+
+            const filteredCacheKey = createCacheKey({
+                dbCacheKey: dbCacheKey.get(),
+                identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
+            });
+
+            const filteredModels = await listFilteredModelsCache.getOrSet(
+                filteredCacheKey,
+                async () => {
+                    return filterAsync(databaseModels, filterModel);
+                }
+            );
+
+            return filteredModels.concat(pluginModels);
         });
     };
 
