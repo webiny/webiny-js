@@ -54,8 +54,6 @@ export const createAppResolvers = (params: Params): Resolvers => {
             },
             [`list${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 const app = context.aco.getApp(targetApp.name);
-                console.log(`security identity on context: ${context.security.getIdentity()?.id}`);
-                console.log(`security identity on app: ${app.context.security.getIdentity()?.id}`);
                 return resolveList(() => {
                     ensureAuthentication(context);
                     return app.search.list(args);
