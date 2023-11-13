@@ -1,6 +1,7 @@
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { createHandlerCore, CreateHandlerCoreParams } from "./handlerCore";
 import { AuditLogsContext, AuditLogsAcoContext } from "~/types";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 export const useHandler = (params?: CreateHandlerCoreParams) => {
     const core = createHandlerCore(params);
@@ -29,7 +30,7 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
                         ...payload?.headers
                     }
                 },
-                {} as any
+                {} as LambdaContext
             );
         }
     };

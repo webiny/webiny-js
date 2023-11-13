@@ -179,8 +179,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.
