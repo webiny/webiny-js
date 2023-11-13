@@ -74,6 +74,9 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
         const newFile: FileInput = {
             ...toImport,
             id,
+            location: {
+                folderId: "root"
+            },
             key: newKey,
             meta: { ...toImport.meta, originalKey: toImport.key }
         };
