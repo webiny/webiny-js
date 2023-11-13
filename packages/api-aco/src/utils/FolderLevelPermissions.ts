@@ -51,6 +51,7 @@ export interface FolderLevelPermissionsParams {
     listAllFolders: (folderType: string) => Promise<Folder[]>;
     canUseTeams: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
+    isAuthorizationEnabled: () => boolean;
 }
 
 export class FolderLevelPermissions {
@@ -60,6 +61,7 @@ export class FolderLevelPermissions {
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
     private readonly canUseTeams: () => boolean;
     private readonly canUseFolderLevelPermissions: () => boolean;
+    private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
@@ -69,6 +71,7 @@ export class FolderLevelPermissions {
         this.listAllFoldersCallback = params.listAllFolders;
         this.canUseTeams = params.canUseTeams;
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
+        this.isAuthorizationEnabled = params.isAuthorizationEnabled;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
@@ -107,7 +110,7 @@ export class FolderLevelPermissions {
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return [];
         }
 
@@ -275,7 +278,7 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolder(params: CanAccessFolderParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -339,7 +342,7 @@ export class FolderLevelPermissions {
     }
 
     canManageFolderPermissions(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return false;
         }
 
@@ -347,7 +350,7 @@ export class FolderLevelPermissions {
     }
 
     canManageFolderStructure(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -355,7 +358,7 @@ export class FolderLevelPermissions {
     }
 
     canManageFolderContent(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -363,7 +366,7 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolderContent(params: CanAccessFolderContentParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 

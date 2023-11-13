@@ -97,7 +97,8 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),
-        canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions()
+        canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions(),
+        isAuthorizationEnabled: () => context.security.isAuthorizationEnabled()
     });
 
     const params: CreateAcoParams = {
