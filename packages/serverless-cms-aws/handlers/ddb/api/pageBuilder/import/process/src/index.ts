@@ -78,7 +78,7 @@ export const handler = createHandler({
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         }),
-        createAco(),
+        createAco({ useFolderLevelPermissions: false }),
         createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
