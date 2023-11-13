@@ -180,7 +180,7 @@ const setupAcoContext = async (
     }
 };
 
-export const createAcoContext = (params: CreateAcoContextParams) => {
+export const createAcoContext = (params: CreateAcoContextParams = {}) => {
     const plugin = new ContextPlugin<AcoContext>(async context => {
         /**
          * We can skip the ACO initialization if the installation is pending.

@@ -12,6 +12,6 @@ export interface CreateAcoParams {
     useFolderLevelPermissions?: boolean;
 }
 
-export const createAco = (params: CreateAcoParams = {}) => {
+export const createAco = (params: CreateAcoParams) => {
     return [...createFields(), createAcoContext(params), ...createAcoGraphQL()];
 };
