@@ -37,6 +37,7 @@ export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
         setIsLoading(false);
     }, [provider]);
 
+    // To prevent setting state on unmounted component.
     useEffect(() => {
         return () => {
             isMounted.current = false;

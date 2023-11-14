@@ -16,6 +16,7 @@
     "@editorjs/editorjs": "^2.19.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@iconify/json": "^2.2.142",
     "@material-design-icons/svg": "^0.14.3",
     "@svgr/webpack": "^6.1.1",
     "@types/mime": "^2.0.3",
@@ -46,6 +47,7 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.11",
+    "mobx": "^6.9.0",
     "nanoid": "^3.1.23",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
@@ -53,7 +55,8 @@
     "react-hotkeyz": "^1.0.4",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.2",
-    "store": "^2.0.12"
+    "store": "^2.0.12",
+    "unicode-emoji-json": "^0.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

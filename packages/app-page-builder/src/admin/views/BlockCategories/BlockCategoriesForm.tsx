@@ -12,7 +12,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker/new/IconPicker";
 import { validation } from "@webiny/validation";
 import { blockCategorySlugValidator, blockCategoryDescriptionValidator } from "./validators";
 import {
@@ -209,6 +209,12 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="icon" validators={validation.create("required")}>
+                                    <IconPicker />
+                                </Bind>
+                            </Cell>
+                            {/* Second IconPicker added to test how it behaves with more than one component. */}
+                            <Cell span={12}>
+                                <Bind name="icon2" validators={validation.create("required")}>
                                     <IconPicker />
                                 </Bind>
                             </Cell>

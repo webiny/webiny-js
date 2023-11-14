@@ -6514,6 +6514,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconify/json@npm:^2.2.142":
+  version: 2.2.142
+  resolution: "@iconify/json@npm:2.2.142"
+  dependencies:
+    "@iconify/types": "*"
+    pathe: ^1.1.0
+  checksum: b6bb18dd28d0038e1f88b1f4e1b5b3e1e4013fc9f9ed8a9711439bfbe4abfda929a28e24fa68bef43b5666bdc2947ffd1fb5b88ef7b86d6fd49cb0c0ee2a20d8
+  languageName: node
+  linkType: hard
+
+"@iconify/types@npm:*":
+  version: 2.0.0
+  resolution: "@iconify/types@npm:2.0.0"
+  checksum: 029f58542c160e9d4a746869cf2e475b603424d3adf3994c5cc8d0406c47e6e04a3b898b2707840c1c5b9bd5563a1660a34b110d89fce43923baca5222f4e597
+  languageName: node
+  linkType: hard
+
 "@icons/material@npm:^0.2.4":
   version: 0.2.4
   resolution: "@icons/material@npm:0.2.4"
@@ -14436,6 +14453,7 @@ __metadata:
     "@editorjs/editorjs": ^2.19.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
+    "@iconify/json": ^2.2.142
     "@material-design-icons/svg": ^0.14.3
     "@svgr/webpack": ^6.1.1
     "@types/bytes": ^3.1.1
@@ -14472,6 +14490,7 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
+    mobx: ^6.9.0
     nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
@@ -14483,6 +14502,7 @@ __metadata:
     store: ^2.0.12
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    unicode-emoji-json: ^0.4.0
   languageName: unknown
   linkType: soft
 
@@ -35059,6 +35079,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pathe@npm:^1.1.0":
+  version: 1.1.1
+  resolution: "pathe@npm:1.1.1"
+  checksum: 34ab3da2e5aa832ebc6a330ffe3f73d7ba8aec6e899b53b8ec4f4018de08e40742802deb12cf5add9c73b7bf719b62c0778246bd376ca62b0fb23e0dde44b759
+  languageName: node
+  linkType: hard
+
 "pbkdf2@npm:^3.0.3":
   version: 3.1.2
   resolution: "pbkdf2@npm:3.1.2"
@@ -42563,6 +42590,13 @@ __metadata:
   version: 2.0.0
   resolution: "unicode-canonical-property-names-ecmascript@npm:2.0.0"
   checksum: 39be078afd014c14dcd957a7a46a60061bc37c4508ba146517f85f60361acf4c7539552645ece25de840e17e293baa5556268d091ca6762747fdd0c705001a45
+  languageName: node
+  linkType: hard
+
+"unicode-emoji-json@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "unicode-emoji-json@npm:0.4.0"
+  checksum: 3c70df3d004d06f7f6efbda0b4935646027e4599389ccc508ccf20e6dd1e69897822a52769e33cf5b6f7c55b467587f2a8f10394b70cdc3f83deec92065c2ebe
   languageName: node
   linkType: hard
 

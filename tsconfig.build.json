@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "lib": ["esnext"],
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,

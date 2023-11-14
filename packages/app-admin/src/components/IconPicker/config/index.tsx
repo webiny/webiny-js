@@ -2,11 +2,46 @@ import React, { useCallback, useMemo } from "react";
 
 import { createConfigurableComponent } from "@webiny/react-properties";
 
-import { IconPackProvider, IconProps } from "./IconPackProvider";
+import { IconDTO } from "~/components/IconPicker/new/domain";
+import { IconPackProvider } from "./IconPackProvider";
 
-const { icons: fa6RegularIcons, categories: fa6RegularCategories } = require("./fa6-regular.json");
-const { icons: fa6SolidIcons, categories: fa6SolidCategories } = require("./fa6-solid.json");
-const emojis = require("./emojis.json");
+import {
+    icons as fa6RegularIconsJson,
+    categories as fa6RegularCategoriesJson
+} from "@iconify/json/json/fa6-regular.json";
+import {
+    icons as fa6SolidIconsJson,
+    categories as fa6SolidCategoriesJson
+} from "@iconify/json/json/fa6-solid.json";
+import emojisJson from "unicode-emoji-json/data-by-emoji.json";
+
+type FaIconSet = {
+    [key: string]: {
+        body: string;
+        width?: number;
+    };
+};
+
+type FaCategorySet = {
+    [key: string]: string[];
+};
+
+type EmojiSet = {
+    [key: string]: {
+        name: string;
+        slug: string;
+        group: string;
+        emoji_version: string;
+        unicode_version: string;
+        skin_tone_support: boolean;
+    };
+};
+
+const fa6RegularIcons: FaIconSet = fa6RegularIconsJson;
+const fa6RegularCategories: FaCategorySet = fa6RegularCategoriesJson;
+const fa6SolidIcons: FaIconSet = fa6SolidIconsJson;
+const fa6SolidCategories: FaCategorySet = fa6SolidCategoriesJson;
+const emojis: EmojiSet = emojisJson;
 
 const base = createConfigurableComponent<IconPickerConfig>("IconPicker");
 
@@ -15,7 +50,7 @@ export const IconPickerWithConfig = base.WithConfig;
 
 interface IconPickerConfig {
     iconPackProviders: {
-        icons: IconProps[];
+        icons: IconDTO[];
         initialize: () => Promise<void> | void;
         isLoading: boolean;
         isInitialized: boolean;
@@ -30,9 +65,9 @@ export function useIconPickerConfig() {
 
     const initialize = useCallback(async () => {
         await Promise.all(
-            iconPackProviders.map(async provider => {
+            iconPackProviders.map(provider => {
                 if (!provider.isInitialized && !provider.isLoading) {
-                    await provider.initialize();
+                    provider.initialize();
                 }
             })
         );
@@ -104,7 +139,7 @@ export const DefaultIcons = () => {
             />
 
             {/* Examples of custom icons/emojis providers and async provider */}
-            <IconPickerConfig.IconPackProvider
+            {/* <IconPickerConfig.IconPackProvider
                 name="test_custom_emojis"
                 provider={() => [{ type: "emoji", name: "testing_face", value: "😀" }]}
             />
@@ -146,7 +181,7 @@ export const DefaultIcons = () => {
                         };
                     });
                 }}
-            />
+            /> */}
         </IconPickerConfig>
     );
 };
