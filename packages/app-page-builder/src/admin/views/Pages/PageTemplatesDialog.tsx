@@ -37,6 +37,7 @@ const DetailsContainer = styled.div`
     height: calc(100% - 10px);
     overflow: hidden;
     position: relative;
+
     nav {
         background-color: var(--mdc-theme-surface);
     }
@@ -191,7 +192,11 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                         ))}
                     </ScrollList>
                     <BlankTemplateButtonWrapper>
-                        <ButtonSecondary disabled={isLoading} onClick={() => onSelect()}>
+                        <ButtonSecondary
+                            disabled={isLoading}
+                            onClick={() => onSelect()}
+                            data-testid={"pb-pages-list-use-blank-template-btn"}
+                        >
                             Use a blank page template
                         </ButtonSecondary>
                     </BlankTemplateButtonWrapper>
@@ -214,6 +219,7 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                                             <HeaderActions>
                                                 <ButtonSecondary
                                                     disabled={isLoading}
+                                                    data-testid={"pb-pages-list-use-template-btn"}
                                                     onClick={() =>
                                                         handleCreatePageFromTemplate(activeTemplate)
                                                     }
