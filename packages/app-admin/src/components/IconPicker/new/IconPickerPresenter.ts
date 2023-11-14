@@ -2,12 +2,9 @@ import { IconDTO, IconRepository } from "~/components/IconPicker/new/domain";
 
 export interface IconPickerPresenterInterface {
     load(icon: IconDTO): Promise<void>;
-    open(): void;
-    close(): void;
     setIcon(icon: IconDTO): void;
     filterIcons(value: string): void;
     get vm(): {
-        isOpen: boolean;
         icons: IconDTO[];
         selectedIcon: IconDTO | null;
         filter: string | null;
@@ -16,7 +13,6 @@ export interface IconPickerPresenterInterface {
 
 export class IconPickerPresenter implements IconPickerPresenterInterface {
     private repository: IconRepository;
-    private isOpen = false;
     private selectedIcon: IconDTO | null = null;
     private filter: string | null = null;
 
@@ -31,19 +27,10 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
 
     get vm() {
         return {
-            isOpen: this.isOpen,
             icons: this.repository.getIcons(),
             selectedIcon: this.selectedIcon,
             filter: this.filter
         };
-    }
-
-    open() {
-        this.isOpen = true;
-    }
-
-    close() {
-        this.isOpen = false;
     }
 
     setIcon(icon: IconDTO) {

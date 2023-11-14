@@ -13,9 +13,19 @@ class IconRepositoryFactory {
         if (!this.cache.has(namespace)) {
             this.cache.set(namespace, new IconRepository(config, namespace));
         }
+
+        const repository = this.cache.get(namespace) as IconRepository;
+
         // We can trigger repository.initialize() here.
 
-        return this.cache.get(namespace) as IconRepository;
+        repository.config.initialize();
+
+        if (!config.isLoading) {
+            repository.config = config;
+            this.cache.set(namespace, repository);
+        }
+
+        return repository;
     }
 }
 

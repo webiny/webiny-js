@@ -1,15 +1,41 @@
 import React, { useEffect, useMemo } from "react";
 
+import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
+
+import { Menu } from "@webiny/ui/Menu";
+import { Typography } from "@webiny/ui/Typography";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FormComponentProps } from "@webiny/ui/types";
 
 import { IconPickerPresenter } from "./IconPickerPresenter";
-import { IconPickerMainUIComponent } from "./IconPickerMainUIComponent";
+import { IconRepository } from "./domain/IconRepository";
+import { IconRenderer } from "../IconRenderer";
+import {
+    IconPickerWrapper,
+    iconPickerLabel,
+    IconPickerInput,
+    MenuHeader,
+    placeholderIcon
+} from "../IconPicker.styles";
 
-interface IconPickerComponentProps extends FormComponentProps {
-    repository: any;
+export interface IconPickerProps extends FormComponentProps {
+    label?: string;
+    description?: string;
 }
 
-export const IconPickerComponent = ({ repository, ...props }: IconPickerComponentProps) => {
+export interface IconPickerComponentProps extends IconPickerProps {
+    repository: IconRepository;
+}
+
+export const IconPickerComponent = ({
+    repository,
+    label,
+    description,
+    ...props
+}: IconPickerComponentProps) => {
+    const { isValid: validationIsValid, message: validationMessage } = props.validation || {};
+
     const presenter = useMemo(() => {
         return new IconPickerPresenter(repository);
     }, [repository]);
@@ -24,13 +50,44 @@ export const IconPickerComponent = ({ repository, ...props }: IconPickerComponen
         }
     }, [presenter.vm.selectedIcon]);
 
+    console.log("Icons", presenter.vm.icons);
+
     return (
-        <IconPickerMainUIComponent
-            icons={presenter.vm.icons}
-            open={presenter.vm.isOpen}
-            value={presenter.vm.selectedIcon}
-            onChange={icon => presenter.setIcon(icon)}
-            onFilter={value => presenter.filterIcons(value)}
-        />
+        <IconPickerWrapper>
+            {label && (
+                <div className={iconPickerLabel}>
+                    <Typography use={"body1"}>{label}</Typography>
+                </div>
+            )}
+
+            <Menu
+                handle={
+                    <IconPickerInput>
+                        {presenter.vm.selectedIcon ? (
+                            <IconRenderer icon={presenter.vm.selectedIcon} />
+                        ) : (
+                            <SearchIcon width={32} height={32} className={placeholderIcon} />
+                        )}
+                    </IconPickerInput>
+                }
+            >
+                {({ closeMenu }: { closeMenu: () => void }) => (
+                    <>
+                        <MenuHeader>
+                            <Typography use={"body1"}>Select an icon</Typography>
+                            <CloseIcon onClick={() => closeMenu()} />
+                        </MenuHeader>
+                        TABS
+                    </>
+                )}
+            </Menu>
+
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
+            {validationIsValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </IconPickerWrapper>
     );
 };
