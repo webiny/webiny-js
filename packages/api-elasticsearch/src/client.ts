@@ -33,20 +33,29 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions): 
 
         if (!clientOptions.auth) {
             const region = String(process.env.AWS_REGION);
-            /**
-             * TODO fix the CI to output the AWS_SESSION_TOKEN
-             */
+
             const credentials = {
-                accessKeyId: String(process.env.AWS_ACCESS_KEY_ID),
-                secretAccessKey: String(process.env.AWS_SECRET_ACCESS_KEY),
-                sessionToken: String(process.env.AWS_SESSION_TOKEN)
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+                sessionToken: process.env.AWS_SESSION_TOKEN
             };
+
+            const errors = Object.keys(credentials).filter(key => {
+                const value = credentials[key as keyof typeof credentials];
+                return !value;
+            });
+            if (errors.length > 0) {
+                throw new WebinyError(
+                    `Missing keys values: ${errors.join(", ")}`,
+                    "MISSING_AWS_CREDENTIALS"
+                );
+            }
 
             clientOptions = {
                 ...clientOptions,
-                // @ts-expect-error
                 ...createAwsElasticsearchConnector({
                     region,
+                    // @ts-expect-error
                     credentials
                 })
             };
