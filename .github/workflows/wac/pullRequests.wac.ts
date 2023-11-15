@@ -1,7 +1,7 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps } from "./steps";
+import { createSetupVerdaccioSteps, createAwsCredentialsStep } from "./steps";
+import { createValidateWorkflowsJob } from "./jobs";
 import { NODE_OPTIONS, NODE_VERSION, listPackagesWithJestTests } from "./utils";
-import {createAwsCredentialsStep} from "./steps/createAwsCredentialsStep";
 
 // Let's assign some of the common steps into a standalone const.
 const createSetupSteps = ({ workingDirectory = "" } = {}) =>
@@ -44,7 +44,7 @@ const createJestTestsJob = (storage: string | null) => {
 
         // Required in order for the `aws-actions/configure-aws-credentials` to work.
         // https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
-        permissions: {"id-token": "write" },
+        permissions: { "id-token": "write" },
 
         strategy: {
             "fail-fast": false,
@@ -96,6 +96,7 @@ const createJestTestsJob = (storage: string | null) => {
 
     return job;
 };
+
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: {
@@ -103,31 +104,15 @@ export const pullRequests = createWorkflow({
             branches: ["next"]
         }
     },
-
-    env: {
-        NODE_OPTIONS
-    },
+    env: { NODE_OPTIONS },
     jobs: {
-        "validate-workflows": {
-            name: "Validate workflows",
-            "runs-on": "ubuntu-latest",
-            steps: [
-                {
-                    name: "Validate",
-                    run: "npx github-actions-wac validate"
-                }
-            ]
-        },
-        "validate-commits": {
+        validateWorkflows: createValidateWorkflowsJob(),
+        validateCommits: {
             name: "Validate commit messages",
             "runs-on": "ubuntu-latest",
             steps: [
-                {
-                    uses: "actions/checkout@v3"
-                },
-                {
-                    uses: "webiny/action-conventional-commits@v1.1.0"
-                }
+                { uses: "actions/checkout@v3" },
+                { uses: "webiny/action-conventional-commits@v1.1.0" }
             ]
         },
         init: {

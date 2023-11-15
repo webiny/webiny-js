@@ -10,13 +10,13 @@ name: Pull Requests
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
 jobs:
-  validate-workflows:
+  validateWorkflows:
     name: Validate workflows
     runs-on: ubuntu-latest
     steps:
       - name: Validate
         run: npx github-actions-wac validate
-  validate-commits:
+  validateCommits:
     name: Validate commit messages
     runs-on: ubuntu-latest
     steps:

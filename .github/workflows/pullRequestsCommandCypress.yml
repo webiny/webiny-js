@@ -8,6 +8,12 @@ env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
+  validateWorkflows:
+    name: Validate workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate
+        run: npx github-actions-wac validate
   checkComment:
     name: Check comment for /cypress
     runs-on: ubuntu-latest

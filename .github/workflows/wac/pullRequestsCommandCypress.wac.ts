@@ -1,7 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps, createDeployWebinySteps } from "./steps";
+import {
+    createSetupVerdaccioSteps,
+    createDeployWebinySteps,
+    createAwsCredentialsStep
+} from "./steps";
 import { NODE_OPTIONS, NODE_VERSION } from "./utils";
-import {createAwsCredentialsStep} from "./steps/createAwsCredentialsStep";
+import { createValidateWorkflowsJob } from "./jobs";
 
 // Let's assign some of the common steps into a standalone const.
 const createSetupSteps = ({ workingDirectory = "" } = {}) =>
@@ -86,7 +90,7 @@ const createJobs = (dbSetup: string) => {
 
         // Required in order for the `aws-actions/configure-aws-credentials` to work.
         // https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
-        permissions: {"id-token": "write" },
+        permissions: { "id-token": "write" },
 
         "runs-on": "ubuntu-latest",
         outputs: {
@@ -269,6 +273,7 @@ export const pullRequestsCommandCypress = createWorkflow({
         AWS_REGION: "eu-central-1"
     },
     jobs: {
+        validateWorkflows: createValidateWorkflowsJob(),
         checkComment: {
             name: `Check comment for /cypress`,
             "runs-on": "ubuntu-latest",
