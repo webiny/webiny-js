@@ -1,6 +1,5 @@
 import installation from "~/plugins/installation";
-export * from "./contexts/Tenancy";
-export * from "./hooks/useTenancy";
+export { useTenancy } from "@webiny/app-admin";
 export * from "./withTenant";
 export * from "./Tenancy";
 

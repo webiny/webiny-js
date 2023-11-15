@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as localStorage } from "store";
-import { LoginScreen, Tags } from "~/index";
+import { LoginScreen, Tags, useTenancy } from "~/index";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -19,7 +19,7 @@ import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialo
 import { config as appConfig } from "@webiny/app/config";
 
 export const AppInstaller: React.FC = ({ children }) => {
-    const tenantId = localStorage.get("webiny_tenant") || "root";
+    const { tenant: tenantId } = useTenancy();
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const isRootTenant = tenantId === "root";

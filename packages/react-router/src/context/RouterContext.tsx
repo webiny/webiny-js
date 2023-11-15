@@ -43,9 +43,3 @@ export const RouterProvider: React.FC = ({ children }) => {
     }, []);
     return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
-
-export const RouterConsumer: React.FC = ({ children }) => (
-    <RouterContext.Consumer>
-        {props => React.cloneElement(children as any, props)}
-    </RouterContext.Consumer>
-);

@@ -1,8 +1,7 @@
-import React, { useMemo, useCallback, Fragment, useState } from "react";
-import { default as localStorage } from "store";
+import React, { useMemo, useCallback, Fragment, useState, useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-import { useWcp } from "@webiny/app-admin";
+import { useWcp } from "@webiny/app-wcp";
 
 export interface Tenant {
     id: string;
@@ -23,53 +22,62 @@ export const TenancyContext = React.createContext<TenancyContextValue>({
     isMultiTenant: false
 });
 
-const LOCAL_STORAGE_KEY = "webiny_tenant";
-
-function loadState(): string | null {
-    return localStorage.get(LOCAL_STORAGE_KEY) || null;
-}
-
-function storeState(state: string) {
-    localStorage.set(LOCAL_STORAGE_KEY, state);
-}
+const tryMatchingTenantInPathname = () => {
+    const pathParts = location.pathname.split("/").filter(Boolean);
+    if (pathParts.length > 0 && pathParts[0].startsWith("t_")) {
+        return pathParts[0].substring(2);
+    }
+    return undefined;
+};
 
 const getInitialTenant = (): string | null => {
     // Check if `tenantId` query parameter is set. If it is, it takes precedence over any other source.
     const searchParams = new URLSearchParams(location.search);
     const tenantId = searchParams.get("tenantId");
-    if (tenantId) {
-        storeState(tenantId);
-    }
 
-    const currentTenant = loadState() || "root";
+    const currentTenant = tenantId || tryMatchingTenantInPathname() || "root";
     plugins.register(new TenantHeaderLinkPlugin(currentTenant));
     return currentTenant;
 };
 
-export const TenancyProvider: React.FC = props => {
+export interface TenancyProviderProps {
+    onTenant?: (tenantId: string) => void;
+    children: React.ReactElement;
+}
+
+export const TenancyProvider = ({ onTenant, children }: TenancyProviderProps) => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
     const { canUseFeature } = useWcp();
 
     const changeTenant = useCallback(
         (tenant: string): void => {
             if (!tenant) {
-                localStorage.remove(LOCAL_STORAGE_KEY);
-
                 window.location.pathname = "/";
             }
 
             if (!currentTenant) {
                 plugins.register(new TenantHeaderLinkPlugin(tenant));
                 setTenant(tenant);
-                storeState(tenant);
                 return;
             }
 
-            storeState(tenant);
-            window.location.pathname = "/";
+            window.location.pathname = tenant === "root" ? "/" : `/t_${tenant}/`;
         },
         [currentTenant]
     );
+
+    useEffect(() => {
+        if (currentTenant) {
+            onTenant && onTenant(currentTenant);
+
+            if (
+                currentTenant !== "root" &&
+                !window.location.pathname.startsWith(`/t_${currentTenant}`)
+            ) {
+                window.location.pathname = `/t_${currentTenant}/`;
+            }
+        }
+    }, [onTenant, currentTenant]);
 
     const value = useMemo<TenancyContextValue>(
         () => ({
@@ -80,9 +88,13 @@ export const TenancyProvider: React.FC = props => {
         [currentTenant]
     );
 
+    if (!currentTenant) {
+        return null;
+    }
+
     return (
         <TenancyContext.Provider value={value}>
-            <Fragment>{props.children}</Fragment>
+            <Fragment>{children}</Fragment>
         </TenancyContext.Provider>
     );
 };

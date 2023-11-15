@@ -7,8 +7,8 @@ import React, {
     FunctionComponentElement,
     ReactElement
 } from "react";
-import { BrowserRouter, RouteProps, Route } from "@webiny/react-router";
-import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
+import { RouteProps, Route } from "@webiny/react-router";
+import { compose, CompositionProvider, Decorator } from "@webiny/react-composition";
 import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
@@ -20,12 +20,12 @@ type RoutesByPath = {
 interface State {
     routes: RoutesByPath;
     plugins: JSX.Element[];
-    providers: HigherOrderComponent[];
+    providers: Decorator[];
 }
 
 interface AppContext extends State {
     addRoute(route: JSX.Element): void;
-    addProvider(hoc: HigherOrderComponent): void;
+    addProvider(hoc: Decorator): void;
     addPlugin(plugin: React.ReactNode): void;
 }
 
@@ -43,14 +43,25 @@ export const useApp = () => {
     return appContext;
 };
 
+export interface ContentDecorator {
+    (element: ReactElement): ReactElement;
+}
+
 export interface AppProps {
     debounceRender?: number;
     routes?: Array<RouteProps>;
-    providers?: Array<HigherOrderComponent>;
+    providers?: Array<Decorator>;
+    contentDecorator?: ContentDecorator;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
+export const App = ({
+    debounceRender = 50,
+    routes = [],
+    providers = [],
+    contentDecorator = el => el,
+    children
+}: AppProps) => {
     const [state, setState] = useState<State>({
         routes: routes.reduce<RoutesByPath>((acc, item) => {
             return { ...acc, [item.path as string]: <Route {...item} /> };
@@ -115,18 +126,19 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
 
     Providers.displayName = "Providers";
 
+    // @ts-ignore
     return (
         <AppContext.Provider value={appContext}>
             <CompositionProvider>
                 {children}
-                <BrowserRouter>
+                {contentDecorator(
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
                         <DebounceRender wait={debounceRender}>
                             <AppRouter />
                         </DebounceRender>
                     </Providers>
-                </BrowserRouter>
+                )}
             </CompositionProvider>
         </AppContext.Provider>
     );

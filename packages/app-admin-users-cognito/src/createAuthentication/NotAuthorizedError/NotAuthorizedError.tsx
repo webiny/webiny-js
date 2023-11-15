@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import Helmet from "react-helmet";
 import authErrorImg from "./SecureRouteError.svg";
 import { Typography } from "@webiny/ui/Typography";
-import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy";
+import { useTenancy } from "@webiny/app-admin";
 
 const ContentWrapper = styled("div")({
     display: "block",

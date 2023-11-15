@@ -19,13 +19,7 @@ export const getTenantId = (): string | null => {
         return tenant;
     }
 
-    // 3. Get tenant via `window.localStorage.webiny_tenant`. Used within the Admin app.
-    tenant = window.localStorage.webiny_tenant;
-    if (tenant) {
-        return tenant;
-    }
-
-    // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_TENANT_ID`
+    // 3. Finally, for development purposes, we take the `WEBINY_WEBSITE_TENANT_ID`
     // and `WEBINY_ADMIN_TENANT_ID` environment variables into consideration.
     if (isLocalhost()) {
         return process.env.WEBINY_WEBSITE_TENANT_ID || process.env.WEBINY_ADMIN_TENANT_ID || null;

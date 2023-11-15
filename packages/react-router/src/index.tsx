@@ -1,18 +1,15 @@
 import React, { useContext } from "react";
 import {
-    BrowserRouter as RBrowserRouter,
-    BrowserRouterProps,
     UNSAFE_RouteContext as __RouterContext,
     useLocation,
     useParams,
     useSearchParams
 } from "react-router-dom";
-import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
 import { ReactRouterContext, RouterContext } from "./context/RouterContext";
 /**
  * Webiny enhancements and backwards compatibility with react-router v5.
  */
-import enhancer from "./routerEnhancer";
+import { BrowserRouter as WebinyRouter, BrowserRouterProps } from "./BrowserRouter";
 import { useHistory, UseHistory } from "~/useHistory";
 import { RouteProps } from "./Route";
 
@@ -90,10 +87,7 @@ export function useRouter(): UseRouter {
 }
 
 /**
- * For Webiny, we only need a BrowserRouter, and we also export a StaticRouter, if we ever
- * need to do SSR. Right now, StaticRouter is not being used at all.
+ * We have a custom version of the BrowserRouter, with the ability to provide our own instance of `History`.
  */
-export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
+export const BrowserRouter: React.FC<BrowserRouterProps> = WebinyRouter;
 export type { BrowserRouterProps };
-
-export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);
