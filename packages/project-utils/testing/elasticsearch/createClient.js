@@ -179,6 +179,13 @@ const attachCustomEvents = client => {
 
     client.indices.registerIndex = registerIndex;
 
+    const bulk = client.bulk;
+    client.bulk = async (...params) => {
+        const result = await bulk.apply(client, params);
+        await client.indices.refreshAll();
+        return result;
+    };
+
     return client;
 };
 
