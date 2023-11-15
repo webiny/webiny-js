@@ -38,8 +38,6 @@ import elasticsearchClientContextPlugin, {
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { configurations } from "~/configurations";
-import { createContextPlugin } from "@webiny/handler";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
@@ -99,18 +97,6 @@ export const useHandler = (params: Params) => {
         return index;
     };
 
-    const refreshIndex = async (): Promise<void> => {
-        const index = getPageBuilderIndexName();
-
-        try {
-            await elasticsearch.indices.refresh({ index });
-        } catch (ex) {
-            console.log(`Could not reindex elasticsearch index: ${index}`);
-            console.log(ex.message);
-            console.log(JSON.stringify(ex));
-        }
-    };
-
     /**
      *
      * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -167,26 +153,6 @@ export const useHandler = (params: Params) => {
                         process: "process"
                     }
                 }
-            }),
-            createContextPlugin<PbContext>(async context => {
-                context.pageBuilder.onPageAfterCreate.subscribe(async () => {
-                    return refreshIndex();
-                });
-                context.pageBuilder.onPageAfterCreateFrom.subscribe(async () => {
-                    return refreshIndex();
-                });
-                context.pageBuilder.onPageAfterUpdate.subscribe(async () => {
-                    return refreshIndex();
-                });
-                context.pageBuilder.onPageAfterDelete.subscribe(async () => {
-                    return refreshIndex();
-                });
-                context.pageBuilder.onPageAfterPublish.subscribe(async () => {
-                    return refreshIndex();
-                });
-                context.pageBuilder.onPageAfterUnpublish.subscribe(async () => {
-                    return refreshIndex();
-                });
             }),
             ...(params.plugins || [])
         ]

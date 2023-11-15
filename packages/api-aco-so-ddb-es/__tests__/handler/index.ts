@@ -103,13 +103,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         return index;
     };
 
-    const refreshIndex = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
-        const index = createIndexName(model);
-        return elasticsearch.indices.refresh({
-            index
-        });
-    };
-
     const handler = createHandler({
         plugins: [
             createGzipCompression(),
@@ -133,10 +126,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             new ContextPlugin<CmsContext>(async context => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
-                    elasticsearch.indices.registerIndex(createIndexName(model));
-                });
-                context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
+                    elasticsearch.indices.create({
+                        index: createIndexName(model)
+                    });
                 });
             }),
             createHeadlessCmsGraphQL(),
