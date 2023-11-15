@@ -51,11 +51,11 @@ const createDynamoStreamRecord = (eventName, data = {}) => {
 };
 
 const processDelete = async (documentClient, handler, params) => {
-    if (isElasticsearchStreamTable(params?.TableName) === false) {
+    if (isElasticsearchStreamTable(params.input?.TableName) === false) {
         return;
     }
     // Get original item from DDB to use as OldImage
-    const { Key, TableName } = params;
+    const { Key, TableName } = params.input;
     const { Item } = await documentClient.get({ Key, TableName });
 
     if (!Item || !Item.index) {
