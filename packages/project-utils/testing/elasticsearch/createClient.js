@@ -179,10 +179,20 @@ const attachCustomEvents = client => {
 
     client.indices.registerIndex = registerIndex;
 
+    let isDirty = false;
+    const search = client.search;
+    client.search = async (...params) => {
+        if (isDirty) {
+            await client.indices.refreshAll();
+            isDirty = false;
+        }
+        return await search.apply(client, params);
+    };
+
     const bulk = client.bulk;
     client.bulk = async (...params) => {
         const result = await bulk.apply(client, params);
-        await client.indices.refreshAll();
+        isDirty = true;
         return result;
     };
 
