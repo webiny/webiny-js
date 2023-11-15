@@ -156,6 +156,20 @@ const attachCustomEvents = client => {
         logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
 
+    const refreshIndex = async index => {
+        try {
+            await client.indices.refresh({
+                index,
+                ignore_unavailable: true
+            });
+        } catch (ex) {
+            logger.error(`Could not refresh index "${index}": ${ex.message}`);
+            throw ex;
+        }
+    };
+
+    const dirtyIndexes = new Set();
+
     client.indices.refreshAll = async () => {
         logger.debug(`Running "client.indices.refreshAll".`);
         const indexes = Array.from(registeredIndexes.values());
@@ -164,36 +178,41 @@ const attachCustomEvents = client => {
         }
         logger.debug(indexes, "Refreshing all indexes.");
         for (const index of indexes) {
-            try {
-                await client.indices.refresh({
-                    index,
-                    ignore_unavailable: true
-                });
-            } catch (ex) {
-                logger.error(`Could not refresh index "${index}": ${ex.message}`);
-                throw ex;
-            }
+            await refreshIndex(index);
+            dirtyIndexes.delete(index);
         }
         logger.debug(`Finished "client.indices.refreshAll".\n`);
     };
 
     client.indices.registerIndex = registerIndex;
 
-    let isDirty = false;
     const search = client.search;
     client.search = async (...params) => {
-        if (isDirty) {
-            await client.indices.refreshAll();
-            isDirty = false;
+        if (dirtyIndexes.size === 0) {
+            return await search.apply(client, params);
         }
+        const [param] = params;
+        const index = param?.index;
+        if (!index || dirtyIndexes.has(index) === false) {
+            return await search.apply(client, params);
+        }
+        await refreshIndex(index);
+        dirtyIndexes.delete(index);
         return await search.apply(client, params);
     };
 
     const bulk = client.bulk;
     client.bulk = async (...params) => {
-        const result = await bulk.apply(client, params);
-        isDirty = true;
-        return result;
+        const [param] = params;
+        const { body } = param;
+        if (Array.isArray(body)) {
+            for (const item of body) {
+                if (item.index?._index) {
+                    dirtyIndexes.add(item.index?._index);
+                }
+            }
+        }
+        return await bulk.apply(client, params);
     };
 
     return client;
