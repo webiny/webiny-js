@@ -1,2 +1,2 @@
 export * from "./createJob";
-export * from "./createValidateWorfklowsJob";
+export * from "./createValidateWorkflowsJob";

@@ -10,17 +10,12 @@ name: Pull Requests
 jobs:
   validateWorkflows:
     name: Validate workflows
-    steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - uses: actions/checkout@v3
-      - name: Validate workflow
-        run: npx github-actions-wac validate
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Validate
+        run: npx github-actions-wac validate
   validateCommits:
     name: Validate commit messages
     steps:
