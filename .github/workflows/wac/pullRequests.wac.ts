@@ -1,5 +1,5 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps, createAwsCredentialsStep } from "./steps";
+import { createSetupVerdaccioSteps } from "./steps";
 import { createValidateWorkflowsJob, createJob } from "./jobs";
 import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
 
