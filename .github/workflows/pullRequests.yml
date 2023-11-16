@@ -7,21 +7,32 @@ name: Pull Requests
   pull_request:
     branches:
       - next
-env:
-  NODE_OPTIONS: '--max_old_space_size=4096'
 jobs:
   validateWorkflows:
     name: Validate workflows
-    runs-on: ubuntu-latest
     steps:
-      - name: Validate
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+      - name: Validate workflow
         run: npx github-actions-wac validate
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommits:
     name: Validate commit messages
-    runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@v3
       - uses: webiny/action-conventional-commits@v1.1.0
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   init:
     name: Init
     runs-on: webiny-build-packages
@@ -33,8 +44,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Get timestamp
         id: get-timestamp
         run: >-
@@ -66,17 +75,17 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
-  code-analysis:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  staticCodeAnalysis:
     needs: init
     name: Static code analysis
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -95,7 +104,11 @@ jobs:
         run: yarn check-ts-configs
       - name: ESLint
         run: yarn eslint
-  code-analysis-typescript:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
@@ -103,8 +116,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -113,11 +124,12 @@ jobs:
         run: yarn --immutable
       - name: Build packages (full)
         run: yarn build
-  jest-tests-no-storage:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  jestTestsNoStorage:
     needs: init
     name: ${{ matrix.package.cmd }}
-    permissions:
-      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -130,19 +142,19 @@ jobs:
           fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-dynamodb-to-elasticsearch","id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
           }}
     runs-on: ${{ matrix.os }}
-    env: {}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -157,11 +169,11 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-  jest-tests-ddb:
-    needs: init
-    name: ${{ matrix.package.cmd }}
     permissions:
       id-token: write
+  jestTestsDdb:
+    needs: init
+    name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
       matrix:
@@ -188,19 +200,19 @@ jobs:
           --storage=ddb","storage":"ddb","id":"api-tenancy_ddb"},{"cmd":"packages/api-tenant-manager
           --storage=ddb","storage":"ddb","id":"api-tenant-manager_ddb"}]') }}
     runs-on: ${{ matrix.os }}
-    env: {}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -215,11 +227,11 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-  jest-tests-ddb-es:
-    needs: init
-    name: ${{ matrix.package.cmd }}
     permissions:
       id-token: write
+  jestTestsDdbEs:
+    needs: init
+    name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
       matrix:
@@ -243,6 +255,8 @@ jobs:
           }}
     runs-on: ${{ matrix.os }}
     env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -250,14 +264,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -272,12 +284,13 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+    permissions:
+      id-token: write
     if: needs.init.outputs.is-fork-pr != 'true'
-  verdaccio-publish:
-    if: needs.init.outputs.is-fork-pr != 'true'
-    needs: init
+  verdaccioPublish:
     name: Publish to Verdaccio
-    runs-on: ubuntu-latest
+    needs: init
+    if: needs.init.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -319,9 +332,13 @@ jobs:
           path: |
             .verdaccio/
             .verdaccio.yaml
-  test-create-webiny-project:
-    needs: verdaccio-publish
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  testCreateWebinyProject:
     name: Test "create-webiny-project"
+    needs: verdaccioPublish
     strategy:
       fail-fast: false
       matrix:
@@ -330,9 +347,11 @@ jobs:
         node:
           - 18
     runs-on: ${{ matrix.os }}
-    env:
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -359,3 +378,6 @@ jobs:
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false

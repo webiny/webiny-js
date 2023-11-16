@@ -1,18 +1,7 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createSetupVerdaccioSteps, createAwsCredentialsStep } from "./steps";
-import { createValidateWorkflowsJob } from "./jobs";
-import { NODE_OPTIONS, NODE_VERSION, listPackagesWithJestTests } from "./utils";
-
-const createSetupSteps = ({ workingDirectory = "" } = {}) =>
-    [
-        {
-            uses: "actions/setup-node@v3",
-            with: {
-                "node-version": NODE_VERSION
-            }
-        },
-        { uses: "actions/checkout@v3", with: { path: workingDirectory } }
-    ] as NonNullable<NormalJob["steps"]>;
+import { createValidateWorkflowsJob, createJob } from "./jobs";
+import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
 
 const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = {};
@@ -35,14 +24,9 @@ const createJestTestsJob = (storage: string | null) => {
         storage
     });
 
-    const job: NormalJob = {
+    const job: NormalJob = createJob({
         needs: "init",
         name: "${{ matrix.package.cmd }}",
-
-        // Required in order for the `aws-actions/configure-aws-credentials` to work.
-        // https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
-        permissions: { "id-token": "write" },
-
         strategy: {
             "fail-fast": false,
             matrix: {
@@ -53,9 +37,8 @@ const createJestTestsJob = (storage: string | null) => {
         },
         "runs-on": "${{ matrix.os }}",
         env,
+        awsAuth: true,
         steps: [
-            ...createSetupSteps(),
-            createAwsCredentialsStep(),
             {
                 uses: "actions/cache@v3",
                 with: {
@@ -83,7 +66,7 @@ const createJestTestsJob = (storage: string | null) => {
                 run: "yarn test ${{ matrix.package.cmd }}"
             }
         ]
-    };
+    });
 
     // We prevent running of Jest tests if a PR was created from a fork.
     // This is because we don't want to expose our AWS credentials to forks.
@@ -94,25 +77,16 @@ const createJestTestsJob = (storage: string | null) => {
     return job;
 };
 
-export const pullRequestsTest = createWorkflow({
-    name: "Pull Requests (TEST)",
-    on: {
-        pull_request: {
-            branches: ["next"]
-        }
-    },
-    env: { NODE_OPTIONS },
+export const pullRequests = createWorkflow({
+    name: "Pull Requests",
+    on: { pull_request: { branches: ["next"] } },
     jobs: {
         validateWorkflows: createValidateWorkflowsJob(),
-        validateCommits: {
+        validateCommits: createJob({
             name: "Validate commit messages",
-            "runs-on": "ubuntu-latest",
-            steps: [
-                { uses: "actions/checkout@v3" },
-                { uses: "webiny/action-conventional-commits@v1.1.0" }
-            ]
-        },
-        init: {
+            steps: [{ uses: "webiny/action-conventional-commits@v1.1.0" }]
+        }),
+        init: createJob({
             name: "Init",
             "runs-on": "webiny-build-packages",
             outputs: {
@@ -120,7 +94,6 @@ export const pullRequestsTest = createWorkflow({
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
             },
             steps: [
-                ...createSetupSteps(),
                 {
                     name: "Get timestamp",
                     id: "get-timestamp",
@@ -164,13 +137,11 @@ export const pullRequestsTest = createWorkflow({
                     }
                 }
             ]
-        },
-        "code-analysis": {
+        }),
+        staticCodeAnalysis: createJob({
             needs: "init",
             name: "Static code analysis",
-            "runs-on": "ubuntu-latest",
             steps: [
-                ...createSetupSteps(),
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -206,12 +177,11 @@ export const pullRequestsTest = createWorkflow({
                     run: "yarn eslint"
                 }
             ]
-        },
-        "code-analysis-typescript": {
+        }),
+        staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
             "runs-on": "webiny-build-packages",
             steps: [
-                ...createSetupSteps(),
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -228,30 +198,20 @@ export const pullRequestsTest = createWorkflow({
                     run: "yarn build"
                 }
             ]
-        },
-        "jest-tests-no-storage": createJestTestsJob(null),
-        "jest-tests-ddb": createJestTestsJob("ddb"),
-        "jest-tests-ddb-es": createJestTestsJob("ddb-es"),
-        // "jest-tests-ddb-os": createJestTestsJob("ddb-os"),
-        "verdaccio-publish": {
-            if: "needs.init.outputs.is-fork-pr != 'true'",
-            needs: "init",
+        }),
+        jestTestsNoStorage: createJestTestsJob(null),
+        jestTestsDdb: createJestTestsJob("ddb"),
+        jestTestsDdbEs: createJestTestsJob("ddb-es"),
+
+        verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            "runs-on": "ubuntu-latest",
+            needs: "init",
+            if: "needs.init.outputs.is-fork-pr != 'true'",
+            checkout: {
+                "fetch-depth": 0,
+                ref: "${{ github.event.pull_request.head.ref }}"
+            },
             steps: [
-                {
-                    uses: "actions/setup-node@v3",
-                    with: {
-                        "node-version": NODE_VERSION
-                    }
-                },
-                {
-                    uses: "actions/checkout@v3",
-                    with: {
-                        "fetch-depth": 0,
-                        ref: "${{ github.event.pull_request.head.ref }}"
-                    }
-                },
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -293,10 +253,10 @@ export const pullRequestsTest = createWorkflow({
                     }
                 }
             ]
-        },
-        "test-create-webiny-project": {
-            needs: "verdaccio-publish",
+        }),
+        testCreateWebinyProject: createJob({
             name: 'Test "create-webiny-project"',
+            needs: "verdaccioPublish",
             strategy: {
                 "fail-fast": false,
                 matrix: {
@@ -305,9 +265,6 @@ export const pullRequestsTest = createWorkflow({
                 }
             },
             "runs-on": "${{ matrix.os }}",
-            env: {
-                YARN_ENABLE_IMMUTABLE_INSTALLS: false
-            },
             steps: [
                 {
                     uses: "actions/setup-node@v3",
@@ -332,6 +289,6 @@ export const pullRequestsTest = createWorkflow({
                     run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
                 }
             ]
-        }
+        })
     }
 });
