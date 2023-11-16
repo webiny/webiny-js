@@ -10,11 +10,11 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
+    GET_PAGE,
+    LIST_PAGES,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
-    UPDATE_PAGE,
-    GET_PAGE,
-    LIST_PAGES
+    UPDATE_PAGE
 } from "~tests/graphql/page.gql";
 import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 
@@ -42,6 +42,7 @@ import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
 import { createWcpContext } from "@webiny/api-wcp";
+import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -72,7 +73,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const i18nStorage = getStorageOps<any[]>("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const adminUsersStorage = getStorageOps<HeadlessCmsStorageOperations>("adminUsers");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
