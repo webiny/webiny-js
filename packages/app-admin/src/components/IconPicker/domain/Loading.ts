@@ -6,8 +6,8 @@ export class Loading {
     private _feedback: string;
     private _success: boolean;
 
-    constructor() {
-        this._isLoading = false;
+    constructor(isLoading = false) {
+        this._isLoading = isLoading;
         this._loadingLabel = "";
         this._feedback = "";
         this._success = false;

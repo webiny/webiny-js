@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { createConfigurableComponent } from "@webiny/react-properties";
 
-import { IconDTO } from "~/components/IconPicker/new/domain";
-import { IconPackProvider } from "./IconPackProvider";
+import { IconPackProvider as IconPack } from "./IconPackProvider";
+import { Icon } from "~/components/IconPicker/types";
 
 import {
     icons as fa6RegularIconsJson,
@@ -45,39 +45,41 @@ const emojis: EmojiSet = emojisJson;
 
 const base = createConfigurableComponent<IconPickerConfig>("IconPicker");
 
-export const IconPickerConfig = Object.assign(base.Config, { IconPackProvider });
+export const IconPickerConfig = Object.assign(base.Config, { IconPack });
 export const IconPickerWithConfig = base.WithConfig;
 
+export interface IconPackLoader {
+    (): Promise<Icon[]>;
+}
+
 interface IconPickerConfig {
-    iconPackProviders: {
-        icons: IconDTO[];
-        initialize: () => Promise<void> | void;
-        isLoading: boolean;
-        isInitialized: boolean;
-    }[];
+    iconPackProviders: IconPackLoader[];
+}
+
+export interface IconPackProviderInterface {
+    getIcons(): Promise<Icon[]>;
+}
+
+class IconPackProvider implements IconPackProviderInterface {
+    private readonly loader: IconPackLoader;
+
+    constructor(loader: IconPackLoader) {
+        this.loader = loader;
+    }
+
+    getIcons(): Promise<Icon[]> {
+        return this.loader();
+    }
 }
 
 export function useIconPickerConfig() {
     const config = base.useConfig();
 
     const iconPackProviders = config.iconPackProviders || [];
-    const isLoading = iconPackProviders.some(iconProvider => iconProvider.isLoading);
-
-    const initialize = useCallback(async () => {
-        await Promise.all(
-            iconPackProviders.map(provider => {
-                if (!provider.isInitialized && !provider.isLoading) {
-                    provider.initialize();
-                }
-            })
-        );
-    }, [iconPackProviders]);
 
     return useMemo(
         () => ({
-            icons: iconPackProviders.map(provider => provider.icons || []).flat(),
-            initialize,
-            isLoading
+            iconPackProviders: iconPackProviders.map(loader => new IconPackProvider(loader))
         }),
         [config]
     );
@@ -87,7 +89,7 @@ export const DefaultIcons = () => {
     return (
         <IconPickerConfig>
             {/* Default Emojis Provider */}
-            <IconPickerConfig.IconPackProvider
+            <IconPickerConfig.IconPack
                 name="default_emojis"
                 provider={() =>
                     Object.keys(emojis).map(key => {
@@ -103,7 +105,7 @@ export const DefaultIcons = () => {
                 }
             />
             {/* Default Icons Providers */}
-            <IconPickerConfig.IconPackProvider
+            <IconPickerConfig.IconPack
                 name="fa6_regular"
                 provider={() =>
                     Object.keys(fa6RegularIcons).map(key => {
@@ -120,7 +122,7 @@ export const DefaultIcons = () => {
                     })
                 }
             />
-            <IconPickerConfig.IconPackProvider
+            <IconPickerConfig.IconPack
                 name="fa6_solid"
                 provider={() =>
                     Object.keys(fa6SolidIcons).map(key => {
@@ -139,11 +141,11 @@ export const DefaultIcons = () => {
             />
 
             {/* Examples of custom icons/emojis providers and async provider */}
-            {/* <IconPickerConfig.IconPackProvider
+            {/* <IconPickerConfig.IconPack
                 name="test_custom_emojis"
                 provider={() => [{ type: "emoji", name: "testing_face", value: "😀" }]}
             />
-            <IconPickerConfig.IconPackProvider
+            <IconPickerConfig.IconPack
                 name="test_custom_icons"
                 provider={() => [
                     {
@@ -153,7 +155,7 @@ export const DefaultIcons = () => {
                     }
                 ]}
             />
-            <IconPickerConfig.IconPackProvider
+            <IconPickerConfig.IconPack
                 name="fa6_brands"
                 provider={async () => {
                     const iconsData = await fetch(

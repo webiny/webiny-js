@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface IconProps {
@@ -18,48 +18,13 @@ export type IconPackProviderProps = {
 export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
     const getId = useIdGenerator("iconPackProvider");
 
-    const isMounted = useRef(true);
-    const [icons, setIcons] = useState<IconProps[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-
-    const initialize = useCallback(async () => {
-        setIsLoading(true);
-
-        const iconsData = await provider();
-
-        if (!isMounted.current) {
-            return;
-        }
-
-        setIcons(iconsData);
-        setIsInitialized(true);
-        setIsLoading(false);
+    const load = useCallback(async () => {
+        // Timeout for test purpose.
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return await provider();
     }, [provider]);
 
-    // To prevent setting state on unmounted component.
-    useEffect(() => {
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
-
     return (
-        <Property id={getId(name)} name={"iconPackProviders"} array={true}>
-            <Property id={getId(name, "initialize")} name={"initialize"} value={initialize} />
-            {isLoading && (
-                <Property id={getId(name, "isLoading")} name={"isLoading"} value={isLoading} />
-            )}
-            {isInitialized && (
-                <Property
-                    id={getId(name, "isInitialized")}
-                    name={"isInitialized"}
-                    value={isInitialized}
-                />
-            )}
-            {Boolean(icons.length) && (
-                <Property id={getId(name, "icons")} name={"icons"} value={icons} />
-            )}
-        </Property>
+        <Property id={getId(name)} name={"iconPackProviders"} array={true} value={load}></Property>
     );
 };

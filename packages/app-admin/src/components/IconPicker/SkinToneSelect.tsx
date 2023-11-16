@@ -31,17 +31,17 @@ const SkinTone = styled.div`
 
 type SkinToneSelectProps = {
     emojis: IconProps[];
-    icon: Icon;
+    icon: Icon | null;
     onChange: (value: Icon) => void;
 };
 
 export const SkinToneSelect = ({ emojis, icon, onChange }: SkinToneSelectProps) => {
-    const hasSkinToneSupport = emojis.find(emoji => emoji.value === icon.value)?.skinToneSupport;
+    const hasSkinToneSupport = emojis.find(emoji => emoji.value === icon?.value)?.skinToneSupport;
 
-    if (!hasSkinToneSupport) {
+    if (!icon || !hasSkinToneSupport) {
         return (
             <SkinToneSelectWrapper>
-                {icon.type === "emoji" && <IconRenderer icon={icon} />}
+                {icon?.type === "emoji" && <IconRenderer icon={icon} />}
             </SkinToneSelectWrapper>
         );
     }

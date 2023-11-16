@@ -39,6 +39,12 @@ export const MenuHeader = styled.div`
     }
 `;
 
+export const MenuContent = styled.div`
+    position: relative;
+    width: 364px;
+    height: 524px;
+`;
+
 export const Row = styled.div`
     display: flex;
     align-items: center;

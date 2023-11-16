@@ -12,7 +12,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { IconPicker } from "@webiny/app-admin/components/IconPicker/new/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { validation } from "@webiny/validation";
 import { blockCategorySlugValidator, blockCategoryDescriptionValidator } from "./validators";
 import {
