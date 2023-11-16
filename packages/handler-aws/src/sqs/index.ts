@@ -1,26 +1,30 @@
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams
-} from "@webiny/handler";
-const Reply = require("fastify/lib/reply");
-import { SQSEvent, Context as LambdaContext } from "aws-lambda";
-import { SQSEventHandler, SQSEventHandlerCallableParams } from "./plugins/SQSEventHandler";
-import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
+import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
+import { SQSEventHandler, SQSEventHandlerCallableParams } from "~/sqs/plugins/SQSEventHandler";
 import { execute } from "~/execute";
+import { HandlerFactoryParams } from "~/types";
+import { APIGatewayProxyResult, SQSEvent } from "aws-lambda";
+import { Context as LambdaContext } from "aws-lambda/handler";
+/**
+ * We need a class, not an interface exported from types.
+ */
+// @ts-expect-error
+import Reply from "fastify/lib/reply";
 
-const url = "/webiny-sqs-event";
+export * from "./plugins/SQSEventHandler";
 
 export interface HandlerCallable {
-    (payload: SQSEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
+    (event: SQSEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
+export interface HandlerParams extends HandlerFactoryParams {
     debug?: boolean;
 }
 
-export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
-    return (payload, context) => {
+const url = "/webiny-sqs-event";
+
+export const createHandler = (params: HandlerParams): HandlerCallable => {
+    return async (event, context) => {
         const app = createBaseHandler({
             ...params,
             options: {
@@ -46,7 +50,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 request,
                 reply,
                 context: app.webiny,
-                event: payload,
+                event,
                 lambdaContext: context
             };
             const result = await handler.cb(params);
@@ -61,9 +65,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         return execute({
             app,
             url,
-            payload
+            payload: event
         });
     };
 };
-
-export * from "./plugins/SQSEventHandler";

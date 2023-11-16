@@ -1,33 +1,34 @@
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams
-} from "@webiny/handler";
-const Reply = require("fastify/lib/reply");
-import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
+import { createHandler as createBaseHandler } from "@webiny/handler";
+import { registerDefaultPlugins } from "~/plugins";
 import {
     EventBridgeEventHandler,
     EventBridgeEventHandlerCallableParams
-} from "./plugins/EventBridgeEventHandler";
-import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { registerDefaultPlugins } from "~/plugins";
+} from "~/eventBridge/plugins/EventBridgeEventHandler";
 import { execute } from "~/execute";
+import { HandlerFactoryParams } from "~/types";
+import { APIGatewayProxyResult, Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
+/**
+ * We need a class, not an interface exported from types.
+ */
+// @ts-expect-error
+import Reply from "fastify/lib/reply";
 
-const url = "/webiny-sqs-event";
+export * from "./plugins/EventBridgeEventHandler";
 
-export interface HandlerCallable<DetailType extends string, Detail> {
+export interface HandlerParams extends HandlerFactoryParams {
+    debug?: boolean;
+}
+
+export interface HandlerCallable {
     (
-        event: EventBridgeEvent<DetailType, Detail>,
+        event: EventBridgeEvent<string, string>,
         context: LambdaContext
     ): Promise<APIGatewayProxyResult>;
 }
 
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
-    debug?: boolean;
-}
+const url = "/webiny-eventBridge-event";
 
-export const createHandler = <DetailType extends string, Detail>(
-    params: CreateHandlerParams
-): HandlerCallable<DetailType, Detail> => {
+export const createHandler = (params: HandlerParams): HandlerCallable => {
     return (payload, context) => {
         const app = createBaseHandler({
             ...params,
@@ -43,7 +44,7 @@ export const createHandler = <DetailType extends string, Detail>(
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<EventBridgeEventHandler<DetailType, Detail>>(
+        const plugins = app.webiny.plugins.byType<EventBridgeEventHandler<string, string>>(
             EventBridgeEventHandler.type
         );
         const handler = plugins.shift();
@@ -54,7 +55,7 @@ export const createHandler = <DetailType extends string, Detail>(
         }
 
         app.post(url, async (request, reply) => {
-            const params: EventBridgeEventHandlerCallableParams<DetailType, Detail> = {
+            const params: EventBridgeEventHandlerCallableParams<string, string> = {
                 request,
                 reply,
                 context: app.webiny,
@@ -77,5 +78,3 @@ export const createHandler = <DetailType extends string, Detail>(
         });
     };
 };
-
-export * from "./plugins/EventBridgeEventHandler";

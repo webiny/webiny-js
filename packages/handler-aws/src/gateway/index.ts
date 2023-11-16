@@ -1,27 +1,20 @@
-import awsLambdaFastify, {
-    LambdaFastifyOptions as LambdaOptions,
-    LambdaResponse
-} from "@fastify/aws-lambda";
+import awsLambdaFastify, { LambdaResponse } from "@fastify/aws-lambda";
+import { createHandler as createBaseHandler, createRoute, RoutePlugin } from "@webiny/handler";
 import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams,
-    RoutePlugin,
-    createRoute
-} from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
-import { Base64EncodeHeader } from "~/types";
+import { Base64EncodeHeader, HandlerFactoryParams } from "~/types";
 import { APIGatewayProxyEventHeaders } from "aws-lambda/trigger/api-gateway-proxy";
 
-export interface HandlerCallable {
-    (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
-}
+export { RoutePlugin, createRoute };
 
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
+export interface HandlerParams extends HandlerFactoryParams {
     http?: {
         debug?: boolean;
     };
-    lambdaOptions?: LambdaOptions;
+}
+
+export interface HandlerCallable {
+    (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
 }
 
 const getHeader = (headers: APIGatewayProxyEventHeaders, header: string): string | undefined => {
@@ -61,8 +54,8 @@ const attachRequiredProperties = (event: APIGatewayEvent): void => {
     }
 };
 
-export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
-    return (event, context) => {
+export const createHandler = (params: HandlerParams): HandlerCallable => {
+    return async (event, context) => {
         const app = createBaseHandler({
             ...params,
             options: {
@@ -97,5 +90,3 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         return appLambda(event, context);
     };
 };
-
-export { RoutePlugin, createRoute };
