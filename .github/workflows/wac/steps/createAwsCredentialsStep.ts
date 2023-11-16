@@ -8,5 +8,5 @@ export const createAwsCredentialsStep = () => {
             "role-to-assume": IAM_ROLE,
             "aws-region": "eu-central-1"
         }
-    }
-}
+    };
+};
