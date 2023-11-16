@@ -3,7 +3,6 @@ import { createSetupVerdaccioSteps, createAwsCredentialsStep } from "./steps";
 import { createValidateWorkflowsJob } from "./jobs";
 import { NODE_OPTIONS, NODE_VERSION, listPackagesWithJestTests } from "./utils";
 
-// Let's assign some of the common steps into a standalone const.
 const createSetupSteps = ({ workingDirectory = "" } = {}) =>
     [
         {
@@ -14,8 +13,6 @@ const createSetupSteps = ({ workingDirectory = "" } = {}) =>
         },
         { uses: "actions/checkout@v3", with: { path: workingDirectory } }
     ] as NonNullable<NormalJob["steps"]>;
-
-// Create "Pull requests" workflow.
 
 const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = {};
