@@ -71,6 +71,7 @@
     "get-stream": "^3.0.0",
     "get-yarn-workspaces": "^1.0.2",
     "git-cz": "^1.7.1",
+    "github-actions-wac": "^1.4.1",
     "glob": "^7.1.3",
     "globby": "^8.0.1",
     "got": "^9.6.0",

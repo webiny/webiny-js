@@ -25777,6 +25777,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-glob@npm:^3.2.11":
+  version: 3.3.2
+  resolution: "fast-glob@npm:3.3.2"
+  dependencies:
+    "@nodelib/fs.stat": ^2.0.2
+    "@nodelib/fs.walk": ^1.2.3
+    glob-parent: ^5.1.2
+    merge2: ^1.3.0
+    micromatch: ^4.0.4
+  checksum: 900e4979f4dbc3313840078419245621259f349950411ca2fa445a2f9a1a6d98c3b5e7e0660c5ccd563aa61abe133a21765c6c0dec8e57da1ba71d8000b05ec1
+  languageName: node
+  linkType: hard
+
 "fast-glob@npm:^3.2.5, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12"
@@ -27235,6 +27248,26 @@ __metadata:
   dependencies:
     ini: ^1.3.2
   checksum: e6d2764c15bbab6d1d1000d1181bb907f6b3796bb04f63614dba571b18369e0ecb1beaf27ce8da5b24307ef607e3a5f262a67cb9575510b9446aac697d421beb
+  languageName: node
+  linkType: hard
+
+"github-actions-wac@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "github-actions-wac@npm:1.4.1"
+  dependencies:
+    chokidar: ^3.5.2
+    cosmiconfig: ^7.0.1
+    debug: ^4.3.4
+    fast-glob: ^3.2.11
+    js-yaml: ^4.1.0
+    ts-node: ^10.8.1
+    yargs: ^17.4.0
+  peerDependencies:
+    typescript: ^4.0.0
+  bin:
+    ghawac: bin.js
+    github-actions-wac: bin.js
+  checksum: cd980c4ba48b1f96da886d73c2ff268d17151c7ac7da33f0e68e0376f50b5d69fca79f25441475b2a8aebc0cd321ed99d350c3b5d186a87519db72f8fad506d1
   languageName: node
   linkType: hard
 
@@ -39517,6 +39550,7 @@ __metadata:
     get-stream: ^3.0.0
     get-yarn-workspaces: ^1.0.2
     git-cz: ^1.7.1
+    github-actions-wac: ^1.4.1
     glob: ^7.1.3
     globby: ^8.0.1
     got: ^9.6.0
@@ -42465,7 +42499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.5.0":
+"ts-node@npm:^10.5.0, ts-node@npm:^10.8.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
