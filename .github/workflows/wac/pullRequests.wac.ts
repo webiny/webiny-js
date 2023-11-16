@@ -94,8 +94,8 @@ const createJestTestsJob = (storage: string | null) => {
     return job;
 };
 
-export const pullRequests = createWorkflow({
-    name: "Pull Requests",
+export const pullRequestsTest = createWorkflow({
+    name: "Pull Requests (TEST)",
     on: {
         pull_request: {
             branches: ["next"]
