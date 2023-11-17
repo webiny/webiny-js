@@ -104,19 +104,28 @@ export const createEventHandler = () => {
                 if (!dynamodb) {
                     continue;
                 }
-
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
                 const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
 
                 if (!newImage || newImage.ignore === true) {
                     continue;
                 }
-                
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
                 const keys = unmarshall<RecordDynamoDbKeys>(dynamodb.Keys);
                 if (!keys?.PK || !keys.SK) {
                     continue;
                 }
                 const _id = `${keys.PK}:${keys.SK}`;
-
+                /**
+                 * TODO: figure out correct types
+                 */
+                // @ts-expect-error
                 const oldImage = unmarshall<RecordDynamoDbImage>(dynamodb.OldImage);
                 const operation = record.eventName;
 
