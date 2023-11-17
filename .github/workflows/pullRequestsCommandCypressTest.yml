@@ -141,7 +141,7 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: ''
+        working-directory: dev
         run: ' yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml'
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
@@ -383,7 +383,7 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: ''
+        working-directory: dev
         run: ' yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml'
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
