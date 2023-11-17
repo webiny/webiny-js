@@ -14,7 +14,7 @@ import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
-import "./pageBuilder/pbUpdatingPageTemplate";
+import "./pageBuilder/pbUpdatePageTemplate";
 import "./pageBuilder/pbListPageTemplates";
 import "./pageBuilder/pbListPageBlocks";
 import "./pageBuilder/pbDeleteAllBlocks";
