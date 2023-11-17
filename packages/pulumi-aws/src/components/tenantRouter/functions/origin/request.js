@@ -1,12 +1,12 @@
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+// TODO @pavel check this out - we are not using aws-sdk directly.
+const { getDocumentClient, GetCommand, QueryCommand } = require("@webiny/aws-sdk/client-dynamodb");
 
 // Since Lambda@Edge doesn't support ENV variables, the easiest way to pass
 // config values to it is to inject them into the source code before deploy.
 const DB_TABLE_NAME = "{DB_TABLE_NAME}";
 const DB_TABLE_REGION = "{DB_TABLE_REGION}";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
+const documentClient = getDocumentClient({
     region: DB_TABLE_REGION
 });
 
@@ -44,7 +44,7 @@ async function getTenantIdByDomain(domain) {
             SK: "A"
         }
     };
-    const { Item } = await documentClient.get(params).promise();
+    const { Item } = await documentClient.send(new GetCommand(params));
 
     return Item ? Item.tenant : undefined;
 }
@@ -53,8 +53,8 @@ async function getTenantIdByDomain(domain) {
  * Check if "root" tenant has at least one child tenant.
  */
 async function hasMultipleTenants() {
-    const { Count } = await documentClient
-        .query({
+    const { Count } = await documentClient.send(
+        new QueryCommand({
             TableName: DB_TABLE_NAME,
             IndexName: "GSI1",
             Limit: 1,
@@ -65,7 +65,7 @@ async function hasMultipleTenants() {
                 ":GSI1_SK": "T#root#"
             }
         })
-        .promise();
+    );
 
     return Count > 0;
 }

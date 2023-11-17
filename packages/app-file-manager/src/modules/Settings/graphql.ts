@@ -10,6 +10,14 @@ const fields = /* GraphQL */ `
     }
 `;
 
+export interface GetSettingsResponse {
+    fileManager: {
+        getSettings: {
+            data: Record<string, any>;
+        };
+    };
+}
+
 const graphql = {
     GET_SETTINGS: gql`
             query GetFileManagerSettings {

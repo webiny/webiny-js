@@ -81,7 +81,7 @@ export const createLongTextStorageTransformPlugin = () => {
              * There is a possibility that we are trying to compress already compressed value.
              */
             if (initialValue && initialValue.hasOwnProperty("compression") === true) {
-                return initialValue as any;
+                return initialValue as unknown as StorageValue;
             }
             const isArray = Array.isArray(initialValue);
             const value = isArray ? JSON.stringify(initialValue) : initialValue;

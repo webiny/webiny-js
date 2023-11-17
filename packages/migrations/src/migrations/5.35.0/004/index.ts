@@ -1,18 +1,19 @@
-import { Table } from "dynamodb-toolbox";
-import { makeInjectable, inject } from "@webiny/ioc";
+import { Table } from "@webiny/db-dynamodb/toolbox";
+import { inject, makeInjectable } from "@webiny/ioc";
 import { DataMigrationContext, PrimaryDynamoTableSymbol } from "@webiny/data-migration";
-import { queryOne, queryAll } from "~/utils";
+import { queryAll, queryOne } from "~/utils";
 import {
     createLegacyTenantEntity,
     createNewTenantEntity,
     getTenantData
 } from "./createTenantEntity";
+import { put } from "@webiny/db-dynamodb";
 
 export class Tenancy_5_35_0_004 {
     private readonly legacyTenantEntity: ReturnType<typeof createLegacyTenantEntity>;
     private readonly newTenantEntity: ReturnType<typeof createNewTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.legacyTenantEntity = createLegacyTenantEntity(table);
         this.newTenantEntity = createNewTenantEntity(table);
     }
@@ -60,18 +61,21 @@ export class Tenancy_5_35_0_004 {
 
         for (const tenant of tenants) {
             logger.info(`Updating tenant ${tenant.name} (${tenant.id}).`);
-            await this.newTenantEntity.put({
-                PK: `T#${tenant.id}`,
-                SK: "A",
-                GSI1_PK: tenant.GSI1_PK,
-                GSI1_SK: tenant.GSI1_SK,
-                TYPE: tenant.TYPE,
-                ...getTenantData(tenant),
-                // Move all data to a `data` envelope
-                data: {
+            await put({
+                entity: this.newTenantEntity,
+                item: {
+                    PK: `T#${tenant.id}`,
+                    SK: "A",
+                    GSI1_PK: tenant.GSI1_PK,
+                    GSI1_SK: tenant.GSI1_SK,
+                    TYPE: tenant.TYPE,
                     ...getTenantData(tenant),
-                    // While we're here, add a `tags` attribute to tenants
-                    tags: []
+                    // Move all data to a `data` envelope
+                    data: {
+                        ...getTenantData(tenant),
+                        // While we're here, add a `tags` attribute to tenants
+                        tags: []
+                    }
                 }
             });
         }

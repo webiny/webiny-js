@@ -1,5 +1,9 @@
 import numberIndexing from "~/elasticsearch/indexing/numberIndexing";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import {
+    CmsModelFieldToElasticsearchFromParams,
+    CmsModelFieldToElasticsearchPlugin,
+    CmsModelFieldToElasticsearchToParams
+} from "~/types";
 
 describe("numberIndexing", () => {
     const plugin = numberIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
@@ -24,7 +28,10 @@ describe("numberIndexing", () => {
         const field: any = {
             storageId: "number"
         };
-        const result = plugin.toIndex({ value: num, field } as any);
+        const result = plugin.toIndex({
+            value: num,
+            field
+        } as CmsModelFieldToElasticsearchToParams);
 
         expect(result.value).toEqual(expected);
     });
@@ -49,7 +56,10 @@ describe("numberIndexing", () => {
         const field: any = {
             storageId: "number"
         };
-        const result = plugin.fromIndex({ value: str, field } as any);
+        const result = plugin.fromIndex({
+            value: str,
+            field
+        } as CmsModelFieldToElasticsearchFromParams);
 
         expect(result).toEqual(expected);
     });

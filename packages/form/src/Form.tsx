@@ -353,11 +353,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         ) {
             return Promise.resolve(null);
         }
-        const value = lodashGet(
-            stateRef.current.data,
-            name,
-            inputs.current[name].defaultValue
-        ) as any;
+        const value = lodashGet(stateRef.current.data, name, inputs.current[name].defaultValue);
         const { validators: initialValidators } = inputs.current[name];
         /**
          * We need to filter out validators which are being skipped

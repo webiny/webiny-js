@@ -4,7 +4,7 @@ module.exports = {
             require.resolve("@babel/preset-env", { paths: [__dirname] }),
             {
                 targets: {
-                    node: "12"
+                    node: "18"
                 }
             }
         ],

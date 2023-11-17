@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -12,9 +12,9 @@ import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.table = table;
         this.formEntity = createFormEntity(table);
     }
