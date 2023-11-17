@@ -1,5 +1,4 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps } from "./steps";
 import { createValidateWorkflowsJob, createJob } from "./jobs";
 import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
 
@@ -234,7 +233,22 @@ export const pullRequests = createWorkflow({
                     name: "Build packages",
                     run: "yarn build:quick"
                 },
-                ...createSetupVerdaccioSteps(),
+                {
+                    name: "Start Verdaccio local server",
+                    run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
+                },
+                {
+                    name: "Configure NPM to use local registry",
+                    run: "npm config set registry http://localhost:4873"
+                },
+                {
+                    name: "Set git email",
+                    run: 'git config --global user.email "webiny-bot@webiny.com"'
+                },
+                {
+                    name: "Set git username",
+                    run: 'git config --global user.name "webiny-bot"'
+                },
                 {
                     name: 'Create ".npmrc" file in the project root, with a dummy auth token',
                     run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
@@ -279,7 +293,23 @@ export const pullRequests = createWorkflow({
                         path: "verdaccio-files"
                     }
                 },
-                ...createSetupVerdaccioSteps({ workingDirectory: "verdaccio-files" }),
+                {
+                    name: "Start Verdaccio local server",
+                    "working-directory": "verdaccio-files",
+                    run: "yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
+                },
+                {
+                    name: "Configure NPM to use local registry",
+                    run: "npm config set registry http://localhost:4873"
+                },
+                {
+                    name: "Set git email",
+                    run: 'git config --global user.email "webiny-bot@webiny.com"'
+                },
+                {
+                    name: "Set git username",
+                    run: 'git config --global user.name "webiny-bot"'
+                },
                 {
                     name: "Disable Webiny telemetry",
                     run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
