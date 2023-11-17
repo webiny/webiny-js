@@ -15,7 +15,7 @@ jest.mock("node-fetch", () => {
     };
 });
 
-import { createHandler, RoutePlugin } from "@webiny/handler-aws/gateway";
+import { createHandler, RoutePlugin } from "@webiny/handler-aws";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import createHttpLogsHandlerResultPlugin from "~/index";
 

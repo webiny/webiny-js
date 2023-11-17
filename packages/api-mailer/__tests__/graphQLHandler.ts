@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import { until, sleep } from "./context/helpers";
 /**

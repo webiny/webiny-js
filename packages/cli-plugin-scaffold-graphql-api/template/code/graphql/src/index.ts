@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import logsPlugins from "@webiny/handler-logs";
 

@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
 import { createGroupPlugin, createModelPlugin } from "./model";
 import { CmsModel } from "~/types";
