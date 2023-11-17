@@ -20,14 +20,16 @@ export type IconPickerTabProps = {
     onFilterChange: (value: string) => void;
     color: string;
     onColorChange: (value: string) => void;
+    checkSkinToneSupport: (icon: Icon) => boolean;
     children?: ReactNode;
 };
 
-export type IconPickerTabPlugin = Plugin & {
-    type: "icon-picker-tab";
+export type IconPickerPlugin = Plugin & {
+    type: "admin-icon-picker";
     name: string;
     iconType: string;
-    render: (props: IconPickerTabProps) => ReactNode;
+    renderIcon: (icon: Icon, size: number) => JSX.Element;
+    renderTab: (props: IconPickerTabProps) => ReactNode;
 };
 
 type IconsRow = {

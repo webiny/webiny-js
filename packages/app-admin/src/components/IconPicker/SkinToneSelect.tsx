@@ -3,8 +3,8 @@ import styled from "@emotion/styled";
 
 import { Menu } from "@webiny/ui/Menu";
 
-import { Icon, IconRenderer } from "./IconRenderer";
-import { IconProps } from "./config/IconPackProvider";
+import { IconRenderer } from "./IconRenderer";
+import { Icon } from "./types";
 
 const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
 
@@ -30,18 +30,22 @@ const SkinTone = styled.div`
 `;
 
 type SkinToneSelectProps = {
-    emojis: IconProps[];
     icon: Icon | null;
     onChange: (value: Icon) => void;
+    checkSkinToneSupport: (icon: Icon) => boolean;
 };
 
-export const SkinToneSelect = ({ emojis, icon, onChange }: SkinToneSelectProps) => {
-    const hasSkinToneSupport = emojis.find(emoji => emoji.value === icon?.value)?.skinToneSupport;
+export const SkinToneSelect = ({ icon, onChange, checkSkinToneSupport }: SkinToneSelectProps) => {
+    if (!icon || icon?.type !== "emoji") {
+        return <SkinToneSelectWrapper />;
+    }
 
-    if (!icon || !hasSkinToneSupport) {
+    const hasSkinToneSupport = checkSkinToneSupport(icon);
+
+    if (!hasSkinToneSupport) {
         return (
             <SkinToneSelectWrapper>
-                {icon?.type === "emoji" && <IconRenderer icon={icon} />}
+                <IconRenderer icon={icon} />
             </SkinToneSelectWrapper>
         );
     }
@@ -55,7 +59,7 @@ export const SkinToneSelect = ({ emojis, icon, onChange }: SkinToneSelectProps) 
                 </SkinToneSelectWrapper>
             }
         >
-            {({ closeMenu }: { closeMenu: () => void }) => (
+            {({ closeMenu }) => (
                 <SkinTonesGrid>
                     {SKIN_TONES.map((skinTone, index) => (
                         <SkinTone

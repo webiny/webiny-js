@@ -3,36 +3,31 @@ import { makeAutoObservable, runInAction } from "mobx";
 
 import { Loading } from "../domain";
 import { IconPackProviderInterface as IconPackProvider } from "~/components/IconPicker/config";
-import { Icon } from "~/components/IconPicker/types";
+import { ProviderIcon } from "~/components/IconPicker/config/IconPackProvider";
 
 export class IconRepository {
     private loading: Loading;
-    private icons: Icon[] = [];
+    private icons: ProviderIcon[] = [];
     public iconPackProviders: IconPackProvider[];
-    public readonly namespace: string;
 
-    constructor(iconPackProviders: IconPackProvider[], namespace: string) {
+    constructor(iconPackProviders: IconPackProvider[]) {
         this.loading = new Loading(true);
         this.iconPackProviders = iconPackProviders;
-        this.namespace = namespace;
         makeAutoObservable(this);
     }
 
-    async loadProviders() {
-        const iconPacks = await this.runWithLoading<Icon[][]>(
+    async loadIcons() {
+        if (this.icons.length > 0) {
+            return;
+        }
+
+        const iconPacks = await this.runWithLoading<ProviderIcon[][]>(
             Promise.all(this.iconPackProviders.map(provider => provider.getIcons()))
         );
 
         runInAction(() => {
             this.icons = iconPacks?.flat() || [];
         });
-    }
-
-    setIconPackProviders(newProviders: IconPackProvider[]) {
-        if (newProviders.length !== this.iconPackProviders.length) {
-            this.iconPackProviders = newProviders;
-            this.loadProviders();
-        }
     }
 
     getIcons() {

@@ -17,9 +17,13 @@ const style = {
     })
 };
 
+type MenuChildrenFunctionProps = {
+    closeMenu: () => void;
+};
+
 type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: React.ReactNode;
+    children: React.ReactNode | ((props: MenuChildrenFunctionProps) => React.ReactNode);
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;

@@ -1,5 +1,5 @@
-import { defaultTabPlugin } from "./defaultTabPlugin";
-import { emojisTabPlugin } from "./emojisTabPlugin";
-import { iconsTabPlugin } from "./iconsTabPlugin";
+import { customPlugin } from "./customPlugin";
+import { emojisPlugin } from "./emojisPlugin";
+import { iconsPlugin } from "./iconsPlugin";
 
-export default [defaultTabPlugin(), emojisTabPlugin(), iconsTabPlugin()];
+export default [iconsPlugin(), emojisPlugin(), customPlugin()];

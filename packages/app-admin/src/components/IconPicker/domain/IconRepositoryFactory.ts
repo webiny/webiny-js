@@ -4,18 +4,17 @@ import { IconPackProviderInterface as IconPackProvider } from "~/components/Icon
 class IconRepositoryFactory {
     private cache: Map<string, IconRepository> = new Map();
 
-    getRepository(iconPackProviders: IconPackProvider[], namespace: string) {
-        let repository;
+    getRepository(iconPackProviders: IconPackProvider[]) {
+        const cacheKey = iconPackProviders
+            .map(provider => provider.name)
+            .sort()
+            .join("#");
 
-        if (!this.cache.has(namespace)) {
-            repository = new IconRepository(iconPackProviders, namespace);
-            this.cache.set(namespace, repository);
-        } else {
-            repository = this.cache.get(namespace) as IconRepository;
-            repository.setIconPackProviders(iconPackProviders);
+        if (!this.cache.has(cacheKey)) {
+            this.cache.set(cacheKey, new IconRepository(iconPackProviders));
         }
 
-        return repository;
+        return this.cache.get(cacheKey) as IconRepository;
     }
 }
 

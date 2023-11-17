@@ -3,14 +3,15 @@ import React from "react";
 import { useIconRepository } from "./useIconRepository";
 import { IconPickerComponent, IconPickerProps } from "./IconPickerComponent";
 import { IconPickerWithConfig } from "./config";
+import { IconRenderer } from "./IconRenderer";
 
 const IconPickerInner = (props: IconPickerProps) => {
-    const repository = useIconRepository("iconPicker");
+    const repository = useIconRepository();
 
     return <IconPickerComponent repository={repository} {...props} />;
 };
 
-export const IconPicker = ({
+const IconPicker = ({
     label,
     description,
     value,
@@ -31,3 +32,7 @@ export const IconPicker = ({
         </IconPickerWithConfig>
     );
 };
+
+IconPicker.Icon = IconRenderer;
+
+export { IconPicker };

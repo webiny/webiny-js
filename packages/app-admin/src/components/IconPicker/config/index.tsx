@@ -2,8 +2,7 @@ import React, { useMemo } from "react";
 
 import { createConfigurableComponent } from "@webiny/react-properties";
 
-import { IconPackProvider as IconPack } from "./IconPackProvider";
-import { Icon } from "~/components/IconPicker/types";
+import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
 
 import {
     icons as fa6RegularIconsJson,
@@ -49,25 +48,31 @@ export const IconPickerConfig = Object.assign(base.Config, { IconPack });
 export const IconPickerWithConfig = base.WithConfig;
 
 export interface IconPackLoader {
-    (): Promise<Icon[]>;
+    (): Promise<ProviderIcon[]>;
 }
 
 interface IconPickerConfig {
-    iconPackProviders: IconPackLoader[];
+    iconPackProviders: {
+        name: string;
+        load: IconPackLoader;
+    }[];
 }
 
 export interface IconPackProviderInterface {
-    getIcons(): Promise<Icon[]>;
+    name: string;
+    getIcons(): Promise<ProviderIcon[]>;
 }
 
 class IconPackProvider implements IconPackProviderInterface {
+    public readonly name: string;
     private readonly loader: IconPackLoader;
 
-    constructor(loader: IconPackLoader) {
+    constructor(name: string, loader: IconPackLoader) {
+        this.name = name;
         this.loader = loader;
     }
 
-    getIcons(): Promise<Icon[]> {
+    getIcons(): Promise<ProviderIcon[]> {
         return this.loader();
     }
 }
@@ -79,7 +84,9 @@ export function useIconPickerConfig() {
 
     return useMemo(
         () => ({
-            iconPackProviders: iconPackProviders.map(loader => new IconPackProvider(loader))
+            iconPackProviders: iconPackProviders.map(
+                provider => new IconPackProvider(provider.name, provider.load)
+            )
         }),
         [config]
     );

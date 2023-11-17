@@ -1,30 +1,46 @@
 import React, { useCallback } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
-export interface IconProps {
-    type: string;
+type Icon = {
+    type: "icon";
     name: string;
-    skinToneSupport?: boolean;
-    category?: string;
     value: string;
+    category?: string;
     width?: number;
-}
+};
+
+export type Emoji = {
+    type: "emoji";
+    name: string;
+    value: string;
+    category: string;
+    skinToneSupport: boolean;
+};
+
+type Custom = {
+    type: "custom";
+    name: string;
+    value: string;
+};
+
+export type ProviderIcon = Icon | Emoji | Custom;
 
 export type IconPackProviderProps = {
     name: string;
-    provider: () => Promise<IconProps[]> | IconProps[];
+    provider: () => Promise<ProviderIcon[]> | ProviderIcon[];
 };
 
 export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
     const getId = useIdGenerator("iconPackProvider");
 
     const load = useCallback(async () => {
-        // Timeout for test purpose.
-        await new Promise(resolve => setTimeout(resolve, 2000));
         return await provider();
     }, [provider]);
 
     return (
-        <Property id={getId(name)} name={"iconPackProviders"} array={true} value={load}></Property>
+        <Property id={getId(name)} name={"iconPackProviders"} array={true}>
+            <Property id={getId(name, "name")} name={"name"} value={name} />
+            <Property id={getId(name, "load")} name={"load"} value={load} />
+        </Property>
     );
 };

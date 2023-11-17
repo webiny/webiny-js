@@ -3,15 +3,26 @@ import React from "react";
 import { ColorPicker } from "@webiny/ui/ColorPicker";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
-import { IconPickerTabPlugin } from "~/components/IconPicker/types";
+import { IconPickerPlugin } from "~/components/IconPicker/types";
 import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
 
-export const iconsTabPlugin = (): IconPickerTabPlugin => {
+export const iconsPlugin = (): IconPickerPlugin => {
     return {
-        type: "icon-picker-tab",
-        name: "icon-picker-tab-icons",
+        type: "admin-icon-picker",
+        name: "admin-icon-picker-icons",
         iconType: "icon",
-        render(props) {
+        renderIcon(icon, size) {
+            return (
+                <svg
+                    width={size}
+                    height={size}
+                    viewBox={`0 0 ${icon.width || 512} 512`}
+                    color={icon?.color || "inherit"}
+                    dangerouslySetInnerHTML={{ __html: icon.value }}
+                />
+            );
+        },
+        renderTab(props) {
             return (
                 <IconPickerTab
                     key={props.label}

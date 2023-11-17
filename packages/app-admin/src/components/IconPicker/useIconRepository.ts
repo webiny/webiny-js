@@ -1,8 +1,8 @@
 import { useIconPickerConfig } from "./config";
 import { iconRepositoryFactory } from "./domain";
 
-export const useIconRepository = (namespace: string) => {
+export const useIconRepository = () => {
     const { iconPackProviders } = useIconPickerConfig();
 
-    return iconRepositoryFactory.getRepository(iconPackProviders, namespace);
+    return iconRepositoryFactory.getRepository(iconPackProviders);
 };

@@ -3,6 +3,7 @@ import groupBy from "lodash/groupBy";
 
 import { IconRepository } from "./domain";
 import { Row, Icon } from "./types";
+import { Emoji } from "./config/IconPackProvider";
 
 const COLUMN_COUNT = 8;
 
@@ -30,14 +31,14 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         makeAutoObservable(this);
     }
 
-    async load(value: Icon) {
+    async load(value: Icon | null = null) {
         this.selectedIcon = value;
 
-        if (value.color) {
+        if (value?.color) {
             this.color = value.color;
         }
 
-        await this.repository.loadProviders();
+        await this.repository.loadIcons();
     }
 
     get vm() {
@@ -68,26 +69,34 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     private getRows(icons: Icon[]) {
+        // Group the icons by their category.
         const groupedObjects = groupBy(icons, "category");
         const rows: Row[] = [];
 
+        // Iterate over each category in the grouped icons.
         for (const key in groupedObjects) {
+            // Skip any group where the key is `undefined` (these icons will be handled separately).
             if (key !== "undefined") {
                 const rowIcons = groupedObjects[key];
 
+                // Add a row for the category name.
                 rows.push({ type: "category-name", name: key });
 
+                // Split the icons in this category into groups of COLUMN_COUNT and add them as rows.
                 while (rowIcons.length) {
                     rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
                 }
             }
         }
 
+        // Handle icons that don't have a category (key is `undefined`).
         if (groupedObjects.undefined) {
             const rowIcons = groupedObjects.undefined;
 
+            // Add a row for the `Uncategorized` category name.
             rows.push({ type: "category-name", name: "Uncategorized" });
 
+            // Split these icons into groups of COLUMN_COUNT and add them as rows.
             while (rowIcons.length) {
                 rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
             }
@@ -115,5 +124,17 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
 
     filterIcons(value: string) {
         this.filter = value;
+    }
+
+    checkSkinToneSupport(iconToCheck: Icon) {
+        const icons = this.repository.getIcons();
+
+        return (
+            icons
+                .filter(icon => icon.type === "emoji")
+                // Assert the icon as an Emoji based on the filter.
+                .find((icon): icon is Emoji => icon.value === iconToCheck.value)?.skinToneSupport ||
+            false
+        );
     }
 }
