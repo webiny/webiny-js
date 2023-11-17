@@ -117,7 +117,7 @@ const createJobs = (dbSetup: string) => {
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
-            ...createSetupVerdaccioSteps(),
+            ...createSetupVerdaccioSteps({ workingDirectory: "dev" }),
             {
                 name: 'Create ".npmrc" file in the project root, with a dummy auth token',
                 "working-directory": "dev",
