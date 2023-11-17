@@ -11,12 +11,11 @@ export interface HandlerParams extends HandlerFactoryParams {
 const handler = createSourceHandler<S3Event, HandlerParams>({
     name: "handler-aws-s3",
     canUse: event => {
-        if (!Array.isArray(event.Records)) {
+        if (!Array.isArray(event.Records) || event.Records.length === 0) {
             return false;
         }
-        return event.Records.some(record => {
-            return !!record.s3;
-        });
+        const [record] = event.Records;
+        return !!record.s3;
     },
     handle: async ({ params, event, context }) => {
         return createHandler(params)(event, context);

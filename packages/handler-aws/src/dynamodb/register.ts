@@ -9,12 +9,11 @@ const handler = createSourceHandler<DynamoDBStreamEvent, HandlerParams>({
         if (!Array.isArray(event.Records)) {
             return false;
         }
-        return event.Records.some(record => {
-            if (typeof record.eventSource !== "string") {
-                return false;
-            }
-            return record.eventSource.toLowerCase() === "aws:dynamodb";
-        });
+        const [record] = event.Records;
+        if (!record.eventSource?.toLowerCase) {
+            return false;
+        }
+        return record.eventSource.toLowerCase() === "aws:dynamodb";
     },
     handle: async ({ params, event, context }) => {
         return createHandler(params)(event, context);

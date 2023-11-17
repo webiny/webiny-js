@@ -11,7 +11,7 @@ export interface HandlerParams extends HandlerFactoryParams {
 const handler = createSourceHandler<EventBridgeEvent<string, string>, HandlerParams>({
     name: "handler-aws-event-bridge",
     canUse: event => {
-        return event.source === "aws:eventBridge";
+        return !!event.source;
     },
     handle: async ({ params, event, context }) => {
         return createHandler(params)(event, context);
