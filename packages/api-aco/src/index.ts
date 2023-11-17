@@ -8,6 +8,10 @@ export { FILTER_MODEL_ID } from "./filter/filter.model";
 export * from "./apps";
 export * from "./plugins";
 
-export const createAco = () => {
-    return [...createFields(), createAcoContext(), ...createAcoGraphQL()];
+export interface CreateAcoParams {
+    useFolderLevelPermissions?: boolean;
+}
+
+export const createAco = (params: CreateAcoParams = {}) => {
+    return [...createFields(), createAcoContext(params), ...createAcoGraphQL()];
 };

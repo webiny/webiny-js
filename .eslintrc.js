@@ -45,7 +45,18 @@ module.exports = {
         "jest/no-conditional-expect": 0,
         "jest/no-commented-out-tests": 0,
         "jest/no-disabled-tests": 0,
-        "lodash/import-scope": [2, "method"]
+        "lodash/import-scope": [2, "method"],
+        "no-restricted-imports": [
+            "error",
+            {
+                patterns: [
+                    {
+                        group: ["@aws-sdk/*"],
+                        message: "Please use @webiny/aws-sdk instead."
+                    }
+                ]
+            }
+        ]
     },
     settings: {
         react: {

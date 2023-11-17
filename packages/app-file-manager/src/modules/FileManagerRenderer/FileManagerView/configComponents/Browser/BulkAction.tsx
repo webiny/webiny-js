@@ -14,7 +14,7 @@ export interface BulkActionProps {
     remove?: boolean;
     before?: string;
     after?: string;
-    element: React.ReactElement;
+    element?: React.ReactElement;
 }
 
 export const BaseBulkAction: React.FC<BulkActionProps> = ({
@@ -40,7 +40,9 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
-                <Property id={getId(name, "element")} name={"element"} value={element} />
+                {element ? (
+                    <Property id={getId(name, "element")} name={"element"} value={element} />
+                ) : null}
             </Property>
         </Property>
     );

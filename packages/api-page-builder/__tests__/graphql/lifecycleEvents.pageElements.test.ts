@@ -4,7 +4,6 @@ import { assignPageElementLifecycleEvents, tracker } from "./mocks/lifecycleEven
 
 const name = "Page Element";
 const type = "block";
-const category = "blocks";
 const content = {
     contentTest: true
 };
@@ -29,7 +28,6 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
                 content
             }
         });
@@ -41,7 +39,6 @@ describe("Page Element Lifecycle Events", () => {
                             id: expect.any(String),
                             name,
                             type,
-                            category,
                             content
                         },
                         error: null
@@ -63,7 +60,6 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
                 content
             }
         });
@@ -77,7 +73,6 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
                 content: updatedContent
             }
         });
@@ -89,7 +84,6 @@ describe("Page Element Lifecycle Events", () => {
                             id: expect.any(String),
                             name,
                             type,
-                            category,
                             content: updatedContent
                         },
                         error: null
@@ -111,7 +105,6 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
                 content
             }
         });
@@ -128,13 +121,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     deletePageElement: {
-                        data: {
-                            id: expect.any(String),
-                            name,
-                            type,
-                            category,
-                            content
-                        },
+                        data: true,
                         error: null
                     }
                 }

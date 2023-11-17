@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Filters as BaseFilters, FiltersOnSubmit } from "@webiny/app-admin";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
-import { AdvancedSearch, GraphQLInputMapper } from "@webiny/app-aco";
+import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
 import { useModel } from "~/admin/hooks";
 import { FieldsMapper } from "./FieldsMapper";
 import { FieldRaw, FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain";
@@ -12,6 +12,7 @@ export const Filters = () => {
     const list = useContentEntriesList();
     const { model } = useModel();
     const [fields, setFields] = useState<FieldRaw[] | undefined>();
+    const repository = useFilterRepository(`cms:${model.modelId}`);
 
     useEffect(() => {
         setFields(FieldsMapper.toRaw(model));
@@ -55,7 +56,7 @@ export const Filters = () => {
         >
             <AdvancedSearch
                 fields={fields}
-                namespace={model.modelId}
+                repository={repository}
                 onApplyFilter={applyAdvancedSearch}
             />
         </BaseFilters>

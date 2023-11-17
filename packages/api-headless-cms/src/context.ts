@@ -3,7 +3,6 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { CmsParametersPlugin, CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin";
 import { createSystemCrud } from "~/crud/system.crud";
-import { createSettingsCrud } from "~/crud/settings.crud";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
@@ -12,7 +11,6 @@ import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/v
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
 import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
-import { SettingsPermissions } from "./utils/permissions/SettingsPermissions";
 import { createExportCrud } from "~/export";
 import { createImportCrud } from "~/export/crud/importing";
 
@@ -83,12 +81,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 fullAccessPermissionName: "cms.*"
             });
 
-            const settingsPermissions = new SettingsPermissions({
-                getIdentity: context.security.getIdentity,
-                getPermissions: () => context.security.getPermissions("cms.settings"),
-                fullAccessPermissionName: "cms.*"
-            });
-
             context.cms = {
                 type,
                 locale,
@@ -100,8 +92,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 permissions: {
                     groups: modelGroupsPermissions,
                     models: modelsPermissions,
-                    entries: entriesPermissions,
-                    settings: settingsPermissions
+                    entries: entriesPermissions
                 },
                 ...createSystemCrud({
                     context,
@@ -109,13 +100,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getLocale,
                     getIdentity,
                     storageOperations
-                }),
-                ...createSettingsCrud({
-                    context,
-                    getTenant,
-                    getLocale,
-                    storageOperations,
-                    settingsPermissions
                 }),
                 ...createModelGroupsCrud({
                     context,

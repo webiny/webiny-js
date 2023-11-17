@@ -16,7 +16,11 @@ export const executeAction = <T extends EventActionHandlerCallableArgs = any>(
     const previousState = previousResult?.state || {};
     const previousActions = previousResult?.actions || [];
     const result = action(
-        { ...state, ...previousState } as any,
+        /**
+         * Some value is undefined, and it creates problems for TS, but not for our action runner.
+         */
+        // @ts-expect-error
+        { ...state, ...previousState },
         meta,
         args
     ) as EventActionHandlerActionCallableResponse;
@@ -39,7 +43,11 @@ export const executeAsyncAction = async <T extends EventActionHandlerCallableArg
 ): Promise<EventActionHandlerActionCallableResponse> => {
     const previousState = previousResult?.state || {};
     const previousActions = previousResult?.actions || [];
-    const result = await action({ ...state, ...previousState } as any, meta, args);
+    /**
+     * Error is due to some undefined property. Action runner will handle it.
+     */
+    // @ts-expect-error
+    const result = await action({ ...state, ...previousState }, meta, args);
 
     return {
         state: {

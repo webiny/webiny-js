@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { ClassNames, CSSObject } from "@emotion/react";
 import { Klass, LexicalNode } from "lexical";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -15,7 +15,7 @@ import {
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalValue } from "~/types";
-import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -32,12 +32,15 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
     themeEmotionMap
 }) => {
     const editorTheme = useRef(createTheme());
+    const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
+        // We update the state via the `<LexicalUpdateStatePlugin/>`.
+        editorState: null,
         namespace: "webiny",
-        onError: (error: Error) => {
-            throw error;
+        onError: () => {
+            // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
+            // These are usually resolved in the next component render cycle.
         },
         editable: false,
         nodes: [...allNodes, ...(nodes || [])],
@@ -45,7 +48,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
     };
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
+        <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
             <RichTextPlugin
                 contentEditable={
                     <div className="editor">
@@ -55,7 +58,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
                 ErrorBoundary={LexicalErrorBoundary}
                 placeholder={null}
             />
-            <LexicalUpdateStatePlugin value={value} />
+            <UpdateStatePlugin value={editorValue} />
         </LexicalComposer>
     );
 };

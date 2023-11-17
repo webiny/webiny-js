@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -23,11 +23,11 @@ import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MultiStepForms_5_38_0_001 implements DataMigration {
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
     private readonly formEntity: ReturnType<typeof createFormEntity>;
     private readonly elasticsearchClient: Client;
 
-    constructor(table: Table, elasticsearchClient: Client) {
+    constructor(table: Table<string, string, string>, elasticsearchClient: Client) {
         this.table = table;
         this.formEntity = createFormEntity(table);
         this.elasticsearchClient = elasticsearchClient;
@@ -38,7 +38,7 @@ export class MultiStepForms_5_38_0_001 implements DataMigration {
     }
 
     getDescription() {
-        return "Convert forms tu multi-step forms.";
+        return "Convert forms to multi-step forms.";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {

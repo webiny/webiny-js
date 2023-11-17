@@ -284,6 +284,15 @@ export interface OnFormSubmissionAfterDelete {
     form: FbForm;
     submission: FbSubmission;
 }
+export interface OnFormSubmissionsBeforeExport {
+    form: FbForm;
+}
+export interface OnFormSubmissionsAfterExport {
+    result: {
+        key: any;
+        src: string;
+    };
+}
 export interface SubmissionsCRUD {
     getSubmissionsByIds(form: string | FbForm, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
@@ -307,6 +316,8 @@ export interface SubmissionsCRUD {
     onFormSubmissionAfterUpdate: Topic<OnFormSubmissionAfterUpdate>;
     onFormSubmissionBeforeDelete: Topic<OnFormSubmissionBeforeDelete>;
     onFormSubmissionAfterDelete: Topic<OnFormSubmissionAfterDelete>;
+    onFormSubmissionsBeforeExport: Topic<OnFormSubmissionsBeforeExport>;
+    onFormSubmissionsAfterExport: Topic<OnFormSubmissionsAfterExport>;
 }
 
 export interface OnSystemBeforeInstallTopic {

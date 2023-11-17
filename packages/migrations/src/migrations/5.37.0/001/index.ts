@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { makeInjectable, inject } from "@webiny/ioc";
 import {
     DataMigration,
@@ -11,7 +11,7 @@ import { TenantLinkRecords_5_37_0_001_FileData } from "./TenantLinkDataMigration
 export class TenantLinkRecords_5_37_0_001 implements DataMigration {
     private migrations: DataMigration[];
 
-    public constructor(table: Table) {
+    public constructor(table: Table<string, string, string>) {
         this.migrations = [new TenantLinkRecords_5_37_0_001_FileData(table)];
     }
 
