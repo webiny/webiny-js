@@ -9,6 +9,8 @@ import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
+import "./pageBuilder/createCategory";
+import "./pageBuilder/pbDeleteAllCategories";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
