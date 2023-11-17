@@ -38,6 +38,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
@@ -120,8 +121,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

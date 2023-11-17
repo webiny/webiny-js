@@ -121,8 +121,8 @@ describe("export cms structure", () => {
             models: expect.any(Array)
         });
         for (const model of createdModels) {
-            const jsonModel = json.models.find(m => m.modelId === model.modelId) as any;
-            const group = createdGroups.find(g => g.id === model.group.id) as any;
+            const jsonModel = json.models.find(m => m.modelId === model.modelId) as CmsModel;
+            const group = createdGroups.find(g => g.id === model.group.id) as CmsGroup;
             expect(jsonModel).toMatchObject({
                 modelId: model.modelId,
                 name: model.name,

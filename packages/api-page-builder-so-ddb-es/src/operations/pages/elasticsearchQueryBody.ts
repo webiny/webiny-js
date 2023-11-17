@@ -224,11 +224,6 @@ export const createElasticsearchQueryBody = (
             }
         },
         size: limit + 1,
-        /**
-         * Casting as any is required due to search_after is accepting an array of values.
-         * Which is correct in some cases. In our case, it is not.
-         * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
-         */
         search_after: decodeCursor(after),
         sort
     };

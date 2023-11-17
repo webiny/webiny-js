@@ -1,27 +1,34 @@
 /**
  * Sharp is included in the AWS Lambda layer
  */
-// @ts-ignore
 import sharp from "sharp";
-import { Body } from "aws-sdk/clients/s3";
+import type { Readable } from "stream";
 
-export default async (buffer: Body, type: string): Promise<Body> => {
+export default async (stream: Readable, type: string): Promise<Buffer> => {
     switch (type) {
         case "image/png": {
-            return await sharp(buffer)
+            const optimizedImage = sharp()
                 .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
                 .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
-                .withMetadata()
-                .toBuffer();
+                .withMetadata();
+
+            return await stream.pipe(optimizedImage).toBuffer();
         }
         case "image/jpeg":
         case "image/jpg": {
-            return await sharp(buffer)
+            const optimizedImage = sharp()
                 .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
-                .toFormat("jpeg", { quality: 90 })
-                .toBuffer();
+                .toFormat("jpeg", { quality: 90 });
+
+            return await stream.pipe(optimizedImage).toBuffer();
         }
         default:
-            return buffer;
+            const chunks = [];
+
+            for await (const chunk of stream) {
+                chunks.push(chunk);
+            }
+
+            return Buffer.concat(chunks);
     }
 };

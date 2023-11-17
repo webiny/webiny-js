@@ -1,6 +1,6 @@
 import renderUrl, { File } from "./renderUrl";
 import { join } from "path";
-import S3 from "aws-sdk/clients/s3";
+import { S3, PutObjectCommandInput } from "@webiny/aws-sdk/client-s3";
 import { getStorageFolder, getRenderUrl, getIsNotFoundPage, isMultiTenancyEnabled } from "~/utils";
 import { HandlerPayload, RenderHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, Render, TagPathLink } from "~/types";
@@ -20,7 +20,7 @@ interface StoreFileParams {
 
 const storeFile = (params: StoreFileParams) => {
     const { storageName, key, contentType, body } = params;
-    const object: S3.Types.PutObjectRequest = {
+    const object: PutObjectCommandInput = {
         Bucket: storageName,
         Key: key,
         ContentType: contentType,
@@ -32,7 +32,7 @@ const storeFile = (params: StoreFileParams) => {
         object.ACL = "public-read";
     }
 
-    return s3.putObject(object).promise();
+    return s3.putObject(object);
 };
 
 export interface RenderParams {

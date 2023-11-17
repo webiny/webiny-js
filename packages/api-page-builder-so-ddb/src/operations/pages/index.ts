@@ -7,8 +7,8 @@ import {
     PageStorageOperationsCreateParams,
     PageStorageOperationsDeleteAllParams,
     PageStorageOperationsDeleteParams,
-    PageStorageOperationsGetParams,
     PageStorageOperationsGetByPathParams,
+    PageStorageOperationsGetParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListResponse,
     PageStorageOperationsListRevisionsParams,
@@ -17,10 +17,16 @@ import {
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { get as entityGet } from "@webiny/db-dynamodb/utils/get";
-import { Entity } from "dynamodb-toolbox";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { DbItem, queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
+import {
+    DbItem,
+    queryAll,
+    QueryAllParams,
+    queryOne,
+    queryOneClean
+} from "@webiny/db-dynamodb/utils/query";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -194,11 +200,10 @@ export const createPageStorageOperations = (
             SK: createLatestSortKey(page)
         };
 
-        const latestPageResult = await entityGet<Page>({
+        const latestPage = await getClean<Page>({
             entity,
             keys: latestKeys
         });
-        const latestPage = cleanupItem(entity, latestPageResult);
 
         const titleLC = page.title.toLowerCase();
         /**
@@ -584,14 +589,10 @@ export const createPageStorageOperations = (
             };
         }
         try {
-            const result = await entityGet<Page>({
+            return await getClean<Page>({
                 entity,
                 keys
             });
-            if (!result) {
-                return null;
-            }
-            return cleanupItem(entity, result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",
@@ -622,11 +623,7 @@ export const createPageStorageOperations = (
             }
         };
         try {
-            const result = await queryOne<Page>(queryOptions);
-            if (!result) {
-                return null;
-            }
-            return cleanupItem(entity, result);
+            return await queryOneClean<Page>(queryOptions);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get page by given path.",

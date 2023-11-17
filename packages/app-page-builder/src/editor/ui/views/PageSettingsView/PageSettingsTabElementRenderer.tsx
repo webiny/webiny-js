@@ -43,7 +43,7 @@ export class PageSettingsTabElementRenderer extends UIRenderer<PageSettingsTabEl
                 onClick={() => setActiveSection(element.id)}
             >
                 <ListItemGraphic>
-                    <Icon icon={element.config.icon as any} />
+                    <Icon icon={element.config.icon} />
                 </ListItemGraphic>
                 <TitleContent>
                     <ListItemTitle>{element.config.title}</ListItemTitle>

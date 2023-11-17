@@ -257,24 +257,29 @@ export const make = function make(
     classNames: string[] | string | null = null,
     attributes?: Record<string, string | number | boolean>
 ): HTMLElement {
-    const el: HTMLElement = document.createElement(tagName);
+    const element: HTMLElement = document.createElement(tagName);
 
     if (Array.isArray(classNames)) {
-        el.classList.add(...classNames);
+        element.classList.add(...classNames);
     } else if (classNames) {
-        el.classList.add(classNames);
+        element.classList.add(classNames);
     }
 
     if (!attributes) {
-        return el;
+        return element;
     }
     for (const attrName in attributes) {
         /**
          * Unfortunately it is a problem to map attributes to element because element is complaining
          * that attrName is a string, which cannot index the HTMLElement
          */
-        (el as any)[attrName] = (attributes as any)[attrName];
+        const key = attrName as keyof HTMLElement;
+        /**
+         * Error says that each key is a read-only property.
+         */
+        // @ts-expect-error
+        element[key] = attributes[attrName];
     }
 
-    return el;
+    return element;
 };

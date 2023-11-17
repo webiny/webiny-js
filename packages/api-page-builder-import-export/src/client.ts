@@ -33,7 +33,8 @@ export async function invokeHandlerClient<TParams>({
         /**
          * Required until type augmentation works correctly.
          */
-        cookies: (request as any).cookies
+        // @ts-ignore
+        cookies: request.cookies
     };
     // Invoke handler
     await context.handlerClient.invoke<TParams & any>({
