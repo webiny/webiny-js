@@ -32,6 +32,11 @@ export const MenuActions: React.VFC<MenuActionsProps> = ({
         return null;
     }
 
+    // If the user cannot manage folder structure, no need to show the menu.
+    if (!folder.canManageStructure) {
+        return null;
+    }
+
     return (
         <Container className={"folder-tree-menu-action"}>
             <Menu handle={<More />} renderToPortal={true}>

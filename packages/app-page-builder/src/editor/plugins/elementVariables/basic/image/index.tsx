@@ -9,7 +9,7 @@ export default {
     elementType: "image",
     getVariableValue(element) {
         const variables = useElementVariables(element);
-        return variables?.length > 0 ? variables[0].value : null;
+        return variables.length > 0 ? variables[0].value : null;
     },
     renderVariableInput(variableId: string) {
         return <SingleImageVariableInput variableId={variableId} />;

@@ -59,7 +59,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
                 index: testIndexName
             });
 
-            expect(settingsResponse.body).toEqual({
+            expect(settingsResponse.body).toMatchObject({
                 [testIndexName]: {
                     settings: {
                         ...setting.settings,

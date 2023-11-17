@@ -4,7 +4,8 @@
   "references": [
     { "path": "../api-admin-users" },
     { "path": "../db-dynamodb" },
-    { "path": "../error" }
+    { "path": "../error" },
+    { "path": "../aws-sdk" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -18,7 +19,9 @@
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"]
+      "@webiny/error": ["../error/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"]
     },
     "baseUrl": "."
   }

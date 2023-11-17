@@ -1,14 +1,14 @@
 import invariant from "invariant";
 import { customAlphabet } from "nanoid";
 import { set } from "dot-prop-immutable";
-import { DragObjectWithTypeWithTarget } from "./components/Droppable";
+import { DragObjectWithTypeWithTarget as BaseDragObjectWithTypeWithTarget } from "./components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorBlockPlugin,
+    PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorElement,
     PbElement
 } from "~/types";
 import {
@@ -127,6 +127,11 @@ export const removeElementFromParent = (parent: PbEditorElement, id?: string): P
     };
 };
 
+export interface DragObjectWithTypeWithTarget extends BaseDragObjectWithTypeWithTarget {
+    elements?: PbEditorElement[];
+    data?: Record<string, any>;
+}
+
 export const createDroppedElement = (
     source: DragObjectWithTypeWithTarget,
     target: PbEditorElement
@@ -137,11 +142,11 @@ export const createDroppedElement = (
         return {
             id,
             type: source.type,
-            elements: ((source as any).elements || []).map((childElement: PbEditorElement) => ({
+            elements: (source.elements || []).map((childElement: PbEditorElement) => ({
                 ...childElement,
                 parent: id
             })),
-            data: (source as any).data || {},
+            data: source.data || {},
             parent: target.id
         };
     }
@@ -288,7 +293,11 @@ export const moveInPlace = (
 export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
     const { source, target, position, state, meta } = props;
 
-    const element = createDroppedElement(source as any, target);
+    /**
+     * TODO: figure out the correct type instead of the PbEditorElement.
+     */
+    // @ts-expect-error
+    const element = createDroppedElement(source, target);
     const parent = addElementToParent(element, target, position);
 
     const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {

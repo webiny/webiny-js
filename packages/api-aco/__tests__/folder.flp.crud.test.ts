@@ -522,14 +522,26 @@ describe("Folder Level Permissions", () => {
             {
                 id: folderA.id,
                 parentId: null,
-                permissions: [],
+                permissions: [
+                    {
+                        target: "admin:2",
+                        level: "public",
+                        inheritedFrom: "public"
+                    }
+                ],
                 hasNonInheritedPermissions: false,
                 canManagePermissions: false
             },
             {
                 id: folderB.id,
                 parentId: folderA.id,
-                permissions: [],
+                permissions: [
+                    {
+                        target: "admin:2",
+                        level: "public",
+                        inheritedFrom: `parent:${folderA.id}`
+                    }
+                ],
                 hasNonInheritedPermissions: false,
                 canManagePermissions: false
             }

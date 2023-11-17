@@ -18,6 +18,7 @@ import {
 } from "./mocks/fields";
 import { createError, createFieldErrors, isNestedError } from "./mocks/errors";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
+import { CmsModel } from "~/types";
 
 describe("content entry validation", () => {
     /**
@@ -205,7 +206,7 @@ describe("content entry validation", () => {
 
     it("should return errors for invalid dynamic zone field values", async () => {
         const { plugins, model } = createValidationStructure({
-            ...(pageModel as any)
+            ...(pageModel as CmsModel)
         });
         const manager = useValidationManageHandler({
             path: "manage/en-US",

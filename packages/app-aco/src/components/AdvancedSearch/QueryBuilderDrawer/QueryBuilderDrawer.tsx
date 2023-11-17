@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
@@ -27,9 +27,9 @@ interface QueryBuilderDrawerProps {
 }
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
-    const [presenter] = useState<QueryBuilderDrawerPresenter>(
-        new QueryBuilderDrawerPresenter(props.fields)
-    );
+    const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
+        return new QueryBuilderDrawerPresenter(props.fields);
+    }, [props.fields]);
 
     useEffect(() => {
         presenter.load(filter);

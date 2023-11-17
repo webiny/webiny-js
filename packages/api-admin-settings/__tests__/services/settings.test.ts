@@ -1,5 +1,6 @@
 import { createMockContextHandler } from "../context";
 import { AdminSettingsVariant } from "~/types";
+import { put } from "@webiny/db-dynamodb";
 
 const createData = (variant: AdminSettingsVariant) => {
     return {
@@ -11,10 +12,13 @@ describe("Settings service", () => {
     const { handle, entity } = createMockContextHandler();
 
     const insertAdminSettings = async (variant: AdminSettingsVariant) => {
-        return entity.put({
-            PK: "ADMIN#SETTINGS",
-            SK: variant,
-            data: createData(variant)
+        return put({
+            entity,
+            item: {
+                PK: "ADMIN#SETTINGS",
+                SK: variant,
+                data: createData(variant)
+            }
         });
     };
 

@@ -12,34 +12,34 @@ export const createGetRevisionById = (params: DataLoaderParams) => {
 
     return new DataLoader<string, CmsStorageEntry[]>(
         async (ids: readonly string[]) => {
-            const queries = ids.reduce((collection, id) => {
-                const partitionKey = createPartitionKey({
-                    tenant,
-                    locale,
-                    id
-                });
-                const { version } = parseIdentifier(id);
-                if (version === null) {
-                    return collection;
-                }
-                const sortKey = createRevisionSortKey({
-                    version
-                });
-                const keys = `${partitionKey}__${sortKey}`;
-                if (collection[keys]) {
-                    return collection;
-                }
+            const queries = ids.reduce<Record<string, ReturnType<typeof entity.getBatch>>>(
+                (collection, id) => {
+                    const partitionKey = createPartitionKey({
+                        tenant,
+                        locale,
+                        id
+                    });
+                    const { version } = parseIdentifier(id);
+                    if (version === null) {
+                        return collection;
+                    }
+                    const sortKey = createRevisionSortKey({
+                        version
+                    });
+                    const keys = `${partitionKey}__${sortKey}`;
+                    if (collection[keys]) {
+                        return collection;
+                    }
 
-                collection[keys] = entity.getBatch({
-                    PK: partitionKey,
-                    SK: sortKey
-                });
+                    collection[keys] = entity.getBatch({
+                        PK: partitionKey,
+                        SK: sortKey
+                    });
 
-                return collection;
-                /**
-                 * We cast as any because there is no return type defined.
-                 */
-            }, {} as Record<string, any>);
+                    return collection;
+                },
+                {}
+            );
 
             const records = await batchReadAll<CmsStorageEntry>({
                 table: entity.table,

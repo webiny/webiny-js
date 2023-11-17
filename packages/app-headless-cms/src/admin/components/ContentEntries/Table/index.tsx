@@ -10,11 +10,7 @@ import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { EntryName, FolderName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
@@ -103,12 +99,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 enableSorting: true,
                 size: 400
             },
-            createdOn: {
-                header: "Created",
-                className: "cms-aco-list-createdOn",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
-                enableSorting: true
-            },
             createdBy: {
                 header: "Author",
                 className: "cms-aco-list-createdBy"
@@ -154,6 +144,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                 <RecordActionDelete record={record} />
                             </Menu>
                         );
+                    }
+
+                    // If the user cannot manage folder structure, no need to show the menu.
+                    if (!record.original.canManageStructure) {
+                        return null;
                     }
 
                     return (

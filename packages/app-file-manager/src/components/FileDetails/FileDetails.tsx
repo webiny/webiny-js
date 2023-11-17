@@ -30,6 +30,7 @@ import { CmsModelField } from "@webiny/app-headless-cms/types";
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
 const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
+    z-index: 70;
     &.mdc-drawer {
         width: ${props => props.width};
     }

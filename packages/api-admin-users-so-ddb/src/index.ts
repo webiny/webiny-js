@@ -2,18 +2,24 @@ import { AdminUsersStorageOperations, CreateAdminUsersStorageOperations, ENTITIE
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createSystemEntity, createUserEntity } from "~/definitions/entities";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
-import { get } from "@webiny/db-dynamodb/utils/get";
-import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import {
     AdminUser,
     StorageOperationsGetUserParams,
-    StorageOperationsListUsersParams
+    StorageOperationsListUsersParams,
+    System
 } from "@webiny/api-admin-users/types";
+import {
+    cleanupItem,
+    deleteItem,
+    get,
+    getClean,
+    put,
+    queryAll,
+    queryOne,
+    sortItems
+} from "@webiny/db-dynamodb";
 
 const reservedFields = ["PK", "SK", "index", "data"];
-const cleanupAttributes = ["TYPE"];
 
 const isReserved = (name: string): void => {
     if (reservedFields.includes(name)) {
@@ -71,10 +77,13 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             };
 
             try {
-                await entities.users.put({
-                    ...keys,
-                    TYPE: "adminUsers.user",
-                    data: user
+                await put({
+                    entity: entities.users,
+                    item: {
+                        ...keys,
+                        TYPE: "adminUsers.user",
+                        data: user
+                    }
                 });
 
                 return user;
@@ -89,10 +98,13 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         async createSystemData({ system }) {
             const keys = createSystemKeys(system.tenant);
             try {
-                await entities.system.put({
-                    ...keys,
-                    TYPE: "adminUsers.system",
-                    ...cleanupItem(entities.system, system)
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...cleanupItem(entities.system, system),
+                        ...keys,
+                        TYPE: "adminUsers.system"
+                    }
                 });
                 return system;
             } catch (err) {
@@ -107,7 +119,10 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             const keys = createUserKeys(user);
 
             try {
-                await entities.users.delete(keys);
+                await deleteItem({
+                    entity: entities.users,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete group.",
@@ -149,11 +164,10 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         async getSystemData({ tenant }) {
             const keys = createSystemKeys(tenant);
             try {
-                const result = await entities.system.get(keys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entities.system, result.Item, cleanupAttributes);
+                return await getClean<System | null>({
+                    entity: entities.system,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load system.",
@@ -172,8 +186,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                     entity: entities.users,
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -192,10 +205,13 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             };
 
             try {
-                await entities.users.put({
-                    ...keys,
-                    TYPE: "adminUsers.user",
-                    data: user
+                await put({
+                    entity: entities.users,
+                    item: {
+                        ...keys,
+                        TYPE: "adminUsers.user",
+                        data: user
+                    }
                 });
                 return user;
             } catch (err) {
@@ -209,9 +225,12 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         async updateSystemData({ system }) {
             const keys = createSystemKeys(system.tenant);
             try {
-                await entities.system.put({
-                    ...keys,
-                    ...cleanupItem(entities.system, system)
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...keys,
+                        ...cleanupItem(entities.system, system)
+                    }
                 });
                 return system;
             } catch (err) {

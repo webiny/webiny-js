@@ -445,13 +445,14 @@ describe("Reviewer crud test", () => {
         await updatedSecurityIdentity.login();
 
         await until(
-            () => updatedReviewer.listReviewersQuery({}).then(([data]) => data),
-            (response: any) => {
-                const list = response.data.apw.listReviewers.data as any[];
+            () => updatedReviewer.listReviewersQuery({}),
+            data => {
+                const response = data[0] as unknown as Record<string, any>;
+                const list = response.data.apw.listReviewers.data;
                 if (list.length !== 2) {
                     return false;
                 }
-                return list.some(reviewer => reviewer.email === email);
+                return list.some((reviewer: any) => reviewer.email === email);
             },
             {
                 name: "Wait for listReviewers query after updated login"
