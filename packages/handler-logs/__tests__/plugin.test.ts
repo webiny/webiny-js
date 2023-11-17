@@ -25,7 +25,7 @@ const testHandler = createHandler({
         new RoutePlugin(context => {
             context.onGet("/test", () => {
                 console.log(forwardUrl);
-                return null;
+                return {};
             });
         })
     ]
@@ -33,12 +33,18 @@ const testHandler = createHandler({
 
 describe("logs plugin", () => {
     it("should send data to given url", async () => {
-        await testHandler(
+        const result = await testHandler(
             {
-                path: "/test"
+                path: "/test",
+                httpMethod: "GET"
             } as APIGatewayEvent,
             {} as LambdaContext
         );
+
+        expect(result).toMatchObject({
+            statusCode: 200,
+            body: "{}"
+        });
 
         expect(mockResult.url).toEqual(forwardUrl);
         expect(mockResult.opts).toEqual({
