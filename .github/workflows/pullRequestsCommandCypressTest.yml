@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Cypress
+name: Pull Requests Command - Cypress (TEST)
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
@@ -17,7 +17,7 @@ jobs:
       - name: Validate
         run: npx github-actions-wac validate
   checkComment:
-    name: Check comment for /cypress
+    name: Check comment for /cypress_test
     if: ${{ github.event.issue.pull_request }}
     steps:
       - uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress
+          command: cypress_test
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
