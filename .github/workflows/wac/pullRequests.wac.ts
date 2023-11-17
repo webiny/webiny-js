@@ -36,7 +36,7 @@ const createJestTestsJob = (storage: string | null) => {
         },
         "runs-on": "${{ matrix.os }}",
         env,
-        awsAuth: true,
+        awsAuth: storage === "ddb-es" || storage === "ddb-os",
         steps: [
             {
                 uses: "actions/cache@v3",
