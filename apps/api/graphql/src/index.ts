@@ -108,7 +108,27 @@ export const handler = createHandler({
                 type: "text",
                 renderer: {
                     name: "text-input"
-                }
+                },
+                bulkEdit: true
+            });
+
+            modifier.addField({
+                id: "article",
+                fieldId: "article",
+                label: "Article",
+                type: "ref",
+                renderer: {
+                    name: "ref-inputs"
+                },
+                multipleValues: true,
+                settings: {
+                    models: [
+                        {
+                            modelId: "article"
+                        }
+                    ]
+                },
+                bulkEdit: true
             });
 
             modifier.addField({
