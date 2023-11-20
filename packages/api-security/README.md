@@ -36,7 +36,7 @@ export const handler = createHandler({
         logsPlugins(),
         graphqlPlugins({ debug })
     ],
-    http: { debug }
+    debug
 });
 ```
 
@@ -81,7 +81,7 @@ export const handler = createHandler({
         logsPlugins(),
         graphqlPlugins({ debug })
     ],
-    http: { debug }
+    debug
 });
 ```
 

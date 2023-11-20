@@ -45,9 +45,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const model = createModelPlugin();
     const handler = createHandler({
         plugins: core.plugins.concat([group, model, createUpdateLocationGraphQl()]),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({

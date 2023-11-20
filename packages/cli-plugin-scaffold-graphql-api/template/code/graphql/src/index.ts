@@ -9,5 +9,5 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [logsPlugins(), graphqlPlugins({ debug }), scaffoldsPlugins()],
-    http: { debug }
+    debug
 });

@@ -112,5 +112,5 @@ export const handler = createHandler({
         createAuditLogs(),
         scaffoldsPlugins()
     ],
-    http: { debug }
+    debug
 });

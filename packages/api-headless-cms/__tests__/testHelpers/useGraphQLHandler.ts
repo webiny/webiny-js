@@ -76,9 +76,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: plugins.all(),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({

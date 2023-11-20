@@ -163,9 +163,7 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             createApwGraphQL(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {

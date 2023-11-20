@@ -14,9 +14,7 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
 
     const handler = createRawHandler<any, AuditLogsContext & AuditLogsAcoContext>({
         plugins,
-        http: {
-            debug: process.env.DEBUG === "true"
-        }
+        debug: process.env.DEBUG === "true"
     });
     return {
         plugins,

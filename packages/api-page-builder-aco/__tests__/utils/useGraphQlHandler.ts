@@ -103,9 +103,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createAcoPageBuilderContext(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
