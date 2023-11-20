@@ -13,7 +13,8 @@ export {
     PutCommand,
     GetCommand,
     UpdateCommand,
-    DeleteCommand
+    DeleteCommand,
+    DynamoDBDocument
 } from "@aws-sdk/lib-dynamodb";
 
 export { unmarshall, marshall } from "@aws-sdk/util-dynamodb";
