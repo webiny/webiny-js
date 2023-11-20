@@ -1,12 +1,27 @@
+import zod from "zod";
+
 export interface BatchDTO {
     operations: OperationDTO[];
 }
+
+const operationValidationSchema = zod.object({
+    field: zod.string().trim().nonempty("Field is required."),
+    operator: zod.string().nonempty("Condition is required.")
+});
+
+export const batchValidationSchema = zod.object({
+    operations: zod.array(operationValidationSchema).min(1)
+});
 
 export class Batch {
     operations: Operation[];
 
     static createEmpty() {
         return new Batch([new Operation()]);
+    }
+
+    static validate(data: BatchDTO) {
+        return batchValidationSchema.safeParse(data);
     }
 
     protected constructor(operations: Operation[]) {
@@ -23,7 +38,7 @@ export interface OperationDTO {
 export class Operation {
     public readonly field?: string;
     public readonly operator?: string;
-    public readonly value?: any = undefined;
+    public readonly value?: Record<string, any> = undefined;
 
     constructor(field?: string, operator?: string, value?: any) {
         this.field = field;

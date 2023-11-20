@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 import {
+    Batch,
     BatchDTO,
     Field,
     FieldDTO,
@@ -16,10 +17,12 @@ export interface IBatchEditorDialogPresenter {
     setOperationFieldData(operationIndex: number, data: string): void;
     setBatch(data: any): void;
     onApply(onSuccess?: (batch: BatchDTO) => void, onError?: (batch: BatchDTO) => void): void;
+    get vm(): BatchEditorDialogViewModel;
 }
 
 export interface BatchEditorDialogViewModel {
     fields: FieldDTO[];
+    invalidFields: Record<string, { isValid: boolean; message: string }>;
     data: BatchEditorFormData;
 }
 
@@ -30,6 +33,8 @@ export interface BatchEditorFormData {
 export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     private batch: BatchDTO | undefined;
     private readonly fields: FieldDTO[];
+    private invalidFields: BatchEditorDialogViewModel["invalidFields"] = {};
+    private formWasSubmitted = false;
 
     constructor(fields: FieldRaw[]) {
         this.batch = undefined;
@@ -44,6 +49,7 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     get vm() {
         return {
             fields: this.fields,
+            invalidFields: this.invalidFields,
             data: {
                 operations:
                     this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
@@ -109,13 +115,46 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
                 value: operation.value
             }))
         };
+
+        if (this.formWasSubmitted) {
+            this.validateBatch(this.batch);
+        }
     }
 
-    onApply(onSuccess?: (batch: BatchDTO) => void, onError?: (batch: BatchDTO) => void) {
+    onApply(
+        onSuccess?: (batch: BatchDTO) => void,
+        onError?: (
+            batch: BatchDTO,
+            invalidFields: BatchEditorDialogViewModel["invalidFields"]
+        ) => void
+    ) {
         if (!this.batch) {
             return;
         }
 
-        onSuccess && onSuccess(this.batch);
+        const result = this.validateBatch(this.batch);
+        if (result.success) {
+            onSuccess && onSuccess(this.batch);
+        } else {
+            onError && onError(this.batch, this.invalidFields);
+        }
+    }
+
+    private validateBatch(data: BatchDTO) {
+        this.formWasSubmitted = true;
+        const validation = Batch.validate(data);
+
+        if (!validation.success) {
+            this.invalidFields = validation.error.issues.reduce((acc, issue) => {
+                return {
+                    ...acc,
+                    [issue.path.join(".")]: issue.message
+                };
+            }, {});
+        } else {
+            this.invalidFields = {};
+        }
+
+        return validation;
     }
 }

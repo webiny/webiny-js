@@ -13,7 +13,7 @@ export const AddOperation = ({ onClick }: AddOperationProps) => {
     return (
         <AddOperationInner>
             <ButtonDefault onClick={onClick}>
-                <ButtonIcon /> {"Add new filter group"}
+                <ButtonIcon /> {"Add new operation"}
             </ButtonDefault>
         </AddOperationInner>
     );

@@ -4,6 +4,7 @@ import { RenderFieldElement, ModelProvider } from "@webiny/app-headless-cms";
 import { Bind, Form, useBind } from "@webiny/form";
 
 import { FieldDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
+
 import { useFileModel } from "~/hooks/useFileModel";
 
 export interface FieldRendererProps {

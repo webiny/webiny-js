@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
+import { prepareFormData } from "@webiny/app-headless-cms-common";
 import { observer } from "mobx-react-lite";
 import omit from "lodash/omit";
 
@@ -7,14 +8,13 @@ import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManager
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
-import { BatchEditorDialog } from "./BatchEditorDialog";
-import { ActionEditPresenter } from "./ActionEditPresenter";
-
 import { useFileModel } from "~/hooks/useFileModel";
 import { getFilesLabel } from "~/components/BulkActions";
 import { GraphQLInputMapper } from "~/components/BulkActions/ActionEdit/GraphQLInputMapper";
 import { BatchDTO } from "~/components/BulkActions/ActionEdit/domain";
-import { prepareFormData } from "@webiny/app-headless-cms-common";
+
+import { BatchEditorDialog } from "./BatchEditorDialog";
+import { ActionEditPresenter } from "./ActionEditPresenter";
 
 export const ActionEdit = observer(() => {
     const { fields: defaultFields } = useFileModel();
@@ -53,6 +53,8 @@ export const ActionEdit = observer(() => {
         );
     }, [defaultFields]);
 
+    console.log("fields", fields);
+
     const canEditAll = useMemo(() => {
         return worker.items.every(item => canEdit(item));
     }, [worker.items]);
@@ -73,8 +75,6 @@ export const ActionEdit = observer(() => {
                             item.extensions,
                             batch
                         );
-
-                        console.log("extensionsData", extensionsData);
 
                         const output = omit(item, ["id", "createdBy", "createdOn", "src"]);
 

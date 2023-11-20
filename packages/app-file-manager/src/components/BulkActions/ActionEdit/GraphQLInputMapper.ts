@@ -1,5 +1,5 @@
-import { BatchDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
 import { FileItem } from "@webiny/app-admin/types";
+import { BatchDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
 
 export class GraphQLInputMapper {
     static toGraphQLExtensions(data: FileItem["extensions"], batch: BatchDTO) {
