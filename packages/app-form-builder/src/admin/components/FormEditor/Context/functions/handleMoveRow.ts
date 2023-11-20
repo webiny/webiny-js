@@ -18,12 +18,9 @@ export default ({
     destination
 }: HandleMoveRowParams): void => {
     if (source.containerId === destination.containerId) {
-        /* 
-            This condition should cover such cases:
-            1) When we move rows in scope of one Step;
-            2) When we move rows in scope of one Condition Group (Condition Group yet to be implemented).
-            -----------------------------------------------------
-        */
+        // This condition should cover:
+        // 1. When we move rows in scope of one Step;
+        // 2. When we move rows in scope of one Condition Group (Condition Group yet to be implemented).
         const sourceContainer = data.steps.find(
             step => step.id === source.containerId
         ) as FbFormStep;
@@ -33,12 +30,9 @@ export default ({
             sourceContainer
         });
     } else {
-        /* 
-            This condition should cover such cases:
-            1) When we move rows in scope of two different Steps;
-            2) When we move rows in scope of two different Condition Groups (Condition Group yet to be implemented).
-            ----------------------------------------------------------------
-        */
+        // This condition should cover:
+        // 1. When we move rows in scope of two different Steps;
+        // 2. When we move rows in scope of two different Condition Groups (Condition Group yet to be implemented).
         const sourceContainer = data.steps.find(
             step => step.id === source.containerId
         ) as FbFormStep;
