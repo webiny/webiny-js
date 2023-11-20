@@ -16994,6 +16994,7 @@ __metadata:
     "@webiny/handler-client": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     aws-lambda: ^1.0.7
     fastify: 4.11.0
     rimraf: ^3.0.2

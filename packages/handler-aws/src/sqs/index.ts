@@ -10,6 +10,7 @@ import { Context as LambdaContext } from "aws-lambda/handler";
  */
 // @ts-expect-error
 import Reply from "fastify/lib/reply";
+import { createComposedHandler } from "~/utils/composedHandler";
 
 export * from "./plugins/SQSEventHandler";
 
@@ -17,9 +18,7 @@ export interface HandlerCallable {
     (event: SQSEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface HandlerParams extends HandlerFactoryParams {
-    debug?: boolean;
-}
+export type HandlerParams = HandlerFactoryParams;
 
 const url = "/webiny-sqs-event";
 
@@ -39,21 +38,29 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<SQSEventHandler>(SQSEventHandler.type);
-        const handler = plugins.shift();
-        if (!handler) {
+        const plugins = app.webiny.plugins.byType<SQSEventHandler>(SQSEventHandler.type).reverse();
+        if (plugins.length === 0) {
             throw new Error(`To run @webiny/handler-aws/sqs, you must have SQSEventHandler set.`);
         }
 
+        const handler = createComposedHandler<
+            SQSEventHandler,
+            SQSEventHandlerCallableParams<APIGatewayProxyResult>,
+            APIGatewayProxyResult
+        >(plugins);
+
         app.post(url, async (request, reply) => {
-            const params: SQSEventHandlerCallableParams = {
+            const params: Omit<SQSEventHandlerCallableParams<APIGatewayProxyResult>, "next"> = {
                 request,
                 reply,
                 context: app.webiny,
                 event,
                 lambdaContext: context
             };
-            const result = await handler.cb(params);
+
+            const result = await handler(
+                params as unknown as SQSEventHandlerCallableParams<APIGatewayProxyResult>
+            );
 
             if (result instanceof Reply) {
                 return result;

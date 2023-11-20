@@ -7,11 +7,7 @@ import { APIGatewayProxyEventHeaders } from "aws-lambda/trigger/api-gateway-prox
 
 export { RoutePlugin, createRoute };
 
-export interface HandlerParams extends HandlerFactoryParams {
-    http?: {
-        debug?: boolean;
-    };
-}
+export type HandlerParams = HandlerFactoryParams;
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
@@ -59,7 +55,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         const app = createBaseHandler({
             ...params,
             options: {
-                logger: params.http?.debug === true,
+                logger: params.debug === true,
                 ...(params.options || {})
             }
         });

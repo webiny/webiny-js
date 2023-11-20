@@ -12,12 +12,11 @@ import { APIGatewayProxyResult, Context as LambdaContext, EventBridgeEvent } fro
  */
 // @ts-expect-error
 import Reply from "fastify/lib/reply";
+import { createComposedHandler } from "~/utils/composedHandler";
 
 export * from "./plugins/EventBridgeEventHandler";
 
-export interface HandlerParams extends HandlerFactoryParams {
-    debug?: boolean;
-}
+export type HandlerParams = HandlerFactoryParams;
 
 export interface HandlerCallable {
     (
@@ -44,25 +43,39 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<EventBridgeEventHandler<string, string>>(
-            EventBridgeEventHandler.type
-        );
-        const handler = plugins.shift();
-        if (!handler) {
+        const plugins = app.webiny.plugins
+            .byType<EventBridgeEventHandler<string, string>>(EventBridgeEventHandler.type)
+            .reverse();
+        if (plugins.length === 0) {
             throw new Error(
                 `To run @webiny/handler-aws/eventBridge, you must have EventBridgeEventHandler set.`
             );
         }
 
+        const handler = createComposedHandler<
+            EventBridgeEventHandler<string, string>,
+            EventBridgeEventHandlerCallableParams<string, string, APIGatewayProxyResult>,
+            APIGatewayProxyResult
+        >(plugins);
+
         app.post(url, async (request, reply) => {
-            const params: EventBridgeEventHandlerCallableParams<string, string> = {
+            const params: Omit<
+                EventBridgeEventHandlerCallableParams<string, string, APIGatewayProxyResult>,
+                "next"
+            > = {
                 request,
                 reply,
                 context: app.webiny,
                 payload,
                 lambdaContext: context
             };
-            const result = await handler.cb(params);
+            const result = await handler(
+                params as unknown as EventBridgeEventHandlerCallableParams<
+                    string,
+                    string,
+                    APIGatewayProxyResult
+                >
+            );
 
             if (result instanceof Reply) {
                 return result;

@@ -10,6 +10,7 @@ import { HandlerFactoryParams } from "~/types";
 import Reply from "fastify/lib/reply";
 import { APIGatewayProxyResult, S3Event } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
+import { createComposedHandler } from "~/utils/composedHandler";
 
 export * from "./plugins/S3EventHandler";
 
@@ -17,9 +18,7 @@ export interface HandlerCallable {
     (event: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface HandlerParams extends HandlerFactoryParams {
-    debug?: boolean;
-}
+export type HandlerParams = HandlerFactoryParams;
 
 const url = "/webiny-s3-event";
 
@@ -39,21 +38,28 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<S3EventHandler>(S3EventHandler.type);
-        const handler = plugins.shift();
-        if (!handler) {
+        const plugins = app.webiny.plugins.byType<S3EventHandler>(S3EventHandler.type).reverse();
+        if (plugins.length === 0) {
             throw new Error(`To run @webiny/handler-aws/s3, you must have S3EventHandler set.`);
         }
 
+        const handler = createComposedHandler<
+            S3EventHandler,
+            S3EventHandlerCallableParams<APIGatewayProxyResult>,
+            APIGatewayProxyResult
+        >(plugins);
+
         app.post(url, async (request, reply) => {
-            const params: S3EventHandlerCallableParams = {
+            const params: Omit<S3EventHandlerCallableParams<APIGatewayProxyResult>, "next"> = {
                 request,
                 reply,
                 context: app.webiny,
                 event,
                 lambdaContext: context
             };
-            const result = await handler.cb(params);
+            const result = await handler(
+                params as unknown as S3EventHandlerCallableParams<APIGatewayProxyResult>
+            );
 
             if (result instanceof Reply) {
                 return result;

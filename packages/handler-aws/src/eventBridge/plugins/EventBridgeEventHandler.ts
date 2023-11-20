@@ -2,15 +2,26 @@ import { Plugin } from "@webiny/plugins/Plugin";
 import { Request, Reply, Context } from "@webiny/handler/types";
 import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
 
-export interface EventBridgeEventHandlerCallableParams<DetailType extends string, Detail> {
+export interface EventBridgeEventHandlerCallableParams<
+    DetailType extends string,
+    Detail,
+    Response = Reply
+> {
     request: Request;
     reply: Reply;
     context: Context;
     payload: EventBridgeEvent<DetailType, Detail>;
     lambdaContext: LambdaContext;
+    next: () => Promise<Response>;
 }
-export interface EventBridgeEventHandlerCallable<DetailType extends string, Detail, Response> {
-    (params: EventBridgeEventHandlerCallableParams<DetailType, Detail>): Promise<Response | Reply>;
+export interface EventBridgeEventHandlerCallable<
+    DetailType extends string,
+    Detail,
+    Response = Reply
+> {
+    (
+        params: EventBridgeEventHandlerCallableParams<DetailType, Detail, Response>
+    ): Promise<Response>;
 }
 
 export class EventBridgeEventHandler<
