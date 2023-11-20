@@ -8,10 +8,10 @@ import { DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny
 import { BatchEditorDialogPresenter, BatchEditorFormData } from "./BatchEditorDialogPresenter";
 import { BatchEditor } from "~/components/BulkActions/ActionEdit/BatchEditorDialog/BatchEditor";
 import { ActionEditFormContainer, DialogContainer } from "../ActionEdit.styled";
-import { FieldRaw, BatchDTO } from "~/components/BulkActions/ActionEdit/domain";
+import { BatchDTO, FieldDTO } from "~/components/BulkActions/ActionEdit/domain";
 
 interface BatchEditorDialogProps {
-    fields: FieldRaw[];
+    fields: FieldDTO[];
     batch: BatchDTO;
     vm: {
         isOpen: boolean;
@@ -22,12 +22,12 @@ interface BatchEditorDialogProps {
 
 export const BatchEditorDialog = observer((props: BatchEditorDialogProps) => {
     const presenter = useMemo<BatchEditorDialogPresenter>(() => {
-        return new BatchEditorDialogPresenter(props.fields);
-    }, [props.fields]);
+        return new BatchEditorDialogPresenter();
+    }, []);
 
     useEffect(() => {
-        presenter.load(props.batch);
-    }, [props.batch]);
+        presenter.load(props.batch, props.fields);
+    }, [props.batch, props.fields]);
 
     const onChange = (data: BatchEditorFormData) => {
         presenter.setBatch(data);

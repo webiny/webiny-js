@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import { observer } from "mobx-react-lite";
@@ -23,37 +23,23 @@ export const ActionEdit = observer(() => {
         useButtons,
         useDialog: useBulkActionDialog
     } = FileManagerViewConfig.Browser.BulkAction;
-
     const worker = useWorker();
-
-    const presenter = useMemo<ActionEditPresenter>(() => {
-        return new ActionEditPresenter();
-    }, []);
-
     const { updateFile } = useFileManagerView();
     const { canEdit } = useFileManagerApi();
     const { IconButton } = useButtons();
     const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
 
+    const presenter = useMemo<ActionEditPresenter>(() => {
+        return new ActionEditPresenter();
+    }, []);
+
+    useEffect(() => {
+        presenter.load(defaultFields);
+    }, [defaultFields]);
+
     const filesLabel = useMemo(() => {
         return getFilesLabel(worker.items.length);
     }, [worker.items.length]);
-
-    const fields = useMemo(() => {
-        const extensions = defaultFields.find(field => field.fieldId === "extensions");
-
-        if (!extensions?.settings?.fields) {
-            return [];
-        }
-
-        return (
-            extensions.settings.fields.filter(
-                field => field.tags && field.tags.includes("field:bulk-edit")
-            ) || []
-        );
-    }, [defaultFields]);
-
-    console.log("fields", fields);
 
     const canEditAll = useMemo(() => {
         return worker.items.every(item => canEdit(item));
@@ -119,6 +105,10 @@ export const ActionEdit = observer(() => {
         [openWorkerDialog]
     );
 
+    if (!presenter.vm.show) {
+        return null;
+    }
+
     if (!canEditAll) {
         console.log("You don't have permissions to edit files.");
         return null;
@@ -134,7 +124,7 @@ export const ActionEdit = observer(() => {
             />
             <BatchEditorDialog
                 onClose={() => presenter.closeEditor()}
-                fields={fields}
+                fields={presenter.vm.fields}
                 batch={presenter.vm.currentBatch}
                 vm={presenter.vm.editorVm}
                 onApply={onBatchEditorSubmit}

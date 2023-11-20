@@ -3,15 +3,12 @@ import { makeAutoObservable } from "mobx";
 import {
     Batch,
     BatchDTO,
-    Field,
     FieldDTO,
-    FieldMapper,
-    FieldRaw,
     OperationDTO
 } from "~/components/BulkActions/ActionEdit/domain";
 
 export interface IBatchEditorDialogPresenter {
-    load(batch: BatchDTO): void;
+    load(batch: BatchDTO, fields: FieldDTO[]): void;
     addOperation(): void;
     deleteOperation(operationIndex: number): void;
     setOperationFieldData(operationIndex: number, data: string): void;
@@ -32,18 +29,19 @@ export interface BatchEditorFormData {
 
 export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     private batch: BatchDTO | undefined;
-    private readonly fields: FieldDTO[];
+    private fields: FieldDTO[];
     private invalidFields: BatchEditorDialogViewModel["invalidFields"] = {};
     private formWasSubmitted = false;
 
-    constructor(fields: FieldRaw[]) {
+    constructor() {
         this.batch = undefined;
-        this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
+        this.fields = [];
         makeAutoObservable(this);
     }
 
-    load(batch: BatchDTO) {
+    load(batch: BatchDTO, fields: FieldDTO[]) {
         this.batch = batch;
+        this.fields = fields;
     }
 
     get vm() {
