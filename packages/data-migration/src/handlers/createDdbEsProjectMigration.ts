@@ -1,5 +1,5 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import {
@@ -25,8 +25,8 @@ import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbEsDataMigrationConfig {
     elasticsearchClient: ElasticsearchClient;
-    primaryTable: Table;
-    dynamoToEsTable: Table;
+    primaryTable: Table<string, string, string>;
+    dynamoToEsTable: Table<string, string, string>;
     migrations: Constructor<DataMigration>[];
     isMigrationApplicable?: IsMigrationApplicable;
     repository?: MigrationRepository;

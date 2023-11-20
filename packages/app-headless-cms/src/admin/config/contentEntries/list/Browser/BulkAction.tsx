@@ -15,7 +15,7 @@ export interface BulkActionProps {
     before?: string;
     after?: string;
     modelIds?: string[];
-    element: React.ReactElement;
+    element?: React.ReactElement;
 }
 
 export const BaseBulkAction: React.FC<BulkActionProps> = ({
@@ -47,7 +47,9 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
-                <Property id={getId(name, "element")} name={"element"} value={element} />
+                {element ? (
+                    <Property id={getId(name, "element")} name={"element"} value={element} />
+                ) : null}
             </Property>
         </Property>
     );
@@ -59,7 +61,7 @@ const useWorker = () => {
 
     useEffect(() => {
         worker.items = selected;
-    }, [selected]);
+    }, [selected.length]);
 
     // Reset selected items in both useContentEntriesList and Worker
     const resetItems = useCallback(() => {
@@ -68,7 +70,7 @@ const useWorker = () => {
     }, []);
 
     return {
-        items: worker.items,
+        items: selected,
         process: (callback: (items: CmsContentEntry[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({

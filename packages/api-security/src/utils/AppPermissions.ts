@@ -9,13 +9,13 @@ export interface AppPermissionsParams<TPermission extends SecurityPermission = S
     fullAccessPermissionName?: string;
 }
 
-type EnsureParams = Partial<{
+export type EnsureParams = Partial<{
     rwd: string;
     pw: string;
     owns: CreatedBy;
 }>;
 
-type Options = Partial<{
+export type Options = Partial<{
     throw: boolean;
 }>;
 

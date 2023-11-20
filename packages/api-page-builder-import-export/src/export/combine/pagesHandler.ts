@@ -62,7 +62,7 @@ export const pagesHandler = async (
             data: {
                 message: `Finish uploading page export.`,
                 key: pageExportUpload.Key,
-                url: s3Stream.getPresignedUrl(pageExportUpload.Key)
+                url: await s3Stream.getPresignedUrl(pageExportUpload.Key)
             }
         });
 

@@ -2,15 +2,10 @@ import {
     TenancyStorageOperations,
     TenancyStorageOperations as BaseTenantsStorageOperations
 } from "@webiny/api-tenancy/types";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { Table, Entity } from "dynamodb-toolbox";
-import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
-
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -21,12 +16,12 @@ export enum ENTITIES {
 }
 
 export interface TableModifier {
-    (table: TableConstructor): TableConstructor;
+    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
 }
 
 export interface CreateTenancyStorageOperations {
     (params: {
-        documentClient: DocumentClient;
+        documentClient: DynamoDBClient;
         table?: TableModifier;
         attributes?: Record<ENTITIES, Attributes>;
     }): TenancyStorageOperations;
@@ -38,6 +33,6 @@ export interface TenancySystem {
 }
 
 export interface TenantsStorageOperations extends BaseTenantsStorageOperations {
-    getTable(): Table;
+    getTable(): Table<string, string, string>;
     getEntities(): Record<"tenants" | "system" | "domain", Entity<any>>;
 }

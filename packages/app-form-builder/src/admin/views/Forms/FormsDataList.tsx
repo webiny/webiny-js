@@ -1,9 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
-/**
- * Package timeago-react does not have types
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import orderBy from "lodash/orderBy";

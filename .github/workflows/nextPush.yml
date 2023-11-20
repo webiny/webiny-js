@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -113,7 +113,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -131,20 +131,26 @@ jobs:
   jest-tests:
     name: ${{ matrix.package.cmd }}
     needs: [init, build]
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [14]
+        node: [18]
         package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -180,7 +186,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -199,22 +205,28 @@ jobs:
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -330,7 +342,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress-tests/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: next
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -340,32 +352,38 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: next
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        working-directory: next/cypress-tests
+        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
     needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [14]
+        node: [18]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+
       - uses: actions/checkout@v3
         with:
           path: next
@@ -390,10 +408,10 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: next
-        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next
+        working-directory: next/cypress-tests
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
@@ -407,7 +425,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
 
@@ -426,13 +444,13 @@ jobs:
   e2e-wby-cms-ddb-es-project-setup:
     name: E2E (DDB+ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
@@ -442,9 +460,15 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -560,7 +584,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress.json config.
+      # Generates a new cypress-tests/cypress.config.ts config.
       - name: Create Cypress config
         working-directory: next
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -570,27 +594,27 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: next
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        working-directory: next/cypress-tests
+        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
 
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
     needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [14]
+        node: [18]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
@@ -599,6 +623,12 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+
       - uses: actions/checkout@v3
         with:
           path: next
@@ -623,10 +653,10 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: next
-        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: next
+        working-directory: next/cypress-tests
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
@@ -649,7 +679,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:

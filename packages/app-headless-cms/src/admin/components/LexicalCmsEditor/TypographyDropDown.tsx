@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { $getNearestNodeOfType } from "@lexical/utils";
 import {
     DropDown,
     DropDownItem,
-    useRichTextEditor,
+    useCurrentSelection,
+    useCurrentElement,
     useTypographyAction
 } from "@webiny/lexical-editor";
+import {
+    $isHeadingNode,
+    $isParagraphNode,
+    $isQuoteNode,
+    $isListNode,
+    ListNode
+} from "@webiny/lexical-nodes";
 import { TypographyStyle } from "@webiny/theme/types";
-import { TypographyValue } from "@webiny/lexical-editor/types";
+import { TypographyValue } from "@webiny/lexical-theme";
 import { useTheme } from "@webiny/app-admin";
-/*
- * This components support the typography selection for page builder and HCMS.
- * */
+
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = useTheme();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const { textBlockSelection } = useRichTextEditor();
-    const textType = textBlockSelection?.state?.textType;
+    const { element } = useCurrentElement();
+    const { rangeSelection } = useCurrentSelection();
 
     const getAllTextStyles = (): TypographyStyle[] => {
         if (!theme?.styles.typography) {
@@ -28,8 +35,7 @@ export const TypographyDropDown = () => {
     };
 
     useEffect(() => {
-        // In static toolbar typography styles always need to be visible.
-        // User from the start can select immediately in witch style he wants to start typing.
+        // In static toolbar typography, styles always need to be visible.
         if (theme?.styles) {
             setStyles(getAllTextStyles());
         }
@@ -40,32 +46,46 @@ export const TypographyDropDown = () => {
         if (listStyles.length > 0) {
             return listStyles;
         }
-        // fallback
+
         const fallbackTag = tag === "ul" ? "ol" : "ul";
         return theme?.styles.typography.lists?.filter(x => x.tag === fallbackTag) || [];
     };
 
     useEffect(() => {
-        if (textType) {
-            switch (textType) {
-                case "heading":
-                case "paragraph":
-                    setStyles(getAllTextStyles());
-                    break;
-                case "bullet":
-                    setStyles(getListStyles("ul"));
-                    break;
-                case "number":
-                    setStyles(getListStyles("ol"));
-                    break;
-                case "quoteblock":
-                    setStyles(theme?.styles.typography?.quotes || []);
-                    break;
-                default:
-                    setStyles([]);
-            }
+        if (!element || !rangeSelection) {
+            return;
         }
-    }, [textType]);
+
+        switch (true) {
+            case $isHeadingNode(element):
+            case $isParagraphNode(element):
+                setStyles(getAllTextStyles());
+                break;
+            case $isListNode(element):
+                let type;
+                try {
+                    const anchorNode = rangeSelection.anchor.getNode();
+                    const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+                    if (parentList) {
+                        type = parentList.getListType();
+                    }
+                } catch {
+                    type = element.getListType();
+                }
+
+                if (type === "bullet") {
+                    setStyles(getListStyles("ul"));
+                } else {
+                    setStyles(getListStyles("ol"));
+                }
+                break;
+            case $isQuoteNode(element):
+                setStyles(theme?.styles.typography?.quotes || []);
+                break;
+            default:
+                setStyles([]);
+        }
+    }, [element]);
 
     return (
         <>

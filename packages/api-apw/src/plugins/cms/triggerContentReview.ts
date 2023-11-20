@@ -5,7 +5,7 @@ import {
     OnCmsEntryBeforePublishTopicParams
 } from "~/types";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { isAwpModel } from "~/plugins/cms/utils";
+import { isApwDisabledOnModel } from "~/plugins/cms/utils";
 
 interface TriggerContentReviewParams {
     apw: AdvancedPublishingWorkflow;
@@ -16,7 +16,7 @@ export const triggerContentReview = (params: TriggerContentReviewParams) => {
 
     cms.onEntryBeforePublish.subscribe<OnCmsEntryBeforePublishTopicParams>(
         async ({ entry, model }) => {
-            if (isAwpModel(model)) {
+            if (isApwDisabledOnModel(model)) {
                 return;
             }
             const contentReviewId = entry.meta?.apw?.contentReviewId;

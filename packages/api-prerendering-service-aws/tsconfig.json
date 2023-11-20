@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-prerendering-service" },
+    { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler-aws" },
     { "path": "../handler-client" },
@@ -20,6 +21,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
       "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

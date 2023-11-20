@@ -123,16 +123,25 @@ Resources:
                   "Null":
                     "aws:RequestTag/WbyProjectName": "false"
 
+              # Amazon Cognito
               - Effect: Allow
                 Action:
-                  - cognito-idp:CreateUserPoolClient
-                  - cognito-idp:DeleteUserPool
                   - cognito-idp:UpdateUserPool
-                  - cognito-idp:DeleteUserPoolClient
+                  - cognito-idp:DeleteUserPool
                   - cognito-idp:DescribeUserPool
+                  - cognito-idp:CreateUserPoolDomain
+                  - cognito-idp:UpdateUserPoolDomain
+                  - cognito-idp:DeleteUserPoolDomain
+                  - cognito-idp:DescribeUserPoolDomain
+                  - cognito-idp:DescribeIdentityProvider
+                  - cognito-idp:CreateIdentityProvider
+                  - cognito-idp:UpdateIdentityProvider
+                  - cognito-idp:DeleteIdentityProvider
+                  - cognito-idp:CreateUserPoolClient
+                  - cognito-idp:UpdateUserPoolClient
+                  - cognito-idp:DeleteUserPoolClient
                   - cognito-idp:DescribeUserPoolClient
                   - cognito-idp:GetUserPoolMfaConfig
-                  - cognito-idp:TagResource
                   - cognito-idp:UntagResource
                 Resource: arn:aws:cognito-idp:*:*:userpool/*
                 Condition:
@@ -448,10 +457,10 @@ Resources:
 
               # We need this to get logs from CloudWatch during data migrations.
               - Effect: Allow
-                Resource: "*:"
+                Resource: "arn:aws:logs:*:*:log-group:wby-data-migration-*"
                 Action:
-                  - logs:GetLogEvents
                   - logs:Unmask
+                  - logs:GetLogEvents
 
   UserToDeployWebinyProjectGroup1:
     Type: AWS::IAM::UserToGroupAddition

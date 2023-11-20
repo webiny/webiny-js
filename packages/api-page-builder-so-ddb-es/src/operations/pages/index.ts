@@ -14,7 +14,7 @@ import {
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
@@ -24,7 +24,7 @@ import {
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
 import { configurations } from "~/configurations";
-import { encodeCursor, createLimit } from "@webiny/api-elasticsearch";
+import { createLimit, encodeCursor } from "@webiny/api-elasticsearch";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";
 import { SearchLatestPagesPlugin } from "~/plugins/definitions/SearchLatestPagesPlugin";
 import { SearchPublishedPagesPlugin } from "~/plugins/definitions/SearchPublishedPagesPlugin";
@@ -47,6 +47,7 @@ import {
 } from "./keys";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 /**
  * This function removes attributes that were once present in the Page record, which we no longer need.
@@ -96,10 +97,13 @@ export const createPageStorageOperations = (
                 table: entity.table,
                 items: items
             });
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
             return page;
         } catch (ex) {
@@ -148,10 +152,13 @@ export const createPageStorageOperations = (
                 items
             });
 
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
             return page;
         } catch (ex) {
@@ -181,8 +188,10 @@ export const createPageStorageOperations = (
             ...keys,
             SK: createLatestSortKey()
         };
-        const latestPageResult = await entity.get(latestKeys);
-        const latestPage = cleanupItem(entity, latestPageResult ? latestPageResult.Item : null);
+        const latestPage = await getClean<Page>({
+            entity,
+            keys: latestKeys
+        });
 
         const items = [
             entity.putBatch({
@@ -194,7 +203,7 @@ export const createPageStorageOperations = (
 
         const esData = getESLatestPageData(plugins, page, input);
 
-        if (latestPage && latestPage.id === page.id) {
+        if (latestPage && latestPage?.id === page.id) {
             /**
              * We also update the regular record.
              */
@@ -215,10 +224,13 @@ export const createPageStorageOperations = (
                 items
             });
 
-            await esEntity.put({
-                index: configurations.es(page).index,
-                data: esData,
-                ...latestKeys
+            await put({
+                entity: esEntity,
+                item: {
+                    index: configurations.es(page).index,
+                    data: esData,
+                    ...latestKeys
+                }
             });
 
             return page;
@@ -438,6 +450,8 @@ export const createPageStorageOperations = (
     const publish = async (params: PageStorageOperationsPublishParams): Promise<Page> => {
         const { page, latestPage, publishedPage } = params;
 
+        page.status = "published";
+
         /**
          * Update the given revision of the page.
          */
@@ -451,9 +465,8 @@ export const createPageStorageOperations = (
         ];
         const esItems = [];
         /**
-         * If we are publishing the latest revision, let's also update the latest revision entry's
-         * status in ES. Also, if we are publishing the latest revision, we need to update the latest
-         * page revision entry in ES.
+         * If we are publishing the latest revision, update the latest revision
+         * status in ES. We also need to update the latest page revision entry in ES.
          */
         if (latestPage.id === page.id) {
             items.push(
@@ -475,11 +488,10 @@ export const createPageStorageOperations = (
             );
         }
         /**
-         * If we have already published revision of this page:
-         *  - set existing published page revision to unpublished
-         *  - remove old published path if paths are different
+         * If we already have a published revision, and it's not the revision being published:
+         *  - set the existing published revision to "unpublished"
          */
-        if (publishedPage) {
+        if (publishedPage && publishedPage.id !== page.id) {
             items.push(
                 entity.putBatch({
                     ...publishedPage,
@@ -567,6 +579,8 @@ export const createPageStorageOperations = (
 
     const unpublish = async (params: PageStorageOperationsUnpublishParams): Promise<Page> => {
         const { page, latestPage } = params;
+
+        page.status = "unpublished";
 
         const items = [
             entity.deleteBatch({
@@ -684,11 +698,10 @@ export const createPageStorageOperations = (
             SK: sortKey
         };
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",

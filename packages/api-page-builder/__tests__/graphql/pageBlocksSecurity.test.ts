@@ -1,6 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { expectCompressed } from "./utils/expectCompressed";
 
 class Mock {
     public name: string;
@@ -117,7 +118,7 @@ describe("Page blocks Security Test", () => {
             data: new Mock("list-page-blocks-four-")
         });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", rwd: "wd" }], identityA],
@@ -133,13 +134,13 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { listPageBlocks } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listPageBlocks();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPageBlocks"));
         }
 
-        const sufficientPermissionsAll = [
+        const sufficientPermissionsAll: [SecurityPermission[], SecurityIdentity][] = [
             [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.block" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.block", rwd: "rw" }], identityA],
@@ -152,7 +153,7 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listPageBlocks } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listPageBlocks();
             expect(response).toMatchObject({
@@ -165,28 +166,36 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-one-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-one-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-one-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityA,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-two-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-two-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-two-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-three-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-three-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-three-content"
+                                    })
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
                                     name: "list-page-blocks-four-name",
                                     blockCategory: "block-category",
-                                    content: { some: "list-page-blocks-four-content" }
+                                    content: expectCompressed({
+                                        some: "list-page-blocks-four-content"
+                                    })
                                 }
                             ],
                             error: null
@@ -212,14 +221,14 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-one-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-one-content" }
+                                content: expectCompressed({ some: "list-page-blocks-one-content" })
                             },
                             {
                                 createdBy: identityA,
                                 createdOn: /^20/,
                                 name: "list-page-blocks-two-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-two-content" }
+                                content: expectCompressed({ some: "list-page-blocks-two-content" })
                             }
                         ],
                         error: null
@@ -244,14 +253,16 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-three-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-three-content" }
+                                content: expectCompressed({
+                                    some: "list-page-blocks-three-content"
+                                })
                             },
                             {
                                 createdBy: identityB,
                                 createdOn: /^20/,
                                 name: "list-page-blocks-four-name",
                                 blockCategory: "block-category",
-                                content: { some: "list-page-blocks-four-content" }
+                                content: expectCompressed({ some: "list-page-blocks-four-content" })
                             }
                         ],
                         error: null
@@ -271,7 +282,7 @@ describe("Page blocks Security Test", () => {
             }
         });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", own: false, rwd: "r" }], identityA],
@@ -287,14 +298,14 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createPageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             const [response] = await createPageBlock({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createPageBlock"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [
                 [
                     { name: "content.i18n" },
@@ -341,11 +352,11 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { createBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const { createPageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             await createBlockCategory({
@@ -362,7 +373,10 @@ describe("Page blocks Security Test", () => {
                 data: {
                     pageBuilder: {
                         createPageBlock: {
-                            data,
+                            data: {
+                                ...data,
+                                content: expectCompressed(data.content)
+                            },
                             error: null
                         }
                     }
@@ -387,7 +401,7 @@ describe("Page blocks Security Test", () => {
 
         const id = createPageBlockResponse.data.pageBuilder.createPageBlock.data.id;
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.block", rwd: "r" }], identityA],
@@ -404,13 +418,13 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { updatePageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updatePageBlock({ id, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updatePageBlock"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [
                 [
                     { name: "content.i18n" },
@@ -457,14 +471,17 @@ describe("Page blocks Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { updatePageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updatePageBlock({ id, data: mock });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updatePageBlock: {
-                            data: mock,
+                            data: {
+                                ...mock,
+                                content: expectCompressed(mock.content)
+                            },
                             error: null
                         }
                     }
@@ -569,7 +586,7 @@ describe("Page blocks Security Test", () => {
                 data: {
                     pageBuilder: {
                         deletePageBlock: {
-                            data: mock,
+                            data: true,
                             error: null
                         }
                     }
@@ -650,6 +667,7 @@ describe("Page blocks Security Test", () => {
                         getPageBlock: {
                             data: {
                                 ...mock,
+                                content: expectCompressed(mock.content),
                                 createdBy: identityA,
                                 createdOn: /^20/
                             },

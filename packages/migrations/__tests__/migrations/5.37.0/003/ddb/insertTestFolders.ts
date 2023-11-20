@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
 import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/003/constants";
 import { FolderDdbItem, FolderDdbWriteItem } from "../types";
@@ -10,7 +10,9 @@ interface Response {
     ddbFolders: FolderDdbItem[];
 }
 
-export const insertTestFolders = async (table: Table): Promise<Response> => {
+export const insertTestFolders = async (
+    table: Table<string, string, string>
+): Promise<Response> => {
     const folders = createOldFoldersData();
     const tenants = createTenantsData().map(tenant => tenant.data.id);
     const testLocales = createLocalesData();

@@ -21,7 +21,7 @@ class Switch extends React.Component<Props> {
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];
 
     onChange = (e: React.SyntheticEvent<HTMLElement>) => {
-        this.props.onChange && this.props.onChange((e.target as any).checked);
+        this.props.onChange && this.props.onChange((e.target as HTMLInputElement).checked);
     };
 
     public override render() {

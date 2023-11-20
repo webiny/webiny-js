@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
@@ -28,6 +28,7 @@ import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
+import { createAuditLogs } from "@webiny/api-audit-logs";
 /**
  * APW
  */
@@ -39,10 +40,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
@@ -96,6 +94,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createAuditLogs(),
         scaffoldsPlugins()
     ],
     http: { debug }

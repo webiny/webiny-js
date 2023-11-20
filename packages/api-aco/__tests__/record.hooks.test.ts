@@ -8,7 +8,6 @@ const id = "id-lifecycle-events";
 const type = "demo-lifecycle-events";
 const title = "Record Lifecycle Events Title";
 const content = "Record Lifecycle Events Content";
-const folderId = "folderId-lifecycle-events";
 
 const data = {
     someText: "Some strange title",
@@ -24,18 +23,52 @@ const data = {
 const tags = ["tag1", "tag2"];
 
 describe("Search Record Lifecycle Events", () => {
-    const { search } = useGraphQlHandler({
-        plugins: [
-            createMockAcoApp({
-                name: "WebinyApp",
-                apiName: "Webiny"
-            }),
-            assignRecordLifecycleEvents()
-        ]
-    });
-
     beforeEach(async () => {
         tracker.reset();
+    });
+
+    let folder1: Record<string, any>;
+    let folder2: Record<string, any>;
+    let search: ReturnType<typeof useGraphQlHandler>["search"];
+    let aco: ReturnType<typeof useGraphQlHandler>["aco"];
+
+    beforeEach(async () => {
+        const handler = useGraphQlHandler({
+            plugins: [
+                createMockAcoApp({
+                    name: "WebinyApp",
+                    apiName: "Webiny"
+                }),
+                assignRecordLifecycleEvents()
+            ]
+        });
+
+        search = handler.search;
+        aco = handler.aco;
+
+        folder1 = await aco
+            .createFolder({
+                data: {
+                    title: "Folder 1",
+                    slug: "folder-1",
+                    type: "cms:acoSearchRecord-webiny"
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        folder2 = await aco
+            .createFolder({
+                data: {
+                    title: "Folder 2",
+                    slug: "folder-2",
+                    type: "cms:acoSearchRecord-webiny"
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
     });
 
     it("should trigger create lifecycle events", async () => {
@@ -46,7 +79,7 @@ describe("Search Record Lifecycle Events", () => {
                 title,
                 content,
                 location: {
-                    folderId
+                    folderId: folder1.id
                 },
                 data,
                 tags
@@ -63,7 +96,7 @@ describe("Search Record Lifecycle Events", () => {
                             title,
                             content,
                             location: {
-                                folderId
+                                folderId: folder1.id
                             },
                             data,
                             tags
@@ -92,7 +125,7 @@ describe("Search Record Lifecycle Events", () => {
                 title,
                 content,
                 location: {
-                    folderId
+                    folderId: folder1.id
                 },
                 data
             }
@@ -106,7 +139,7 @@ describe("Search Record Lifecycle Events", () => {
                 title: `${title} updated`,
                 content: `${content} updated`,
                 location: {
-                    folderId: `${folderId}-updated`
+                    folderId: folder2.id
                 },
                 data: {
                     ...data,
@@ -123,7 +156,7 @@ describe("Search Record Lifecycle Events", () => {
                             title: `${title} updated`,
                             content: `${content} updated`,
                             location: {
-                                folderId: `${folderId}-updated`
+                                folderId: folder2.id
                             },
                             data: {
                                 ...data,
@@ -154,7 +187,7 @@ describe("Search Record Lifecycle Events", () => {
                 title,
                 content,
                 location: {
-                    folderId
+                    folderId: folder1.id
                 },
                 data
             }
@@ -164,7 +197,7 @@ describe("Search Record Lifecycle Events", () => {
 
         const [moveResponse] = await search.moveRecord({
             id,
-            folderId: `${folderId}-updated`
+            folderId: folder2.id
         });
 
         expect(moveResponse).toMatchObject({
@@ -197,7 +230,7 @@ describe("Search Record Lifecycle Events", () => {
                         data: {
                             id,
                             location: {
-                                folderId: `${folderId}-updated`
+                                folderId: folder2.id
                             }
                         },
                         error: null
@@ -215,7 +248,7 @@ describe("Search Record Lifecycle Events", () => {
                 title,
                 content,
                 location: {
-                    folderId
+                    folderId: folder1.id
                 },
                 data,
                 tags
