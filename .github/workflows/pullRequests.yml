@@ -144,11 +144,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
@@ -164,8 +159,6 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-    permissions:
-      id-token: write
   jestTestsDdb:
     needs: init
     name: ${{ matrix.package.cmd }}
@@ -202,11 +195,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
@@ -222,8 +210,6 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-    permissions:
-      id-token: write
   jestTestsDdbEs:
     needs: init
     name: ${{ matrix.package.cmd }}

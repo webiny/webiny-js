@@ -6,6 +6,10 @@ export const createValidateWorkflowsJob = (): NormalJob => {
         "runs-on": "ubuntu-latest",
         steps: [
             {
+                name: "Install dependencies",
+                run: "yarn --immutable"
+            },
+            {
                 name: "Validate",
                 run: "npx github-actions-wac validate"
             }
