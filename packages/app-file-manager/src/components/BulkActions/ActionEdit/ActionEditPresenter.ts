@@ -10,7 +10,21 @@ import {
     FieldRaw
 } from "~/components/BulkActions/ActionEdit/domain";
 
-export class ActionEditPresenter {
+interface IActionEditPresenter {
+    load: (fields: FieldRaw[]) => void;
+    openEditor: () => void;
+    closeEditor: () => void;
+    get vm(): {
+        show: boolean;
+        currentBatch: BatchDTO;
+        fields: FieldDTO[];
+        editorVm: {
+            isOpen: boolean;
+        };
+    };
+}
+
+export class ActionEditPresenter implements IActionEditPresenter {
     private showEditor = false;
     private readonly currentBatch: BatchDTO;
     private extensionFields: FieldDTO[];
