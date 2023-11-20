@@ -12,7 +12,10 @@ const esEndpoint: string | undefined = process.env.ELASTIC_SEARCH_ENDPOINT;
 
 const defaultOptions: Partial<ElasticsearchClientOptions> = {
     node: `http://localhost:${ELASTICSEARCH_PORT}`,
-    auth: {} as any,
+    auth: {
+        username: "",
+        password: ""
+    },
     maxRetries: 10,
     pingTimeout: 500
 };

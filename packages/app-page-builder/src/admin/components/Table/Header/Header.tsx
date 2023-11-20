@@ -7,20 +7,23 @@ import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
 
 import { Container, Divider, WrapperActions } from "./styled";
+import { PbPageDataItem } from "~/types";
 
 export interface HeaderProps {
     title?: string;
-    canCreate: boolean;
+    canCreateFolder: boolean;
+    canCreateContent: boolean;
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
-    selected: string[];
+    selected: PbPageDataItem[];
     searchValue: string;
     onSearchChange: (value: string) => void;
 }
 
 export const Header: React.VFC<HeaderProps> = ({
-    canCreate,
+    canCreateFolder,
+    canCreateContent,
     onCreatePage,
     onImportPage,
     onCreateFolder,
@@ -40,15 +43,13 @@ export const Header: React.VFC<HeaderProps> = ({
                         <Search value={searchValue} onChange={onSearchChange} />
                         <Divider />
                         <TableActions selected={selected} onImportPage={onImportPage} />
-                        {canCreate && (
-                            <>
-                                <Divider />
-                                <ButtonsCreate
-                                    onCreateFolder={onCreateFolder}
-                                    onCreatePage={onCreatePage}
-                                />
-                            </>
-                        )}
+                        <Divider />
+                        <ButtonsCreate
+                            canCreateFolder={canCreateFolder}
+                            canCreatePage={canCreateContent}
+                            onCreateFolder={onCreateFolder}
+                            onCreatePage={onCreatePage}
+                        />
                     </WrapperActions>
                 </Cell>
             </Grid>

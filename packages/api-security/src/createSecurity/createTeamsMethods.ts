@@ -10,6 +10,7 @@ import deepEqual from "deep-equal";
  */
 // @ts-ignore
 import { withFields, string } from "@commodo/fields";
+import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -115,6 +116,15 @@ export const createTeamsMethods = ({
         return tenant;
     };
     return {
+        onTeamBeforeCreate: createTopic("security.onTeamBeforeCreate"),
+        onTeamAfterCreate: createTopic("security.onTeamAfterCreate"),
+        onTeamBeforeBatchCreate: createTopic("security.onTeamBeforeBatchCreate"),
+        onTeamAfterBatchCreate: createTopic("security.onTeamAfterBatchCreate"),
+        onTeamBeforeUpdate: createTopic("security.onTeamBeforeUpdate"),
+        onTeamAfterUpdate: createTopic("security.onTeamAfterUpdate"),
+        onTeamBeforeDelete: createTopic("security.onTeamBeforeDelete"),
+        onTeamAfterDelete: createTopic("security.onTeamAfterDelete"),
+
         async getTeam(this: Security, { where }: GetTeamParams): Promise<Team> {
             await checkPermission(this);
 
@@ -192,7 +202,11 @@ export const createTeamsMethods = ({
             };
 
             try {
-                return await storageOperations.createTeam({ team });
+                await this.onTeamBeforeCreate.publish({ team });
+                const result = await storageOperations.createTeam({ team });
+                await this.onTeamAfterCreate.publish({ team: result });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create team.",
@@ -226,10 +240,13 @@ export const createTeamsMethods = ({
                 ...data
             };
             try {
+                await this.onTeamBeforeUpdate.publish({ original, team });
                 const result = await storageOperations.updateTeam({ original, team });
                 if (groupsChanged) {
                     await updateTenantLinks(this, getTenant(), result);
                 }
+                await this.onTeamAfterUpdate.publish({ original, team: result });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -279,7 +296,9 @@ export const createTeamsMethods = ({
             }
 
             try {
+                await this.onTeamBeforeDelete.publish({ team });
                 await storageOperations.deleteTeam({ team });
+                await this.onTeamAfterDelete.publish({ team });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete team.",

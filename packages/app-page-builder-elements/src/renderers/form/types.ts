@@ -43,12 +43,18 @@ export interface FormDataRevision {
     createdBy: FormDataCreatedBy;
 }
 
+export interface FormDataStep {
+    id: string;
+    title: string;
+    layout: string[][];
+}
+
 export interface FormData {
     id: string;
     formId: string;
     version: number;
-    layout: FormDataFieldsLayout;
     fields: FormDataField[];
+    steps: FormDataStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -77,8 +83,15 @@ export interface ErrorResponse {
 export type FormLayoutComponentProps<T = any> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => FormRenderComponentDataField[][];
+    getFields: (stepIndex?: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
+    goToNextStep: () => void;
+    goToPreviousStep: () => void;
+    isLastStep: boolean;
+    isFirstStep: boolean;
+    isMultiStepForm: boolean;
+    currentStepIndex: number;
+    currentStep: FormDataStep;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;

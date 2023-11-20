@@ -76,12 +76,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
 
     return {
         /**
-         * Deprecated - will be removed in 5.36.0
-         */
-        onBeforeSystemInstall: onSystemBeforeInstall,
-        onAfterSystemInstall: onSystemAfterInstall,
-        /**
-         * Released in 5.34.0
+         * Lifecycle Events.
          */
         onSystemBeforeInstall,
         onSystemAfterInstall,

@@ -13,60 +13,46 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
+import { LexicalValue, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { WebinyNodes } from "~/nodes/webinyNodes";
+import {
+    createTheme,
+    WebinyTheme,
+    ThemeEmotionMap,
+    toTypographyEmotionMap
+} from "@webiny/lexical-theme";
+import { allNodes } from "@webiny/lexical-nodes";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 
 export interface RichTextEditorProps {
-    toolbar?: React.ReactNode;
-    staticToolbar?: React.ReactNode;
-    toolbarActionPlugins?: ToolbarActionPlugin[];
-    tag?: string;
-    onChange?: (json: LexicalValue) => void;
-    value: LexicalValue | null;
-    focus?: boolean;
-    placeholder?: string;
-    nodes?: Klass<LexicalNode>[];
-    /**
-     * @description Lexical plugins
-     */
     children?: React.ReactNode | React.ReactNode[];
-    onBlur?: (editorState: LexicalValue) => void;
-    height?: number | string;
-    width?: number | string;
-    /*
-     * @description Theme to be injected into lexical editor
-     */
-    theme: WebinyTheme;
-    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
-    themeEmotionMap?: ThemeEmotionMap;
-
-    placeholderStyles?: React.CSSProperties;
-    /*
-     * Set inline styles to lexical editor container
-     * */
-    styles?: React.CSSProperties;
-
-    /*
-     * Set inline styles to lexical editor editable content
-     * */
-    contentEditableStyles?: React.CSSProperties;
-
-    /*
-     * Set classes to lexical input container
-     * */
     classes?: string;
+    contentEditableStyles?: React.CSSProperties;
+    focus?: boolean;
+    height?: number | string;
+    nodes?: Klass<LexicalNode>[];
+    onBlur?: (editorState: LexicalValue) => void;
+    onChange?: (json: LexicalValue) => void;
+    placeholder?: string;
+    placeholderStyles?: React.CSSProperties;
+    staticToolbar?: React.ReactNode;
+    styles?: React.CSSProperties;
+    tag?: string;
+    theme: WebinyTheme;
+    themeEmotionMap?: ThemeEmotionMap;
+    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
+    toolbar?: React.ReactNode;
+    toolbarActionPlugins?: ToolbarActionPlugin[];
+    value: LexicalValue | null;
+    width?: number | string;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -88,6 +74,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     contentEditableStyles,
     placeholderStyles
 }: RichTextEditorProps) => {
+    const editorTheme = useRef(createTheme());
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = (
@@ -126,14 +113,18 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <Fragment key={plugin.name}>{plugin.element}</Fragment>
     ));
 
+    const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
+
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
+        // We update the state via the `<LexicalUpdateStatePlugin/>`.
+        editorState: null,
         namespace: "webiny",
-        onError: (error: Error) => {
-            throw error;
+        onError: () => {
+            // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
+            // These are usually resolved in the next component render cycle.
         },
-        nodes: [...WebinyNodes, ...configNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap }
+        nodes: [...allNodes, ...configNodes, ...(nodes || [])],
+        theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
@@ -146,16 +137,25 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     }
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
+        /**
+         * Once the LexicalComposer is mounted, it caches the `initialConfig` internally, and all future
+         * updates to the config will be ignored. This is a problem because we pull in Nodes from our config,
+         * and initially, there can be multiple re-renders, while the config object is settled.
+         *
+         * To bypass this issue, we generate a naive `key` based on the number of Nodes.
+         */
+        <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
             <>
                 {staticToolbar && staticToolbar}
                 <div
+                    /* This className is necessary for targeting of editor container from CSS files. */
+                    className={"editor-shell"}
                     ref={scrollRef}
                     style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                 >
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
-                    {value && <LexicalUpdateStatePlugin value={value} />}
+                    <UpdateStatePlugin value={editorValue} />
                     <ClearEditorPlugin />
                     <HistoryPlugin externalHistoryState={historyState} />
                     {/* Events */}

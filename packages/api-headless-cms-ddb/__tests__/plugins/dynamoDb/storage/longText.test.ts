@@ -1,6 +1,7 @@
 import { createLongTextStorageTransformPlugin } from "~/dynamoDb/storage/longText";
-import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { FromStorageParams, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createStoragePluginsContainer } from "./plugins";
+import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 
 const container = createStoragePluginsContainer();
 
@@ -14,10 +15,10 @@ const defaultArgs = {
     field: {
         fieldId: "longTextFieldId",
         storageId: "longTextStorageFieldId"
-    } as any,
+    } as CmsModelField,
     model: {
         modelId: "longTextModel"
-    } as any,
+    } as CmsModel,
     plugins: container,
     getStoragePlugin: (fieldType: string) => {
         const plugins = container.byType<StorageTransformPlugin>(StorageTransformPlugin.type);
@@ -129,8 +130,8 @@ describe("long text storage plugin", () => {
         try {
             await plugin.fromStorage({
                 ...defaultArgs,
-                value: {} as any
-            });
+                value: {}
+            } as FromStorageParams<any, any>);
         } catch (ex: any) {
             error = {
                 message: ex.message,

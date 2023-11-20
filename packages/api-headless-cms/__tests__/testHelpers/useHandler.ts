@@ -1,6 +1,7 @@
 import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsContext } from "~/types";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface CmsHandlerEvent {
     path: string;
@@ -30,7 +31,7 @@ export const useHandler = (params: Params) => {
         plugins,
         tenant: core.tenant,
         handler: (payload: CmsHandlerEvent) => {
-            return handler(payload, {} as any);
+            return handler(payload, {} as LambdaContext);
         }
     };
 };

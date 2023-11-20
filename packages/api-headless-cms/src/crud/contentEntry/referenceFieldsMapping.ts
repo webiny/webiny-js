@@ -285,14 +285,16 @@ async function validateReferencedEntries({
     }
 
     /**
-     * Load all models and use only those used in the input references.
+     * Load all models and use only those that are used in reference.
      */
-    const models = (await context.cms.listModels()).filter(model => {
-        const entries = referencesByModel.get(model.modelId);
-        if (!entries || !entries.length) {
-            return false;
-        }
-        return true;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter(model => {
+            const entries = referencesByModel.get(model.modelId);
+            if (!Array.isArray(entries) || entries.length === 0) {
+                return false;
+            }
+            return true;
+        });
     });
 
     if (!models.length) {
@@ -302,8 +304,10 @@ async function validateReferencedEntries({
     /**
      * Load all the entries by their IDs.
      */
-    const promises = models.map(model => {
-        return context.cms.getEntriesByIds(model, referencesByModel.get(model.modelId) || []);
+    const promises = await context.security.withoutAuthorization(async () => {
+        return models.map(model => {
+            return context.cms.getEntriesByIds(model, referencesByModel.get(model.modelId) || []);
+        });
     });
 
     const allEntries = await Promise.all(promises).then(res => res.flat());

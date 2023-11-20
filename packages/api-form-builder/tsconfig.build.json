@@ -6,6 +6,7 @@
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
+    { "path": "../api-page-builder/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },

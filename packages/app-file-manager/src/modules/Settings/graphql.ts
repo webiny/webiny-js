@@ -10,6 +10,14 @@ const fields = /* GraphQL */ `
     }
 `;
 
+export interface GetSettingsResponse {
+    fileManager: {
+        getSettings: {
+            data: Record<string, any>;
+        };
+    };
+}
+
 const graphql = {
     GET_SETTINGS: gql`
             query GetFileManagerSettings {
@@ -19,7 +27,7 @@ const graphql = {
             }
         `,
     UPDATE_SETTINGS: gql`
-        mutation UpdateFileManagerSettings($data: FileManagerSettingsInput) {
+        mutation UpdateFileManagerSettings($data: FmSettingsInput) {
             fileManager {
                 updateSettings(data: $data) ${fields}
             }

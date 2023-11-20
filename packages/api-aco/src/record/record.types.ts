@@ -25,7 +25,7 @@ export interface SearchRecordTag {
     count: number;
 }
 
-export interface ListSearchRecordsWhere {
+export interface ListSearchRecordsWhere<TData extends GenericSearchData = GenericSearchData> {
     type: string;
     location?: {
         folderId: string;
@@ -33,6 +33,7 @@ export interface ListSearchRecordsWhere {
     tags_in?: string[];
     tags_startsWith?: string;
     tags_not_startsWith?: string;
+    data?: TData;
 }
 
 export interface ListSearchRecordsParams {

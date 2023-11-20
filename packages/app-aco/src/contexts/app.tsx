@@ -252,7 +252,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
-                        <AcoListProvider own={own}>
+                        <AcoListProvider own={own} titleFieldId={model.titleFieldId}>
                             <DialogsContextProvider>{children}</DialogsContextProvider>
                         </AcoListProvider>
                     </NavigateFolderWithRouterProvider>

@@ -19,6 +19,7 @@ export * from "./compression";
 export * from "./operators";
 export * from "./cursors";
 export * from "./client";
+export * from "./utils";
 export { createGzipCompression } from "./plugins/GzipCompression";
 
 /**

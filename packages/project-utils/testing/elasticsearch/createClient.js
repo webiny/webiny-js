@@ -156,28 +156,74 @@ const attachCustomEvents = client => {
         logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
 
-    client.indices.refreshAll = async () => {
+    const refreshIndex = async index => {
+        try {
+            await client.indices.refresh({
+                index,
+                ignore_unavailable: true
+            });
+        } catch (ex) {
+            logger.error(`Could not refresh index "${index}": ${ex.message}`);
+            throw ex;
+        }
+    };
+
+    const dirtyIndexes = new Set();
+
+    const refreshAll = async (input = null) => {
         logger.debug(`Running "client.indices.refreshAll".`);
-        const indexes = Array.from(registeredIndexes.values());
+        const indexes = input?.length ? input : Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
             return;
         }
-        logger.debug(indexes, "Refreshing all indexes.");
+        logger.debug(indexes, "Refreshing indexes.");
         for (const index of indexes) {
-            try {
-                await client.indices.refresh({
-                    index,
-                    ignore_unavailable: true
-                });
-            } catch (ex) {
-                logger.error(`Could not refresh index "${index}": ${ex.message}`);
-                throw ex;
-            }
+            await refreshIndex(index);
+            dirtyIndexes.delete(index);
         }
-        logger.debug(`Finished "client.indices.refreshAll".\n`);
+        logger.debug(`Finished "refreshAll".\n`);
     };
+    client.indices.refreshAll = refreshAll;
 
     client.indices.registerIndex = registerIndex;
+
+    const search = client.search;
+    client.search = async (...params) => {
+        if (dirtyIndexes.size === 0) {
+            return await search.apply(client, params);
+        }
+        const [param] = params;
+        const index = param?.index;
+        if (!index || dirtyIndexes.has(index) === false) {
+            return await search.apply(client, params);
+        }
+        await refreshIndex(index);
+        dirtyIndexes.delete(index);
+        return await search.apply(client, params);
+    };
+
+    const bulk = client.bulk;
+    client.bulk = async (...params) => {
+        const [param] = params;
+        const { body } = param;
+        const deleteIndex = new Set();
+        if (Array.isArray(body)) {
+            for (const item of body) {
+                if (item.index?._index) {
+                    dirtyIndexes.add(item.index._index);
+                    registerIndex(item.index._index);
+                } else if (item.delete?._index) {
+                    deleteIndex.add(item.delete._index);
+                    registerIndex(item.delete._index);
+                }
+            }
+        }
+        const result = await bulk.apply(client, params);
+        if (deleteIndex.size > 0) {
+            await refreshAll(Array.from(deleteIndex));
+        }
+        return result;
+    };
 
     return client;
 };

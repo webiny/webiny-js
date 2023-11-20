@@ -1,19 +1,20 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import {
+    FolderDialogDelete,
+    FolderDialogManagePermissions,
+    FolderDialogUpdate
+} from "@webiny/app-aco";
 import { FolderItem, Location } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 import bytes from "bytes";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileName, FolderName } from "./Name";
 import { FolderActionDelete } from "./FolderActionDelete";
 import { FolderActionEdit } from "./FolderActionEdit";
+import { FolderActionManagePermissions } from "./FolderActionManagePermissions";
 import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
@@ -31,11 +32,10 @@ export interface TableProps {
     onRecordClick: (id: string) => void;
     onFolderClick: (id: string) => void;
     onSelectRow: ((rows: Entry[] | []) => void) | undefined;
+    onToggleRow: ((row: Entry) => void) | undefined;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
-    selectableItems: boolean;
-    canSelectAllRows: boolean;
 }
 
 interface BaseEntry {
@@ -57,18 +57,17 @@ interface FileEntry extends BaseEntry {
 
 interface FolderEntry extends BaseEntry {
     $type: "FOLDER";
-    $selectable: boolean;
     title: string;
     original: FolderItem;
 }
 
-type Entry = FolderEntry | FileEntry;
+export type Entry = FolderEntry | FileEntry;
 
-const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] => {
+const createRecordsData = (items: FileItem[]): FileEntry[] => {
     return items.map(data => {
         return {
             $type: "RECORD",
-            $selectable: selectable,
+            $selectable: true, // Files a.k.a. records are always selectable to perform bulk actions
             id: data.id,
             name: data.name,
             createdBy: data.createdBy?.displayName || "-",
@@ -105,21 +104,21 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         records,
         selectedRecords,
         onSelectRow,
+        onToggleRow,
         loading,
         onRecordClick,
         onFolderClick,
         sorting,
-        onSortingChange,
-        selectableItems,
-        canSelectAllRows
+        onSortingChange
     } = props;
 
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
-        return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
+        return [...createFoldersData(folders), ...createRecordsData(records)];
     }, [folders, records]);
 
     const columns: Columns<Entry> = useMemo(() => {
@@ -139,7 +138,18 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             />
                         );
                     }
-                    return <FolderName name={item.title} id={item.id} onClick={onFolderClick} />;
+
+                    const { hasNonInheritedPermissions, canManagePermissions } = item.original;
+
+                    return (
+                        <FolderName
+                            name={item.title}
+                            id={item.id}
+                            onClick={onFolderClick}
+                            canManagePermissions={canManagePermissions}
+                            hasNonInheritedPermissions={hasNonInheritedPermissions}
+                        />
+                    );
                 }
             },
             type: {
@@ -160,11 +170,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return "-";
                 }
-            },
-            createdOn: {
-                header: "Created",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
-                enableSorting: true
             },
             createdBy: {
                 header: "Author"
@@ -211,6 +216,14 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                     setSelectedFolder(original);
                                 }}
                             />
+                            {original.canManagePermissions && (
+                                <FolderActionManagePermissions
+                                    onClick={() => {
+                                        setManagePermissionsDialogOpen(true);
+                                        setSelectedFolder(original);
+                                    }}
+                                />
+                            )}
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);
@@ -227,12 +240,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     return (
         <div ref={ref}>
             <DataTable<Entry>
-                canSelectAllRows={canSelectAllRows}
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                onToggleRow={onToggleRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
                 initialSorting={[
@@ -242,7 +255,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                 ]}
                 onSortingChange={onSortingChange}
-                selectedRows={createRecordsData(selectedRecords, true)}
+                selectedRows={createRecordsData(selectedRecords)}
             />
             {selectedFolder && (
                 <>
@@ -250,6 +263,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         folder={selectedFolder}
                         open={updateDialogOpen}
                         onClose={() => setUpdateDialogOpen(false)}
+                    />
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={managePermissionsDialogOpen}
+                        onClose={() => setManagePermissionsDialogOpen(false)}
                     />
                     <FolderDialogDelete
                         folder={selectedFolder}

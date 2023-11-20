@@ -41,16 +41,11 @@ export const handleRequest: HandleRequest = async params => {
         return context.cms.getLocale();
     };
 
-    const getLastModifiedTime = async () => {
-        return context.cms.getModelLastChange();
-    };
-
     const schema = await context.benchmark.measure("headlessCms.graphql.getSchema", async () => {
         try {
             return await getSchema({
                 context,
                 getTenant,
-                getLastModifiedTime,
                 getLocale,
                 type: context.cms.type as ApiEndpoint
             });

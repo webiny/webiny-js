@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -79,7 +79,11 @@ export class CmsEntriesRootFolder_5_37_0_002
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    public constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    public constructor(
+        table: Table<string, string, string>,
+        esTable: Table<string, string, string>,
+        elasticsearchClient: Client
+    ) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
@@ -285,8 +289,9 @@ export class CmsEntriesRootFolder_5_37_0_002
                 logger.trace("Storing the DynamoDB records...");
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
-                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                        logger.error(error.message);
+                        logger.error(
+                            `"batchWriteAll" attempt #${error.attemptNumber} failed: ${error.message}`
+                        );
                     }
                 });
                 logger.trace("...stored.");
@@ -295,9 +300,8 @@ export class CmsEntriesRootFolder_5_37_0_002
                 await executeWithRetry(executeDdbEs, {
                     onFailedAttempt: error => {
                         logger.error(
-                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
+                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed: ${error.message}`
                         );
-                        logger.error(error.message);
                     }
                 });
                 logger.trace("...stored.");
@@ -343,12 +347,12 @@ export class CmsEntriesRootFolder_5_37_0_002
             };
         } catch (ex) {
             logger.error(`Failed to fetch original Elasticsearch settings for index "${index}".`);
-            logger.error(ex.message);
-            logger.info(ex.code);
-            logger.info(JSON.stringify(ex.data));
-            if (ex.stack) {
-                logger.info(ex.stack);
-            }
+            logger.error({
+                ...ex,
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            });
         }
         return null;
     }
@@ -379,12 +383,12 @@ export class CmsEntriesRootFolder_5_37_0_002
                 logger.error(
                     `Failed to restore original settings for index "${index}". Please do it manually.`
                 );
-                logger.error(ex.message);
-                logger.info(ex.code);
-                logger.info(JSON.stringify(ex.data));
-                if (ex.stack) {
-                    logger.info(ex.stack);
-                }
+                logger.error({
+                    ...ex,
+                    message: ex.message,
+                    code: ex.code,
+                    data: ex.data
+                });
             }
         }
     }
@@ -405,12 +409,12 @@ export class CmsEntriesRootFolder_5_37_0_002
             });
         } catch (ex) {
             logger.error(`Failed to disable indexing for index "${index}".`);
-            logger.error(ex.message);
-            logger.info(ex.code);
-            logger.info(JSON.stringify(ex.data));
-            if (ex.stack) {
-                logger.info(ex.stack);
-            }
+            logger.error({
+                ...ex,
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            });
         }
     }
 }

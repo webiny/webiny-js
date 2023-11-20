@@ -93,6 +93,11 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     loading?: boolean;
 
     /**
+     * Use custom renderer for selected items.
+     */
+    renderMultipleSelection?: ((items: any) => React.ReactNode | null) | null;
+
+    /**
      * Use data list instead of default Chips component. Useful when expecting a lot of data.
      */
     useMultipleSelectionList?: boolean;
@@ -400,8 +405,17 @@ export class MultiAutoComplete extends React.Component<
             useMultipleSelectionList,
             description,
             renderListItemLabel,
+            renderMultipleSelection,
             renderListItemOptions
         } = this.props;
+
+        if (renderMultipleSelection !== undefined) {
+            if (renderMultipleSelection === null) {
+                return null;
+            }
+
+            return renderMultipleSelection.call(this, this.props);
+        }
 
         if (useMultipleSelectionList) {
             const { data, meta } = this.paginateMultipleSelection();

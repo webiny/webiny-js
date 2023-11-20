@@ -134,7 +134,7 @@ export const createCustomAppsSchemaSnapshot = () => {
         }
 
         input AcoSearchRecordCustomTestingApp_LocationInput {
-          folderId: String!
+          folderId: String
         }
 
         input AcoSearchRecordCustomTestingApp_Data_IdentityInput {
@@ -155,11 +155,11 @@ export const createCustomAppsSchemaSnapshot = () => {
 
         input AcoSearchRecordCustomTestingAppCreateInput {
           id: ID
-          type: String!
-          title: String!
+          type: String
+          title: String
           content: String
-          location: AcoSearchRecordCustomTestingApp_LocationInput!
-          data: AcoSearchRecordCustomTestingApp_DataInput!
+          location: AcoSearchRecordCustomTestingApp_LocationInput
+          data: AcoSearchRecordCustomTestingApp_DataInput
           tags: [String!]
         }
         
