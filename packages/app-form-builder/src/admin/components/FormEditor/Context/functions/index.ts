@@ -1,9 +1,4 @@
-export { default as getFieldPosition } from "./getFieldPosition";
-export { default as moveField } from "./moveField";
 export { default as deleteField } from "./deleteField";
-export { default as moveRow } from "./moveRow";
 export { default as moveStep } from "./moveStep";
-export { default as moveFieldBetween } from "./moveFieldBetween";
-export { default as moveRowBetween } from "./moveRowBetween";
 export { default as handleMoveField } from "./handleMoveField";
 export { default as handleMoveRow } from "./handleMoveRow";
