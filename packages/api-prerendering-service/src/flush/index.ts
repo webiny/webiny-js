@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import { join } from "path";
 import WebinyError from "@webiny/error";
 import { getStorageFolder, isMultiTenancyEnabled } from "~/utils";
@@ -14,12 +14,10 @@ interface DeleteFileParams {
 }
 
 const deleteFile = ({ key, storageName }: DeleteFileParams) => {
-    return s3
-        .deleteObject({
-            Bucket: storageName,
-            Key: key
-        })
-        .promise();
+    return s3.deleteObject({
+        Bucket: storageName,
+        Key: key
+    });
 };
 
 export interface Params {

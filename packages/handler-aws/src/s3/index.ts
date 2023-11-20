@@ -2,12 +2,13 @@ import {
     createHandler as createBaseHandler,
     CreateHandlerParams as BaseCreateHandlerParams
 } from "@webiny/handler";
-const Reply = require("fastify/lib/reply");
-import { S3Event, Context as LambdaContext } from "aws-lambda";
+import { Context as LambdaContext, S3Event } from "aws-lambda";
 import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventHandler";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { registerDefaultPlugins } from "~/plugins";
 import { execute } from "~/execute";
+
+const Reply = require("fastify/lib/reply");
 
 const url = "/webiny-s3-event";
 
@@ -55,7 +56,7 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
                 return result;
             }
 
-            (app as any).__webiny_raw_result = result;
+            app.__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({

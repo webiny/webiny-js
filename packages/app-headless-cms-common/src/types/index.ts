@@ -226,7 +226,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
     Label: React.FC;
-    getBind: (index?: number, key?: string) => BindComponent;
+    getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
     contentModel: CmsModel;
 }
 
@@ -501,7 +501,7 @@ export interface CmsSecurityPermission extends SecurityPermission {
 export interface CmsErrorResponse {
     message: string;
     code: string;
-    data: Record<string, any> | Record<string, any>[];
+    data: Record<string, any>;
 }
 /**
  * @category GraphQL
@@ -527,12 +527,13 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>>
     moveValueDown: (index: number) => void;
 }
 
-interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {
+interface BindComponentProps<T = any, F = any>
+    extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
-    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent = React.FC<BindComponentProps> & {
+export type BindComponent<T = any, F = any> = React.FC<BindComponentProps<T, F>> & {
     parentName?: string;
 };
 

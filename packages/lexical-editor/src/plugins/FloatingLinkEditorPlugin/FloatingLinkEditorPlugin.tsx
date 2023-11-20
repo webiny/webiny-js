@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./FloatingLinkEditorPlugin.css";
-import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
@@ -15,11 +15,11 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 
-import { createPortal } from "react-dom";
-import { LinkPreview } from "../../ui/LinkPreview";
-import { getSelectedNode } from "../../utils/getSelectedNode";
-import { sanitizeUrl } from "../../utils/sanitizeUrl";
-import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
+import { LinkPreview } from "~/ui/LinkPreview";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { sanitizeUrl } from "~/utils/sanitizeUrl";
+import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
 
 function FloatingLinkEditor({

@@ -9,7 +9,9 @@ import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useParentBlock } from "~/editor/hooks/useParentBlock";
 
 const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => {
-    const updatedVariables = block.data.variables.filter(
+    const variables = block.data.variables ?? [];
+
+    const updatedVariables = variables.filter(
         (variable: PbBlockVariable) => variable.id.split(".")[0] !== variableId
     );
 

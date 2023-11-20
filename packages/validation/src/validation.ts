@@ -51,6 +51,7 @@ class Validation {
      */
     setValidator(name: string, callable: Validator): this {
         this.__validators[name] = callable;
+        this.__validators[name].validatorName = name;
         return this;
     }
 

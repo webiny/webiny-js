@@ -68,7 +68,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                         model={model}
                         onChange={entry => {
                             /* TODO: The `any` argument is wrong, and needs revision. */
-                            return onChange(entry, entry as any);
+                            return onChange(entry, entry);
                         }}
                     />
                 ) : null}

@@ -1,10 +1,8 @@
-import DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
 import {
     CmsContext,
     CmsGroup,
     CmsGroupContext,
-    CmsGroupListParams,
     HeadlessCmsStorageOperations,
     OnGroupAfterCreateTopicParams,
     OnGroupAfterDeleteTopicParams,
@@ -16,7 +14,6 @@ import {
     OnGroupDeleteErrorTopicParams,
     OnGroupUpdateErrorTopicParams
 } from "~/types";
-import { NotFoundError } from "@webiny/handler-graphql";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -32,6 +29,9 @@ import {
 import { createZodError, mdbid } from "@webiny/utils";
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { filterAsync } from "~/utils/filterAsync";
+import { createCacheKey, createMemoryCache } from "~/utils";
+import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -52,43 +52,49 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         context
     } = params;
 
-    const dataLoaders = {
-        listGroups: new DataLoader(async () => {
-            const tenant = getTenant().id;
-            const locale = getLocale().code;
-
-            const pluginsGroups = getGroupsAsPlugins().map(group => {
-                return {
-                    ...group,
-                    tenant: group.tenant || tenant,
-                    locale: group.locale || locale
-                };
-            });
-
-            const groups = await storageOperations.groups.list({
-                where: {
-                    tenant: getTenant().id,
-                    locale: getLocale().code
-                }
-            });
-
-            return [groups.concat(pluginsGroups)];
-        })
-    };
-
-    const clearGroupsCache = (): void => {
-        for (const loader of Object.values(dataLoaders)) {
-            loader.clearAll();
+    const filterGroup = async (group?: CmsGroup) => {
+        if (!group) {
+            return false;
         }
+        const ownsGroup = await modelGroupsPermissions.ensure(
+            { owns: group.createdBy },
+            { throw: false }
+        );
+
+        if (!ownsGroup) {
+            return false;
+        }
+
+        return await modelGroupsPermissions.canAccessGroup({
+            group
+        });
     };
 
-    const getGroupsAsPlugins = (): CmsGroup[] => {
-        const tenant = getTenant().id;
-        const locale = getLocale().code;
+    const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const listFilteredDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const listPluginGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
+    const clearGroupsCache = (): void => {
+        listPluginGroupsCache.clear();
+        listDatabaseGroupsCache.clear();
+        listFilteredDatabaseGroupsCache.clear();
+    };
 
-        return (
-            context.plugins
-                .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+    const fetchPluginGroups = (tenant: string, locale: string): Promise<CmsGroup[]> => {
+        const pluginGroups = context.plugins.byType<CmsGroupPlugin>(CmsGroupPlugin.type);
+
+        const cacheKey = createCacheKey({
+            tenant,
+            locale,
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
+            groups: pluginGroups
+                .map(({ contentModelGroup: group }) => {
+                    return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
+                })
+                .join("/")
+        });
+
+        return listPluginGroupsCache.getOrSet(cacheKey, async (): Promise<CmsGroup[]> => {
+            const groups = pluginGroups
                 /**
                  * We need to filter out groups that are not for this tenant or locale.
                  * If it does not have tenant or locale define, it is for every locale and tenant
@@ -109,32 +115,42 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                         locale,
                         webinyVersion: context.WEBINY_VERSION
                     };
-                })
-        );
+                });
+            return filterAsync(groups, filterGroup);
+        });
     };
 
-    const getGroupViaDataLoader = async (id: string) => {
-        const groups = await dataLoaders.listGroups.load("listGroups");
-
-        const group = groups.find(g => g.id === id);
-
-        if (!group) {
-            throw new NotFoundError(`Cms Group "${id}" was not found!`);
-        }
-        return group;
-    };
-
-    const listGroupsViaDataLoader = async (params: CmsGroupListParams) => {
-        const { where } = params || {};
-
-        try {
-            return await dataLoaders.listGroups.load("listGroups");
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
-                ...(ex.data || {}),
-                where
+    const fetchGroups = async (tenant: string, locale: string) => {
+        const pluginGroups = await fetchPluginGroups(tenant, locale);
+        /**
+         * Maybe we can cache based on permissions, not the identity id?
+         *
+         * TODO: @adrian please check if possible.
+         */
+        const cacheKey = createCacheKey({
+            tenant,
+            locale
+        });
+        const databaseGroups = await listDatabaseGroupsCache.getOrSet(cacheKey, async () => {
+            return await listGroupsFromDatabase({
+                storageOperations,
+                tenant,
+                locale
             });
-        }
+        });
+        const filteredCacheKey = createCacheKey({
+            dbCacheKey: cacheKey.get(),
+            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
+        });
+
+        const groups = await listFilteredDatabaseGroupsCache.getOrSet(
+            filteredCacheKey,
+            async () => {
+                return filterAsync(databaseGroups, filterGroup);
+            }
+        );
+
+        return groups.concat(pluginGroups);
     };
 
     /**
@@ -182,7 +198,13 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     const getGroup: CmsGroupContext["getGroup"] = async id => {
         await modelGroupsPermissions.ensure({ rwd: "r" });
 
-        const group = await getGroupViaDataLoader(id);
+        const groups = await context.security.withoutAuthorization(async () => {
+            return fetchGroups(getTenant().id, getLocale().code);
+        });
+        const group = groups.find(group => group.id === id);
+        if (!group) {
+            throw new NotFoundError(`Cms Group "${id}" was not found!`);
+        }
 
         await modelGroupsPermissions.ensure({ owns: group.createdBy });
         await modelGroupsPermissions.ensureCanAccessGroup({
@@ -191,6 +213,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         return group;
     };
+
     const listGroups: CmsGroupContext["listGroups"] = async params => {
         const { where } = params || {};
 
@@ -198,30 +221,9 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         await modelGroupsPermissions.ensure({ rwd: "r" });
 
-        const response = await listGroupsViaDataLoader({
-            ...(params || {}),
-            where: {
-                ...(where || {}),
-                tenant: tenant || getTenant().id,
-                locale: locale || getLocale().code
-            }
-        });
-
-        return filterAsync(response, async group => {
-            const ownsGroup = await modelGroupsPermissions.ensure(
-                { owns: group.createdBy },
-                { throw: false }
-            );
-
-            if (!ownsGroup) {
-                return false;
-            }
-
-            return await modelGroupsPermissions.canAccessGroup({
-                group
-            });
-        });
+        return fetchGroups(tenant || getTenant().id, locale || getLocale().code);
     };
+
     const createGroup: CmsGroupContext["createGroup"] = async input => {
         await modelGroupsPermissions.ensure({ rwd: "w" });
 
@@ -234,7 +236,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         const identity = getIdentity();
 
-        const id = mdbid();
+        const id = data.id || mdbid();
         const group: CmsGroup = {
             ...data,
             id,
@@ -285,7 +287,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
         await modelGroupsPermissions.ensure({ rwd: "w" });
 
-        const original = await getGroupViaDataLoader(id);
+        const original = await getGroup(id);
 
         await modelGroupsPermissions.ensure({ owns: original.createdBy });
 
@@ -346,7 +348,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
         await modelGroupsPermissions.ensure({ rwd: "d" });
 
-        const group = await getGroupViaDataLoader(id);
+        const group = await getGroup(id);
 
         await modelGroupsPermissions.ensure({ owns: group.createdBy });
 
@@ -376,18 +378,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     };
 
     return {
-        /**
-         * Deprecated - will be removed in 5.36.0
-         */
-        onBeforeGroupCreate: onGroupBeforeCreate,
-        onAfterGroupCreate: onGroupAfterCreate,
-        onBeforeGroupUpdate: onGroupBeforeUpdate,
-        onAfterGroupUpdate: onGroupAfterUpdate,
-        onBeforeGroupDelete: onGroupBeforeDelete,
-        onAfterGroupDelete: onGroupAfterDelete,
-        /**
-         * Released in 5.34.0
-         */
         onGroupBeforeCreate,
         onGroupAfterCreate,
         onGroupCreateError,

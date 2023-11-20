@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { ReactComponent as PublishIcon } from "@material-design-icons/svg/filled/publish.svg";
+import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { usePermission, useCms, useContentEntry } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-const ActionPublish = () => {
+export const ActionPublish = observer(() => {
     const { canPublish } = usePermission();
     const { publishEntryRevision } = useCms();
     const { contentModel } = useContentEntry();
@@ -17,8 +18,7 @@ const ActionPublish = () => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = worker.items.length || 0;
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
 
     const openPublishEntriesDialog = () =>
@@ -62,12 +62,13 @@ const ActionPublish = () => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Publish entries",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished publishing entries! See full report below:"
                 });
             }
         });
 
     if (!canPublish("cms.contentEntry")) {
+        console.log("You don't have permissions to publish entries.");
         return null;
     }
 
@@ -79,6 +80,4 @@ const ActionPublish = () => {
             tooltipPlacement={"bottom"}
         />
     );
-};
-
-export default observer(ActionPublish);
+});

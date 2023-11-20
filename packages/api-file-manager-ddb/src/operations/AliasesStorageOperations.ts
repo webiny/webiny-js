@@ -1,5 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { Entity, Table } from "dynamodb-toolbox";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import {
     FileManagerAliasesStorageOperations,
     File,
@@ -15,7 +15,7 @@ import {
 } from "@webiny/db-dynamodb";
 
 interface AliasesStorageOperationsConfig {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
 }
 
 interface CreatePartitionKeyParams {
@@ -26,7 +26,7 @@ interface CreatePartitionKeyParams {
 
 export class AliasesStorageOperations implements FileManagerAliasesStorageOperations {
     private readonly aliasEntity: Entity<any>;
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
 
     constructor({ documentClient }: AliasesStorageOperationsConfig) {
         this.table = createTable({ documentClient });

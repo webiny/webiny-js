@@ -6,8 +6,7 @@ import {
     getNumbersEntryQuery
 } from "./mocks/numbersModel";
 
-// eslint-disable-next-line
-const integerValue = 123456789011121314151617;
+const integerValue = 1234567890111213;
 const float2Value = 0.04;
 const float5Value = 0.00506;
 const float6Value = 0.008107;

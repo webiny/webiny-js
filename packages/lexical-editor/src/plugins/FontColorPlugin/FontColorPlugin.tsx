@@ -4,8 +4,9 @@ import {
     $applyStylesToNode,
     $createFontColorNode,
     ADD_FONT_COLOR_COMMAND,
-    FontColorPayload
-} from "~/nodes/FontColorNode";
+    FontColorPayload,
+    $createParagraphNode
+} from "@webiny/lexical-nodes";
 import {
     $getSelection,
     $insertNodes,
@@ -14,7 +15,6 @@ import {
     COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
-import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
