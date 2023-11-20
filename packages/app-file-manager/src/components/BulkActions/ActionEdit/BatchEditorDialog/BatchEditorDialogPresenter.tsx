@@ -82,6 +82,11 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
         this.batch.operations = this.batch.operations.filter(
             (_, index) => index !== operationIndex
         );
+
+        // Make sure we always have at least 1 operation!
+        if (this.batch.operations.length === 0) {
+            this.addOperation();
+        }
     }
 
     setOperationFieldData(batchIndex: number, data: string) {

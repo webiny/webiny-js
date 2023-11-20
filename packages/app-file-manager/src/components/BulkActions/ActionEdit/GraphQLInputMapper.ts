@@ -3,17 +3,18 @@ import { BatchDTO, OperatorType } from "~/components/BulkActions/ActionEdit/doma
 
 export class GraphQLInputMapper {
     static toGraphQLExtensions(data: FileItem["extensions"], batch: BatchDTO) {
-        let update = { ...data };
+        const update = { ...data };
 
         batch.operations.forEach(operation => {
             const { field, operator, value } = operation;
 
             switch (operator) {
                 case OperatorType.OVERRIDE:
-                    update = {
-                        ...update,
-                        ...value
-                    };
+                    if (!value || !value[field]) {
+                        return;
+                    }
+
+                    update[field] = value[field];
                     break;
                 case OperatorType.REMOVE:
                     update[field] = null;
