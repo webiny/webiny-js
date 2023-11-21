@@ -5,7 +5,8 @@ import {
     DynamoDBStreamEvent,
     EventBridgeEvent,
     S3Event,
-    SQSEvent
+    SQSEvent,
+    SNSEvent
 } from "aws-lambda";
 import "fastify";
 import { CreateHandlerParams as BaseCreateHandlerParams } from "@webiny/handler";
@@ -19,6 +20,7 @@ export { APIGatewayEvent, LambdaContext, APIGatewayEventRequestContextWithAuthor
 
 export type HandlerEvent =
     | APIGatewayEvent
+    | SNSEvent
     | SQSEvent
     | S3Event
     | EventBridgeEvent<string, string>
