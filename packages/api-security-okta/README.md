@@ -47,7 +47,7 @@ export const handler = createHandler({
     graphqlPlugins({ debug }),
     scaffoldsPlugins()
   ],
-  debug
+  http: { debug }
 });
 ```
 

@@ -53,5 +53,5 @@ export const handler = createHandler({
         }),
         exportCombinePlugins()
     ],
-    debug
+    http: { debug }
 });

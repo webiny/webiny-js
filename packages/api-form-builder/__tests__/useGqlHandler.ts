@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs-extra";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import i18nContext from "@webiny/api-i18n/graphql/context";

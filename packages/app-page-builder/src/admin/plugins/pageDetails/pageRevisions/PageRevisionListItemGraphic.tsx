@@ -7,7 +7,7 @@ import { ReactComponent as LockIcon } from "~/admin/assets/lock.svg";
 import { ReactComponent as BeenHereIcon } from "~/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "~/admin/assets/gesture.svg";
 import { PbPageRevision } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
+import { makeComposable } from "@webiny/app-admin/";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 

@@ -47,10 +47,6 @@
       "dependencies": [
         "@pulumi/pulumi",
         "@pulumi/aws"
-      ],
-      "src": [
-        "@aws-sdk/client-dynamodb",
-        "@aws-sdk/lib-dynamodb"
       ]
     }
   }

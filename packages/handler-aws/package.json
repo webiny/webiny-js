@@ -18,7 +18,7 @@
     "@webiny/handler": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/utils": "0.0.0",
+    "aws-lambda": "^1.0.7",
     "fastify": "4.11.0"
   },
   "devDependencies": {
@@ -28,7 +28,6 @@
     "@babel/preset-typescript": "^7.22.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "aws-lambda": "^1.0.7",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"

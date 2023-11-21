@@ -23,7 +23,9 @@ export const useHandler = (params: Params) => {
 
     const handler = createRawHandler<CmsHandlerEvent, CmsContext>({
         plugins,
-        debug: process.env.DEBUG === "true"
+        http: {
+            debug: process.env.DEBUG === "true"
+        }
     });
     return {
         plugins,

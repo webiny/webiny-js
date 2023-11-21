@@ -40,12 +40,5 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-sdk"
-      ]
-    }
-  },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

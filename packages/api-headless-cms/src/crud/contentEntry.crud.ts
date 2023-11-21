@@ -76,7 +76,7 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-security/";
 import { ROOT_FOLDER } from "~/constants";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;

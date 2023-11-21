@@ -1,5 +1,5 @@
 import tenantLinkAuthorization from "~/plugins/tenantLinkAuthorization";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";

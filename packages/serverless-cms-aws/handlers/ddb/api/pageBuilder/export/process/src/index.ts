@@ -75,5 +75,5 @@ export const handler = createHandler({
             }
         })
     ],
-    debug
+    http: { debug }
 });

@@ -13,6 +13,7 @@ import editorFieldNumber from "@webiny/app-form-builder/admin/plugins/editor/for
 import editorFieldRadioButtons from "@webiny/app-form-builder/admin/plugins/editor/formFields/radioButtons";
 import editorFieldCheckboxes from "@webiny/app-form-builder/admin/plugins/editor/formFields/checkboxes";
 import editorFieldDateTime from "@webiny/app-form-builder/admin/plugins/editor/formFields/dateTime";
+import editorFieldConditionGroup from "@webiny/app-form-builder/admin/plugins/editor/formFields/conditionGroup";
 import editorFieldFirstName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/firstName";
 import editorFieldLastName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/lastName";
 import editorFieldEmail from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/email";
@@ -84,6 +85,7 @@ export default [
     editorFieldRadioButtons,
     editorFieldCheckboxes,
     editorFieldDateTime,
+    editorFieldConditionGroup,
     editorFieldFirstName,
     editorFieldLastName,
     editorFieldEmail,

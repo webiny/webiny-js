@@ -1,5 +1,5 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import {
     createDownloadFileByExactKeyPlugins,
     createDownloadFileByAliasPlugins

@@ -80,7 +80,6 @@ const OPTIONS_HEADERS: Record<string, string> = {
 export interface CreateHandlerParams {
     plugins: PluginCollection;
     options?: ServerOptions;
-    debug?: boolean;
 }
 
 export const createHandler = (params: CreateHandlerParams) => {

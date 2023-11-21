@@ -8,15 +8,12 @@ import {
     createHandler as createBaseHandler,
     CreateHandlerParams as BaseCreateHandlerParams
 } from "@webiny/handler";
+const Reply = require("fastify/lib/reply");
 import { Context as LambdaContext } from "aws-lambda";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { RawEventHandler } from "~/raw/plugins/RawEventHandler";
 import { registerDefaultPlugins } from "~/plugins";
 import { execute } from "~/execute";
-import { createComposedHandler } from "~/utils/composedHandler";
-import { Context, Request } from "@webiny/handler/types";
-
-const Reply = require("fastify/lib/reply");
 
 const url = "/webiny-raw-event";
 
@@ -24,15 +21,10 @@ export interface HandlerCallable<Payload, Response = APIGatewayProxyResult> {
     (payload: Payload, context: LambdaContext): Promise<Response>;
 }
 
-export type CreateHandlerParams = BaseCreateHandlerParams;
-
-interface HandlerParams<Payload = any> {
-    request: Request;
-    context: Context;
-    payload: Payload;
-    lambdaContext: LambdaContext;
-    reply: Record<string, any>;
-    next: () => Promise<Payload>;
+export interface CreateHandlerParams extends BaseCreateHandlerParams {
+    http?: {
+        debug?: boolean;
+    };
 }
 
 export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
@@ -42,7 +34,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
         const app = createBaseHandler({
             ...params,
             options: {
-                logger: params.debug === true,
+                logger: params.http?.debug === true,
                 ...(params.options || {})
             }
         });
@@ -53,28 +45,23 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins
-            .byType<RawEventHandler<Payload, any, Response>>(RawEventHandler.type)
-            .reverse();
-        if (plugins.length === 0) {
+        const plugins = app.webiny.plugins.byType<RawEventHandler<Payload, any, Response>>(
+            RawEventHandler.type
+        );
+        const handler = plugins.shift();
+        if (!handler) {
             throw new Error(`To run @webiny/handler-aws/raw, you must have RawEventHandler set.`);
         }
 
-        const handler = createComposedHandler<
-            RawEventHandler<Payload, any, Response>,
-            HandlerParams,
-            Response
-        >(plugins);
-
         app.post(url, async (request, reply) => {
-            const params: Omit<HandlerParams, "next"> = {
+            const params = {
                 request,
                 reply,
                 context: app.webiny,
                 payload,
                 lambdaContext: context
             };
-            const result = await handler(params as unknown as HandlerParams);
+            const result = await handler.cb(params);
 
             if (result instanceof Reply) {
                 return result;

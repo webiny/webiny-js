@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import tenantManagerPlugins from "../src";

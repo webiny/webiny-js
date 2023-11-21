@@ -145,15 +145,15 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
 
       - uses: actions/checkout@v3
 
@@ -218,15 +218,15 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - uses: actions/checkout@v3
         with:
@@ -342,7 +342,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress-tests/cypress.config.ts config.
+      # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: dev
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -352,11 +352,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: dev/cypress-tests
-        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+        working-directory: dev
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -408,10 +408,10 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: dev
-        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
+        run: echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config }}' > cypress.json
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: dev/cypress-tests
+        working-directory: dev
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
@@ -584,7 +584,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev
 
-      # Generates a new cypress-tests/cypress.config.ts config.
+      # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: dev
         run: yarn setup-cypress --projectFolder ../xyz/test-project
@@ -594,11 +594,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: dev
-        run: echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\t\n\r')" >> $GITHUB_OUTPUT
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
-        working-directory: dev/cypress-tests
-        run: yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+        working-directory: dev
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -653,9 +653,9 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: dev
-        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress-tests/cypress.config.ts
+        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: dev/cypress-tests
+        working-directory: dev
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"

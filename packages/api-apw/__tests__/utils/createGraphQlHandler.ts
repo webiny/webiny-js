@@ -2,7 +2,7 @@ import { getIntrospectionQuery } from "graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { createI18NContext, createI18NGraphQL } from "@webiny/api-i18n";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -163,7 +163,9 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             createApwGraphQL(),
             plugins
         ],
-        debug: false
+        http: {
+            debug: false
+        }
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {

@@ -1,29 +1,27 @@
-import { createHandler as createBaseHandler } from "@webiny/handler";
+import {
+    createHandler as createBaseHandler,
+    CreateHandlerParams as BaseCreateHandlerParams
+} from "@webiny/handler";
+import { Context as LambdaContext, S3Event } from "aws-lambda";
+import { S3EventHandler, S3EventHandlerCallableParams } from "./plugins/S3EventHandler";
+import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { registerDefaultPlugins } from "~/plugins";
-import { S3EventHandler, S3EventHandlerCallableParams } from "~/s3/plugins/S3EventHandler";
 import { execute } from "~/execute";
-import { HandlerFactoryParams } from "~/types";
-/**
- * We need a class, not an interface exported from types.
- */
-// @ts-expect-error
-import Reply from "fastify/lib/reply";
-import { APIGatewayProxyResult, S3Event } from "aws-lambda";
-import { Context as LambdaContext } from "aws-lambda/handler";
-import { createComposedHandler } from "~/utils/composedHandler";
 
-export * from "./plugins/S3EventHandler";
-
-export interface HandlerCallable {
-    (event: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
-}
-
-export type HandlerParams = HandlerFactoryParams;
+const Reply = require("fastify/lib/reply");
 
 const url = "/webiny-s3-event";
 
-export const createHandler = (params: HandlerParams): HandlerCallable => {
-    return async (event, context) => {
+export interface HandlerCallable {
+    (payload: S3Event, context: LambdaContext): Promise<APIGatewayProxyResult>;
+}
+
+export interface CreateHandlerParams extends BaseCreateHandlerParams {
+    debug?: boolean;
+}
+
+export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
+    return (payload, context) => {
         const app = createBaseHandler({
             ...params,
             options: {
@@ -38,28 +36,21 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<S3EventHandler>(S3EventHandler.type).reverse();
-        if (plugins.length === 0) {
+        const plugins = app.webiny.plugins.byType<S3EventHandler>(S3EventHandler.type);
+        const handler = plugins.shift();
+        if (!handler) {
             throw new Error(`To run @webiny/handler-aws/s3, you must have S3EventHandler set.`);
         }
 
-        const handler = createComposedHandler<
-            S3EventHandler,
-            S3EventHandlerCallableParams<APIGatewayProxyResult>,
-            APIGatewayProxyResult
-        >(plugins);
-
         app.post(url, async (request, reply) => {
-            const params: Omit<S3EventHandlerCallableParams<APIGatewayProxyResult>, "next"> = {
+            const params: S3EventHandlerCallableParams = {
                 request,
                 reply,
                 context: app.webiny,
-                event,
+                event: payload,
                 lambdaContext: context
             };
-            const result = await handler(
-                params as unknown as S3EventHandlerCallableParams<APIGatewayProxyResult>
-            );
+            const result = await handler.cb(params);
 
             if (result instanceof Reply) {
                 return result;
@@ -71,7 +62,9 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         return execute({
             app,
             url,
-            payload: event
+            payload
         });
     };
 };
+
+export * from "./plugins/S3EventHandler";

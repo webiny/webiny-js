@@ -6,8 +6,8 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import {
-    createPageBuilderContext,
-    createPageBuilderGraphQL
+    createPageBuilderGraphQL,
+    createPageBuilderContext
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -53,5 +53,5 @@ export const handler = createHandler({
         }),
         exportCombinePlugins()
     ],
-    debug
+    http: { debug }
 });

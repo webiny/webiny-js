@@ -9,7 +9,7 @@ import elasticsearchClientContextPlugin, {
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
 import { logger } from "../logger";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
@@ -81,7 +81,7 @@ export class ElasticsearchClientConfig {
             await elasticsearchClientContext.apply(context);
         });
 
-        const dynamoDbHandler = createHandler({
+        const dynamoDbHandler = createDynamoDBHandler({
             plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
         });
         simulateStream(documentClient, dynamoDbHandler);
