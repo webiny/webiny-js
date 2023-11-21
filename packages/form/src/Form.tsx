@@ -1,4 +1,11 @@
-import React from "react";
+import React, {
+    useContext,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState
+} from "react";
 import lodashGet from "lodash/get";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashIsPlainObject from "lodash/isPlainObject";
@@ -9,22 +16,24 @@ import lodashHas from "lodash/has";
 import set from "lodash/fp/set";
 import { Bind } from "./Bind";
 import ValidationError from "./ValidationError";
-import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import {
     BindComponentProps,
     FormAPI,
     FormProps,
+    FormSubmitOptions,
     GenericFormData,
     UseBindHook,
     Validation
 } from "~/types";
 import { Validator } from "@webiny/validation/types";
+import camelCase from "lodash/camelCase";
 
 interface State<T extends GenericFormData = GenericFormData> {
     data: T;
     originalData: T;
     wasSubmitted: boolean;
     validation: Validation;
+    options?: FormSubmitOptions;
 }
 
 interface GetOnChangeFn {
@@ -55,7 +64,7 @@ export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
         }
     }, []);
 
-    // @ts-ignore
+    // @ts-expect-error
     return form.createField(props);
 }
 
@@ -64,15 +73,19 @@ interface InputRecord {
     validators: Validator[];
     afterChange?: (value: unknown, form: FormAPI) => void;
 }
-// interface ValidationInputFormData {
-//     inputs: Record<string, InputRecord>;
-//     data: FormData;
-// }
 
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     const [state, setState] = useState<State<T>>({
         data: props.data as T,
         originalData: (props.data || {}) as T,
@@ -81,6 +94,8 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     });
 
     const [prevData, setPrevData] = useState<Partial<T> | null>(null);
+    const [prevInvalidFields, setPrevInvalidFields] =
+        useState<FormProps["invalidFields"]>(undefined);
 
     // This simulates "getDerivedStateFromProps"
     if (props.data !== prevData) {
@@ -97,7 +112,12 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 validation: {}
             }));
         }
+    }
 
+    if (props.invalidFields !== prevInvalidFields) {
+        setPrevInvalidFields(() => {
+            return props.invalidFields || undefined;
+        });
         // Check for validation errors
         let validation = lodashCloneDeep(state.validation);
         if (
@@ -216,12 +236,12 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     });
 
     useImperativeHandle(ref, () => ({
-        submit: (ev: React.SyntheticEvent) => {
+        submit: (ev: React.SyntheticEvent, options?: FormSubmitOptions) => {
             /**
              * We need to `return` to utilize the `props.onSubmit` return value. It's useful for plugins and chaining
              * of `onSubmit` callbacks, where return value needs to be passed to the next handler.
              */
-            return formRef.current.submit(ev);
+            return formRef.current.submit(ev, options);
         }
     }));
 
@@ -230,15 +250,15 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         validators: Validator[]
     ): Promise<Record<string, any>> => {
         const results: Record<string, string> = {};
-        for (let i = 0; i < validators.length; i++) {
-            const validator = validators[i];
+        for (const index in validators) {
+            const validator = validators[index];
             try {
                 await Promise.resolve(validator(value))
                     .then((result: any) => {
                         if (result instanceof Error) {
                             throw result;
                         }
-                        results[i] = result;
+                        results[index] = result;
                     })
                     .catch(e => {
                         throw new ValidationError(e.message, value);
@@ -260,15 +280,18 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     /**
      * MAIN FORM ACTION METHODS
      */
-    const submit = (event?: React.SyntheticEvent<any, any>): Promise<any> => {
+    const submit = (
+        event?: React.SyntheticEvent<any, any>,
+        options?: FormSubmitOptions
+    ): Promise<any> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();
         }
 
-        setState(state => ({ ...state, wasSubmitted: true }));
+        setState(state => ({ ...state, wasSubmitted: true, options }));
 
-        return validate().then(valid => {
+        return validate(options).then(valid => {
             if (valid) {
                 let { data } = state;
 
@@ -290,7 +313,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         });
     };
 
-    const validate = async () => {
+    const validate = async (options?: FormSubmitOptions) => {
         const { data, validation = {} } = state;
         const promises = Object.keys(inputs.current).map(async (name): Promise<boolean> => {
             const { validators } = inputs.current[name];
@@ -306,7 +329,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             if (isInputValid) {
                 return true;
             }
-            const result = await validateInput(name);
+            const result = await validateInput(name, options);
             return result !== false;
         });
 
@@ -315,7 +338,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         return results.every(value => value);
     };
 
-    const validateInput = async (name: string) => {
+    const validateInput = async (name: string, options?: FormSubmitOptions) => {
         // Want to know why this nonsense is here?
         // When you have a <Tabs> component which has an <Input>, and you try to switch tabs
         // while your input is focused, Tabs end up in an eternal switching loop.
@@ -330,40 +353,57 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         ) {
             return Promise.resolve(null);
         }
-        const value = lodashGet(
-            stateRef.current.data,
-            name,
-            inputs.current[name].defaultValue
-        ) as any;
-        const { validators } = inputs.current[name];
+        const value = lodashGet(stateRef.current.data, name, inputs.current[name].defaultValue);
+        const { validators: initialValidators } = inputs.current[name];
+        /**
+         * We need to filter out validators which are being skipped
+         */
+        const skipValidators = options?.skipValidators;
+        const validators = initialValidators.filter(validator => {
+            if (!validator.validatorName || !skipValidators) {
+                return true;
+            }
+            /**
+             * We need to remove the validators which are in the skipValidators array, thus the ! before the checks.
+             */
+            return !(
+                skipValidators.includes(validator.validatorName) ||
+                skipValidators.includes(camelCase(validator.validatorName))
+            );
+        });
+
         const hasValidators = Object.keys(validators).length > 0;
 
-        setState(state => ({
-            ...state,
-            validation: {
-                ...state.validation,
-                [name]: {
-                    ...state.validation[name],
-                    isValidating: true
+        if (isMounted.current) {
+            setState(state => ({
+                ...state,
+                validation: {
+                    ...state.validation,
+                    [name]: {
+                        ...state.validation[name],
+                        isValidating: true
+                    }
                 }
-            }
-        }));
+            }));
+        }
 
-        return Promise.resolve(executeValidators(value, validators))
+        return await Promise.resolve(executeValidators(value, validators))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
-                setState(state => ({
-                    ...state,
-                    validation: {
-                        ...state.validation,
-                        [name]: {
-                            isValid,
-                            message: null,
-                            results: validationResults
+                if (isMounted.current) {
+                    setState(state => ({
+                        ...state,
+                        validation: {
+                            ...state.validation,
+                            [name]: {
+                                isValid,
+                                message: null,
+                                results: validationResults
+                            }
                         }
-                    }
-                }));
+                    }));
+                }
 
                 return validationResults;
             })
@@ -468,6 +508,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     };
 
     const getFormRef = (): FormAPI<T> => ({
+        options: state.options || {},
         data: state.data,
         setValue,
         validate,
@@ -495,6 +536,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 "webiny-form-container",
                 { onKeyDown: __onKeyDown },
                 children({
+                    options: state.options || {},
                     data: state.data,
                     setValue,
                     form: getFormRef(),

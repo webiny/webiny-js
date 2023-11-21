@@ -4,24 +4,20 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 
 import {
     DataList,
     DataListModalOverlay,
     DataListModalOverlayAction,
-    ScrollList,
-    ListItem,
     ListActions,
+    ListItem,
     ListItemMeta,
     ListItemText,
     ListItemTextSecondary,
+    ListSelectBox,
     ListTextOverline,
-    ListSelectBox
+    ScrollList
 } from "@webiny/ui/List";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -36,7 +32,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/d
 import { CreatableItem } from "./PageTemplates";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
 import { ExportTemplatesButton } from "~/editor/plugins/defaultBar/components/ExportTemplateButton";
-import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
+import { ReactComponent as FileUploadIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
 import useImportTemplate from "~/admin/views/PageTemplates/hooks/useImportTemplate";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 

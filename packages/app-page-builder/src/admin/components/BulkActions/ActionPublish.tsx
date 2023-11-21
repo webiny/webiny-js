@@ -63,12 +63,13 @@ export const ActionPublish = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Publish pages",
-                    message: "Operation completed, here below you find the complete report:"
+                    message: "Finished publishing pages! See full report below:"
                 });
             }
         });
 
     if (!canPublish()) {
+        console.log("You don't have permissions to publish pages.");
         return null;
     }
 

@@ -13,6 +13,7 @@
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../ui-composer/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {

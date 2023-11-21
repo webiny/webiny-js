@@ -67,7 +67,7 @@ export const createHandler = <DetailType extends string, Detail>(
                 return result;
             }
 
-            (app as any).__webiny_raw_result = result;
+            app.__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({

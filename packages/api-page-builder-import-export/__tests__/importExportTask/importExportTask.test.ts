@@ -2,12 +2,13 @@ import useHandler from "./useHandler";
 import { ImportExportTask, ImportExportTaskCrud, ImportExportTaskStatus } from "~/types";
 import { initialStats } from "~/import/utils";
 import { defaultIdentity } from "../tenancySecurity";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 describe("Page builder import export task Test", () => {
     const { handler } = useHandler();
 
     test("Should able to create, update, list, get and delete import export tasks", async () => {
-        const { pageBuilder } = await handler({}, {} as any);
+        const { pageBuilder } = await handler({}, {} as LambdaContext);
         const importExportTask: ImportExportTaskCrud = pageBuilder.importExportTask;
 
         // Create a ImportExportTask
@@ -92,7 +93,7 @@ describe("Page builder import export task Test", () => {
     });
 
     test("Should able to create, update, list, get and delete import export sub tasks", async () => {
-        const { pageBuilder } = await handler({}, {} as any);
+        const { pageBuilder } = await handler({}, {} as LambdaContext);
         const importExportTask: ImportExportTaskCrud = pageBuilder.importExportTask;
 
         // Create a ImportExportTask
@@ -193,7 +194,7 @@ describe("Page builder import export task Test", () => {
     });
 
     test("Should able to update stats of a task", async () => {
-        const { pageBuilder } = await handler({}, {} as any);
+        const { pageBuilder } = await handler({}, {} as LambdaContext);
         const importExportTask: ImportExportTaskCrud = pageBuilder.importExportTask;
 
         // Create a ImportExportTask

@@ -1,7 +1,7 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createLegacyEntity } from "~/utils";
 
-export const createTenantEntity = (table: Table) => {
+export const createTenantEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "TenancyTenant", {
         id: {
             type: "string"

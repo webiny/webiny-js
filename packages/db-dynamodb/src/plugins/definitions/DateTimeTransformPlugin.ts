@@ -8,19 +8,20 @@ import { parseISO } from "date-fns";
 
 const transformDateTime = (params: ValueTransformPluginParamsTransformParams): number | null => {
     const { value } = params;
-    if (value === null) {
+    if (value === null || value === undefined) {
         return null;
-    }
-    if (value && typeof (value as any).getTime === "function") {
+    } else if (typeof value === "string") {
+        const parsedDateTime = parseISO(value).getTime();
+        if (isNaN(parsedDateTime) === false) {
+            return parsedDateTime;
+        }
+    } else if (value instanceof Date || typeof (value as unknown as Date)?.getTime === "function") {
         /**
-         * In this case we assume this is a date object and we just get the time.
+         * In this case we assume this is a date object, and we just get the time.
          */
-        return (value as Date).getTime();
+        return value.getTime();
     }
-    const parsedDateTime = parseISO(value).getTime();
-    if (isNaN(parsedDateTime) === false) {
-        return parsedDateTime;
-    }
+
     throw new WebinyError("Could not parse given dateTime value.", "PARSE_DATE_ERROR", {
         value
     });

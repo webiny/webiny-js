@@ -1,10 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import {
     ListItem,
     ListItemText,
@@ -142,7 +138,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                             <ListItemGraphic>
                                 <Icon icon={<EditIcon />} />
                             </ListItemGraphic>
-                            {t` Edit`}
+                            {t`Edit`}
                         </MenuItem>
                     )}
 

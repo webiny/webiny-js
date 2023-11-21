@@ -13,7 +13,7 @@ export const disallowedEnding: string[] = [
 
 export const isModelEndingAllowed = (apiName: string): boolean => {
     for (const ending of disallowedEnding) {
-        const re = new RegExp(`${ending}$`, "i");
+        const re = new RegExp(`${ending}$`);
         const matched = apiName.match(re);
         if (matched === null) {
             continue;

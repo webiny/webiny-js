@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { useCurrentSelection } from "~/hooks/useCurrentSelection";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export const UnderlineAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [isUnderline, setIsUnderline] = useState(false);
-    const { textBlockSelection } = useRichTextEditor();
-    const isUnderlineSelected = !!textBlockSelection?.state?.underline;
-
-    useEffect(() => {
-        setIsUnderline(isUnderlineSelected);
-    }, [isUnderlineSelected]);
+    const { rangeSelection } = useCurrentSelection();
+    const isUnderlineSelected = rangeSelection ? rangeSelection.hasFormat("underline") : false;
 
     const handleClick = () => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-        setIsUnderline(!isUnderline);
     };
 
     return (
         <button
-            onClick={() => handleClick()}
-            className={"popup-item spaced " + (isUnderline ? "active" : "")}
+            onClick={handleClick}
+            className={"popup-item spaced " + (isUnderlineSelected ? "active" : "")}
             aria-label="Format text as italic"
         >
             <i className="format underline" />

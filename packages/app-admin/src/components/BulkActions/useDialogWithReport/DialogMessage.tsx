@@ -5,7 +5,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { List, ListItemText, ListItemTextPrimary, ListItemTextSecondary } from "@webiny/ui/List";
 import { ShowResultsDialogParams } from "./index";
 
-import { ListItem, ListItemGraphic, MessageContainer } from "./useDialogWithReport.styles";
+import { ListItem, ListItemGraphic, MessageContainer } from "./useDialogWithReport.styled";
 
 type ResultDialogMessageProps = Pick<ShowResultsDialogParams, "results" | "message">;
 

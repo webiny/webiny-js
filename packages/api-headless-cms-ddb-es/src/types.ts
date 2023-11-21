@@ -8,14 +8,11 @@ import {
     CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
-import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import {
-    EntityAttributeConfig,
-    EntityCompositeAttributes
-} from "dynamodb-toolbox/dist/classes/Entity";
+import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { PluginsContainer } from "@webiny/plugins";
 
 /**
@@ -46,7 +43,7 @@ export interface CmsIndexEntry extends CmsEntry {
  * @category Elasticsearch
  * @category CmsEntry
  */
-interface CmsModelFieldToElasticsearchToParams {
+export interface CmsModelFieldToElasticsearchToParams {
     plugins: PluginsContainer;
     model: CmsModel;
     field: CmsModelField;
@@ -68,7 +65,7 @@ interface CmsModelFieldToElasticsearchToParams {
  * @category Elasticsearch
  * @category CmsEntry
  */
-interface CmsModelFieldToElasticsearchFromParams {
+export interface CmsModelFieldToElasticsearchFromParams {
     plugins: PluginsContainer;
     model: CmsModel;
     field: CmsModelField;
@@ -146,13 +143,10 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
     fromIndex?: (params: CmsModelFieldToElasticsearchFromParams) => any;
 }
 
-export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
-
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     SYSTEM = "CmsSystem",
-    SETTINGS = "CmsSettings",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries",
@@ -160,11 +154,11 @@ export enum ENTITIES {
 }
 
 export interface TableModifier {
-    (table: TableConstructor): TableConstructor;
+    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     elasticsearch: Client;
     table?: TableModifier;
     esTable?: TableModifier;
@@ -173,10 +167,10 @@ export interface StorageOperationsFactoryParams {
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
-    getTable: () => Table;
-    getEsTable: () => Table;
+    getTable: () => Table<string, string, string>;
+    getEsTable: () => Table<string, string, string>;
     getEntities: () => Record<
-        "system" | "settings" | "groups" | "models" | "entries" | "entriesEs",
+        "system" | "groups" | "models" | "entries" | "entriesEs",
         Entity<any>
     >;
 }

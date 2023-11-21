@@ -1,5 +1,5 @@
 import { AdvancedPublishingWorkflow, ApwContentTypes } from "~/types";
-import { fetchModel, isAwpModel, updateEntryMeta } from "~/plugins/cms/utils";
+import { fetchModel, isApwDisabledOnModel, updateEntryMeta } from "~/plugins/cms/utils";
 import Error from "@webiny/error";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 
@@ -52,7 +52,7 @@ export const linkContentReviewToEntry = (params: LinkContentReviewToEntryParams)
     });
 
     cms.onEntryBeforeDelete.subscribe(async ({ entry, model }) => {
-        if (isAwpModel(model)) {
+        if (isApwDisabledOnModel(model)) {
             return;
         }
         const contentReviewId = entry.meta?.apw?.contentReviewId;

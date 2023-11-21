@@ -7,7 +7,7 @@ import {
     PageBlockStorageOperationsListParams,
     PageBlockStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -15,8 +15,10 @@ import { PageBlockDataLoader } from "./dataLoader";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { createPartitionKey, createSortKey } from "./keys";
+import { createGSIPartitionKey, createGSISortKey, createPartitionKey, createSortKey } from "./keys";
 import { PageBlockStorageOperations } from "~/types";
+import { deleteItem, put } from "@webiny/db-dynamodb";
+import { compress, decompress } from "./compression";
 
 const createType = (): string => {
     return "pb.pageBlock";
@@ -38,7 +40,8 @@ export const createPageBlockStorageOperations = ({
         const { where } = params;
 
         try {
-            return await dataLoader.getOne(where);
+            const pageBlock = await dataLoader.getOne(where);
+            return decompress(pageBlock);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page block by given parameters.",
@@ -53,13 +56,19 @@ export const createPageBlockStorageOperations = ({
     const list = async (params: PageBlockStorageOperationsListParams) => {
         const { where, sort, limit } = params;
 
-        const { tenant, locale, ...restWhere } = where;
+        const { tenant, locale, blockCategory, ...restWhere } = where;
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey({ tenant, locale }),
-            options: {
-                gt: " "
-            }
+            partitionKey: createGSIPartitionKey({ tenant, locale }),
+            options: blockCategory
+                ? {
+                      index: "GSI1",
+                      beginsWith: `${blockCategory}#`
+                  }
+                : {
+                      index: "GSI1",
+                      gt: " "
+                  }
         };
 
         let items: PageBlock[] = [];
@@ -95,7 +104,7 @@ export const createPageBlockStorageOperations = ({
         });
 
         return createListResponse({
-            items: sortedItems,
+            items: await Promise.all(sortedItems.map(item => decompress(item))),
             limit: limit || 100000,
             totalCount: filteredItems.length,
             after: null
@@ -108,16 +117,23 @@ export const createPageBlockStorageOperations = ({
         const keys = {
             PK: createPartitionKey({
                 tenant: pageBlock.tenant,
-                locale: pageBlock.locale
+                locale: pageBlock.locale,
+                id: pageBlock.id
             }),
-            SK: createSortKey(pageBlock)
+            SK: createSortKey(),
+            GSI1_PK: createGSIPartitionKey({ tenant: pageBlock.tenant, locale: pageBlock.locale }),
+            GSI1_SK: createGSISortKey({ blockCategory: pageBlock.blockCategory, id: pageBlock.id })
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys,
+                    content: await compress(pageBlock.content)
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -141,16 +157,23 @@ export const createPageBlockStorageOperations = ({
         const keys = {
             PK: createPartitionKey({
                 tenant: original.tenant,
-                locale: original.locale
+                locale: original.locale,
+                id: pageBlock.id
             }),
-            SK: createSortKey(pageBlock)
+            SK: createSortKey(),
+            GSI1_PK: createGSIPartitionKey({ tenant: pageBlock.tenant, locale: pageBlock.locale }),
+            GSI1_SK: createGSISortKey({ blockCategory: pageBlock.blockCategory, id: pageBlock.id })
         };
 
         try {
-            await entity.put({
-                ...pageBlock,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...pageBlock,
+                    TYPE: createType(),
+                    ...keys,
+                    content: await compress(pageBlock.content)
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -176,22 +199,21 @@ export const createPageBlockStorageOperations = ({
         const keys = {
             PK: createPartitionKey({
                 tenant: pageBlock.tenant,
-                locale: pageBlock.locale
+                locale: pageBlock.locale,
+                id: pageBlock.id
             }),
-            SK: createSortKey(pageBlock)
+            SK: createSortKey()
         };
 
         try {
-            await entity.delete({
-                ...pageBlock,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.
              */
             dataLoader.clear();
-
-            return pageBlock;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete page block.",

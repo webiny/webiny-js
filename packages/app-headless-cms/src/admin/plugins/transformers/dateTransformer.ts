@@ -12,7 +12,6 @@ const dateOnly: TransformerCallable<string> = value => {
         const date = new Date(value).toISOString();
         return date.slice(0, 10);
     } catch (error) {
-        console.log(error, value);
         throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
             error,
             type: "date",

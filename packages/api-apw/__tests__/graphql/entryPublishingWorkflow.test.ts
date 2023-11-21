@@ -438,6 +438,16 @@ describe("Cms Entry Publishing Workflow", () => {
                 }
             }
         });
+        expect(createContentReviewResponse).toEqual({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: expect.any(Object),
+                        error: null
+                    }
+                }
+            }
+        });
         const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         /*
