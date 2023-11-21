@@ -31,7 +31,7 @@ export const FieldRenderer = (props: FieldRendererProps) => {
 
     return (
         <ModelProvider model={fileModel}>
-            <Cell span={11}>
+            <Cell span={12}>
                 <Form onChange={onChange}>
                     {() => {
                         return (

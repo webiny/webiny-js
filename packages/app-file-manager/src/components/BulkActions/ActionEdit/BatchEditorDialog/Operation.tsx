@@ -1,13 +1,11 @@
 import React from "react";
 
 import { observer } from "mobx-react-lite";
-
 import { Bind } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 
 import { FieldDTO, OperationDTO } from "~/components/BulkActions/ActionEdit/domain";
-import { RemoveOperation } from "~/components/BulkActions/ActionEdit/BatchEditorDialog/RemoveOperation";
 import { FieldRenderer } from "~/components/BulkActions/ActionEdit/BatchEditorDialog/FieldRenderer";
 
 export interface OperationProps {
@@ -33,7 +31,7 @@ export const Operation = observer((props: OperationProps) => {
                     )}
                 </Bind>
             </Cell>
-            <Cell span={5}>
+            <Cell span={6}>
                 {props.operation.field && (
                     <Bind name={`${props.name}.operator`}>
                         {({ value, onChange, validation }) => (
@@ -52,10 +50,6 @@ export const Operation = observer((props: OperationProps) => {
                     </Bind>
                 )}
             </Cell>
-            <Cell span={1} align={"middle"}>
-                <RemoveOperation onClick={props.onDelete} disabled={!props.operation.canDelete} />
-            </Cell>
-
             <FieldRenderer
                 operator={props.operation.operator}
                 field={props.operation.availableFields.find(

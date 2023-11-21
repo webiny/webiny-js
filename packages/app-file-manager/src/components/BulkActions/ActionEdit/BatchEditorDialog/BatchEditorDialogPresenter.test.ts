@@ -79,6 +79,8 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data).toEqual({
             operations: [
                 {
+                    title: "Operation #1",
+                    open: true,
                     canDelete: false,
                     field: "",
                     operator: "",
@@ -102,6 +104,8 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations.length).toBe(1);
         expect(presenter.vm.data.operations).toEqual([
             {
+                title: "Operation #1",
+                open: true,
                 field: "",
                 operator: "",
                 value: {},
@@ -116,6 +120,8 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations.length).toBe(2);
         expect(presenter.vm.data.operations).toEqual([
             {
+                title: "Operation #1",
+                open: true,
                 field: "",
                 operator: "",
                 value: {},
@@ -123,6 +129,8 @@ describe("BatchEditorDialogPresenter", () => {
                 availableFields: fields
             },
             {
+                title: "Operation #2",
+                open: true,
                 field: "",
                 operator: "",
                 value: {},
@@ -137,6 +145,8 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations.length).toBe(1);
         expect(presenter.vm.data.operations).toEqual([
             {
+                title: "Operation #1",
+                open: true,
                 field: "",
                 operator: "",
                 value: {},
@@ -152,6 +162,8 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations.length).toBe(1);
         expect(presenter.vm.data.operations).toEqual([
             {
+                title: "Operation #1",
+                open: true,
                 field: "",
                 operator: "",
                 value: {},
@@ -168,6 +180,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Override existing values for field "${fields[0].label}"`,
+                    open: true,
                     field: fields[0].value,
                     operator: OperatorType.OVERRIDE,
                     value: {
@@ -186,6 +200,8 @@ describe("BatchEditorDialogPresenter", () => {
 
         // Only the not-set field should be available
         expect(presenter.vm.data.operations[1]).toEqual({
+            title: "Operation #2",
+            open: true,
             field: "",
             operator: "",
             value: {},
@@ -197,6 +213,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Override existing values for field "${fields[0].label}"`,
+                    open: true,
                     field: fields[0].value,
                     operator: OperatorType.OVERRIDE,
                     value: {
@@ -206,6 +224,8 @@ describe("BatchEditorDialogPresenter", () => {
                     availableFields: fields
                 },
                 {
+                    title: `Remove all values for field "${fields[1].label}"`,
+                    open: false,
                     field: fields[1].value,
                     operator: OperatorType.REMOVE,
                     value: {},
@@ -226,6 +246,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Remove all values for field "${fields[0].label}"`,
+                    open: false,
                     field: fields[0].value,
                     operator: OperatorType.OVERRIDE,
                     value: {
@@ -251,6 +273,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Override existing values for field "${fields[0].label}"`,
+                    open: true,
                     field: fields[0].value,
                     operator: OperatorType.OVERRIDE,
                     value: {
@@ -267,6 +291,8 @@ describe("BatchEditorDialogPresenter", () => {
 
         // should have an operation with default definition and new field value
         expect(presenter.vm.data.operations[0]).toEqual({
+            title: "Operation #1",
+            open: true,
             field: "new-field",
             operator: "",
             value: {},
@@ -284,6 +310,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Override existing values for field "${fields[0].label}"`,
+                    open: true,
                     field: fields[0].value,
                     operator: "", // empty value -> this should trigger the error
                     value: {},
@@ -301,6 +329,8 @@ describe("BatchEditorDialogPresenter", () => {
         presenter.setBatch({
             operations: [
                 {
+                    title: `Override existing values for field "${fields[0].label}"`,
+                    open: true,
                     field: fields[0].value,
                     operator: OperatorType.OVERRIDE,
                     value: {

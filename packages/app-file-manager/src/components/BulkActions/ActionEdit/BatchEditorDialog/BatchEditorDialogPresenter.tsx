@@ -24,7 +24,12 @@ export interface BatchEditorDialogViewModel {
 }
 
 export interface BatchEditorFormData {
-    operations: (OperationDTO & { canDelete: boolean; availableFields: FieldDTO[] })[];
+    operations: (OperationDTO & {
+        canDelete: boolean;
+        availableFields: FieldDTO[];
+        title: string;
+        open: boolean;
+    })[];
 }
 
 export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
@@ -62,6 +67,10 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
         return (
             this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
                 return {
+                    title:
+                        this.getOperationTitle(operation.field, operation.operator) ??
+                        `Operation #${operationIndex + 1}`,
+                    open: true,
                     field: operation.field,
                     operator: operation.operator,
                     value: operation.value,
@@ -71,6 +80,26 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
             }) || []
         );
     };
+
+    private getOperationTitle(inputField?: string, inputOperation?: string) {
+        if (!inputField || !inputOperation) {
+            return undefined;
+        }
+
+        const field = this.fields.find(field => field.value === inputField);
+
+        if (!field) {
+            return undefined;
+        }
+
+        const operator = field.operators.find(operator => operator.value === inputOperation);
+
+        if (!operator) {
+            return undefined;
+        }
+
+        return `${operator.label} for field "${field.label}"`;
+    }
 
     private getAvailableFields(currentFieldId = "") {
         if (!this.batch) {

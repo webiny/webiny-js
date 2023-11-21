@@ -15,8 +15,12 @@ export const DialogContainer = styled(Dialog)`
     }
 `;
 
+export const BatchEditorContainer = styled.div`
+    padding: 24px;
+`;
+
 export const AddOperationInner = styled.div`
-    padding: 0 0 24px;
+    padding: 24px 0 0;
     text-align: center;
 `;
 
