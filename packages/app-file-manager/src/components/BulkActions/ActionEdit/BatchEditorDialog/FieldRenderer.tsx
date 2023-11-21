@@ -6,6 +6,7 @@ import { Bind, Form, useBind } from "@webiny/form";
 import { FieldDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
 
 import { useFileModel } from "~/hooks/useFileModel";
+import { Cell } from "@webiny/ui/Grid";
 
 export interface FieldRendererProps {
     name: string;
@@ -30,17 +31,19 @@ export const FieldRenderer = (props: FieldRendererProps) => {
 
     return (
         <ModelProvider model={fileModel}>
-            <Form onChange={onChange}>
-                {() => {
-                    return (
-                        <RenderFieldElement
-                            field={props.field!.raw}
-                            Bind={Bind as any}
-                            contentModel={fileModel}
-                        />
-                    );
-                }}
-            </Form>
+            <Cell span={11}>
+                <Form onChange={onChange}>
+                    {() => {
+                        return (
+                            <RenderFieldElement
+                                field={props.field!.raw}
+                                Bind={Bind as any}
+                                contentModel={fileModel}
+                            />
+                        );
+                    }}
+                </Form>
+            </Cell>
         </ModelProvider>
     );
 };

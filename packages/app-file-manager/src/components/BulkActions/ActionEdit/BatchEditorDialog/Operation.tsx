@@ -55,15 +55,14 @@ export const Operation = observer((props: OperationProps) => {
             <Cell span={1} align={"middle"}>
                 <RemoveOperation onClick={props.onDelete} disabled={!props.operation.canDelete} />
             </Cell>
-            <Cell span={11}>
-                <FieldRenderer
-                    operator={props.operation.operator}
-                    field={props.operation.availableFields.find(
-                        field => field.value === props.operation.field
-                    )}
-                    name={`${props.name}.value`}
-                />
-            </Cell>
+
+            <FieldRenderer
+                operator={props.operation.operator}
+                field={props.operation.availableFields.find(
+                    field => field.value === props.operation.field
+                )}
+                name={`${props.name}.value`}
+            />
         </Grid>
     );
 });
