@@ -5,7 +5,7 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service/client"
 import prerenderingHookPlugins from "@webiny/api-page-builder/prerendering/hooks";
 import dbPlugins from "@webiny/handler-db";
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
@@ -26,7 +26,6 @@ import {
 import { CREATE_CATEGORY } from "../../api-page-builder/__tests__/graphql/graphql/categories";
 import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import elasticsearchClientContextPlugin, {
     createGzipCompression,
@@ -102,7 +101,7 @@ export const useHandler = (params: Params) => {
      */
     simulateStream(
         documentClient,
-        createDynamoDBHandler({
+        createHandler({
             plugins: [
                 elasticsearchClientContext,
                 createDynamoDBToElasticsearchHandler(),

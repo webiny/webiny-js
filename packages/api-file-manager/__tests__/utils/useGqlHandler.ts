@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import {

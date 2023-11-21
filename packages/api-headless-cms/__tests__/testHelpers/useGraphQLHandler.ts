@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { sleep, until } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
@@ -76,9 +76,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: plugins.all(),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({

@@ -1,5 +1,5 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -112,5 +112,5 @@ export const handler = createHandler({
         createAuditLogs(),
         scaffoldsPlugins()
     ],
-    http: { debug }
+    debug
 });
