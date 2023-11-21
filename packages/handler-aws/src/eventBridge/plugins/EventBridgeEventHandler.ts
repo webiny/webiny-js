@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, Context } from "@webiny/handler/types";
-import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
+import { Context, Reply, Request } from "@webiny/handler/types";
+import { Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
 
 export interface EventBridgeEventHandlerCallableParams<
     DetailType extends string,
@@ -29,7 +29,7 @@ export class EventBridgeEventHandler<
     Detail,
     Response = any
 > extends Plugin {
-    public static override type = "handler.fastify.aws.sqs.eventHandler";
+    public static override type = "handler.fastify.aws.eventBridge.eventHandler";
 
     public readonly cb: EventBridgeEventHandlerCallable<DetailType, Detail, Response>;
 

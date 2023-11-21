@@ -6,7 +6,7 @@ import { createHandler, HandlerParams } from "~/dynamodb/index";
 const handler = createSourceHandler<DynamoDBStreamEvent, HandlerParams>({
     name: "handler-aws-dynamodb-stream",
     canUse: event => {
-        if (!Array.isArray(event.Records)) {
+        if (!Array.isArray(event.Records) || event.Records.length === 0) {
             return false;
         }
         const [record] = event.Records;
