@@ -1,7 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
-import { until, sleep } from "./context/helpers";
+import { sleep, until } from "./context/helpers";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -9,7 +9,8 @@ import { ContextPlugin } from "@webiny/api";
 import { MailerContext } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
-import { createHandlerPlugins, CreateHandlerParams } from "./handlerPlugins";
+import { CreateHandlerParams, createHandlerPlugins } from "./handlerPlugins";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
@@ -58,9 +59,7 @@ export interface InvokeParams {
 export const createGraphQLHandler = (params?: CreateHandlerParams) => {
     const handler = createHandler({
         plugins: [createHandlerPlugins(params)],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
@@ -75,8 +74,8 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
         if (httpMethod === "OPTIONS" && !response.body) {
             return [null, response];

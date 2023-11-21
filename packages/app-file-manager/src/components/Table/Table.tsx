@@ -2,19 +2,15 @@ import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import {
     FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions
+    FolderDialogManagePermissions,
+    FolderDialogUpdate
 } from "@webiny/app-aco";
 import { FolderItem, Location } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 import bytes from "bytes";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileName, FolderName } from "./Name";
 import { FolderActionDelete } from "./FolderActionDelete";
 import { FolderActionEdit } from "./FolderActionEdit";
@@ -36,6 +32,7 @@ export interface TableProps {
     onRecordClick: (id: string) => void;
     onFolderClick: (id: string) => void;
     onSelectRow: ((rows: Entry[] | []) => void) | undefined;
+    onToggleRow: ((row: Entry) => void) | undefined;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
@@ -107,6 +104,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         records,
         selectedRecords,
         onSelectRow,
+        onToggleRow,
         loading,
         onRecordClick,
         onFolderClick,
@@ -172,11 +170,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     }
                     return "-";
                 }
-            },
-            createdOn: {
-                header: "Created",
-                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
-                enableSorting: true
             },
             createdBy: {
                 header: "Author"
@@ -252,6 +245,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                onToggleRow={onToggleRow}
                 isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
                 initialSorting={[

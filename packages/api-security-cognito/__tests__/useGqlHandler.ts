@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
@@ -23,7 +23,8 @@ import {
 
 import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
+import { AdminUsersStorageOperations } from "./types";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import cognitoAuthentication from "~/index";
 
 interface UseGqlHandlerParams {
@@ -45,7 +46,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     opts = Object.assign({}, defaults, opts);
 
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
-    const i18nStorage = getStorageOps("i18n");
+    const i18nStorage = getStorageOps<any>("i18n");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
@@ -53,7 +54,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             createWcpContext(),
             createWcpGraphQL(),
             ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
-            ...(i18nStorage.storageOperations as any),
+            ...i18nStorage.storageOperations,
             i18nContext(),
             mockLocalesPlugins(),
             adminUsersPlugins({
@@ -88,8 +89,8 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

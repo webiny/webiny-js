@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/FilePhysicalStoragePlugin";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import uploadFileToS3 from "../utils/uploadFileToS3";
@@ -44,12 +44,10 @@ export default () => {
                         return;
                     }
 
-                    await s3
-                        .deleteObject({
-                            Bucket: S3_BUCKET,
-                            Key: key
-                        })
-                        .promise();
+                    await s3.deleteObject({
+                        Bucket: S3_BUCKET,
+                        Key: key
+                    });
                 }
             })
         );

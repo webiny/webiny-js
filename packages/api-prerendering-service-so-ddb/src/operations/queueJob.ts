@@ -5,10 +5,10 @@ import {
     PrerenderingServiceStorageOperationsDeleteQueueJobsParams,
     QueueJob
 } from "@webiny/api-prerendering-service/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
-import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { put } from "@webiny/db-dynamodb";
 
 export interface CreateQueueJobStorageOperationsParams {
     entity: Entity<any>;
@@ -40,10 +40,13 @@ export const createQueueJobStorageOperations = (
         };
 
         try {
-            await entity.put({
-                ...queueJob,
-                ...keys,
-                TYPE: createQueueJobType()
+            await put({
+                entity,
+                item: {
+                    ...queueJob,
+                    ...keys,
+                    TYPE: createQueueJobType()
+                }
             });
             return queueJob;
         } catch (ex) {
@@ -68,9 +71,7 @@ export const createQueueJobStorageOperations = (
         };
 
         try {
-            const results = await queryAll<QueueJob>(queryAllParams);
-
-            return cleanupItems(entity, results);
+            return await queryAllClean<QueueJob>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list queue jobs records.",

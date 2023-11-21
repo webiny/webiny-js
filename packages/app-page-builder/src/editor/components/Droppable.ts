@@ -35,7 +35,7 @@ export type DroppableIsVisiblePropType = (params: {
 export interface DragObjectWithTypeWithTarget extends DragObjectWithType {
     id?: string;
     type: string;
-    target: string[];
+    target: string[] | null | undefined;
 }
 export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTarget) => void;
 export interface DroppableProps {

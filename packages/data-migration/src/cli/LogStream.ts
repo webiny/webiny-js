@@ -1,4 +1,4 @@
-import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import { CloudWatchLogs, GetLogEventsRequest } from "@webiny/aws-sdk/client-cloudwatch";
 
 const cache = new Map<string, LogStream>();
 
@@ -35,7 +35,7 @@ export class LogStream {
     }
 
     async printLogsSince(startTime: number): Promise<void> {
-        const params: CloudWatchLogs.Types.GetLogEventsRequest = {
+        const params: GetLogEventsRequest = {
             logStreamName: this.logStreamName,
             logGroupName: this.logGroupName,
             nextToken: this.nextPage,
@@ -45,9 +45,7 @@ export class LogStream {
         };
 
         try {
-            const { events, nextForwardToken } = await this.cloudWatchLogs
-                .getLogEvents(params)
-                .promise();
+            const { events, nextForwardToken } = await this.cloudWatchLogs.getLogEvents(params);
 
             this.nextPage = nextForwardToken;
 

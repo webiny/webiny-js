@@ -13,6 +13,11 @@ export const Button = styled("button")`
     align-items: center;
     font-size: 1em;
     padding: 8px;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
 `;
 
 export const IconContainer = styled.div`

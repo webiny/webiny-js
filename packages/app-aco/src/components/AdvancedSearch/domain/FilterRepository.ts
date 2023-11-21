@@ -9,7 +9,6 @@ export class FilterRepository {
     private gateway: FiltersGatewayInterface;
     private sorter: Sorter<FilterDTO>;
     private loading: Loading;
-    private static instance: FilterRepository;
     private filters: FilterDTO[] = [];
     public readonly namespace: string;
 
@@ -19,13 +18,6 @@ export class FilterRepository {
         this.namespace = namespace;
         this.sorter = new Sorter(["createdOn_DESC"]);
         makeAutoObservable(this);
-    }
-
-    static getInstance(gateway: FiltersGatewayInterface, namespace: string) {
-        if (!FilterRepository.instance) {
-            FilterRepository.instance = new FilterRepository(gateway, namespace);
-        }
-        return FilterRepository.instance;
     }
 
     getFilters() {

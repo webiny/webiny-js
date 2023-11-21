@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Form } from "@webiny/form";
@@ -26,7 +26,9 @@ interface QuerySaverDialogProps {
 }
 
 export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialogProps) => {
-    const [presenter] = useState<QuerySaverDialogPresenter>(new QuerySaverDialogPresenter());
+    const presenter = useMemo<QuerySaverDialogPresenter>(() => {
+        return new QuerySaverDialogPresenter();
+    }, []);
 
     useEffect(() => {
         presenter.load(filter);

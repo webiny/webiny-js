@@ -1,6 +1,12 @@
-import { Table, Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 
-export const createStandardEntity = ({ table, name }: { table: Table; name: string }) => {
+export const createStandardEntity = ({
+    table,
+    name
+}: {
+    table: Table<string, string, string>;
+    name: string;
+}) => {
     return new Entity({
         name,
         table,

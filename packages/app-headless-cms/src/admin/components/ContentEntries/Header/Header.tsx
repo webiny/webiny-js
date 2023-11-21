@@ -10,7 +10,8 @@ import { Container, WrapperActions } from "./styled";
 
 interface Props {
     title?: string;
-    canCreate: boolean;
+    canCreateFolder: boolean;
+    canCreateContent: boolean;
     onCreateEntry: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     searchValue: string;
@@ -18,7 +19,15 @@ interface Props {
 }
 
 export const Header: React.VFC<Props> = props => {
-    const { canCreate, onCreateEntry, onCreateFolder, title, searchValue, onSearchChange } = props;
+    const {
+        canCreateFolder,
+        canCreateContent,
+        onCreateEntry,
+        onCreateFolder,
+        title,
+        searchValue,
+        onSearchChange
+    } = props;
 
     return (
         <Container>
@@ -30,12 +39,12 @@ export const Header: React.VFC<Props> = props => {
                     <WrapperActions>
                         <Search value={searchValue} onChange={onSearchChange} />
                         <ButtonFilters />
-                        {canCreate && (
-                            <ButtonsCreate
-                                onCreateFolder={onCreateFolder}
-                                onCreateEntry={onCreateEntry}
-                            />
-                        )}
+                        <ButtonsCreate
+                            canCreateFolder={canCreateFolder}
+                            canCreateContent={canCreateContent}
+                            onCreateFolder={onCreateFolder}
+                            onCreateEntry={onCreateEntry}
+                        />
                     </WrapperActions>
                 </Cell>
             </Grid>

@@ -76,7 +76,7 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
-import { NotAuthorizedError } from "@webiny/api-security/";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { ROOT_FOLDER } from "~/constants";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
@@ -1056,6 +1056,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         const entry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        /**
+         * No need to continue if the entry is already in the requested folder.
+         */
+        if (entry.location?.folderId === folderId) {
+            return entry;
+        }
 
         try {
             await onEntryBeforeMove.publish({
@@ -1611,78 +1617,38 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     return {
-        /**
-         * Deprecated - will be removed in 5.35.0
-         */
-        onBeforeEntryCreate: onEntryBeforeCreate,
-        onAfterEntryCreate: onEntryAfterCreate,
-        onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
-        onAfterEntryCreateRevision: onEntryRevisionAfterCreate,
-        onBeforeEntryUpdate: onEntryBeforeUpdate,
-        onAfterEntryUpdate: onEntryAfterUpdate,
-        onBeforeEntryDelete: onEntryBeforeDelete,
-        onAfterEntryDelete: onEntryAfterDelete,
-        onBeforeEntryDeleteRevision: onEntryRevisionBeforeDelete,
-        onAfterEntryDeleteRevision: onEntryRevisionAfterDelete,
-        onBeforeEntryPublish: onEntryBeforePublish,
-        onAfterEntryPublish: onEntryAfterPublish,
-        onBeforeEntryUnpublish: onEntryBeforeUnpublish,
-        onAfterEntryUnpublish: onEntryAfterUnpublish,
-        onBeforeEntryGet: onEntryBeforeGet,
-        onBeforeEntryList: onEntryBeforeList,
-        /**
-         * Released in 5.34.0
-         *
-         * Create
-         */
         onEntryBeforeCreate,
         onEntryAfterCreate,
         onEntryCreateError,
-        /**
-         * Create revision
-         */
+
         onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
         onEntryRevisionAfterCreate,
         onEntryRevisionCreateError: onEntryCreateRevisionError,
-        /**
-         * Update
-         */
+
         onEntryBeforeUpdate,
         onEntryAfterUpdate,
         onEntryUpdateError,
-        /**
-         * Move
-         */
+
         onEntryBeforeMove,
         onEntryAfterMove,
         onEntryMoveError,
-        /**
-         * Delete whole entry
-         */
+
         onEntryBeforeDelete,
         onEntryAfterDelete,
         onEntryDeleteError,
-        /**
-         * Delete entry revision
-         */
+
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
-        /**
-         * Publish
-         */
+
         onEntryBeforePublish,
         onEntryAfterPublish,
         onEntryPublishError,
-        /**
-         * Republish
-         */
+
         onEntryBeforeRepublish,
         onEntryAfterRepublish,
         onEntryRepublishError,
-        /**
-         * Unpublish
-         */
+
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
         onEntryUnpublishError,

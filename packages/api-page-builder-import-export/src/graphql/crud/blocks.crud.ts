@@ -1,6 +1,15 @@
 import WebinyError from "@webiny/error";
+import { createTopic } from "@webiny/pubsub";
 import { ContextPlugin } from "@webiny/api";
-import { ImportExportTaskStatus, BlocksImportExportCrud, PbImportExportContext } from "~/types";
+import {
+    ImportExportTaskStatus,
+    BlocksImportExportCrud,
+    PbImportExportContext,
+    OnBlocksBeforeExportTopicParams,
+    OnBlocksAfterExportTopicParams,
+    OnBlocksBeforeImportTopicParams,
+    OnBlocksAfterImportTopicParams
+} from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
@@ -19,8 +28,29 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         fullAccessPermissionName: "pb.*"
     });
 
+    // Export
+    const onBlocksBeforeExport = createTopic<OnBlocksBeforeExportTopicParams>(
+        "PageBuilder.onBlocksBeforeExport"
+    );
+    const onBlocksAfterExport = createTopic<OnBlocksAfterExportTopicParams>(
+        "PageBuilder.onBlocksAfterExport"
+    );
+
+    // Import
+    const onBlocksBeforeImport = createTopic<OnBlocksBeforeImportTopicParams>(
+        "PageBuilder.onBlocksBeforeImport"
+    );
+    const onBlocksAfterImport = createTopic<OnBlocksAfterImportTopicParams>(
+        "PageBuilder.onBlocksAfterImport"
+    );
+
     const importExportCrud: BlocksImportExportCrud = {
-        async importBlocks({ zipFileUrl }) {
+        onBlocksBeforeExport,
+        onBlocksAfterExport,
+        onBlocksBeforeImport,
+        onBlocksAfterImport,
+        async importBlocks(params) {
+            const { zipFileUrl } = params;
             await pageBlocksPermissions.ensure({ rwd: "w" });
 
             // Create a task for import block
@@ -35,6 +65,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
              * ImportBlocks
              * importBlocks
              */
+            await onBlocksBeforeImport.publish({ params });
             await invokeHandlerClient<CreateHandlerPayload>({
                 context,
                 name: IMPORT_BLOCKS_CREATE_HANDLER,
@@ -46,13 +77,15 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 },
                 description: "Import Blocks - create"
             });
+            await onBlocksAfterImport.publish({ params });
 
             return {
                 task
             };
         },
 
-        async exportBlocks({ ids: initialBlockIds, where }) {
+        async exportBlocks(params) {
+            const { ids: initialBlockIds, where } = params;
             await pageBlocksPermissions.ensure({ rwd: "w" });
 
             let blockIds: string[] = initialBlockIds || [];
@@ -108,6 +141,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
              * ExportBlocks
              * exportBlocks
              */
+            await onBlocksBeforeExport.publish({ params });
             // Invoke handler.
             await invokeHandlerClient<ExportBlocksProcessHandlerPayload>({
                 context,
@@ -120,6 +154,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 },
                 description: "Export blocks - process"
             });
+            await onBlocksAfterExport.publish({ params });
 
             return { task };
         }

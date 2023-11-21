@@ -39,7 +39,10 @@ const OptionsContainer: any = styled("div")({
     marginBottom: "-21px",
     marginRight: "-1px"
 });
-
+/**
+ * Error is on the `position: "relative !important"` style.
+ */
+// @ts-expect-error
 const Container = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     paddingLeft: "10px",
@@ -63,7 +66,7 @@ const Container = styled("div")({
         "> .entries": {
             height: "auto",
             " > div > div": {
-                position: "relative !important" as any
+                position: "relative !important"
             }
         }
     }

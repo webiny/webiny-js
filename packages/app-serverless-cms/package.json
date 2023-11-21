@@ -16,6 +16,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-rmwc": "0.0.0",
     "@webiny/app-apw": "0.0.0",
+    "@webiny/app-audit-logs": "0.0.0",
     "@webiny/app-file-manager": "0.0.0",
     "@webiny/app-file-manager-s3": "0.0.0",
     "@webiny/app-form-builder": "0.0.0",

@@ -13,7 +13,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { LexicalValue, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
@@ -113,11 +113,15 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <Fragment key={plugin.name}>{plugin.element}</Fragment>
     ));
 
+    const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
+
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
+        // We update the state via the `<LexicalUpdateStatePlugin/>`.
+        editorState: null,
         namespace: "webiny",
-        onError: (error: Error) => {
-            throw error;
+        onError: () => {
+            // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
+            // These are usually resolved in the next component render cycle.
         },
         nodes: [...allNodes, ...configNodes, ...(nodes || [])],
         theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
@@ -151,7 +155,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 >
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
-                    {value && <LexicalUpdateStatePlugin value={value} />}
+                    <UpdateStatePlugin value={editorValue} />
                     <ClearEditorPlugin />
                     <HistoryPlugin externalHistoryState={historyState} />
                     {/* Events */}
