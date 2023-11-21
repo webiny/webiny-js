@@ -2,18 +2,21 @@ import React from "react";
 
 import { ButtonDefault } from "@webiny/ui/Button";
 
-import { AddOperationInner } from "~/components/BulkActions/ActionEdit/ActionEdit.styled";
-import { ButtonIcon } from "@webiny/app-aco/components/AdvancedSearch/QueryBuilderDrawer/QueryBuilder/Querybuilder.styled";
+import {
+    AddOperationInner,
+    ButtonIcon
+} from "~/components/BulkActions/ActionEdit/ActionEdit.styled";
 
 interface AddOperationProps {
+    disabled: boolean;
     onClick: () => void;
 }
 
-export const AddOperation = ({ onClick }: AddOperationProps) => {
+export const AddOperation = ({ disabled, onClick }: AddOperationProps) => {
     return (
         <AddOperationInner>
-            <ButtonDefault onClick={onClick}>
-                <ButtonIcon /> {"Add new operation"}
+            <ButtonDefault disabled={disabled} onClick={onClick}>
+                <ButtonIcon disabled={disabled} /> {"Add new operation"}
             </ButtonDefault>
         </AddOperationInner>
     );

@@ -113,6 +113,17 @@ export const handler = createHandler({
             });
 
             modifier.addField({
+                id: "customLabel",
+                fieldId: "customLabel",
+                label: "Custom Label",
+                type: "text",
+                renderer: {
+                    name: "text-input"
+                },
+                bulkEdit: true
+            });
+
+            modifier.addField({
                 id: "article",
                 fieldId: "article",
                 label: "Article",
@@ -125,6 +136,25 @@ export const handler = createHandler({
                     models: [
                         {
                             modelId: "article"
+                        }
+                    ]
+                },
+                bulkEdit: true
+            });
+
+            modifier.addField({
+                id: "demo",
+                fieldId: "demo",
+                label: "Demo content model",
+                type: "ref",
+                renderer: {
+                    name: "ref-simple-multiple"
+                },
+                multipleValues: true,
+                settings: {
+                    models: [
+                        {
+                            modelId: "demo"
                         }
                     ]
                 },

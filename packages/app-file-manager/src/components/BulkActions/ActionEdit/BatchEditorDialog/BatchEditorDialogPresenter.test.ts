@@ -37,6 +37,31 @@ describe("BatchEditorDialogPresenter", () => {
                 tags: ["field:bulk-edit"],
                 storageId: "text@field1"
             }
+        },
+        {
+            label: "Field 2",
+            value: "field2",
+            operators: [
+                {
+                    label: "Override existing values",
+                    value: OperatorType.OVERRIDE
+                },
+                {
+                    label: "Clear all existing values",
+                    value: OperatorType.REMOVE
+                }
+            ],
+            raw: {
+                id: "field2",
+                fieldId: "field2",
+                label: "Field 1",
+                type: "text",
+                renderer: {
+                    name: "text-input"
+                },
+                tags: ["field:bulk-edit"],
+                storageId: "text@field2"
+            }
         }
     ];
 
@@ -50,9 +75,6 @@ describe("BatchEditorDialogPresenter", () => {
     it("should load data", () => {
         presenter.load(batch, fields);
 
-        // `vm` should have the expected `fields` definition
-        expect(presenter.vm.fields).toEqual(fields);
-
         // `vm` should have the expected `data` definition
         expect(presenter.vm.data).toEqual({
             operations: [
@@ -60,13 +82,17 @@ describe("BatchEditorDialogPresenter", () => {
                     canDelete: false,
                     field: "",
                     operator: "",
-                    value: {}
+                    value: {},
+                    availableFields: fields
                 }
             ]
         });
 
         // `vm` should have the expected `invalidFields` definition
         expect(presenter.vm.invalidFields).toEqual({});
+
+        // `vm` should have the expected `canAddOperation` definition
+        expect(presenter.vm.canAddOperation).toEqual(true);
     });
 
     it("should be able to add and delete operations", () => {
@@ -79,7 +105,8 @@ describe("BatchEditorDialogPresenter", () => {
                 field: "",
                 operator: "",
                 value: {},
-                canDelete: false
+                canDelete: false,
+                availableFields: fields
             }
         ]);
 
@@ -92,13 +119,15 @@ describe("BatchEditorDialogPresenter", () => {
                 field: "",
                 operator: "",
                 value: {},
-                canDelete: false
+                canDelete: false,
+                availableFields: fields
             },
             {
                 field: "",
                 operator: "",
                 value: {},
-                canDelete: true
+                canDelete: true,
+                availableFields: fields
             }
         ]);
 
@@ -111,7 +140,8 @@ describe("BatchEditorDialogPresenter", () => {
                 field: "",
                 operator: "",
                 value: {},
-                canDelete: false
+                canDelete: false,
+                availableFields: fields
             }
         ]);
 
@@ -125,9 +155,68 @@ describe("BatchEditorDialogPresenter", () => {
                 field: "",
                 operator: "",
                 value: {},
-                canDelete: false
+                canDelete: false,
+                availableFields: fields
             }
         ]);
+    });
+
+    it("should be able to handle the `availableFields` based operations set in the batch", () => {
+        presenter.load(batch, fields);
+
+        // let's set some `data` back to the operation
+        presenter.setBatch({
+            operations: [
+                {
+                    field: fields[0].value,
+                    operator: OperatorType.OVERRIDE,
+                    value: {
+                        [fields[0].value]: "newValue"
+                    },
+                    canDelete: false,
+                    availableFields: fields
+                }
+            ]
+        });
+
+        // I should be able to add a new operation
+        expect(presenter.vm.canAddOperation).toBeTruthy();
+
+        presenter.addOperation();
+
+        // Only the not-set field should be available
+        expect(presenter.vm.data.operations[1]).toEqual({
+            field: "",
+            operator: "",
+            value: {},
+            canDelete: true,
+            availableFields: [fields[1]]
+        });
+
+        // let's set some `data` back to the operations
+        presenter.setBatch({
+            operations: [
+                {
+                    field: fields[0].value,
+                    operator: OperatorType.OVERRIDE,
+                    value: {
+                        [fields[0].value]: "newValue"
+                    },
+                    canDelete: false,
+                    availableFields: fields
+                },
+                {
+                    field: fields[1].value,
+                    operator: OperatorType.REMOVE,
+                    value: {},
+                    canDelete: true,
+                    availableFields: [fields[1]]
+                }
+            ]
+        });
+
+        // I should NOT be able to add a new operation
+        expect(presenter.vm.canAddOperation).toBeFalsy();
     });
 
     it("should be able to set data back to the operation", () => {
@@ -142,7 +231,8 @@ describe("BatchEditorDialogPresenter", () => {
                     value: {
                         [fields[0].value]: "newValue"
                     },
-                    canDelete: false
+                    canDelete: false,
+                    availableFields: fields
                 }
             ]
         });
@@ -152,6 +242,7 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations[0].value).toEqual({
             [fields[0].value]: "newValue"
         });
+        expect(presenter.vm.data.operations[0].availableFields).toEqual(fields);
     });
 
     it("should able to set the operation `field` data", () => {
@@ -165,7 +256,8 @@ describe("BatchEditorDialogPresenter", () => {
                     value: {
                         [fields[0].value]: "newValue"
                     },
-                    canDelete: false
+                    canDelete: false,
+                    availableFields: fields
                 }
             ]
         });
@@ -178,7 +270,8 @@ describe("BatchEditorDialogPresenter", () => {
             field: "new-field",
             operator: "",
             value: {},
-            canDelete: false
+            canDelete: false,
+            availableFields: fields
         });
     });
 
@@ -194,7 +287,8 @@ describe("BatchEditorDialogPresenter", () => {
                     field: fields[0].value,
                     operator: "", // empty value -> this should trigger the error
                     value: {},
-                    canDelete: false
+                    canDelete: false,
+                    availableFields: fields
                 }
             ]
         });
@@ -212,7 +306,8 @@ describe("BatchEditorDialogPresenter", () => {
                     value: {
                         [fields[0].value]: "newValue"
                     },
-                    canDelete: false
+                    canDelete: false,
+                    availableFields: fields
                 }
             ]
         });

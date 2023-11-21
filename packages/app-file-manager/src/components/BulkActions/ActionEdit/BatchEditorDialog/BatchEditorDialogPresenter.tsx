@@ -18,13 +18,13 @@ export interface IBatchEditorDialogPresenter {
 }
 
 export interface BatchEditorDialogViewModel {
-    fields: FieldDTO[];
     invalidFields: Record<string, { isValid: boolean; message: string }>;
+    canAddOperation: boolean;
     data: BatchEditorFormData;
 }
 
 export interface BatchEditorFormData {
-    operations: (OperationDTO & { canDelete: boolean })[];
+    operations: (OperationDTO & { canDelete: boolean; availableFields: FieldDTO[] })[];
 }
 
 export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
@@ -45,21 +45,43 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     }
 
     get vm() {
+        const operations = this.getOperations();
+        const canAddOperation =
+            operations[operations.length - 1].availableFields.length > 1 ?? false;
+
         return {
-            fields: this.fields,
             invalidFields: this.invalidFields,
+            canAddOperation,
             data: {
-                operations:
-                    this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
-                        return {
-                            field: operation.field,
-                            operator: operation.operator,
-                            value: operation.value,
-                            canDelete: operationIndex !== 0
-                        };
-                    }) || []
+                operations
             }
         };
+    }
+
+    private getOperations = () => {
+        return (
+            this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
+                return {
+                    field: operation.field,
+                    operator: operation.operator,
+                    value: operation.value,
+                    canDelete: operationIndex !== 0,
+                    availableFields: this.getAvailableFields(operation.field)
+                };
+            }) || []
+        );
+    };
+
+    private getAvailableFields(currentFieldId = "") {
+        if (!this.batch) {
+            return [];
+        }
+
+        const existings = this.batch.operations
+            .filter(operation => operation.field !== currentFieldId)
+            .map(operation => operation.field);
+
+        return this.fields.filter(field => !existings.includes(field.value));
     }
 
     addOperation(): void {

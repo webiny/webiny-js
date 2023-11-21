@@ -44,14 +44,16 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
                             key={`operation-${operationIndex}`}
                             name={`operations.${operationIndex}`}
                             operation={operation}
-                            fields={props.vm.fields}
                             onDelete={() => props.onDelete(operationIndex)}
                             onSetOperationFieldData={data =>
                                 props.onSetOperationFieldData(operationIndex, data)
                             }
                         />
                     ))}
-                    <AddOperation onClick={() => props.onAdd()} />
+                    <AddOperation
+                        disabled={!props.vm.canAddOperation}
+                        onClick={() => props.onAdd()}
+                    />
                 </>
             )}
         </Form>

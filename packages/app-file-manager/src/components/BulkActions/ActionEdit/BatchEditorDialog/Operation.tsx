@@ -11,8 +11,7 @@ import { RemoveOperation } from "~/components/BulkActions/ActionEdit/BatchEditor
 import { FieldRenderer } from "~/components/BulkActions/ActionEdit/BatchEditorDialog/FieldRenderer";
 
 export interface OperationProps {
-    fields: FieldDTO[];
-    operation: OperationDTO & { canDelete: boolean };
+    operation: OperationDTO & { canDelete: boolean; availableFields: FieldDTO[] };
     name: string;
     onDelete: () => void;
     onSetOperationFieldData: (data: string) => void;
@@ -26,7 +25,7 @@ export const Operation = observer((props: OperationProps) => {
                     {({ value, validation }) => (
                         <Select
                             label={"Field"}
-                            options={props.fields}
+                            options={props.operation.availableFields}
                             value={value}
                             onChange={data => props.onSetOperationFieldData(data)}
                             validation={validation}
@@ -41,7 +40,7 @@ export const Operation = observer((props: OperationProps) => {
                             <Select
                                 label={"Operation"}
                                 options={
-                                    props.fields.find(
+                                    props.operation.availableFields.find(
                                         field => field.value === props.operation.field
                                     )?.operators || []
                                 }
@@ -59,7 +58,9 @@ export const Operation = observer((props: OperationProps) => {
             <Cell span={11}>
                 <FieldRenderer
                     operator={props.operation.operator}
-                    field={props.fields.find(field => field.value === props.operation.field)}
+                    field={props.operation.availableFields.find(
+                        field => field.value === props.operation.field
+                    )}
                     name={`${props.name}.value`}
                 />
             </Cell>

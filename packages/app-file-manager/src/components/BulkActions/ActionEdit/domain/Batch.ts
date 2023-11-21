@@ -5,8 +5,8 @@ export interface BatchDTO {
 }
 
 const operationValidationSchema = zod.object({
-    field: zod.string().trim().nonempty("Field is required."),
-    operator: zod.string().nonempty("Condition is required.")
+    field: zod.string().trim().min(1, "Field is required."),
+    operator: zod.string().min(1, "Operator is required.")
 });
 
 export const batchValidationSchema = zod.object({
