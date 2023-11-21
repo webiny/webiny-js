@@ -41,13 +41,17 @@ context("Categories Module", () => {
 
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
-        //Assert all of the programatically created categories are being properly displayed.
-        cy.contains(categoryData1.name && categoryData1.url).should("exist");
-        cy.contains(categoryData2.name && categoryData2.url).should("exist");
-        cy.contains(categoryData3.name && categoryData3.url).should("exist");
-        cy.contains(categoryData4.name && categoryData4.url).should("exist");
+        // Assert all of the programatically created categories are being properly displayed.
+        cy.contains(categoryData1.name).should("exist");
+        cy.contains(categoryData1.url).should("exist");
+        cy.contains(categoryData2.name).should("exist");
+        cy.contains(categoryData2.url).should("exist");
+        cy.contains(categoryData3.name).should("exist");
+        cy.contains(categoryData3.url).should("exist");
+        cy.contains(categoryData4.name).should("exist");
+        cy.contains(categoryData4.url).should("exist");
 
-        //Assert all the categories are being displayed properly when searched for by name
+        // Assert all the categories are being displayed properly when searched for by name
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.name);
         cy.contains(categoryData1.name).should("exist");
         cy.contains(categoryData2.name).should("not.exist");
@@ -72,7 +76,7 @@ context("Categories Module", () => {
         cy.contains(categoryData3.name).should("not.exist");
         cy.contains(categoryData4.name).should("exist");
 
-        //Assert all the categories are being displayed properly when searched for by URL
+        // Assert all the categories are being displayed properly when searched for by URL
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.url);
         cy.contains(categoryData1.url).should("exist");
         cy.contains(categoryData2.url).should("not.exist");
@@ -107,7 +111,7 @@ context("Categories Module", () => {
 
         cy.findByPlaceholderText("Search categories").clear();
 
-        //Assert that all of the categories are being sorted properly
+        // Assert that all of the categories are being sorted properly
 
         cy.findByTestId("default-data-list.filter").click();
         cy.get(".webiny-ui-select select").select("Newest to oldest");

@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import { gqlClient } from "../utils";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -41,21 +41,17 @@ const MUTATION = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("createCategory", data => {
-    cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
-        // Step 1: Create the category
-        client.request(MUTATION, { data: data }).then(response => {
-            // Step 2: Handle the response as needed (e.g., log or perform assertions)
-            if (response.pageBuilder.category.error) {
-                // Handle any errors that occurred during category creation
-                // You can log the error or perform other actions as needed
-                console.error(response.pageBuilder.category.error);
-            }
-        });
+    return cy.login().then(user => {
+        return gqlClient
+            .request({
+                query: MUTATION,
+                variables: { data },
+                authToken: user.idToken.jwtToken
+            })
+            .then(response => {
+                if (response.pageBuilder.category.error) {
+                    console.error(response.pageBuilder.category.error);
+                }
+            });
     });
 });

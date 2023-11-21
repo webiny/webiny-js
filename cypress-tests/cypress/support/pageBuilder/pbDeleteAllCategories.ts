@@ -4,25 +4,17 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeleteCategoriesExceptStatic(): void;
+            pbDeleteAllCategories(): void;
         }
     }
 }
 
-const GET_CATEGORIES_QUERY = /* GraphQL */ `
+const LIST_CATEGORIES_QUERY = /* GraphQL */ `
     query ListCategories {
         pageBuilder {
             listCategories {
                 data {
                     slug
-                    name
-                    layout
-                    url
-                    createdOn
-                    createdBy {
-                        id
-                        displayName
-                    }
                 }
             }
         }
@@ -51,15 +43,14 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
         });
 
         // Step 1: Fetch categories
-        client.request(GET_CATEGORIES_QUERY).then(response => {
+        client.request(LIST_CATEGORIES_QUERY).then(response => {
             const categories = response.pageBuilder.listCategories.data;
 
             // Step 2: Filter and delete categories
             categories.forEach(category => {
                 // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
                 if (
-                    category.name.toLowerCase().includes("static") ||
-                    category.url.toLowerCase().includes("/static/")
+                    category.slug === "static"
                 ) {
                     // Skip this category
                     return;

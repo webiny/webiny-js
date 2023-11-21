@@ -20,7 +20,7 @@ context("Categories Module", () => {
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
 
-        //Creates new category.
+        // Creates new category.
         cy.findByTestId("data-list-new-record-button").click();
         cy.findByTestId("pb.category.new.form.name").type(category_name);
         cy.findByTestId("pb.category.new.form.slug").type(category_slug);
@@ -28,7 +28,7 @@ context("Categories Module", () => {
         cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category saved successfully.").should("exist");
 
-        //Asserts the previously created category is being correctly displayed.
+        // Asserts the previously created category is being correctly displayed.
         cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(category_name).should("exist");
@@ -36,20 +36,20 @@ context("Categories Module", () => {
             cy.findByText(category_url).click();
         });
 
-        //Assert that the title on top and the other form fields below display correct values on the right side of the screen.
+        // Assert that the title on top and the other form fields below display correct values on the right side of the screen.
         cy.get(".mdc-typography--headline5").should("contain", category_name);
         cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", category_name);
         cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
         cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url);
 
-        //Tests editing category fields.
+        // Tests editing category fields.
         cy.findByTestId("pb.category.new.form.name").clear().type(category_name_edited);
         cy.findByTestId("pb.category.new.form.url").clear().type(category_url_edited);
 
         cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category saved successfully.").should("exist");
 
-        //Asserts the previously edited category is being correctly displayed.
+        // Asserts the previously edited category is being correctly displayed.
         cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(category_name_edited).should("exist");
@@ -63,7 +63,7 @@ context("Categories Module", () => {
         cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
         cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url_edited);
 
-        //Asserts that the created category is being correctly displayed in menu item creation.
+        // Asserts that the created category is being correctly displayed in menu item creation.
         cy.visit("/page-builder/menus?slug=main-menu");
 
         cy.findByTestId("pb.menu.add.addmenuitem").click();
@@ -76,7 +76,7 @@ context("Categories Module", () => {
             .invoke("val")
             .should("eq", category_name_edited);
 
-        //Deletes the previously created category and asserts it is no longer being displayed.
+        // Deletes the previously created category and asserts it is no longer being displayed.
         cy.visit("/page-builder/categories");
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(category_name_edited)
