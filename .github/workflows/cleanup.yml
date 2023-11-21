@@ -23,8 +23,6 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
 
-      - uses: actions/checkout@v3
-
       - name: Run AWS Nuke
         run: >
           aws-nuke
