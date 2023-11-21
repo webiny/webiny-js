@@ -130,10 +130,10 @@ export default /* GraphQL */ `
     input FmFileCreateInput {
         id: ID!
         location: FmFile_LocationInput
-        name: String
-        key: String
-        type: String
-        size: Number
+        name: String!
+        key: String!
+        type: String!
+        size: Number!
         meta: FmFile_MetaInput
         tags: [String!]
         aliases: [String!]

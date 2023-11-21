@@ -29,11 +29,10 @@ export default (params: Params = {}) => {
                     if (context.i18n) {
                         return;
                     }
-                    /**
-                     * No need to define all the methods for the dummy context.
-                     */
-                    // @ts-expect-error
+
                     context.i18n = {
+                        // @ts-ignore
+                        ...(context.i18n || ({} as any)),
                         getContentLocale() {
                             return { code: "en-US", default: true };
                         },
@@ -51,14 +50,14 @@ export default (params: Params = {}) => {
                                 webinyVersion: process.env.WEBINY_VERSION
                             };
                         },
-                        checkI18NContentPermission: async () => {
-                            return;
+                        checkI18NContentPermission: () => {
+                            return true;
                         }
                     };
                 }
             },
             new ContextPlugin<PbImportExportContext>(context => {
-                context.pageBuilder = {} as PbImportExportContext["pageBuilder"];
+                context.pageBuilder = {} as any;
             }),
             importExportTaskPlugins({
                 storageOperations: pageBuilderImportExport.storageOperations

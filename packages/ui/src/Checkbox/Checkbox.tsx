@@ -31,7 +31,7 @@ interface Props extends FormComponentProps {
  */
 class Checkbox extends React.Component<Props> {
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-        this.props.onChange && this.props.onChange((e.target as HTMLInputElement).checked);
+        this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
     public override render() {

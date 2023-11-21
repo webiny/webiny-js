@@ -5,11 +5,16 @@ import {
     PageBuilderStorageOperations as BasePageBuilderStorageOperations,
     PageTemplateStorageOperations as BasePageTemplateStorageOperations
 } from "@webiny/api-page-builder/types";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { Entity, Table } from "dynamodb-toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Plugin } from "@webiny/plugins/types";
-import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
+
+export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -26,11 +31,11 @@ export enum ENTITIES {
 }
 
 export interface TableModifier {
-    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
+    (table: TableConstructor): TableConstructor;
 }
 
 export interface PageBuilderStorageOperations extends BasePageBuilderStorageOperations {
-    getTable: () => Table<string, string, string>;
+    getTable: () => Table;
     getEntities: () => Record<
         | "system"
         | "settings"
@@ -46,7 +51,7 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
     table?: TableModifier;
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin[] | Plugin[][];

@@ -67,7 +67,7 @@ describe("Forms Security Test", () => {
     });
 
     test(`"listForms" only returns entries to which the identity has access to`, async () => {
-        const { createForm } = defaultHandler;
+        const { until, createForm, listForms } = defaultHandler;
 
         const [createA1] = await createForm({ data: new Mock("list-forms-1-") });
 
@@ -83,6 +83,14 @@ describe("Forms Security Test", () => {
 
         const [createB2] = await identityBHandler.createForm({ data: new Mock("list-forms-4-") });
         const { id: formB2Id } = createB2.data.formBuilder.createForm.data;
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data.length > 0,
+            {
+                name: "list forms after create"
+            }
+        );
 
         const insufficientPermissions: IdentityPermissions = [
             [[], null],
@@ -110,6 +118,16 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
+
+            await until(
+                () => listForms().then(([data]) => data),
+                ({ data }: any) =>
+                    data.formBuilder.listForms.data[0].id === formB2Id &&
+                    data.formBuilder.listForms.data[3].id === formA1Id,
+                {
+                    name: `list forms with sufficient permissions ${i}`
+                }
+            );
 
             const [response] = await listForms();
             expect(response).toMatchObject({

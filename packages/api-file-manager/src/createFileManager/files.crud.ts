@@ -11,7 +11,6 @@ import {
 } from "~/types";
 import { FileManagerConfig } from "~/createFileManager/index";
 import { ROOT_FOLDER } from "~/contants";
-import { NotAuthorizedError } from "@webiny/api-security";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -91,11 +90,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 await this.onFileAfterCreate.publish({ file, meta });
                 return result;
             } catch (ex) {
-                // If a `NotAuthorizedError` error was thrown, then we just want to rethrow it.
-                if (ex instanceof NotAuthorizedError) {
-                    throw ex;
-                }
-
                 throw new WebinyError(
                     ex.message || "Could not create a file.",
                     ex.code || "CREATE_FILE_ERROR",

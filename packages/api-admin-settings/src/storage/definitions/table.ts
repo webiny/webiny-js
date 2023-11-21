@@ -1,20 +1,18 @@
 import { TableModifier } from "../types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Table } from "@webiny/db-dynamodb/toolbox";
-import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Table } from "dynamodb-toolbox";
+import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
 interface Params {
     table?: TableModifier;
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
-export const createTable = ({ table, documentClient }: Params): Table<string, string, string> => {
-    const tableConfig: TableConstructor<string, string, string> = {
+export const createTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig: TableConstructor = {
         name: process.env.DB_TABLE_ADMIN_SETTINGS || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient,
-        autoExecute: true,
-        autoParse: true
+        DocumentClient: documentClient
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

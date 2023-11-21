@@ -8,6 +8,7 @@ jest.setTimeout(100000);
 
 describe('Form Builder "Form" Test', () => {
     const {
+        until,
         install,
         installFileManager,
         createForm,
@@ -64,6 +65,11 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data.length > 0
+        );
+
         const [list] = await listForms();
         const { data } = list.data.formBuilder.listForms;
         expect(data.length).toBe(1);
@@ -86,6 +92,14 @@ describe('Form Builder "Form" Test', () => {
 
         const [update] = await updateRevision({ revision: id, data: newData });
         expect(update.data.formBuilder.updateRevision.data).toMatchObject(newData);
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].name === newData.name,
+            {
+                name: "list forms after update revision"
+            }
+        );
 
         const [get] = await getForm({ revision: id });
         expect(get.data.formBuilder.getForm.data).toMatchObject(newData);
@@ -116,6 +130,14 @@ describe('Form Builder "Form" Test', () => {
 
         const [update] = await updateRevision({ revision: id, data: newDataWithSteps });
         expect(update.data.formBuilder.updateRevision.data).toMatchObject(newDataWithSteps);
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].name === newDataWithSteps.name,
+            {
+                name: "list forms after adding step"
+            }
+        );
 
         const [get] = await getForm({ revision: id });
         expect(get.data.formBuilder.getForm.data).toMatchObject(newDataWithSteps);
@@ -165,12 +187,28 @@ describe('Form Builder "Form" Test', () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
         const { id } = create.data.formBuilder.createForm.data;
 
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data.length > 0,
+            {
+                name: "after create form"
+            }
+        );
+
         // Create 2 new revisions
         const [create2] = await createRevisionFrom({ revision: id });
         const { id: id2 } = create2.data.formBuilder.createRevisionFrom.data;
 
         const [create3] = await createRevisionFrom({ revision: id });
         const { id: id3 } = create3.data.formBuilder.createRevisionFrom.data;
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id3,
+            {
+                name: "after create revisions"
+            }
+        );
 
         const [list] = await listForms();
         const { data: data1 } = list.data.formBuilder.listForms;
@@ -190,6 +228,14 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id2,
+            {
+                name: "after delete revision 3"
+            }
+        );
 
         // Make sure revision #2 is now "latest"
         const [list2] = await listForms();
@@ -228,17 +274,15 @@ describe('Form Builder "Form" Test', () => {
         await createRevisionFrom({ revision: id });
 
         // Delete the whole form
-        const [result] = await deleteForm({ id });
-        expect(result).toEqual({
-            data: {
-                formBuilder: {
-                    deleteForm: {
-                        data: true,
-                        error: null
-                    }
-                }
+        await deleteForm({ id });
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data.length === 0,
+            {
+                name: "list after delete form"
             }
-        });
+        );
 
         const [get] = await getForm({ revision: id });
         expect(get.data.formBuilder.getForm.data).toBe(null);
@@ -253,6 +297,14 @@ describe('Form Builder "Form" Test', () => {
         // Publish revision #1
         await publishRevision({ revision: id });
 
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id,
+            {
+                name: "list forms after publish revision"
+            }
+        );
+
         // Get the published form
         const [{ data: get }] = await getPublishedForm({ revision: id });
         expect(get.formBuilder.getPublishedForm.data.id).toEqual(id);
@@ -260,6 +312,11 @@ describe('Form Builder "Form" Test', () => {
         // Create a new revision
         const [create2] = await createRevisionFrom({ revision: id });
         const { id: id2 } = create2.data.formBuilder.createRevisionFrom.data;
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id2
+        );
 
         // Latest published form should still be #1
         const [latestPublished] = await getPublishedForm({ parent: id.split("#")[0] });
@@ -355,6 +412,16 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+
+        await until(
+            () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
+            ({ data }: any) => {
+                return data.formBuilder.listFormSubmissions.data.length === 2;
+            },
+            {
+                name: "after create submission"
+            }
+        );
 
         // Load submissions
         const [submissions] = await listFormSubmissions({ form: id, sort: ["createdOn_ASC"] });
@@ -457,7 +524,16 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+        const form3 = createForm3Response.data.formBuilder.createForm.data;
 
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [form1.id, form2.id, form3.id].includes(form.id);
+                });
+            }
+        );
         /**
          * Publish form 2 so we can create new revision.
          */
@@ -518,6 +594,17 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+        /**
+         * We must have form 1 and form 3
+         */
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [form1.id, form3.id].includes(form.id);
+                });
+            }
+        );
         /**
          * Publish form 1 so we can create new revision.
          */
@@ -623,6 +710,17 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+        /**
+         * We must have form 1 and form 3
+         */
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [`${form1.formId}#0002`, form3.id].includes(form.id);
+                });
+            }
+        );
     });
 
     it("should properly sort form revisions", async () => {
@@ -671,6 +769,16 @@ describe('Form Builder "Form" Test', () => {
             revisions.push(createRevisionResponse.data.formBuilder.createRevisionFrom.data.id);
         }
         expect(revisions).toHaveLength(total);
+
+        await until(
+            () =>
+                getFormRevisions({
+                    id: form.id
+                }).then(([data]) => data),
+            ({ data }: any) => {
+                return data.formBuilder.getFormRevisions.data.length === revisions.length;
+            }
+        );
 
         const [listRevisionsResponse] = await getFormRevisions({
             id: form.id

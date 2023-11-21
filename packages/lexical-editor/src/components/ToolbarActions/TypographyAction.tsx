@@ -1,27 +1,26 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { LexicalCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
-import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
+
+import { TypographyValue } from "~/types";
 import {
-    $isHeadingNode,
-    $isParagraphNode,
-    $isQuoteNode,
-    $isTypographyNode,
-    ADD_TYPOGRAPHY_COMMAND,
-    TypographyNode,
+    $isTypographyElementNode,
+    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+    TypographyElementNode,
     TypographyPayload
-} from "@webiny/lexical-nodes";
+} from "~/nodes/TypographyElementNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
-    INSERT_ORDERED_LIST_COMMAND,
-    INSERT_UNORDERED_LIST_COMMAND,
-    INSERT_QUOTE_COMMAND,
-    ListCommandPayload,
-    QuoteCommandPayload
-} from "~/commands";
-import { useCurrentElement } from "~/hooks/useCurrentElement";
+    INSERT_ORDERED_WEBINY_LIST_COMMAND,
+    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+    WebinyListCommandPayload
+} from "~/commands/webiny-list";
+import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
+import { $isParagraphNode } from "~/nodes/ParagraphNode";
+import { $isHeadingNode } from "~/nodes/HeadingNode";
+import { $isQuoteNode } from "~/nodes/QuoteNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -54,13 +53,12 @@ export interface TypographyAction extends React.FC<unknown> {
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { themeEmotionMap } = useRichTextEditor();
-    const { element } = useCurrentElement();
-    const isTypographySelected = $isTypographyNode(element);
-    const isParagraphSelected = $isParagraphNode(element);
-    const isHeadingSelected = $isHeadingNode(element);
-    const isQuoteSelected = $isQuoteNode(element);
-
+    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
+    const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
+    const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
+    const isHeadingSelected = textBlockSelection?.state?.heading.isSelected || false;
+    const textType = textBlockSelection?.state?.textType;
+    const isQuoteSelected = textBlockSelection?.state?.quote.isSelected || false;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -71,14 +69,17 @@ export const TypographyAction: TypographyAction = () => {
     const onTypographySelect = useCallback((value: TypographyValue) => {
         setTypographySelect(value);
         if (value.tag.includes("h") || value.tag.includes("p")) {
-            editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_COMMAND, {
-                value
-            });
+            editor.dispatchCommand<LexicalCommand<TypographyPayload>>(
+                ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+                {
+                    value
+                }
+            );
         }
 
         if (value.tag === "ol") {
-            editor.dispatchCommand<LexicalCommand<ListCommandPayload>>(
-                INSERT_ORDERED_LIST_COMMAND,
+            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
+                INSERT_ORDERED_WEBINY_LIST_COMMAND,
                 {
                     themeStyleId: value.id
                 }
@@ -86,8 +87,8 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         if (value.tag === "ul") {
-            editor.dispatchCommand<LexicalCommand<ListCommandPayload>>(
-                INSERT_UNORDERED_LIST_COMMAND,
+            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
+                INSERT_UNORDERED_WEBINY_LIST_COMMAND,
                 {
                     themeStyleId: value.id
                 }
@@ -95,61 +96,68 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         if (value.tag === "quoteblock") {
-            editor.dispatchCommand<LexicalCommand<QuoteCommandPayload>>(INSERT_QUOTE_COMMAND, {
-                themeStyleId: value.id
-            });
+            editor.dispatchCommand<LexicalCommand<WebinyQuoteCommandPayload>>(
+                INSERT_WEBINY_QUOTE_COMMAND,
+                {
+                    themeStyleId: value.id
+                }
+            );
         }
     }, []);
 
     useEffect(() => {
-        if (!element) {
-            return;
-        }
-        // header and paragraph elements inserted with typography node
-        if (isTypographySelected) {
-            const el = element as TypographyNode;
-            setTypography(el.getTypographyValue());
-            return;
-        }
-
-        if (isParagraphSelected || isHeadingSelected || isQuoteSelected) {
-            const styleId = element.getTypographyStyleId();
-            if (!styleId) {
+        if (textBlockSelection) {
+            // header and paragraph elements inserted with typography node
+            if ($isTypographyElementNode(textBlockSelection?.element)) {
+                const el = textBlockSelection.element as TypographyElementNode;
+                setTypography(el.getTypographyValue());
                 return;
             }
 
-            if (!themeEmotionMap) {
-                return;
-            }
+            if (
+                $isParagraphNode(textBlockSelection?.element) ||
+                $isHeadingNode(textBlockSelection?.element) ||
+                $isQuoteNode(textBlockSelection?.element)
+            ) {
+                const elementWithThemeStyle = textBlockSelection?.element;
+                const styleId = elementWithThemeStyle.getTypographyStyleId();
+                if (!styleId) {
+                    return;
+                }
 
-            const style = themeEmotionMap[styleId];
-            if (style) {
-                setTypography({
-                    name: style?.name,
-                    id: style.id,
-                    css: style.styles,
-                    tag: style.tag
-                });
-            }
-            return;
-        }
+                if (!themeEmotionMap) {
+                    return;
+                }
 
-        // list and quote element
-        if (themeEmotionMap && element?.getStyleId) {
-            const themeStyleId = element?.getStyleId() || undefined;
-            if (themeStyleId) {
-                const elementStyle = themeEmotionMap[themeStyleId];
-                if (elementStyle) {
+                const style = themeEmotionMap[styleId];
+                if (style) {
                     setTypography({
-                        id: elementStyle.id,
-                        css: elementStyle.styles,
-                        name: elementStyle.name,
-                        tag: elementStyle.tag
+                        name: style?.name,
+                        id: style.id,
+                        css: style.styles,
+                        tag: style.tag
                     });
+                }
+                return;
+            }
+
+            // list and quote element
+            if (themeEmotionMap && textBlockSelection?.element?.getStyleId) {
+                const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
+                if (themeStyleId) {
+                    const elementStyle = themeEmotionMap[themeStyleId];
+                    if (elementStyle) {
+                        setTypography({
+                            id: elementStyle.id,
+                            css: elementStyle.styles,
+                            name: elementStyle.name,
+                            tag: elementStyle.tag
+                        });
+                    }
                 }
             }
         }
-    }, [element, isTypographySelected, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
+    }, [isTypographySelected, textType, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
 
     return (
         <TypographyActionContext.Provider
@@ -163,4 +171,7 @@ export const TypographyAction: TypographyAction = () => {
     );
 };
 
+{
+    /* Typography dropdown settings */
+}
 TypographyAction.TypographyDropDown = TypographyActionDropDown;

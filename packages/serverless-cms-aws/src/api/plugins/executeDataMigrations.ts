@@ -1,4 +1,4 @@
-import { LambdaClient } from "@webiny/aws-sdk/client-lambda";
+import LambdaClient from "aws-sdk/clients/lambda";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import {

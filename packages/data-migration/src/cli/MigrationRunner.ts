@@ -1,4 +1,4 @@
-import { InvokeCommand, LambdaClient } from "@webiny/aws-sdk/client-lambda";
+import LambdaClient from "aws-sdk/clients/lambda";
 import { MigrationStatusReporter } from "~/cli/MigrationStatusReporter";
 import {
     MigrationEventHandlerResponse,
@@ -55,15 +55,11 @@ export class MigrationRunnerResult {
     }
 
     async process(): Promise<void> {
-        if (this.result.error) {
-            for (const handler of this.errorBranch) {
-                await handler(this.result.error);
-            }
-            return;
-        }
+        const branch = this.result.error ? this.errorBranch : this.successBranch;
+        const input = this.result.error ? this.result.error : this.result.data;
 
-        for (const handler of this.successBranch) {
-            await handler(this.result.data);
+        for (const handler of branch) {
+            await handler(input as any);
         }
     }
 }
@@ -139,13 +135,13 @@ export class MigrationRunner {
     }
 
     private async invokeMigration(payload: MigrationPayload) {
-        const response = await this.lambdaClient.send(
-            new InvokeCommand({
+        const response = await this.lambdaClient
+            .invoke({
                 FunctionName: this.functionName,
                 InvocationType: "Event",
                 Payload: JSON.stringify({ ...payload, command: "execute" })
             })
-        );
+            .promise();
 
         return response.StatusCode;
     }
@@ -156,19 +152,18 @@ export class MigrationRunner {
 
     private async getStatus(payload: Record<string, any>) {
         const getStatus = () => {
-            return this.lambdaClient.send(
-                new InvokeCommand({
+            return this.lambdaClient
+                .invoke({
                     FunctionName: this.functionName,
                     InvocationType: "RequestResponse",
                     Payload: JSON.stringify({ ...payload, command: "status" })
                 })
-            );
+                .promise();
         };
 
         const response = await executeWithRetry(getStatus);
 
-        const decoder = new TextDecoder("utf-8");
-        return JSON.parse(decoder.decode(response.Payload)) as MigrationEventHandlerResponse;
+        return JSON.parse(response.Payload as string) as MigrationEventHandlerResponse;
     }
 
     private getMigrationStatusReportInterval() {

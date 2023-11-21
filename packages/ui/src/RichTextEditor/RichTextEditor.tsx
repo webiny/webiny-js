@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import shortid from "shortid";
-import EditorJS, {
+import EditorJS from "@editorjs/editorjs";
+import {
     LogLevels,
     OutputBlockData,
     OutputData,
@@ -40,11 +41,7 @@ export type RichTextEditorValue = OutputBlockData[];
 
 export interface RichTextEditorProps {
     autofocus?: boolean;
-    className?: string;
     context?: { [key: string]: any };
-    description?: string;
-    disabled?: boolean;
-    label?: string;
     logLevel?: string;
     minHeight?: number;
     onChange?: (data: RichTextEditorValue) => void;
@@ -55,32 +52,13 @@ export interface RichTextEditorProps {
     tools?: {
         [toolName: string]: ToolSettings;
     };
-    validation?: FormComponentProps["validation"];
     value?: RichTextEditorValue;
+    label?: string;
+    description?: string;
+    disabled?: boolean;
+    validation?: FormComponentProps["validation"];
+    className?: string;
 }
-
-const waitForDom = (id: string, callback: () => void) => {
-    let timeSpent = 0;
-    const interval = setInterval(() => {
-        if (timeSpent > 1000) {
-            clearInterval(interval);
-            return;
-        }
-
-        const dom = document.querySelector(`#${id}`);
-        if (!dom) {
-            timeSpent += 10;
-            return;
-        }
-
-        clearInterval(interval);
-        callback();
-    }, 10);
-
-    return () => {
-        clearInterval(interval);
-    };
-};
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     const elementId = useRef("rte-" + shortid.generate());
@@ -91,48 +69,45 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
 
         const initialData = value ? { blocks: value } : { blocks: [] };
 
-        const clearWait = waitForDom(elementId.current, () => {
-            editorRef.current = new EditorJS({
-                ...nativeProps,
-                holder: elementId.current,
-                logLevel: "ERROR" as LogLevels.ERROR,
-                data: initialData,
-                onChange: async () => {
-                    if (!editorRef.current) {
-                        return;
-                    }
-                    const { blocks: data } = await editorRef.current.save();
-                    if (!props.onChange) {
-                        return;
-                    }
-                    props.onChange(data);
-                },
-                onReady() {
-                    if (typeof onReady !== "function") {
-                        return;
-                    }
-                    onReady({ editor: editorRef.current, initialData });
-                },
-                tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                    const tool = props.tools ? props.tools[name] : null;
-                    if (!tool) {
-                        return tools;
-                    }
-                    tools[name] = tool;
-                    if (!tool.config) {
-                        tool.config = { context };
-                    } else if (typeof tool.config === "function") {
-                        tool.config = tool.config();
-                    } else {
-                        tool.config = { ...tool.config, context };
-                    }
+        editorRef.current = new EditorJS({
+            ...nativeProps,
+            holder: elementId.current,
+            logLevel: "ERROR" as LogLevels.ERROR,
+            data: initialData,
+            onChange: async () => {
+                if (!editorRef.current) {
+                    return;
+                }
+                const { blocks: data } = await editorRef.current.save();
+                if (!props.onChange) {
+                    return;
+                }
+                props.onChange(data);
+            },
+            onReady() {
+                if (typeof onReady !== "function") {
+                    return;
+                }
+                onReady({ editor: editorRef.current, initialData });
+            },
+            tools: Object.keys(props.tools || {}).reduce((tools, name) => {
+                const tool = props.tools ? props.tools[name] : null;
+                if (!tool) {
                     return tools;
-                }, {} as Record<string, ToolSettings>)
-            });
+                }
+                tools[name] = tool;
+                if (!tool.config) {
+                    tool.config = { context };
+                } else if (typeof tool.config === "function") {
+                    tool.config = tool.config();
+                } else {
+                    tool.config = { ...tool.config, context };
+                }
+                return tools;
+            }, {} as Record<string, ToolSettings>)
         });
 
         return () => {
-            clearWait();
             if (!editorRef.current || typeof editorRef.current.destroy !== "function") {
                 return;
             }

@@ -15,11 +15,13 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
             getContentModel: async (_: unknown, args: any, context) => {
                 try {
                     const model = await context.cms.getModel(args.modelId);
-
-                    if (!model) {
-                        throw new NotFoundError(`Content model "${args.modelId}" was not found!`);
+                    if (model?.isPrivate === true) {
+                        if (!model) {
+                            throw new NotFoundError(
+                                `Content model "${args.modelId}" was not found!`
+                            );
+                        }
                     }
-
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);

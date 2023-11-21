@@ -1,4 +1,4 @@
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
@@ -42,7 +42,6 @@ import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { AcoContext } from "@webiny/api-aco/types";
 import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -65,11 +64,13 @@ const defaultIdentity: SecurityIdentity = {
     displayName: "John Doe"
 };
 
-const documentClient = getDocumentClient({
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    tls: false,
+    sslEnabled: false,
     region: "local",
-    credentials: { accessKeyId: "test", secretAccessKey: "test" }
+    accessKeyId: "test",
+    secretAccessKey: "test"
 });
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
@@ -102,6 +103,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         return index;
     };
 
+    const refreshIndex = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
+        const index = createIndexName(model);
+        return elasticsearch.indices.refresh({
+            index
+        });
+    };
+
     const handler = createHandler({
         plugins: [
             createGzipCompression(),
@@ -125,9 +133,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             new ContextPlugin<CmsContext>(async context => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
-                    elasticsearch.indices.create({
-                        index: createIndexName(model)
-                    });
+                    elasticsearch.indices.registerIndex(createIndexName(model));
+                });
+                context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
                 });
             }),
             createHeadlessCmsGraphQL(),
@@ -152,8 +161,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
+            } as any,
+            {} as any
         );
 
         // The first element is the response body, and the second is the raw response.

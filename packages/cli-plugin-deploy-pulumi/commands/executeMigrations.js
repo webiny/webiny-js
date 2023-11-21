@@ -1,4 +1,4 @@
-const { LambdaClient } = require("@webiny/aws-sdk/client-lambda");
+const LambdaClient = require("aws-sdk/clients/lambda");
 const { getStackOutput } = require("../utils");
 const {
     MigrationRunner,

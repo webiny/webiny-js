@@ -32,11 +32,10 @@ const syncTemplateVariables = (content: PbElement) => {
     const templateVariables = [];
 
     for (const block of content.elements) {
-        const variables = block.data.variables ?? [];
-        if (variables.length > 0) {
+        if (block.data.variables?.length > 0) {
             templateVariables.push({
                 blockId: block.data.templateBlockId,
-                variables: variables
+                variables: block.data.variables
             });
         }
     }
@@ -51,7 +50,7 @@ const removeTemplateBlockIds = (content: PbElement) => {
         // we need to drop templateBlockId property, when block is no longer inside template
         // we also remove variables from unlinked blocks, since they don't need them outside template
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { templateBlockId, variables = [], ...blockData } = block.data;
+        const { templateBlockId, variables, ...blockData } = block.data;
         if (block.data.blockId) {
             return {
                 ...block,

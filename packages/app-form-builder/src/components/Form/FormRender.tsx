@@ -89,8 +89,8 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
 
-    const isFirstStep = currentStepIndex === 0;
-    const isLastStep = currentStepIndex === steps.length - 1;
+    const isFirstStep = isMultiStepForm && currentStepIndex === 0;
+    const isLastStep = isMultiStepForm && currentStepIndex === steps.length - 1;
 
     // We need this check in case we deleted last step and at the same time we were previewing it.
     const currentStep =

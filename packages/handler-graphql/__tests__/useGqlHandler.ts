@@ -1,7 +1,6 @@
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlServerPlugins from "~/index";
 import { PluginCollection } from "@webiny/plugins/types";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     debug?: boolean;
@@ -27,8 +26,8 @@ export default ({ debug = false, plugins = [] }: Params = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
+            } as any,
+            {} as any
         );
 
         // The first element is the response body, and the second is the raw response.

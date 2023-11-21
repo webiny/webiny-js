@@ -67,7 +67,7 @@ export const createHandler = <Payload = any, Response = APIGatewayProxyResult>(
                 return result;
             }
 
-            app.__webiny_raw_result = result;
+            (app as any).__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({

@@ -233,10 +233,7 @@ const AddElement: React.FC = () => {
                                           }
 
                                           dropElement({
-                                              source: {
-                                                  type: plugin.elementType,
-                                                  target: undefined
-                                              },
+                                              source: { type: plugin.elementType } as any,
                                               target: params as DropElementActionArgsType["target"]
                                           });
                                           setTimeout(deactivatePlugin, 20);

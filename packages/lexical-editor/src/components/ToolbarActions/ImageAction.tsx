@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { LexicalCommand } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
-import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
+import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
+import { LexicalCommand } from "lexical";
 import { ToolbarActionPlugin } from "~/types";
 
 export const ImageAction = () => {

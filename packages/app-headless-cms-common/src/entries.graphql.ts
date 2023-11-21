@@ -9,7 +9,6 @@ import {
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
-import { FormSubmitOptions } from "@webiny/form";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     meta {
@@ -208,15 +207,14 @@ export interface CmsEntryCreateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
     const createFields = createFieldsList({ model, fields: model.fields });
 
     return gql`
-        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!, $options: CreateCmsEntryOptionsInput) {
-            content: create${model.singularApiName}(data: $data, options: $options) {
+        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!) {
+            content: create${model.singularApiName}(data: $data) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFields}
@@ -244,17 +242,14 @@ export interface CmsEntryCreateFromMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data?: Record<string, any>;
-    options?: FormSubmitOptions;
 }
 
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsCreate${model.singularApiName}From($revision: ID!, $data: ${
         model.singularApiName
-    }Input, $options: CreateRevisionCmsEntryOptionsInput) {
-        content: create${
-            model.singularApiName
-        }From(revision: $revision, data: $data, options: $options) {
+    }Input) {
+        content: create${model.singularApiName}From(revision: $revision, data: $data) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
@@ -281,17 +276,14 @@ export interface CmsEntryUpdateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
 }
 
 export const createUpdateMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUpdate${model.singularApiName}($revision: ID!, $data: ${
         model.singularApiName
-    }Input!, $options: UpdateCmsEntryOptionsInput) {
-            content: update${
-                model.singularApiName
-            }(revision: $revision, data: $data, options: $options) {
+    }Input!) {
+            content: update${model.singularApiName}(revision: $revision, data: $data) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}

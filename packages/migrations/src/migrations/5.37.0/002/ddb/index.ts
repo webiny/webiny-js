@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -30,7 +30,7 @@ export class CmsEntriesRootFolder_5_37_0_002
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table<string, string, string>) {
+    constructor(table: Table) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.tenantEntity = createTenantEntity(table);

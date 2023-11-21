@@ -5,7 +5,7 @@ import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
-    id
+    id   
     content {
         ...on ${singularPageApiName}_Content_Hero {
             title
@@ -110,7 +110,6 @@ const errorFields = `
         code
         message
         data
-        stack
     }
 `;
 

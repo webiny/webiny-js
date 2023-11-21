@@ -220,7 +220,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     ];
 
     const isActive = activeElementId === element.id;
-    const isHighlighted = editorElement?.isHighlighted ?? false;
+    const isHighlighted = editorElement.isHighlighted;
 
     const { children, dropRef, ...rest } = props;
 

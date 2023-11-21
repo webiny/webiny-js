@@ -1,5 +1,4 @@
 import { createHandler } from "@webiny/handler-aws/raw";
-import { LambdaContext } from "@webiny/handler-aws/types";
 import { MigrationEventHandlerResponse } from "~/types";
 
 interface Payload {
@@ -30,23 +29,11 @@ export const runMigration = async ({
     payload
 }: RunMigrationParams): Promise<NotUndefined<MigrationEventHandlerResponse>> => {
     const invokeMigration = async () => {
-        return await handler(
-            {
-                ...payload,
-                command: "execute"
-            },
-            {} as LambdaContext
-        );
+        return await handler({ ...payload, command: "execute" }, {} as any);
     };
 
     const getMigrationStatus = () => {
-        return handler(
-            {
-                ...payload,
-                command: "status"
-            },
-            {} as LambdaContext
-        );
+        return handler({ ...payload, command: "status" }, {} as any);
     };
 
     // Execute migration function. Invocation of `execute` doesn't return anything.

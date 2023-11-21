@@ -1,4 +1,4 @@
-import { HeadlessCmsStorageOperations, OnGroupBeforeCreateTopicParams } from "~/types";
+import { OnGroupBeforeCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
@@ -16,22 +16,6 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
 
     onGroupBeforeCreate.subscribe(async params => {
         const { group } = params;
-
-        if (group.id) {
-            const groups = await storageOperations.groups.list({
-                where: {
-                    tenant: group.tenant,
-                    locale: group.locale,
-                    id: group.id
-                }
-            });
-            if (groups.length > 0) {
-                throw new WebinyError(
-                    `Cms Group with the id "${group.id}" already exists.`,
-                    "ID_ALREADY_EXISTS"
-                );
-            }
-        }
 
         if (group.slug && group.slug.trim()) {
             const groups = await storageOperations.groups.list({

@@ -9,7 +9,7 @@ import {
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import {
     createGSIPartitionKey,
     createGSISortKey,
@@ -34,7 +34,7 @@ import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
-import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
@@ -569,7 +569,7 @@ export const createEntriesStorageOperations = (
         /**
          * Then we need to construct the queries for all the revisions and entries.
          */
-        const items: Record<string, WriteRequest>[] = [];
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
         for (const id of entries) {
             /**
              * Latest item.

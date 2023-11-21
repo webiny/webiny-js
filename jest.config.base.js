@@ -19,7 +19,7 @@ module.exports = function ({ path }, presets = []) {
     const merged = merge.recursive(true, { setupFilesAfterEnv: [] }, tsPreset, {
         displayName: name,
         modulePaths: [`${path}/src`],
-        testMatch: [`${path}/**/*${type}.test.[jt]s?(x)`],
+        testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
             "^.+\\.[jt]sx?$": [
                 "ts-jest",

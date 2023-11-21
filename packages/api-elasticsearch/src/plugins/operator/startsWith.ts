@@ -13,9 +13,6 @@ export class ElasticsearchQueryBuilderOperatorStartsWithPlugin extends Elasticse
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
         const { value, basePath } = params;
-        if (value === "" || value === null || value === undefined) {
-            return;
-        }
         query.filter.push({
             match_phrase_prefix: {
                 [basePath]: value

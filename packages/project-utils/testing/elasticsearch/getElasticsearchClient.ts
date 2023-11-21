@@ -12,10 +12,10 @@ import { logger } from "../logger";
 import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
-import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
-import { getDocumentClient, simulateStream } from "../dynamodb";
+import { createElasticsearchClient } from "./createClient";
+import { simulateStream, getDocumentClient } from "../dynamodb";
+import { ElasticsearchClient } from "./createClient";
 import { PluginCollection } from "../environment";
-import { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
 
 interface GetElasticsearchClientParams {
     name: string;
@@ -76,15 +76,17 @@ export class ElasticsearchClientConfig {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const gzipCompression = createGzipCompression();
-        const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
+        const simulationContext = new ContextPlugin(async context => {
             context.plugins.register(gzipCompression);
-            await elasticsearchClientContext.apply(context);
+            await elasticsearchClientContext.apply(context as any);
         });
 
-        const dynamoDbHandler = createDynamoDBHandler({
-            plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
-        });
-        simulateStream(documentClient, dynamoDbHandler);
+        simulateStream(
+            documentClient,
+            createDynamoDBHandler({
+                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+            })
+        );
 
         elasticIndexManager({
             global: global,

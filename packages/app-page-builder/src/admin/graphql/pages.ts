@@ -240,6 +240,7 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         id
         name
         type
+        category
         content
     }
 `;
@@ -258,6 +259,7 @@ export interface ListPageElementsQueryResponseDataPreview {
 export interface ListPageElementsQueryResponseData {
     id: string;
     name: string;
+    category: string;
     type: string;
     content: PbElement;
 }
@@ -282,6 +284,17 @@ export const CREATE_PAGE_ELEMENT = gql`
     mutation PbCreatePageElement($data: PbCreatePageElementInput!) {
         pageBuilder {
             createPageElement(data: $data) {
+                data ${PAGE_ELEMENT_FIELDS}
+                ${error}
+            }
+        }
+    }
+`;
+
+export const UPDATE_PAGE_ELEMENT = gql`
+    mutation PbUpdatePageElement($id: ID!, $data: PbUpdatePageElementInput!) {
+        pageBuilder {
+            updatePageElement(id: $id, data: $data) {
                 data ${PAGE_ELEMENT_FIELDS}
                 ${error}
             }

@@ -84,15 +84,14 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = model.fields.reduce((acc, field) => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        /**
-                         * TODO @ts-refactor
-                         * Figure out type for Bind.
-                         */
-                        // @ts-expect-error
-                        Bind={formRenderProps.Bind}
+                        Bind={formRenderProps.Bind as any}
                         contentModel={model}
                     />
                 );
@@ -110,8 +109,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                  * TODO @ts-refactor
                  * Figure out type for Bind.
                  */
-                // @ts-expect-error
-                Bind: formRenderProps.Bind
+                Bind: formRenderProps.Bind as any
             });
         },
         [formRenderer]
@@ -157,12 +155,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                     fields={model.fields || []}
                                     layout={model.layout || []}
                                     {...formProps}
-                                    /**
-                                     * TODO @ts-refactor
-                                     * Figure out type for Bind.
-                                     */
-                                    // @ts-expect-error
-                                    Bind={formProps.Bind}
+                                    Bind={formProps.Bind as any}
                                 />
                             )}
                         </FormWrapper>

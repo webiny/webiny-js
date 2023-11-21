@@ -12,67 +12,67 @@ import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
     CREATE_MENU,
     DELETE_MENU,
-    GET_MENU,
-    GET_PUBLIC_MENU,
     LIST_MENUS,
-    UPDATE_MENU
+    UPDATE_MENU,
+    GET_MENU,
+    GET_PUBLIC_MENU
 } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
     DELETE_PAGE_ELEMENT,
-    GET_PAGE_ELEMENT,
     LIST_PAGE_ELEMENTS,
-    UPDATE_PAGE_ELEMENT
+    UPDATE_PAGE_ELEMENT,
+    GET_PAGE_ELEMENT
 } from "./graphql/pageElements";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
-    GET_PAGE,
-    GET_PUBLISHED_PAGE,
-    LIST_PAGE_TAGS,
     LIST_PAGES,
     LIST_PUBLISHED_PAGES,
-    OEMBED_DATA,
+    LIST_PAGE_TAGS,
+    UPDATE_PAGE,
+    GET_PAGE,
+    GET_PUBLISHED_PAGE,
     PUBLISH_PAGE,
-    UNLINK_PAGE_FROM_TEMPLATE,
     UNPUBLISH_PAGE,
-    UPDATE_PAGE
+    UNLINK_PAGE_FROM_TEMPLATE,
+    OEMBED_DATA
 } from "./graphql/pages";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
-    GET_CATEGORY,
     LIST_CATEGORIES,
-    UPDATE_CATEGORY
+    UPDATE_CATEGORY,
+    GET_CATEGORY
 } from "./graphql/categories";
 
-import { GET_DEFAULT_SETTINGS, GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 
 import {
     CREATE_BLOCK_CATEGORY,
     DELETE_BLOCK_CATEGORY,
-    GET_BLOCK_CATEGORY,
     LIST_BLOCK_CATEGORIES,
-    UPDATE_BLOCK_CATEGORY
+    UPDATE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
 import {
     CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
     DELETE_PAGE_BLOCK,
-    GET_PAGE_BLOCK,
     LIST_PAGE_BLOCKS,
-    UPDATE_PAGE_BLOCK
+    GET_PAGE_BLOCK
 } from "./graphql/pageBlocks";
 
 import {
-    CREATE_PAGE_FROM_TEMPLATE,
     CREATE_PAGE_TEMPLATE,
+    UPDATE_PAGE_TEMPLATE,
     DELETE_PAGE_TEMPLATE,
-    GET_PAGE_TEMPLATE,
     LIST_PAGE_TEMPLATES,
-    UPDATE_PAGE_TEMPLATE
+    GET_PAGE_TEMPLATE,
+    CREATE_PAGE_FROM_TEMPLATE
 } from "./graphql/pageTemplates";
 
 import path from "path";
@@ -84,7 +84,6 @@ import { PageBuilderStorageOperations } from "~/types";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     permissions?: any;
@@ -94,7 +93,7 @@ interface Params {
 }
 
 export default ({ permissions, identity, plugins }: Params = {}) => {
-    const i18nStorage = getStorageOps<any>("i18n");
+    const i18nStorage = getStorageOps("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -108,7 +107,7 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nStorage.storageOperations,
+            i18nStorage.storageOperations as any,
             mockLocalesPlugins(),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
@@ -172,7 +171,7 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
                 body: JSON.stringify(body),
                 ...rest
             },
-            {} as LambdaContext
+            {} as any
         );
 
         // The first element is the response body, and the second is the raw response.

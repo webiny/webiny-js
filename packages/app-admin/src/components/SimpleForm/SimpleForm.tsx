@@ -86,7 +86,7 @@ export const SimpleFormHeader: React.FC<SimpleFormHeaderProps> = props => {
     );
 };
 
-export interface SimpleFormFooterProps {
+interface SimpleFormFooterProps {
     children: React.ReactNode;
     className?: string;
 }

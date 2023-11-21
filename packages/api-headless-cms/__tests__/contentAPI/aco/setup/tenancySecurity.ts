@@ -9,7 +9,7 @@ import {
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
+import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { CmsContext } from "~/types";
 
 interface Config {
@@ -36,7 +36,7 @@ export const createTenancyAndSecurity = ({
                 id: "root",
                 name: "Root",
                 webinyVersion: context.WEBINY_VERSION
-            } as Tenant);
+            } as any);
 
             context.security.addAuthenticator(async () => {
                 return (

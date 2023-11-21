@@ -37,7 +37,6 @@ const DetailsContainer = styled.div`
     height: calc(100% - 10px);
     overflow: hidden;
     position: relative;
-
     nav {
         background-color: var(--mdc-theme-surface);
     }
@@ -172,10 +171,7 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                             </DelayedOnChange>
                         </Styled.Input>
                     </SearchInputWrapper>
-                    <ScrollList
-                        className={listStyle}
-                        data-list={"pb-new-page-dialog-templates-list"}
-                    >
+                    <ScrollList className={listStyle}>
                         {filteredPageTemplates.map(template => (
                             <ListItem
                                 key={template.id}
@@ -195,16 +191,12 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                         ))}
                     </ScrollList>
                     <BlankTemplateButtonWrapper>
-                        <ButtonSecondary
-                            disabled={isLoading}
-                            onClick={() => onSelect()}
-                            data-testid={"pb-new-page-dialog-use-blank-template-btn"}
-                        >
+                        <ButtonSecondary disabled={isLoading} onClick={() => onSelect()}>
                             Use a blank page template
                         </ButtonSecondary>
                     </BlankTemplateButtonWrapper>
                 </LeftPanel>
-                <RightPanel span={9} data-testid={"pb-new-page-dialog-template-preview"}>
+                <RightPanel span={9}>
                     {activeTemplate && (
                         <DetailsContainer>
                             <RenderBlock>
@@ -222,9 +214,6 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                                             <HeaderActions>
                                                 <ButtonSecondary
                                                     disabled={isLoading}
-                                                    data-testid={
-                                                        "pb-new-page-dialog-use-template-btn"
-                                                    }
                                                     onClick={() =>
                                                         handleCreatePageFromTemplate(activeTemplate)
                                                     }

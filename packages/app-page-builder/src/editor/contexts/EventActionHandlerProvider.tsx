@@ -198,7 +198,6 @@ export const EventActionHandlerProvider = makeComposable<
                     id: element.id,
                     type: element.type,
                     data: element.data,
-                    source: element.source,
                     elements: await Promise.all(
                         /**
                          * We are positive that element.elements is array of strings.

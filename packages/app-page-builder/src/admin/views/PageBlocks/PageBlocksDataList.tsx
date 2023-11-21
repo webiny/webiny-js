@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
 
 import { useRouter } from "@webiny/react-router";
@@ -14,24 +15,30 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
+import { addElementId } from "~/editor/helpers";
 
 import { PbPageBlock } from "~/types";
+import {
+    LIST_PAGE_BLOCKS,
+    LIST_PAGE_BLOCKS_AND_CATEGORIES,
+    CREATE_PAGE_BLOCK,
+    DELETE_PAGE_BLOCK
+} from "./graphql";
 import { CreatableItem } from "./PageBlocks";
-import { PreviewBlock } from "~/admin/components/PreviewBlock";
-import { ResponsiveElementsProvider } from "~/admin/components/ResponsiveElementsProvider";
-import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+import { Content } from "@webiny/app-page-builder-elements/components/Content";
+import { Content as ContentType } from "@webiny/app-page-builder-elements/types";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
-const List = styled("div")`
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-    margin: 17px 50px;
-    background-color: white;
-    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%),
-        0px 1px 3px 0px rgb(0 0 0 / 12%);
-`;
+const List = styled("div")({
+    display: "flex",
+    flexDirection: "column",
+    padding: "8px",
+    margin: "17px 50px",
+    backgroundColor: "white",
+    boxShadow:
+        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)"
+});
 
 const ListItem = styled.div`
     position: relative;
@@ -44,9 +51,13 @@ const ListItem = styled.div`
     :last-of-type {
         margin-bottom: 0;
     }
+    img {
+        position: relative;
+        width: 100%;
+    }
 `;
 
-const ListItemText = styled("div")({
+const ListItemText = styled("span")({
     textTransform: "uppercase",
     alignSelf: "start",
     marginTop: "15px"
@@ -123,24 +134,40 @@ type PageBlocksDataListProps = {
 const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const [loadingLabel, setLoadingLabel] = useState("");
-    const { showConfirmation } = useConfirmationDialog({
-        title: "Delete page block",
-        message: "Are you sure you want to delete this page block?"
-    });
+    const { showConfirmation } = useConfirmationDialog();
     const { showExportBlockInitializeDialog } = useExportBlockDialog();
-    const pageBlocks = usePageBlocks();
-    const [blocks, setPageBlocks] = useState<PbPageBlock[]>([]);
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
+    const { data, loading, refetch } = useQuery(LIST_PAGE_BLOCKS, {
+        variables: { blockCategory: selectedBlocksCategory as string },
+        skip: !selectedBlocksCategory,
+        onCompleted: data => {
+            const error = data?.pageBuilder?.listPageBlocks?.error;
+            if (error) {
+                history.push("/page-builder/page-blocks");
+                showSnackbar(error.message);
+            }
+        }
+    });
+
     useEffect(() => {
         if (selectedBlocksCategory) {
-            pageBlocks.listBlocks(selectedBlocksCategory).then(pageBlocks => {
-                setPageBlocks(pageBlocks);
-            });
+            refetch();
         }
-    }, [selectedBlocksCategory, pageBlocks.pageBlocks]);
+    }, [selectedBlocksCategory]);
+
+    const [deleteIt, deleteMutation] = useMutation(DELETE_PAGE_BLOCK, {
+        // To update block counters on the left side
+        refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }],
+        onCompleted: () => refetch()
+    });
+
+    const [duplicateIt, duplicateMutation] = useMutation(CREATE_PAGE_BLOCK, {
+        // To update block counters on the left side and blocks list in pageEditor
+        refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }, { query: LIST_PAGE_BLOCKS }],
+        onCompleted: () => refetch()
+    });
 
     const filterData = useCallback(
         ({ name }) => {
@@ -149,45 +176,57 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         [filter]
     );
 
-    const filteredBlocksData: PbPageBlock[] = filter === "" ? blocks : blocks.filter(filterData);
+    const pageBlocksData: PbPageBlock[] = data?.pageBuilder?.listPageBlocks?.data || [];
+    const filteredBlocksData: PbPageBlock[] =
+        filter === "" ? pageBlocksData : pageBlocksData.filter(filterData);
 
     const deleteItem = useCallback(
-        (pageBlock: PbPageBlock) => {
+        item => {
             showConfirmation(async () => {
-                try {
-                    await pageBlocks.deleteBlock(pageBlock.id);
-                    showSnackbar(t`Block "{name}" deleted.`({ name: pageBlock.name }));
-                } catch (error) {
-                    showSnackbar(error.message);
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.pageBuilder?.deletePageBlock?.error;
+                if (error) {
+                    return showSnackbar(error.message);
                 }
+
+                showSnackbar(t`Block "{name}" deleted.`({ name: item.name }));
             });
         },
         [selectedBlocksCategory]
     );
 
-    const duplicateItem = useCallback(async item => {
-        setLoadingLabel(t`Creating a copy of "{name}"...`({ name: item.name }));
-
-        const newName = `${item.name} (copy)`;
-        try {
-            await pageBlocks.createBlock({
-                name: newName,
-                category: item.blockCategory,
-                content: item.content
+    const duplicateItem = useCallback(
+        async item => {
+            const response = await duplicateIt({
+                variables: {
+                    data: {
+                        name: `${item.name} (copy)`,
+                        blockCategory: item.blockCategory,
+                        content: item.content
+                    }
+                }
             });
-        } catch (error) {
-            showSnackbar(error.message);
-        }
 
-        showSnackbar(t`"{name}" was created successfully!`({ name: newName }));
-    }, []);
+            const error = response?.data?.pageBuilder?.deletePageBlock?.error;
+            if (error) {
+                return showSnackbar(error.message);
+            }
+
+            showSnackbar(t`Duplicated "{name}".`({ name: item.name }));
+        },
+        [duplicateIt]
+    );
 
     const handleExportClick = useCallback((id: string) => {
         showExportBlockInitializeDialog({ ids: [id] });
     }, []);
 
-    const showEmptyView = !pageBlocks.loading && !selectedBlocksCategory;
+    const isLoading = [deleteMutation, duplicateMutation].find(item => item.loading) || loading;
 
+    const showEmptyView = !isLoading && !selectedBlocksCategory;
     // Render "No content selected" view.
     if (showEmptyView) {
         return (
@@ -198,7 +237,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         );
     }
 
-    const showNoRecordsView = !pageBlocks.loading && isEmpty(filteredBlocksData);
+    const showNoRecordsView = !isLoading && isEmpty(filteredBlocksData);
     // Render "No records found" view.
     if (showNoRecordsView) {
         return (
@@ -209,14 +248,12 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     }
 
     return (
-        <List>
-            {pageBlocks.loading && (
-                <CircularProgress label={loadingLabel || pageBlocks.loadingLabel || "Loading..."} />
-            )}
-            <ResponsiveElementsProvider>
+        <>
+            <List>
+                {isLoading && <CircularProgress />}
                 {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
-                        <PreviewBlock element={pageBlock} />
+                        <Content content={addElementId(pageBlock.content) as ContentType} />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             <ExportButton
@@ -248,8 +285,8 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                         </Controls>
                     </ListItem>
                 ))}
-            </ResponsiveElementsProvider>
-        </List>
+            </List>
+        </>
     );
 };
 

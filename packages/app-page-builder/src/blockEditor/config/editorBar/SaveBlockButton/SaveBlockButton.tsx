@@ -11,8 +11,6 @@ import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { DisplayMode } from "~/types";
-import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
-import { UpdatePageBlockInput } from "~/admin/contexts/AdminPageBuilder/PageBlocks/BlockGatewayInterface";
 
 const SpinnerWrapper = styled.div`
     position: relative;
@@ -28,7 +26,6 @@ const DefaultSaveBlockButton: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
     const { setDisplayMode } = useDisplayMode();
-    const { updateBlock } = usePageBlocks();
 
     const saveChanges = useCallback(() => {
         setLoading(true);
@@ -36,12 +33,6 @@ const DefaultSaveBlockButton: React.FC = () => {
         setTimeout(() => {
             eventActionHandler.trigger(
                 new SaveBlockActionEvent({
-                    execute({ blockCategory, ...data }: UpdatePageBlockInput) {
-                        return updateBlock({
-                            ...data,
-                            category: blockCategory
-                        });
-                    },
                     debounce: false,
                     onFinish: () => {
                         setLoading(false);

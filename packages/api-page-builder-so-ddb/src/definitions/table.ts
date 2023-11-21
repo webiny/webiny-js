@@ -1,14 +1,14 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { TableModifier } from "~/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
 interface Params {
     table?: TableModifier;
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
-export const createTable = ({ table, documentClient }: Params): Table<string, string, string> => {
-    const tableConfig: TableConstructor<string, string, string> = {
+export const createTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig: TableConstructor = {
         name: process.env.DB_PAGE_BUILDER || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
@@ -18,9 +18,7 @@ export const createTable = ({ table, documentClient }: Params): Table<string, st
                 partitionKey: "GSI1_PK",
                 sortKey: "GSI1_SK"
             }
-        },
-        autoExecute: true,
-        autoParse: true
+        }
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;

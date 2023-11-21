@@ -20,6 +20,5 @@ export const Empty: React.VFC<EmptyViewProps> = ({ browseFiles, isSearchResult }
     if (isSearchResult) {
         return <NoResults />;
     }
-
     return <DropFilesHere empty onClick={() => browseFiles()} />;
 };

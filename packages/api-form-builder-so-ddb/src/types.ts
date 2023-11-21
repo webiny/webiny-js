@@ -5,10 +5,16 @@ import {
     FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
     FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations
 } from "@webiny/api-form-builder/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Table, Entity } from "dynamodb-toolbox";
+import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
 import { Plugin } from "@webiny/plugins";
+
+export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -20,7 +26,7 @@ export enum ENTITIES {
 }
 
 export interface FormBuilderStorageOperationsFactoryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
     table?: string;
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin;
@@ -86,7 +92,7 @@ export interface FormBuilderStorageOperations
         FormBuilderSubmissionStorageOperations,
         FormBuilderFormStorageOperations,
         FormBuilderSystemStorageOperations {
-    getTable(): Table<string, string, string>;
+    getTable(): Table;
     getEntities(): Record<Entities, Entity<any>>;
 }
 

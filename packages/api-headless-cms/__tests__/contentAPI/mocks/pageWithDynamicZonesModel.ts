@@ -159,13 +159,7 @@ export const pageModel: CmsModel = {
                                             id: "rt3uhvds",
                                             fieldId: "objectTitle",
                                             type: "text",
-                                            label: "Object title",
-                                            validation: [
-                                                {
-                                                    name: "required",
-                                                    message: `"nestedObject.objectTitle" is required.`
-                                                }
-                                            ]
+                                            label: "Object title"
                                         },
                                         {
                                             id: "r329gdfhsaufdsa",
@@ -179,13 +173,7 @@ export const pageModel: CmsModel = {
                                                         id: "g9huerprgds",
                                                         fieldId: "nestedObjectNestedTitle",
                                                         type: "text",
-                                                        label: "Nested object nested title",
-                                                        validation: [
-                                                            {
-                                                                name: "required",
-                                                                message: `"nestedObject.objectNestedObject.nestedObjectNestedTitle" is required.`
-                                                            }
-                                                        ]
+                                                        label: "Nested object nested title"
                                                     }
                                                 ]
                                             }
@@ -459,13 +447,7 @@ export const pageModel: CmsModel = {
                                                         id: "hpgtierghpiue",
                                                         fieldId: "nestedObjectNestedTitle",
                                                         type: "text",
-                                                        label: "Nested object nested title",
-                                                        validation: [
-                                                            {
-                                                                name: "required",
-                                                                message: `"nestedObjectNestedTitle" is required.`
-                                                            }
-                                                        ]
+                                                        label: "Nested object nested title"
                                                     }
                                                 ]
                                             }

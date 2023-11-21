@@ -38,10 +38,10 @@ export interface IsVisibleCallable {
     We need to extend DragObjectWithType type because it does not support fields,
     that we set through "beginDrag".
     * "ui" propetry gives us information about the Entity that we are moving.
-    "Entity" can be step, field, row or custom. "Entity" will be custom in case we are moving field from a "Custom Field" menu.
+    "Entity" can be step, field, row or conditionGroup.
     * "name" property contains the type of the field, it can be text, number or one of the available fields.
     * "pos" propety contains info about Entity position that we are moving.
-    * "conatiner" propety contains info about source "Entity".
+    * "container" propety contains info about source "Entity".
     pos can be undefined in case we are moving field from a "Custom Field" menu.
 */
 export interface DragObjectWithFieldInfo extends DragObjectWithType {

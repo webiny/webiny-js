@@ -1,11 +1,12 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { createTenantLinkEntity } from "./entities/createTenantLinkEntity";
 import { createTenantEntity } from "./entities/createTenantEntity";
+
 import { queryAll } from "~/utils";
+
 import { Tenant, TenantLink } from "./types";
 import { isMigratedTenantLink } from "~/migrations/5.37.0/001/utils/isMigratedTenantLink";
-import { update } from "@webiny/db-dynamodb";
 
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
@@ -15,7 +16,7 @@ export class TenantLinkRecords_5_37_0_001_FileData
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly tenantLinkEntity: ReturnType<typeof createTenantLinkEntity>;
 
-    constructor(table: Table<string, string, string>) {
+    constructor(table: Table) {
         this.tenantEntity = createTenantEntity(table);
         this.tenantLinkEntity = createTenantLinkEntity(table);
     }
@@ -70,21 +71,18 @@ export class TenantLinkRecords_5_37_0_001_FileData
 
                 logger.info(`Updating tenant link ${tenantLink.PK}.`);
 
-                await update({
-                    entity: this.tenantLinkEntity,
-                    item: {
-                        PK: tenantLink.PK,
-                        SK: tenantLink.SK,
-                        data: {
-                            ...tenantLink.data,
-                            teams: [],
-                            groups: [
-                                {
-                                    id: tenantLink.data.group,
-                                    permissions: tenantLink.data.permissions
-                                }
-                            ]
-                        }
+                await this.tenantLinkEntity.update({
+                    PK: tenantLink.PK,
+                    SK: tenantLink.SK,
+                    data: {
+                        ...tenantLink.data,
+                        teams: [],
+                        groups: [
+                            {
+                                id: tenantLink.data.group,
+                                permissions: tenantLink.data.permissions
+                            }
+                        ]
                     }
                 });
             }

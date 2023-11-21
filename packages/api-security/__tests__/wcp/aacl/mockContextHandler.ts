@@ -4,7 +4,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createWcpContext } from "@webiny/api-wcp";
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { SecurityContext, SecurityStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTenancyContext } from "@webiny/api-tenancy";
@@ -15,7 +15,6 @@ import { customAuthenticator } from "~tests/wcp/aacl/mocks/customAuthenticator";
 import { customAuthorizer } from "~tests/wcp/aacl/mocks/customAuthorizer";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { PluginCollection } from "@webiny/plugins/types";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 type CreateMockContextHandlerOptions = {
     plugins?: PluginCollection;
@@ -50,8 +49,7 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
         plugins: [
             createWcpContext(),
             new ContextPlugin<SecurityContext>(async context => {
-                // @ts-expect-error
-                context.tenancy = {
+                (context as any).tenancy = {
                     getCurrentTenant: () => {
                         return {
                             id: "root"
@@ -86,7 +84,7 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
                     headers: { "x-tenant": "root" },
                     body: ""
                 },
-                {} as LambdaContext
+                {} as any
             );
         },
         documentClient,

@@ -1,9 +1,12 @@
 import { createHandler } from "@webiny/handler-aws/raw";
 import { executeActionHandlerPlugins } from "@webiny/api-apw/scheduler/handlers/executeAction";
 import { createStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-const documentClient = getDocumentClient();
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 const debug = process.env.DEBUG === "true";
 

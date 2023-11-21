@@ -38,11 +38,12 @@ export const NumberScalar = new GraphQLScalarType({
     },
     parseValue,
     parseLiteral: ast => {
+        const value = (ast as any).value;
         if (ast.kind === Kind.INT) {
-            return Number(ast.value);
+            return Number(value);
         } else if (ast.kind === Kind.FLOAT) {
-            return parseFloat(ast.value);
+            return parseFloat(value);
         }
-        throw new Error(`Expected type Number, found {${ast.kind}}`);
+        throw new Error(`Expected type Number, found {${value}}`);
     }
 });

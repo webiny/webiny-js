@@ -5,14 +5,6 @@ const DATA_FIELD = /* GraphQL */ `
         slug
         type
         parentId
-        permissions {
-            target
-            level
-            inheritedFrom
-        }
-        hasNonInheritedPermissions
-        canManagePermissions
-        canManageStructure
         createdBy {
             id
             displayName
@@ -63,17 +55,11 @@ export const DELETE_FOLDER = /* GraphQL */ `
 `;
 
 export const LIST_FOLDERS = /* GraphQL */ `
-    query ListFolders($limit: Int,  $after: String, $where: FoldersListWhereInput!) {
+    query ListFolders($where: FoldersListWhereInput!) {
         aco {
-            listFolders( limit: $limit, after: $after, where: $where) {
+            listFolders(where: $where) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
-                meta {
-                    cursor
-                    totalCount
-                    hasMoreItems
-                }
-
             }
         }
     }

@@ -1,4 +1,3 @@
-import { CmsContext } from "~/types";
 import {
     createPersonEntries,
     createPersonModel,
@@ -20,7 +19,7 @@ describe("field unique values listing", () => {
     beforeAll(async () => {
         await storageOperations.beforeInit({
             plugins
-        } as unknown as CmsContext);
+        } as any);
     });
 
     beforeEach(async () => {

@@ -1,18 +1,15 @@
-import React, { CSSProperties, useCallback, useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "~/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Typography } from "~/Typography";
+
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
 import classNames from "classnames";
-import {
-    AccordionItemAction,
-    AccordionItemActions,
-    AccordionItemElement
-} from "~/Accordion/AccordionItemActions";
+import { AccordionItemAction, AccordionItemActions } from "~/Accordion/AccordionItemActions";
 
 const Content = styled.div`
     width: 100%;
@@ -59,35 +56,38 @@ const nonInteractive = css`
 `;
 
 const duration = 150;
-const defaultStyle: CSSProperties = {
+const defaultStyle = {
     transition: `all ${duration}ms ease-in-out`,
     opacity: 0,
     height: 0,
-    pointerEvents: "auto",
+    pointerEvents: "none",
     overflow: "hidden"
 };
 
 type TransitionStylesState = "entering" | "entered" | "exiting";
 
-const transitionStyles: Record<string, CSSProperties> = {
+/**
+ * We are casting pointerEvents as any because csstype does not have PointerEvents exported. Or at least, that is the error.
+ */
+const transitionStyles = {
     entering: {
         opacity: 0,
         height: 0,
         padding: "20px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     },
     exiting: {
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     }
 };
@@ -215,12 +215,10 @@ type AccordionItem = React.FC<AccordionItemProps> & {
     Divider: typeof Divider;
     Actions: typeof AccordionItemActions;
     Action: typeof AccordionItemAction;
-    Element: typeof AccordionItemElement;
 };
 
 export const AccordionItem: AccordionItem = Object.assign(AccordionItemComponent, {
     Divider,
     Action: AccordionItemAction,
-    Actions: AccordionItemActions,
-    Element: AccordionItemElement
+    Actions: AccordionItemActions
 });

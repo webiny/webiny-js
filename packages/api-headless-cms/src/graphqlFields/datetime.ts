@@ -1,5 +1,5 @@
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { createGraphQLInputField } from "./helpers";
+import { attachRequiredFieldValue, createGraphQLInputField } from "./helpers";
 
 const fieldGraphQLTypes = {
     time: "Time",
@@ -58,7 +58,8 @@ export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
             createListFilters,
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
+                    const def = attachRequiredFieldValue(getFieldGraphQLType(field), field);
+                    return `${field.fieldId}: [${def}]`;
                 }
                 return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             },

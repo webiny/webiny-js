@@ -3,41 +3,43 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 
 import {
     DataList,
     DataListModalOverlay,
     DataListModalOverlayAction,
+    ScrollList,
     List,
     ListItem,
     ListItemGraphic,
     ListItemText,
     ListItemTextPrimary,
-    ListItemTextSecondary,
-    ScrollList
+    ListItemTextSecondary
 } from "@webiny/ui/List";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Typography } from "@webiny/ui/Typography";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
-import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
+import { ReactComponent as DownloadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_download.svg";
+import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
-import { PbBlockCategory } from "~/types";
-import { LIST_PAGE_CATEGORIES } from "./graphql";
+import { PbBlockCategory, PbPageBlock } from "~/types";
+import { LIST_PAGE_BLOCKS_AND_CATEGORIES, LIST_PAGE_BLOCKS, CREATE_PAGE_BLOCK } from "./graphql";
+
+import { addElementId } from "~/editor/helpers";
 import useImportBlock from "~/admin/views/PageBlocks/hooks/useImportBlock";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
 import useFilteredCategoriesListData from "./hooks/useFilteredCategoriesListData";
-import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
@@ -97,24 +99,24 @@ const BlocksByCategoriesDataList = ({
     const [sort, setSort] = useState<string>(SORTERS[2].sort);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
+    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_PAGE_CATEGORIES);
+    const listQuery = useQuery(LIST_PAGE_BLOCKS_AND_CATEGORIES);
     const { showExportBlockInitializeDialog } = useExportBlockDialog();
 
     const blockCategoriesData: PbBlockCategory[] =
         listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
-
-    const { loading: pageBlocksLoading, pageBlocks, createBlock } = usePageBlocks();
+    const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
     const [filteredBlocksList, filteredBlockCategoriesList] = useFilteredCategoriesListData(
-        pageBlocks,
+        pageBlocksData,
         blockCategoriesData,
         sort,
         filter
     );
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
-    const loading = listQuery.loading || pageBlocksLoading;
+    const loading = [listQuery].find(item => item.loading);
 
     const blockCategoriesDataListModalOverlay = useMemo(
         () => (
@@ -143,11 +145,133 @@ const BlocksByCategoriesDataList = ({
     );
 
     const onCreatePageBlock = async (categorySlug: string) => {
-        try {
-            const newBlock = await createBlock({ name: "New block", category: categorySlug });
+        const { data: res } = await client.mutate({
+            mutation: CREATE_PAGE_BLOCK,
+            variables: {
+                data: {
+                    name: "New block",
+                    blockCategory: categorySlug,
+                    // Create base block content, and make sure all elements have an `id` property.
+                    content: addElementId({
+                        type: "block",
+                        data: {
+                            settings: {
+                                width: {
+                                    desktop: {
+                                        value: "100%"
+                                    }
+                                },
+                                margin: {
+                                    desktop: {
+                                        top: "0px",
+                                        right: "0px",
+                                        bottom: "0px",
+                                        left: "0px",
+                                        advanced: true
+                                    }
+                                },
+                                padding: {
+                                    desktop: {
+                                        all: "10px"
+                                    }
+                                },
+                                horizontalAlignFlex: {
+                                    desktop: "center"
+                                },
+                                verticalAlign: {
+                                    desktop: "flex-start"
+                                }
+                            }
+                        },
+                        elements: [
+                            {
+                                id: "nbLftfYqrg",
+                                type: "grid",
+                                data: {
+                                    settings: {
+                                        width: {
+                                            desktop: {
+                                                value: "1100px"
+                                            }
+                                        },
+                                        margin: {
+                                            desktop: {
+                                                top: "0px",
+                                                right: "0px",
+                                                bottom: "0px",
+                                                left: "0px",
+                                                advanced: true
+                                            }
+                                        },
+                                        padding: {
+                                            desktop: {
+                                                all: "10px"
+                                            }
+                                        },
+                                        grid: {
+                                            cellsType: "12"
+                                        },
+                                        gridSettings: {
+                                            desktop: {
+                                                flexDirection: "row"
+                                            },
+                                            "mobile-landscape": {
+                                                flexDirection: "column"
+                                            }
+                                        },
+                                        horizontalAlignFlex: {
+                                            desktop: "flex-start"
+                                        },
+                                        verticalAlign: {
+                                            desktop: "flex-start"
+                                        }
+                                    }
+                                },
+                                elements: [
+                                    {
+                                        id: "FoKq0fZfr4",
+                                        type: "cell",
+                                        data: {
+                                            settings: {
+                                                margin: {
+                                                    desktop: {
+                                                        top: "0px",
+                                                        right: "0px",
+                                                        bottom: "0px",
+                                                        left: "0px",
+                                                        advanced: true
+                                                    }
+                                                },
+                                                padding: {
+                                                    desktop: {
+                                                        all: "0px"
+                                                    }
+                                                },
+                                                grid: {
+                                                    size: 12
+                                                }
+                                            }
+                                        },
+                                        elements: [],
+                                        path: ["sUK8viY2oz", "eM2Z1d9gfH", "nbLftfYqrg"]
+                                    }
+                                ],
+                                path: ["sUK8viY2oz", "eM2Z1d9gfH"]
+                            }
+                        ]
+                    })
+                }
+            },
+            refetchQueries: [
+                { query: LIST_PAGE_BLOCKS_AND_CATEGORIES },
+                { query: LIST_PAGE_BLOCKS }
+            ]
+        });
+        const { error, data } = get(res, `pageBuilder.pageBlock`);
+        if (data) {
             setIsDialogOpen(false);
-            history.push(`/page-builder/block-editor/${newBlock.id}`);
-        } catch (error) {
+            history.push(`/page-builder/block-editor/${data.id}`);
+        } else {
             showSnackbar(error.message);
         }
     };
@@ -212,7 +336,6 @@ const BlocksByCategoriesDataList = ({
                         inputPlaceholder={t`Search blocks`}
                     />
                 }
-                showOptions={{ refresh: false }}
                 modalOverlay={blockCategoriesDataListModalOverlay}
                 modalOverlayAction={
                     <DataListModalOverlayAction
@@ -220,6 +343,12 @@ const BlocksByCategoriesDataList = ({
                         data-testid={"default-data-list.filter"}
                     />
                 }
+                refresh={() => {
+                    if (!listQuery.refetch) {
+                        return;
+                    }
+                    listQuery.refetch();
+                }}
             >
                 {({ data }: { data: PbBlockCategory[] }) => (
                     <ScrollList data-testid="default-data-list">

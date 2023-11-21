@@ -15,15 +15,14 @@ import {
     indentList,
     insertList,
     outdentList,
-    removeList,
-    $isListNode
-} from "@webiny/lexical-nodes";
+    removeList
+} from "~/nodes/ListNode/formatList";
 import {
-    INSERT_ORDERED_LIST_COMMAND,
-    INSERT_UNORDERED_LIST_COMMAND,
-    REMOVE_LIST_COMMAND
-} from "~/commands";
-import { getNodeFromSelection } from "~/hooks/useCurrentElement";
+    INSERT_ORDERED_WEBINY_LIST_COMMAND,
+    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+    REMOVE_WEBINY_LIST_COMMAND
+} from "~/commands/webiny-list";
+import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 export function useList(editor: LexicalEditor): void {
     useEffect(() => {
@@ -45,7 +44,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                INSERT_ORDERED_LIST_COMMAND,
+                INSERT_ORDERED_WEBINY_LIST_COMMAND,
                 ({ themeStyleId }) => {
                     insertList(editor, "number", themeStyleId);
                     return true;
@@ -53,7 +52,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                INSERT_UNORDERED_LIST_COMMAND,
+                INSERT_UNORDERED_WEBINY_LIST_COMMAND,
                 ({ themeStyleId }) => {
                     insertList(editor, "bullet", themeStyleId);
                     return true;
@@ -65,13 +64,13 @@ export function useList(editor: LexicalEditor): void {
                 (event: KeyboardEvent) => {
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
-                        const node = getNodeFromSelection(selection);
-                        if (!$isListNode(node)) {
-                            return false;
-                        }
-
+                        const textSelection = getLexicalTextSelectionState(editor, selection);
                         // Check if list have one list item remain, without text.
-                        if (node.getChildren().length === 1 && !node.getTextContent()) {
+                        if (
+                            textSelection?.state?.list.isSelected &&
+                            textSelection?.element?.__size === 1 &&
+                            typeof textSelection?.anchorNode.__text === "undefined"
+                        ) {
                             event.preventDefault();
                             removeList(editor);
                             return true;
@@ -82,7 +81,7 @@ export function useList(editor: LexicalEditor): void {
                 COMMAND_PRIORITY_LOW
             ),
             editor.registerCommand(
-                REMOVE_LIST_COMMAND,
+                REMOVE_WEBINY_LIST_COMMAND,
                 () => {
                     removeList(editor);
                     return true;
@@ -92,7 +91,13 @@ export function useList(editor: LexicalEditor): void {
             editor.registerCommand(
                 INSERT_PARAGRAPH_COMMAND,
                 () => {
-                    return $handleListInsertParagraph();
+                    const hasHandledInsertParagraph = $handleListInsertParagraph();
+
+                    if (hasHandledInsertParagraph) {
+                        return true;
+                    }
+
+                    return false;
                 },
                 COMMAND_PRIORITY_LOW
             )

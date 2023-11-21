@@ -1,4 +1,5 @@
 export * from "./useHandler";
+export * from "./getDocumentClient";
 export * from "./getPrimaryDynamoDbTable";
 export * from "./insertDynamoDbTestData";
 export * from "./createDdbMigrationHandler";

@@ -1,5 +1,5 @@
-import { Entity } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { Entity } from "dynamodb-toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
     FileManagerSettings,
     FileManagerSettingsStorageOperations,
@@ -9,10 +9,10 @@ import {
     FileManagerStorageOperationsGetSettingsParams
 } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
-import { createStandardEntity, createTable, deleteItem, get, put } from "@webiny/db-dynamodb";
+import { get, createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 interface SettingsStorageOperationsConfig {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
 
 const SORT_KEY = "A";
@@ -39,7 +39,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
                 }
             });
 
-            return settings?.data || null;
+            return settings ? settings.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager settings.",
@@ -58,14 +58,11 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         }
 
         try {
-            await put({
-                entity: this._entity,
-                item: {
-                    PK: `T#${data.tenant}#FM#SETTINGS`,
-                    SK: SORT_KEY,
-                    TYPE: "fm.settings",
-                    data
-                }
+            await this._entity.put({
+                PK: `T#${data.tenant}#FM#SETTINGS`,
+                SK: SORT_KEY,
+                TYPE: "fm.settings",
+                data
             });
             return data;
         } catch (ex) {
@@ -83,14 +80,11 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         data
     }: FileManagerSettingsStorageOperationsUpdateParams): Promise<FileManagerSettings> {
         try {
-            await put({
-                entity: this._entity,
-                item: {
-                    PK: `T#${data.tenant}#FM#SETTINGS`,
-                    SK: SORT_KEY,
-                    TYPE: "fm.settings",
-                    data
-                }
+            await this._entity.update({
+                PK: `T#${data.tenant}#FM#SETTINGS`,
+                SK: SORT_KEY,
+                TYPE: "fm.settings",
+                data
             });
             return data;
         } catch (ex) {
@@ -105,12 +99,9 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     }
 
     public async delete({ tenant }: FileManagerStorageOperationsDeleteSettings): Promise<void> {
-        await deleteItem({
-            entity: this._entity,
-            keys: {
-                PK: `T#${tenant}#FM#SETTINGS`,
-                SK: SORT_KEY
-            }
+        return this._entity.delete({
+            PK: `T#${tenant}#FM#SETTINGS`,
+            SK: SORT_KEY
         });
     }
 }

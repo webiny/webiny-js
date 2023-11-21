@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/rounded/arrow_right.svg";
 import { ReactComponent as Folder } from "@material-symbols/svg-400/rounded/folder-fill.svg";
-import { ReactComponent as FolderShared } from "@material-symbols/svg-400/rounded/folder_shared-fill.svg";
+import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/rounded/folder_open-fill.svg";
 import { ReactComponent as HomeIcon } from "@material-design-icons/svg/filled/home.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 import { MenuActions } from "../MenuActions";
@@ -19,7 +19,6 @@ type NodeProps = {
     onClick: (data: FolderItem) => void;
     onUpdateFolder: (data: FolderItem) => void;
     onDeleteFolder: (data: FolderItem) => void;
-    onSetFolderPermissions: (data: FolderItem) => void;
 };
 
 type FolderProps = {
@@ -27,26 +26,10 @@ type FolderProps = {
     isRoot: boolean;
     isOpen: boolean;
     isFocused?: boolean;
-    hasNonInheritedPermissions?: boolean;
-    canManagePermissions?: boolean;
 };
 
-export const FolderNode: React.VFC<FolderProps> = ({
-    isRoot,
-    isFocused,
-    hasNonInheritedPermissions,
-    canManagePermissions,
-    text
-}) => {
-    let icon = <HomeIcon />;
-
-    if (!isRoot) {
-        if (hasNonInheritedPermissions && canManagePermissions) {
-            icon = <FolderShared />;
-        } else {
-            icon = <Folder />;
-        }
-    }
+export const FolderNode: React.VFC<FolderProps> = ({ isRoot, isOpen, isFocused, text }) => {
+    const icon = isRoot ? <HomeIcon /> : isOpen ? <FolderOpen /> : <Folder />;
 
     return (
         <>
@@ -66,8 +49,7 @@ export const Node: React.VFC<NodeProps> = ({
     onToggle,
     onClick,
     onUpdateFolder,
-    onDeleteFolder,
-    onSetFolderPermissions
+    onDeleteFolder
 }) => {
     const isRoot = node.id === ROOT_FOLDER;
     // Move the placeholder line to the left based on the element depth within the tree.
@@ -94,8 +76,6 @@ export const Node: React.VFC<NodeProps> = ({
         return id;
     }, [node.id]);
 
-    const { hasNonInheritedPermissions, canManagePermissions } = node.data || {};
-
     return (
         <Container
             isFocused={!!node.data?.isFocused}
@@ -111,8 +91,6 @@ export const Node: React.VFC<NodeProps> = ({
                 <FolderNode
                     isRoot={isRoot}
                     text={node.text}
-                    hasNonInheritedPermissions={hasNonInheritedPermissions}
-                    canManagePermissions={canManagePermissions}
                     isOpen={isRoot ? true : isOpen}
                     isFocused={!!node.data?.isFocused}
                 />
@@ -122,7 +100,6 @@ export const Node: React.VFC<NodeProps> = ({
                     folder={node.data}
                     onUpdateFolder={onUpdateFolder}
                     onDeleteFolder={onDeleteFolder}
-                    onSetFolderPermissions={onSetFolderPermissions}
                 />
             )}
         </Container>

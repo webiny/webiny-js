@@ -1,5 +1,4 @@
 import { createDateStorageTransformPlugin } from "~/dynamoDb/storage/date";
-import { FromStorageParams, ToStorageParams } from "@webiny/api-headless-cms";
 
 interface CreateDefaultArgsParams {
     storageId?: string;
@@ -40,7 +39,7 @@ describe("dateStoragePlugin", () => {
             const result = await plugin.toStorage({
                 ...defaultDateArgs,
                 value
-            } as ToStorageParams<any, any>);
+            } as any);
 
             expect(result).toEqual(expected);
         }
@@ -60,7 +59,7 @@ describe("dateStoragePlugin", () => {
             const result = await plugin.fromStorage({
                 ...defaultDateArgs,
                 value
-            } as FromStorageParams<any, any>);
+            } as any);
 
             expect(result).toEqual(expected);
         }
@@ -73,7 +72,7 @@ describe("dateStoragePlugin", () => {
         const result = await plugin.toStorage({
             ...defaultTimeArgs,
             value
-        } as ToStorageParams<any, any>);
+        } as any);
 
         expect(result).toEqual(value);
     });
@@ -85,7 +84,7 @@ describe("dateStoragePlugin", () => {
         const result = await plugin.toStorage({
             ...defaultDateTimeWithTimezoneArgs,
             value
-        } as ToStorageParams<any, any>);
+        } as any);
 
         expect(result).toEqual(value);
     });

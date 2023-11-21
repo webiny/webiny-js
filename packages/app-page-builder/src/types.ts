@@ -4,8 +4,8 @@ import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
-import { IconName, IconPrefix, IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FormAPI, FormOnSubmit, FormSetValue, GenericFormData } from "@webiny/form/types";
+import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
+import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
@@ -116,18 +116,17 @@ export interface PbElementDataImageType {
     title?: string;
 }
 
-export interface PbElementDataIconType {
-    id?: IconProp;
+export type PbElementDataIconType = {
+    id?: [string, string];
     width?: number;
     color?: string;
     svg?: string;
     position?: string;
-}
-
-export interface PbElementDataSettingsFormType {
+};
+export type PbElementDataSettingsFormType = {
     parent?: string;
     revision?: string;
-}
+};
 
 export enum AlignmentTypesEnum {
     HORIZONTAL_LEFT = "horizontalLeft",
@@ -177,8 +176,6 @@ export interface PbElementDataTypeSource {
 }
 
 export type PbElementDataType = {
-    blockId?: string;
-    variables?: PbBlockVariable[];
     action?: {
         href: string;
         newTab: boolean;

@@ -122,7 +122,7 @@ export class Context implements ContextInterface {
          * If there are no targets to be awaited, just fire the callable.
          */
         if (targets.length === 0) {
-            cb(this as unknown as T);
+            cb(this as any);
             return;
         }
         /**

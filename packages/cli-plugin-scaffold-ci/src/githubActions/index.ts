@@ -120,7 +120,10 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 choices: async () => {
                     const organizations = await octokit.rest.orgs.listForAuthenticatedUser();
                     return [
-                        { name: "Create within my own account", value: null },
+                        /**
+                         * We must cast as any becaues TS is complaining about null value. Which is legitimate in choices.
+                         */
+                        { name: "Create within my own account", value: null } as any,
                         { type: "separator" },
                         ...organizations.data.map(item => item.login)
                     ];

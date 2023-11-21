@@ -1,8 +1,7 @@
 import { GraphQLSchemaPlugin } from "~/types";
 import { ContextPlugin } from "@webiny/api";
-import { Book, Context } from "~tests/types";
 
-export const books: Book[] = [
+export const books = [
     {
         name: "Book 1"
     },
@@ -11,8 +10,8 @@ export const books: Book[] = [
     }
 ];
 
-export const booksCrudPlugin = new ContextPlugin<Context>(async context => {
-    context.getBooks = async () => {
+export const booksCrudPlugin = new ContextPlugin(async context => {
+    (context as any).getBooks = () => {
         console.log("getBooks");
         console.table(books);
         console.warn("Your store is quite empty!");
@@ -39,13 +38,13 @@ export const booksSchema: GraphQLSchemaPlugin = {
         `,
         resolvers: {
             Query: {
-                async books(_, __, context: any) {
+                books(_, __, context: any) {
                     console.group("books resolver");
-                    const books = await context.getBooks();
+                    const books = context.getBooks();
                     console.groupEnd();
                     return books;
                 },
-                async book(_, { name }) {
+                book(_, { name }) {
                     console.log("Find book by name");
                     const book = books.find(b => b.name === name);
                     if (book) {
@@ -57,9 +56,7 @@ export const booksSchema: GraphQLSchemaPlugin = {
                 }
             },
             Mutation: {
-                async createBook() {
-                    return true;
-                }
+                createBook: () => true
             }
         }
     }

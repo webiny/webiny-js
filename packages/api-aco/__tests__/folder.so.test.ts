@@ -1,151 +1,80 @@
-import { mdbid } from "@webiny/utils";
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 
-const createSampleFileData = (overrides: Record<string, any> = {}) => {
-    const id = mdbid();
-    return {
-        id,
-        type: "image/jpeg",
-        name: "image-48.jpg",
-        size: 269965,
-        key: `${id}/image.jpg`,
-        tags: [],
-        location: {
-            folderId: ""
-        },
-        ...overrides
-    };
-};
-
 describe("`folder` CRUD", () => {
-    let folder1: Record<string, any>;
-    let folder2: Record<string, any>;
-    let aco: ReturnType<typeof useGraphQlHandler>["aco"];
-    let fm: ReturnType<typeof useGraphQlHandler>["fm"];
-    let cms: ReturnType<typeof useGraphQlHandler>["cms"];
-
-    beforeEach(async () => {
-        const handler = useGraphQlHandler({});
-
-        folder1 = await handler.aco
-            .createFolder({
-                data: {
-                    title: "Folder 1",
-                    slug: "folder-1",
-                    type: "xyz"
-                }
-            })
-            .then(([response]) => {
-                return response.data.aco.createFolder.data;
-            });
-
-        folder2 = await handler.aco
-            .createFolder({
-                data: {
-                    title: "Folder 2",
-                    slug: "folder-2",
-                    type: "xyz"
-                }
-            })
-            .then(([response]) => {
-                return response.data.aco.createFolder.data;
-            });
-
-        aco = handler.aco;
-        fm = handler.fm;
-        cms = handler.cms;
-    });
+    const { aco } = useGraphQlHandler();
 
     it("should be able to create, read, update and delete `folders`", async () => {
+        // Let's create some folders.
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
-
-        expect(folderA).toMatchObject({
+        expect(folderA).toEqual({
             id: folderA.id,
             parentId: null,
             createdBy: userMock,
             ...folderMocks.folderA
         });
 
-        const [responseB] = await aco.createFolder({
-            data: { ...folderMocks.folderB, parentId: folder1.id }
-        });
-
+        const [responseB] = await aco.createFolder({ data: folderMocks.folderB });
         const folderB = responseB.data.aco.createFolder.data;
-        expect(folderB).toMatchObject({
-            id: folderB.id,
-            createdBy: userMock,
-            ...folderMocks.folderB,
-            parentId: folder1.id
-        });
+        expect(folderB).toEqual({ id: folderB.id, createdBy: userMock, ...folderMocks.folderB });
 
         const [responseC] = await aco.createFolder({ data: folderMocks.folderC });
         const folderC = responseC.data.aco.createFolder.data;
-        expect(folderC).toMatchObject({
+        expect(folderC).toEqual({
             id: folderC.id,
             parentId: null,
             createdBy: userMock,
             ...folderMocks.folderC
         });
 
-        const [responseD] = await aco.createFolder({
-            data: { ...folderMocks.folderD, parentId: folder2.id }
-        });
+        const [responseD] = await aco.createFolder({ data: folderMocks.folderD });
         const folderD = responseD.data.aco.createFolder.data;
-        expect(folderD).toMatchObject({
-            id: folderD.id,
-            createdBy: userMock,
-            ...folderMocks.folderD,
-            parentId: folder2.id
-        });
+        expect(folderD).toEqual({ id: folderD.id, createdBy: userMock, ...folderMocks.folderD });
 
         // Let's check whether both of the folder exists, listing them by `type`.
         const [listResponse] = await aco.listFolders({ where: { type: "page" } });
-        expect(listResponse.data.aco.listFolders).toMatchObject({
-            data: [
-                {
-                    parentId: null,
-                    slug: "folder-a",
-                    type: "page"
-                },
-                {
-                    parentId: folder1.id,
-                    slug: "folder-b",
-                    type: "page"
-                },
-                {
-                    parentId: null,
-                    slug: "folder-c",
-                    type: "page"
-                }
-            ],
-            error: null,
-            meta: {
-                cursor: null,
-                hasMoreItems: false,
-                totalCount: 3
-            }
-        });
+        expect(listResponse.data.aco.listFolders).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        title: "Folder A",
+                        slug: "folder-a",
+                        type: "page",
+                        parentId: null
+                    }),
+                    expect.objectContaining({
+                        title: "Folder B",
+                        slug: "folder-b",
+                        type: "page",
+                        parentId: "parent-folder-a"
+                    }),
+                    expect.objectContaining({
+                        title: "Folder C",
+                        slug: "folder-c",
+                        type: "page",
+                        parentId: null
+                    })
+                ]),
+                error: null
+            })
+        );
 
         const [listFoldersResponse] = await aco.listFolders({ where: { type: "cms" } });
-        expect(listFoldersResponse.data.aco.listFolders).toMatchObject({
-            data: [
-                {
-                    parentId: folder2.id,
-                    slug: "folder-d",
-                    title: "Folder D",
-                    type: "cms"
-                }
-            ],
-            error: null,
-            meta: {
-                cursor: null,
-                hasMoreItems: false,
-                totalCount: 1
-            }
-        });
+        expect(listFoldersResponse.data.aco.listFolders).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        title: "Folder D",
+                        slug: "folder-d",
+                        type: "cms",
+                        parentId: "parent-folder-b"
+                    })
+                ]),
+                error: null
+            })
+        );
 
         // Let's filter records using `createdBy`
         const [existingUserResponse] = await aco.listFolders({
@@ -155,23 +84,22 @@ describe("`folder` CRUD", () => {
         expect(existingUserResponse.data.aco.listFolders.data.length).toEqual(3);
         expect(existingUserResponse.data.aco.listFolders.error).toBeNull();
 
-        // TODO: enable this back once we've found the best way to support this.
-        // const [nonExistingUserResponse] = await aco.listFolders({
-        //     where: { type: "page", createdBy: "any-id" }
-        // });
-        //
-        // expect(nonExistingUserResponse.data.aco.listFolders).toEqual(
-        //     expect.objectContaining({
-        //         data: [],
-        //         error: null
-        //     })
-        // );
+        const [nonExistingUserResponse] = await aco.listFolders({
+            where: { type: "page", createdBy: "any-id" }
+        });
+
+        expect(nonExistingUserResponse.data.aco.listFolders).toEqual(
+            expect.objectContaining({
+                data: [],
+                error: null
+            })
+        );
 
         // Let's update the "folder-b".
         const update = {
             title: "Folder B - updated",
             slug: "folder-b-updated",
-            parentId: folder2.id
+            parentId: "parent-folder-a-updated"
         };
 
         const [updateB] = await aco.updateFolder({
@@ -280,160 +208,9 @@ describe("`folder` CRUD", () => {
                         data: null,
                         error: expect.objectContaining({
                             code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
+                            message:
+                                "Error: delete all child folders and entries before proceeding."
                         })
-                    }
-                }
-            }
-        });
-    });
-
-    it("should NOT delete `FmFile` folder in case has child file", async () => {
-        // Let's create a folder.
-        const [folderResponse] = await aco.createFolder({
-            data: { ...folderMocks.folderA, type: "FmFile" }
-        });
-        const folder = folderResponse.data.aco.createFolder.data;
-
-        // Let's create a file within the folder.
-        const [fileResponse] = await fm.createFile({
-            data: {
-                ...createSampleFileData(),
-                location: {
-                    folderId: folder.id
-                }
-            }
-        });
-
-        const file = fileResponse.data.fileManager.createFile.data;
-
-        // Let's try to delete the folder.
-        const [failedResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(failedResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: null,
-                        error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and files before proceeding."
-                        })
-                    }
-                }
-            }
-        });
-
-        // Let's delete the file.
-        await fm.deleteFile({
-            id: file.id
-        });
-
-        const [succesfullResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(succesfullResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // Let's list folders.
-        const [listFolderResponse] = await aco.listFolders({ where: { type: "FmFile" } });
-
-        expect(listFolderResponse).toEqual({
-            data: {
-                aco: {
-                    listFolders: {
-                        data: [],
-                        error: null,
-                        meta: {
-                            cursor: null,
-                            hasMoreItems: false,
-                            totalCount: 0
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    it("should NOT delete `HCMS` folder in case has child entry", async () => {
-        // Let's create model and group.
-        const modelGroup = await cms.createTestModelGroup();
-        const model = await cms.createBasicModel({ modelGroup: modelGroup.id });
-
-        // Let's create a folder.
-        const [folderResponse] = await aco.createFolder({
-            data: { ...folderMocks.folderA, type: `cms:${model.modelId}` }
-        });
-        const folder = folderResponse.data.aco.createFolder.data;
-
-        // Let's create an entry within the folder.
-        const [entryResponse] = await cms.createEntry(model, {
-            data: {
-                title: "Test entry",
-                wbyAco_location: {
-                    folderId: folder.id
-                }
-            }
-        });
-
-        const entry = entryResponse.data.createBasicTestModel.data;
-
-        // Let's try to delete the folder.
-        const [failedResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(failedResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: null,
-                        error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
-                        })
-                    }
-                }
-            }
-        });
-
-        // Let's delete the entry.
-        await cms.deleteEntry(model, {
-            revision: entry.id
-        });
-
-        const [succesfullResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(succesfullResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // Let's list folders.
-        const [listFolderResponse] = await aco.listFolders({ where: { type: "basicTestModel" } });
-
-        expect(listFolderResponse).toEqual({
-            data: {
-                aco: {
-                    listFolders: {
-                        data: [],
-                        error: null,
-                        meta: {
-                            cursor: null,
-                            hasMoreItems: false,
-                            totalCount: 0
-                        }
                     }
                 }
             }
@@ -488,9 +265,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "title",
-                                    storageId: "text@title",
-                                    id: "title",
-                                    parents: []
+                                    storageId: "text@title"
                                 }
                             ]
                         }
@@ -520,9 +295,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is required.",
                                     fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
+                                    storageId: "text@slug"
                                 }
                             ]
                         }
@@ -552,9 +325,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value must consist of only 'a-z', '0-9' and '-'.",
                                     fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
+                                    storageId: "text@slug"
                                 }
                             ]
                         }
@@ -570,13 +341,13 @@ describe("`folder` CRUD", () => {
 
         // Creating a folder with same "slug" should not be allowed
         const [response] = await aco.createFolder({
-            data: { ...folderMocks.folderA, parentId: folder1.id }
+            data: { ...folderMocks.folderA, parentId: "parent-folder-a" }
         });
 
         const folder = response.data.aco.createFolder.data;
-        expect(folder).toMatchObject({
+        expect(folder).toEqual({
             id: folder.id,
-            parentId: folder1.id,
+            parentId: folder.parentId,
             createdBy: userMock,
             ...folderMocks.folderA
         });
@@ -607,9 +378,7 @@ describe("`folder` CRUD", () => {
         const folderA = responseA.data.aco.createFolder.data;
 
         // Creating "Folder B"
-        const [responseB] = await aco.createFolder({
-            data: { ...folderMocks.folderB, parentId: folder1.id }
-        });
+        const [responseB] = await aco.createFolder({ data: folderMocks.folderB });
         const folderB = responseB.data.aco.createFolder.data;
 
         // Updating "Folder B" with same "slug" of "Folder A" should not be allowed
@@ -656,7 +425,7 @@ describe("`folder` CRUD", () => {
         // Let's create some a dummy folder
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
-        expect(folderA).toMatchObject({
+        expect(folderA).toEqual({
             id: folderA.id,
             parentId: null,
             createdBy: userMock,

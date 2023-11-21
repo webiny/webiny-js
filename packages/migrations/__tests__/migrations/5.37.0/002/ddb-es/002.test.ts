@@ -79,9 +79,15 @@ describe("5.37.0-002", () => {
                 }
             });
         } catch (ex) {
-            console.log(JSON.stringify(ex.data));
-            console.error(ex.message);
-            console.log(ex.stack);
+            console.log(
+                "Error inserting test entries: ",
+                JSON.stringify({
+                    message: ex.message,
+                    data: ex.data,
+                    stack: ex.stack,
+                    code: ex.code
+                })
+            );
             throw ex;
         }
 

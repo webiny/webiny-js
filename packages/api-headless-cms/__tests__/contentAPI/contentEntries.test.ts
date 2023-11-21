@@ -126,9 +126,6 @@ describe("Content entries", () => {
         const [publish] = await publishFruit({
             revision: createdFruit.id
         });
-        if (publish.data.publishFruit.error) {
-            throw new Error(publish.data.publishFruit.error.message);
-        }
 
         return publish.data.publishFruit.data;
     };
@@ -148,6 +145,7 @@ describe("Content entries", () => {
         await setupContentModels(mainManager, group, ["fruit"]);
         return createFruits();
     };
+
     it("should get content entry by modelId and id", async () => {
         const { apple, banana, strawberry } = await setupFruits();
 
@@ -196,7 +194,7 @@ describe("Content entries", () => {
             data: {
                 createFruitFrom: {
                     data: {
-                        id: expect.stringMatching(/0003$/),
+                        id: (secondBanana.id || "").replace("0002", "0003"),
                         entryId: banana.entryId,
                         meta: {
                             version: 3,

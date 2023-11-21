@@ -1,13 +1,13 @@
+import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
 import WebinyError from "@webiny/error";
-import { TableDef } from "~/toolbox";
 
 export interface BatchReadItem {
-    Table?: TableDef;
+    Table: Table;
     Key: any;
 }
 export interface BatchReadParams {
-    table?: TableDef;
+    table: Table;
     items: BatchReadItem[];
 }
 
@@ -23,16 +23,12 @@ const flatten = (responses: Record<string, any[]>): any[] => {
 };
 
 interface BatchReadAllChunkParams {
-    table?: TableDef;
+    table: Table;
     items: BatchReadItem[];
 }
 const batchReadAllChunk = async <T = any>(params: BatchReadAllChunkParams): Promise<T[]> => {
     const { table, items } = params;
     const records: T[] = [];
-
-    if (!table) {
-        return records;
-    }
 
     const result = await table.batchGet(items);
     if (!result || !result.Responses) {

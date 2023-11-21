@@ -1,1 +1,1 @@
-export * from "./UpdateStatePlugin";
+export * from "./LexicalUpdateStatePlugin";

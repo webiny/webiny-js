@@ -1,22 +1,14 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 
-class Mock {
-    public slug: string;
-    public name: string;
-    public layout: string;
-    public url: string;
-
-    constructor(prefix = "") {
-        this.slug = `${prefix}slug`;
-        this.name = `${prefix}name`;
-        this.url = `${prefix}url`;
-        this.layout = `${prefix}layout`;
-    }
+function Mock(prefix = "") {
+    this.slug = `${prefix}slug`;
+    this.name = `${prefix}name`;
+    this.url = `${prefix}url`;
+    this.layout = `${prefix}layout`;
 }
 
-const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
+const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
         pageBuilder: {
             [operation]: {
@@ -47,7 +39,7 @@ describe("Categories Security Test", () => {
         await identityBHandler.createCategory({ data: new Mock("list-categories-3-") });
         await identityBHandler.createCategory({ data: new Mock("list-categories-4-") });
 
-        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.category", rwd: "wd" }], identityA],
@@ -61,12 +53,12 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { listCategories } = useGqlHandler({ permissions, identity: identity });
+            const { listCategories } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listCategories();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listCategories"));
         }
 
-        const sufficientPermissionsAll: [SecurityPermission[], SecurityIdentity | null][] = [
+        const sufficientPermissionsAll = [
             [
                 [{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.category" }],
                 identityA
@@ -80,7 +72,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
-            const { listCategories } = useGqlHandler({ permissions, identity });
+            const { listCategories } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listCategories();
             expect(response).toMatchObject({
                 data: {
@@ -197,7 +189,7 @@ describe("Categories Security Test", () => {
     });
 
     test(`allow createCategory if identity has sufficient permissions`, async () => {
-        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.category", own: false, rwd: "r" }], identityA],
@@ -210,13 +202,13 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { createCategory } = useGqlHandler({ permissions, identity: identity });
+            const { createCategory } = useGqlHandler({ permissions, identity: identity as any });
 
             const [response] = await createCategory({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createCategory"));
         }
 
-        const sufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
@@ -227,7 +219,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { createCategory } = useGqlHandler({ permissions, identity: identity });
+            const { createCategory } = useGqlHandler({ permissions, identity: identity as any });
 
             const data = new Mock(`category-create-${i}-`);
             const [response] = await createCategory({ data });
@@ -249,7 +241,7 @@ describe("Categories Security Test", () => {
 
         await createCategory({ data: mock });
 
-        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.category", rwd: "r" }], identityA],
@@ -264,12 +256,12 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { updateCategory } = useGqlHandler({ permissions, identity: identity });
+            const { updateCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateCategory"));
         }
 
-        const sufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
 
@@ -280,7 +272,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { updateCategory } = useGqlHandler({ permissions, identity: identity });
+            const { updateCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
@@ -295,23 +287,22 @@ describe("Categories Security Test", () => {
         }
     });
 
-    const deleteCategoryInsufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] =
+    const deleteCategoryInsufficientPermissions = [
+        // [[], null],
+        // [[], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityB],
         [
-            // [[], null],
-            // [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityB],
-            [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
-                identityA
-            ],
-            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA] // will fail - missing "r"
-        ];
+            [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+            identityA
+        ],
+        [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA] // will fail - missing "r"
+    ];
 
     test.each(deleteCategoryInsufficientPermissions)(
         `do not allow "deleteCategory" if identity has not sufficient permissions`,
-        async (permissions, identity) => {
+        async (permissions: any, identity: any) => {
             const mock = new Mock("delete-category-");
 
             await createCategory({ data: mock });
@@ -322,7 +313,7 @@ describe("Categories Security Test", () => {
         }
     );
 
-    const deleteCategorySufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+    const deleteCategorySufficientPermissions = [
         [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
@@ -337,12 +328,12 @@ describe("Categories Security Test", () => {
     ];
     test.each(deleteCategorySufficientPermissions)(
         `allow "deleteCategory" if identity has sufficient permissions`,
-        async (permissions, identity) => {
+        async (permissions: any, identity: any) => {
             const mock = new Mock("delete-category-");
 
             const { createCategory, deleteCategory } = useGqlHandler({
                 permissions,
-                identity
+                identity: identity as any
             });
             await createCategory({ data: mock });
             const [response] = await deleteCategory({
@@ -361,7 +352,7 @@ describe("Categories Security Test", () => {
         }
     );
 
-    const getCategoryInsufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+    const getCategoryInsufficientPermissions = [
         [[], null],
         [[], identityA],
         [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
@@ -375,7 +366,7 @@ describe("Categories Security Test", () => {
 
     test.each(getCategoryInsufficientPermissions)(
         `do not allow "getCategory" if identity has no sufficient permissions`,
-        async (permissions, identity) => {
+        async (permissions: any, identity: any) => {
             const mock = new Mock("get-category-");
             await createCategory({ data: mock });
             const { getCategory } = useGqlHandler({ permissions, identity });
@@ -384,7 +375,7 @@ describe("Categories Security Test", () => {
         }
     );
 
-    const getCategorySufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
+    const getCategorySufficientPermissions = [
         [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
@@ -402,7 +393,7 @@ describe("Categories Security Test", () => {
 
     test.each(getCategorySufficientPermissions)(
         `allow "getCategory" if identity has sufficient permissions`,
-        async (permissions, identity) => {
+        async (permissions: any, identity: any) => {
             const mock = new Mock("get-category-");
 
             await createCategory({ data: mock });

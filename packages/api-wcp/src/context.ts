@@ -1,15 +1,10 @@
 import { ContextPlugin } from "@webiny/api";
 import { WcpContext } from "~/types";
 import { createWcp } from "~/createWcp";
-import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
-export interface CreateWcpContextParams {
-    testProjectLicense?: DecryptedWcpProjectLicense;
-}
-
-export const createWcpContext = (params: CreateWcpContextParams = {}) => {
+export const createWcpContext = () => {
     const plugin = new ContextPlugin<WcpContext>(async context => {
-        context.wcp = await createWcp(params);
+        context.wcp = await createWcp();
     });
     plugin.name = "wcp.context.create";
 

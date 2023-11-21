@@ -17,16 +17,22 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
-import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { LIST_PAGE_BLOCKS, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
-import { PbErrorResponse, PbBlockCategory, PbEditorElement, PbPageTemplate } from "~/types";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import {
+    PbErrorResponse,
+    PbPageBlock,
+    PbBlockCategory,
+    PbEditorElement,
+    PbPageTemplate
+} from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageTemplateWithContent } from "~/templateEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { TemplateEditorConfig } from "./config/TemplateEditorConfig";
 import elementVariableRendererPlugins from "~/blockEditor/plugins/elementVariables";
-import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorElement[] => {
     return blocks?.map((block: PbEditorElement) => {
@@ -43,7 +49,6 @@ export const TemplateEditor: React.FC = () => {
     const client = useApolloClient();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { listBlocks } = usePageBlocks();
     const [template, setTemplate] = useState<PageTemplateWithContent>();
 
     const templateId = decodeURIComponent(params["id"]);
@@ -64,9 +69,16 @@ export const TemplateEditor: React.FC = () => {
                     }
                 });
             });
-
-        const savedBLocks = listBlocks();
-
+        const savedBLocks = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_PAGE_BLOCKS })
+            .then(({ data }) => {
+                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
+                blocks.forEach(element => {
+                    createBlockPlugin({
+                        ...element
+                    });
+                });
+            });
         const blockCategories = client
             .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
             .then(({ data }) => {

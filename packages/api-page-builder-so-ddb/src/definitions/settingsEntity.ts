@@ -1,7 +1,7 @@
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
 
 interface Params {
-    table: Table<string, string, string>;
+    table: Table;
     entityName: string;
 }
 

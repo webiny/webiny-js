@@ -227,7 +227,7 @@ export default /* GraphQL */ `
     }
 
     input PageModelApiName_Content_HeroInput {
-        title: String
+        title: String!
     }
 
     input PageModelApiName_Content_SimpleTextInput {
@@ -257,7 +257,7 @@ export default /* GraphQL */ `
     }
 
     input PageModelApiName_Content_AuthorInput {
-        author: RefFieldInput
+        author: RefFieldInput!
         authors: [RefFieldInput!]
     }
 
@@ -437,24 +437,17 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createPageModelApiName(data: PageModelApiNameInput!, options: CreateCmsEntryOptionsInput): PageModelApiNameResponse
+        createPageModelApiName(data: PageModelApiNameInput!): PageModelApiNameResponse
 
         createPageModelApiNameFrom(
             revision: ID!
             data: PageModelApiNameInput
-            options: CreateRevisionCmsEntryOptionsInput
         ): PageModelApiNameResponse
 
         updatePageModelApiName(
             revision: ID!
             data: PageModelApiNameInput!
-            options: UpdateCmsEntryOptionsInput
         ): PageModelApiNameResponse
-
-        validatePageModelApiName(
-            revision: ID
-            data: PageModelApiNameInput!
-        ): CmsEntryValidationResponse!
 
         movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
 

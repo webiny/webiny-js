@@ -16,7 +16,6 @@ jest.mock("node-fetch", () => {
 });
 
 import { createHandler, RoutePlugin } from "@webiny/handler-aws/gateway";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import createHttpLogsHandlerResultPlugin from "~/index";
 
 const testHandler = createHandler({
@@ -33,12 +32,7 @@ const testHandler = createHandler({
 
 describe("logs plugin", () => {
     it("should send data to given url", async () => {
-        await testHandler(
-            {
-                path: "/test"
-            } as APIGatewayEvent,
-            {} as LambdaContext
-        );
+        await testHandler({ path: "/test" } as any, {} as any);
 
         expect(mockResult.url).toEqual(forwardUrl);
         expect(mockResult.opts).toEqual({

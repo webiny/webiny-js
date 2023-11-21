@@ -1,8 +1,4 @@
-import {
-    CmsModelField,
-    CmsModelFieldToGraphQLCreateResolver,
-    CmsModelFieldToGraphQLPlugin
-} from "~/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createGraphQLInputField } from "./helpers";
 
 interface CreateListFiltersParams {
@@ -13,11 +9,6 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
         ${field.fieldId}_contains: String
         ${field.fieldId}_not_contains: String
     `;
-};
-const createResolver: CmsModelFieldToGraphQLCreateResolver = ({ field }) => {
-    return async parent => {
-        return parent[field.fieldId] || null;
-    };
 };
 
 export const createLongTextField = (): CmsModelFieldToGraphQLPlugin => {
@@ -36,8 +27,7 @@ export const createLongTextField = (): CmsModelFieldToGraphQLPlugin => {
 
                 return `${field.fieldId}: String`;
             },
-            createListFilters,
-            createResolver
+            createListFilters
         },
         manage: {
             createListFilters,
@@ -50,8 +40,7 @@ export const createLongTextField = (): CmsModelFieldToGraphQLPlugin => {
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "String");
-            },
-            createResolver
+            }
         }
     };
 };

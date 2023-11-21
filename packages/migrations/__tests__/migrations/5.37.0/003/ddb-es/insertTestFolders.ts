@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
 import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/003/constants";
 import {
@@ -27,8 +27,8 @@ interface Response {
 
 interface Params {
     elasticsearchClient: ElasticsearchClient;
-    table: Table<string, string, string>;
-    esTable: Table<string, string, string>;
+    table: Table;
+    esTable: Table;
 }
 
 export const insertTestFolders = async (params: Params): Promise<Response> => {

@@ -1,12 +1,25 @@
 import React, { useEffect, useCallback, useState } from "react";
+/**
+ * Package dataurl-to-blob does not have types.
+ */
+// @ts-ignore
+import SaveDialog from "./SaveDialog";
+import pick from "lodash/pick";
 import get from "lodash/get";
+import createElementPlugin from "~/admin/utils/createElementPlugin";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import { activeElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import SaveDialog from "./SaveDialog";
-import createElementPlugin from "~/admin/utils/createElementPlugin";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
-import { CREATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
+import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
+import {
+    CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
+    LIST_PAGE_BLOCKS_AND_CATEGORIES
+} from "~/admin/views/PageBlocks/graphql";
+import { useRecoilValue } from "recoil";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
@@ -16,10 +29,11 @@ import {
 } from "~/types";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { removeElementId } from "~/editor/helpers";
-import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+interface PbDocumentElement extends BasePbEditorElement {
+    overwrite?: boolean;
+}
 
-interface PbEditorElementWithSource extends PbEditorElement {
+interface RecoilPbEditorElement extends PbEditorElement {
     source: string;
 }
 
@@ -33,76 +47,67 @@ const pluginOnSave = (element: BasePbEditorElement): BasePbEditorElement => {
     return plugin.onSave(element);
 };
 
-export interface SaveBlockFormData {
-    id: string;
-    name: string;
-    type: "block";
-    blockCategory: string;
-    overwrite?: boolean;
-}
-
-export interface SaveElementFormData {
-    id: string;
-    name: string;
-    type: "element";
-}
-
-const SaveAction = ({ children }: { children: React.ReactElement }) => {
-    const [element] = useActiveElement<PbEditorElementWithSource>();
+const SaveAction: React.FC = ({ children }) => {
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(
+        elementByIdSelector(activeElementId as string)
+    ) as RecoilPbEditorElement;
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
-    const { createBlock, updateBlock } = usePageBlocks();
 
-    const onSubmit = async (formData: SaveElementFormData | SaveBlockFormData) => {
+    const onSubmit = async (formData: PbDocumentElement) => {
         const pbElement = (await getElementTree({ element })) as PbElement;
-        const newContent = pluginOnSave(removeElementId(pbElement));
+        formData.content = pluginOnSave(removeElementId(pbElement));
 
         if (formData.type === "block") {
-            // We can create a new block, or update an existing one.
-            try {
-                if (formData.overwrite) {
-                    await updateBlock({
-                        id: element.source,
-                        content: newContent
-                    });
-                } else {
-                    await createBlock({
-                        name: formData.name,
-                        category: formData.blockCategory,
-                        content: newContent
-                    });
-                }
-            } catch (error) {
+            const query = formData.overwrite ? UPDATE_PAGE_BLOCK : CREATE_PAGE_BLOCK;
+
+            const { data: res } = await client.mutate({
+                mutation: query,
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: pick(formData, ["content"])
+                      }
+                    : { data: pick(formData, ["name", "blockCategory", "content"]) },
+                refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
+            });
+
+            const { error, data } = get(res, `pageBuilder.pageBlock`);
+
+            if (error) {
                 showSnackbar(error.message);
                 return;
             }
 
             hideDialog();
 
+            createBlockPlugin(data);
             showSnackbar(
                 <span>
                     {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
-                    <strong>{formData.name}</strong> was saved!
+                    <strong>{data.name}</strong> was saved!
                 </span>
             );
         } else {
+            const query = formData.overwrite ? UPDATE_PAGE_ELEMENT : CREATE_PAGE_ELEMENT;
+
             const { data: res } = await client.mutate({
-                mutation: CREATE_PAGE_ELEMENT,
-                variables: {
-                    data: {
-                        name: formData.name,
-                        type: formData.type,
-                        content: newContent
-                    }
-                }
+                mutation: query,
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: pick(formData, ["content"])
+                      }
+                    : { data: pick(formData, ["type", "category", "name", "content"]) }
             });
 
             hideDialog();
-
-            const data = get(res, `pageBuilder.createPageElement.data`);
+            const mutationName = formData.overwrite ? "updatePageElement" : "createPageElement";
+            const data = get(res, `pageBuilder.${mutationName}.data`);
 
             createElementPlugin(data);
 
@@ -141,10 +146,15 @@ const SaveAction = ({ children }: { children: React.ReactElement }) => {
                 element={element}
                 open={isDialogOpened}
                 onClose={hideDialog}
-                onSubmit={data => onSubmit(data)}
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is PbEditorElement.
+                     */
+                    onSubmit(data as PbDocumentElement);
+                }}
                 type={element.type === "block" ? "block" : "element"}
             />
-            {React.cloneElement(children, {
+            {React.cloneElement(children as unknown as React.ReactElement, {
                 onClick: showDialog
             })}
         </>

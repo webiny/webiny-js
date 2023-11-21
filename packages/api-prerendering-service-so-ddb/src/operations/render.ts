@@ -9,17 +9,17 @@ import {
     PrerenderingServiceStorageOperationsListRendersParams,
     PrerenderingServiceStorageOperationsListTagPathLinksParams,
     Render,
-    Tag,
     TagPathLink
 } from "@webiny/api-prerendering-service/types";
-import { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import { get } from "@webiny/db-dynamodb/utils/get";
-import { queryAll, queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { Tag } from "@webiny/api-prerendering-service/types";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { DataContainer } from "~/types";
-import { deleteItem, put } from "@webiny/db-dynamodb";
 
 export interface CreateRenderStorageOperationsParams {
     entity: Entity<any>;
@@ -146,15 +146,12 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...keys,
-                    data: render,
-                    TYPE: createRenderType(),
-                    GSI1_PK: createRenderGSI1PartitionKey(render.tenant),
-                    GSI1_SK: render.path
-                }
+            await entity.put({
+                ...keys,
+                data: render,
+                TYPE: createRenderType(),
+                GSI1_PK: createRenderGSI1PartitionKey(render.tenant),
+                GSI1_SK: render.path
             });
 
             return render;
@@ -180,10 +177,7 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete render record.",
@@ -256,9 +250,9 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            const results = await queryAllClean<DataContainer<Render>>(queryAllParams);
+            const results = await queryAll<DataContainer<Render>>(queryAllParams);
 
-            return results.map(item => item.data);
+            return cleanupItems(entity, results).map(item => item.data);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list render records.",
@@ -358,9 +352,7 @@ export const createRenderStorageOperations = (
             tag
         });
 
-        const options: EntityQueryOptions = {
-            index: "GSI1"
-        };
+        const options: DynamoDBToolboxQueryOptions = { index: "GSI1" };
 
         if (tag.value) {
             options.beginsWith = `${tag.key}#${tag.value}#`;

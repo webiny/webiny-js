@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -79,11 +79,7 @@ export class CmsEntriesRootFolder_5_37_0_002
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    public constructor(
-        table: Table<string, string, string>,
-        esTable: Table<string, string, string>,
-        elasticsearchClient: Client
-    ) {
+    public constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);

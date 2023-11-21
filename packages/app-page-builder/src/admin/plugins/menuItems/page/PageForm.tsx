@@ -2,8 +2,8 @@ import * as React from "react";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
-import { Cell, Grid } from "@webiny/ui/Grid";
-import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { PagesAutocomplete } from "~/admin/components/PagesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
@@ -38,7 +38,13 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                 <Bind name="page" validators={validation.create("required")}>
                                     {({ onChange, ...rest }) => (
                                         <PagesAutocomplete
-                                            {...rest}
+                                            {
+                                                /**
+                                                 * Find better suited type
+                                                 */
+                                                // TODO @ts-refactor
+                                                ...(rest as any)
+                                            }
                                             onChange={(value: string, selection: MenuTreeItem) => {
                                                 onChange(value);
                                                 if (!data.title && selection) {

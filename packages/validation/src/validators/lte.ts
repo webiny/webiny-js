@@ -1,7 +1,7 @@
 import ValidationError from "~/validationError";
 
 export default (value: any, params?: string[]) => {
-    if (value === undefined || value === null || !params) {
+    if (!value || !params) {
         return;
     }
     value = value + "";

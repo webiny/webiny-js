@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
-import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
@@ -31,15 +30,11 @@ interface FolderNameProps {
 export const FolderName: React.VFC<FolderNameProps> = ({ record }) => {
     const { navigateToFolder } = useNavigateFolder();
 
-    const { hasNonInheritedPermissions, canManagePermissions } = record.original;
-    let icon = <Folder />;
-    if (hasNonInheritedPermissions && canManagePermissions) {
-        icon = <FolderShared />;
-    }
-
     return (
         <Title onClick={() => navigateToFolder(record.id)}>
-            <Icon>{icon}</Icon>
+            <Icon>
+                <Folder />
+            </Icon>
             <Text use={"subtitle2"}>{record.title}</Text>
         </Title>
     );
@@ -49,7 +44,6 @@ interface EntryNameProps {
     record: RecordEntry;
     onClick?: () => void;
 }
-
 export const EntryName: React.VFC<EntryNameProps> = ({ record, onClick }) => {
     return (
         <Title onClick={onClick} className="cms-data-list-record-title">

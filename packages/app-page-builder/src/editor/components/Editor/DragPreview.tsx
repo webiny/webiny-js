@@ -26,11 +26,8 @@ const onOffsetChange = (monitor: DragLayerMonitor) => () => {
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
-    /**
-     * TS is complaining about -webkit.
-     */
-    // @ts-expect-error
-    dragPreviewRef.style["-webkit-transform"] = transform;
+    // TODO @ts-refactor
+    dragPreviewRef.style["-webkit-transform" as any] = transform;
 };
 
 const DragPreview: React.FC = () => {

@@ -1,31 +1,28 @@
+import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
-import { TableDef } from "~/toolbox";
-import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 export interface BatchWriteItem {
-    [key: string]: WriteRequest;
+    [key: string]: DocumentClient.WriteRequest;
 }
 
 export interface BatchWriteParams {
-    table?: TableDef;
+    table: Table;
     items: BatchWriteItem[];
 }
 
 /**
  * Method is meant for batch writing to a single table.
- * It expects already prepared items for writing.
+ * It expects already prepared items for the write.
  * It can either delete or put items
  * The method does not check items before actually sending them into the underlying library.
  */
 export const batchWriteAll = async (params: BatchWriteParams, maxChunk = 25): Promise<void> => {
-    const { items: collection, table } = params;
-    if (collection.length === 0 || !table) {
+    if (params.items.length === 0) {
         return;
     }
-    const chunkedItems: BatchWriteItem[][] = lodashChunk(collection, maxChunk);
+    const chunkedItems: BatchWriteItem[][] = lodashChunk(params.items, maxChunk);
     for (const items of chunkedItems) {
-        await table.batchWrite(items, {
-            execute: true
-        });
+        await params.table.batchWrite(items);
     }
 };

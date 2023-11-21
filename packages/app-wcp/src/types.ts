@@ -18,12 +18,7 @@ export type WcpProjectPackage = {
             enabled: boolean;
             options: {
                 teams: boolean;
-                privateFiles: boolean;
-                folderLevelPermissions: boolean;
             };
-        };
-        auditLogs: {
-            enabled: boolean;
         };
     };
 };

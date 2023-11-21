@@ -9,9 +9,8 @@ import {
     DeleteRuleCommand,
     RemoveTargetsCommand,
     PutTargetsCommand,
-    PutRuleCommand,
-    PutRuleCommandInput
-} from "@webiny/aws-sdk/client-cloudwatch";
+    PutRuleCommand
+} from "@aws-sdk/client-cloudwatch-events";
 import { ClientContext } from "@webiny/handler-client/types";
 import { getApwSettings } from "~/scheduler/handlers/utils";
 
@@ -69,7 +68,7 @@ export async function scheduleLambdaExecution({
      */
     const cronExpression = dateTimeToCronExpression(datetime);
 
-    const ruleParams: PutRuleCommandInput = {
+    const ruleParams = {
         Name: eventRuleName,
         ScheduleExpression: `cron(${cronExpression})`,
         State: "ENABLED",

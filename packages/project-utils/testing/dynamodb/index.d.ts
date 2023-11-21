@@ -1,4 +1,4 @@
-import { DynamoDBClient, DynamoDBClientConfig } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export function getDocumentClient(params?: DynamoDBClientConfig, force?: boolean): DynamoDBClient;
-export function simulateStream(documentClient: DynamoDBClient, handler: any): void;
+export function getDocumentClient(): DocumentClient;
+export function simulateStream(documentClient: DocumentClient, handler: any): void;

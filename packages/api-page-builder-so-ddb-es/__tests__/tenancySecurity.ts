@@ -6,10 +6,10 @@ import { SecurityContext } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 interface Params {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
 
 export const defaultIdentity = {

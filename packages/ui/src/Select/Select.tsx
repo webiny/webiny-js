@@ -114,7 +114,7 @@ export const Select: React.FC<SelectProps> = props => {
                     }
                 )}
                 onChange={e => {
-                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
+                    props.onChange && props.onChange((e.target as any).value);
                 }}
             />
 

@@ -1,20 +1,18 @@
 import React, { forwardRef, useCallback, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import {
-    FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions,
-    useNavigateFolder
-} from "@webiny/app-aco";
+import { FolderDialogDelete, FolderDialogUpdate, useNavigateFolder } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
+import TimeAgo from "timeago-react";
 import { EntryName, FolderName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
-import { FolderActionManagePermissions } from "./Row/Folder/FolderActionManagePermissions";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
@@ -50,7 +48,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return (folders as Entry[]).concat(records as Entry[]);
@@ -99,6 +96,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 enableSorting: true,
                 size: 400
             },
+            createdOn: {
+                header: "Created",
+                className: "cms-aco-list-createdOn",
+                cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
+                enableSorting: true
+            },
             createdBy: {
                 header: "Author",
                 className: "cms-aco-list-createdBy"
@@ -146,11 +149,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    // If the user cannot manage folder structure, no need to show the menu.
-                    if (!record.original.canManageStructure) {
-                        return null;
-                    }
-
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit
@@ -159,14 +157,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                                     setSelectedFolder(record.original);
                                 }}
                             />
-                            {record.original.canManagePermissions && (
-                                <FolderActionManagePermissions
-                                    onClick={() => {
-                                        setManagePermissionsDialogOpen(true);
-                                        setSelectedFolder(record.original);
-                                    }}
-                                />
-                            )}
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);
@@ -205,11 +195,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         folder={selectedFolder}
                         open={updateDialogOpen}
                         onClose={() => setUpdateDialogOpen(false)}
-                    />
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={managePermissionsDialogOpen}
-                        onClose={() => setManagePermissionsDialogOpen(false)}
                     />
                     <FolderDialogDelete
                         folder={selectedFolder}

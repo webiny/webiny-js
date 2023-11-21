@@ -10,6 +10,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    DialogButton,
     DialogCancel,
     DialogOnClose
 } from "@webiny/ui/Dialog";
@@ -22,11 +23,6 @@ import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
 import { PbEditorBlockCategoryPlugin, PbEditorElement, PbElement } from "~/types";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { ButtonPrimary } from "@webiny/ui/Button";
-import {
-    SaveBlockFormData,
-    SaveElementFormData
-} from "~/editor/plugins/elementSettings/save/SaveAction";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -54,9 +50,9 @@ const PreviewBox = styled("div")({
 interface Props {
     open: boolean;
     onClose: DialogOnClose;
-    onSubmit: FormOnSubmit<SaveElementFormData | SaveBlockFormData>;
+    onSubmit: FormOnSubmit;
     element: PbEditorElement;
-    type: SaveElementFormData["type"] | SaveBlockFormData["type"];
+    type: string;
 }
 
 const SaveDialog = (props: Props) => {
@@ -82,18 +78,15 @@ const SaveDialog = (props: Props) => {
             };
         });
 
-    const onSubmit: FormOnSubmit<SaveElementFormData | SaveBlockFormData> = async (data, form) => {
-        try {
-            setLoading(true);
-            await props.onSubmit(data, form);
-        } finally {
-            setLoading(false);
-        }
+    const onSubmit: FormOnSubmit = async (data, form) => {
+        setLoading(true);
+        await props.onSubmit(data, form);
+        setLoading(false);
     };
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type, id: element.id }}>
+            <Form onSubmit={onSubmit} data={{ type, category: "general", id: element.id }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogTitle>Save {type}</DialogTitle>
@@ -109,7 +102,7 @@ const SaveDialog = (props: Props) => {
                                     </Cell>
                                 </Grid>
                             )}
-                            {data.type === "block" && data.overwrite ? null : (
+                            {!data.overwrite && (
                                 <Grid>
                                     <Cell span={12}>
                                         <Bind
@@ -151,7 +144,7 @@ const SaveDialog = (props: Props) => {
                         </DialogContent>
                         <DialogActions>
                             <DialogCancel>Cancel</DialogCancel>
-                            <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                            <DialogButton onClick={submit}>Save</DialogButton>
                         </DialogActions>
                     </React.Fragment>
                 )}

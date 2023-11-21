@@ -4,7 +4,11 @@ import React, { useCallback } from "react";
  */
 // @ts-ignore
 import LazyLoad from "react-lazy-load";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
+import TimeAgo from "timeago-react";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";

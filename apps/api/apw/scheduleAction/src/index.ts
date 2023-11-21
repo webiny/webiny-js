@@ -1,10 +1,13 @@
+const { CloudWatchEventsClient } = require("@aws-sdk/client-cloudwatch-events");
 import { createHandler } from "@webiny/handler-aws/raw";
 import { scheduleActionHandlerPlugins } from "@webiny/api-apw/scheduler/handlers/scheduleAction";
 import { createStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
-import { CloudWatchEventsClient } from "@webiny/aws-sdk/client-cloudwatch";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-const documentClient = getDocumentClient();
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 const debug = process.env.DEBUG === "true";
 

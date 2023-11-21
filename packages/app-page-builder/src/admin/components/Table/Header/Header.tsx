@@ -11,8 +11,7 @@ import { PbPageDataItem } from "~/types";
 
 export interface HeaderProps {
     title?: string;
-    canCreateFolder: boolean;
-    canCreateContent: boolean;
+    canCreate: boolean;
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
@@ -22,8 +21,7 @@ export interface HeaderProps {
 }
 
 export const Header: React.VFC<HeaderProps> = ({
-    canCreateFolder,
-    canCreateContent,
+    canCreate,
     onCreatePage,
     onImportPage,
     onCreateFolder,
@@ -43,13 +41,15 @@ export const Header: React.VFC<HeaderProps> = ({
                         <Search value={searchValue} onChange={onSearchChange} />
                         <Divider />
                         <TableActions selected={selected} onImportPage={onImportPage} />
-                        <Divider />
-                        <ButtonsCreate
-                            canCreateFolder={canCreateFolder}
-                            canCreatePage={canCreateContent}
-                            onCreateFolder={onCreateFolder}
-                            onCreatePage={onCreatePage}
-                        />
+                        {canCreate && (
+                            <>
+                                <Divider />
+                                <ButtonsCreate
+                                    onCreateFolder={onCreateFolder}
+                                    onCreatePage={onCreatePage}
+                                />
+                            </>
+                        )}
                     </WrapperActions>
                 </Cell>
             </Grid>

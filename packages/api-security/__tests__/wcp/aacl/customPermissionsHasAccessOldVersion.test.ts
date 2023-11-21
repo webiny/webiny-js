@@ -1,4 +1,3 @@
-import { PutCommand } from "@webiny/aws-sdk/client-dynamodb";
 import { createMockContextHandler } from "./mockContextHandler";
 import { customPermissions } from "./mocks/customPermissions";
 
@@ -7,8 +6,8 @@ describe(`Custom permissions test (no WCP access but we're dealing with an old p
         const { handle, documentClient } = createMockContextHandler();
 
         // Let's remove the `installedOn` value from the System record.
-        await documentClient.send(
-            new PutCommand({
+        await documentClient
+            .put({
                 TableName: process.env.DB_TABLE as string,
                 Item: {
                     PK: "T#root#SYSTEM",
@@ -16,7 +15,7 @@ describe(`Custom permissions test (no WCP access but we're dealing with an old p
                     installedOn: null
                 }
             })
-        );
+            .promise();
 
         // This is now an old project and AACL should work as usual.
         const context = await handle();

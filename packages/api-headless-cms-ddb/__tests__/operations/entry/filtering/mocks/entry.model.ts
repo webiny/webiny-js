@@ -32,6 +32,7 @@ interface Values {
     options: ValuesOptions[];
     info: ValuesInfo;
 }
+type Result = Pick<CmsEntry<Values>, "id" | "createdBy" | "createdOn" | "values">;
 
 const createCreatedOn = (index: number) => {
     const d = new Date();
@@ -40,7 +41,7 @@ const createCreatedOn = (index: number) => {
     return d.toISOString();
 };
 
-export const createEntry = (index = 0) => {
+export const createEntry = (index = 0): Result => {
     return {
         id: `${index + 100000}#0001`,
         createdOn: createCreatedOn(index),
@@ -93,7 +94,7 @@ export const createEntry = (index = 0) => {
                 }
             ]
         }
-    } as unknown as CmsEntry<Values>;
+    };
 };
 
 export const createEntries = (amount: number) => {

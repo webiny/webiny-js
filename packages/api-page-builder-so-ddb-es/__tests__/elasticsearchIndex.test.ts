@@ -46,11 +46,7 @@ describe("Elasticsearch index", () => {
     it("should throw error when missing tenant but it is required", async () => {
         expect(() => {
             configurations.es({
-                /**
-                 * Tenant cannot be null, but we are testing the error.
-                 */
-                // @ts-expect-error
-                tenant: null,
+                tenant: null as any,
                 locale: "en-US"
             });
         }).toThrowError(
@@ -64,10 +60,7 @@ describe("Elasticsearch index", () => {
         expect(() => {
             configurations.es({
                 tenant: "root",
-                /**
-                 * Locale cannot be null, but we are testing the error.
-                 */ // @ts-expect-error
-                locale: null
+                locale: null as any
             });
         }).toThrowError(
             `Missing "locale" parameter when trying to create Elasticsearch index name.`

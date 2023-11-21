@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import pick from "lodash/pick";
 import { createLegacyEntity, createStandardEntity } from "~/utils";
 
@@ -39,10 +39,10 @@ export const getUserData = (user: any) => {
     return pick(user, Object.keys(attributes));
 };
 
-export const createLegacyUserEntity = (table: Table<string, string, string>) => {
+export const createLegacyUserEntity = (table: Table) => {
     return createLegacyEntity(table, "AdminUsers.User", attributes);
 };
 
-export const createUserEntity = (table: Table<string, string, string>) => {
+export const createUserEntity = (table: Table) => {
     return createStandardEntity(table, "AdminUsers.User", attributes);
 };

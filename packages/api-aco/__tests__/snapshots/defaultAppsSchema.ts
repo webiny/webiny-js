@@ -110,7 +110,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
         }
 
         input AcoSearchRecordWebiny_LocationInput {
-          folderId: String
+          folderId: String!
         }
 
         input AcoSearchRecordWebiny_Data_IdentityInput {
@@ -129,11 +129,11 @@ export const createDefaultAppsSchemaSnapshot = () => {
 
         input AcoSearchRecordWebinyCreateInput {
           id: ID
-          type: String
-          title: String
+          type: String!
+          title: String!
           content: String
-          location: AcoSearchRecordWebiny_LocationInput
-          data: AcoSearchRecordWebiny_DataInput
+          location: AcoSearchRecordWebiny_LocationInput!
+          data: AcoSearchRecordWebiny_DataInput!
           tags: [String!]
         }
         

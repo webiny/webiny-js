@@ -1,6 +1,6 @@
 import ApolloClient from "apollo-client";
 import { useEffect, useState } from "react";
-import { useApolloClient, useModelFieldGraphqlContext } from "~/admin/hooks";
+import { useApolloClient } from "~/admin/hooks";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import {
     CmsEntrySearchQueryResponse,
@@ -15,11 +15,10 @@ interface ExecuteSearchParams {
     setEntries: (entries: CmsReferenceContentEntry[]) => void;
     client: ApolloClient<any>;
     models: CmsModel[];
-    requestContext: Record<string, any>;
 }
 
 const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
-    const { setLoading, setError, setEntries, client, models, requestContext = {} } = params;
+    const { setLoading, setError, setEntries, client, models } = params;
     setLoading(true);
     try {
         const result = await client.query<
@@ -30,8 +29,7 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
             variables: {
                 modelIds: models.map(model => model.modelId),
                 limit: 10000
-            },
-            context: requestContext
+            }
         });
         const error = result.data.content?.error;
         if (error) {
@@ -57,7 +55,6 @@ export const useReferences = ({ models }: UseReferencesParams) => {
     const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined | null>(null);
-    const requestContext = useModelFieldGraphqlContext();
 
     useEffect(() => {
         if (!models || models.length === 0) {
@@ -65,7 +62,6 @@ export const useReferences = ({ models }: UseReferencesParams) => {
         }
         executeSearch({
             client,
-            requestContext,
             models,
             setLoading,
             setError,

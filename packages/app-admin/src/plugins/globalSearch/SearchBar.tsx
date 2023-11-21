@@ -21,11 +21,11 @@ import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outline
 
 // Local components
 import {
-    icon,
-    searchBarInput,
-    SearchBarInputWrapper,
     SearchBarWrapper,
+    SearchBarInputWrapper,
     SearchShortcut,
+    searchBarInput,
+    icon,
     searchWrapper
 } from "./styled";
 import { makeComposable } from "~/index";
@@ -121,7 +121,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         this.setState(
             state => {
                 const newState = set(state, "searchTerm.previous", state.searchTerm.current);
-                return set(newState, "plugins.current", plugin);
+                return set(newState, "plugins.current", plugin) as any;
             },
             () => {
                 const query = new URLSearchParams();

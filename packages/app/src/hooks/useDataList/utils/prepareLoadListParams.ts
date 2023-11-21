@@ -9,44 +9,40 @@ interface Params {
 
 const keys: (keyof Params)[] = ["sort", "where", "search"];
 
-export default (location?: Location): Params => {
+export default (location: Location): Params => {
     const params: Params = {};
-    if (!location) {
-        return params;
-    }
 
-    const query = new URLSearchParams(location.search);
+    if (location) {
+        const query = new URLSearchParams(location.search);
 
-    const after = query.get("after");
-    const before = query.get("before");
-    const limit = query.get("limit");
+        const after = query.get("after");
+        const before = query.get("before");
+        const limit = query.get("limit");
 
-    if (after) {
-        params.after = after;
-    }
-
-    if (before) {
-        params.before = before;
-    }
-
-    if (limit) {
-        params.limit = parseInt(limit);
-    }
-
-    keys.forEach(key => {
-        const value = query.get(key);
-        if (typeof value !== "string") {
-            return;
+        if (after) {
+            params.after = after;
         }
-        try {
-            params[key] = JSON.parse(value);
-        } catch (e) {
-            /**
-             * If we can't parse the value, it means it's a string.
-             */
-            // @ts-expect-error
-            params[key] = value;
+
+        if (before) {
+            params.before = before;
         }
-    });
-    return params;
+
+        if (limit) {
+            params.limit = parseInt(limit);
+        }
+
+        keys.forEach(key => {
+            const value = query.get(key);
+            if (typeof value !== "string") {
+                return;
+            }
+            try {
+                params[key] = JSON.parse(value);
+            } catch (e) {
+                params[key] = value as any;
+            }
+        });
+    }
+
+    return params as Params;
 };

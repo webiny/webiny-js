@@ -24,7 +24,6 @@ const productFields = `
     variant {
         name
         price
-        images
         category {
             id
             title
@@ -32,13 +31,7 @@ const productFields = `
         options {
             name
             price
-            image
-            longText
             category {
-                id
-                title
-            }
-            categories {
                 id
                 title
             }

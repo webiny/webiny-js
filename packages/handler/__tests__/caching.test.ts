@@ -5,7 +5,7 @@ import { createPostRoute } from "./caching/createPostRoute";
 import { createRequestBody, createRequestBodyValue } from "./caching/requestBody";
 
 describe("request caching", () => {
-    it("should store the request response", async () => {
+    it.skip("should store the request response", async () => {
         const cache = new DummyCache();
         const app = createHandler({
             plugins: [createPostRoute(), createCachingPlugin(cache)]

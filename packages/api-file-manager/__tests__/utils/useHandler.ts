@@ -1,5 +1,4 @@
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { LambdaContext } from "@webiny/handler-aws/types";
 import { FileManagerContext } from "~/types";
 import { handlerPlugins, HandlerParams } from "./plugins";
 
@@ -21,7 +20,7 @@ export const useHandler = (params: HandlerParams = {}) => {
     return {
         plugins,
         handler: () => {
-            return handler({}, {} as LambdaContext);
+            return handler({}, {} as any);
         }
     };
 };

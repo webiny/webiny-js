@@ -12,14 +12,10 @@ export const DefaultOnPageDelete = () => {
         revision: Pick<PbPageData, "id" | "version">,
         options: DeletePageOptions
     ) => {
-        /**
-         * Error is due to options.mutationOptions
-         */
-        // @ts-expect-error
         const response = await options.client.mutate({
             mutation: DELETE_PAGE,
             variables: { id: revision.id },
-            ...get(options, "mutationOptions", {})
+            ...(get(options, "mutationOptions", {}) as any)
         });
 
         const { error, data } = get(response, "data.pageBuilder.deletePage");

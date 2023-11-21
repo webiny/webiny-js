@@ -10,11 +10,7 @@ export default {
     elementType: "paragraph",
     getVariableValue(element) {
         const variables = useElementVariables(element);
-        if (!variables) {
-            return null;
-        }
-
-        return variables.length > 0 ? variables[0].value : null;
+        return variables?.length > 0 ? variables[0].value : null;
     },
     renderVariableInput(variableId: string) {
         return (

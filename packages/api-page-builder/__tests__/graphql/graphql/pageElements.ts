@@ -1,6 +1,7 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
+        category
         name
         content
         type
@@ -69,7 +70,7 @@ export const DELETE_PAGE_ELEMENT = /* GraphQL */ `
     mutation DeletePageElement($id: ID!) {
         pageBuilder {
             deletePageElement(id: $id) {
-                data
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }

@@ -6,15 +6,11 @@ import { IconButton } from "@webiny/ui/Button";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 
-import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./BulkActions.styled";
+import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./styles";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/bulk-actions");
-
-export const getEntriesLabel = (count = 0): string => {
-    return `${count} ${count === 1 ? "entry" : "entries"}`;
-};
 
 export const BulkActions = () => {
     const { browser } = useContentEntryListConfig();

@@ -46,12 +46,6 @@ export const RouterProvider: React.FC = ({ children }) => {
 
 export const RouterConsumer: React.FC = ({ children }) => (
     <RouterContext.Consumer>
-        {props => {
-            /**
-             * TODO: Figure out correct type for children.
-             */
-            // @ts-ignore
-            return React.cloneElement(children, props);
-        }}
+        {props => React.cloneElement(children as any, props)}
     </RouterContext.Consumer>
 );

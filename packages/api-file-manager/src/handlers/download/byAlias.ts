@@ -1,5 +1,5 @@
-import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
-import { DynamoDBClient, QueryCommand, unmarshall } from "@webiny/aws-sdk/client-dynamodb";
+import S3 from "aws-sdk/clients/s3";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { getEnvironment } from "../utils";
 import { RoutePlugin } from "@webiny/handler-aws/gateway";
 import { extractFileInformation } from "./extractFileInformation";
@@ -12,34 +12,29 @@ const { region } = getEnvironment();
 const s3 = new S3({ region });
 
 export interface DownloadByFileAliasConfig {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
 
 export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByFileAliasConfig) => {
     async function getFileByAlias(tenant: string, alias: string): Promise<string | null> {
-        const { Items } = await documentClient.send(
-            new QueryCommand({
+        const { Items, Count } = await documentClient
+            .query({
                 TableName: String(process.env.DB_TABLE),
                 IndexName: "GSI1",
                 Limit: 1,
                 KeyConditionExpression: "GSI1_PK = :GSI1_PK AND GSI1_SK = :GSI1_SK",
                 ExpressionAttributeValues: {
-                    ":GSI1_PK": { S: `T#${tenant}#FM#FILE_ALIASES` },
-                    ":GSI1_SK": { S: `/${alias}` }
+                    ":GSI1_PK": `T#${tenant}#FM#FILE_ALIASES`,
+                    ":GSI1_SK": `/${alias}`
                 }
             })
-        );
+            .promise();
 
-        if (!Array.isArray(Items)) {
+        if (!Items || Count === 0) {
             return null;
         }
-        const [item] = Items;
-        if (!item) {
-            return null;
-        }
-        const { data } = unmarshall(item);
 
-        return data?.key ?? null;
+        return Items[0].data.key ?? null;
     }
 
     return [
@@ -76,16 +71,11 @@ export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByF
 
                 console.log("This is a large object; redirecting to a presigned URL.");
 
-                const presignedUrl = getSignedUrl(
-                    s3,
-                    new GetObjectCommand({
-                        Bucket: params.Bucket,
-                        Key: params.Key
-                    }),
-                    {
-                        expiresIn: PRESIGNED_URL_EXPIRATION
-                    }
-                );
+                const presignedUrl = s3.getSignedUrl("getObject", {
+                    Bucket: params.Bucket,
+                    Key: params.Key,
+                    Expires: PRESIGNED_URL_EXPIRATION
+                });
 
                 // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
                 // a 301 Redirect, redirecting the user to the public URL of the object in S3.

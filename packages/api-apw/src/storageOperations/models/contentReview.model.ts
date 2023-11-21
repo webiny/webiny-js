@@ -100,7 +100,7 @@ const contentTypeField = () =>
                     label: "Page",
                     value: "page"
                 },
-                { value: "cms_entry", label: "CMS Entry" }
+                { value: "cms-entry", label: "CMS Entry" }
             ]
         },
         validation: [

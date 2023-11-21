@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
@@ -63,8 +63,8 @@ interface Options {
 }
 
 interface Params {
-    ddbTable: Table<string, string, string>;
-    ddbToEsTable: Table<string, string, string>;
+    ddbTable: Table;
+    ddbToEsTable: Table;
     elasticsearchClient: ElasticsearchClient;
     options?: Options;
 }

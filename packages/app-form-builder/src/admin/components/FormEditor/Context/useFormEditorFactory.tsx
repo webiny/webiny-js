@@ -10,14 +10,9 @@ import {
     UpdateFormRevisionMutationResponse,
     UpdateFormRevisionMutationVariables
 } from "./graphql";
-import {
-    getFieldPosition,
-    moveField,
-    deleteField,
-    moveStep,
-    handleMoveRow,
-    handleMoveField
-} from "./functions";
+import { deleteField, moveStep, handleMoveRow, handleMoveField } from "./functions";
+import moveField from "./functions/handleMoveField/moveField";
+import getFieldPosition from "./functions/handleMoveField/getFieldPosition";
 import { plugins } from "@webiny/plugins";
 
 import {

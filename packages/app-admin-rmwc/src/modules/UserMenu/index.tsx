@@ -46,21 +46,7 @@ const UserMenuHandleRendererImpl = (): React.FC => {
             return null;
         }
 
-        const profile = identity.profile;
-
-        if (!profile) {
-            return (
-                <Avatar
-                    data-testid="logged-in-user-menu-avatar"
-                    src={undefined}
-                    alt={identity.displayName}
-                    fallbackText={identity.displayName}
-                    renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-                />
-            );
-        }
-
-        const { firstName, lastName, avatar, gravatar } = profile;
+        const { firstName, lastName, avatar, gravatar } = identity.profile || {};
         const fullName = `${firstName} ${lastName}`;
 
         return (

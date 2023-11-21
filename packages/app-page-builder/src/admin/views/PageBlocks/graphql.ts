@@ -18,12 +18,22 @@ const PAGE_BLOCK_BASE_FIELDS = `
     }
 `;
 
-export const LIST_PAGE_CATEGORIES = gql`
+export const LIST_PAGE_BLOCKS_AND_CATEGORIES = gql`
     query ListBlockCategories {
         pageBuilder {
             listBlockCategories {
                 data {
                     ${PAGE_BLOCK_CATEGORY_BASE_FIELDS}
+                }
+                error {
+                    code
+                    data
+                    message
+                }
+            }
+            listPageBlocks {
+                data {
+                    ${PAGE_BLOCK_BASE_FIELDS}
                 }
                 error {
                     code
@@ -40,10 +50,8 @@ export const LIST_PAGE_CATEGORIES = gql`
  */
 export interface GetPageBlockQueryResponse {
     pageBuilder: {
-        getPageBlock: {
-            data: PbPageBlock | null;
-            error: PbErrorResponse | null;
-        };
+        data?: PbPageBlock;
+        error?: PbErrorResponse;
     };
 }
 export interface GetPageBlockQueryVariables {
@@ -71,15 +79,12 @@ export const GET_PAGE_BLOCK = gql`
  */
 export interface ListPageBlocksQueryResponse {
     pageBuilder: {
-        listPageBlocks: {
-            data: PbPageBlock[] | null;
-            error: PbErrorResponse | null;
-        };
+        data?: PbPageBlock[];
+        error?: PbErrorResponse;
     };
 }
 export interface ListPageBlocksQueryVariables {
-    blockCategory?: string;
-    limit?: number;
+    blockCategory: string;
 }
 export const LIST_PAGE_BLOCKS = gql`
     query ListPageBlocks($blockCategory: String) {
@@ -110,11 +115,7 @@ export interface CreatePageBlockMutationResponse {
     };
 }
 export interface CreatePageBlockMutationVariables {
-    data: {
-        name: string;
-        content: any;
-        blockCategory: string;
-    };
+    data: PbPageBlock;
 }
 export const CREATE_PAGE_BLOCK = gql`
     mutation CreatePageBlock($data: PbCreatePageBlockInput!){
@@ -149,7 +150,6 @@ export interface UpdatePageBlockMutationVariables {
     data: {
         name: string;
         blockCategory: string;
-        content: any;
     };
 }
 export const UPDATE_PAGE_BLOCK = gql`
@@ -169,23 +169,10 @@ export const UPDATE_PAGE_BLOCK = gql`
     }
 `;
 
-export interface DeletePageBlockMutationResponse {
-    pageBuilder: {
-        deletePageBlock: {
-            data: boolean | null;
-            error: PbErrorResponse | null;
-        };
-    };
-}
-export interface DeletePageBlockMutationVariables {
-    id: string;
-}
-
 export const DELETE_PAGE_BLOCK = gql`
     mutation DeletePageBlock($id: ID!) {
         pageBuilder {
             deletePageBlock(id: $id) {
-                data
                 error {
                     code
                     message

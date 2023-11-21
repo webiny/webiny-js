@@ -296,10 +296,7 @@ describe("Republish entries", () => {
             category: {
                 entryId: applePublished.id,
                 modelId: categoryModel.modelId
-            },
-            price: 1,
-            color: "red",
-            image: "https://webiny.com/gala.png"
+            }
         });
         const { entry: goldenEntry } = createEntry(
             productModel,
@@ -308,10 +305,7 @@ describe("Republish entries", () => {
                 category: {
                     entryId: bananaPublished.id,
                     modelId: categoryModel.modelId
-                },
-                price: 1,
-                color: "white",
-                image: "https://webiny.com/golden.png"
+                }
             },
             5
         );

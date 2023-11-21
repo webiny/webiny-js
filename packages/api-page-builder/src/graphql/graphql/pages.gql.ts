@@ -369,7 +369,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         }
                     },
                     listPageTags: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.listPagesTags(args));
+                        return resolve(() => context.pageBuilder.listPagesTags(args as any));
                     },
 
                     getPublishedPage: async (

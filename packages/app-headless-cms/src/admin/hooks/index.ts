@@ -11,4 +11,3 @@ export { useModelField } from "../components/ModelFieldProvider";
 export { useModelFieldEditor } from "../components/FieldEditor";
 export * from "./useContentModels";
 export * from "~/admin/views/contentEntries/hooks";
-export * from "./useModelFieldGraphqlContext";

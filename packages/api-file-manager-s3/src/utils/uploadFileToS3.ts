@@ -1,8 +1,11 @@
 import FormData from "form-data";
 import fetch, { Response } from "node-fetch";
-import { PresignedPost } from "@webiny/aws-sdk/client-s3";
+import S3 from "aws-sdk/clients/s3";
 
-export default async (buffer: Buffer, preSignedPostPayload: PresignedPost): Promise<Response> => {
+export default async (
+    buffer: Buffer,
+    preSignedPostPayload: S3.PresignedPost
+): Promise<Response> => {
     const formData = new FormData();
     // Add all pre signed payload field to "FormData".
     Object.keys(preSignedPostPayload.fields).forEach(key => {

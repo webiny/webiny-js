@@ -49,8 +49,8 @@ export interface DataMigrationContext<TCheckpoint = any> {
     checkpoint?: TCheckpoint;
     forceExecute: boolean;
     runningOutOfTime: () => boolean;
-    createCheckpoint: (data: TCheckpoint) => Promise<void>;
-    createCheckpointAndExit: (data: TCheckpoint) => Promise<void>;
+    createCheckpoint: (data: TCheckpoint) => void;
+    createCheckpointAndExit: (data: TCheckpoint) => void;
 }
 
 export interface DataMigration<TCheckpoint = any> {

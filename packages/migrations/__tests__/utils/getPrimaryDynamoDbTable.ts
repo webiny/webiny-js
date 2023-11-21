@@ -1,10 +1,10 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Table } from "dynamodb-toolbox";
+import { getDocumentClient } from "./getDocumentClient";
 
 export interface CreateTableParams {
     name?: string;
-    documentClient?: DynamoDBClient;
+    documentClient?: DocumentClient;
 }
 
 export const getPrimaryDynamoDbTable = (params?: CreateTableParams) => {
@@ -24,9 +24,7 @@ export const getPrimaryDynamoDbTable = (params?: CreateTableParams) => {
             //     partitionKey: "GSI2_PK",
             //     sortKey: "GSI2_SK"
             // }
-        },
-        autoExecute: true,
-        autoParse: true
+        }
     });
 };
 

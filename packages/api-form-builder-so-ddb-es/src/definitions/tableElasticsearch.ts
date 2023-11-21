@@ -1,19 +1,17 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { Table } from "dynamodb-toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 interface Params {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
     tableName?: string;
 }
 
-export const createElasticsearchTable = (params: Params): Table<string, string, string> => {
+export const createElasticsearchTable = (params: Params): Table => {
     const { tableName, documentClient } = params;
     return new Table({
         name: tableName || (process.env.DB_TABLE_ELASTICSEARCH as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient,
-        autoExecute: true,
-        autoParse: true
+        DocumentClient: documentClient
     });
 };

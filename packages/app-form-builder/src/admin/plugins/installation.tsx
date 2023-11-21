@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -45,20 +45,25 @@ const FBInstaller: React.FC<FBInstallerProps> = ({ onInstalled }) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        client
-            .mutate({
-                mutation: INSTALL,
-                variables: { domain: window.location.origin }
-            })
-            .then(({ data }) => {
-                const { error } = data.formBuilder.install;
-                if (error) {
-                    setError(error.message);
-                    return;
-                }
+        // Temporary fix for the ES index creation failure.
+        // Let's try waiting a bit before running the installation.
+        setTimeout(() => {
+            client
+                .mutate({
+                    mutation: INSTALL,
+                    variables: { domain: window.location.origin }
+                })
+                .then(({ data }) => {
+                    const { error } = data.formBuilder.install;
+                    if (error) {
+                        setError(error.message);
+                        return;
+                    }
 
-                onInstalled();
-            });
+                    // Just so the user sees the actual message.
+                    setTimeout(onInstalled, 3000);
+                });
+        }, 10000);
     }, []);
 
     const label = error ? (

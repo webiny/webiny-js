@@ -1,8 +1,7 @@
-import { Entity } from "~/toolbox";
-import { cleanupItem } from "~/utils/cleanup";
+import { Entity } from "dynamodb-toolbox";
 
 export interface GetRecordParams {
-    entity: Entity;
+    entity: Entity<any>;
     keys: {
         PK: string;
         SK: string;
@@ -20,20 +19,10 @@ export interface GetRecordParams {
 export const get = async <T>(params: GetRecordParams): Promise<T | null> => {
     const { entity, keys } = params;
 
-    const result = await entity.get(keys, {
-        execute: true
-    });
+    const result = await entity.get(keys);
 
-    if (!result?.Item) {
+    if (!result || !result.Item) {
         return null;
     }
-    return result.Item as T;
-};
-
-export const getClean = async <T>(params: GetRecordParams): Promise<T | null> => {
-    const result = await get<T>(params);
-    if (!result) {
-        return null;
-    }
-    return cleanupItem<T>(params.entity, result);
+    return result.Item;
 };

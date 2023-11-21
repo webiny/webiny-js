@@ -15,24 +15,21 @@ interface UseContentReviewParams {
 interface UseContentReviewResult {
     contentReview: ApwContentReview;
     loading: boolean;
-    refetch: () => Promise<any>;
 }
 
 export function useContentReview(params: UseContentReviewParams): UseContentReviewResult {
     const id = decodeURIComponent(params.id);
 
-    const { data, loading, refetch } = useQuery<
+    const { data, loading } = useQuery<
         GetContentReviewQueryResponse,
         GetContentReviewQueryVariables
     >(GET_CONTENT_REVIEW_QUERY, {
         variables: { id },
         skip: !id
     });
-
     return {
         contentReview: dotPropImmutable.get(data, "apw.getContentReview.data"),
-        loading,
-        refetch
+        loading
     };
 }
 

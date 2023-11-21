@@ -1,35 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands";
+import {
+    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+    REMOVE_WEBINY_LIST_COMMAND
+} from "~/commands/webiny-list";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
-import { $isListNode, ListNode } from "@webiny/lexical-nodes";
-import { useCurrentElement } from "~/hooks/useCurrentElement";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 export const BulletListAction = () => {
     const [editor] = useLexicalComposerContext();
-    const { element } = useCurrentElement();
-    const { themeEmotionMap } = useRichTextEditor();
-    const isList = $isListNode(element);
+    const [isActive, setIsActive] = useState<boolean>(false);
+    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
+    const isListSelected = textBlockSelection?.state?.list.isSelected;
 
-    const isBullet = isList && (element as ListNode).getListType() === "bullet";
+    useEffect(() => {
+        const isListBulletType = textBlockSelection?.state?.textType === "bullet";
+        setIsActive(isListBulletType);
+    }, [textBlockSelection?.state?.textType, isListSelected]);
 
     const formatBulletList = () => {
-        if (!isBullet) {
+        if (!isActive) {
             const styleId = themeEmotionMap
                 ? findTypographyStyleByHtmlTag("ul", themeEmotionMap)?.id
                 : undefined;
             // will update the active state in the useEffect
-            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, { themeStyleId: styleId });
+            editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: styleId });
+            setIsActive(true);
         } else {
-            editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
         }
     };
 
     return (
         <button
             onClick={() => formatBulletList()}
-            className={"popup-item spaced " + (isBullet ? "active" : "")}
+            className={"popup-item spaced " + (isActive ? "active" : "")}
             aria-label="Format text as bullet list"
         >
             <i className="icon bullet-list" />

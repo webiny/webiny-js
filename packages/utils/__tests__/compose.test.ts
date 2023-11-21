@@ -67,7 +67,7 @@ describe("Compose Async", () => {
                 });
             };
         };
-        const result = await composeAsync<any>([fn, fn, fn, nameFn])({
+        const result = await composeAsync([fn, fn, fn, nameFn] as any)({
             value: 5
         });
 
@@ -137,7 +137,7 @@ describe("Compose Sync", () => {
                 });
             };
         };
-        const result = composeSync<any>([fn, fn, fn, nameFn])({
+        const result = composeSync([fn, fn, fn, nameFn] as any)({
             value: 5
         });
 

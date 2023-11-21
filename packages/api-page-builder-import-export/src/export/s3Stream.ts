@@ -1,15 +1,5 @@
 import { Stream, Readable } from "stream";
-import {
-    S3,
-    ListObjectsOutput,
-    DeleteObjectOutput,
-    HeadObjectOutput,
-    getSignedUrl,
-    GetObjectCommand,
-    PutObjectCommand,
-    PutObjectCommandInput
-} from "@webiny/aws-sdk/client-s3";
-import { Upload } from "@webiny/aws-sdk/lib-storage";
+import S3 from "aws-sdk/clients/s3";
 
 const ARCHIVE_CONTENT_TYPE = "application/zip";
 
@@ -24,17 +14,12 @@ class S3Stream {
         this.bucket = process.env.S3_BUCKET as string;
     }
 
-    getPresignedUrl(key?: string) {
-        return getSignedUrl(
-            this.s3,
-            new GetObjectCommand({
-                Bucket: this.bucket,
-                Key: key
-            }),
-            {
-                expiresIn: 604800 // 1 week
-            }
-        );
+    getPresignedUrl(key: string) {
+        return this.s3.getSignedUrl("getObject", {
+            Bucket: this.bucket,
+            Key: key,
+            Expires: 604800 // 1 week
+        });
     }
 
     /**
@@ -53,19 +38,18 @@ class S3Stream {
         }
     }
 
-    getObjectHead(Key: string): Promise<HeadObjectOutput> {
-        return this.s3.headObject({ Bucket: this.bucket, Key });
+    getObjectHead(Key: string): Promise<S3.HeadObjectOutput> {
+        return this.s3.headObject({ Bucket: this.bucket, Key }).promise();
     }
 
-    async readStream(Key: string): Promise<Readable> {
-        const response = await this.s3.send(new GetObjectCommand({ Bucket: this.bucket, Key }));
-        return response.Body as Readable;
+    readStream(Key: string): Readable {
+        return this.s3.getObject({ Bucket: this.bucket, Key }).createReadStream();
     }
 
     writeStream(Key: string, contentType: string = ARCHIVE_CONTENT_TYPE) {
         const streamPassThrough = new Stream.PassThrough();
 
-        const params: PutObjectCommandInput = {
+        const params: S3.PutObjectRequest = {
             ACL: "private",
             Body: streamPassThrough,
             Bucket: this.bucket,
@@ -73,39 +57,40 @@ class S3Stream {
             Key
         };
 
-        const upload = new Upload({
-            client: this.s3,
-            params
-        });
-
         return {
             streamPassThrough: streamPassThrough,
             /**
              * We're not using the `FileManager` storage plugin here because it currently doesn't support streams.
              */
-            streamPassThroughUploadPromise: upload.done()
+            streamPassThroughUploadPromise: this.s3.upload(params).promise()
         };
     }
 
-    async upload(params: { Key: string; ContentType: string; Body: Buffer }): Promise<void> {
-        await this.s3.send(
-            new PutObjectCommand({
+    upload(params: {
+        Key: string;
+        ContentType: string;
+        Body: Buffer;
+    }): Promise<S3.ManagedUpload.SendData> {
+        return this.s3
+            .upload({
                 ACL: "private",
                 Bucket: this.bucket,
                 ...params
             })
-        );
+            .promise();
     }
 
-    listObject(prefix: string): Promise<ListObjectsOutput> {
-        return this.s3.listObjects({
-            Bucket: this.bucket,
-            Prefix: prefix
-        });
+    listObject(prefix: string): Promise<S3.ListObjectsOutput> {
+        return this.s3
+            .listObjects({
+                Bucket: this.bucket,
+                Prefix: prefix
+            })
+            .promise();
     }
 
-    deleteObject(key: string): Promise<DeleteObjectOutput> {
-        return this.s3.deleteObject({ Key: key, Bucket: this.bucket });
+    deleteObject(key: string): Promise<S3.DeleteObjectOutput> {
+        return this.s3.deleteObject({ Key: key, Bucket: this.bucket }).promise();
     }
 }
 

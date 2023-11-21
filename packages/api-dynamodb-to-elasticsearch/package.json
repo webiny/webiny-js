@@ -13,9 +13,10 @@
   "dependencies": {
     "@babel/runtime": "^7.22.6",
     "@webiny/api-elasticsearch": "0.0.0",
-    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.971.0",
     "p-retry": "^4.6.2"
   },
   "devDependencies": {
@@ -41,6 +42,11 @@
   "adio": {
     "ignoreDirs": [
       "__tests__"
-    ]
+    ],
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
   }
 }

@@ -20,7 +20,6 @@ import { PbErrorResponse } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 interface PageBuilderWebsiteSettings {
-    id?: string;
     websiteUrl?: string;
 }
 
@@ -77,7 +76,7 @@ export function usePbWebsiteSettings() {
                 /**
                  * sendEvent is async, why is it not awaited?
                  */
-                // TODO @pavel
+                // TODO @ts-refactor
                 sendEvent("custom-domain", {
                     domain: data.websiteUrl
                 });
@@ -85,13 +84,14 @@ export function usePbWebsiteSettings() {
                 /**
                  * setProperties is async, why is it not awaited?
                  */
-                // TODO @pavel
+                // TODO @ts-refactor
                 setProperties({
                     domain: data.websiteUrl
                 });
             }
 
-            delete data.id;
+            // TODO @ts-refactor
+            delete (data as any).id;
             const response = await update({ variables: { data } });
             const responseError = response.data?.pageBuilder.updateSettings.error;
             setError(responseError || null);

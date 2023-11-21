@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
-import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { Icon } from "@webiny/ui/Icon";
@@ -11,7 +11,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import * as SF from "@webiny/app-admin/components/SimpleForm";
 import { CmsEditorFormSettingsPlugin } from "~/types";
-import { listItem, ListItemTitle, listStyle, Title, TitleContent } from "./FormSettingsStyled";
+import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
 import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
@@ -65,7 +65,11 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                                 <SF.SimpleFormHeader title={activePlugin.title}>
                                     {typeof activePlugin.renderHeaderActions === "function" &&
                                         activePlugin.renderHeaderActions({
-                                            Bind,
+                                            /**
+                                             * TODO @ts-refactor
+                                             * Figure out type for Bind
+                                             */
+                                            Bind: Bind as any,
                                             form,
                                             formData
                                         })}
@@ -73,7 +77,11 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                                 <SF.SimpleFormContent>
                                     {activePlugin
                                         ? activePlugin.render({
-                                              Bind: Bind,
+                                              /**
+                                               * TODO @ts-refactor
+                                               * Figure out type for Bind
+                                               */
+                                              Bind: Bind as any,
                                               form,
                                               formData
                                           })

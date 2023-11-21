@@ -1,16 +1,7 @@
 import WebinyError from "@webiny/error";
-import { createTopic } from "@webiny/pubsub";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
-import {
-    ImportExportTaskStatus,
-    PagesImportExportCrud,
-    PbImportExportContext,
-    OnPagesBeforeExportTopicParams,
-    OnPagesAfterExportTopicParams,
-    OnPagesBeforeImportTopicParams,
-    OnPagesAfterImportTopicParams
-} from "~/types";
+import { ImportExportTaskStatus, PagesImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
@@ -30,29 +21,8 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         fullAccessPermissionName: "pb.*"
     });
 
-    // Export
-    const onPagesBeforeExport = createTopic<OnPagesBeforeExportTopicParams>(
-        "PageBuilder.onPagesBeforeExport"
-    );
-    const onPagesAfterExport = createTopic<OnPagesAfterExportTopicParams>(
-        "PageBuilder.onPagesAfterExport"
-    );
-
-    // Import
-    const onPagesBeforeImport = createTopic<OnPagesBeforeImportTopicParams>(
-        "PageBuilder.onPagesBeforeImport"
-    );
-    const onPagesAfterImport = createTopic<OnPagesAfterImportTopicParams>(
-        "PageBuilder.onPagesAfterImport"
-    );
-
     const importExportCrud: PagesImportExportCrud = {
-        onPagesBeforeExport,
-        onPagesAfterExport,
-        onPagesBeforeImport,
-        onPagesAfterImport,
-        async importPages(params) {
-            const { category: categorySlug, zipFileUrl, meta } = params;
+        async importPages({ category: categorySlug, zipFileUrl, meta }) {
             await pagesPermissions.ensure({ rwd: "w" });
 
             // Bail out early if category not found
@@ -74,7 +44,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
              * ImportPages
              * importPages
              */
-            await onPagesBeforeImport.publish({ params });
             await invokeHandlerClient<CreateHandlerPayload>({
                 context,
                 name: IMPORT_PAGES_CREATE_HANDLER,
@@ -88,15 +57,13 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 },
                 description: "Import Pages - create"
             });
-            await onPagesAfterImport.publish({ params });
 
             return {
                 task
             };
         },
 
-        async exportPages(params) {
-            const { ids: initialPageIds, revisionType, where, sort, search } = params;
+        async exportPages({ ids: initialPageIds, revisionType, where, sort, search }) {
             await pagesPermissions.ensure({ rwd: "w" });
 
             let pageIds: string[] = initialPageIds || [];
@@ -166,7 +133,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
              * ExportPages
              * exportPages
              */
-            await onPagesBeforeExport.publish({ params });
             // Invoke handler.
             await invokeHandlerClient<ExportPagesProcessHandlerPayload>({
                 context,
@@ -179,7 +145,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 },
                 description: "Export pages - process"
             });
-            await onPagesAfterExport.publish({ params });
 
             return { task };
         }

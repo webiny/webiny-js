@@ -141,7 +141,7 @@ module.exports = [
                     });
                     yargs.option("output", {
                         describe: `Specify the output destination to which all of the logs will be forwarded`,
-                        default: "simple",
+                        default: "terminal",
                         type: "string"
                     });
                     yargs.option("logs", {
@@ -153,11 +153,6 @@ module.exports = [
                         alias: "r",
                         describe: `Forward logs from deployed application code to your terminal (optionally accepts a glob pattern for filtering purposes)`,
                         type: "string"
-                    });
-                    yargs.option("show-timestamps", {
-                        alias: "t",
-                        describe: `Includes timestamps in the logs`,
-                        type: "boolean"
                     });
                     yargs.option("debug", {
                         default: false,

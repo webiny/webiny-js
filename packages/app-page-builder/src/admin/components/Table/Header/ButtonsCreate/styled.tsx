@@ -7,6 +7,7 @@ export const Container = styled("div")`
 
     > button {
         flex-shrink: 0;
+        margin-left: 8px;
     }
 
     > button:first-of-type {

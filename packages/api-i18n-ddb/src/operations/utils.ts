@@ -1,9 +1,9 @@
 import WebinyError from "@webiny/error";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export const getDocumentClient = (context: I18NContext): DynamoDBClient => {
-    const driver = context.db?.driver as unknown as { documentClient?: DynamoDBClient };
+export const getDocumentClient = (context: I18NContext): DocumentClient => {
+    const driver = context.db?.driver as any;
     if (!driver?.documentClient) {
         throw new WebinyError(
             `Missing documentDriver on the context db.driver property.`,
@@ -14,7 +14,7 @@ export const getDocumentClient = (context: I18NContext): DynamoDBClient => {
 };
 
 export const getTable = (context: I18NContext): string => {
-    const db = context.db;
+    const db = context.db as any;
     if (!db) {
         throw new WebinyError("Missing db on context.", "DB_ERROR");
     } else if (!db.table) {

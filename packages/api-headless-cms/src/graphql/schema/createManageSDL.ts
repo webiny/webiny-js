@@ -165,13 +165,11 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         extend type Mutation {
-            create${singularName}(data: ${singularName}Input!, options: CreateCmsEntryOptionsInput): ${singularName}Response
+            create${singularName}(data: ${singularName}Input!): ${singularName}Response
 
-            create${singularName}From(revision: ID!, data: ${singularName}Input, options: CreateRevisionCmsEntryOptionsInput): ${singularName}Response
+            create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
     
-            update${singularName}(revision: ID!, data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
-
-            validate${singularName}(revision: ID, data: ${singularName}Input!): CmsEntryValidationResponse!
+            update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
             
             move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 

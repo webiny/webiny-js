@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import get from "lodash/get";
-import { merge, set } from "dot-prop-immutable";
+import { set, merge } from "dot-prop-immutable";
 import cloneDeep from "lodash/cloneDeep";
 import { MutationUpdaterFn } from "apollo-client";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
@@ -59,15 +59,11 @@ export const DefaultOnPagePublish = () => {
         revision: Pick<PbPageData, "id" | "version">,
         options: PublishPageOptions
     ) => {
-        /**
-         * Error is due to options.mutationOptions
-         */
-        // @ts-expect-error
         const response = await options.client.mutate({
             mutation: PUBLISH_PAGE,
             variables: { id: revision.id },
             update: getUpdateCache(revision),
-            ...get(options, "mutationOptions", {})
+            ...(get(options, "mutationOptions", {}) as any)
         });
 
         const { error, data } = get(response, "data.pageBuilder.publishPage");

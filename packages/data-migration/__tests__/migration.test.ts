@@ -1,17 +1,10 @@
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { useHandler } from "~tests/useHandler";
 import { createTable } from "~/createTable";
 import { createDdbMigration } from "~tests/createDdbMigration";
-import {
-    MigrationInvocationErrorResponse,
-    MigrationItem,
-    MigrationRepository,
-    MigrationRun,
-    MigrationRunItem
-} from "~/types";
+import { MigrationInvocationErrorResponse, MigrationRepository, MigrationRunItem } from "~/types";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { createDdbProjectMigration } from "~/handlers/createDdbProjectMigration";
-import { DbItem, scan } from "@webiny/db-dynamodb";
 
 jest.retryTimes(0);
 
@@ -41,11 +34,13 @@ const groupMigrations = (migrations: MigrationRunItem[]) => {
 };
 
 describe("Migration Lambda Handler", () => {
-    const documentClient = getDocumentClient({
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-        tls: false,
+        sslEnabled: false,
         region: "local",
-        credentials: { accessKeyId: "test", secretAccessKey: "test" }
+        accessKeyId: "test",
+        secretAccessKey: "test"
     });
 
     const table = createTable({ name: String(process.env.DB_TABLE), documentClient });
@@ -68,9 +63,7 @@ describe("Migration Lambda Handler", () => {
         await handler({ version: "0.1.0" });
 
         // Doing this assertion using native table.scan, to verify the DynamoDB item structure.
-        const { items: Items, count: Count } = await scan<DbItem<MigrationRun | MigrationItem>>({
-            table
-        });
+        const { Items, Count } = await table.scan();
         expect(Count).toEqual(2);
 
         const migrationRecord = Items.find((item: { TYPE: string }) => item.TYPE === "migration");

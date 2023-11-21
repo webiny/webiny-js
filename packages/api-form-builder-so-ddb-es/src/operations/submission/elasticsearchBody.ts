@@ -1,8 +1,9 @@
-import { PrimitiveValue, SearchBody as esSearchBody } from "elastic-ts";
+import { SearchBody as esSearchBody } from "elastic-ts";
 import {
-    applyWhere,
+    decodeCursor,
     createLimit,
     createSort,
+    applyWhere,
     ElasticsearchQueryBuilderOperatorPlugin
 } from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
@@ -114,7 +115,7 @@ interface CreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     where: FormBuilderStorageOperationsListSubmissionsParams["where"];
     limit: number;
-    after?: PrimitiveValue[];
+    after?: string;
     sort: string[];
 }
 
@@ -172,7 +173,12 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
             }
         },
         size: limit + 1,
-        search_after: after,
+        /**
+         * Casting as any is required due to search_after is accepting an array of values.
+         * Which is correct in some cases. In our case, it is not.
+         * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
+         */
+        search_after: decodeCursor(after) as any,
         sort
     };
 

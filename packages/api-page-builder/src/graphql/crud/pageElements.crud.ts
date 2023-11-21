@@ -57,6 +57,15 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
 
     return {
         /**
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
+         */
+        onBeforePageElementCreate: onPageElementBeforeCreate,
+        onAfterPageElementCreate: onPageElementAfterCreate,
+        onBeforePageElementUpdate: onPageElementBeforeUpdate,
+        onAfterPageElementUpdate: onPageElementAfterUpdate,
+        onBeforePageElementDelete: onPageElementBeforeDelete,
+        onAfterPageElementDelete: onPageElementAfterDelete,
+        /**
          * Introduced in 5.34.0
          */
         onPageElementBeforeCreate,
@@ -243,14 +252,13 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                 await onPageElementBeforeDelete.publish({
                     pageElement
                 });
-
-                await storageOperations.pageElements.delete({
+                const result = await storageOperations.pageElements.delete({
                     pageElement
                 });
-
                 await onPageElementAfterDelete.publish({
-                    pageElement
+                    pageElement: result
                 });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page element.",

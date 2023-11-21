@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [
-    { "path": "../lexical-nodes" },
-    { "path": "../lexical-theme" },
-    { "path": "../react-composition" },
-    { "path": "../react-properties" }
-  ],
+  "references": [{ "path": "../react-composition" }, { "path": "../react-properties" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -14,10 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/lexical-nodes/*": ["../lexical-nodes/src/*"],
-      "@webiny/lexical-nodes": ["../lexical-nodes/src"],
-      "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
-      "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],

@@ -7,14 +7,13 @@ import { Button, Icon, IconContainer } from "./styled";
 
 type CreateButtonProps = {
     onClick: () => void;
-    disabled?: boolean;
 };
 
 const t = i18n.ns("app-aco/components/folder-tree/button-create");
 
-export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick, disabled }) => {
+export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick }) => {
     return (
-        <Button onClick={onClick} disabled={disabled}>
+        <Button onClick={onClick}>
             <IconContainer>
                 <Icon />
             </IconContainer>

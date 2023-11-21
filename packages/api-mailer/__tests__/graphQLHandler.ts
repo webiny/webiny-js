@@ -10,7 +10,6 @@ import { MailerContext } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
 import { createHandlerPlugins, CreateHandlerParams } from "./handlerPlugins";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
@@ -76,8 +75,8 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
+            } as any,
+            {} as any
         );
         if (httpMethod === "OPTIONS" && !response.body) {
             return [null, response];

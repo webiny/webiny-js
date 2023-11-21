@@ -1,5 +1,10 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
+export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 /**
  * @internal
@@ -24,7 +29,7 @@ export enum ENTITIES {
 }
 
 export interface SecurityStorageParams {
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
     table?: string;
     attributes?: Record<ENTITIES, Attributes>;
 }

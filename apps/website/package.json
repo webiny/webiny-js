@@ -50,7 +50,6 @@
   "adio": {
     "ignore": {
       "src": [
-        "@webiny/aws-sdk",
         "@webiny/handler-aws",
         "@webiny/api-prerendering-service-aws",
         "@webiny/api-prerendering-service-so-ddb"

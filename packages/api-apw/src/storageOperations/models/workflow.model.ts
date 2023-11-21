@@ -1,6 +1,6 @@
 import { createModelField } from "./utils";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-import { WorkflowModelDefinition, WorkflowScopeTypes } from "~/types";
+import { WorkflowModelDefinition } from "~/types";
 
 const titleField = () =>
     createModelField({
@@ -131,12 +131,16 @@ const scopeTypeField = () =>
             enabled: true,
             values: [
                 {
-                    value: WorkflowScopeTypes.DEFAULT,
+                    value: "default",
                     label: "Default  - Catch all scope that applies to all content that's being published."
                 },
                 {
-                    value: WorkflowScopeTypes.CUSTOM,
-                    label: "Custom - The workflow will be applied to all selected content."
+                    value: "pageBuilder",
+                    label: "Page category (Page Builder only) - The workflow will apply to all pages inside specific categories."
+                },
+                {
+                    value: "cms",
+                    label: "Content model (Headless CMS only) - The workflow will apply to all the content inside the specific content models. "
                 }
             ]
         }

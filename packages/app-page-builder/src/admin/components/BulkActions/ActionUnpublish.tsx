@@ -63,13 +63,12 @@ export const ActionUnpublish = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Unpublish pages",
-                    message: "Finished unpublishing pages! See full report below:"
+                    message: "Operation completed, here below you find the complete report:"
                 });
             }
         });
 
     if (!canUnpublish()) {
-        console.log("You don't have permissions to unpublish pages.");
         return null;
     }
 

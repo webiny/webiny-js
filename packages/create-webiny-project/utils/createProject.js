@@ -121,34 +121,9 @@ module.exports = async function createProject({
                 // Setup yarn
                 title: "Setup yarn",
                 task: async () => {
-                    const yarnVersion = "3.6.4";
-                    const yarnFile = `yarn-${yarnVersion}.cjs`;
-                    const yarnPath = `.yarn`;
-                    const yarnReleasesPath = path.join(yarnPath, "releases");
-                    const yarnReleasesFilePath = path.join(yarnReleasesPath, yarnFile);
-
-                    /**
-                     * We do not want to do the recursive directory creating as it might do something in parent directories which we do not want.
-                     */
-                    const yarnReleaseFullPath = path.join(projectRoot, yarnReleasesPath);
-                    fs.ensureDirSync(yarnReleaseFullPath);
-
-                    const source = path.join(__dirname, path.join("binaries", yarnFile));
-                    if (!fs.existsSync(source)) {
-                        throw new Error(`No yarn binary source file: ${source}`);
-                    }
-                    const target = path.join(projectRoot, yarnReleasesFilePath);
-                    fs.copyFileSync(source, target);
-
-                    await execa("yarn", ["set", "version", yarnVersion], {
-                        cwd: projectRoot
-                    });
+                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
-                    if (!fs.existsSync(yamlPath)) {
-                        fs.writeFileSync(yamlPath, `yarnPath: ${yarnReleasesFilePath}`, "utf-8");
-                    }
-
                     const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
 
                     // Default settings are applied here. Currently we only apply the `nodeLinker` param.

@@ -1,6 +1,5 @@
 import { createHandler } from "~/raw";
 import { EventPlugin } from "@webiny/handler";
-import { LambdaContext } from "./types";
 
 describe("raw", () => {
     it("should exec event and output should not be transformed into reply", async () => {
@@ -18,7 +17,7 @@ describe("raw", () => {
             {
                 input: 1
             },
-            {} as LambdaContext
+            {} as any
         );
 
         expect(result).toEqual({
@@ -42,7 +41,7 @@ describe("raw", () => {
             {
                 input: 1
             },
-            {} as LambdaContext
+            {} as any
         );
 
         expect(result).toMatchObject({

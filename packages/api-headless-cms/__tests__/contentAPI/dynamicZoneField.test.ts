@@ -3,7 +3,6 @@ import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
-import { CmsModel } from "~tests/types";
 
 const singularPageApiName = pageModel.singularApiName;
 
@@ -277,10 +276,7 @@ describe("dynamicZone field", () => {
     });
 
     beforeEach(async () => {
-        await setupGroupAndModels({
-            manager: manage,
-            models: ["author", pageModel as unknown as CmsModel]
-        });
+        await setupGroupAndModels({ manager: manage, models: ["author", pageModel as any] });
         await setupAuthor({
             manager: authorManager
         });

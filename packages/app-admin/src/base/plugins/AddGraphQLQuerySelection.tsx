@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { plugins } from "@webiny/plugins";
-import { generateId } from "@webiny/utils";
+import { nanoid } from "nanoid";
 import { AddQuerySelectionPlugin } from "@webiny/app/plugins/AddQuerySelectionPlugin";
 import { DocumentNode } from "graphql";
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const AddGraphQLQuerySelection: React.FC<Props> = props => {
-    const [name] = useState(`AddGraphQLQuerySelection:${props.operationName}:${generateId()}`);
+    const [name] = useState(`AddGraphQLQuerySelection:${props.operationName}:${nanoid()}`);
 
     useEffect(() => {
         const plugin = new AddQuerySelectionPlugin(props);

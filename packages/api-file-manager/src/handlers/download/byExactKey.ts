@@ -1,4 +1,4 @@
-import { S3, getSignedUrl, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
+import S3 from "aws-sdk/clients/s3";
 import { getEnvironment } from "../utils";
 import { RoutePlugin } from "@webiny/handler-aws/gateway";
 import { getS3Object, isSmallObject } from "~/handlers/download/getS3Object";
@@ -30,14 +30,11 @@ export const createDownloadFileByExactKeyPlugins = () => {
 
                 console.log("This is a large object; redirecting to a presigned URL.");
 
-                const presignedUrl = getSignedUrl(
-                    s3,
-                    new GetObjectCommand({
-                        Bucket: params.Bucket,
-                        Key: params.Key
-                    }),
-                    { expiresIn: PRESIGNED_URL_EXPIRATION }
-                );
+                const presignedUrl = s3.getSignedUrl("getObject", {
+                    Bucket: params.Bucket,
+                    Key: params.Key,
+                    Expires: PRESIGNED_URL_EXPIRATION
+                });
 
                 // Lambda can return max 6MB of content, so if our object's size is larger, we are sending
                 // a 301 Redirect, redirecting the user to the public URL of the object in S3.

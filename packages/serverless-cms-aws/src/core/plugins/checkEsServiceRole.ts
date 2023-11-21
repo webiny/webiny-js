@@ -1,4 +1,4 @@
-import { IAM } from "@webiny/aws-sdk/client-iam";
+import IAM from "aws-sdk/clients/iam";
 import ora from "ora";
 import { green } from "chalk";
 import { CliContext } from "@webiny/cli/types";
@@ -13,7 +13,9 @@ export const checkEsServiceRole = {
         spinner.start(`Checking Elastic Search service role...`);
         const iam = new IAM();
         try {
-            await iam.getRole({ RoleName: "AWSServiceRoleForAmazonElasticsearchService" });
+            await iam
+                .getRole({ RoleName: "AWSServiceRoleForAmazonElasticsearchService" })
+                .promise();
 
             spinner.stopAndPersist({
                 symbol: green("✔"),
@@ -36,7 +38,7 @@ export const checkEsServiceRole = {
             spinner.text = "Creating Elastic Search service role...";
 
             try {
-                await iam.createServiceLinkedRole({ AWSServiceName: "es.amazonaws.com" });
+                await iam.createServiceLinkedRole({ AWSServiceName: "es.amazonaws.com" }).promise();
 
                 spinner.stop();
             } catch (err) {

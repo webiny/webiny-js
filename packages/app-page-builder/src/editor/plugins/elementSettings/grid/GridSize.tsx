@@ -5,12 +5,12 @@ import { useRecoilValue } from "recoil";
 import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
-import { Cell, Grid } from "@webiny/ui/Grid";
+import { Grid, Cell } from "@webiny/ui/Grid";
 import {
     DisplayMode,
-    PbEditorElement,
     PbEditorGridPresetPluginType,
-    PbEditorPageElementSettingsRenderComponentProps
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorElement
 } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { createElement } from "../../../helpers";
@@ -163,7 +163,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                 element: {
                     ...newElement,
                     elements: updatedCells
-                },
+                } as any,
                 history: true
             })
         );
@@ -189,7 +189,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                             }
                         }
                     },
-                    elements: updateChildrenWithPreset(element, pl, currentRowCount)
+                    elements: updateChildrenWithPreset(element, pl, currentRowCount) as any
                 },
                 history: true
             })
@@ -215,7 +215,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             new UpdateElementActionEvent({
                 element: {
                     ...newElement,
-                    elements: updateCells(newElement, rowCount, columnsCount)
+                    elements: updateCells(newElement, rowCount, columnsCount) as any
                 },
                 history: true
             })

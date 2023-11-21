@@ -31,7 +31,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
         createTenancyGraphQL(),
         createSecurityContext({
-            storageOperations: securityStorage.storageOperations
+            storageOperations: securityStorage.storageOperations,
+            verifyIdentityToTenantLink: false
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {

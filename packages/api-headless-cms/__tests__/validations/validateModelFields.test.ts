@@ -79,7 +79,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel()
             });
         } catch (ex) {
@@ -94,7 +93,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel()
             });
         } catch (ex) {
@@ -109,7 +107,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textField],
                     layout: [[textField.id]]
@@ -131,7 +128,6 @@ describe("Validate model fields", () => {
             context.plugins = new PluginsContainer();
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textField],
                     layout: [[textField.id]]
@@ -152,7 +148,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textFieldWithoutFieldId],
                     layout: [[textFieldWithoutFieldId.id]]
@@ -178,7 +173,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedId],
                     layout: [[textField.id], [textFieldWithDuplicatedId.id]]
@@ -201,7 +195,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedFieldId],
                     layout: [[textField.id], [textFieldWithDuplicatedFieldId.id]]
@@ -221,7 +214,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [textField, textFieldWithDuplicatedStorageId],
                     layout: [[textField.id], [textFieldWithDuplicatedStorageId.id]]
@@ -239,7 +231,6 @@ describe("Validate model fields", () => {
     it("should assign fieldId to the storageId on locked field", async () => {
         await validateModelFields({
             context,
-            models: [],
             model: createModel({
                 fields: [textField, textFieldWithoutStorageId],
                 layout: [[textField.id], [textFieldWithoutStorageId.id]],
@@ -263,7 +254,6 @@ describe("Validate model fields", () => {
         };
         await validateModelFields({
             context,
-            models: [],
             model: createModel({
                 fields: [field],
                 layout: [[field.id]]
@@ -284,7 +274,6 @@ describe("Validate model fields", () => {
         };
         await validateModelFields({
             context,
-            models: [],
             model: createModel({
                 fields: [field],
                 layout: [[field.id]]
@@ -301,7 +290,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [field],
                     layout: [[field.id]]
@@ -326,7 +314,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [field],
                     layout: [[field.id]]
@@ -351,7 +338,6 @@ describe("Validate model fields", () => {
         try {
             await validateModelFields({
                 context,
-                models: [],
                 model: createModel({
                     fields: [field],
                     layout: [[field.id]]

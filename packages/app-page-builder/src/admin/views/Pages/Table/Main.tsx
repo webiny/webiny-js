@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useFolders } from "@webiny/app-aco";
+import { FolderDialogCreate } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -53,17 +53,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
     const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
-    // We check permissions on two layers - security and folder level permissions.
     const { canCreate } = usePagesPermissions();
-    const { folderLevelPermissions: flp } = useFolders();
-
-    const canCreateFolder = useMemo(() => {
-        return flp.canManageStructure(folderId);
-    }, [flp, folderId]);
-
-    const canCreateContent = useMemo(() => {
-        return canCreate() && flp.canManageContent(folderId);
-    }, [flp, folderId]);
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -112,8 +102,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreateFolder={canCreateFolder}
-                    canCreateContent={canCreateContent}
+                    canCreate={canCreate()}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
@@ -128,8 +117,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreateFolder={canCreateFolder}
-                            canCreateContent={canCreateContent}
+                            canCreate={canCreate()}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
                         />

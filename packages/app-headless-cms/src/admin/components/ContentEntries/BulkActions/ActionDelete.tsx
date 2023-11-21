@@ -1,12 +1,11 @@
 import React, { useMemo } from "react";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useContentEntry } from "~/admin/hooks";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
-export const ActionDelete = observer(() => {
+const ActionDelete = () => {
     const { deleteEntry } = useCms();
     const { contentModel } = useContentEntry();
     const { removeRecordFromCache } = useRecords();
@@ -17,7 +16,8 @@ export const ActionDelete = observer(() => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.items.length);
+        const count = worker.items.length || 0;
+        return `${count} ${count === 1 ? "entry" : "entries"}`;
     }, [worker.items.length]);
 
     const openDeleteEntriesDialog = () =>
@@ -61,7 +61,7 @@ export const ActionDelete = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Delete entries",
-                    message: "Finished deleting entries! See full report below:"
+                    message: "Operation completed, here below you find the complete report:"
                 });
             }
         });
@@ -74,4 +74,6 @@ export const ActionDelete = observer(() => {
             tooltipPlacement={"bottom"}
         />
     );
-});
+};
+
+export default observer(ActionDelete);

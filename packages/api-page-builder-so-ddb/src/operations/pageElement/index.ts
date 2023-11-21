@@ -7,7 +7,7 @@ import {
     PageElementStorageOperationsListParams,
     PageElementStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -16,7 +16,6 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageElementDynamoDbFieldPlugin } from "~/plugins/definitions/PageElementDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -55,13 +54,10 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...pageElement,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                ...pageElement,
+                TYPE: createType(),
+                ...keys
             });
             return pageElement;
         } catch (ex) {
@@ -84,13 +80,10 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...pageElement,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                ...pageElement,
+                TYPE: createType(),
+                ...keys
             });
             return pageElement;
         } catch (ex) {
@@ -114,10 +107,8 @@ export const createPageElementStorageOperations = ({
         };
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
+            return pageElement;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete pageElement.",
@@ -138,10 +129,11 @@ export const createPageElementStorageOperations = ({
             SK: createSortKey(where)
         };
         try {
-            return await getClean<PageElement>({
-                entity,
-                keys
-            });
+            const result = await entity.get(keys);
+            if (!result || !result.Item) {
+                return null;
+            }
+            return cleanupItem(entity, result.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page element by given parameters.",

@@ -50,7 +50,7 @@ describe("Elasticsearch Japanese", () => {
             index: indexTestName
         });
 
-        expect(settingsResponse.body).toMatchObject({
+        expect(settingsResponse.body).toEqual({
             [indexTestName]: {
                 settings: {
                     ...japanese.settings,

@@ -1,7 +1,6 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/renderAllPages";
 import { mdbid } from "@webiny/utils";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 describe("Render All Pages Test", () => {
     const plugin = {
@@ -35,7 +34,7 @@ describe("Render All Pages Test", () => {
         const queueJobsRecords = await storageOperations.listQueueJobs();
         expect(queueJobsRecords).toHaveLength(6);
 
-        const handlerResponse = await handler({}, {} as LambdaContext);
+        const handlerResponse = await handler({}, {} as any);
         expect(handlerResponse).toEqual({
             data: {
                 stats: {
@@ -75,7 +74,7 @@ describe("Render All Pages Test", () => {
         const queueJobsRecords = await storageOperations.listQueueJobs();
         expect(queueJobsRecords).toHaveLength(9);
 
-        const handlerResponse = await handler({}, {} as LambdaContext);
+        const handlerResponse = await handler({}, {} as any);
 
         expect(handlerResponse).toEqual({
             data: {

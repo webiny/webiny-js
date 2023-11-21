@@ -7,8 +7,6 @@ import { createAdminSettingsContext } from "~/index";
 import { createTable } from "~/storage/definitions/table";
 import { createSettingsEntity } from "~/storage/definitions/settings";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { TenancyContext } from "@webiny/api-tenancy/types";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 export const createMockContextHandler = () => {
     const tableName = process.env.DB_TABLE as string;
@@ -32,12 +30,8 @@ export const createMockContextHandler = () => {
     const handler = createRawHandler<any, AdminSettingsContext>({
         plugins: [
             new ContextPlugin<AdminSettingsContext>(async context => {
-                (context as TenancyContext).tenancy = {
-                    /**
-                     * Determine correct return type.
-                     */
-                    // @ts-expect-error
-                    getCurrentTenant() {
+                (context as any).tenancy = {
+                    getCurrentTenant: () => {
                         return {
                             id: "root"
                         };
@@ -57,7 +51,7 @@ export const createMockContextHandler = () => {
 
     return {
         handle: () => {
-            return handler({}, {} as LambdaContext);
+            return handler({}, {} as any);
         },
         documentClient,
         table,

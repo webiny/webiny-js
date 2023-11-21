@@ -6,6 +6,5 @@ export const WCP_FEATURE_LABEL = {
     seats: "User Seats",
     multiTenancy: "Multi-tenancy",
     advancedPublishingWorkflow: "Advanced Publishing Workflow (APW)",
-    advancedAccessControlLayer: "Advanced Access Control Layer (ACL)",
-    auditLogs: "Audit Logs"
+    advancedAccessControlLayer: "Advanced Access Control Layer (ACL)"
 };

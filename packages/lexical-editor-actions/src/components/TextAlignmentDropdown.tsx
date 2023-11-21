@@ -1,14 +1,15 @@
 import React from "react";
-import { $isParentElementRTL } from "@lexical/selection";
-import { Divider, DropDown, DropDownItem, useTextAlignmentAction } from "@webiny/lexical-editor";
-import { useDeriveValueFromSelection } from "@webiny/lexical-editor/hooks/useCurrentSelection";
+import {
+    Divider,
+    DropDown,
+    DropDownItem,
+    useRichTextEditor,
+    useTextAlignmentAction
+} from "@webiny/lexical-editor";
 
 export const TextAlignmentDropdown = () => {
+    const { textBlockSelection } = useRichTextEditor();
     const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
-
-    const isRTL = useDeriveValueFromSelection(({ rangeSelection }) => {
-        return rangeSelection ? $isParentElementRTL(rangeSelection) : false;
-    });
 
     return (
         <DropDown
@@ -60,7 +61,9 @@ export const TextAlignmentDropdown = () => {
                 }}
                 className="item"
             >
-                <i className={"icon " + (isRTL ? "indent" : "outdent")} />
+                <i
+                    className={"icon " + (textBlockSelection?.state?.isRTL ? "indent" : "outdent")}
+                />
                 <span className="text">Outdent</span>
             </DropDownItem>
             <DropDownItem
@@ -69,7 +72,9 @@ export const TextAlignmentDropdown = () => {
                 }}
                 className="item"
             >
-                <i className={"icon " + (isRTL ? "outdent" : "indent")} />
+                <i
+                    className={"icon " + (textBlockSelection?.state?.isRTL ? "outdent" : "indent")}
+                />
                 <span className="text">Indent</span>
             </DropDownItem>
         </DropDown>

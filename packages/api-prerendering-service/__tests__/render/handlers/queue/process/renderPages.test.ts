@@ -3,7 +3,6 @@ import createRenderEntry from "./mocks/createRenderEntry";
 import createTagLinkEntry from "./mocks/createTagLinkEntry";
 import createQueueJobEntry from "./mocks/createQueueJobEntry";
 import { Render, RenderEvent, TagPathLink } from "~/types";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 const tenant = "root";
 const locale = "en-US";
@@ -288,7 +287,7 @@ describe("Render Pages Test", () => {
             }
         ]);
 
-        const handlerResponse = await handler({}, {} as LambdaContext);
+        const handlerResponse = await handler({}, {} as any);
         expect(handlerResponse).toEqual({
             data: {
                 stats: {

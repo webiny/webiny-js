@@ -7,7 +7,7 @@ import {
     PageTemplateStorageOperationsListParams,
     PageTemplateStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -17,7 +17,6 @@ import { PageTemplateDynamoDbElasticFieldPlugin } from "~/plugins/definitions/Pa
 import { PluginsContainer } from "@webiny/plugins";
 import { createGSI1PK, createPrimaryPK } from "./keys";
 import { DataContainer, PageTemplateStorageOperations } from "~/types";
-import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.pageTemplate";
@@ -132,13 +131,10 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: pageTemplate,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                data: pageTemplate,
+                TYPE: createType(),
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -167,13 +163,10 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: pageTemplate,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                data: pageTemplate,
+                TYPE: createType(),
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -202,9 +195,9 @@ export const createPageTemplateStorageOperations = ({
         };
 
         try {
-            await deleteItem({
-                entity,
-                keys
+            await entity.delete({
+                data: pageTemplate,
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.

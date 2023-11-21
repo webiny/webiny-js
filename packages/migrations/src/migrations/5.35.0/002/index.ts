@@ -1,6 +1,6 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { DataMigrationContext, PrimaryDynamoTableSymbol } from "@webiny/data-migration";
-import { queryAll, queryOne } from "~/utils";
+import { queryOne, queryAll } from "~/utils";
 import { createTenantEntity } from "./createTenantEntity";
 import {
     createLegacySettingsEntity,
@@ -8,8 +8,7 @@ import {
     getSettingsData
 } from "./createSettingsEntity";
 import { createLocaleEntity } from "./createLocaleEntity";
-import { inject, makeInjectable } from "@webiny/ioc";
-import { put } from "@webiny/db-dynamodb";
+import { makeInjectable, inject } from "@webiny/ioc";
 
 export class PageBuilder_5_35_0_002 {
     private readonly newSettingsEntity: ReturnType<typeof createSettingsEntity>;
@@ -17,7 +16,7 @@ export class PageBuilder_5_35_0_002 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    constructor(table: Table<string, string, string>) {
+    constructor(table: Table) {
         this.newSettingsEntity = createSettingsEntity(table);
         this.legacySettingsEntity = createLegacySettingsEntity(table);
         this.tenantEntity = createTenantEntity(table);
@@ -112,16 +111,13 @@ export class PageBuilder_5_35_0_002 {
                 }
 
                 logger.info(`Updating PB settings for tenant ${tenant.name} (${tenant.id}).`);
-                await put({
-                    entity: this.newSettingsEntity,
-                    item: {
-                        PK: `T#${tenant.id}#L#${locale.code}#PB#SETTINGS`,
-                        SK: "A",
-                        TYPE: "pb.settings",
-                        data: {
-                            ...getSettingsData(settings),
-                            tenant: tenant.id
-                        }
+                await this.newSettingsEntity.put({
+                    PK: `T#${tenant.id}#L#${locale.code}#PB#SETTINGS`,
+                    SK: "A",
+                    TYPE: "pb.settings",
+                    data: {
+                        ...getSettingsData(settings),
+                        tenant: tenant.id
                     }
                 });
             }

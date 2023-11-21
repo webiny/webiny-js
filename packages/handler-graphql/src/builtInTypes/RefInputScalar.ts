@@ -1,38 +1,11 @@
 import { GraphQLScalarType } from "graphql";
 
-const tests = [
-    {
-        re: /^([0-9a-zA-Z_-]+)$/,
-        message: "Must be a string matching a-z, A-Z, 0-9, underscore (_) or dash(-)!"
-    },
-    {
-        re: /^-/,
-        message: "Must not start with a dash (-)!"
-    },
-    {
-        re: /-$/,
-        message: "Must not end with a dash (-)!"
-    },
-    {
-        re: /^_/,
-        message: "Must not start with an underscore (_)!"
-    },
-    {
-        re: /_$/,
-        message: "Must not end with an underscore (_)!"
+const isMongoId = (value: any): string => {
+    if (/^[0-9a-fA-F]{24}$/.test(value)) {
+        return value;
     }
-];
 
-const isValidId = (value: any): string => {
-    if (typeof value !== "string" || value.length < 1) {
-        throw new Error("Must be a string with at least 1 character!");
-    }
-    for (const test of tests) {
-        if (test.re.test(value) === null) {
-            throw new Error(test.message);
-        }
-    }
-    return value;
+    throw new Error("Must be a valid Mongo ID!");
 };
 
 export const RefInputScalar = new GraphQLScalarType({
@@ -52,18 +25,18 @@ export const RefInputScalar = new GraphQLScalarType({
         }
 
         if (typeof value === "string") {
-            return isValidId(value);
+            return isMongoId(value);
         }
 
         if ("id" in value) {
-            return isValidId(value.id);
+            return isMongoId(value.id);
         }
 
         throw new Error("Invalid RefInput value!");
     },
     parseLiteral: ast => {
         if (ast.kind === "StringValue") {
-            return isValidId(ast.value);
+            return isMongoId(ast.value);
         }
 
         if (ast.kind === "ObjectValue") {
@@ -71,7 +44,7 @@ export const RefInputScalar = new GraphQLScalarType({
                 const { name, value } = ast.fields[i];
                 if (name.value === "id") {
                     // @ts-ignore
-                    return isValidId(value.value);
+                    return isMongoId(value.value);
                 }
             }
         }

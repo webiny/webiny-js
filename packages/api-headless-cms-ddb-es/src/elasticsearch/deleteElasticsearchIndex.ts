@@ -3,19 +3,19 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 
 interface DeleteElasticsearchIndexParams {
-    client: Client;
+    elasticsearch: Client;
     model: CmsModel;
 }
 
 export const deleteElasticsearchIndex = async (
     params: DeleteElasticsearchIndexParams
 ): Promise<void> => {
-    const { client, model } = params;
+    const { elasticsearch, model } = params;
 
     const { index } = configurations.es({
         model
     });
-    const { body: exists } = await client.indices.exists({
+    const { body: exists } = await elasticsearch.indices.exists({
         index
     });
     if (!exists) {
@@ -23,7 +23,7 @@ export const deleteElasticsearchIndex = async (
     }
 
     try {
-        await client.indices.delete({
+        await elasticsearch.indices.delete({
             index,
             ignore_unavailable: true
         });

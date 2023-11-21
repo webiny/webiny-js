@@ -5,7 +5,7 @@ const plugin: FbFormFieldPatternValidatorPlugin = {
     name: "form-field-validator-pattern-url",
     pattern: {
         name: "url",
-        regex: "^((ftp|http|https):\\/\\/)?([a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)+.*)$",
+        regex: "^(ftp|http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$",
         flags: "i"
     }
 };

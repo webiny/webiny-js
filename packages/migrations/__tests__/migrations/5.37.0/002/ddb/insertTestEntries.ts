@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { CmsEntry, Identity } from "~/migrations/5.37.0/002/types";
 import { insertDynamoDbTestData } from "~tests/utils";
 
@@ -64,10 +64,7 @@ interface Options {
     maxItems?: number;
 }
 
-export const insertTestEntries = async (
-    table: Table<string, string, string>,
-    options?: Options
-) => {
+export const insertTestEntries = async (table: Table, options?: Options) => {
     const maxItems = options?.maxItems || defaultMaxItems;
     for (const tenant of tenants) {
         const items = [];

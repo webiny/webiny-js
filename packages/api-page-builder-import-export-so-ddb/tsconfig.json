@@ -3,7 +3,6 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-page-builder-import-export" },
-    { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../api-security" },
@@ -20,8 +19,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-page-builder-import-export/*": ["../api-page-builder-import-export/src/*"],
       "@webiny/api-page-builder-import-export": ["../api-page-builder-import-export/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

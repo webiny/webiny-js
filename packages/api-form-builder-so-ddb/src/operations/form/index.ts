@@ -14,8 +14,9 @@ import {
     FormBuilderStorageOperationsUnpublishFormParams,
     FormBuilderStorageOperationsUpdateFormParams
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -28,7 +29,7 @@ import {
 } from "~/types";
 import { FormDynamoDbFieldPlugin } from "~/plugins/FormDynamoDbFieldPlugin";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
-import { getClean } from "@webiny/db-dynamodb/utils/get";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 type DbRecord<T = any> = T & {
     PK: string;
@@ -53,7 +54,7 @@ interface GsiKeys {
 
 export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
-    table: Table<string, string, string>;
+    table: Table;
     plugins: PluginsContainer;
 }
 
@@ -343,7 +344,8 @@ export const createFormStorageOperations = (
         };
 
         try {
-            return await getClean<FbForm>({ entity, keys });
+            const item = await get<FbForm>({ entity, keys });
+            return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get form by keys.",
@@ -495,7 +497,7 @@ export const createFormStorageOperations = (
             entity,
             partitionKey: createFormPartitionKey(form),
             options: {
-                beginsWith: form.formId || undefined
+                beginsWith: form.formId
             }
         };
         try {

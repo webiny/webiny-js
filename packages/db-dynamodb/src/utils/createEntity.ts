@@ -1,7 +1,8 @@
-import { AttributeDefinitions, Entity, Table } from "~/toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
+import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
 
 interface CreateStandardEntityParams {
-    table: Table<string, string, string>;
+    table: Table;
     name: string;
 }
 
@@ -33,9 +34,9 @@ export const createStandardEntity = (params: CreateStandardEntityParams): Entity
 };
 
 interface CreateLegacyEntityParams {
-    table: Table<string, string, string>;
+    table: Table;
     name: string;
-    attributes?: AttributeDefinitions;
+    attributes?: EntityAttributes;
 }
 
 export const createLegacyEntity = (params: CreateLegacyEntityParams) => {

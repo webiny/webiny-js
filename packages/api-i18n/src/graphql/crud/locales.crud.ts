@@ -183,10 +183,6 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale: result
                     });
                 }
-
-                // We want to reload the internally cached locales after a new locale is created.
-                await context.i18n.reloadLocales();
-
                 await onLocaleAfterCreate.publish({
                     context,
                     locale: result,
@@ -255,10 +251,6 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale
                     });
                 }
-
-                // We want to reload the internally cached locales after a locale is updated.
-                await context.i18n.reloadLocales();
-
                 await onLocaleAfterUpdate.publish({
                     context,
                     locale: result,
@@ -308,10 +300,6 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await storageOperations.delete({
                     locale
                 });
-
-                // We want to reload the internally cached locales after a locale is deleted.
-                await context.i18n.reloadLocales();
-
                 await onLocaleAfterDelete.publish({
                     context,
                     locale,

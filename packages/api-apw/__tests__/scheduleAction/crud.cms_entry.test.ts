@@ -5,7 +5,6 @@ import {
     ApwScheduleActionCrud,
     ApwScheduleActionTypes
 } from "~/scheduler/types";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 const ONE_MINUTE = 1000 * 60;
 const TIME_SEPARATOR = ":";
@@ -35,7 +34,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as LambdaContext
+            {} as any
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -160,7 +159,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as LambdaContext
+            {} as any
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -253,7 +252,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as LambdaContext
+            {} as any
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -329,7 +328,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as LambdaContext
+            {} as any
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -427,7 +426,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as LambdaContext
+            {} as any
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
 

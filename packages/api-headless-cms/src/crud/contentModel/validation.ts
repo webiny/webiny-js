@@ -135,10 +135,7 @@ const fieldSchema = zod.object({
         .default({})
 });
 
-const apiNameRefinementValidation = (value: string): boolean => {
-    if (value.match(/^[A-Z]/) === null) {
-        return false;
-    }
+const refinementValidation = (value: string): boolean => {
     return value === upperFirst(camelCase(value));
 };
 const refinementSingularValidationMessage = (value?: string) => {
@@ -156,49 +153,15 @@ const refinementPluralValidationMessage = (value?: string) => {
     };
 };
 
-const refinementModelIdValidation = (value?: string) => {
-    if (!value) {
-        return true;
-    } else if (value.match(/^[a-zA-Z]/) === null) {
-        return false;
-    }
-    const camelCasedValue = camelCase(value).toLowerCase();
-    return camelCasedValue === value.toLowerCase();
-};
-const refinementModelIdValidationMessage = (value?: string) => {
-    if (!value) {
-        return {};
-    } else if (value.match(/^[a-zA-Z]/) === null) {
-        return {
-            message: `The modelId "${value}" is not valid. It must start with a A-Z or a-z.`
-        };
-    }
-    return {
-        message: `The modelId "${value}" is not valid.`
-    };
-};
-
-const modelIdTransformation = (value?: string) => {
-    if (!value) {
-        return value;
-    }
-    const camelCasedValue = camelCase(value);
-    if (camelCasedValue.toLowerCase() === value.toLowerCase()) {
-        return value;
-    }
-    return camelCasedValue;
-};
-
 export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
-        modelId: optionalShortString.transform(modelIdTransformation),
-        singularApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementSingularValidationMessage),
-        pluralApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
+        modelId: optionalShortString,
+        singularApiName: shortString.refine(
+            refinementValidation,
+            refinementSingularValidationMessage
+        ),
+        pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
         icon: optionalNullishShortString,
@@ -212,52 +175,15 @@ export const createModelCreateValidation = () => {
     });
 };
 
-export const createModelImportValidation = () => {
-    return zod.object({
-        name: shortString.min(1).refine(
-            value => {
-                return value.match(/[a-zA-Z]/) !== null;
-            },
-            value => {
-                return {
-                    message: `The name "${value}" is not valid.`
-                };
-            }
-        ),
-        modelId: shortString
-            .min(1)
-            .refine(refinementModelIdValidation, refinementModelIdValidationMessage)
-            .transform(modelIdTransformation),
-        singularApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementSingularValidationMessage),
-        pluralApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
-        description: optionalNullishShortString,
-        group: shortString,
-        icon: optionalNullishShortString,
-        fields: zod.array(fieldSchema).min(1),
-        layout: zod.array(zod.array(shortString)).min(1),
-        tags: zod.array(shortString).optional(),
-        titleFieldId: shortString.nullish(),
-        descriptionFieldId: optionalShortString.nullish(),
-        imageFieldId: optionalShortString.nullish()
-    });
-};
-
 export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
-        modelId: optionalShortString.transform(modelIdTransformation),
+        modelId: optionalShortString,
         singularApiName: shortString.refine(
-            apiNameRefinementValidation,
+            refinementValidation,
             refinementSingularValidationMessage
         ),
-        pluralApiName: shortString.refine(
-            apiNameRefinementValidation,
-            refinementPluralValidationMessage
-        ),
+        pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
         icon: optionalNullishShortString,
@@ -272,13 +198,13 @@ export const createModelUpdateValidation = () => {
             if (!value) {
                 return true;
             }
-            return apiNameRefinementValidation(value);
+            return refinementValidation(value);
         }, refinementSingularValidationMessage),
         pluralApiName: optionalShortString.refine(value => {
             if (!value) {
                 return true;
             }
-            return apiNameRefinementValidation(value);
+            return refinementValidation(value);
         }, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: optionalShortString,

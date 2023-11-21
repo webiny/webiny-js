@@ -1,29 +1,27 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { ThemeProvider } from "@emotion/react";
 import {
-    AssignStylesCallback,
-    ElementStylesCallback,
-    GetElementAttributes,
-    GetElementStyles,
-    GetRenderers,
-    GetStyles,
     PageElementsContextValue,
     PageElementsProviderProps,
-    SetAssignStylesCallback,
+    ElementStylesCallback,
+    StylesCallback,
+    GetElementAttributes,
+    GetElementStyles,
+    GetStyles,
+    AssignStylesCallback,
     SetElementStylesCallback,
     SetStylesCallback,
-    StylesCallback
+    SetAssignStylesCallback,
+    GetRenderers
 } from "~/types";
 import {
+    setUsingPageElements,
     defaultElementAttributesCallback,
     defaultElementStylesCallback,
-    defaultStylesCallback,
-    setUsingPageElements
+    defaultStylesCallback
 } from "~/utils";
 
-export const PageElementsContext = createContext<PageElementsContextValue>(
-    null as unknown as PageElementsContextValue
-);
+export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,

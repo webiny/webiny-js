@@ -9,6 +9,7 @@ export interface PageElement {
     id: string;
     name: string;
     type: "element" | "block";
+    category: string;
     content: any;
     preview?: Partial<File>;
     createdOn: string;
@@ -256,7 +257,7 @@ export interface MenuStorageOperations {
     /**
      * Get a single menu item by given params.
      */
-    get(params: MenuStorageOperationsGetParams): Promise<Menu | null>;
+    get(params: MenuStorageOperationsGetParams): Promise<Menu>;
     /**
      * Get all menu items by given params.
      */
@@ -342,7 +343,7 @@ export interface PageElementStorageOperations {
     ): Promise<PageElementStorageOperationsListResponse>;
     create(params: PageElementStorageOperationsCreateParams): Promise<PageElement>;
     update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement>;
-    delete(params: PageElementStorageOperationsDeleteParams): Promise<void>;
+    delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
 }
 
 /**
@@ -821,7 +822,6 @@ export interface PageBlockStorageOperationsListParams {
         tenant: string;
         locale: string;
         createdBy?: string;
-        blockCategory?: string;
     };
     sort?: string[];
     limit?: number;
@@ -879,7 +879,7 @@ export interface PageBlockStorageOperations {
 
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
     update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
-    delete(params: PageBlockStorageOperationsDeleteParams): Promise<void>;
+    delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
 }
 
 /**

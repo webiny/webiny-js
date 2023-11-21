@@ -10,11 +10,7 @@ export const createContext = () => {
          * // TODO refactor at some point
          */
         const storageOperations = await createStorageOperations({
-            /**
-             * Should use some global client, not the one from context.db.driver.
-             */
-            // @ts-expect-error
-            documentClient: context.db.driver.documentClient
+            documentClient: (context.db.driver as any).documentClient
         });
 
         context.settings = await createSettingsService({

@@ -5,9 +5,6 @@ import { css } from "emotion";
 import AceEditor from "react-ace";
 // Modes
 import "brace/mode/html";
-import "brace/mode/json";
-// Extensions
-import "brace/ext/searchbox";
 // Themes
 import "brace/theme/github";
 import "brace/theme/twilight";
@@ -31,8 +28,6 @@ interface Props extends FormComponentProps {
     mode: string;
 
     theme: string;
-
-    readOnly?: boolean;
 
     // Description beneath the input.
     description?: React.ReactNode;
@@ -60,9 +55,6 @@ class CodeEditor extends React.Component<Props> {
                     {...rest}
                     width="100%"
                     className={"mdc-text-field"}
-                    editorProps={{
-                        $blockScrolling: Infinity // Suppresses scrolling warning in console.
-                    }}
                 />
 
                 {validationIsValid === false && (

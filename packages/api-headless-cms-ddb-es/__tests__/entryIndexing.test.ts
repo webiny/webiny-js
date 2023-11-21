@@ -3,7 +3,6 @@ import indexingPlugins from "~/elasticsearch/indexing";
 import { createGraphQLFields } from "@webiny/api-headless-cms";
 import { CmsEntry, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
-import { CmsIndexEntry } from "~/types";
 
 const mockRichTextValue = [
     {
@@ -149,8 +148,8 @@ const plugins = new PluginsContainer([...indexingPlugins(), ...createGraphQLFiel
 describe("entryIndexing", () => {
     test("should prepare entry for indexing", () => {
         const entryToIndex = prepareEntryToIndex({
-            entry: mockInputEntry as CmsEntry,
-            storageEntry: mockInputEntry as CmsEntry,
+            entry: mockInputEntry as any,
+            storageEntry: mockInputEntry as any,
             model: mockModel as unknown as CmsModel,
             plugins
         });
@@ -162,7 +161,7 @@ describe("entryIndexing", () => {
         const [entryFromIndex] = extractEntriesFromIndex({
             model: mockModel as unknown as CmsModel,
             plugins,
-            entries: [mockIndexedEntry as CmsIndexEntry]
+            entries: [mockIndexedEntry as any]
         });
 
         expect(entryFromIndex.values).toEqual(mockInputEntry.values);

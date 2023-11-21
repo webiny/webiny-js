@@ -1,6 +1,6 @@
 // TODO: Move "archive" in layer
 import vending, { ArchiverError } from "archiver";
-import { CompleteMultipartUploadOutput } from "@webiny/aws-sdk/client-s3";
+import S3 from "aws-sdk/clients/s3";
 import { Readable } from "stream";
 import * as path from "path";
 import kebabCase from "lodash/kebabCase";
@@ -38,17 +38,15 @@ export default class Zipper {
         );
     }
 
-    async s3DownloadStreams(): Promise<FileStreamDetails[]> {
+    s3DownloadStreams(): FileStreamDetails[] {
         const exportInfo = this.config.exportInfo;
         const prefix = uniqueId("", `-${kebabCase(exportInfo.name)}`);
-        const files = await Promise.all(
-            exportInfo.files.map(async ({ key }) => {
-                return {
-                    stream: await s3Stream.readStream(key),
-                    filename: `${prefix}\\${this.filesDirName}\\${key}`
-                };
-            })
-        );
+        const files = exportInfo.files.map(({ key }) => {
+            return {
+                stream: s3Stream.readStream(key),
+                filename: `${prefix}\\${this.filesDirName}\\${key}`
+            };
+        });
 
         return [
             ...files,
@@ -59,13 +57,13 @@ export default class Zipper {
         ];
     }
 
-    async process(): Promise<CompleteMultipartUploadOutput> {
+    process(): Promise<S3.ManagedUpload.SendData> {
         const { streamPassThrough, streamPassThroughUploadPromise } = s3Stream.writeStream(
             this.archiveFileName
         );
 
         // 1. Read all files from S3 using stream.
-        const s3FilesStreams = await this.s3DownloadStreams();
+        const s3FilesStreams = this.s3DownloadStreams();
 
         // 2. Prepare zip from the file stream.
         const archive = vending.create(this.archiveFormat);
@@ -104,24 +102,22 @@ export class ZipOfZip {
         this.archiveFileName = uniqueId("EXPORTS/", `-${filename}`);
     }
 
-    async getFileStreams(): Promise<FileStreamDetails[]> {
-        return await Promise.all(
-            this.keys.map(async key => {
-                return {
-                    stream: await s3Stream.readStream(key),
-                    filename: `${path.basename(key)}`
-                };
-            })
-        );
+    getFileStreams(): FileStreamDetails[] {
+        return this.keys.map(key => {
+            return {
+                stream: s3Stream.readStream(key),
+                filename: `${path.basename(key)}`
+            };
+        });
     }
 
-    async process(): Promise<CompleteMultipartUploadOutput> {
+    process(): Promise<S3.ManagedUpload.SendData> {
         const { streamPassThrough, streamPassThroughUploadPromise } = s3Stream.writeStream(
             this.archiveFileName
         );
 
         // 1. Read all files from S3 using stream.
-        const fileStreamDetails = await this.getFileStreams();
+        const fileStreamDetails = this.getFileStreams();
 
         // 2. Prepare zip from the file stream.
         const archive = vending.create(this.archiveFormat);

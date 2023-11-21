@@ -19,11 +19,10 @@ interface ExecuteSearchParams {
     setEntries: (entries: Record<string, CmsReferenceContentEntry>) => void;
     client: ApolloClient<any>;
     values: CmsReferenceValue[];
-    requestContext?: Record<string, any>;
 }
 
 const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
-    const { setLoading, setError, setEntries, client, values, requestContext = {} } = params;
+    const { setLoading, setError, setEntries, client, values } = params;
     setLoading(true);
     try {
         const result = await client.query<
@@ -38,8 +37,7 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
                         modelId: value.modelId
                     };
                 })
-            },
-            context: requestContext
+            }
         });
         const error = result.data.entries?.error;
         if (error) {
@@ -69,14 +67,9 @@ interface CmsReferenceValue extends BaseCmsReferenceValue {
 interface UseReferencesParams {
     values?: BaseCmsReferenceValue[] | BaseCmsReferenceValue | null;
     perPage?: number;
-    requestContext?: Record<string, any>;
 }
 
-export const useReferences = ({
-    values: initialValues,
-    perPage = 10,
-    requestContext = {}
-}: UseReferencesParams) => {
+export const useReferences = ({ values: initialValues, perPage = 10 }: UseReferencesParams) => {
     const client = useApolloClient();
     const [entries, setEntries] = useState<Record<string, CmsReferenceContentEntry>>({});
     const [loading, setLoading] = useState<boolean>(false);
@@ -160,7 +153,6 @@ export const useReferences = ({
         }
         executeSearch({
             client,
-            requestContext,
             values: entriesToLoad,
             setLoading,
             setError,

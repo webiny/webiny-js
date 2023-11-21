@@ -1,10 +1,13 @@
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createHandler } from "@webiny/handler-aws/raw";
 import { createDdbEsProjectMigration, createTable } from "@webiny/data-migration";
 import { migrations } from "@webiny/migrations/ddb-es";
 
-const documentClient = getDocumentClient();
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 const elasticsearchClient = createElasticsearchClient({
     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`

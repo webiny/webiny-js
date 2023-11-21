@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsFieldValueTransformer, CmsModelField } from "~/types";
+import { CmsModelField, CmsFieldValueTransformer, CmsContentEntry } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface AvailableFieldTransformers {
@@ -65,18 +65,7 @@ export const prepareFormData = (
 
         if (field.multipleValues) {
             const values = Array.isArray(inputValue) ? inputValue : undefined;
-            if (!values?.length) {
-                return output;
-            }
-            /**
-             * We need to skip sending the values if there is only one item in the array, and it is a null or undefined value.
-             *
-             * In case there are more items in the array, and they are null / undefined,
-             * we must not do anything because it means the user added new items into the array,
-             * and they want to have it like that - or is a mistake by user - in that case they will then remove the extra item(s).
-             */
-            //
-            else if (values.length === 1 && (values[0] === null || values[0] === undefined)) {
+            if (!values) {
                 return output;
             }
             output[field.fieldId] = values.map(value => runTransformation(field, value));

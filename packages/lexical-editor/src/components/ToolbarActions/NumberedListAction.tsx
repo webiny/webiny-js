@@ -1,17 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isListNode, ListNode } from "@webiny/lexical-nodes";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
-import { INSERT_ORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands";
+import {
+    INSERT_ORDERED_WEBINY_LIST_COMMAND,
+    REMOVE_WEBINY_LIST_COMMAND
+} from "~/commands/webiny-list";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { useCurrentElement } from "~/hooks/useCurrentElement";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 export const NumberedListAction = () => {
     const [editor] = useLexicalComposerContext();
-    const { element } = useCurrentElement();
-    const { themeEmotionMap } = useRichTextEditor();
-    const isList = $isListNode(element);
-    const isNumbered = isList && (element as ListNode).getListType() === "number";
+    const [isActive, setIsActive] = useState<boolean>(false);
+    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
+    const isListSelected = textBlockSelection?.state?.list.isSelected;
+
+    useEffect(() => {
+        const isListBulletType = textBlockSelection?.state?.textType === "number";
+        setIsActive(isListBulletType);
+    }, [textBlockSelection?.state?.textType, isListSelected]);
 
     const getStyleId = (): string | undefined => {
         if (!themeEmotionMap) {
@@ -27,18 +32,22 @@ export const NumberedListAction = () => {
     };
 
     const formatNumberedList = () => {
-        if (!isNumbered) {
+        if (!isActive) {
             const styleId = themeEmotionMap ? getStyleId() : undefined;
-            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, { themeStyleId: styleId });
+            // will update the active state in the useEffect
+            editor.dispatchCommand(INSERT_ORDERED_WEBINY_LIST_COMMAND, { themeStyleId: styleId });
+            setIsActive(true);
         } else {
-            editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
+            // removing will not update correctly the active state, so we need to set to false manually.
+            setIsActive(false);
         }
     };
 
     return (
         <button
             onClick={() => formatNumberedList()}
-            className={"popup-item spaced " + (isNumbered ? "active" : "")}
+            className={"popup-item spaced " + (isActive ? "active" : "")}
             aria-label="Format text as numbered list"
         >
             <i className="icon numbered-list" />

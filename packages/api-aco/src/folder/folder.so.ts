@@ -56,13 +56,8 @@ export const createFolderOperations = (
         return withModel(async model => {
             const { type, slug, parentId } = params;
 
-            // We don't need to perform any kind of authorization or checks here. We just need to check
-            // if the folder already exists in the database. Hence the direct storage operations access.
-            const listResult = await cms.storageOperations.entries.list(model, {
-                ...params,
+            const [existings] = await cms.listLatestEntries(model, {
                 where: {
-                    // Folders always work with latest entries. We never publish them.
-                    latest: true,
                     type,
                     slug,
                     parentId,
@@ -71,7 +66,7 @@ export const createFolderOperations = (
                 limit: 1
             });
 
-            if (listResult?.items?.length > 0) {
+            if (existings.length > 0) {
                 throw new WebinyError(
                     `Folder with slug "${slug}" already exists at this level.`,
                     "FOLDER_ALREADY_EXISTS",

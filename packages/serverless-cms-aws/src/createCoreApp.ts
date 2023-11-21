@@ -2,7 +2,7 @@ import { createCorePulumiApp, CreateCorePulumiAppParams } from "@webiny/pulumi-a
 import { PluginCollection } from "@webiny/plugins/types";
 import { generateDdbToEsHandler, checkEsServiceRole } from "./core/plugins";
 
-export { CoreOutput, configureAdminCognitoFederation } from "@webiny/pulumi-aws";
+export { CoreOutput } from "@webiny/pulumi-aws";
 
 export interface CreateCoreAppParams extends CreateCorePulumiAppParams {
     plugins?: PluginCollection;

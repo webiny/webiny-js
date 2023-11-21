@@ -42,10 +42,7 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
 }
 
 export interface CmsApiModel
-    extends Omit<
-        CmsModel,
-        "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
-    > {
+    extends Omit<CmsModel, "isPrivate" | "fields" | "singularApiName" | "pluralApiName"> {
     isPrivate?: never;
     noValidate?: never;
     singularApiName?: string;
@@ -59,10 +56,7 @@ export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidat
 }
 
 interface CmsPrivateModel
-    extends Omit<
-        CmsModel,
-        "isPrivate" | "singularApiName" | "pluralApiName" | "fields" | "isPlugin"
-    > {
+    extends Omit<CmsModel, "isPrivate" | "singularApiName" | "pluralApiName" | "fields"> {
     noValidate?: never;
     singularApiName?: never;
     pluralApiName?: never;
@@ -111,11 +105,10 @@ export class CmsModelPlugin extends Plugin {
             /**
              * We can safely ignore this error, because we are sure noValidate is not a model field.
              */
-            // @ts-expect-error
+            // @ts-ignore
             delete input["noValidate"];
             return {
                 ...input,
-                isPlugin: true,
                 isPrivate,
                 singularApiName,
                 pluralApiName
@@ -124,7 +117,6 @@ export class CmsModelPlugin extends Plugin {
 
         const model: CmsModel = {
             ...input,
-            isPlugin: true,
             isPrivate,
             singularApiName,
             pluralApiName,

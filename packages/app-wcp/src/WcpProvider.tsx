@@ -26,9 +26,6 @@ export const GET_WCP_PROJECT = gql`
                                 enabled
                                 options
                             }
-                            auditLogs {
-                                enabled
-                            }
                         }
                     }
                 }

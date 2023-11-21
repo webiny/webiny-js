@@ -128,7 +128,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     public getParentByType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
         let parent = this.getParent();
         while (parent) {
-            if (parent instanceof type) {
+            if (parent instanceof (type as any)) {
                 break;
             }
 

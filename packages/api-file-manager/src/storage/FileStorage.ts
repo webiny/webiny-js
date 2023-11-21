@@ -65,7 +65,7 @@ export class FileStorage {
 
         // Save file in DB.
         return this.context.fileManager.createFile({
-            ...fileData,
+            ...(fileData as any),
             meta: {
                 private: Boolean(params.hideInFileManager)
             },

@@ -28,12 +28,7 @@ import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbRenderElementPlugin } from "~/types";
 
-interface PageElementsProviderProps {
-    theme?: Theme;
-    children: React.ReactNode;
-}
-
-export const PageElementsProvider = ({ theme, children }: PageElementsProviderProps) => {
+export const PageElementsProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
 
     const getRenderers = useCallback(() => {
@@ -73,7 +68,7 @@ export const PageElementsProvider = ({ theme, children }: PageElementsProviderPr
     return (
         <PbPageElementsProvider
             // We can assign `Theme` here because we know at this point we're using the new elements rendering engine.
-            theme={theme ?? (pageBuilder.theme as Theme)}
+            theme={pageBuilder.theme as Theme}
             renderers={getRenderers}
             modifiers={modifiers}
         >

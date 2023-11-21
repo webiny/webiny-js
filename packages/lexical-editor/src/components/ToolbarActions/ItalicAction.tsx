@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
-import { useCurrentSelection } from "~/hooks/useCurrentSelection";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 export const ItalicAction = () => {
     const [editor] = useLexicalComposerContext();
-    const { rangeSelection } = useCurrentSelection();
-    const isItalicSelected = rangeSelection ? rangeSelection.hasFormat("italic") : false;
+    const [isItalic, setIsItalic] = useState(false);
+    const { textBlockSelection } = useRichTextEditor();
+    const isItalicSelected = !!textBlockSelection?.state?.italic;
 
     const handleClick = () => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+        setIsItalic(!isItalic);
     };
+
+    useEffect(() => {
+        setIsItalic(isItalicSelected);
+    }, [isItalicSelected]);
 
     return (
         <button
-            onClick={handleClick}
-            className={"popup-item spaced " + (isItalicSelected ? "active" : "")}
+            onClick={() => handleClick()}
+            className={"popup-item spaced " + (isItalic ? "active" : "")}
             aria-label="Format text as italic"
         >
             <i className="format italic" />

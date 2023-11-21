@@ -25,15 +25,14 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = contentModel.fields.reduce((acc, field) => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        /**
-                         * TODO @ts-refactor
-                         * Figure out type for Bind.
-                         */
-                        // @ts-expect-error
-                        Bind={formRenderProps.Bind}
+                        Bind={formRenderProps.Bind as any}
                         contentModel={contentModel}
                     />
                 );
@@ -49,8 +48,7 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
                  * TODO @ts-refactor
                  * Figure out type for Bind.
                  */
-                // @ts-expect-error
-                Bind: formRenderProps.Bind,
+                Bind: formRenderProps.Bind as any,
                 contentModel,
                 fields
             });
@@ -70,12 +68,7 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
                             fields={contentModel.fields}
                             layout={contentModel.layout || []}
                             {...formProps}
-                            /**
-                             * TODO @ts-refactor
-                             * Figure out type for Bind.
-                             */
-                            // @ts-expect-error
-                            Bind={formProps.Bind}
+                            Bind={formProps.Bind as any}
                         />
                     )}
                 </FormWrapper>

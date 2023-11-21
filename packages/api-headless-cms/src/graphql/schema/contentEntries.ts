@@ -367,7 +367,7 @@ export const createContentEntriesSchema = ({
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
-                            const modelManager = await context.cms.getEntryManager(model.modelId);
+                            const modelManager = await context.cms.getModelManager(model.modelId);
                             const where: CmsEntryListWhere = {};
 
                             const [items] = await modelManager.listLatest({

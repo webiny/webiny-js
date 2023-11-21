@@ -74,13 +74,13 @@ export const ActionDelete = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Delete pages",
-                    message: "Finished deleting pages! See full report below:"
+                    message: "Operation completed, here below you find the complete report:"
                 });
             }
         });
 
     if (!canDeleteAll) {
-        console.log("You don't have permissions to delete pages.");
+        console.log("Does not have permission to delete one or more pages.");
         return null;
     }
 

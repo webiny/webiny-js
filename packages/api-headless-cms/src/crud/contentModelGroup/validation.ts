@@ -4,12 +4,11 @@ import { toSlug } from "~/utils/toSlug";
 const str = zod.string().trim();
 
 const name = str.max(100);
-const description = str.max(255).optional().nullish();
+const description = str.max(255).optional();
 const icon = str.min(1).max(255);
 
 export const createGroupCreateValidation = () => {
     return zod.object({
-        id: str.optional().nullish(),
         name: name.min(1),
         slug: str
             .max(100)

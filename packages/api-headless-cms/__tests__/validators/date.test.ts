@@ -1,6 +1,6 @@
 import { createDateLteValidator } from "~/validators/dateLte";
 import { createDateGteValidator } from "~/validators/dateGte";
-import { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
+import { CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
@@ -35,8 +35,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -59,8 +59,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -83,8 +83,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -107,8 +107,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -133,8 +133,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -157,8 +157,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -183,8 +183,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -209,8 +209,8 @@ describe("date validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as unknown as CmsModelField,
-                model: {} as unknown as CmsModel
+                field: {} as any,
+                model: {} as any
             });
             expect(result).toEqual(false);
         }

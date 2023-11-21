@@ -1,19 +1,19 @@
 import prepareMenuItems from "./menus/prepareMenuItems";
 import WebinyError from "@webiny/error";
 import {
-    Menu,
-    MenusCrud,
     MenuStorageOperationsGetParams,
+    Menu,
+    PbContext,
     MenuStorageOperationsListParams,
-    OnMenuAfterCreateTopicParams,
-    OnMenuAfterDeleteTopicParams,
-    OnMenuAfterUpdateTopicParams,
     OnMenuBeforeCreateTopicParams,
-    OnMenuBeforeDeleteTopicParams,
+    OnMenuAfterCreateTopicParams,
     OnMenuBeforeUpdateTopicParams,
+    OnMenuAfterUpdateTopicParams,
+    OnMenuBeforeDeleteTopicParams,
+    OnMenuAfterDeleteTopicParams,
+    MenusCrud,
     PageBuilderContextObject,
-    PageBuilderStorageOperations,
-    PbContext
+    PageBuilderStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -90,10 +90,13 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                 }
             };
 
-            let menu: Menu | null;
+            let menu: Menu;
 
             try {
                 menu = await storageOperations.menus.get(params);
+                if (!menu) {
+                    return null;
+                }
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get menu by slug.",
@@ -103,9 +106,6 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                         params
                     }
                 );
-            }
-            if (!menu) {
-                return null;
             }
 
             if (auth !== false) {

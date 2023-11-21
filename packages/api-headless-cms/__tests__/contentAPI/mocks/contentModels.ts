@@ -228,12 +228,12 @@ const models: CmsModel[] = [
                 storageId: "ref@categoryStorageId",
                 fieldId: "category",
                 type: "ref",
-                // validation: [
-                //     {
-                //         name: "required",
-                //         message: "Please select a category"
-                //     }
-                // ],
+                validation: [
+                    {
+                        name: "required",
+                        message: "Please select a category"
+                    }
+                ],
                 listValidation: [],
                 settings: {
                     models: [{ modelId: "category" }]
@@ -543,12 +543,12 @@ const models: CmsModel[] = [
                             storageId: "ref@categoryStorageId",
                             fieldId: "category",
                             type: "ref",
-                            // validation: [
-                            //     {
-                            //         name: "required",
-                            //         message: "Please select a category"
-                            //     }
-                            // ],
+                            validation: [
+                                {
+                                    name: "required",
+                                    message: "Please select a category"
+                                }
+                            ],
                             listValidation: [],
                             settings: {
                                 models: [{ modelId: "category" }]
@@ -637,12 +637,12 @@ const models: CmsModel[] = [
                                         storageId: "ref@categoryStorageId",
                                         fieldId: "category",
                                         type: "ref",
-                                        // validation: [
-                                        //     {
-                                        //         name: "required",
-                                        //         message: "Please select a category"
-                                        //     }
-                                        // ],
+                                        validation: [
+                                            {
+                                                name: "required",
+                                                message: "Please select a category"
+                                            }
+                                        ],
                                         listValidation: [],
                                         settings: {
                                             models: [{ modelId: "category" }]
@@ -743,6 +743,12 @@ const models: CmsModel[] = [
                             type: "text",
                             storageId: "text@textStorageId",
                             fieldId: "text",
+                            validation: [
+                                {
+                                    name: "required",
+                                    message: "This field is required"
+                                }
+                            ],
                             listValidation: [],
                             placeholderText: "placeholder text",
                             predefinedValues: {

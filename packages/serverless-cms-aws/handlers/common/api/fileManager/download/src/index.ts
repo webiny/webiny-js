@@ -1,11 +1,14 @@
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import {
     createDownloadFileByExactKeyPlugins,
     createDownloadFileByAliasPlugins
 } from "@webiny/api-file-manager/handlers/download";
 
-const documentClient = getDocumentClient();
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 export const handler = createHandler({
     plugins: [

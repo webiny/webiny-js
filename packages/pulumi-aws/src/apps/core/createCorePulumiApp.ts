@@ -1,4 +1,3 @@
-import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
@@ -64,7 +63,7 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
@@ -131,7 +130,6 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 : null;
 
             app.addOutputs({
-                region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
@@ -159,4 +157,6 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             };
         }
     });
+
+    return app;
 }

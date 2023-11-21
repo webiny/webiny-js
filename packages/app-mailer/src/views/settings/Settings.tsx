@@ -15,15 +15,14 @@ import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
     GET_SETTINGS_QUERY,
+    SettingsQueryResponse,
     SAVE_SETTINGS_MUTATION,
-    SaveSettingsMutationResponse,
     SaveSettingsMutationVariables,
-    SettingsQueryResponse
+    SaveSettingsMutationResponse
 } from "./graphql";
 import { TransportSettings, ValidationError } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import { Validator } from "@webiny/validation/types";
-import dotPropImmutable from "dot-prop-immutable";
 
 const displayErrors = (errors?: ValidationError[]) => {
     if (!errors) {
@@ -81,9 +80,7 @@ export const Settings: React.FC = () => {
                                 },
                                 update: (cache, result) => {
                                     const data = structuredClone(
-                                        cache.readQuery<SettingsQueryResponse>({
-                                            query: GET_SETTINGS_QUERY
-                                        })
+                                        cache.readQuery({ query: GET_SETTINGS_QUERY })
                                     );
 
                                     const { data: updateData, error: updateError } =
@@ -98,12 +95,14 @@ export const Settings: React.FC = () => {
                                         return;
                                     }
 
+                                    data.mailer.settings.data = {
+                                        ...settingsData,
+                                        ...updateData
+                                    };
+
                                     cache.writeQuery({
                                         query: GET_SETTINGS_QUERY,
-                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
-                                            ...settingsData,
-                                            ...updateData
-                                        })
+                                        data
                                     });
                                     showSnackbar("Settings updated successfully.");
                                 }

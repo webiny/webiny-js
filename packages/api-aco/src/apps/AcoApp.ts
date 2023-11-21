@@ -2,14 +2,10 @@ import WebinyError from "@webiny/error";
 import structuredClone from "@ungap/structured-clone";
 import {
     AcoContext,
-    AcoRequestAction,
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
     IAcoApp,
     IAcoAppModifyFieldCallableCallback,
-    IAcoAppOnAnyRequest,
-    IAcoAppOnEntry,
-    IAcoAppOnEntryList,
     IAcoAppParams,
     ListSearchRecordsParams,
     ListSearchRecordTagsParams,
@@ -29,61 +25,35 @@ export class AcoApp implements IAcoApp {
     public readonly context: AcoContext;
     public readonly model: CmsModel;
     private readonly fields: CmsModelField[];
-    private readonly onEntry?: IAcoAppOnEntry;
-    private readonly onEntryList?: IAcoAppOnEntryList;
-    private readonly onAnyRequest?: IAcoAppOnAnyRequest;
 
     public get search(): AcoSearchRecordCrudBase {
         return {
             create: async <TData>(data: CreateSearchRecordParams<TData>) => {
-                await this.execOnAnyRequest("create");
-                const result = await this.context.aco.search.create<TData>(this.getModel(), data);
-                if (!this.onEntry) {
-                    return result;
-                }
-                return this.onEntry(result);
+                return this.context.aco.search.create<TData>(this.getModel(), data);
             },
             update: async <TData>(id: string, data: SearchRecord<TData>) => {
-                await this.execOnAnyRequest("update");
-                const result = await this.context.aco.search.update<TData>(
+                /**
+                 * Required to have as any atm as TS is breaking on the return type.
+                 */
+                return (await this.context.aco.search.update<TData>(
                     this.getModel(),
                     id,
                     data
-                );
-                if (!this.onEntry) {
-                    return result;
-                }
-                return this.onEntry(result);
+                )) as any;
             },
             move: async (id: string, folderId?: string) => {
-                await this.execOnAnyRequest("move");
                 return this.context.aco.search.move(this.getModel(), id, folderId);
             },
             get: async <TData>(id: string) => {
-                await this.execOnAnyRequest("fetch");
-                const result = await this.context.aco.search.get<TData>(this.getModel(), id);
-                if (!result || !this.onEntry) {
-                    return result;
-                }
-                return this.onEntry(result);
+                return this.context.aco.search.get<TData>(this.getModel(), id);
             },
             list: async <TData>(params: ListSearchRecordsParams) => {
-                await this.execOnAnyRequest("fetch");
-                const result = await this.context.aco.search.list<TData>(this.getModel(), params);
-                const onEntryList = this.onEntryList;
-                if (!onEntryList) {
-                    return result;
-                }
-                const [entries, meta] = result;
-                const items = await onEntryList(entries);
-                return [items, meta];
+                return this.context.aco.search.list<TData>(this.getModel(), params);
             },
             delete: async (id: string): Promise<Boolean> => {
-                await this.execOnAnyRequest("delete");
                 return this.context.aco.search.delete(this.getModel(), id);
             },
             listTags: async (params: ListSearchRecordTagsParams) => {
-                await this.execOnAnyRequest("fetch");
                 return this.context.aco.search.listTags(this.getModel(), params);
             }
         };
@@ -103,8 +73,6 @@ export class AcoApp implements IAcoApp {
     private constructor(context: AcoContext, params: IAcoAppParams) {
         this.context = context;
         this.name = params.name;
-        this.onEntry = params.onEntry;
-        this.onEntryList = params.onEntryList;
         this.model = structuredClone(params.model);
         /**
          * We can safely define the api name of the model as we control everything here.
@@ -172,12 +140,5 @@ export class AcoApp implements IAcoApp {
             );
         }
         this.fields[index] = cb(structuredClone(this.fields[index]));
-    }
-
-    private async execOnAnyRequest(action: AcoRequestAction): Promise<void> {
-        if (!this.onAnyRequest) {
-            return;
-        }
-        await this.onAnyRequest(this.context, action);
     }
 }

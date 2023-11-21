@@ -1,4 +1,4 @@
-import { Entity } from "~/toolbox";
+import { Entity } from "dynamodb-toolbox";
 
 /**
  * The attributes defined by us or the dynamodb-toolbox library.

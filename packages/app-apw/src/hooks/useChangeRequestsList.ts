@@ -33,7 +33,6 @@ interface UseChangeRequestsListHook {
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
         editContentReview: (id: string) => void;
-        refetch: () => Promise<any>;
     };
 }
 
@@ -50,7 +49,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         }
     };
 
-    const { data, loading, refetch } = useQuery<
+    const { data, loading } = useQuery<
         ListChangeRequestsQueryResponse,
         ListChangeRequestsQueryVariables
     >(LIST_CHANGE_REQUESTS_QUERY, {
@@ -71,7 +70,6 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         sort,
         setSort,
         serializeSorters,
-        editContentReview,
-        refetch
+        editContentReview
     };
 };

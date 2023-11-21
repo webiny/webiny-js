@@ -1,7 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 import { ErrorOptions } from "@webiny/error";
-import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 
 jest.setTimeout(100000);
 
@@ -45,7 +44,6 @@ describe("Page Blocks Test", () => {
                         createPageBlock: {
                             data: {
                                 ...data,
-                                content: expectCompressed(data.content),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
@@ -62,10 +60,7 @@ describe("Page Blocks Test", () => {
                 data: {
                     pageBuilder: {
                         getPageBlock: {
-                            data: {
-                                ...data,
-                                content: expectCompressed(data.content)
-                            },
+                            data,
                             error: null
                         }
                     }
@@ -88,7 +83,6 @@ describe("Page Blocks Test", () => {
                         updatePageBlock: {
                             data: {
                                 ...updateData,
-                                content: expectCompressed(updateData.content),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
@@ -108,9 +102,9 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category",
-                                content: expectCompressed({
+                                content: {
                                     some: "page-block-one-content-UPDATED"
-                                }),
+                                },
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[0],
@@ -118,9 +112,9 @@ describe("Page Blocks Test", () => {
                             },
                             {
                                 blockCategory: "block-category",
-                                content: expectCompressed({
+                                content: {
                                     some: "page-block-two-content-UPDATED"
-                                }),
+                                },
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[1],
@@ -128,9 +122,9 @@ describe("Page Blocks Test", () => {
                             },
                             {
                                 blockCategory: "block-category",
-                                content: expectCompressed({
+                                content: {
                                     some: "page-block-three-content-UPDATED"
-                                }),
+                                },
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[2],
@@ -150,7 +144,9 @@ describe("Page Blocks Test", () => {
                 data: {
                     pageBuilder: {
                         deletePageBlock: {
-                            data: true,
+                            data: {
+                                id: ids[i]
+                            },
                             error: null
                         }
                     }
@@ -268,7 +264,7 @@ describe("Page Blocks Test", () => {
                         data: {
                             name: "name",
                             blockCategory: "block-category",
-                            content: expectCompressed({ some: "content" })
+                            content: { some: "content" }
                         },
                         error: null
                     }
@@ -370,9 +366,9 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category-one",
-                                content: expectCompressed({
+                                content: {
                                     some: "page-block-one-content"
-                                }),
+                                },
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockOneId,
@@ -398,9 +394,9 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category-two",
-                                content: expectCompressed({
+                                content: {
                                     some: "page-block-two-content"
-                                }),
+                                },
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockTwoId,

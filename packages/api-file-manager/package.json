@@ -24,7 +24,6 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
-    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
@@ -34,6 +33,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/pubsub": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "aws-sdk": "^2.971.0",
     "lodash": "^4.17.11",
     "object-hash": "^2.1.1"
   },
@@ -44,7 +44,6 @@
     "@babel/plugin-transform-runtime": "^7.22.7",
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-typescript": "^7.22.5",
-    "@types/sharp": "^0.32.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/utils": "0.0.0",
@@ -67,6 +66,7 @@
     ],
     "ignore": {
       "src": [
+        "aws-sdk",
         "sharp"
       ]
     }

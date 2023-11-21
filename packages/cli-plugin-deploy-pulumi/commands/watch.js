@@ -144,18 +144,17 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output;
+    let output = terminalOutput;
 
-    // TODO: deprecate browser/terminal options with 5.40.0 release.
     switch (inputs.output) {
         case "browser":
             output = browserOutput;
             break;
-        case "terminal":
-            output = terminalOutput;
+        case "simple":
+            output = simpleOutput;
             break;
         default:
-            output = simpleOutput;
+            output = terminalOutput;
     }
 
     if (typeof output.initialize === "function") {
@@ -172,41 +171,6 @@ module.exports = async (inputs, context) => {
             const tunnel = await localtunnel({ port: 3010 });
 
             logging.url = tunnel.url;
-
-            const uniqueLocalTunnelErrorMessages = [];
-            tunnel.on("error", e => {
-                // We're ensuring the same message is not printed twice or more.
-                // We're doing this because we've seen the same error message being printed
-                // multiple times, and it's not really helpful. This way we're ensuring
-                // the user sees the error only once.
-                if (!uniqueLocalTunnelErrorMessages.includes(e.message)) {
-                    uniqueLocalTunnelErrorMessages.push(e.message);
-
-                    if (uniqueLocalTunnelErrorMessages.length === 1) {
-                        output.log({
-                            type: "logs",
-                            message: chalk.red("Could not initialize logs forwarding.")
-                        });
-                    }
-
-                    output.log({
-                        type: "logs",
-                        message: chalk.red("Could not initialize logs forwarding.")
-                    });
-
-                    output.log({
-                        type: "logs",
-                        message: chalk.red(e.message)
-                    });
-
-                    if (inputs.debug) {
-                        output.log({
-                            type: "logs",
-                            message: chalk.red(e.stack)
-                        });
-                    }
-                }
-            });
 
             const app = express();
             app.use(bodyParser.urlencoded({ extended: false }));

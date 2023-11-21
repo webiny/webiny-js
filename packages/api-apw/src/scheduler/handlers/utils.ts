@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -100,7 +100,10 @@ export const decodeToken = (token: string): Partial<EncodeTokenParams> => {
     };
 };
 
-export const documentClient = getDocumentClient();
+export const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 export const basePlugins = () => [
     dynamoDbPlugins(),
@@ -133,7 +136,7 @@ export const getApwSettings = async (): Promise<ApwSettings> => {
         }
     };
 
-    const { Item } = await documentClient.get(params);
+    const { Item } = await documentClient.get(params).promise();
 
     return {
         mainGraphqlFunctionArn: Item ? Item["mainGraphqlFunctionArn"] : "mainGraphqlFunctionArn",

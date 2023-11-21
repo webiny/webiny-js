@@ -16,24 +16,20 @@ const createSvg = (icon: string[]): React.ReactElement => {
 
 const icons: CmsIcon[] = [];
 
-interface Icons {
-    definitions: Record<IconPrefix, Record<IconName, string[]>>;
-}
-
 const plugin: CmsIconsPlugin = {
     name: "cms-icons-fontawesome",
     type: "cms-icons",
     init() {
-        /**
-         * Ignoring TS errors. We know what we did here is good, but cannot get it to work with typescript.
-         */
-        // @ts-expect-error
+        // @ts-ignore
         library.add(fab, fas, far);
-        const definitions = (library as unknown as Icons).definitions;
-        // @ts-expect-error
+        const definitions = (library as any).definitions as unknown as Record<IconPrefix, IconName>;
+        /**
+         * Ignoring TS errors. We know what we coded is good, but cannot get it to work with typescript.
+         */
+        // @ts-ignore
         Object.keys(definitions).forEach((pack: IconPrefix) => {
             const defs = definitions[pack];
-            // @ts-expect-error
+            // @ts-ignore
             Object.keys(defs).forEach((icon: IconName) => {
                 icons.push({
                     id: [pack, icon],

@@ -13,12 +13,13 @@ jobs:
     name: Init
     runs-on: ubuntu-latest
     outputs:
+      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -37,7 +38,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -76,7 +77,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -123,7 +124,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:

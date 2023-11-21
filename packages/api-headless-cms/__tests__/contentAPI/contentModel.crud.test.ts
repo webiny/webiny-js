@@ -1,9 +1,9 @@
-import { CmsGroup, CmsModel, CmsModelField, CmsModelFieldInput } from "~/types";
+import { CmsModelFieldInput, CmsGroup, CmsModelField, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { assignModelEvents, pubSubTracker } from "./mocks/lifecycleHooks";
+import { pubSubTracker, assignModelEvents } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 const getTypeFields = (type: any) => {
@@ -47,10 +47,7 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const {
-        createContentModelGroupMutation,
-        createContentModelMutation: baseCreateContentModelMutation
-    } = useGraphQLHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
@@ -86,7 +83,6 @@ describe("content model test", () => {
 
         expect(getTypeFields(ReadQuery)).toEqual(["getContentModel", "listContentModels"]);
         expect(getTypeFields(ManageQuery)).toEqual([
-            "exportStructure",
             "getContentModel",
             "listContentModels",
             "searchContentEntries",
@@ -101,8 +97,6 @@ describe("content model test", () => {
         ]);
         expect(getTypeFields(ReadMutation)).toEqual([]);
         expect(getTypeFields(ManageMutation)).toEqual([
-            "validateImportStructure",
-            "importStructure",
             "createContentModel",
             "createContentModelFrom",
             "updateContentModel",
@@ -971,10 +965,6 @@ describe("content model test", () => {
 
         const { listContentModelsQuery: listModels } = useGraphQLHandler({
             ...manageHandlerOpts,
-            identity: {
-                ...helpers.identity,
-                id: "identityWithSpecificModelPermissions"
-            },
             permissions: createPermissions({ models: [createdContentModels[0].modelId] })
         });
 
@@ -1373,43 +1363,6 @@ describe("content model test", () => {
                         modelId: "testContentModel2",
                         fields: [field],
                         imageFieldId: field.fieldId
-                    },
-                    error: null
-                }
-            }
-        });
-    });
-
-    it("should create a model in a group with custom ID", async () => {
-        await createContentModelGroupMutation({
-            data: {
-                id: "a-custom-group-id",
-                name: "My Group With ID",
-                description: "A group with ID",
-                icon: "fa/fas"
-            }
-        });
-
-        const [response] = await baseCreateContentModelMutation({
-            data: {
-                name: "Test Content model",
-                modelId: "test-content-model-2",
-                singularApiName: `TestContentModel2`,
-                pluralApiName: `TestContentModels2`,
-                group: "a-custom-group-id",
-                fields: [],
-                layout: []
-            }
-        });
-        expect(response).toMatchObject({
-            data: {
-                createContentModel: {
-                    data: {
-                        modelId: "testContentModel2",
-                        group: {
-                            id: "a-custom-group-id",
-                            name: "My Group With ID"
-                        }
                     },
                     error: null
                 }

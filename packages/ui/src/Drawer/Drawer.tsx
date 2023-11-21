@@ -9,18 +9,7 @@ import {
 } from "@rmwc/drawer";
 
 type DrawerHeaderProps = RmwcDrawerHeaderProps & {
-    /**
-     * Drawer direction.
-     */
-    dir?: string;
-    /**
-     * Drawer content.
-     */
-    children: React.ReactNode;
-
-    /**
-     * CSS class name
-     */
+    children: any;
     className?: string;
 };
 

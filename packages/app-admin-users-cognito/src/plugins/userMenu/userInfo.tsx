@@ -77,33 +77,7 @@ export const UserInfo: React.FC = () => {
         wrapper = { Component: "div", props: {} };
     }
 
-    const profile = security.identity.profile;
-    if (!profile) {
-        const { displayName } = security.identity;
-
-        return (
-            <wrapper.Component {...wrapper.props} className={linkStyles}>
-                <ListItem ripple={false} className={linkStyles}>
-                    <ListItemGraphic className={avatarImage}>
-                        <Avatar
-                            className={"avatar"}
-                            src={undefined}
-                            alt={displayName}
-                            fallbackText={displayName}
-                            renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-                        />
-                    </ListItemGraphic>
-                    <div>
-                        <h3>
-                            <Typography use={"headline6"}>{displayName}</Typography>
-                        </h3>
-                    </div>
-                </ListItem>
-            </wrapper.Component>
-        );
-    }
-
-    const { email, firstName, lastName, avatar, gravatar } = profile;
+    const { email, firstName, lastName, avatar, gravatar } = security.identity.profile || {};
     const fullName = `${firstName} ${lastName}`;
 
     return (

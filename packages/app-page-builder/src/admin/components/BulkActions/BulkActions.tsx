@@ -6,7 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { usePageListConfig } from "~/admin/config/pages";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 
-import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./BulkActions.styled";
+import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./styles";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 

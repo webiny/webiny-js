@@ -7,7 +7,7 @@ import {
     BlockCategoryStorageOperationsListParams,
     BlockCategoryStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -17,14 +17,13 @@ import { BlockCategoryDynamoDbFieldPlugin } from "~/plugins/definitions/BlockCat
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "~/operations/blockCategory/keys";
 import { BlockCategoryStorageOperations } from "~/types";
-import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.blockCategory";
 };
 
 export interface CreateBlockCategoryStorageOperationsParams {
-    entity: Entity;
+    entity: Entity<any>;
     plugins: PluginsContainer;
 }
 export const createBlockCategoryStorageOperations = ({
@@ -63,13 +62,10 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...blockCategory,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                ...blockCategory,
+                TYPE: createType(),
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -99,13 +95,10 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...blockCategory,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                ...blockCategory,
+                TYPE: createType(),
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -137,9 +130,9 @@ export const createBlockCategoryStorageOperations = ({
         };
 
         try {
-            await deleteItem({
-                entity,
-                keys
+            await entity.delete({
+                ...blockCategory,
+                ...keys
             });
             /**
              * Always clear data loader cache when modifying the records.

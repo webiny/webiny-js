@@ -85,7 +85,7 @@ export const createExpressions = (params: Params): Expression => {
         };
 
         for (const key in where) {
-            const value = where[key];
+            const value = (where as any)[key];
             if (value === undefined) {
                 continue;
             }

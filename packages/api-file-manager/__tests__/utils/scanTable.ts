@@ -1,11 +1,8 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 
-type ScanTableOptions = Parameters<Table<string, string, string>["scan"]>[0];
+type ScanTableOptions = Parameters<Table["scan"]>[0];
 
-export const scanTable = async (
-    table: Table<string, string, string>,
-    options?: ScanTableOptions
-) => {
+export const scanTable = async (table: Table, options?: ScanTableOptions) => {
     const items = [];
     let result = await table.scan(options);
     items.push(...result.Items);

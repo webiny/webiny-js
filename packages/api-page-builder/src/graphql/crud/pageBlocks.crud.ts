@@ -261,16 +261,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 await onPageBlockBeforeDelete.publish({
                     pageBlock
                 });
-
-                await storageOperations.pageBlocks.delete({
+                const result = await storageOperations.pageBlocks.delete({
                     pageBlock
                 });
-
                 await onPageBlockAfterDelete.publish({
-                    pageBlock
+                    pageBlock: result
                 });
-
-                return true;
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page block.",
@@ -303,7 +300,6 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                         id: blockId
                     }
                 });
-
                 // We check if the block has variable values set on the page/template, and use them
                 // in priority over the ones set inline in the block editor.
                 const blockDataVariables = blockData?.content?.data?.variables || [];

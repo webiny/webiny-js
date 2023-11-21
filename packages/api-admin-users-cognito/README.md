@@ -1,1 +1,1 @@
-This package was deprecated with the 5.38.0 release of Webiny.
+# @webiny/api-admin-users-cognito

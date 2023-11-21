@@ -18,7 +18,7 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
         if (element) {
             // we need to drop blockId and variables properties when unlinking, so they are separated from all other element data
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { blockId, variables = [], ...newData } = element.data;
+            const { blockId, variables, ...newData } = element.data;
             const pbElement = (await getElementTree({
                 element: { ...element, data: newData }
             })) as PbElement;

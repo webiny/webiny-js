@@ -1,20 +1,18 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Table } from "dynamodb-toolbox";
 
 interface Params {
     tableName?: string;
-    documentClient: DynamoDBClient;
+    documentClient: DocumentClient;
 }
 
-export const createTable = (params: Params): Table<string, string, string> => {
+export const createTable = (params: Params): Table => {
     const { tableName, documentClient } = params;
 
     return new Table({
         name: tableName || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: documentClient,
-        autoExecute: true,
-        autoParse: true
+        DocumentClient: documentClient
     });
 };

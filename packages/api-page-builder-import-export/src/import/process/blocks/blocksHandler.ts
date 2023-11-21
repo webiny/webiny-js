@@ -97,11 +97,7 @@ export const blocksHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        console.error(
-            "[IMPORT_BLOCKS_PROCESS] Error => ",
-            e.message,
-            JSON.stringify(e.data, null, 2)
-        );
+        log("[IMPORT_BLOCKS_PROCESS] Error => ", e.message);
 
         if (subTask && subTask.id) {
             /**

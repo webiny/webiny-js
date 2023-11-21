@@ -5,10 +5,10 @@ import {
     CmsSystemStorageOperationsGetParams,
     CmsSystemStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import { getClean } from "@webiny/db-dynamodb/utils/get";
-import { put } from "@webiny/db-dynamodb";
+import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
@@ -43,12 +43,9 @@ export const createSystemStorageOperations = (
     const create = async ({ system }: CmsSystemStorageOperationsCreateParams) => {
         const keys = createKeys(system);
         try {
-            await put({
-                entity,
-                item: {
-                    ...system,
-                    ...keys
-                }
+            await entity.put({
+                ...system,
+                ...keys
             });
             return system;
         } catch (ex) {
@@ -70,12 +67,9 @@ export const createSystemStorageOperations = (
         const keys = createKeys(system);
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...system,
-                    ...keys
-                }
+            await entity.put({
+                ...system,
+                ...keys
             });
             return system;
         } catch (ex) {
@@ -95,10 +89,11 @@ export const createSystemStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            return await getClean<CmsSystem>({
+            const system = await getRecord<CmsSystem>({
                 entity,
                 keys
             });
+            return cleanupItem(entity, system);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get system.",

@@ -7,8 +7,8 @@ import {
     PageStorageOperationsCreateParams,
     PageStorageOperationsDeleteAllParams,
     PageStorageOperationsDeleteParams,
-    PageStorageOperationsGetByPathParams,
     PageStorageOperationsGetParams,
+    PageStorageOperationsGetByPathParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListResponse,
     PageStorageOperationsListRevisionsParams,
@@ -17,16 +17,10 @@ import {
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { getClean } from "@webiny/db-dynamodb/utils/get";
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { get as entityGet } from "@webiny/db-dynamodb/utils/get";
+import { Entity } from "dynamodb-toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import {
-    DbItem,
-    queryAll,
-    QueryAllParams,
-    queryOne,
-    queryOneClean
-} from "@webiny/db-dynamodb/utils/query";
+import { DbItem, queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -200,10 +194,11 @@ export const createPageStorageOperations = (
             SK: createLatestSortKey(page)
         };
 
-        const latestPage = await getClean<Page>({
+        const latestPageResult = await entityGet<Page>({
             entity,
             keys: latestKeys
         });
+        const latestPage = cleanupItem(entity, latestPageResult);
 
         const titleLC = page.title.toLowerCase();
         /**
@@ -395,15 +390,15 @@ export const createPageStorageOperations = (
     };
 
     /**
-     * - update the revision record
-     * - if the revision being published is also the "latest" revision, update the "latest" record
-     * - set the status of the previously published revision to "unpublished"
-     * - create/update the "published" record
+     * We need to
+     * - update revision that it is published
+     * - if is latest update record that it is published
+     * - set status of previously published page to unpublished
+     * - create / update published record
+     * - create / update published path
      */
     const publish = async (params: PageStorageOperationsPublishParams): Promise<Page> => {
         const { page, latestPage, publishedPage } = params;
-
-        page.status = "published";
 
         const revisionKeys = {
             PK: createRevisionPartitionKey(page),
@@ -438,10 +433,10 @@ export const createPageStorageOperations = (
             );
         }
         /**
-         * If we already have a published revision, and it's not the revision being published:
-         *  - set the existing published revision to "unpublished"
+         * If we have already published revision of this page:
+         *  - set existing published page revision to unpublished
          */
-        if (publishedPage && publishedPage.id !== page.id) {
+        if (publishedPage) {
             const publishedRevisionKeys = {
                 PK: createRevisionPartitionKey(publishedPage),
                 SK: createRevisionSortKey(publishedPage)
@@ -482,14 +477,13 @@ export const createPageStorageOperations = (
 
     /**
      * We need to
-     * - update the revision record
-     * - remove the "published" record
-     * - if the revision being unpublished is also the "latest" revision, update the "latest" record with the new status
+     * - update revision record with new status
+     * - remove published record
+     * - remove published path record
+     * - update latest record with new status if is the latest
      */
     const unpublish = async (params: PageStorageOperationsUnpublishParams): Promise<Page> => {
         const { page, latestPage } = params;
-
-        page.status = "unpublished";
 
         const revisionKeys = {
             PK: createRevisionPartitionKey(page),
@@ -589,10 +583,14 @@ export const createPageStorageOperations = (
             };
         }
         try {
-            return await getClean<Page>({
+            const result = await entityGet<Page>({
                 entity,
                 keys
             });
+            if (!result) {
+                return null;
+            }
+            return cleanupItem(entity, result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",
@@ -623,7 +621,11 @@ export const createPageStorageOperations = (
             }
         };
         try {
-            return await queryOneClean<Page>(queryOptions);
+            const result = await queryOne<Page>(queryOptions);
+            if (!result) {
+                return null;
+            }
+            return cleanupItem(entity, result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get page by given path.",

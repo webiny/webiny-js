@@ -10,10 +10,6 @@ export interface WcpContextObject {
     getProjectLicense: () => DecryptedWcpProjectLicense | null;
     getProjectEnvironment: () => WcpProjectEnvironment | null;
     canUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => boolean;
-    canUseAacl: () => boolean;
-    canUseTeams: () => boolean;
-    canUsePrivateFiles: () => boolean;
-    canUseFolderLevelPermissions: () => boolean;
     ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
     incrementSeats: () => Promise<void>;
     decrementSeats: () => Promise<void>;

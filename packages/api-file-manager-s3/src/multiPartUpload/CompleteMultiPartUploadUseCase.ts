@@ -1,10 +1,4 @@
-import {
-    S3,
-    Part,
-    ListPartsOutput,
-    ListPartsCommand,
-    CompleteMultipartUploadCommandOutput
-} from "@webiny/aws-sdk/client-s3";
+import S3 from "aws-sdk/clients/s3";
 
 interface CompleteMultiPartUploadParams {
     fileKey: string;
@@ -43,33 +37,30 @@ export class CompleteMultiPartUploadUseCase {
         };
 
         return new Promise<void>((resolve, reject) => {
-            this.s3.completeMultipartUpload(
-                s3Params,
-                (err: any, data?: CompleteMultipartUploadCommandOutput) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                        return;
-                    }
-
-                    console.log(data);
-                    resolve();
+            this.s3.completeMultipartUpload(s3Params, (err, data) => {
+                if (err) {
+                    console.error(err);
+                    reject(err);
+                    return;
                 }
-            );
+
+                console.log(data);
+                resolve();
+            });
         });
     }
 
     private async getAllUploadParts(params: GetAllUploadPartsParams) {
-        const parts: Part[] = [];
+        const parts: S3.Parts = [];
 
-        let marker: string | undefined = undefined;
+        let marker: number | undefined = undefined;
         while (true) {
-            const { Parts, PartNumberMarker }: ListPartsOutput = await this.s3.send(
-                new ListPartsCommand({
+            const { Parts, PartNumberMarker }: S3.ListPartsOutput = await this.s3
+                .listParts({
                     ...params,
                     PartNumberMarker: marker
                 })
-            );
+                .promise();
 
             if (Parts) {
                 Parts.forEach(part => parts.push(part));

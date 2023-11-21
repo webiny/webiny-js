@@ -70,12 +70,7 @@ describe("not_in filter", () => {
 
     it("should throw error when input is not an array", async () => {
         const where: CmsEntryListWhere = {
-            /**
-             * We expect error because string cannot be passed into the _in operator.
-             * We are testing for the error throwing.
-             */
-            // @ts-expect-error
-            id_not_in: ""
+            id_not_in: "" as any
         };
 
         expect(() => {

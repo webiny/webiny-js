@@ -39,14 +39,10 @@ describe("Elasticsearch index", () => {
         expect(() => {
             configurations.es({
                 model: {
-                    /**
-                     * We expect error because we are testing the case when tenant is missing.
-                     */
-                    // @ts-expect-error
-                    tenant: null,
+                    tenant: null as any,
                     locale: "en-US",
                     modelId: "testModel"
-                }
+                } as CmsModel
             });
         }).toThrowError(
             `Missing "tenant" parameter when trying to create Elasticsearch index name.`
@@ -58,13 +54,9 @@ describe("Elasticsearch index", () => {
             configurations.es({
                 model: {
                     tenant: "root",
-                    /**
-                     * We expect error because we are testing the case when locale is missing.
-                     */
-                    // @ts-expect-error
-                    locale: null,
+                    locale: null as any,
                     modelId: "testModel"
-                }
+                } as CmsModel
             });
         }).toThrowError(
             `Missing "locale" parameter when trying to create Elasticsearch index name.`

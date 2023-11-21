@@ -20,8 +20,7 @@ const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
     // TODO @ts-refactor figure out better type
-    // @ts-expect-error
-    dragPreviewRef.style["-webkit-transform"] = transform;
+    dragPreviewRef.style["-webkit-transform" as any] = transform;
 };
 
 const DragPreview: React.FC = () => {

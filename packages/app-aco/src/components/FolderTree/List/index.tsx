@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     DropOptions,
     getBackendOptions,
@@ -9,11 +9,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import {
-    FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions
-} from "~/components";
+import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
@@ -37,14 +33,13 @@ export const List: React.VFC<ListProps> = ({
     hiddenFolderIds,
     enableActions
 }) => {
-    const { updateFolder, folderLevelPermissions: flp } = useFolders();
+    const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [permissionsDialogOpen, setPermissionsDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
 
     useEffect(() => {
@@ -72,14 +67,10 @@ export const List: React.VFC<ListProps> = ({
             }
 
             setTreeData(newTree);
-
-            await updateFolder(
-                {
-                    ...item,
-                    parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
-                },
-                { refetchFoldersList: true }
-            );
+            await updateFolder({
+                ...item,
+                parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
+            });
         } catch (error) {
             return showSnackbar(error.message);
         }
@@ -99,14 +90,6 @@ export const List: React.VFC<ListProps> = ({
         setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
 
-    const canDrag = useCallback(
-        (folderId: string) => {
-            const isRootFolder = folderId === ROOT_FOLDER;
-            return !isRootFolder && flp.canManageStructure(folderId);
-        },
-        [flp.canManageStructure]
-    );
-
     return (
         <>
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
@@ -116,7 +99,7 @@ export const List: React.VFC<ListProps> = ({
                     onDrop={handleDrop}
                     onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
-                    canDrag={item => canDrag(item!.id as string)}
+                    canDrag={item => item!.id !== ROOT_FOLDER}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}
@@ -128,10 +111,6 @@ export const List: React.VFC<ListProps> = ({
                             onUpdateFolder={data => {
                                 setSelectedFolder(data);
                                 setUpdateDialogOpen(true);
-                            }}
-                            onSetFolderPermissions={data => {
-                                setSelectedFolder(data);
-                                setPermissionsDialogOpen(true);
                             }}
                             onDeleteFolder={data => {
                                 setSelectedFolder(data);
@@ -166,14 +145,6 @@ export const List: React.VFC<ListProps> = ({
                         open={deleteDialogOpen}
                         onClose={() => {
                             setDeleteDialogOpen(false);
-                            setSelectedFolder(undefined);
-                        }}
-                    />{" "}
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={permissionsDialogOpen}
-                        onClose={() => {
-                            setPermissionsDialogOpen(false);
                             setSelectedFolder(undefined);
                         }}
                     />

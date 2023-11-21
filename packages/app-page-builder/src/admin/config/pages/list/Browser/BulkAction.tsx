@@ -14,7 +14,7 @@ export interface BulkActionProps {
     remove?: boolean;
     before?: string;
     after?: string;
-    element?: React.ReactElement;
+    element: React.ReactElement;
 }
 
 export const BaseBulkAction: React.FC<BulkActionProps> = ({
@@ -40,9 +40,7 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
-                {element ? (
-                    <Property id={getId(name, "element")} name={"element"} value={element} />
-                ) : null}
+                <Property id={getId(name, "element")} name={"element"} value={element} />
             </Property>
         </Property>
     );
@@ -54,7 +52,7 @@ const useWorker = () => {
 
     useEffect(() => {
         worker.items = selected;
-    }, [selected.length]);
+    }, [selected]);
 
     // Reset selected items in both usePagesList and Worker
     const resetItems = useCallback(() => {
@@ -63,7 +61,7 @@ const useWorker = () => {
     }, []);
 
     return {
-        items: selected,
+        items: worker.items,
         process: (callback: (items: PbPageDataItem[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<PbPageDataItem>) => Promise<void>,

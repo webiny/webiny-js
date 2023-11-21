@@ -28,13 +28,9 @@ import {
     createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { FormSubmitOptions } from "@webiny/form";
 
 interface ContentEntryContextForm {
-    submit: (
-        ev: React.SyntheticEvent,
-        options?: FormSubmitOptions
-    ) => Promise<CmsContentEntry | null>;
+    submit: (ev: React.SyntheticEvent) => Promise<CmsContentEntry | null>;
 }
 type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
 export interface ContentEntryContext extends ContentEntriesContext {

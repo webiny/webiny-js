@@ -13,7 +13,6 @@ import {
     INSTALL_SECURITY
 } from "./graphql/tenants";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 type UseGqlHandlerParams = {
     plugins?: any;
@@ -48,8 +47,8 @@ export default (params: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
+            } as any,
+            {} as any
         );
 
         // The first element is the response body, and the second is the raw response.

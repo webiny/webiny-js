@@ -1,15 +1,15 @@
 import React, {
-    createContext,
     Fragment,
-    useCallback,
-    useContext,
     useEffect,
+    createContext,
+    useCallback,
     useMemo,
-    useState
+    useState,
+    useContext
 } from "react";
-import { generateId } from "@webiny/utils";
+import { nanoid } from "nanoid";
 import { makeComposable, Plugins } from "@webiny/app";
-import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tags } from "~/index";
+import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
@@ -40,11 +40,7 @@ export function useNavigation() {
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
 const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     return (
-        <Menu
-            {...props}
-            name={(props as MenuProps).name || generateId()}
-            label={props.label as string}
-        >
+        <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
             {props.children}
         </Menu>
     );
@@ -72,11 +68,8 @@ const LegacyMenuPlugins: React.FC = () => {
                 </Plugins>
             );
         });
-        /**
-         * TODO Figure out correct types for the menus.
-         */
-        // @ts-expect-error
-        setMenus(menuElements);
+        // TODO @ts-refactor
+        setMenus(menuElements as any);
     }, []);
 
     return menus;

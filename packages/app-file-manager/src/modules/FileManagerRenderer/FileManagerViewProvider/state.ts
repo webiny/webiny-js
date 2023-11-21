@@ -6,6 +6,7 @@ export interface State {
     activeTags: string[];
     dragging: boolean;
     filters: Record<string, any> | undefined;
+    hasPreviouslyUploadedFiles: boolean | null;
     isSearch: boolean;
     limit: number;
     listSort?: ListFilesSort;
@@ -14,10 +15,6 @@ export interface State {
     searchLabel: string;
     searchQuery: string;
     selected: FileItem[];
-    selection: {
-        anchor?: number | undefined;
-        focus?: number | undefined;
-    };
     settings: Settings | undefined;
     showingFileDetails: string | null;
     showingFilters: boolean;
@@ -42,6 +39,7 @@ export const initializeState = (): State => {
         dragging: false,
         isSearch: false,
         filters: undefined,
+        hasPreviouslyUploadedFiles: null,
         limit: 50,
         listSort: [],
         listTable: false,
@@ -49,7 +47,6 @@ export const initializeState = (): State => {
         searchLabel: "",
         searchQuery: "",
         selected: [],
-        selection: {},
         settings: undefined,
         showingFileDetails: null,
         showingFilters: false,

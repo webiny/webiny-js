@@ -1,7 +1,11 @@
 import React from "react";
 import { CmsIdentity } from "~/types";
 import { Box } from "./Box";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
+import TimeAgo from "timeago-react";
 
 interface Props {
     createdBy: CmsIdentity;

@@ -1,9 +1,10 @@
-import { AttributeDefinitions, Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
+import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
 
 export const createLegacyEntity = (
-    table: Table<string, string, string>,
+    table: Table,
     entityName: string,
-    attributes: AttributeDefinitions
+    attributes: EntityAttributes
 ) => {
     return new Entity({
         table,
@@ -25,16 +26,14 @@ export const createLegacyEntity = (
                 type: "string"
             },
             ...(attributes || {})
-        },
-        autoExecute: true,
-        autoParse: true
+        }
     });
 };
 
 export const createStandardEntity = (
-    table: Table<string, string, string>,
+    table: Table,
     entityName: string,
-    attributes: AttributeDefinitions = {}
+    attributes: EntityAttributes = {}
 ) => {
     return new Entity({
         table,
@@ -60,8 +59,6 @@ export const createStandardEntity = (
             },
             // When moving attributes to `data` envelope, we need to keep the old attributes in place for 1 version.
             ...attributes
-        },
-        autoExecute: true,
-        autoParse: true
+        }
     });
 };

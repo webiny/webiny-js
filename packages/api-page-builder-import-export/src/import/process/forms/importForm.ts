@@ -30,11 +30,13 @@ export async function importForm({
 
     log(`Downloading Form data file: ${formDataFileKey} at "${FORM_DATA_FILE_PATH}"`);
     // Download and save form data file in disk.
-    const readStream = await s3Stream.readStream(formDataFileKey);
-    const writeStream = createWriteStream(FORM_DATA_FILE_PATH);
-
     await new Promise((resolve, reject) => {
-        readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
+        s3Stream
+            .readStream(formDataFileKey)
+            .on("error", reject)
+            .pipe(createWriteStream(FORM_DATA_FILE_PATH))
+            .on("error", reject)
+            .on("finish", resolve);
     });
 
     // Load the form data file from disk.

@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 import { assignFields } from "./assignFields";
 
 export interface ValueTransformPluginParamsTransformParams {
-    value: Date | string | null | undefined;
+    value: any;
 }
 export interface ValueTransformPluginParamsTransform {
     (params: ValueTransformPluginParamsTransformParams): any;

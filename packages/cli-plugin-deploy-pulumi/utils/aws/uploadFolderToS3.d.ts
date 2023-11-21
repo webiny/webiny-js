@@ -1,4 +1,4 @@
-import { ObjectCannedACL, PutObjectCommandInput } from "@webiny/aws-sdk/client-s3";
+import { BucketName, ObjectCannedACL, CacheControl } from "aws-sdk/clients/s3";
 
 export interface Paths {
     full: string;
@@ -6,7 +6,7 @@ export interface Paths {
 }
 
 type CacheControlMap = {
-    [key: string]: PutObjectCommandInput["CacheControl"]
+    [key: string]: CacheControl
 }
 
 export default function uploadFolderToS3(params: {
@@ -22,7 +22,7 @@ export default function uploadFolderToS3(params: {
     // A callback that gets called every time a file upload has been skipped.
     onFileUploadSkip: (params: { paths: Paths }) => void;
 
-    bucket: PutObjectCommandInput["Bucket"];
+    bucket: BucketName;
     acl?: ObjectCannedACL;
-    cacheControl?: PutObjectCommandInput["CacheControl"] | CacheControlMap;
+    cacheControl?: CacheControl | CacheControlMap;
 }): Promise<void> ;

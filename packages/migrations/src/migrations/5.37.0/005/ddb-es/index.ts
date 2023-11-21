@@ -1,5 +1,5 @@
 import chunk from "lodash/chunk";
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import {
     DataMigration,
@@ -50,11 +50,7 @@ export class FileManager_5_37_0_005 implements DataMigration<FileDataMigrationCh
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(
-        table: Table<string, string, string>,
-        esTable: Table<string, string, string>,
-        elasticsearchClient: Client
-    ) {
+    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);

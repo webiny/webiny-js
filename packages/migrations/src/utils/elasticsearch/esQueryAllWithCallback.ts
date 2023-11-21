@@ -6,7 +6,7 @@ import {
 } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
 
-export interface EsQueryAllWithCallbackParams<TItem> {
+export interface EsQueryAllParams<TItem> {
     elasticsearchClient: Client;
     index: string;
     body: SearchBody;
@@ -20,7 +20,7 @@ export const esQueryAllWithCallback = async <TItem>({
     index,
     callback,
     onError
-}: EsQueryAllWithCallbackParams<TItem>) => {
+}: EsQueryAllParams<TItem>) => {
     let cursor: PrimitiveValue[] | undefined = body.search_after;
     while (true) {
         const bodyWithCursor = { ...body, search_after: cursor };

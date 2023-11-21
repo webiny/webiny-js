@@ -1,4 +1,4 @@
-import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { Entity } from "dynamodb-toolbox";
 
 export interface DataLoaderParams {
     entity: Entity<any>;

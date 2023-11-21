@@ -15,7 +15,6 @@ import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/getElasticsearchClient";
 import { createTable } from "~/definitions/table";
 import { createEntryEntity } from "~/definitions/entry";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -80,7 +79,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     return {
         createContext: async () => {
-            return handler(payload, {} as LambdaContext);
+            return handler(payload, {} as any);
         },
         elasticsearch: elasticsearchClient,
         documentClient,

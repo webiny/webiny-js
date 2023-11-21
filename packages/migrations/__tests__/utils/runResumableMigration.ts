@@ -1,6 +1,5 @@
 import { useHandler } from "~tests/utils/useHandler";
 import { MigrationEventHandlerResponse } from "@webiny/data-migration";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface TimeLimiter {
     timeLeft: number;
@@ -12,11 +11,11 @@ export const runResumableMigration = async (
     payload: any
 ): Promise<NotUndefined<MigrationEventHandlerResponse>> => {
     const invokeMigration = () => {
-        handler({ ...payload, command: "execute" }, {} as LambdaContext);
+        handler({ ...payload, command: "execute" }, {} as any);
     };
 
     const getMigrationStatus = () => {
-        return handler({ ...payload, command: "status" }, {} as LambdaContext);
+        return handler({ ...payload, command: "status" }, {} as any);
     };
 
     startTimer(timeLimiter);

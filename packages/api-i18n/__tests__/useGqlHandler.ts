@@ -10,7 +10,6 @@ import { apiCallsFactory } from "./helpers";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { I18NContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -34,13 +33,12 @@ export default (params: UseGqlHandlerParams = {}) => {
             {
                 type: "context",
                 apply(context: I18NContext) {
-                    // @ts-expect-error
                     context.tenancy.getCurrentTenant = () => {
                         return {
                             id: "root",
                             name: "Root",
                             parent: null
-                        };
+                        } as any;
                     };
                 }
             },
@@ -62,8 +60,8 @@ export default (params: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
+            } as any,
+            {} as any
         );
 
         // The first element is the response body, and the second is the raw response.

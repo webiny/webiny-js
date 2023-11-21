@@ -1,6 +1,5 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/jobsRemoval";
-import { LambdaContext } from "@webiny/handler-aws/types";
 
 describe("Jobs Removal Test", () => {
     // eslint-disable-next-line
@@ -19,7 +18,7 @@ describe("Jobs Removal Test", () => {
         const queueJobsRecords = await storageOperations.listQueueJobs();
         expect(queueJobsRecords).toHaveLength(3);
 
-        const handlerResponse = await handler({}, {} as LambdaContext);
+        const handlerResponse = await handler({}, {} as any);
 
         expect(handlerResponse).toEqual({
             data: {

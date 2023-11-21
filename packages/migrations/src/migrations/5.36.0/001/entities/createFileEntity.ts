@@ -1,4 +1,4 @@
-import { Table } from "@webiny/db-dynamodb/toolbox";
+import { Table } from "dynamodb-toolbox";
 import { createStandardEntity } from "~/utils";
 
 const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
@@ -18,10 +18,10 @@ const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
     }
 };
 
-export const createDdbFileEntity = (table: Table<string, string, string>) => {
+export const createDdbFileEntity = (table: Table) => {
     return createStandardEntity(table, "FM.File");
 };
 
-export const createDdbEsFileEntity = (table: Table<string, string, string>) => {
+export const createDdbEsFileEntity = (table: Table) => {
     return createStandardEntity(table, "FilesElasticsearch", ddbEsAttributes);
 };

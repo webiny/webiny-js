@@ -1,4 +1,3 @@
-import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createPlainObjectPathPlugin } from "~/dynamoDb/path/plainObject";
 
 describe("dynamodb path plain object", () => {
@@ -11,7 +10,7 @@ describe("dynamodb path plain object", () => {
                 settings: {
                     path: "createdBy.id"
                 }
-            } as unknown as CmsModelField
+            } as any
         });
 
         expect(result).toEqual("createdBy.id");
@@ -24,7 +23,7 @@ describe("dynamodb path plain object", () => {
             plugin.createPath({
                 field: {
                     settings: {}
-                } as unknown as CmsModelField
+                } as any
             });
         }).toThrow("Missing path settings value.");
     });

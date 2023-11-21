@@ -16,7 +16,7 @@ import {
     prepareFormData
 } from "@webiny/app-headless-cms-common";
 import { useCms, useModel, useMutation } from "~/admin/hooks";
-import { CmsContentEntry, CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsModelFieldRendererPlugin, CmsModelField } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useNavigateFolder, useRecords } from "@webiny/app-aco";
@@ -165,9 +165,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                         wbyAco_location: {
                             folderId: currentFolderId || ROOT_FOLDER
                         }
-                    },
-                    options: {
-                        skipValidators: form.options.skipValidators
                     }
                 },
                 fetchPolicy: getFetchPolicy(model)
@@ -209,16 +206,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const updateContent = useCallback(
-        async (revision, data, form) => {
+        async (revision, data) => {
             setLoading(true);
             const response = await updateMutation({
-                variables: {
-                    revision,
-                    data,
-                    options: {
-                        skipValidators: form.options.skipValidators
-                    }
-                },
+                variables: { revision, data },
                 fetchPolicy: getFetchPolicy(model)
             });
             setLoading(false);
@@ -246,16 +237,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const createContentFrom = useCallback(
-        async (revision: string, formData: Record<string, any>, form) => {
+        async (revision: string, formData: Record<string, any>) => {
             setLoading(true);
             const response = await createFromMutation({
-                variables: {
-                    revision,
-                    data: formData,
-                    options: {
-                        skipValidators: form.options.skipValidators
-                    }
-                },
+                variables: { revision, data: formData },
                 fetchPolicy: getFetchPolicy(model)
             });
 
@@ -306,10 +291,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         const { locked: isLocked } = meta || {};
 
         if (!isLocked) {
-            return updateContent(entry.id, gqlData, form);
+            return updateContent(entry.id, gqlData);
         }
 
-        return createContentFrom(entry.id, gqlData, form);
+        return createContentFrom(entry.id, gqlData);
     };
 
     const defaultValues = useMemo((): Record<string, any> => {

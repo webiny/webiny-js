@@ -10,14 +10,13 @@ import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
 import styled from "@emotion/styled";
-import { useQuery, useModelFieldGraphqlContext } from "~/admin/hooks";
+import { useQuery } from "~/admin/hooks";
 import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import * as GQL from "~/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const Container = styled("div")({});
 
@@ -40,13 +39,9 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
     const [loadedModels, setLoadedModels] = useState<CmsModel[]>([]);
-    const requestContext = useModelFieldGraphqlContext();
 
     const { data, loading: loadingModels } = useQuery<ListCmsModelsQueryResponse>(
-        GQL.LIST_CONTENT_MODELS,
-        {
-            context: requestContext
-        }
+        GQL.LIST_CONTENT_MODELS
     );
 
     useEffect(() => {
@@ -93,8 +88,7 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
     }, []);
 
     const { entries, loading: loadingEntries } = useReferences({
-        values: bind.value,
-        requestContext
+        values: bind.value
     });
 
     const onRemove = useCallback(() => {
@@ -175,15 +169,9 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
         };
     }, [entries, loadedModels]);
 
-    const { validation } = bind;
-    const { isValid: validationIsValid, message: validationMessage } = validation || {};
-
     return (
         <>
             <FieldLabel>{field.label}</FieldLabel>
-            {validationIsValid === false && (
-                <FormElementMessage error>{validationMessage}</FormElementMessage>
-            )}
             <Container>
                 {loading && <Loader />}
                 {initialValue && (

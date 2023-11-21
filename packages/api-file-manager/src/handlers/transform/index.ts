@@ -1,4 +1,4 @@
-import { S3, GetObjectOutput } from "@webiny/aws-sdk/client-s3";
+import S3 from "aws-sdk/clients/s3";
 import { transformImage } from "./transformImage";
 import optimizeImage from "./optimizeImage";
 import { getEnvironment, getObjectParams } from "../utils";
@@ -6,7 +6,6 @@ import * as newUtils from "./utils";
 import * as legacyUtils from "./legacyUtils";
 import { TransformHandlerEventPayload } from "~/handlers/types";
 import { createEvent } from "@webiny/handler";
-import type { Readable } from "stream";
 
 export const createTransformFilePlugins = () => {
     return [
@@ -17,7 +16,7 @@ export const createTransformFilePlugins = () => {
                 const env = getEnvironment();
                 const s3 = new S3({ region: env.region });
 
-                let optimizedImageObject: GetObjectOutput;
+                let optimizedImageObject: S3.Types.GetObjectOutput;
 
                 const utils = key.includes("/") ? newUtils : legacyUtils;
 
@@ -31,21 +30,23 @@ export const createTransformFilePlugins = () => {
 
                 // 1. Get optimized image.
                 try {
-                    optimizedImageObject = await s3.getObject(params.optimized);
+                    optimizedImageObject = await s3.getObject(params.optimized).promise();
                 } catch (e) {
                     // If not found, try to create it by loading the initially uploaded image.
-                    optimizedImageObject = await s3.getObject(params.initial);
+                    optimizedImageObject = await s3.getObject(params.initial).promise();
 
-                    await s3.putObject({
-                        ...params.optimized,
-                        ContentType: optimizedImageObject.ContentType,
-                        Body: await optimizeImage(
-                            optimizedImageObject.Body as Readable,
-                            optimizedImageObject.ContentType as string
-                        )
-                    });
+                    await s3
+                        .putObject({
+                            ...params.optimized,
+                            ContentType: optimizedImageObject.ContentType,
+                            Body: await optimizeImage(
+                                optimizedImageObject.Body as Buffer,
+                                optimizedImageObject.ContentType as string
+                            )
+                        })
+                        .promise();
 
-                    optimizedImageObject = await s3.getObject(params.optimized);
+                    optimizedImageObject = await s3.getObject(params.optimized).promise();
                 }
 
                 // 2. If no transformations requested, just exit.
@@ -59,17 +60,17 @@ export const createTransformFilePlugins = () => {
                 // 3. If transformations requested, apply them in save it into the bucket.
                 const isAnimated = key.endsWith(".gif") || key.endsWith(".webp");
 
-                await s3.putObject({
-                    ...params.optimizedTransformed,
-                    ContentType: optimizedImageObject.ContentType,
-                    Body: await transformImage(
-                        optimizedImageObject.Body as Readable,
-                        transformations,
-                        {
-                            animated: isAnimated
-                        }
-                    )
-                });
+                await s3
+                    .putObject({
+                        ...params.optimizedTransformed,
+                        ContentType: optimizedImageObject.ContentType,
+                        Body: await transformImage(
+                            optimizedImageObject.Body as Buffer,
+                            transformations,
+                            { animated: isAnimated }
+                        )
+                    })
+                    .promise();
 
                 return {
                     error: false,

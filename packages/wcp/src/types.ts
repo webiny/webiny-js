@@ -15,9 +15,7 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     SEATS = "seats",
     MT = "multiTenancy",
     APW = "advancedPublishingWorkflow",
-    AACL = "advancedAccessControlLayer",
-    AL = "auditLogs",
-    AUDIT_LOGS = "auditLogs"
+    AACL = "advancedAccessControlLayer"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -46,15 +44,9 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.APW]: {
         enabled: boolean;
     };
-    [PROJECT_PACKAGE_FEATURE_NAME.AUDIT_LOGS]: {
-        enabled: boolean;
-    };
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
         enabled: boolean;
-        options: { teams: boolean; privateFiles: boolean; folderLevelPermissions: boolean };
-    };
-    [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
-        enabled: boolean;
+        options: { teams: boolean };
     };
 }
 

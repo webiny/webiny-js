@@ -14,8 +14,6 @@ accounts:
     filters:
       S3Bucket:
         - "s3://webiny-ci"
-      IAMRole:
-        - "GitHubActionsWebinyJs"
 
 resource-types:
   # These resource types will be destroyed.
