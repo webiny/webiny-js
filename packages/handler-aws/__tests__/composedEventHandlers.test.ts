@@ -18,6 +18,8 @@ import { LambdaContext } from "~/types";
 interface S3EventHandlerResponse {
     isS3MainEventHandler?: boolean;
     isAnotherS3EventHandler?: boolean;
+    isThirdS3EventHandler?: boolean;
+    isFourthS3EventHandler?: boolean;
 }
 
 interface DynamoDBEventHandlerResponse {
@@ -33,20 +35,40 @@ interface SQSEventHandlerResponse {
 describe("composed event handlers", () => {
     const context = {} as LambdaContext;
 
+    const calledS3EventHandlers: number[] = [];
+
     const plugins = [
         /**
          * S3
          */
         createS3EventHandler<S3EventHandlerResponse>(async () => {
+            calledS3EventHandlers.push(1);
             return {
                 isS3MainEventHandler: true
             };
         }),
         createS3EventHandler<S3EventHandlerResponse>(async ({ next }) => {
             const result = await next();
+            calledS3EventHandlers.push(2);
             return {
                 ...result,
                 isAnotherS3EventHandler: true
+            };
+        }),
+        createS3EventHandler<S3EventHandlerResponse>(async ({ next }) => {
+            const result = await next();
+            calledS3EventHandlers.push(3);
+            return {
+                ...result,
+                isThirdS3EventHandler: true
+            };
+        }),
+        createS3EventHandler<S3EventHandlerResponse>(async ({ next }) => {
+            const result = await next();
+            calledS3EventHandlers.push(4);
+            return {
+                ...result,
+                isFourthS3EventHandler: true
             };
         }),
         /**
@@ -113,8 +135,15 @@ describe("composed event handlers", () => {
 
         expect(result).toEqual({
             isS3MainEventHandler: true,
-            isAnotherS3EventHandler: true
+            isAnotherS3EventHandler: true,
+            isThirdS3EventHandler: true,
+            isFourthS3EventHandler: true
         });
+
+        expect(calledS3EventHandlers[0]).toEqual(1);
+        expect(calledS3EventHandlers[1]).toEqual(2);
+        expect(calledS3EventHandlers[2]).toEqual(3);
+        expect(calledS3EventHandlers[3]).toEqual(4);
     });
 
     it("should be possible to execute multiple event handlers for a single event using next() callback - dynamodb stream", async () => {
