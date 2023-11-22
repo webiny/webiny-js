@@ -5,7 +5,7 @@ module.exports = ({ path, esm }) => {
                 "@babel/preset-env",
                 {
                     targets: {
-                        node: "16"
+                        node: "18"
                     },
                     modules: esm ? false : "auto"
                 }

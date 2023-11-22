@@ -37,10 +37,10 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = useCallback(
-        async data => {
+        async (_, form) => {
             try {
                 await createFolder({
-                    ...data,
+                    ...form.data,
                     parentId: parentId === ROOT_FOLDER ? null : parentId
                 });
                 setDialogOpen(false);

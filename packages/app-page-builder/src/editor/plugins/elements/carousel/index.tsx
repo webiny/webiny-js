@@ -55,7 +55,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         canDelete: () => {
-            return false;
+            return true;
         },
         create: () => {
             const defaultValue = {

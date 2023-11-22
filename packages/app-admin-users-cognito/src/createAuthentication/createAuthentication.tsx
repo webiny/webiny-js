@@ -4,9 +4,10 @@ import {
     createAuthentication as baseCreateAuthentication,
     AuthenticationFactoryConfig as BaseConfig
 } from "@webiny/app-admin-cognito";
+import { useTags } from "@webiny/app-admin";
+import { useTenancy, withTenant } from "@webiny/app-tenancy";
 import { NotAuthorizedError } from "./NotAuthorizedError";
 import { createGetIdentityData, LOGIN_ST, LOGIN_MT } from "~/createGetIdentityData";
-import { useTenancy, withTenant } from "@webiny/app-tenancy";
 import { GetIdentityDataCallable } from "~/createGetIdentityData/createGetIdentityData";
 
 export interface CreateAuthenticationConfig extends Partial<BaseConfig> {
@@ -42,6 +43,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
     };
 
     const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+        const { installer } = useTags();
         const [error, setError] = useState<string | null>(null);
         const BaseAuthentication = useMemo(() => {
             return baseCreateAuthentication({
@@ -53,7 +55,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
             });
         }, []);
 
-        if (error) {
+        if (error && !installer) {
             return <NotAuthorizedError />;
         }
 

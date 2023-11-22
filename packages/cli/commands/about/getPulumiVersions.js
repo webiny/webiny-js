@@ -9,6 +9,7 @@ module.exports.getPulumiVersions = async () => {
                 "info",
                 "@pulumi/pulumi",
                 "-A",
+                "-R",
                 "--name-only",
                 "--json"
             ]);
@@ -24,6 +25,7 @@ module.exports.getPulumiVersions = async () => {
                 "info",
                 "@pulumi/aws",
                 "-A",
+                "-R",
                 "--name-only",
                 "--json"
             ]);

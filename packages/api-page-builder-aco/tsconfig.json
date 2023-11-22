@@ -7,13 +7,16 @@
     { "path": "../api-page-builder" },
     { "path": "../error" },
     { "path": "../handler" },
+    { "path": "../api-admin-users" },
     { "path": "../api-headless-cms" },
     { "path": "../api-i18n" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
+    { "path": "../api-wcp" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,6 +35,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
@@ -40,12 +45,16 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

@@ -4,14 +4,14 @@ import {
     FormBuilderStorageOperationsUpdateSystemParams,
     System
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { FormBuilderSystemCreateKeysParams, FormBuilderSystemStorageOperations } from "~/types";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSystemStorageOperations = (
@@ -41,9 +41,12 @@ export const createSystemStorageOperations = (
         const keys = createKeys(system);
 
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {
@@ -64,11 +67,10 @@ export const createSystemStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<System>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get the system record by given keys.",
@@ -87,9 +89,12 @@ export const createSystemStorageOperations = (
         const keys = createKeys(system);
 
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {

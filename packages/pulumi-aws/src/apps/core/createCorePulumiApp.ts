@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
@@ -63,11 +64,24 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    const app = createPulumiApp({
+    return createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.elasticSearch) {
+                const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+                if (typeof elasticSearch === "object") {
+                    if (elasticSearch.domainName) {
+                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+                    }
+
+                    if (elasticSearch.indexPrefix) {
+                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+                    }
+                }
+            }
+
             const pulumiResourceNamePrefix = app.getParam(
                 projectAppParams.pulumiResourceNamePrefix
             );
@@ -117,6 +131,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 : null;
 
             app.addOutputs({
+                region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
@@ -144,19 +159,4 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             };
         }
     });
-
-    if (projectAppParams.elasticSearch) {
-        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
-        if (typeof elasticSearch === "object") {
-            if (elasticSearch.domainName) {
-                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
-            }
-
-            if (elasticSearch.indexPrefix) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
-            }
-        }
-    }
-
-    return app;
 }

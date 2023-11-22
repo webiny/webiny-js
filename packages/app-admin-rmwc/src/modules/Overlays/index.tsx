@@ -1,5 +1,5 @@
 import React from "react";
-import { Provider } from "@webiny/app-admin/";
+import { Provider } from "@webiny/app-admin";
 import Snackbar from "./Snackbar";
 import { DialogContainer } from "./Dialog";
 import { Portal } from "@rmwc/base";

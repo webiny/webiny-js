@@ -1,5 +1,5 @@
 // https://github.com/jeremydaly/dynamodb-toolbox
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import table from "./table";
 import { TargetDataModelEntity } from "../types";
 

@@ -1,5 +1,5 @@
 import { createSecurity } from "~/createSecurity";
-import { Security, SecurityConfig } from "~/types";
+import { Security, SecurityConfig, SecurityStorageOperations } from "~/types";
 
 const fullPermissions = {
     name: "*"
@@ -14,7 +14,7 @@ describe("without authorization", function () {
                 teams: false
             }
         },
-        storageOperations: {} as any,
+        storageOperations: {} as SecurityStorageOperations,
         getTenant: () => {
             return "root";
         }

@@ -1,7 +1,18 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
-import { CmsModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
+import {
+    CmsModel as BaseCmsModel,
+    CmsModelField as BaseCmsModelField,
+    CmsModelFieldSettings as BaseCmsModelFieldSettings
+} from "~/types";
 
-type CmsModelField = Omit<BaseCmsModelField, "storageId">;
+type CmsModelField = Omit<BaseCmsModelField, "storageId" | "settings"> & {
+    settings: CmsModelFieldSettings;
+};
+
+interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
+    fields?: CmsModelField[];
+}
+
 interface CmsModel extends Omit<BaseCmsModel, "fields"> {
     fields: CmsModelField[];
 }
@@ -22,7 +33,15 @@ export const pageModel: CmsModel = {
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
-    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"], ["ahterwfesi2"], ["ahterwfesi3"]],
+    layout: [
+        ["kcq9kt40"],
+        ["peeeyhtc"],
+        ["t4pfesadsa"],
+        ["ahterwfesi2"],
+        ["rethawfesi2"],
+        ["ahterwfesi3"],
+        ["ngrejnoxj0wax"]
+    ],
     tags: ["type:model"],
     fields: [
         {
@@ -122,7 +141,7 @@ export const pageModel: CmsModel = {
                         ]
                     },
                     {
-                        layout: [["ttyh493ugfd"]],
+                        layout: [["ttyh493ugfd"], ["nli9u1rm"], ["lsd78slxc8"]],
                         name: "Objecting",
                         gqlTypeName: "Objecting",
                         icon: "fas/file-text",
@@ -140,7 +159,13 @@ export const pageModel: CmsModel = {
                                             id: "rt3uhvds",
                                             fieldId: "objectTitle",
                                             type: "text",
-                                            label: "Object title"
+                                            label: "Object title",
+                                            validation: [
+                                                {
+                                                    name: "required",
+                                                    message: `"nestedObject.objectTitle" is required.`
+                                                }
+                                            ]
                                         },
                                         {
                                             id: "r329gdfhsaufdsa",
@@ -154,7 +179,13 @@ export const pageModel: CmsModel = {
                                                         id: "g9huerprgds",
                                                         fieldId: "nestedObjectNestedTitle",
                                                         type: "text",
-                                                        label: "Nested object nested title"
+                                                        label: "Nested object nested title",
+                                                        validation: [
+                                                            {
+                                                                name: "required",
+                                                                message: `"nestedObject.objectNestedObject.nestedObjectNestedTitle" is required.`
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -163,6 +194,136 @@ export const pageModel: CmsModel = {
                                 },
                                 renderer: {
                                     name: "dynamicZone"
+                                }
+                            },
+                            {
+                                type: "dynamicZone",
+                                settings: {
+                                    templates: [
+                                        {
+                                            name: "SuperNestedObject",
+                                            gqlTypeName: "SuperNestedObject",
+                                            icon: "fab/buysellads",
+                                            description: "SuperNestedObject",
+                                            id: "0emukbsvmzpozx2lzk883",
+                                            fields: [
+                                                {
+                                                    type: "ref",
+                                                    settings: {
+                                                        models: [
+                                                            {
+                                                                modelId: "author"
+                                                            }
+                                                        ]
+                                                    },
+                                                    validation: [],
+                                                    renderer: {
+                                                        name: "ref-inputs"
+                                                    },
+                                                    multipleValues: true,
+                                                    listValidation: [],
+                                                    label: "Authors",
+                                                    fieldId: "authors",
+                                                    id: "tuuehcqp"
+                                                }
+                                            ],
+                                            layout: [["tuuehcqp"]]
+                                        }
+                                    ]
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                },
+                                validation: [],
+                                label: "DynamicZone",
+                                fieldId: "dynamicZone",
+                                id: "nli9u1rm"
+                            },
+                            /**
+                             * Add a dynamic zone field without any templates, to test for correct schema generation.
+                             */
+                            {
+                                type: "dynamicZone",
+                                settings: {
+                                    templates: []
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                },
+                                validation: [],
+                                label: "DynamicZone",
+                                fieldId: "emptyDynamicZone",
+                                id: "lsd78slxc8"
+                            }
+                        ]
+                    },
+                    {
+                        layout: [["jms49ui"], ["xcv50da"]],
+                        name: "Author",
+                        gqlTypeName: "Author",
+                        icon: "fas/file-text",
+                        description: "Reference to an Author.",
+                        id: "qi81z2v453wx9uque0gox",
+                        validation: [
+                            {
+                                name: "minLength",
+                                message: "You need to add at least 1 Simple Text template.",
+                                settings: {
+                                    value: "1"
+                                }
+                            }
+                        ],
+                        fields: [
+                            {
+                                id: "jms49ui",
+                                multipleValues: false,
+                                helpText: "",
+                                label: "Author",
+                                fieldId: "author",
+                                type: "ref",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Please select an author"
+                                    }
+                                ],
+                                listValidation: [],
+                                settings: {
+                                    models: [{ modelId: "author" }]
+                                },
+                                placeholderText: "placeholder text",
+                                predefinedValues: {
+                                    enabled: false,
+                                    values: []
+                                },
+                                renderer: {
+                                    name: "renderer"
+                                }
+                            },
+                            {
+                                id: "xcv50da",
+                                multipleValues: true,
+                                helpText: "",
+                                label: "Authors",
+                                fieldId: "authors",
+                                type: "ref",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Please select some authors"
+                                    }
+                                ],
+                                listValidation: [],
+                                settings: {
+                                    models: [{ modelId: "author" }]
+                                },
+                                placeholderText: "placeholder text",
+                                predefinedValues: {
+                                    enabled: false,
+                                    values: []
+                                },
+                                renderer: {
+                                    name: "renderer"
                                 }
                             }
                         ]
@@ -298,7 +459,13 @@ export const pageModel: CmsModel = {
                                                         id: "hpgtierghpiue",
                                                         fieldId: "nestedObjectNestedTitle",
                                                         type: "text",
-                                                        label: "Nested object nested title"
+                                                        label: "Nested object nested title",
+                                                        validation: [
+                                                            {
+                                                                name: "required",
+                                                                message: `"nestedObjectNestedTitle" is required.`
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -317,6 +484,7 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi2",
             fieldId: "reference",
+            helpText: "Single-value DZ with 2 templates",
             type: "dynamicZone",
             label: "Reference",
             settings: {
@@ -348,8 +516,45 @@ export const pageModel: CmsModel = {
             }
         },
         {
+            id: "rethawfesi2",
+            fieldId: "references1",
+            helpText: "Single value DZ with multi-value ref field.",
+            type: "dynamicZone",
+            multipleValues: false,
+            label: "Reference",
+            settings: {
+                templates: [
+                    {
+                        layout: [["gt409u8qhgoudsahfds"]],
+                        name: "AuthorReference Field",
+                        gqlTypeName: "Authors",
+                        icon: "fas/file-text",
+                        description: "Reference field test.",
+                        id: "tg9u4h3qgfsauighafs",
+                        fields: [
+                            {
+                                id: "gt409u8qhgoudsahfds",
+                                multipleValues: true,
+                                fieldId: "authors",
+                                label: "Reference Field",
+                                type: "ref",
+                                settings: {
+                                    models: [
+                                        {
+                                            modelId: "author"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
             id: "ahterwfesi3",
-            fieldId: "references",
+            fieldId: "references2",
+            helpText: "Multi-value DZ with a single-value ref field.",
             type: "dynamicZone",
             multipleValues: true,
             label: "Reference",
@@ -377,6 +582,30 @@ export const pageModel: CmsModel = {
                                 }
                             }
                         ]
+                    }
+                ]
+            }
+        },
+        /**
+         *  Dynamic zone without templates will be skipped in the SDL generation process.
+         *  This means that the parent `object` field will have 0 child fields.
+         *  For that reason, we expect a GQL type with an `_empty: String` field.
+         */
+        {
+            id: "ngrejnoxj0wax",
+            fieldId: "ghostObject",
+            type: "object",
+            label: "Object that will generate a type with an _empty field.",
+            settings: {
+                fields: [
+                    {
+                        id: "rghpiuehpgtie",
+                        fieldId: "emptyDynamicZone",
+                        type: "dynamicZone",
+                        label: "Dynamic zone without templates",
+                        settings: {
+                            templates: []
+                        }
                     }
                 ]
             }

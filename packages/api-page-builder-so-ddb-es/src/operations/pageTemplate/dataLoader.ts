@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { PageTemplate } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { createPrimaryPK } from "./keys";
 import { DataContainer, DataLoaderInterface } from "~/types";
 

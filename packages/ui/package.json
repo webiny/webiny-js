@@ -64,7 +64,8 @@
     "react-loading-skeleton": "^3.1.0",
     "react-spinner-material": "1.1.4",
     "react-transition-group": "^4.3.0",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "timeago-react": "^3.0.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

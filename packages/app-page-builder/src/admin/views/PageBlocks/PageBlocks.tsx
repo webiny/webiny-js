@@ -16,14 +16,14 @@ const PageBlocks: React.FC = () => {
 
     return (
         <SplitView>
-            <LeftPanel>
+            <LeftPanel span={4}>
                 <BlocksByCategoriesDataList
                     filter={filter}
                     setFilter={setFilter}
                     canCreate={canCreate()}
                 />
             </LeftPanel>
-            <RightPanel>
+            <RightPanel span={8}>
                 <PageBlocksDataList
                     filter={filter}
                     canCreate={canCreate()}

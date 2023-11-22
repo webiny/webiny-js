@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -22,10 +22,7 @@ import elasticSearch, {
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 const elasticsearchClient = createElasticsearchClient({
     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
@@ -64,5 +61,5 @@ export const handler = createHandler({
         }),
         exportCombinePlugins()
     ],
-    http: { debug }
+    debug
 });

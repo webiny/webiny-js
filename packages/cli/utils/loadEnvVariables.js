@@ -44,3 +44,11 @@ if (project.config.featureFlags) {
     process.env.WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
     process.env.REACT_APP_WEBINY_FEATURE_FLAGS = JSON.stringify(project.config.featureFlags);
 }
+
+// With 5.38.0, we are hiding the `WEBINY_ELASTICSEARCH_INDEX_LOCALE` env variable and always setting it to `true`.
+// This is because this variable is not something users should be concerned with, nor should they be able to change it.
+// In order to ensure backwards compatibility, we first check if the variable is set, and if it is, we don't override it.
+const esIndexLocaleEnvVarExists = "WEBINY_ELASTICSEARCH_INDEX_LOCALE" in process.env;
+if (!esIndexLocaleEnvVarExists) {
+    process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
+}

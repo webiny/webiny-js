@@ -1,5 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createApiGatewayHandler as createHandler } from "@webiny/handler-aws";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -34,16 +34,14 @@ import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAuditLogs } from "@webiny/api-audit-logs";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 
 const debug = process.env.DEBUG === "true";
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
@@ -119,7 +117,8 @@ export const handler = createHandler({
                     name: "number-input"
                 }
             });
-        })
+        }),
+        createAuditLogs()
     ],
-    http: { debug }
+    debug
 });

@@ -43,6 +43,9 @@ type MenuProps = RmwcMenuProps & {
     // Class that will be added to the Menu element.
     className?: string;
 
+    // If true, prevents menu from opening when clicked.
+    disabled?: boolean;
+
     onOpen?: () => void;
     onClose?: () => void;
 
@@ -67,7 +70,9 @@ class Menu extends React.Component<MenuProps, MenuState> {
     };
 
     private readonly openMenu = () => {
-        this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+        if (this.props.disabled !== true) {
+            this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+        }
     };
 
     private readonly closeMenu = () => {
