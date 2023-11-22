@@ -48,7 +48,7 @@ export class ActionEditPresenter implements IActionEditPresenter {
 
         const extensionFields =
             extensions.settings.fields.filter(
-                field => field.tags && field.tags.includes("field:bulk-edit")
+                field => field.tags && field.tags.includes("$bulk-edit")
             ) || [];
 
         return FieldMapper.toDTO(extensionFields.map(field => Field.createFromRaw(field)));

@@ -34,7 +34,7 @@ describe("BatchEditorDialogPresenter", () => {
                 renderer: {
                     name: "text-input"
                 },
-                tags: ["field:bulk-edit"],
+                tags: ["$bulk-edit"],
                 storageId: "text@field1"
             }
         },
@@ -59,7 +59,7 @@ describe("BatchEditorDialogPresenter", () => {
                 renderer: {
                     name: "text-input"
                 },
-                tags: ["field:bulk-edit"],
+                tags: ["$bulk-edit"],
                 storageId: "text@field2"
             }
         }

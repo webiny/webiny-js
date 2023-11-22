@@ -18,7 +18,7 @@ class CmsModelFieldsModifier {
 
         this.fields.push({
             ...rest,
-            tags: (tags ?? []).concat(bulkEdit ? ["field:bulk-edit"] : []),
+            tags: (tags ?? []).concat(bulkEdit ? ["$bulk-edit"] : []),
             storageId: `${field.type}@${field.id}`
         });
     }

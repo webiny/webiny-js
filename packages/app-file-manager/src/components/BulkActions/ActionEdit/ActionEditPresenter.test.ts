@@ -11,7 +11,7 @@ describe("ActionEditPresenter", () => {
             renderer: {
                 name: "text-input"
             },
-            tags: ["field:bulk-edit"],
+            tags: ["$bulk-edit"],
             storageId: "text@field1"
         },
         {
@@ -30,7 +30,7 @@ describe("ActionEditPresenter", () => {
                     }
                 ]
             },
-            tags: ["field:bulk-edit"],
+            tags: ["$bulk-edit"],
             storageId: "ref@field2"
         },
         {
