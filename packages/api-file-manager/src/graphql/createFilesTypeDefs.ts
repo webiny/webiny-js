@@ -83,10 +83,14 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
 
         input FmFileCreateInput {
             id: ID!
+            createdOn: DateTime
+            savedOn: DateTime
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
         input FmFileUpdateInput {
+            createdOn: DateTime
+            savedOn: DateTime
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 
@@ -131,7 +135,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             data: [FmFile!]
             error: FmError
         }
-            
+        
         type FmFileModelResponse {
             data: JSON
             error: FmError

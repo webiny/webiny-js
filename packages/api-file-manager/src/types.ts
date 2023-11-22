@@ -31,6 +31,8 @@ export interface FilePermission extends SecurityPermission {
 
 export interface FileInput {
     id: string;
+    createdOn?: string | Date | null;
+    savedOn?: string | Date | null;
     key: string;
     name: string;
     size: number;

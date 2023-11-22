@@ -13,6 +13,25 @@ import { FileManagerConfig } from "~/createFileManager/index";
 import { ROOT_FOLDER } from "~/contants";
 import { NotAuthorizedError } from "@webiny/api-security";
 
+const getDate = (input: Date | string | undefined | null, defaultValue: Date | string): string => {
+    if (!input) {
+        if (defaultValue instanceof Date) {
+            return defaultValue.toISOString();
+        }
+        return defaultValue;
+    } else if (input instanceof Date) {
+        return input.toISOString();
+    }
+    try {
+        return new Date(input).toISOString();
+    } catch {
+        if (defaultValue instanceof Date) {
+            return defaultValue.toISOString();
+        }
+        return defaultValue;
+    }
+};
+
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
         storageOperations,
@@ -59,6 +78,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             // Extract ID from file key
             const [id] = input.key.split("/");
 
+            const date = new Date();
             const file: File = {
                 ...input,
                 tags: Array.isArray(input.tags) ? input.tags : [],
@@ -72,8 +92,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     ...(input.meta || {})
                 },
                 tenant: getTenantId(),
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: getDate(input.createdOn, date),
+                savedOn: getDate(input.savedOn, date),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -126,6 +146,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             const file: File = {
                 ...original,
                 ...input,
+                createdOn: getDate(input.createdOn, original.createdOn),
+                savedOn: getDate(input.savedOn, new Date()),
                 tags: Array.isArray(input.tags)
                     ? input.tags
                     : Array.isArray(original.tags)
