@@ -218,6 +218,12 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                     <IconPicker />
                                 </Bind>
                             </Cell>
+                            {/* Third IconPicker added to test how it behaves with more than one component. */}
+                            <Cell span={12}>
+                                <Bind name="icon3" validators={validation.create("required")}>
+                                    <IconPicker />
+                                </Bind>
+                            </Cell>
                             <Cell span={12}>
                                 <Bind
                                     name="description"

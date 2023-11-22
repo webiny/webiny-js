@@ -50,9 +50,9 @@ export const Row = styled.div`
     align-items: center;
 `;
 
-export const Cell = styled.div<{ color: string; isActive: boolean }>`
+export const Cell = styled.div<{ isActive: boolean }>`
     cursor: pointer;
-    color: ${({ color }) => color};
+     color: ${({ color }) => color};
     background-color: ${({ isActive, theme }) =>
         isActive ? theme.styles.colors.color5 : theme.styles.colors.color6};
 

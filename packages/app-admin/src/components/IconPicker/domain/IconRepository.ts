@@ -1,16 +1,20 @@
 import cloneDeep from "lodash/cloneDeep";
 import { makeAutoObservable, runInAction } from "mobx";
-
 import { Loading } from "../domain";
-import { IconPackProviderInterface as IconPackProvider } from "~/components/IconPicker/config";
+import {
+    IconPackProviderInterface as IconPackProvider,
+    IconType
+} from "~/components/IconPicker/config";
 import { ProviderIcon } from "~/components/IconPicker/config/IconPackProvider";
 
 export class IconRepository {
+    public readonly iconPackProviders: IconPackProvider[];
+    private readonly iconTypes: IconType[];
     private loading: Loading;
     private icons: ProviderIcon[] = [];
-    public iconPackProviders: IconPackProvider[];
 
-    constructor(iconPackProviders: IconPackProvider[]) {
+    constructor(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
+        this.iconTypes = iconTypes;
         this.loading = new Loading(true);
         this.iconPackProviders = iconPackProviders;
         makeAutoObservable(this);
@@ -21,17 +25,27 @@ export class IconRepository {
             return;
         }
 
-        const iconPacks = await this.runWithLoading<ProviderIcon[][]>(
-            Promise.all(this.iconPackProviders.map(provider => provider.getIcons()))
-        );
+        const icons = await this.runWithLoading(async () => {
+            const icons = await Promise.all(
+                this.iconPackProviders.map(provider => provider.getIcons())
+            );
+            return icons.flat();
+        });
+
+        const iconTypes = this.iconTypes.map(iconType => iconType.name);
 
         runInAction(() => {
-            this.icons = iconPacks?.flat() || [];
+            // Make sure we only work with known icon types.
+            this.icons = icons.filter(icon => iconTypes.includes(icon.type));
         });
     }
 
     getIcons() {
         return cloneDeep(this.icons);
+    }
+
+    getIconTypes() {
+        return this.iconTypes;
     }
 
     getLoading() {
@@ -43,7 +57,7 @@ export class IconRepository {
     }
 
     private async runWithLoading<T>(
-        action: Promise<T>,
+        action: () => Promise<T>,
         loadingLabel?: string,
         successMessage?: string,
         failureMessage?: string

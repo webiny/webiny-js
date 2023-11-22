@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 
 import { Menu } from "@webiny/ui/Menu";
 
-import { IconRenderer } from "./IconRenderer";
+import { IconProvider, IconRenderer } from "./IconRenderer";
 import { Icon } from "./types";
 
 const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
@@ -45,7 +45,9 @@ export const SkinToneSelect = ({ icon, onChange, checkSkinToneSupport }: SkinTon
     if (!hasSkinToneSupport) {
         return (
             <SkinToneSelectWrapper>
-                <IconRenderer icon={icon} />
+                <IconProvider icon={icon}>
+                    <IconRenderer />
+                </IconProvider>
             </SkinToneSelectWrapper>
         );
     }
@@ -55,7 +57,9 @@ export const SkinToneSelect = ({ icon, onChange, checkSkinToneSupport }: SkinTon
             open={hasSkinToneSupport}
             handle={
                 <SkinToneSelectWrapper>
-                    <IconRenderer icon={icon} />
+                    <IconProvider icon={icon}>
+                        <IconRenderer />
+                    </IconProvider>
                 </SkinToneSelectWrapper>
             }
         >
@@ -69,9 +73,12 @@ export const SkinToneSelect = ({ icon, onChange, checkSkinToneSupport }: SkinTon
                                 closeMenu();
                             }}
                         >
-                            <IconRenderer
+                            <IconProvider icon={icon}>
+                                <IconRenderer />
+                            </IconProvider>
+                            {/*<IconRenderer
                                 icon={{ ...icon, value: icon.value + skinTone, skinTone: "" }}
-                            />
+                            />*/}
                         </SkinTone>
                     ))}
                 </SkinTonesGrid>
