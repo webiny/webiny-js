@@ -19,14 +19,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     const authorizers: Authorizer[] = [];
     let performAuthorization = true;
 
-    let permissions: SecurityPermission[];
+    let permissions: SecurityPermission[] = [];
     let permissionsLoader: Promise<SecurityPermission[]>;
 
     const loadPermissions = async (security: Security): Promise<SecurityPermission[]> => {
-        if (permissions) {
-            return permissions;
-        }
-
         if (permissionsLoader) {
             return permissionsLoader;
         }
@@ -62,6 +58,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
     return {
         ...authentication,
+        async authenticate(this: Security, token: string): Promise<void> {
+            await authentication.authenticate(token);
+            await loadPermissions(this);
+        },
         config,
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
@@ -146,8 +146,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
 
         async listPermissions(this: Security): Promise<SecurityPermission[]> {
-            const permissions = await loadPermissions(this);
-
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
