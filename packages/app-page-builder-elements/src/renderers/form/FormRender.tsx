@@ -5,7 +5,8 @@ import {
     handleFormTriggers,
     reCaptchaEnabled,
     termsOfServiceEnabled,
-    onFormMounted
+    onFormMounted,
+    getNextStepIndex
 } from "./FormRender/functions";
 
 import {
@@ -17,7 +18,6 @@ import {
     FormSubmissionResponse,
     FormLayoutComponentProps,
     CreateFormParams,
-    FormDataFieldsLayout,
     FormSubmissionFieldValues,
     CreateFormParamsFormLayoutComponent,
     CreateFormParamsValidator
@@ -37,6 +37,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+    const [modifiedSteps, setModifiedSteps] = useState(formData.steps);
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
@@ -49,13 +50,18 @@ const FormRender: React.FC<FormRenderProps> = props => {
         setCurrentStepIndex(prevStep => (prevStep -= 1));
     };
 
-    const isFirstStep = currentStepIndex === 0;
-    const isLastStep = currentStepIndex === formData.steps.length - 1;
+    const resolvedSteps = useMemo(() => {
+        return modifiedSteps || formData.steps;
+    }, [formData.steps, modifiedSteps]);
 
+    const isFirstStep = currentStepIndex === 0;
+    const isLastStep = currentStepIndex === resolvedSteps.length - 1;
+
+    // We need this check in case we deleted last step and at the same time we were previewing it.
     const currentStep =
-        formData.steps[currentStepIndex] === undefined
-            ? formData.steps[formData.steps.length - 1]
-            : formData.steps[currentStepIndex];
+        resolvedSteps[currentStepIndex] === undefined
+            ? resolvedSteps[formData.steps.length - 1]
+            : resolvedSteps[currentStepIndex];
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
         let validators: CreateFormParamsValidator[] = [];
@@ -105,8 +111,36 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
+    const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
+        const currentStep = resolvedSteps[stepIndex];
+
+        const nextStepIndex = getNextStepIndex({
+            formData,
+            rules: currentStep.rules
+        });
+
+        const initialStepIndex = steps.findIndex(step => step.index === currentStep.index);
+        if (nextStepIndex === "submit") {
+            setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+        } else if (nextStepIndex !== "") {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(+nextStepIndex)
+            ]);
+        } else {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(initialStepIndex + 1)
+            ]);
+        }
+    };
+
     const getFields = (stepIndex = 0): FormRenderComponentDataField[][] => {
-        const fieldLayout = structuredClone(steps[stepIndex].layout) as FormDataFieldsLayout;
+        const stepFields =
+            resolvedSteps[stepIndex] === undefined
+                ? resolvedSteps[resolvedSteps.length - 1]
+                : resolvedSteps[stepIndex];
+        const fieldLayout = structuredClone(stepFields.layout.filter(Boolean));
 
         return fieldLayout.map(row => {
             return row.map(id => {
@@ -222,6 +256,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        validateStepConditions,
         isFirstStep,
         isLastStep,
         isMultiStepForm,

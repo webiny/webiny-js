@@ -1,17 +1,11 @@
 import React, { useCallback, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 
-import {
-    FbFormModelField,
-    FieldLayoutPositionType,
-    FbBuilderFieldPlugin,
-    MoveFieldParams,
-    FbFormModel,
-    FbFormStep
-} from "~/types";
-import Draggable from "../../../Draggable";
+import { FbFormModelField, FbFormStep, DropDestination } from "~/types";
+import Draggable from "~/admin/components/FormEditor/Draggable";
 import EditFieldDialog from "../EditFieldDialog";
 import Field from "../Field";
+import ConditionalGroupField from "../ConditionGroup";
 import {
     rowHandle,
     fieldHandle,
@@ -19,15 +13,18 @@ import {
     Row,
     RowContainer,
     StyledAccordion,
-    StyledAccordionItem
+    StyledAccordionItem,
+    conditionGroupContainer,
+    StepRulesTag
 } from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
-import { ReactComponent as HandleIcon } from "../../../../../icons/round-drag_indicator-24px.svg";
-import { Center, Vertical, Horizontal } from "../../../DropZone";
+import { ReactComponent as HandleIcon } from "~/admin/components/FormEditor/icons/round-drag_indicator-24px.svg";
+import { Center, Vertical, Horizontal } from "~/admin/components/FormEditor/DropZone";
+import { useFormDragAndDrop } from "~/hooks/useFormDragAndDrop";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
@@ -35,43 +32,40 @@ const t = i18n.namespace("FormsApp.Editor.EditTab");
 export const FormStep = ({
     title,
     deleteStepDisabled,
-    data,
     formStep,
     onDelete,
     onEdit,
-    moveRow,
-    moveField,
-    getFieldPlugin,
-    insertField,
     getLayoutFields,
     updateField,
-    deleteField
+    deleteField,
+    deleteConditionGroup
 }: {
     title: string;
     deleteStepDisabled: boolean;
-    data: FbFormModel;
     formStep: FbFormStep;
     onDelete: () => void;
     onEdit: () => void;
-    moveRow: (
-        source: number,
-        destination: number,
-        targetStepId: string,
-        sourceStep: FbFormStep
-    ) => void;
-    moveField: (params: MoveFieldParams) => void;
-    getFieldPlugin: ({ name }: { name: string }) => FbBuilderFieldPlugin | null;
-    insertField: (
-        field: FbFormModelField,
-        position: FieldLayoutPositionType,
-        stepId: string
-    ) => void;
     getLayoutFields: (stepId: string) => FbFormModelField[][];
     updateField: (field: FbFormModelField) => void;
-    deleteField: (field: FbFormModelField, stepId: string) => void;
+    deleteField: ({
+        field,
+        containerId,
+        containerType
+    }: {
+        field: FbFormModelField;
+        containerId: string;
+        containerType?: "conditionGroup" | "step";
+    }) => void;
+    deleteConditionGroup: ({
+        formStep,
+        conditionGroup
+    }: {
+        formStep: FbFormStep;
+        conditionGroup: FbFormModelField;
+    }) => void;
 }) => {
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
-    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType | null>(null);
+    const [dropDestination, setDropDestination] = useState<DropDestination | null>(null);
 
     const editField = useCallback((field: FbFormModelField | null) => {
         if (!field) {
@@ -81,56 +75,10 @@ export const FormStep = ({
         setEditingField(cloneDeep(field));
     }, []);
 
-    // TODO @ts-refactor figure out source type
-    const handleDropField = useCallback(
-        (source: any, position: FieldLayoutPositionType): void => {
-            const { pos, name, ui, formStep: sourceStep } = source;
-
-            if (name === "custom") {
-                /**
-                 * We can cast because field is empty in the start
-                 */
-                editField({} as FbFormModelField);
-                setDropTarget(position);
-                return;
-            }
-
-            if (ui === "row") {
-                // Reorder rows.
-                // Reorder logic is different depending on the source and target position.
-                // pos.formStep is a source step from which we move row.
-                // formStep is a target step in which we move row.
-                moveRow(pos.row, position.row, formStep.id, sourceStep);
-                return;
-            }
-
-            // If source pos is set, we are moving an existing field.
-            if (pos) {
-                if (pos.index === null) {
-                    console.log("Tried to move Form Field but its position index is null.");
-                    console.log(source);
-                    return;
-                }
-                // Here we are getting field from the source step ("source step" is a step from which we take a field)
-                const fieldId = sourceStep.layout[pos.row][pos.index];
-                moveField({
-                    field: fieldId,
-                    position,
-                    targetStepId: formStep.id,
-                    sourceStepId: sourceStep.id
-                });
-                return;
-            }
-
-            // Find field plugin which handles the dropped field type "name".
-            const plugin = getFieldPlugin({ name });
-            if (!plugin) {
-                return;
-            }
-            insertField(plugin.field.createField(), position, formStep.id);
-        },
-        [data]
-    );
+    const { composeHandleDropParams, createCustomField } = useFormDragAndDrop({
+        editField,
+        setDropDestination
+    });
 
     const fields = getLayoutFields(formStep.id);
 
@@ -145,6 +93,11 @@ export const FormStep = ({
                     open={true}
                     actions={
                         <AccordionItem.Actions>
+                            {formStep.rules.length ? (
+                                <StepRulesTag isValid={true}>{"Rules Attached"}</StepRulesTag>
+                            ) : (
+                                <></>
+                            )}
                             <AccordionItem.Action icon={<EditIcon />} onClick={onEdit} />
                             <AccordionItem.Action
                                 icon={<DeleteIcon />}
@@ -157,13 +110,16 @@ export const FormStep = ({
                     {fields.length === 0 && (
                         <Center
                             onDrop={item => {
-                                // We don't want to drop steps inside of steps
-                                if (item.ui === "step") {
-                                    return undefined;
-                                }
-                                handleDropField(item, {
-                                    row: 0,
-                                    index: 0
+                                composeHandleDropParams({
+                                    item,
+                                    destination: {
+                                        containerId: formStep.id,
+                                        containerType: "step",
+                                        position: {
+                                            row: 0,
+                                            index: 0
+                                        }
+                                    }
                                 });
                                 return undefined;
                             }}
@@ -173,7 +129,14 @@ export const FormStep = ({
                     )}
                     {fields.map((row, index) => (
                         <Draggable
-                            beginDrag={{ ui: "row", pos: { row: index }, formStep }}
+                            beginDrag={{
+                                ui: "row",
+                                pos: { row: index },
+                                container: {
+                                    type: "step",
+                                    id: formStep.id
+                                }
+                            }}
                             key={`row-${index}`}
                         >
                             {(
@@ -194,9 +157,16 @@ export const FormStep = ({
                                     </div>
                                     <Horizontal
                                         onDrop={item => {
-                                            handleDropField(item, {
-                                                row: index,
-                                                index: null
+                                            composeHandleDropParams({
+                                                item,
+                                                destination: {
+                                                    containerId: formStep.id,
+                                                    containerType: "step",
+                                                    position: {
+                                                        row: index,
+                                                        index: null
+                                                    }
+                                                }
                                             });
                                             return undefined;
                                         }}
@@ -210,39 +180,80 @@ export const FormStep = ({
                                                 beginDrag={{
                                                     ui: "field",
                                                     name: field.name,
+                                                    id: field._id,
                                                     pos: {
                                                         row: index,
                                                         index: fieldIndex
                                                     },
-                                                    formStep
+                                                    container: {
+                                                        type: "step",
+                                                        id: formStep.id
+                                                    }
                                                 }}
                                             >
                                                 {({ drag }) => (
-                                                    <div className={fieldContainer} ref={drag}>
+                                                    <div
+                                                        className={
+                                                            field.name === "conditionGroup"
+                                                                ? conditionGroupContainer
+                                                                : fieldContainer
+                                                        }
+                                                        ref={drag}
+                                                    >
                                                         <Vertical
                                                             onDrop={item => {
-                                                                handleDropField(item, {
-                                                                    row: index,
-                                                                    index: fieldIndex
+                                                                composeHandleDropParams({
+                                                                    item,
+                                                                    destination: {
+                                                                        containerId: formStep.id,
+                                                                        containerType: "step",
+                                                                        position: {
+                                                                            row: index,
+                                                                            index: fieldIndex
+                                                                        }
+                                                                    }
                                                                 });
                                                                 return undefined;
                                                             }}
-                                                            isVisible={item =>
-                                                                item.ui === "field" &&
-                                                                (row.length < 4 ||
-                                                                    item?.pos?.row === index)
-                                                            }
+                                                            isVisible={item => {
+                                                                return (
+                                                                    item.ui === "field" &&
+                                                                    (row.length < 4 ||
+                                                                        item?.pos?.row === index)
+                                                                );
+                                                            }}
                                                         />
 
-                                                        <div className={fieldHandle}>
-                                                            <Field
-                                                                field={field}
-                                                                onEdit={editField}
-                                                                onDelete={() =>
-                                                                    deleteField(field, formStep.id)
-                                                                }
-                                                            />
-                                                        </div>
+                                                        {field.name === "conditionGroup" ? (
+                                                            <div>
+                                                                <ConditionalGroupField
+                                                                    field={field}
+                                                                    onEdit={editField}
+                                                                    targetStepId={formStep.id}
+                                                                    onDelete={deleteField}
+                                                                    deleteConditionGroup={
+                                                                        deleteConditionGroup
+                                                                    }
+                                                                    onDrop={composeHandleDropParams}
+                                                                    formStep={formStep}
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className={fieldHandle}>
+                                                                <Field
+                                                                    field={field}
+                                                                    onEdit={editField}
+                                                                    onDelete={() =>
+                                                                        deleteField({
+                                                                            field,
+                                                                            containerId:
+                                                                                formStep.id,
+                                                                            containerType: "step"
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        )}
 
                                                         {/* Field end */}
                                                         {fieldIndex === row.length - 1 && (
@@ -254,9 +265,18 @@ export const FormStep = ({
                                                                         item?.pos?.row === index)
                                                                 }
                                                                 onDrop={item => {
-                                                                    handleDropField(item, {
-                                                                        row: index,
-                                                                        index: fieldIndex + 1
+                                                                    composeHandleDropParams({
+                                                                        item,
+                                                                        destination: {
+                                                                            containerId:
+                                                                                formStep.id,
+                                                                            containerType: "step",
+                                                                            position: {
+                                                                                row: index,
+                                                                                index:
+                                                                                    fieldIndex + 1
+                                                                            }
+                                                                        }
                                                                     });
                                                                     return undefined;
                                                                 }}
@@ -272,9 +292,16 @@ export const FormStep = ({
                                         <Horizontal
                                             last
                                             onDrop={item => {
-                                                handleDropField(item, {
-                                                    row: index + 1,
-                                                    index: null
+                                                composeHandleDropParams({
+                                                    item,
+                                                    destination: {
+                                                        containerId: formStep.id,
+                                                        containerType: "step",
+                                                        position: {
+                                                            row: index + 1,
+                                                            index: null
+                                                        }
+                                                    }
                                                 });
                                                 return undefined;
                                             }}
@@ -295,10 +322,16 @@ export const FormStep = ({
 
                             if (data._id) {
                                 updateField(data);
-                            } else if (!dropTarget) {
+                            } else if (!dropDestination) {
                                 console.log("Missing drop target on EditFieldDialog submit.");
                             } else {
-                                insertField(data, dropTarget, formStep.id);
+                                /*
+                                    Here we are inserting a custom field.
+                                */
+                                createCustomField({
+                                    data,
+                                    dropDestination
+                                });
                             }
                             editField(null);
                         }}

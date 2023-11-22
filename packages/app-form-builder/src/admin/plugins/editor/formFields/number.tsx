@@ -16,6 +16,7 @@ const plugin: FbBuilderFieldPlugin = {
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
+                _id: "",
                 fieldId: "",
                 type: this.type,
                 name: this.name,

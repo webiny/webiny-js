@@ -11,7 +11,7 @@ export interface FormDataFieldValidator {
 }
 
 export interface FormDataField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;
@@ -47,6 +47,24 @@ export interface FormDataStep {
     id: string;
     title: string;
     layout: string[][];
+    rules: FormRule[];
+    index: number;
+}
+
+export interface FormRule {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FormCondition[];
+    isValid: boolean;
+}
+
+export interface FormCondition {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
 }
 
 export interface FormData {
@@ -87,6 +105,7 @@ export type FormLayoutComponentProps<T = any> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;
