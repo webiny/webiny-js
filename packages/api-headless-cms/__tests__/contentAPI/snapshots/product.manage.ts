@@ -160,6 +160,9 @@ export default /* GraphQL */ `
 
     input ProductApiSingularInput {
         id: ID
+        createdOn: DateTime
+        savedOn: DateTime
+        publishedOn: DateTime
         wbyAco_location: WbyAcoLocationInput
         title: String
         category: RefFieldInput
@@ -213,6 +216,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
