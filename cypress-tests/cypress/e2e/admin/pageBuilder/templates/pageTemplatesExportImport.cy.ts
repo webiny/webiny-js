@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Export&Import", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
@@ -40,12 +40,12 @@ context("Page Builder - Templates", () => {
     };
 
     beforeEach(() => {
-        cy.login();
-        cy.pbDeleteAllTemplates();
-        cy.createPageTemplate(pageTemplateData1);
-        cy.createPageTemplate(pageTemplateData2);
-        cy.createPageTemplate(pageTemplateData3);
-        cy.createPageTemplate(pageTemplateData4);
+        cy.login()
+            .then(() => cy.pbDeleteAllTemplates())
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData1))
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData2))
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData3))
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData4));
     });
 
     it("Should be able to export templates and then import them again", () => {

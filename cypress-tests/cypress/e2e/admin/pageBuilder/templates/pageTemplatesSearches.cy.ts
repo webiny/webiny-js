@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Page Search", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
@@ -42,10 +42,10 @@ context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.createPageTemplate(pageTemplateData1);
-        cy.createPageTemplate(pageTemplateData2);
-        cy.createPageTemplate(pageTemplateData3);
-        cy.createPageTemplate(pageTemplateData4);
+        cy.pbCreatePageTemplate(pageTemplateData1);
+        cy.pbCreatePageTemplate(pageTemplateData2);
+        cy.pbCreatePageTemplate(pageTemplateData3);
+        cy.pbCreatePageTemplate(pageTemplateData4);
     });
 
     it("Should be able to create templates and then search for them in the page templates modal", () => {

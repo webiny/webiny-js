@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Visibility", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const pageTemplateData1 = {
         title: nanoid(6),
@@ -14,7 +14,7 @@ context("Page Builder - Templates", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.createPageTemplate(pageTemplateData1);
+        cy.pbCreatePageTemplate(pageTemplateData1);
     });
 
     it("Should be able to see one newly created template in the new page page", () => {

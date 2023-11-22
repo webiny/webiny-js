@@ -43,28 +43,30 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
                 query: LIST_QUERY,
                 authToken: user.idToken.jwtToken
             })
-            .then(listResponse => {
+            .then(async listResponse => {
                 const templates = listResponse.pageBuilder.listPageTemplates.data;
 
                 // Loop through the templates and delete each one
-                templates.forEach((template: { id: any }) => {
-                    gqlClient
-                        .request({
-                            query: DELETE_MUTATION,
-                            variables: {
-                                id: template.id
-                            },
-                            authToken: user.idToken.jwtToken
-                        })
-                        .then(deleteResponse => {
-                            const error = deleteResponse.pageBuilder.deletePageTemplate.error;
-                            if (error) {
-                                // Handle any errors that occur during deletion if needed
-                                // You can use Cypress log or assertion to report the error
-                                cy.log(`Error deleting template with ID: ${template.id}`);
-                            }
-                        });
-                });
+                await Promise.all(
+                    templates.map((template: { id: any }) => {
+                        return gqlClient
+                            .request({
+                                query: DELETE_MUTATION,
+                                variables: {
+                                    id: template.id
+                                },
+                                authToken: user.idToken.jwtToken
+                            })
+                            .then(deleteResponse => { 
+                                const error = deleteResponse.pageBuilder.deletePageTemplate.error;
+                                if (error) {
+                                    // Handle any errors that occur during deletion if needed
+                                    // You can use Cypress log or assertion to report the error
+                                    cy.log(`Error deleting template with ID: ${template.id}`);
+                                }
+                            });
+                    })
+                );
             });
     });
 });

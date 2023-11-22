@@ -1,4 +1,4 @@
-context("Page Builder - Templates", () => {
+context("Page Builder - Template CRUD", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
@@ -6,6 +6,7 @@ context("Page Builder - Templates", () => {
 
     it("Should be able to create a template and then edit and delete it", () => {
         cy.visit("/page-builder/page-templates");
+
         // Creates a template using the UI.
         cy.findAllByTestId("pb-templates-list-new-template-btn").eq(0).click();
         cy.findByRole("textbox", { name: "Title" }).type("testingfunctionality");
@@ -13,7 +14,6 @@ context("Page Builder - Templates", () => {
         cy.findByRole("textbox", { name: "Description" }).type("testingfunctionality");
         cy.findByRole("button", { name: "Create" }).click();
         cy.findByRole("button", { name: "Save Changes" }).should("exist").click();
-
         cy.contains("testingfunctionality").should("exist");
 
         // Edits the template name using the UI.

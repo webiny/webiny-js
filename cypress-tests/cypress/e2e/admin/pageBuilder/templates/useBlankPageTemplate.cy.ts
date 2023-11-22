@@ -1,4 +1,4 @@
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Blank Page", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();

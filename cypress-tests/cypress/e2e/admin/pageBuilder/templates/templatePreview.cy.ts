@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Preview", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     let counter = 3;
     const pageTemplateData1 = {
@@ -29,20 +29,15 @@ context("Page Builder - Templates", () => {
     };
 
     beforeEach(() => {
-        cy.login();
-        cy.pbDeleteAllTemplates();
-        cy.wait(200);
-        cy.createPageTemplate(pageTemplateData1);
-        cy.wait(200);
-        cy.createPageTemplate(pageTemplateData2);
-        cy.wait(200);
-        cy.createPageTemplate(pageTemplateData3);
-        cy.wait(200);
+        cy.login()
+            .then(() => cy.pbDeleteAllTemplates())
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData1))
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData2))
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData3)); 
     });
 
-    it("Should be able to create a page and view all existing templates in it", () => {
+    it.only("Should be able to create a page and view all existing templates in it", () => {
         cy.visit("/page-builder/pages?folderId=root");
-        cy.wait(1000);
         cy.findByTestId("new-page-button").click();
         cy.contains("Pick a template for your new page").should("exist");
         cy.contains(pageTemplateData1.title).should("exist");
@@ -59,8 +54,9 @@ context("Page Builder - Templates", () => {
                 cy.wrap($li).click();
                 // Wait for the right panel to load.
                 cy.findByTestId("pb-new-page-dialog-template-preview").should("be.visible");
-                // Check if the clicked element is being properly displayed on the right side of the screen.
+                // Immediately sets the value to the value of the correct pageTemplateData defined at the start.
                 const currentTemplateData = eval(`pageTemplateData${counter}`);
+                // Check if the clicked element is being properly displayed on the right side of the screen.
                 cy.findByTestId("pb-new-page-dialog-template-preview")
                     .contains(`${currentTemplateData.title}`)
                     .should("exist");

@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Templates", () => {
+context("Page Builder - Template Sorting", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = "ABC";
     const titleString2 = "DEF";
@@ -44,10 +44,10 @@ context("Page Builder - Templates", () => {
         cy.login();
         cy.pbDeleteAllTemplates();
         cy.wait(1000);
-        cy.createPageTemplate(pageTemplateData1);
-        cy.createPageTemplate(pageTemplateData2);
-        cy.createPageTemplate(pageTemplateData3);
-        cy.createPageTemplate(pageTemplateData4);
+        cy.pbCreatePageTemplate(pageTemplateData1);
+        cy.pbCreatePageTemplate(pageTemplateData2);
+        cy.pbCreatePageTemplate(pageTemplateData3);
+        cy.pbCreatePageTemplate(pageTemplateData4);
     });
 
     it("Should be able to create templates and then sort them correctly", () => {
