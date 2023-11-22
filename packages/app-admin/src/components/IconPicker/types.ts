@@ -2,18 +2,22 @@ import { ReactNode } from "react";
 
 import { Plugin } from "@webiny/plugins/types";
 
+/**
+ * We want to have an abstract type, which does not define specifics of each possible icon (like color or skin tone).
+ */
 export type Icon = {
     type: string;
     name: string;
     value: string;
-    color?: string;
-    skinTone?: string;
-    width?: number;
+    [key: string]: any;
+    // color?: string;
+    // skinTone?: string;
+    // width?: number;
 };
 
 export type IconPickerTabProps = {
     label: string;
-    rows: Row[];
+    rows: IconPickerGridRow[];
     value: Icon | null;
     onChange: (icon: Icon, close?: boolean) => void;
     filter: string;
@@ -42,4 +46,4 @@ type CategoryNameRow = {
     name: string;
 };
 
-export type Row = IconsRow | CategoryNameRow;
+export type IconPickerGridRow = IconsRow | CategoryNameRow;

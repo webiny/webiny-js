@@ -2,21 +2,25 @@ import { makeAutoObservable } from "mobx";
 import groupBy from "lodash/groupBy";
 
 import { IconRepository } from "./domain";
-import { Row, Icon } from "./types";
-import { Emoji } from "./config/IconPackProvider";
+import { Icon, IconPickerGridRow } from "./types";
+import { IconType } from "~/components/IconPicker/config";
 
 const COLUMN_COUNT = 8;
 
 export interface IconPickerPresenterInterface {
     load(icon: Icon): Promise<void>;
     setIcon(icon: Icon): void;
-    filterIcons(value: string): void;
+    addIcon(icon: Icon): void;
+    setFilter(value: string): void;
+    openMenu(): void;
+    closeMenu(): void;
     get vm(): {
         isLoading: boolean;
-        data: { type: string; rows: Row[] }[];
+        isMenuOpened: boolean;
+        data: { type: string; rows: IconPickerGridRow[] }[];
+        iconTypes: IconType[];
         selectedIcon: Icon | null;
         filter: string;
-        color: string;
     };
 }
 
@@ -25,6 +29,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     private selectedIcon: Icon | null = null;
     private filter = "";
     private color = "#757575";
+    private isMenuOpened = false;
 
     constructor(repository: IconRepository) {
         this.repository = repository;
@@ -42,13 +47,31 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     get vm() {
+        console.log("vm.isMenuOpened", this.isMenuOpened);
         return {
+            isMenuOpened: this.isMenuOpened,
             isLoading: this.repository.getLoading().isLoading,
             data: this.getData(),
+            iconTypes: this.repository.getIconTypes(),
             selectedIcon: this.selectedIcon,
             filter: this.filter,
             color: this.color
         };
+    }
+
+    addIcon(icon: Icon) {
+        // TODO:
+        // this.repository.addIcon(icon)
+    }
+
+    closeMenu(): void {
+        console.log("presenter.closeMenu()");
+        this.isMenuOpened = false;
+    }
+
+    openMenu(): void {
+        console.log("presenter.openMenu()");
+        this.isMenuOpened = true;
     }
 
     private getGroupedIcons() {
@@ -71,7 +94,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     private getRows(icons: Icon[]) {
         // Group the icons by their category.
         const groupedObjects = groupBy(icons, "category");
-        const rows: Row[] = [];
+        const rows: IconPickerGridRow[] = [];
 
         // Iterate over each category in the grouped icons.
         for (const key in groupedObjects) {
@@ -115,26 +138,27 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     setIcon(icon: Icon) {
+        console.log("set icon", icon);
         this.selectedIcon = icon;
     }
+    //
+    // setColor(color: string) {
+    //     this.color = color;
+    // }
 
-    setColor(color: string) {
-        this.color = color;
-    }
-
-    filterIcons(value: string) {
+    setFilter(value: string) {
         this.filter = value;
     }
 
-    checkSkinToneSupport(iconToCheck: Icon) {
-        const icons = this.repository.getIcons();
-
-        return (
-            icons
-                .filter(icon => icon.type === "emoji")
-                // Assert the icon as an Emoji based on the filter.
-                .find((icon): icon is Emoji => icon.value === iconToCheck.value)?.skinToneSupport ||
-            false
-        );
-    }
+    // checkSkinToneSupport(iconToCheck: Icon) {
+    //     const icons = this.repository.getIcons();
+    //
+    //     return (
+    //         icons
+    //             .filter(icon => icon.type === "emoji")
+    //             // Assert the icon as an Emoji based on the filter.
+    //             .find((icon): icon is Emoji => icon.value === iconToCheck.value)?.skinToneSupport ||
+    //         false
+    //     );
+    // }
 }

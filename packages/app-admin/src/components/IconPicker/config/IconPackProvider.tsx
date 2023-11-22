@@ -33,9 +33,7 @@ export type IconPackProviderProps = {
 export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
     const getId = useIdGenerator("iconPackProvider");
 
-    const load = useCallback(async () => {
-        return await provider();
-    }, [provider]);
+    const load = useCallback(provider, [provider]);
 
     return (
         <Property id={getId(name)} name={"iconPackProviders"} array={true}>

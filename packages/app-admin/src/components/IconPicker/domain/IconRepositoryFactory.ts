@@ -1,20 +1,27 @@
 import { IconRepository } from "../domain";
-import { IconPackProviderInterface as IconPackProvider } from "~/components/IconPicker/config";
+import {
+    IconPackProviderInterface as IconPackProvider,
+    IconType
+} from "~/components/IconPicker/config";
 
 class IconRepositoryFactory {
     private cache: Map<string, IconRepository> = new Map();
 
-    getRepository(iconPackProviders: IconPackProvider[]) {
-        const cacheKey = iconPackProviders
-            .map(provider => provider.name)
-            .sort()
-            .join("#");
+    getRepository(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
+        const cacheKey = this.getCacheKey(iconTypes, iconPackProviders);
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(cacheKey, new IconRepository(iconPackProviders));
+            this.cache.set(cacheKey, new IconRepository(iconTypes, iconPackProviders));
         }
 
         return this.cache.get(cacheKey) as IconRepository;
+    }
+
+    private getCacheKey(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
+        return [
+            ...iconTypes.map(iconType => iconType.name).sort(),
+            ...iconPackProviders.map(provider => provider.name).sort()
+        ].join("#");
     }
 }
 

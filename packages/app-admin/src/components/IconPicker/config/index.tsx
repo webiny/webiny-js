@@ -1,9 +1,6 @@
 import React, { useMemo } from "react";
-
 import { createConfigurableComponent } from "@webiny/react-properties";
-
 import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
-
 import {
     icons as fa6RegularIconsJson,
     categories as fa6RegularCategoriesJson
@@ -13,6 +10,7 @@ import {
     categories as fa6SolidCategoriesJson
 } from "@iconify/json/json/fa6-solid.json";
 import emojisJson from "unicode-emoji-json/data-by-emoji.json";
+import { SimpleIconPlugin } from "../plugins/iconsPlugin";
 
 type FaIconSet = {
     [key: string]: {
@@ -52,10 +50,15 @@ export interface IconPackLoader {
 }
 
 interface IconPickerConfig {
+    iconTypes: IconType[];
     iconPackProviders: {
         name: string;
         load: IconPackLoader;
     }[];
+}
+
+export interface IconType {
+    name: string;
 }
 
 export interface IconPackProviderInterface {
@@ -84,6 +87,7 @@ export function useIconPickerConfig() {
 
     return useMemo(
         () => ({
+            iconTypes: config.iconTypes || [],
             iconPackProviders: iconPackProviders.map(
                 provider => new IconPackProvider(provider.name, provider.load)
             )
@@ -94,61 +98,62 @@ export function useIconPickerConfig() {
 
 export const DefaultIcons = () => {
     return (
-        <IconPickerConfig>
-            {/* Default Emojis Provider */}
-            <IconPickerConfig.IconPack
-                name="default_emojis"
-                provider={() =>
-                    Object.keys(emojis).map(key => {
-                        const emoji = emojis[key];
-                        return {
-                            type: "emoji",
-                            name: emoji.slug,
-                            value: key,
-                            category: emoji.group,
-                            skinToneSupport: emoji.skin_tone_support
-                        };
-                    })
-                }
-            />
-            {/* Default Icons Providers */}
-            <IconPickerConfig.IconPack
-                name="fa6_regular"
-                provider={() =>
-                    Object.keys(fa6RegularIcons).map(key => {
-                        const icon = fa6RegularIcons[key];
-                        return {
-                            type: "icon",
-                            name: `regular_${key}`,
-                            value: icon.body,
-                            category: Object.keys(fa6RegularCategories).find(categoryKey =>
-                                fa6RegularCategories[categoryKey].includes(key)
-                            ),
-                            width: icon.width
-                        };
-                    })
-                }
-            />
-            <IconPickerConfig.IconPack
-                name="fa6_solid"
-                provider={() =>
-                    Object.keys(fa6SolidIcons).map(key => {
-                        const icon = fa6SolidIcons[key];
-                        return {
-                            type: "icon",
-                            name: `solid_${key}`,
-                            value: icon.body,
-                            category: Object.keys(fa6SolidCategories).find(categoryKey =>
-                                fa6SolidCategories[categoryKey].includes(key)
-                            ),
-                            width: icon.width
-                        };
-                    })
-                }
-            />
+        <>
+            <IconPickerConfig>
+                {/* Default Emojis Provider */}
+                <IconPickerConfig.IconPack
+                    name="default_emojis"
+                    provider={() =>
+                        Object.keys(emojis).map(key => {
+                            const emoji = emojis[key];
+                            return {
+                                type: "emoji",
+                                name: emoji.slug,
+                                value: key,
+                                category: emoji.group,
+                                skinToneSupport: emoji.skin_tone_support
+                            };
+                        })
+                    }
+                />
+                {/* Default Icons Providers */}
+                <IconPickerConfig.IconPack
+                    name="fa6_regular"
+                    provider={() =>
+                        Object.keys(fa6RegularIcons).map(key => {
+                            const icon = fa6RegularIcons[key];
+                            return {
+                                type: "icon",
+                                name: `regular_${key}`,
+                                value: icon.body,
+                                category: Object.keys(fa6RegularCategories).find(categoryKey =>
+                                    fa6RegularCategories[categoryKey].includes(key)
+                                ),
+                                width: icon.width
+                            };
+                        })
+                    }
+                />
+                <IconPickerConfig.IconPack
+                    name="fa6_solid"
+                    provider={() =>
+                        Object.keys(fa6SolidIcons).map(key => {
+                            const icon = fa6SolidIcons[key];
+                            return {
+                                type: "icon",
+                                name: `solid_${key}`,
+                                value: icon.body,
+                                category: Object.keys(fa6SolidCategories).find(categoryKey =>
+                                    fa6SolidCategories[categoryKey].includes(key)
+                                ),
+                                width: icon.width
+                            };
+                        })
+                    }
+                />
 
-            {/* Examples of custom icons/emojis providers and async provider */}
-            {/* <IconPickerConfig.IconPack
+                {/* Examples of custom icons/emojis providers and async provider */}
+                {/* <IconPickerConfig.IconPack
                 name="test_custom_emojis"
                 provider={() => [{ type: "emoji", name: "testing_face", value: "😀" }]}
             />
@@ -191,6 +196,8 @@ export const DefaultIcons = () => {
                     });
                 }}
             /> */}
-        </IconPickerConfig>
+            </IconPickerConfig>
+            <SimpleIconPlugin />
+        </>
     );
 };

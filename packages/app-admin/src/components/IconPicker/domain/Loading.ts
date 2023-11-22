@@ -48,19 +48,19 @@ export class Loading {
     }
 
     async runCallbackWithLoading<T>(
-        callback: Promise<T>,
+        callback: () => Promise<T>,
         loadingLabel?: string,
         successMessage?: string,
         failureMessage?: string
-    ): Promise<T | undefined> {
+    ): Promise<T> {
         try {
             this.startLoading(loadingLabel);
-            const result = await callback;
+            const result = await callback();
             this.stopLoadingWithSuccess(successMessage);
             return result;
         } catch (e) {
             this.stopLoadingWithError(e.message || failureMessage);
-            return;
+            throw e;
         }
     }
 }

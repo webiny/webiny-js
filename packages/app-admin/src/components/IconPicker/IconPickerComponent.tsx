@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
-
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
-
-import { plugins } from "@webiny/plugins";
 import { Menu } from "@webiny/ui/Menu";
 import { Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
@@ -12,10 +9,9 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FormComponentProps } from "@webiny/ui/types";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-import { IconPickerPlugin, Icon } from "./types";
 import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconRepository } from "./domain/IconRepository";
-import { IconRenderer } from "./IconRenderer";
+import { IconProvider, IconRenderer } from "./IconRenderer";
 import {
     IconPickerWrapper,
     iconPickerLabel,
@@ -24,6 +20,9 @@ import {
     MenuHeader,
     placeholderIcon
 } from "./IconPicker.styles";
+import { IconPickerTabRenderer } from "~/components/IconPicker/IconPickerTab";
+import { IconPickerPresenterProvider } from "./IconPickerPresenterProvider";
+import { IconTypeProvider } from "~/components/IconPicker/config/IconType";
 
 export interface IconPickerProps extends FormComponentProps {
     label?: string;
@@ -54,93 +53,88 @@ export const IconPickerComponent = observer(
             }
         }, [presenter.vm.selectedIcon]);
 
-        const iconPickerPlugins = plugins.byType<IconPickerPlugin>("admin-icon-picker");
+        const iconTypes = presenter.vm.iconTypes;
+        const selectedIcon = presenter.vm.selectedIcon;
 
         const handleSwitchTab = useCallback(() => {
             if (!tabsRef.current) {
                 return;
             }
 
-            const index = iconPickerPlugins.findIndex(
-                plugin => plugin.iconType === presenter.vm.selectedIcon?.type
-            );
+            presenter.openMenu();
+
+            const index = selectedIcon
+                ? iconTypes.findIndex(iconType => iconType.name === selectedIcon.type)
+                : -1;
 
             if (index !== -1) {
                 tabsRef.current.switchTab(index);
             }
-        }, [tabsRef, iconPickerPlugins, presenter.vm.selectedIcon]);
+        }, [tabsRef, iconTypes, presenter.vm.selectedIcon]);
+
+        const openMenu = () => presenter.openMenu();
+        const closeMenu = () => presenter.closeMenu();
 
         return (
-            <IconPickerWrapper>
-                {label && (
-                    <div className={iconPickerLabel}>
-                        <Typography use={"body1"}>{label}</Typography>
-                    </div>
-                )}
-
-                <Menu
-                    handle={
-                        <IconPickerInput>
-                            {presenter.vm.selectedIcon ? (
-                                <IconRenderer icon={presenter.vm.selectedIcon} />
-                            ) : (
-                                <SearchIcon width={32} height={32} className={placeholderIcon} />
-                            )}
-                        </IconPickerInput>
-                    }
-                    onOpen={handleSwitchTab}
-                >
-                    {({ closeMenu }) => (
-                        <>
-                            <MenuHeader>
-                                <Typography use={"body1"}>Select an icon</Typography>
-                                <CloseIcon onClick={() => closeMenu()} />
-                            </MenuHeader>
-                            <MenuContent>
-                                {presenter.vm.isLoading && <CircularProgress />}
-                                <Tabs ref={tabsRef}>
-                                    {/* Order of tabs defined here: `packages/app-admin/components/IconPicker/plugins/index.ts`. */}
-                                    {iconPickerPlugins.map(plugin => {
-                                        const iconsByType = presenter.vm.data.find(
-                                            iconsByType => iconsByType.type === plugin.iconType
-                                        );
-
-                                        if (!iconsByType) {
-                                            return;
-                                        }
-
-                                        return plugin.renderTab({
-                                            label: iconsByType.type,
-                                            rows: iconsByType.rows,
-                                            value: presenter.vm.selectedIcon,
-                                            onChange: (icon: Icon, close = true) => {
-                                                presenter.setIcon(icon);
-
-                                                if (close) {
-                                                    closeMenu();
-                                                }
-                                            },
-                                            filter: presenter.vm.filter,
-                                            onFilterChange: value => presenter.filterIcons(value),
-                                            color: presenter.vm.color,
-                                            onColorChange: color => presenter.setColor(color),
-                                            checkSkinToneSupport: icon =>
-                                                presenter.checkSkinToneSupport(icon)
-                                        });
-                                    })}
-                                </Tabs>
-                            </MenuContent>
-                        </>
+            <IconPickerPresenterProvider presenter={presenter}>
+                <IconPickerWrapper>
+                    {label && (
+                        <div className={iconPickerLabel}>
+                            <Typography use={"body1"}>{label}</Typography>
+                        </div>
                     )}
-                </Menu>
 
-                {validationIsValid === false && (
-                    <FormElementMessage error>{validationMessage}</FormElementMessage>
-                )}
-                {validationIsValid !== false && description && (
-                    <FormElementMessage>{description}</FormElementMessage>
-                )}
-            </IconPickerWrapper>
+                    <Menu
+                        open={presenter.vm.isMenuOpened}
+                        handle={
+                            <IconPickerInput onClick={openMenu}>
+                                {presenter.vm.selectedIcon ? (
+                                    <IconProvider icon={presenter.vm.selectedIcon}>
+                                        <IconRenderer />
+                                    </IconProvider>
+                                ) : (
+                                    <SearchIcon
+                                        width={32}
+                                        height={32}
+                                        className={placeholderIcon}
+                                    />
+                                )}
+                            </IconPickerInput>
+                        }
+                        onOpen={handleSwitchTab}
+                        onClose={closeMenu}
+                    >
+                        {() => (
+                            <>
+                                <MenuHeader>
+                                    <Typography use={"body1"}>Select an icon</Typography>
+                                    <CloseIcon onClick={closeMenu} />
+                                </MenuHeader>
+                                <MenuContent>
+                                    {presenter.vm.isLoading && <CircularProgress />}
+                                    <Tabs ref={tabsRef}>
+                                        {iconTypes.map(iconType => (
+                                            <IconTypeProvider
+                                                key={iconType.name}
+                                                type={iconType.name}
+                                            >
+                                                <IconPickerTabRenderer />
+                                            </IconTypeProvider>
+                                        ))}
+                                    </Tabs>
+                                </MenuContent>
+                            </>
+                        )}
+                    </Menu>
+
+                    {validationIsValid === false && (
+                        <FormElementMessage error>{validationMessage}</FormElementMessage>
+                    )}
+                    {validationIsValid !== false && description && (
+                        <FormElementMessage>{description}</FormElementMessage>
+                    )}
+                </IconPickerWrapper>
+            </IconPickerPresenterProvider>
         );
     }
 );

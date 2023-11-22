@@ -1,19 +1,28 @@
-import { plugins } from "@webiny/plugins";
+import React from "react";
+import { makeComposable } from "@webiny/react-composition";
+import { Icon } from "./types";
 
-import { IconPickerPlugin, Icon } from "./types";
+export const IconRenderer = makeComposable("IconPickerIcon");
 
-type IconProps = {
+interface IconContext<T extends Icon = Icon> {
+    icon: T;
+}
+
+const IconContext = React.createContext<IconContext | undefined>(undefined);
+
+interface IconProviderProps {
     icon: Icon;
-    size?: number;
+    children: React.ReactNode;
+}
+
+export const IconProvider = ({ icon, children }: IconProviderProps) => {
+    return <IconContext.Provider value={{ icon }}>{children}</IconContext.Provider>;
 };
 
-export const IconRenderer = ({ icon, size = 32 }: IconProps) => {
-    const iconPickerPlugins = plugins.byType<IconPickerPlugin>("admin-icon-picker");
-    const plugin = iconPickerPlugins.find(plugin => plugin.iconType === icon.type);
-
-    if (!plugin) {
-        return null;
+export function useIcon<T extends Icon = Icon>(): IconContext<T> {
+    const context = React.useContext(IconContext);
+    if (!context) {
+        throw Error(`Missing <IconProvider> in the component tree!`);
     }
-
-    return plugin.renderIcon(icon, size);
-};
+    return context as IconContext<T>;
+}
