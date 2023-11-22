@@ -84,27 +84,26 @@ export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
 type DefaultValue = boolean | number | string | null;
 
+const formatDate = (date?: Date | string | null): string | undefined => {
+    if (!date) {
+        return undefined;
+    } else if (date instanceof Date) {
+        return date.toISOString();
+    }
+    return date;
+};
+
 const getDate = <T extends string | undefined = string | undefined>(
-    input: Date | null | string | undefined,
-    defaultValue?: Date | null
+    input?: Date | string | null,
+    defaultValue?: Date | string | null
 ): T => {
     if (!input) {
-        if (!defaultValue) {
-            return undefined as T;
-        }
-        return defaultValue.toISOString() as T;
+        return formatDate(defaultValue) as T;
     }
     if (input instanceof Date) {
-        return input.toISOString() as T;
+        return formatDate(input) as T;
     }
-    try {
-        return new Date(input).toISOString() as T;
-    } catch {
-        if (!defaultValue) {
-            return undefined as T;
-        }
-        return defaultValue.toISOString() as T;
-    }
+    return formatDate(new Date(input)) as T;
 };
 /**
  * Used for some fields to convert their values.
@@ -837,22 +836,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
-        const currentDate = new Date();
-
-        const originalCreatedOnDate = originalEntry.createdOn
-            ? new Date(originalEntry.createdOn)
-            : currentDate;
-        const originalPublishedOnDate = originalEntry.publishedOn
-            ? new Date(originalEntry.publishedOn)
-            : null;
-
         const entry: CmsEntry = {
             ...originalEntry,
             id,
             version: nextVersion,
-            savedOn: getDate(inputData.savedOn, currentDate),
-            createdOn: getDate(inputData.createdOn, originalCreatedOnDate),
-            publishedOn: getDate(inputData.publishedOn, originalPublishedOnDate),
+            savedOn: getDate(inputData.savedOn, new Date()),
+            createdOn: getDate(inputData.createdOn, originalEntry.createdOn),
+            publishedOn: getDate(inputData.publishedOn, originalEntry.publishedOn),
             createdBy: identity,
             modifiedBy: identity,
             locked: false,
@@ -977,18 +967,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * We always send the full entry to the hooks and storage operations update.
          */
-        const currentDate = new Date();
-        const currentCreatedOnDate = originalEntry.createdOn
-            ? new Date(originalEntry.createdOn)
-            : currentDate;
-        const currentPublishedOnDate = originalEntry.publishedOn
-            ? new Date(originalEntry.publishedOn)
-            : null;
         const entry: CmsEntry = {
             ...originalEntry,
-            savedOn: getDate(inputData.savedOn, currentDate),
-            createdOn: getDate(inputData.createdOn, currentCreatedOnDate),
-            publishedOn: getDate(inputData.publishedOn, currentPublishedOnDate),
+            savedOn: getDate(inputData.savedOn, new Date()),
+            createdOn: getDate(inputData.createdOn, originalEntry.createdOn),
+            publishedOn: getDate(inputData.publishedOn, originalEntry.publishedOn),
             modifiedBy: getCreatedBy(),
             values,
             meta,
@@ -1156,7 +1139,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const entry: CmsEntry = {
             ...originalEntry,
             status: STATUS_PUBLISHED,
-            publishedOn: originalEntry.publishedOn || new Date().toISOString(),
+            publishedOn: getDate(originalEntry.publishedOn, new Date()),
+            savedOn: getDate(new Date()),
             webinyVersion: context.WEBINY_VERSION,
             values
         };
