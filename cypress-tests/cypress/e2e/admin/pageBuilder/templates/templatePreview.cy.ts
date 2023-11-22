@@ -36,7 +36,7 @@ context("Page Builder - Template Preview", () => {
             .then(() => cy.pbCreatePageTemplate(pageTemplateData3));
     });
 
-    it.only("Should be able to create a page and view all existing templates in it", () => {
+    it("Should be able to create a page and view all existing templates in it", () => {
         cy.visit("/page-builder/pages?folderId=root");
         cy.findByTestId("new-page-button").click();
         cy.contains("Pick a template for your new page").should("exist");
