@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
 import { createGroupPlugin, createModelPlugin } from "./model";
 import { CmsModel } from "~/types";
@@ -45,9 +45,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const model = createModelPlugin();
     const handler = createHandler({
         plugins: core.plugins.concat([group, model, createUpdateLocationGraphQl()]),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({

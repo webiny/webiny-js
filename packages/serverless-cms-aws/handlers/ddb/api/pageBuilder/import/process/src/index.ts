@@ -78,5 +78,5 @@ export const handler = createHandler({
         createAco({ useFolderLevelPermissions: false }),
         createAcoPageBuilderImportExportContext()
     ],
-    http: { debug }
+    debug
 });

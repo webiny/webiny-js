@@ -13,5 +13,5 @@ export const handler = createHandler({
             documentClient
         })
     }),
-    http: { debug }
+    debug
 });

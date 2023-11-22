@@ -61,5 +61,5 @@ export const handler = createHandler({
         }),
         exportCombinePlugins()
     ],
-    http: { debug }
+    debug
 });
