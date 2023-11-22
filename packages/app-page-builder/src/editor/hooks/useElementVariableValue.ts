@@ -22,7 +22,7 @@ export function useElementVariables(element: PbEditorElement | null) {
         }
     }, [block, element]);
 
-    return variableValue;
+    return variableValue ?? [];
 }
 
 export function useElementVariableValue(element: PbEditorElement | null) {

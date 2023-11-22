@@ -9,7 +9,11 @@ describe("content model via code", () => {
     });
 
     it("should properly construct content model via code and call build fields", async () => {
-        const buildFields = (jest as any).spyOn(CmsModelPlugin.prototype, "buildFields");
+        /**
+         * Types are not properly defined for jest.spyOn.
+         */
+        // @ts-expect-error
+        const buildFields = jest.spyOn(CmsModelPlugin.prototype, "buildFields");
 
         const model = new CmsModelPlugin({
             group: {
@@ -57,7 +61,11 @@ describe("content model via code", () => {
     });
 
     it("should properly construct content model via code and not call build fields", async () => {
-        const buildFields = (jest as any).spyOn(CmsModelPlugin.prototype, "buildFields");
+        /**
+         * Types are not properly defined for jest.spyOn.
+         */
+        // @ts-expect-error
+        const buildFields = jest.spyOn(CmsModelPlugin.prototype, "buildFields");
 
         const model = new CmsModelPlugin({
             noValidate: true,

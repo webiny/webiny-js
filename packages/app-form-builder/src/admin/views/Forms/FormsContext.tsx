@@ -16,7 +16,11 @@ export const FormsContext = React.createContext<FormsContextValue>({
         loading: false,
         variables: {},
         called: false,
-        client: null as any,
+        /**
+         * Not set on initializing of the context.
+         */
+        // @ts-expect-error
+        client: null,
         data: {
             formBuilder: {
                 listForms: {
@@ -26,12 +30,20 @@ export const FormsContext = React.createContext<FormsContextValue>({
             }
         },
         error: undefined,
+        /**
+         * Not set on initializing of the context.
+         */
+        // @ts-expect-error
         fetchMore: async () => {
-            return {} as any;
+            return {};
         },
         networkStatus: NetworkStatus.ready,
+        /**
+         * Not set on initializing of the context.
+         */
+        // @ts-expect-error
         refetch: async () => {
-            return {} as any;
+            return {};
         },
         startPolling: () => {
             return void 0;

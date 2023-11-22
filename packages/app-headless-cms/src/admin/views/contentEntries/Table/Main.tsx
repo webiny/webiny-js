@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { FolderDialogCreate, useFolders } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Filters } from "~/admin/components/ContentEntries/Filters";
@@ -13,6 +13,7 @@ import { useContentEntriesList, useContentEntry } from "~/admin/views/contentEnt
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
 
 interface Props {
     folderId?: string;
@@ -27,7 +28,18 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
     const { history } = useRouter();
+
+    // We check permissions on two layers - security and folder level permissions.
     const { canCreate, contentModel } = useContentEntry();
+    const { folderLevelPermissions: flp } = useFolders();
+
+    const canCreateFolder = useMemo(() => {
+        return flp.canManageStructure(folderId);
+    }, [flp, folderId]);
+
+    const canCreateContent = useMemo(() => {
+        return canCreate && flp.canManageContent(folderId);
+    }, [flp, folderId]);
 
     const createEntry = useCallback(() => {
         const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
@@ -63,12 +75,14 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreate={canCreate}
+                    canCreateFolder={canCreateFolder}
+                    canCreateContent={canCreateContent}
                     onCreateEntry={createEntry}
                     onCreateFolder={openFoldersDialog}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
+                <BulkActions />
                 <Wrapper>
                     <Filters />
                     {list.records.length === 0 &&
@@ -76,7 +90,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreate={canCreate}
+                            canCreateFolder={canCreateFolder}
+                            canCreateContent={canCreateContent}
                             onCreateEntry={createEntry}
                             onCreateFolder={openFoldersDialog}
                         />
@@ -93,6 +108,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     loading={list.isListLoading}
                                     sorting={list.sorting}
                                     onSortingChange={list.setSorting}
+                                    onSelectRow={list.onSelectRow}
+                                    selectedRows={list.selected}
                                 />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
@@ -102,7 +119,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {list.isListLoadingMore && <LoadingMore />}
+                            <LoadingMore show={list.isListLoadingMore} />
                         </>
                     )}
                 </Wrapper>

@@ -22,11 +22,14 @@ export function useFileManagerViewConfig() {
         () => ({
             browser: {
                 ...browser,
+                bulkActions: [...(browser.bulkActions || [])],
+                filterByTags: browser.filterByTags ?? false,
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]
             },
-            fileDetails: config.fileDetails || {
-                width: "1000px"
+            fileDetails: {
+                width: config.fileDetails?.width ?? "1000px",
+                fields: config.fileDetails?.fields ?? []
             }
         }),
         [config]

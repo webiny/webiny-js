@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../lexical-theme" }],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
+      "@webiny/lexical-theme": ["../lexical-theme/src"]
+    },
+    "baseUrl": "."
+  }
+}

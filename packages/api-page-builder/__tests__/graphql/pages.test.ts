@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { waitPage } from "./utils/waitPage";
 import { defaultIdentity } from "../tenancySecurity";
+import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
+import { decompress } from "./utils/compression";
 
 jest.setTimeout(100000);
 
@@ -423,16 +425,17 @@ describe("CRUD Test", () => {
             data: {
                 name: "element-name",
                 type: "element",
-                category: "element-category",
                 content: { some: "element-content" }
             }
         });
 
         const pageElementData = createPageElementResponse.data.pageBuilder.createPageElement.data;
 
+        const uncompressedBlock = await decompress(blockData);
+
         const updatedContent = {
-            ...blockData.content,
-            elements: [...blockData.content.elements, pageElementData]
+            ...uncompressedBlock,
+            elements: [...uncompressedBlock.content.elements, pageElementData]
         };
         const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
@@ -446,7 +449,7 @@ describe("CRUD Test", () => {
                     updatePageBlock: {
                         data: {
                             id: blockData.id,
-                            content: updatedContent
+                            content: expectCompressed(updatedContent)
                         },
                         error: null
                     }
@@ -496,7 +499,6 @@ describe("CRUD Test", () => {
             elements: [
                 {
                     id: pageElementData.id,
-                    category: "element-category",
                     name: "element-name",
                     content: { some: "element-content" },
                     type: "element",

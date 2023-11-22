@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
-import { ADD_TYPOGRAPHY_ELEMENT_COMMAND, TypographyPayload } from "~/nodes/TypographyElementNode";
-import { formatToParagraph } from "~/utils/nodes/formatToParagraph";
-import { formatToHeading } from "~/utils/nodes/formatToHeading";
+import {
+    ADD_TYPOGRAPHY_COMMAND,
+    TypographyPayload,
+    formatToParagraph,
+    formatToHeading
+} from "@webiny/lexical-nodes";
 import { HeadingTagType } from "@lexical/rich-text";
 
 export const TypographyPlugin: React.FC = () => {
@@ -11,7 +14,7 @@ export const TypographyPlugin: React.FC = () => {
 
     useEffect(() => {
         return editor.registerCommand<TypographyPayload>(
-            ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+            ADD_TYPOGRAPHY_COMMAND,
             payload => {
                 const selection = $getSelection();
                 // paragraph

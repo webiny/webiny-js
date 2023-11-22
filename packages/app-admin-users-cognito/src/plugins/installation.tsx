@@ -34,7 +34,7 @@ const IS_INSTALLED = gql`
 `;
 
 const INSTALL = gql`
-    mutation InstallAdminUsers($data: AdminUsersInstallInput!) {
+    mutation InstallAdminUsers($data: AdminUsersInstallInput) {
         adminUsers {
             install(data: $data) {
                 data

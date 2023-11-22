@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as localStorage } from "store";
-import { LoginScreen } from "~/index";
+import { LoginScreen, Tags } from "~/index";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -55,19 +55,21 @@ export const AppInstaller: React.FC = ({ children }) => {
 
     const renderLayout = (content: React.ReactNode, secure = false): React.ReactElement => {
         return (
-            <SplitView className={installerSplitView}>
-                <LeftPanel span={2}>
-                    <Sidebar
-                        allInstallers={installers}
-                        installer={installer}
-                        showLogin={showLogin}
-                    />
-                </LeftPanel>
-                <RightPanel span={10}>
-                    {!showLogin && !secure && content}
-                    {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
-                </RightPanel>
-            </SplitView>
+            <Tags tags={{ installer: true }}>
+                <SplitView className={installerSplitView}>
+                    <LeftPanel span={2}>
+                        <Sidebar
+                            allInstallers={installers}
+                            installer={installer}
+                            showLogin={showLogin}
+                        />
+                    </LeftPanel>
+                    <RightPanel span={10}>
+                        {!showLogin && !secure && content}
+                        {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
+                    </RightPanel>
+                </SplitView>
+            </Tags>
         );
     };
 

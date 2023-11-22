@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { sleep, until } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
@@ -38,6 +38,16 @@ import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
+import {
+    CMS_EXPORT_STRUCTURE_QUERY,
+    CmsExportStructureQueryVariables,
+    CMS_IMPORT_STRUCTURE_MUTATION,
+    CmsImportStructureMutationVariables,
+    CMS_VALIDATE_STRUCTURE_MUTATION,
+    CmsValidateStructureMutationVariables,
+    CmsValidateStructureMutationResponse
+} from "~tests/testHelpers/graphql/structure";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -66,9 +76,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: plugins.all(),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({
@@ -91,8 +99,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as unknown as LambdaContext
         );
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
@@ -116,6 +124,31 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        // export / import
+        async exportStructureQuery(variables?: CmsExportStructureQueryVariables) {
+            return invoke({
+                body: {
+                    query: CMS_EXPORT_STRUCTURE_QUERY,
+                    variables
+                }
+            });
+        },
+        async importCmsStructureMutation(variables: CmsImportStructureMutationVariables) {
+            return invoke({
+                body: {
+                    query: CMS_IMPORT_STRUCTURE_MUTATION,
+                    variables
+                }
+            });
+        },
+        async validateCmsStructureMutation(variables: CmsValidateStructureMutationVariables) {
+            return invoke<CmsValidateStructureMutationResponse>({
+                body: {
+                    query: CMS_VALIDATE_STRUCTURE_MUTATION,
+                    variables
+                }
+            });
         },
         // content model group
         async createContentModelGroupMutation(variables: ContentModelGroupsMutationVariables) {

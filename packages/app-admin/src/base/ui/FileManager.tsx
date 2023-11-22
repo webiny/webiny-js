@@ -129,11 +129,15 @@ export const FileManager: React.FC<FileManagerProps> = ({
         <>
             {show &&
                 ReactDOM.createPortal(
+                    /**
+                     * TODO @pavel
+                     */
+                    // @ts-expect-error
                     <FileManagerRenderer
                         onClose={handleClose}
                         onChange={
                             /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current as any
+                            onChangeRef.current
                         }
                         {...rest}
                     />,

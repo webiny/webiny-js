@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@pulumi/pulumi": "^3.34.0",
-    "find-up": "^5.0.0"
+    "find-up": "^5.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

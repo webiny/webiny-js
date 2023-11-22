@@ -37,7 +37,11 @@ export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
         super();
 
         this.config = params;
-        this.name = `${(this.constructor as any).type}-${this.config.fieldType}`;
+        /**
+         * There is a type on the constructor, TS just doesn't see it.
+         */
+        // @ts-expect-error
+        this.name = `${this.constructor.type}-${this.config.fieldType}`;
     }
 
     public transform(params: TransformCallableParams): any {

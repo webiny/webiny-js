@@ -36,7 +36,7 @@ export const handler = createHandler({
         logsPlugins(),
         graphqlPlugins({ debug })
     ],
-    http: { debug }
+    debug
 });
 ```
 
@@ -59,7 +59,7 @@ export interface Context
 Finally, the security doesn't do much on its own. So, the final step would be to also add the appropriate package that implements the necessary internal processes for your identity provider, for example [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication):
 
 ```ts
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins, { SecurityIdentity } from "@webiny/api-security";
@@ -81,7 +81,7 @@ export const handler = createHandler({
         logsPlugins(),
         graphqlPlugins({ debug })
     ],
-    http: { debug }
+    debug
 });
 ```
 

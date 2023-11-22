@@ -378,9 +378,7 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 pageBuilder: {
                     deletePageBlock: {
-                        data: {
-                            ...b3
-                        },
+                        data: true,
                         error: null
                     }
                 }

@@ -1,11 +1,11 @@
-import { createS3Handler, S3EventHandler } from "~/index";
+import { createHandler, S3EventHandler } from "~/index";
 import { createLambdaContext } from "./mocks/lambdaContext";
 import { createS3Event } from "./mocks/s3Event";
 import { S3Event } from "aws-lambda";
 
 describe("s3", () => {
     it("should create handler", async () => {
-        const handler = createS3Handler({
+        const handler = createHandler({
             plugins: []
         });
 
@@ -14,7 +14,7 @@ describe("s3", () => {
     });
 
     it("should call handler and get an error for non-existing route", async () => {
-        const handler = createS3Handler({
+        const handler = createHandler({
             plugins: []
         });
 
@@ -32,7 +32,7 @@ describe("s3", () => {
 
     it("should call handler and trigger given event - raw returned", async () => {
         const s3Event = createS3Event();
-        const handler = createS3Handler({
+        const handler = createHandler({
             plugins: [
                 new S3EventHandler<S3Event>(async ({ event }) => {
                     return event;
@@ -47,7 +47,7 @@ describe("s3", () => {
 
     it("should call handler and trigger given event - reply returned", async () => {
         const s3Event = createS3Event();
-        const handler = createS3Handler({
+        const handler = createHandler({
             plugins: [
                 new S3EventHandler<S3Event>(async ({ event, reply }) => {
                     return reply.send(event);

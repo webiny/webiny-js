@@ -1,3 +1,22 @@
+export const LIST_PAGES_DATA_FIELDS = /* GraphQL */ `
+    {
+        id
+        pid
+        status
+        title
+        version
+        savedOn
+        category {
+            name
+            slug
+        }
+        createdBy {
+            id
+            displayName
+        }
+    }
+`;
+
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
@@ -70,10 +89,43 @@ export const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_PAGE = /* GraphQL */ `
-    mutation CreatePage($from: ID, $category: String) {
+export const GET_PAGE = /* GraphQL */ `
+    query GetPage($id: ID!) {
         pageBuilder {
-            createPage(from: $from, category: $category) {
+            getPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES = /* GraphQL */ `
+    query PbListPages(
+        $where: PbListPagesWhereInput
+        $sort: [PbListPagesSort!]
+        $search: PbListPagesSearchInput
+        $limit: Int
+        $after: String
+    ) {
+        pageBuilder {
+            listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
+                data ${LIST_PAGES_DATA_FIELDS}
+                error ${ERROR_FIELD}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
+export const CREATE_PAGE = /* GraphQL */ `
+    mutation CreatePage($from: ID, $category: String, $meta: JSON) {
+        pageBuilder {
+            createPage(from: $from, category: $category, meta: $meta) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
