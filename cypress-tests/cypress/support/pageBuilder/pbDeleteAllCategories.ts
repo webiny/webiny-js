@@ -49,9 +49,7 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
             // Step 2: Filter and delete categories
             categories.forEach(category => {
                 // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
-                if (
-                    category.slug === "static"
-                ) {
+                if (category.slug === "static") {
                     // Skip this category
                     return;
                 }

@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Categories Module", () => {
+context("Page Builder - Category CRUD", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const category_name = nanoid(6);
     const category_name_edited = nanoid(6);
@@ -10,10 +10,6 @@ context("Categories Module", () => {
 
     beforeEach(() => {
         cy.login();
-        cy.pbDeleteAllCategories();
-    });
-
-    afterEach(() => {
         cy.pbDeleteAllCategories();
     });
 

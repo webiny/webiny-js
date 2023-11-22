@@ -9,7 +9,7 @@ import "./pageBuilder/pbCreateBlock";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
-import "./pageBuilder/createCategory";
+import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteAllCategories";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";

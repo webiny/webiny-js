@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            createCategory(data: {
+            pbCreateCategory(data: {
                 name: string;
                 slug: string;
                 layout: string;
@@ -16,7 +16,7 @@ declare global {
 }
 
 const MUTATION = /* GraphQL */ `
-    mutation CreateCategory($data: PbCategoryInput!) {
+    mutation pbCreateCategory($data: PbCategoryInput!) {
         pageBuilder {
             category: createCategory(data: $data) {
                 data {
@@ -40,7 +40,7 @@ const MUTATION = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("createCategory", data => {
+Cypress.Commands.add("pbCreateCategory", data => {
     return cy.login().then(user => {
         return gqlClient
             .request({

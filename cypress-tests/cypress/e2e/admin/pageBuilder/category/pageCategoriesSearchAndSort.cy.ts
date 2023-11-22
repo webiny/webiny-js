@@ -1,4 +1,4 @@
-context("Categories Module", () => {
+context("Page Builder - Category Search&Sort", () => {
     const categoryData1 = {
         name: "ABC",
         slug: "ABC",
@@ -27,12 +27,12 @@ context("Categories Module", () => {
         cy.login();
         cy.pbDeleteAllCategories();
         cy.wait(1500);
-        cy.createCategory(categoryData1);
+        cy.pbCreateCategory(categoryData1);
         cy.wait(1500);
-        cy.createCategory(categoryData2);
-        cy.createCategory(categoryData3);
+        cy.pbCreateCategory(categoryData2);
+        cy.pbCreateCategory(categoryData3);
         cy.wait(1500);
-        cy.createCategory(categoryData4);
+        cy.pbCreateCategory(categoryData4);
     });
 
     afterEach(() => {
