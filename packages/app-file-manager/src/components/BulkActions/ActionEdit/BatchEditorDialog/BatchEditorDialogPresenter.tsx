@@ -4,7 +4,8 @@ import {
     Batch,
     BatchDTO,
     FieldDTO,
-    OperationDTO
+    OperationDTO,
+    OperatorDTO
 } from "~/components/BulkActions/ActionEdit/domain";
 
 export interface IBatchEditorDialogPresenter {
@@ -24,13 +25,17 @@ export interface BatchEditorDialogViewModel {
 }
 
 export interface BatchEditorFormData {
-    operations: (OperationDTO & {
-        canDelete: boolean;
-        availableFields: FieldDTO[];
-        title: string;
-        open: boolean;
-    })[];
+    operations: OperationFormData[];
 }
+
+export type OperationFormData = OperationDTO & {
+    canDelete: boolean;
+    title: string;
+    open: boolean;
+    fieldOptions: FieldDTO[];
+    operatorOptions: OperatorDTO[];
+    selectedField?: FieldDTO;
+};
 
 export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     private batch: BatchDTO | undefined;
@@ -51,8 +56,7 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
 
     get vm() {
         const operations = this.getOperations();
-        const canAddOperation =
-            operations[operations.length - 1].availableFields.length > 1 ?? false;
+        const canAddOperation = operations[operations.length - 1].fieldOptions.length > 1 ?? false;
 
         return {
             invalidFields: this.invalidFields,
@@ -66,6 +70,10 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
     private getOperations = () => {
         return (
             this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
+                const fieldOptions = this.getFieldOptions(operation.field);
+                const selectedField = fieldOptions.find(field => field.value === operation.field);
+                const operatorOptions = selectedField?.operators || [];
+
                 return {
                     title:
                         this.getOperationTitle(operation.field, operation.operator) ??
@@ -75,7 +83,9 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
                     operator: operation.operator,
                     value: operation.value,
                     canDelete: operationIndex !== 0,
-                    availableFields: this.getAvailableFields(operation.field)
+                    fieldOptions,
+                    selectedField,
+                    operatorOptions
                 };
             }) || []
         );
@@ -101,7 +111,7 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
         return `${operator.label} for field "${field.label}"`;
     }
 
-    private getAvailableFields(currentFieldId = "") {
+    private getFieldOptions(currentFieldId = "") {
         if (!this.batch) {
             return [];
         }

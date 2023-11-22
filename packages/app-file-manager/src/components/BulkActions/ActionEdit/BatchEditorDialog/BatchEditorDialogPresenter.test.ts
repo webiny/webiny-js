@@ -1,5 +1,10 @@
 import { BatchEditorDialogPresenter } from "./BatchEditorDialogPresenter";
-import { BatchDTO, FieldDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
+import {
+    BatchDTO,
+    FieldDTO,
+    OperatorDTO,
+    OperatorType
+} from "~/components/BulkActions/ActionEdit/domain";
 
 describe("BatchEditorDialogPresenter", () => {
     const batch: BatchDTO = {
@@ -65,6 +70,21 @@ describe("BatchEditorDialogPresenter", () => {
         }
     ];
 
+    const operators: OperatorDTO[] = [
+        {
+            value: OperatorType.OVERRIDE,
+            label: "Override existing values"
+        },
+        {
+            value: OperatorType.REMOVE,
+            label: "Clear all existing values"
+        },
+        {
+            value: OperatorType.APPEND,
+            label: "Append to existing values"
+        }
+    ];
+
     let presenter: BatchEditorDialogPresenter;
 
     beforeEach(() => {
@@ -85,7 +105,9 @@ describe("BatchEditorDialogPresenter", () => {
                     field: "",
                     operator: "",
                     value: {},
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [],
+                    selectedField: undefined
                 }
             ]
         });
@@ -110,7 +132,9 @@ describe("BatchEditorDialogPresenter", () => {
                 operator: "",
                 value: {},
                 canDelete: false,
-                availableFields: fields
+                fieldOptions: fields,
+                operatorOptions: [],
+                selectedField: undefined
             }
         ]);
 
@@ -126,7 +150,9 @@ describe("BatchEditorDialogPresenter", () => {
                 operator: "",
                 value: {},
                 canDelete: false,
-                availableFields: fields
+                fieldOptions: fields,
+                operatorOptions: [],
+                selectedField: undefined
             },
             {
                 title: "Operation #2",
@@ -135,7 +161,9 @@ describe("BatchEditorDialogPresenter", () => {
                 operator: "",
                 value: {},
                 canDelete: true,
-                availableFields: fields
+                fieldOptions: fields,
+                operatorOptions: [],
+                selectedField: undefined
             }
         ]);
 
@@ -151,7 +179,9 @@ describe("BatchEditorDialogPresenter", () => {
                 operator: "",
                 value: {},
                 canDelete: false,
-                availableFields: fields
+                fieldOptions: fields,
+                operatorOptions: [],
+                selectedField: undefined
             }
         ]);
 
@@ -168,12 +198,14 @@ describe("BatchEditorDialogPresenter", () => {
                 operator: "",
                 value: {},
                 canDelete: false,
-                availableFields: fields
+                fieldOptions: fields,
+                operatorOptions: [],
+                selectedField: undefined
             }
         ]);
     });
 
-    it("should be able to handle the `availableFields` based operations set in the batch", () => {
+    it("should be able to handle the `fieldOptions` based operations set in the batch", () => {
         presenter.load(batch, fields);
 
         // let's set some `data` back to the operation
@@ -188,7 +220,9 @@ describe("BatchEditorDialogPresenter", () => {
                         [fields[0].value]: "newValue"
                     },
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 }
             ]
         });
@@ -206,7 +240,9 @@ describe("BatchEditorDialogPresenter", () => {
             operator: "",
             value: {},
             canDelete: true,
-            availableFields: [fields[1]]
+            fieldOptions: [fields[1]],
+            operatorOptions: [],
+            selectedField: undefined
         });
 
         // let's set some `data` back to the operations
@@ -221,7 +257,9 @@ describe("BatchEditorDialogPresenter", () => {
                         [fields[0].value]: "newValue"
                     },
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 },
                 {
                     title: `Remove all values for field "${fields[1].label}"`,
@@ -230,7 +268,9 @@ describe("BatchEditorDialogPresenter", () => {
                     operator: OperatorType.REMOVE,
                     value: {},
                     canDelete: true,
-                    availableFields: [fields[1]]
+                    fieldOptions: [fields[1]],
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[1]
                 }
             ]
         });
@@ -254,7 +294,9 @@ describe("BatchEditorDialogPresenter", () => {
                         [fields[0].value]: "newValue"
                     },
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 }
             ]
         });
@@ -264,7 +306,7 @@ describe("BatchEditorDialogPresenter", () => {
         expect(presenter.vm.data.operations[0].value).toEqual({
             [fields[0].value]: "newValue"
         });
-        expect(presenter.vm.data.operations[0].availableFields).toEqual(fields);
+        expect(presenter.vm.data.operations[0].fieldOptions).toEqual(fields);
     });
 
     it("should able to set the operation `field` data", () => {
@@ -281,7 +323,9 @@ describe("BatchEditorDialogPresenter", () => {
                         [fields[0].value]: "newValue"
                     },
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 }
             ]
         });
@@ -297,7 +341,9 @@ describe("BatchEditorDialogPresenter", () => {
             operator: "",
             value: {},
             canDelete: false,
-            availableFields: fields
+            fieldOptions: fields,
+            operatorOptions: [],
+            selectedField: undefined
         });
     });
 
@@ -316,7 +362,9 @@ describe("BatchEditorDialogPresenter", () => {
                     operator: "", // empty value -> this should trigger the error
                     value: {},
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 }
             ]
         });
@@ -337,7 +385,9 @@ describe("BatchEditorDialogPresenter", () => {
                         [fields[0].value]: "newValue"
                     },
                     canDelete: false,
-                    availableFields: fields
+                    fieldOptions: fields,
+                    operatorOptions: [operators[0], operators[1]],
+                    selectedField: fields[0]
                 }
             ]
         });
