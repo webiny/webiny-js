@@ -1,4 +1,4 @@
-import { IconRepository } from "../domain";
+import { IconRepository } from "./IconRepository";
 import {
     IconPackProviderInterface as IconPackProvider,
     IconType

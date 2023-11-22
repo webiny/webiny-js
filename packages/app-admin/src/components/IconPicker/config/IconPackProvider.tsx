@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 type Icon = {
@@ -33,12 +33,10 @@ export type IconPackProviderProps = {
 export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
     const getId = useIdGenerator("iconPackProvider");
 
-    const load = useCallback(provider, [provider]);
-
     return (
         <Property id={getId(name)} name={"iconPackProviders"} array={true}>
             <Property id={getId(name, "name")} name={"name"} value={name} />
-            <Property id={getId(name, "load")} name={"load"} value={load} />
+            <Property id={getId(name, "load")} name={"load"} value={provider} />
         </Property>
     );
 };

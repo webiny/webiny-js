@@ -1,16 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { Menu } from "@webiny/ui/Menu";
-import { Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
+import { Tabs } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FormComponentProps } from "@webiny/ui/types";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 import { IconPickerPresenter } from "./IconPickerPresenter";
-import { IconRepository } from "./domain/IconRepository";
 import { IconProvider, IconRenderer } from "./IconRenderer";
 import {
     IconPickerWrapper,
@@ -30,47 +29,27 @@ export interface IconPickerProps extends FormComponentProps {
 }
 
 export interface IconPickerComponentProps extends IconPickerProps {
-    repository: IconRepository;
+    presenter: IconPickerPresenter;
 }
 
 export const IconPickerComponent = observer(
-    ({ repository, label, description, ...props }: IconPickerComponentProps) => {
+    ({ presenter, label, description, ...props }: IconPickerComponentProps) => {
+        const { value, onChange } = props;
         const { isValid: validationIsValid, message: validationMessage } = props.validation || {};
-
-        const tabsRef = useRef<TabsImperativeApi>();
-
-        const presenter = useMemo(() => {
-            return new IconPickerPresenter(repository);
-        }, [repository]);
+        const { activeTab, isMenuOpened, isLoading, iconTypes, selectedIcon } = presenter.vm;
 
         useEffect(() => {
-            presenter.load(props.value);
-        }, [repository, props.value]);
-
-        useEffect(() => {
-            if (props.onChange) {
-                props.onChange(presenter.vm.selectedIcon);
+            if (onChange) {
+                onChange(selectedIcon);
             }
-        }, [presenter.vm.selectedIcon]);
+        }, [selectedIcon]);
 
-        const iconTypes = presenter.vm.iconTypes;
-        const selectedIcon = presenter.vm.selectedIcon;
+        const setActiveTab = (index: number) => presenter.setActiveTab(index);
+        const getActiveTab = (type: string) => presenter.getActiveTab(type);
 
-        const handleSwitchTab = useCallback(() => {
-            if (!tabsRef.current) {
-                return;
-            }
-
-            presenter.openMenu();
-
-            const index = selectedIcon
-                ? iconTypes.findIndex(iconType => iconType.name === selectedIcon.type)
-                : -1;
-
-            if (index !== -1) {
-                tabsRef.current.switchTab(index);
-            }
-        }, [tabsRef, iconTypes, presenter.vm.selectedIcon]);
+        const resetActiveTab = useCallback(() => {
+            setActiveTab(value ? getActiveTab(value.type) : 0);
+        }, [value?.type]);
 
         const openMenu = () => presenter.openMenu();
         const closeMenu = () => presenter.closeMenu();
@@ -85,11 +64,11 @@ export const IconPickerComponent = observer(
                     )}
 
                     <Menu
-                        open={presenter.vm.isMenuOpened}
+                        open={isMenuOpened}
                         handle={
                             <IconPickerInput onClick={openMenu}>
-                                {presenter.vm.selectedIcon ? (
-                                    <IconProvider icon={presenter.vm.selectedIcon}>
+                                {selectedIcon ? (
+                                    <IconProvider icon={selectedIcon}>
                                         <IconRenderer />
                                     </IconProvider>
                                 ) : (
@@ -101,8 +80,10 @@ export const IconPickerComponent = observer(
                                 )}
                             </IconPickerInput>
                         }
-                        onOpen={handleSwitchTab}
-                        onClose={closeMenu}
+                        onClose={() => {
+                            closeMenu();
+                            resetActiveTab();
+                        }}
                     >
                         {() => (
                             <>
@@ -111,8 +92,11 @@ export const IconPickerComponent = observer(
                                     <CloseIcon onClick={closeMenu} />
                                 </MenuHeader>
                                 <MenuContent>
-                                    {presenter.vm.isLoading && <CircularProgress />}
-                                    <Tabs ref={tabsRef}>
+                                    {isLoading && <CircularProgress />}
+                                    <Tabs
+                                        value={activeTab}
+                                        onActivate={value => setActiveTab(value)}
+                                    >
                                         {iconTypes.map(iconType => (
                                             <IconTypeProvider
                                                 key={iconType.name}

@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useMemo, useEffect } from "react";
 
-import { useIconRepository } from "./useIconRepository";
+import { IconPickerWithConfig, useIconPickerConfig } from "./config";
+import { iconRepositoryFactory } from "./IconRepositoryFactory";
+import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconPickerComponent, IconPickerProps } from "./IconPickerComponent";
-import { IconPickerWithConfig } from "./config";
 import { IconRenderer } from "./IconRenderer";
 
 const IconPickerInner = (props: IconPickerProps) => {
-    const repository = useIconRepository();
+    const { iconTypes, iconPackProviders } = useIconPickerConfig();
+    const repository = iconRepositoryFactory.getRepository(iconTypes, iconPackProviders);
 
-    return <IconPickerComponent repository={repository} {...props} />;
+    const presenter = useMemo(() => {
+        return new IconPickerPresenter(repository);
+    }, [repository]);
+
+    useEffect(() => {
+        presenter.load(props.value);
+    }, [repository, props.value]);
+
+    return <IconPickerComponent presenter={presenter} {...props} />;
 };
 
 const IconPicker = ({

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import groupBy from "lodash/groupBy";
 
-import { IconRepository } from "./domain";
+import { IconRepository } from "./IconRepository";
 import { Icon, IconPickerGridRow } from "./types";
 import { IconType } from "~/components/IconPicker/config";
 
@@ -12,10 +12,13 @@ export interface IconPickerPresenterInterface {
     setIcon(icon: Icon): void;
     addIcon(icon: Icon): void;
     setFilter(value: string): void;
+    setActiveTab(index: number): void;
+    getActiveTab(type: string): number;
     openMenu(): void;
     closeMenu(): void;
     get vm(): {
         isLoading: boolean;
+        activeTab: number;
         isMenuOpened: boolean;
         data: { type: string; rows: IconPickerGridRow[] }[];
         iconTypes: IconType[];
@@ -29,6 +32,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     private selectedIcon: Icon | null = null;
     private filter = "";
     private color = "#757575";
+    private activeTab = 0;
     private isMenuOpened = false;
 
     constructor(repository: IconRepository) {
@@ -49,6 +53,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     get vm() {
         console.log("vm.isMenuOpened", this.isMenuOpened);
         return {
+            activeTab: this.activeTab,
             isMenuOpened: this.isMenuOpened,
             isLoading: this.repository.getLoading().isLoading,
             data: this.getData(),
@@ -137,28 +142,20 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         }));
     }
 
+    setActiveTab(index: number) {
+        this.activeTab = index;
+    }
+
+    getActiveTab(type: string) {
+        return this.vm.iconTypes.findIndex(iconsByType => iconsByType.name === type);
+    }
+
     setIcon(icon: Icon) {
         console.log("set icon", icon);
         this.selectedIcon = icon;
     }
-    //
-    // setColor(color: string) {
-    //     this.color = color;
-    // }
 
     setFilter(value: string) {
         this.filter = value;
     }
-
-    // checkSkinToneSupport(iconToCheck: Icon) {
-    //     const icons = this.repository.getIcons();
-    //
-    //     return (
-    //         icons
-    //             .filter(icon => icon.type === "emoji")
-    //             // Assert the icon as an Emoji based on the filter.
-    //             .find((icon): icon is Emoji => icon.value === iconToCheck.value)?.skinToneSupport ||
-    //         false
-    //     );
-    // }
 }

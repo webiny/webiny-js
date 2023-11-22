@@ -52,7 +52,6 @@ export const Row = styled.div`
 
 export const Cell = styled.div<{ isActive: boolean }>`
     cursor: pointer;
-     color: ${({ color }) => color};
     background-color: ${({ isActive, theme }) =>
         isActive ? theme.styles.colors.color5 : theme.styles.colors.color6};
 
