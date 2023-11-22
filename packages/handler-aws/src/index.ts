@@ -2,8 +2,8 @@ import "./gateway/register";
 import "./s3/register";
 import "./dynamodb/register";
 import "./sqs/register";
-import "./sns/register";
 import "./eventBridge/register";
+import "./sns/register";
 
 /**
  * API Gateway
