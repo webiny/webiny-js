@@ -84,6 +84,29 @@ export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
 export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
 type DefaultValue = boolean | number | string | null;
+
+const getDate = <T extends string | undefined = string | undefined>(
+    input: Date | null | string | undefined,
+    defaultValue?: Date | null
+): T => {
+    if (!input) {
+        if (!defaultValue) {
+            return undefined as T;
+        }
+        return defaultValue.toISOString() as T;
+    }
+    if (input instanceof Date) {
+        return input.toISOString() as T;
+    }
+    try {
+        return new Date(input).toISOString() as T;
+    } catch {
+        if (!defaultValue) {
+            return undefined as T;
+        }
+        return defaultValue.toISOString() as T;
+    }
+};
 /**
  * Used for some fields to convert their values.
  */
@@ -681,6 +704,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * There is a possibility that user sends an ID in the input, so we will use that one.
          * There is no check if the ID is unique or not, that is up to the user.
          */
+        const currentDate = new Date();
         const entry: CmsEntry = {
             webinyVersion: context.WEBINY_VERSION,
             tenant: getTenant().id,
@@ -688,11 +712,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id,
             modelId: model.modelId,
             locale: locale.code,
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString(),
+            createdOn: getDate(initialInput.createdOn, currentDate),
+            savedOn: getDate(initialInput.savedOn, currentDate),
+            publishedOn: getDate(initialInput.publishedOn),
             createdBy: owner,
             ownedBy: owner,
-            modifiedBy: null,
+            modifiedBy: owner,
             version,
             locked: false,
             status: STATUS_DRAFT,
@@ -813,20 +838,25 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
+        const currentDate = new Date();
+
+        const originalCreatedOnDate = originalEntry.createdOn
+            ? new Date(originalEntry.createdOn)
+            : currentDate;
+        const originalPublishedOnDate = originalEntry.publishedOn
+            ? new Date(originalEntry.publishedOn)
+            : null;
+
         const entry: CmsEntry = {
             ...originalEntry,
             id,
             version: nextVersion,
-            savedOn: new Date().toISOString(),
-            createdOn: new Date().toISOString(),
-            createdBy: {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            },
-            modifiedBy: null,
+            savedOn: getDate(inputData.savedOn, currentDate),
+            createdOn: getDate(inputData.createdOn, originalCreatedOnDate),
+            publishedOn: getDate(inputData.publishedOn, originalPublishedOnDate),
+            createdBy: identity,
+            modifiedBy: identity,
             locked: false,
-            publishedOn: undefined,
             status: STATUS_DRAFT,
             values
         };
@@ -948,9 +978,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * We always send the full entry to the hooks and storage operations update.
          */
+        const currentDate = new Date();
+        const currentCreatedOnDate = originalEntry.createdOn
+            ? new Date(originalEntry.createdOn)
+            : currentDate;
+        const currentPublishedOnDate = originalEntry.publishedOn
+            ? new Date(originalEntry.publishedOn)
+            : null;
         const entry: CmsEntry = {
             ...originalEntry,
-            savedOn: new Date().toISOString(),
+            savedOn: getDate(inputData.savedOn, currentDate),
+            createdOn: getDate(inputData.createdOn, currentCreatedOnDate),
+            publishedOn: getDate(inputData.publishedOn, currentPublishedOnDate),
             modifiedBy: getCreatedBy(),
             values,
             meta,
@@ -1119,7 +1158,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...originalEntry,
             status: STATUS_PUBLISHED,
             publishedOn: originalEntry.publishedOn || new Date().toISOString(),
-            savedOn: new Date().toISOString(),
             webinyVersion: context.WEBINY_VERSION,
             values
         };
@@ -1415,12 +1453,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         const currentDate = new Date().toISOString();
+
         const entry: CmsEntry = {
             ...originalEntry,
             status: STATUS_PUBLISHED,
             locked: true,
             savedOn: currentDate,
-            publishedOn: currentDate
+            publishedOn: originalEntry.publishedOn || currentDate
         };
 
         let storageEntry: CmsStorageEntry | null = null;

@@ -106,6 +106,9 @@ export const createManageSDL: CreateManageSDL = ({
         
         input ${singularName}Input {
             id: ID
+            createdOn: DateTime
+            savedOn: DateTime
+            publishedOn: DateTime
             wbyAco_location: WbyAcoLocationInput
             ${inputGraphQLFields}
         }

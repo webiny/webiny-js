@@ -1492,7 +1492,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      * A string of Date.toISOString() type - if published.
      * Populated when entry is published.
      */
-    publishedOn?: string;
+    publishedOn?: string | null;
     /**
      * A revision version of the entry.
      */
@@ -2149,6 +2149,9 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    createdOn?: Date;
+    savedOn?: Date;
+    publishedOn?: Date;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2164,6 +2167,9 @@ export interface CreateCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
+    createdOn?: Date;
+    savedOn?: Date;
+    publishedOn?: Date;
     [key: string]: any;
 }
 
@@ -2176,6 +2182,9 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    createdOn?: Date;
+    savedOn?: Date;
+    publishedOn?: Date;
     wbyAco_location?: {
         folderId?: string | null;
     };
