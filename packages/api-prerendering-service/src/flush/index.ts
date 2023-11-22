@@ -1,7 +1,7 @@
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import { join } from "path";
 import WebinyError from "@webiny/error";
-import { getStorageFolder } from "~/utils";
+import { getStorageFolder, isMultiTenancyEnabled } from "~/utils";
 import { FlushHookPlugin, HandlerArgs } from "./types";
 import { PrerenderingServiceStorageOperations } from "~/types";
 import { EventPlugin } from "@webiny/handler";
@@ -12,13 +12,12 @@ interface DeleteFileParams {
     key: string;
     storageName: string;
 }
+
 const deleteFile = ({ key, storageName }: DeleteFileParams) => {
-    return s3
-        .deleteObject({
-            Bucket: storageName,
-            Key: key
-        })
-        .promise();
+    return s3.deleteObject({
+        Bucket: storageName,
+        Key: key
+    });
 };
 
 export interface Params {
@@ -27,6 +26,7 @@ export interface Params {
 
 export default (configuration: Params) => {
     const { storageOperations } = configuration;
+    const isMultiTenant = isMultiTenancyEnabled();
 
     return new EventPlugin<HandlerArgs>(async ({ payload, context }) => {
         const log = console.log;
@@ -44,6 +44,8 @@ export default (configuration: Params) => {
                 if (!path) {
                     return;
                 }
+
+                const bucketRoot = isMultiTenant ? tenant : "";
 
                 return new Promise(async (resolve?: any) => {
                     const render = await storageOperations.getRender({
@@ -71,7 +73,7 @@ export default (configuration: Params) => {
 
                         if (Array.isArray(render.files)) {
                             for (const file of render.files) {
-                                const key = join(storageFolder, file.name);
+                                const key = join(bucketRoot, storageFolder, file.name);
                                 await deleteFile({ key, storageName: settings.bucket });
                             }
 

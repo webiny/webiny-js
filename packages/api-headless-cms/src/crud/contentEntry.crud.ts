@@ -59,7 +59,10 @@ import {
     OnEntryUpdateErrorTopicParams,
     UpdateCmsEntryInput
 } from "~/types";
-import { validateModelEntryData } from "./contentEntry/entryDataValidation";
+import {
+    validateModelEntryData,
+    validateModelEntryDataOrThrow
+} from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
@@ -73,7 +76,7 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
-import { NotAuthorizedError } from "@webiny/api-security/";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { ROOT_FOLDER } from "~/constants";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
@@ -644,7 +647,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const createEntry: CmsEntryContext["createEntry"] = async (model, inputData) => {
+    const createEntry: CmsEntryContext["createEntry"] = async (model, inputData, options) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -655,10 +658,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const initialInput = mapAndCleanCreateInputData(model, inputData);
 
-        await validateModelEntryData({
+        await validateModelEntryDataOrThrow({
             context,
             model,
-            data: initialInput
+            data: initialInput,
+            skipValidators: options?.skipValidators
         });
 
         const input = await referenceFieldsMapping({
@@ -707,6 +711,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             storageEntry = await entryToStorageTransform(context, model, entry);
+
             const result = await storageOperations.entries.create(model, {
                 entry,
                 storageEntry
@@ -719,7 +724,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input
             });
 
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryCreateError.publish({
                 error: ex,
@@ -742,7 +747,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
         model,
         sourceId,
-        inputData
+        inputData,
+        options
     ) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
@@ -785,11 +791,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...input
         };
 
-        await validateModelEntryData({
+        await validateModelEntryDataOrThrow({
             context,
             model,
             data: initialValues,
-            entry: originalEntry
+            entry: originalEntry,
+            skipValidators: options?.skipValidators
         });
 
         const values = await referenceFieldsMapping({
@@ -848,7 +855,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 original: originalEntry,
                 storageEntry: result
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryCreateRevisionError.publish({
                 entry,
@@ -870,7 +877,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const updateEntry: CmsEntryContext["updateEntry"] = async (model, id, inputData, metaInput) => {
+    const updateEntry: CmsEntryContext["updateEntry"] = async (
+        model,
+        id,
+        inputData,
+        metaInput,
+        options
+    ) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -901,11 +914,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await validateModelEntryData({
+        await validateModelEntryDataOrThrow({
             context,
             model,
             data: input,
-            entry: originalEntry
+            entry: originalEntry,
+            skipValidators: options?.skipValidators
         });
 
         await entriesPermissions.ensure({ owns: originalEntry.createdBy });
@@ -973,7 +987,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input,
                 original: originalEntry
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryUpdateError.publish({
                 entry,
@@ -995,6 +1009,36 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
+    const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
+        await entriesPermissions.ensure({ rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
+
+        const input = mapAndCleanUpdatedInputData(model, inputData || {});
+        let originalEntry: CmsEntry | undefined;
+        if (id) {
+            /**
+             * The entry we are going to update.
+             */
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                id
+            });
+
+            if (!originalStorageEntry) {
+                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            }
+            originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        }
+        const result = await validateModelEntryData({
+            context,
+            model,
+            data: input,
+            entry: originalEntry
+        });
+        return result.length > 0 ? result : [];
+    };
+
     const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
@@ -1012,6 +1056,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         const entry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        /**
+         * No need to continue if the entry is already in the requested folder.
+         */
+        if (entry.location?.folderId === folderId) {
+            return entry;
+        }
 
         try {
             await onEntryBeforeMove.publish({
@@ -1057,15 +1107,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
-        /**
-         * We can only process published entries.
-         */
-        if (originalEntry.status !== "published") {
-            throw new WebinyError("Entry with given ID is not published!", "NOT_PUBLISHED_ERROR", {
-                id,
-                original: originalEntry
-            });
-        }
 
         const values = await referenceFieldsMapping({
             context,
@@ -1076,6 +1117,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const entry: CmsEntry = {
             ...originalEntry,
+            status: STATUS_PUBLISHED,
+            publishedOn: originalEntry.publishedOn || new Date().toISOString(),
             savedOn: new Date().toISOString(),
             webinyVersion: context.WEBINY_VERSION,
             values
@@ -1116,9 +1159,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             await onEntryAfterRepublish.publish({
                 entry,
                 model,
-                storageEntry
+                storageEntry: result
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryRepublishError.publish({
                 entry,
@@ -1364,6 +1407,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
+        await validateModelEntryDataOrThrow({
+            context,
+            model,
+            data: originalEntry.values,
+            entry: originalEntry
+        });
+
         const currentDate = new Date().toISOString();
         const entry: CmsEntry = {
             ...originalEntry,
@@ -1392,7 +1442,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry: result,
                 model
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryPublishError.publish({
                 entry,
@@ -1464,7 +1514,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 model
             });
 
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryUnpublishError.publish({
                 entry,
@@ -1567,78 +1617,38 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     return {
-        /**
-         * Deprecated - will be removed in 5.35.0
-         */
-        onBeforeEntryCreate: onEntryBeforeCreate,
-        onAfterEntryCreate: onEntryAfterCreate,
-        onBeforeEntryCreateRevision: onEntryBeforeCreateRevision,
-        onAfterEntryCreateRevision: onEntryRevisionAfterCreate,
-        onBeforeEntryUpdate: onEntryBeforeUpdate,
-        onAfterEntryUpdate: onEntryAfterUpdate,
-        onBeforeEntryDelete: onEntryBeforeDelete,
-        onAfterEntryDelete: onEntryAfterDelete,
-        onBeforeEntryDeleteRevision: onEntryRevisionBeforeDelete,
-        onAfterEntryDeleteRevision: onEntryRevisionAfterDelete,
-        onBeforeEntryPublish: onEntryBeforePublish,
-        onAfterEntryPublish: onEntryAfterPublish,
-        onBeforeEntryUnpublish: onEntryBeforeUnpublish,
-        onAfterEntryUnpublish: onEntryAfterUnpublish,
-        onBeforeEntryGet: onEntryBeforeGet,
-        onBeforeEntryList: onEntryBeforeList,
-        /**
-         * Released in 5.34.0
-         *
-         * Create
-         */
         onEntryBeforeCreate,
         onEntryAfterCreate,
         onEntryCreateError,
-        /**
-         * Create revision
-         */
+
         onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
         onEntryRevisionAfterCreate,
         onEntryRevisionCreateError: onEntryCreateRevisionError,
-        /**
-         * Update
-         */
+
         onEntryBeforeUpdate,
         onEntryAfterUpdate,
         onEntryUpdateError,
-        /**
-         * Move
-         */
+
         onEntryBeforeMove,
         onEntryAfterMove,
         onEntryMoveError,
-        /**
-         * Delete whole entry
-         */
+
         onEntryBeforeDelete,
         onEntryAfterDelete,
         onEntryDeleteError,
-        /**
-         * Delete entry revision
-         */
+
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
-        /**
-         * Publish
-         */
+
         onEntryBeforePublish,
         onEntryAfterPublish,
         onEntryPublishError,
-        /**
-         * Republish
-         */
+
         onEntryBeforeRepublish,
         onEntryAfterRepublish,
         onEntryRepublishError,
-        /**
-         * Unpublish
-         */
+
         onEntryBeforeUnpublish,
         onEntryAfterUnpublish,
         onEntryUnpublishError,
@@ -1741,22 +1751,27 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async createEntry(model, input) {
+        async createEntry(model, input, options) {
             return context.benchmark.measure("headlessCms.crud.entries.createEntry", async () => {
-                return createEntry(model, input);
+                return createEntry(model, input, options);
             });
         },
-        async createEntryRevisionFrom(model, sourceId, input) {
+        async createEntryRevisionFrom(model, sourceId, input, options) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.createEntryRevisionFrom",
                 async () => {
-                    return createEntryRevisionFrom(model, sourceId, input);
+                    return createEntryRevisionFrom(model, sourceId, input, options);
                 }
             );
         },
-        async updateEntry(model, id, input, meta) {
+        async updateEntry(model, id, input, meta, options) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
-                return updateEntry(model, id, input, meta);
+                return updateEntry(model, id, input, meta, options);
+            });
+        },
+        async validateEntry(model, id, input) {
+            return context.benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
+                return validateEntry(model, id, input);
             });
         },
         async moveEntry(model, id, folderId) {

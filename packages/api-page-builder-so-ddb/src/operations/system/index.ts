@@ -6,8 +6,9 @@ import {
     SystemStorageOperationsGetParams,
     SystemStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { getClean, put } from "@webiny/db-dynamodb";
+
 interface PartitionKeyParams {
     tenant: string;
 }
@@ -25,18 +26,17 @@ export interface CreateSystemStorageOperationsParams {
 export const createSystemStorageOperations = ({
     entity
 }: CreateSystemStorageOperationsParams): SystemStorageOperations => {
-    const get = async (params: SystemStorageOperationsGetParams): Promise<System | null> => {
+    const get = async (params: SystemStorageOperationsGetParams) => {
         const { tenant } = params;
         const keys = {
             PK: createPartitionKey({ tenant }),
             SK: createSortKey()
         };
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<System>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load system record.",
@@ -55,9 +55,12 @@ export const createSystemStorageOperations = ({
             SK: createSortKey()
         };
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {
@@ -79,9 +82,12 @@ export const createSystemStorageOperations = ({
             SK: createSortKey()
         };
         try {
-            await entity.put({
-                ...system,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {

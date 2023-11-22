@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { FolderDialogCreate, useFolders } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -10,6 +10,7 @@ import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
+import { BulkActions } from "~/admin/components/BulkActions";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
@@ -52,7 +53,17 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
     const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
+    // We check permissions on two layers - security and folder level permissions.
     const { canCreate } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
+
+    const canCreateFolder = useMemo(() => {
+        return flp.canManageStructure(folderId);
+    }, [flp, folderId]);
+
+    const canCreateContent = useMemo(() => {
+        return canCreate() && flp.canManageContent(folderId);
+    }, [flp, folderId]);
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -101,7 +112,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreate={canCreate()}
+                    canCreateFolder={canCreateFolder}
+                    canCreateContent={canCreateContent}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
@@ -109,13 +121,15 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
+                <BulkActions />
                 <Wrapper>
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreate={canCreate()}
+                            canCreateFolder={canCreateFolder}
+                            canCreateContent={canCreateContent}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
                         />
@@ -150,7 +164,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {list.isListLoadingMore && <LoadingMore />}
+                            <LoadingMore show={list.isListLoadingMore} />
                         </>
                     )}
                 </Wrapper>

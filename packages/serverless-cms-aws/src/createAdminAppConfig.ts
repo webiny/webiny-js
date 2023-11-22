@@ -26,3 +26,16 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
         }
     });
 };
+
+/**
+ * Inject REACT_APP_USER_POOL_DOMAIN from the `core` app output into the `admin` app bundle.
+ * The Cognito user pool domain is taken from the `cognitoUserPoolDomain` Pulumi app output.
+ */
+export const configureAdminCognitoUserPoolDomain: ReactAppConfigModifier = modifier => {
+    modifier.config.pulumiOutputToEnv("apps/core", ({ env, output }) => {
+        return {
+            ...env,
+            REACT_APP_USER_POOL_DOMAIN: output["cognitoUserPoolDomain"]
+        };
+    });
+};

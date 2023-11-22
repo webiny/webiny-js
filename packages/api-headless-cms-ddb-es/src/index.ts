@@ -1,7 +1,6 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import elasticsearchPlugins from "./elasticsearch";
 import dynamoDbPlugins from "./dynamoDb";
-import { createSettingsStorageOperations } from "./operations/settings";
 import { createSystemStorageOperations } from "./operations/system";
 import { createModelsStorageOperations } from "./operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
@@ -13,7 +12,6 @@ import { createModelEntity } from "~/definitions/model";
 import { createEntryEntity } from "~/definitions/entry";
 import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch";
 import { createSystemEntity } from "~/definitions/system";
-import { createSettingsEntity } from "~/definitions/settings";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
@@ -36,6 +34,7 @@ import {
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import { createElasticsearchIndexesOnLocaleAfterCreate } from "~/operations/system/indexes";
 
 export * from "./plugins";
 
@@ -59,11 +58,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     });
 
     const entities = {
-        settings: createSettingsEntity({
-            entityName: ENTITIES.SETTINGS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
-        }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
@@ -170,30 +164,36 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
+            await createElasticsearchIndexesOnLocaleAfterCreate({
+                context,
+                client: elasticsearch,
+                plugins
+            });
+
             context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
             });
             context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
             });
             context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model
                 });
             });
 
             context.cms.onModelInitialize.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
-                    elasticsearch,
+                    client: elasticsearch,
                     model,
                     plugins
                 });
@@ -204,9 +204,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         getEsTable: () => tableElasticsearchInstance,
         system: createSystemStorageOperations({
             entity: entities.system
-        }),
-        settings: createSettingsStorageOperations({
-            entity: entities.settings
         }),
         groups: createGroupsStorageOperations({
             entity: entities.groups,

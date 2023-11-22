@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./FloatingLinkEditorPlugin.css";
-import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
@@ -15,11 +15,12 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 
-import { createPortal } from "react-dom";
-import { LinkPreview } from "../../ui/LinkPreview";
-import { getSelectedNode } from "../../utils/getSelectedNode";
-import { sanitizeUrl } from "../../utils/sanitizeUrl";
-import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
+import { LinkPreview } from "~/ui/LinkPreview";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { sanitizeUrl } from "~/utils/sanitizeUrl";
+import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
+import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
 
 function FloatingLinkEditor({
     editor,
@@ -162,11 +163,12 @@ function FloatingLinkEditor({
                         <input
                             type={"checkbox"}
                             checked={linkUrl.target === "_blank"}
+                            disabled={isUrlLinkReference(linkUrl.url)}
                             onChange={() =>
                                 setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
                             }
                         />{" "}
-                        <span>Open in new page</span>
+                        <span>New tab</span>
                     </div>
                     <input
                         ref={inputRef}
@@ -198,7 +200,7 @@ function FloatingLinkEditor({
                 <>
                     <div className={"link-editor-target-checkbox"}>
                         <input type={"checkbox"} checked={linkUrl.target === "_blank"} readOnly />{" "}
-                        <span>Open in new page</span>
+                        <span>New tab</span>
                     </div>
                     <div className="link-input">
                         <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">

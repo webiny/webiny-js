@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { PageBlock } from "@webiny/api-page-builder/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { createPartitionKey, createSortKey } from "./keys";
 import { DataLoaderInterface } from "~/types";
 
@@ -43,7 +43,7 @@ export class PageBlockDataLoader implements DataLoaderInterface {
                     const batched = items.map(item => {
                         return this.entity.getBatch({
                             PK: createPartitionKey(item),
-                            SK: createSortKey(item)
+                            SK: createSortKey()
                         });
                     });
 

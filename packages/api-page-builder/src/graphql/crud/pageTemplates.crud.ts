@@ -50,7 +50,11 @@ const getDefaultContent = () => {
     return {
         id: uniqid.time(),
         type: "document",
-        data: {},
+        data: {
+            template: {
+                variables: []
+            }
+        },
         elements: []
     };
 };

@@ -1,12 +1,15 @@
-import { APIGatewayEvent } from "aws-lambda";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import {
-    createDownloadFileByExactKeyPlugins,
-    createDownloadFileByAliasPlugins
+    createDownloadFileByAliasPlugins,
+    createDownloadFileByExactKeyPlugins
 } from "~/handlers/download";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import { fileAData } from "~tests/mocks/files";
+import {
+    APIGatewayEvent,
+    APIGatewayEventRequestContextWithAuthorizer
+} from "@webiny/handler-aws/types";
 
 const binaryMimeTypes: string[] = [];
 binaryMimeTypes.indexOf = () => {
@@ -18,41 +21,35 @@ enum Files {
     largeFile = "large-test-file-path.png"
 }
 
-jest.retryTimes(0);
-
-jest.mock("aws-sdk/clients/s3", () => {
-    return class {
-        private readonly _fileSizes: Record<string, number> = {
-            ["small-test-file-path.png"]: 137,
-            ["large-test-file-path.png"]: 500000001
-        };
-
-        public getObject(obj: any) {
-            const { Key: file } = obj;
-            return {
-                promise: async () => {
-                    return {
-                        Body: file,
-                        ContentType: "image/png",
-                        ContentLength: this._fileSizes[file as Files] || file.length
-                    };
-                }
+jest.mock("@webiny/aws-sdk/client-s3", () => {
+    return {
+        S3: class {
+            private _fileSizes = {
+                ["small-test-file-path.png"]: 137,
+                ["large-test-file-path.png"]: 500000001
             };
-        }
-        public getSignedUrl() {
+
+            async headObject(obj: any) {
+                const { Key: file } = obj;
+                return {
+                    ContentLength: this._fileSizes[file as Files]
+                };
+            }
+
+            async getObject(obj: any) {
+                const { Key: file } = obj;
+                return {
+                    Body: file,
+                    ContentType: "image/png",
+                    ContentLength: this._fileSizes[file as Files] || file.length
+                };
+            }
+        },
+
+        getSignedUrl() {
             return "https://presigned-domain.loc/some-url?1fjdsfjdsfds";
-        }
-
-        public headObject(obj: any) {
-            const { Key: file } = obj;
-            return {
-                promise: async () => {
-                    return {
-                        ContentLength: this._fileSizes[file as Files]
-                    };
-                }
-            };
-        }
+        },
+        GetObjectCommand: class {}
     };
 });
 
@@ -72,7 +69,7 @@ const createFileDownloadEvent = (path: string): APIGatewayEvent => {
         },
         queryStringParameters: null,
         isBase64Encoded: false,
-        requestContext: {} as any,
+        requestContext: {} as APIGatewayEventRequestContextWithAuthorizer<any>,
         resource: "",
         multiValueHeaders: {},
         stageVariables: null
@@ -87,6 +84,11 @@ const createDownloadHandler = (params: Parameters<typeof createHandler>[0]) => {
 };
 
 describe("download handler", () => {
+    beforeEach(() => {
+        process.env.S3_BUCKET = "some-bucket";
+        process.env.AWS_REGION = "eu-central-1";
+    });
+
     it("should trigger s3 file download - stream", async () => {
         const handler = createDownloadHandler({
             plugins: [createDownloadFileByExactKeyPlugins()]
@@ -135,7 +137,20 @@ describe("download handler", () => {
         const { createFile, updateFile, deleteFile } = useGqlHandler();
 
         // Create a file and make sure it's accessible via all provided aliases.
-        await createFile({ data: fileWithAliases });
+        const [result] = await createFile({ data: fileWithAliases });
+
+        expect(result).toMatchObject({
+            data: {
+                fileManager: {
+                    createFile: {
+                        data: {
+                            aliases: ["/test-file.png", "/my/custom/path.jpeg"]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         const resultA = await handler(createFileDownloadEvent(fileWithAliases.aliases[0]));
 

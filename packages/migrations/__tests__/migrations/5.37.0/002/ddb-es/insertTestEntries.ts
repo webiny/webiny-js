@@ -1,25 +1,16 @@
-import { Table } from "dynamodb-toolbox";
-import { CmsEntry, Identity } from "~/migrations/5.37.0/002/types";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
-import { esGetIndexName } from "~/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
-
-type DbItem<T> = T & {
-    PK: string;
-    SK: string;
-    TYPE: string;
-    _et: string;
-    _md: string;
-    _ct: string;
-};
-
-const identity: Identity = {
-    id: "root",
-    displayName: "Root",
-    type: "admin"
-};
+import { createArticleEntry } from "~tests/migrations/5.37.0/002/ddb-es/mocks/entry";
+import {
+    createDynamoDbElasticsearchRecords,
+    createDynamoDbRecords
+} from "~tests/migrations/5.37.0/002/ddb-es/mocks/record";
+import { createArticleModel } from "~tests/migrations/5.37.0/002/ddb-es/mocks/model";
+import { getStorageModel } from "./mocks/storageModel";
+import { getPlugins } from "./mocks/plugins";
+import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
 
 const tenants = [
     "root",
@@ -46,7 +37,13 @@ const locales = [
  * Items generated per tenant / locale combination.
  * This is used in the test which actually updates everything.
  */
-const defaultMaxItems = 25;
+const defaultMaxItems = 5;
+
+const revisionsArray = Array(3)
+    .fill(0)
+    .map((_, index) => {
+        return Number(index) + 1;
+    });
 /**
  * !!! IMPORTANT !!!
  * UPDATE IF YOU CHANGE THE NUMBER OF RECORDS PER ENTRY.
@@ -55,122 +52,86 @@ const defaultMaxItems = 25;
  * - P
  * - REV#0001
  * - REV#0002
+ * - REV#0003
  */
-const ddbItemPushes = 4;
-
-export const getTotalItems = () => {
-    return tenants.length * locales.length * defaultMaxItems * ddbItemPushes;
-};
+export const ddbItemPushes = revisionsArray.length + 2;
 
 interface Options {
     maxItems?: number;
+    maxTenants?: number;
+    maxLocales?: number;
 }
 
 interface Params {
-    ddbTable: Table;
-    ddbToEsTable: Table;
+    ddbTable: Table<string, string, string>;
+    ddbToEsTable: Table<string, string, string>;
     elasticsearchClient: ElasticsearchClient;
     options?: Options;
 }
 
 export const insertTestEntries = async (params: Params) => {
+    let entries = 0;
+    const plugins = getPlugins();
     const { ddbTable, ddbToEsTable, elasticsearchClient, options } = params;
     const maxItems = options?.maxItems || defaultMaxItems;
-    for (const tenant of tenants) {
-        const items = [];
-        const esItems = [];
-        for (const locale of locales) {
-            for (let i = 1; i <= maxItems; i++) {
-                const entryId = `${tenant}-${locale}-${i}`;
+    const maxTenants = options?.maxTenants || tenants.length + 1;
+    const maxLocales = options?.maxLocales || locales.length + 1;
 
-                const item: DbItem<CmsEntry> = {
-                    PK: `T#${tenant}#L#${locale}#CMS#CME#${entryId}`,
-                    SK: "REV#0001",
-                    _et: "CmsEntries",
-                    _md: new Date().toISOString(),
-                    _ct: new Date().toISOString(),
-                    tenant,
-                    locale,
-                    id: `${entryId}#0001`,
-                    entryId,
-                    modelId: "randomModelId",
-                    TYPE: "cms.entry",
-                    locked: true,
-                    status: "published",
-                    ownedBy: identity,
-                    createdBy: identity,
-                    createdOn: new Date().toISOString(),
-                    savedOn: new Date().toISOString(),
-                    publishedOn: new Date().toISOString(),
-                    values: {
-                        title: `Entry ${entryId}`
-                    },
-                    webinyVersion: "5.36.2",
-                    version: 1
-                };
-                const itemV2 = {
-                    ...item,
-                    SK: "REV#0002",
-                    id: `${entryId}#0002`,
-                    version: 2
-                };
-                const latestItem = {
-                    ...itemV2,
-                    TYPE: "cms.entry.l",
-                    SK: "L"
-                };
-                const publishedItem = {
-                    ...latestItem,
-                    TYPE: "cms.entry.p",
-                    SK: "P"
-                };
-                // REV 1
-                items.push(item);
-                // REV 2
-                items.push({
-                    ...itemV2
+    let currentTenant = 0;
+    for (const tenant of tenants) {
+        currentTenant++;
+        let currentLocale = 0;
+        for (const locale of locales) {
+            currentLocale++;
+            const model = createArticleModel({
+                tenant,
+                locale,
+                webinyVersion: "5.36.2"
+            });
+            const storageModel = getStorageModel(model);
+            const items = [];
+            const esItems = [];
+            for (let i = 1; i <= maxItems; i++) {
+                entries++;
+                const entryId = `${tenant}-${locale}-${i}`;
+                const revisions = revisionsArray.map(version => {
+                    return createArticleEntry({
+                        entryId,
+                        tenant,
+                        locale,
+                        version,
+                        published: version === revisionsArray.length - 1
+                    });
                 });
-                // latest
-                items.push({
-                    ...latestItem,
-                    SK: "L"
+
+                const dynamoDbRecords = await createDynamoDbRecords({
+                    plugins,
+                    model: storageModel,
+                    revisions
                 });
-                // published
-                items.push({
-                    ...publishedItem
+                const dynamoDbElasticsearchRecords = await createDynamoDbElasticsearchRecords({
+                    plugins,
+                    model: storageModel,
+                    revisions
                 });
-                /**
-                 * Elasticsearch Data
-                 */
-                const index = esGetIndexName({
-                    tenant,
-                    locale,
-                    type: "randomModelId",
-                    isHeadlessCmsModel: true
-                });
-                esItems.push({
-                    PK: item.PK,
-                    SK: "L",
-                    index,
-                    data: await getCompressedData(latestItem)
-                });
-                esItems.push({
-                    PK: item.PK,
-                    SK: "P",
-                    index,
-                    data: await getCompressedData(publishedItem)
-                });
+
+                items.push(...dynamoDbRecords);
+                esItems.push(...dynamoDbElasticsearchRecords);
+            }
+            await insertDynamoDbTestData(ddbTable, items);
+            await insertDynamoDbTestData(ddbToEsTable, esItems);
+            await transferDynamoDbToElasticsearch(
+                elasticsearchClient,
+                ddbToEsTable,
+                getRecordIndexName
+            );
+            if (currentLocale >= maxLocales) {
+                break;
             }
         }
-        await insertDynamoDbTestData(ddbTable, items);
-        await insertDynamoDbTestData(ddbToEsTable, esItems);
-        await transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {
-            return esGetIndexName({
-                tenant: item.tenant,
-                locale: item.locale,
-                type: "randomModelId",
-                isHeadlessCmsModel: true
-            });
-        });
+        if (currentTenant >= maxTenants) {
+            return entries;
+        }
     }
+    return entries;
 };

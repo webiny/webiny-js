@@ -2,7 +2,7 @@
  * Remove this when no apps are using our internal db drivers anymore
  */
 // @ts-nocheck
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Batch } from "@webiny/db";
 
 type BatchType = "batchWrite" | "batchGet";
@@ -37,7 +37,7 @@ interface DocumentClientArgs {
 }
 
 class BatchProcess {
-    documentClient: DocumentClient;
+    documentClient: DynamoDBClient;
     batch: Batch;
     resolveBuild: () => void;
     rejectBuild: RejectBuildCallable;
@@ -49,7 +49,7 @@ class BatchProcess {
     batchType: BatchType;
     results: Record<string, any>[];
     response: Record<string, any>;
-    constructor(batch: Batch, documentClient: DocumentClient) {
+    constructor(batch: Batch, documentClient: DynamoDBClient) {
         this.documentClient = documentClient;
         this.batch = batch;
 

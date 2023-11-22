@@ -1,7 +1,11 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Attributes, ENTITIES } from "~/types";
 
-const createEntity = (entityName: string, table: Table, attributes: Attributes): Entity<any> => {
+const createEntity = (
+    entityName: string,
+    table: Table<string, string, string>,
+    attributes: Attributes
+): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -26,7 +30,10 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes):
     });
 };
 
-export const createGroupEntity = (table: Table, attributes: Attributes = {}) => {
+export const createGroupEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.GROUP, table, {
         id: {
             type: "string"
@@ -61,7 +68,10 @@ export const createGroupEntity = (table: Table, attributes: Attributes = {}) => 
         ...attributes
     });
 };
-export const createTeamEntity = (table: Table, attributes: Attributes = {}) => {
+export const createTeamEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.TEAM, table, {
         id: {
             type: "string"
@@ -97,7 +107,10 @@ export const createTeamEntity = (table: Table, attributes: Attributes = {}) => {
     });
 };
 
-export const createApiKeyEntity = (table: Table, attributes: Attributes = {}) => {
+export const createApiKeyEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.API_KEY, table, {
         id: {
             type: "string"
@@ -130,7 +143,10 @@ export const createApiKeyEntity = (table: Table, attributes: Attributes = {}) =>
     });
 };
 
-export const createSystemEntity = (table: Table, attributes: Attributes = {}) => {
+export const createSystemEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.SYSTEM, table, {
         tenant: {
             type: "string"
@@ -148,7 +164,10 @@ export const createSystemEntity = (table: Table, attributes: Attributes = {}) =>
     });
 };
 
-export const createTenantLinkEntity = (table: Table, attributes: Attributes = {}) => {
+export const createTenantLinkEntity = (
+    table: Table<string, string, string>,
+    attributes: Attributes = {}
+) => {
     return createEntity(ENTITIES.TENANT_LINK, table, {
         createdOn: {
             type: "string"

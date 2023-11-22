@@ -5,6 +5,7 @@ import {
     waitPersonRecords
 } from "./helpers";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { CmsContext } from "~/types";
 
 jest.setTimeout(60000);
 
@@ -21,7 +22,7 @@ describe("Entries storage operations", () => {
     beforeAll(async () => {
         await storageOperations.beforeInit({
             plugins
-        } as any);
+        } as unknown as CmsContext);
     });
 
     beforeEach(async () => {

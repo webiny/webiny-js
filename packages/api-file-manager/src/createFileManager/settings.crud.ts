@@ -1,3 +1,4 @@
+import { createTopic } from "@webiny/pubsub";
 /**
  * Package @commodo/fields does not have types.
  */
@@ -38,6 +39,8 @@ export const createSettingsCrud = ({
     getTenantId
 }: FileManagerConfig): SettingsCRUD => {
     return {
+        onSettingsBeforeUpdate: createTopic("fileManager.onSettingsBeforeUpdate"),
+        onSettingsAfterUpdate: createTopic("fileManager.onSettingsAfterUpdate"),
         async getSettings() {
             return storageOperations.settings.get({ tenant: getTenantId() });
         },
@@ -63,14 +66,28 @@ export const createSettingsCrud = ({
                 onlyDirty: true
             });
 
-            return storageOperations.settings.update({
+            const settings: FileManagerSettings = {
+                ...existingSettings,
+                ...updatedSettings,
+                tenant: getTenantId()
+            };
+
+            await this.onSettingsBeforeUpdate.publish({
+                input: data,
                 original: existingSettings,
-                data: {
-                    ...existingSettings,
-                    ...updatedSettings,
-                    tenant: getTenantId()
-                }
+                settings
             });
+            const result = await storageOperations.settings.update({
+                original: existingSettings,
+                data: settings
+            });
+            await this.onSettingsAfterUpdate.publish({
+                input: data,
+                original: existingSettings,
+                settings: result
+            });
+
+            return result;
         },
         async deleteSettings() {
             await storageOperations.settings.delete({ tenant: getTenantId() });

@@ -8,10 +8,11 @@ import {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
-import { Entity } from "dynamodb-toolbox";
-import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
-import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -63,10 +64,13 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await entity.put({
-                ...cleanupItem(entity, model),
-                ...keys,
-                TYPE: createType()
+            await put({
+                entity,
+                item: {
+                    ...cleanupItem(entity, model),
+                    ...keys,
+                    TYPE: createType()
+                }
             });
             return model;
         } catch (ex) {
@@ -84,10 +88,13 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await entity.put({
-                ...cleanupItem(entity, model),
-                ...keys,
-                TYPE: createType()
+            await put({
+                entity,
+                item: {
+                    ...cleanupItem(entity, model),
+                    ...keys,
+                    TYPE: createType()
+                }
             });
             return model;
         } catch (ex) {
@@ -108,7 +115,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await entity.delete(keys);
+            await deleteItem({
+                entity,
+                keys
+            });
             return model;
         } catch (ex) {
             throw new WebinyError(
@@ -127,11 +137,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const item = await getRecord<CmsModel>({
+            return await getClean<CmsModel>({
                 entity,
                 keys
             });
-            return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get model.",
@@ -154,9 +163,7 @@ export const createModelsStorageOperations = (
             }
         };
         try {
-            const items = await queryAll<CmsModel>(queryAllParams);
-
-            return cleanupItems(entity, items);
+            return await queryAllClean<CmsModel>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list models.",
