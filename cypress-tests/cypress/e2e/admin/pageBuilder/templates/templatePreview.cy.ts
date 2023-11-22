@@ -33,7 +33,7 @@ context("Page Builder - Template Preview", () => {
             .then(() => cy.pbDeleteAllTemplates())
             .then(() => cy.pbCreatePageTemplate(pageTemplateData1))
             .then(() => cy.pbCreatePageTemplate(pageTemplateData2))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData3)); 
+            .then(() => cy.pbCreatePageTemplate(pageTemplateData3));
     });
 
     it.only("Should be able to create a page and view all existing templates in it", () => {

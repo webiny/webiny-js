@@ -4,7 +4,15 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbCreatePageTemplate(data: Record<string, any>): Promise<{id : string, title: string, slug: string, tags: string[], description: string, layout: string, pageCategory: string}>; // Update the data type as needed
+            pbCreatePageTemplate(data: Record<string, any>): Promise<{
+                id: string;
+                title: string;
+                slug: string;
+                tags: string[];
+                description: string;
+                layout: string;
+                pageCategory: string;
+            }>;
         }
     }
 }
@@ -21,7 +29,6 @@ const MUTATION = /* GraphQL */ `
                     description
                     layout
                     pageCategory
-                    
                 }
             }
         }

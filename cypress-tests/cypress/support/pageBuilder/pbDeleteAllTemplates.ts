@@ -36,9 +36,9 @@ const DELETE_MUTATION = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbDeleteAllTemplates", () => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         // First, list all page templates
-        gqlClient
+        return gqlClient
             .request({
                 query: LIST_QUERY,
                 authToken: user.idToken.jwtToken
@@ -47,7 +47,7 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
                 const templates = listResponse.pageBuilder.listPageTemplates.data;
 
                 // Loop through the templates and delete each one
-                await Promise.all(
+                return Promise.all(
                     templates.map((template: { id: any }) => {
                         return gqlClient
                             .request({
@@ -57,11 +57,9 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
                                 },
                                 authToken: user.idToken.jwtToken
                             })
-                            .then(deleteResponse => { 
+                            .then(deleteResponse => {
                                 const error = deleteResponse.pageBuilder.deletePageTemplate.error;
                                 if (error) {
-                                    // Handle any errors that occur during deletion if needed
-                                    // You can use Cypress log or assertion to report the error
                                     cy.log(`Error deleting template with ID: ${template.id}`);
                                 }
                             });
