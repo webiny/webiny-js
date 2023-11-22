@@ -86,5 +86,5 @@ export const handler = createHandler({
             }
         })
     ],
-    http: { debug }
+    debug
 });

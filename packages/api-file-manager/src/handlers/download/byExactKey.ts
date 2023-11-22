@@ -1,6 +1,6 @@
 import { S3, getSignedUrl, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
 import { getEnvironment } from "../utils";
-import { RoutePlugin } from "@webiny/handler-aws/gateway";
+import { RoutePlugin } from "@webiny/handler-aws";
 import { getS3Object, isSmallObject } from "~/handlers/download/getS3Object";
 import { extractFileInformation } from "~/handlers/download/extractFileInformation";
 
