@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
-
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
-
-import { plugins } from "@webiny/plugins";
 import { Menu } from "@webiny/ui/Menu";
 import { Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
@@ -12,7 +9,6 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FormComponentProps } from "@webiny/ui/types";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-import { IconPickerPlugin } from "./types";
 import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconRepository } from "./domain/IconRepository";
 import { IconProvider, IconRenderer } from "./IconRenderer";
@@ -57,7 +53,8 @@ export const IconPickerComponent = observer(
             }
         }, [presenter.vm.selectedIcon]);
 
-        const iconPickerPlugins = plugins.byType<IconPickerPlugin>("admin-icon-picker");
+        const iconTypes = presenter.vm.iconTypes;
+        const selectedIcon = presenter.vm.selectedIcon;
 
         const handleSwitchTab = useCallback(() => {
             if (!tabsRef.current) {
@@ -66,14 +63,14 @@ export const IconPickerComponent = observer(
 
             presenter.openMenu();
 
-            const index = iconPickerPlugins.findIndex(
-                plugin => plugin.iconType === presenter.vm.selectedIcon?.type
-            );
+            const index = selectedIcon
+                ? iconTypes.findIndex(iconType => iconType.name === selectedIcon.type)
+                : -1;
 
             if (index !== -1) {
                 tabsRef.current.switchTab(index);
             }
-        }, [tabsRef, iconPickerPlugins, presenter.vm.selectedIcon]);
+        }, [tabsRef, iconTypes, presenter.vm.selectedIcon]);
 
         const openMenu = () => presenter.openMenu();
         const closeMenu = () => presenter.closeMenu();
@@ -116,7 +113,7 @@ export const IconPickerComponent = observer(
                                 <MenuContent>
                                     {presenter.vm.isLoading && <CircularProgress />}
                                     <Tabs ref={tabsRef}>
-                                        {presenter.vm.iconTypes.map(iconType => (
+                                        {iconTypes.map(iconType => (
                                             <IconTypeProvider
                                                 key={iconType.name}
                                                 type={iconType.name}

@@ -11,10 +11,9 @@ import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
 import { FileManager } from "~/base/ui/FileManager";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
 import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
-import IconPickerPlugins from "~/components/IconPicker/plugins";
 
 const BaseExtension: React.FC = () => {
-    plugins.register([globalSearchHotkey, uiLayoutPlugin, ...IconPickerPlugins]);
+    plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     return (
         <Plugin>

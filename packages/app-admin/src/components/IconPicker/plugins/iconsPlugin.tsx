@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-
+import styled from "@emotion/styled";
 import { ColorPicker } from "@webiny/ui/ColorPicker";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
-
-import { Icon, IconPickerPlugin } from "~/components/IconPicker/types";
+import { Icon } from "~/components/IconPicker/types";
 import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
 import { useIcon } from "~/components/IconPicker";
 import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
-import styled from "@emotion/styled";
 import { IconType } from "~/components/IconPicker/config/IconType";
 import { IconPickerConfig } from "~/components/IconPicker/config";
 
-export const iconsPlugin = (): IconPickerPlugin => {
+/*export const iconsPlugin = (): IconPickerPlugin => {
     return {
         type: "admin-icon-picker",
         name: "admin-icon-picker-icons",
@@ -50,7 +48,7 @@ export const iconsPlugin = (): IconPickerPlugin => {
             );
         }
     };
-};
+};*/
 
 /****************** NEW IMPLEMENTATION ******************/
 
@@ -100,7 +98,7 @@ const isSimpleIcon = (icon: Icon | null): icon is SimpleIcon => {
 };
 
 const IconTab = () => {
-    const { presenter } = useIconPicker();
+    const presenter = useIconPicker();
     const { selectedIcon } = presenter.vm;
 
     const [color, setColor] = useState(() => {

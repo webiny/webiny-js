@@ -31,7 +31,7 @@ type RenderRowProps = {
 export const IconPickerTabRenderer = makeComposable("IconPickerTabRenderer");
 
 const useIconTypeRows = (type: string) => {
-    const { presenter } = useIconPicker();
+    const presenter = useIconPicker();
     const group = presenter.vm.data.find(group => group.type === type);
     const rows = group ? group.rows : [];
 
@@ -43,7 +43,7 @@ const useIconTypeRows = (type: string) => {
 };
 
 const RowRenderer = ({ row, style, cellDecorator, onIconClick }: RenderRowProps) => {
-    const { presenter } = useIconPicker();
+    const presenter = useIconPicker();
     const value = presenter.vm.selectedIcon;
 
     if (row.type === "category-name") {
@@ -96,7 +96,7 @@ export const IconPickerTab = ({
 }: IconPickerTabProps) => {
     const { type } = useIconType();
     const { isEmpty, rowCount, rows } = useIconTypeRows(type);
-    const { presenter } = useIconPicker();
+    const presenter = useIconPicker();
 
     return (
         <Tab label={label}>

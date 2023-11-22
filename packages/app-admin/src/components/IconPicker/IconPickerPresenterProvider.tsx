@@ -6,11 +6,7 @@ interface IconPickerPresenterProviderProps {
     children: React.ReactNode;
 }
 
-interface IconPickerPresenterContext {
-    presenter: IconPickerPresenterInterface;
-}
-
-const IconPickerPresenterContext = React.createContext<IconPickerPresenterContext | undefined>(
+const IconPickerPresenterContext = React.createContext<IconPickerPresenterInterface | undefined>(
     undefined
 );
 
@@ -19,7 +15,7 @@ export const IconPickerPresenterProvider = ({
     children
 }: IconPickerPresenterProviderProps) => {
     return (
-        <IconPickerPresenterContext.Provider value={{ presenter }}>
+        <IconPickerPresenterContext.Provider value={presenter}>
             {children}
         </IconPickerPresenterContext.Provider>
     );
