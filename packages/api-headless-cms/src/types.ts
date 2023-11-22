@@ -2149,9 +2149,9 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
-    createdOn?: Date;
-    savedOn?: Date;
-    publishedOn?: Date;
+    createdOn?: Date | string;
+    savedOn?: Date | string;
+    publishedOn?: Date | string;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2182,9 +2182,9 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
-    createdOn?: Date;
-    savedOn?: Date;
-    publishedOn?: Date;
+    createdOn?: Date | string | null;
+    savedOn?: Date | string | null;
+    publishedOn?: Date | string | null;
     wbyAco_location?: {
         folderId?: string | null;
     };

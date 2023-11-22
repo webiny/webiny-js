@@ -56,8 +56,7 @@ import {
     OnEntryRevisionBeforeDeleteTopicParams,
     OnEntryRevisionDeleteErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
-    OnEntryUpdateErrorTopicParams,
-    UpdateCmsEntryInput
+    OnEntryUpdateErrorTopicParams
 } from "~/types";
 import {
     validateModelEntryData,
@@ -173,8 +172,8 @@ const mapAndCleanCreateInputData = (model: CmsModel, input: CreateCmsEntryInput)
 /**
  * Cleans the update input entry data.
  */
-const mapAndCleanUpdatedInputData = (model: CmsModel, input: UpdateCmsEntryInput) => {
-    return model.fields.reduce<UpdateCmsEntryInput>((acc, field) => {
+const mapAndCleanUpdatedInputData = (model: CmsModel, input: Record<string, any>) => {
+    return model.fields.reduce<Record<string, any>>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -1453,13 +1452,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         const currentDate = new Date().toISOString();
+        /**
+         * We need to reset the publishedOn if the entry was previously published and then unpublished.
+         * Otherwise, use the original entry publishedOn or the current date.
+         */
+        let publishedOn = originalEntry.publishedOn;
+        if (!publishedOn || originalEntry.status === STATUS_UNPUBLISHED) {
+            publishedOn = currentDate;
+        }
 
         const entry: CmsEntry = {
             ...originalEntry,
             status: STATUS_PUBLISHED,
             locked: true,
             savedOn: currentDate,
-            publishedOn: originalEntry.publishedOn || currentDate
+            publishedOn
         };
 
         let storageEntry: CmsStorageEntry | null = null;
