@@ -118,7 +118,7 @@ export const createPageTemplateStorageOperations = ({
         return createListResponse({
             items: sortedItems,
             limit: limit || 100000,
-            totalCount: filteredItems.length,
+            totalCount: sortedItems.length,
             after: null
         });
     };
