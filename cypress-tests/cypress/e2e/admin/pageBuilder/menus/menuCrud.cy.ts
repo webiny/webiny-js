@@ -1,4 +1,4 @@
-context("Menus Module", () => {
+context("Page Builder - Menu CRUD", () => {
     const menuName = "Test menu";
     const menuSlug = "test-slug";
 
@@ -10,14 +10,11 @@ context("Menus Module", () => {
         cy.pbDeleteAllMenus();
     });
 
-    afterEach(() => {
-        cy.login();
-        cy.pbDeleteAllMenus();
-    });
     it("should be able to create, edit, and immediately delete a menu", () => {
         cy.visit("/page-builder/menus");
-        cy.wait(1000);
-        //Create a menu.
+
+        // Create a menu.
+        cy.findByTestId("data-list-new-record-button").should("exist");
         cy.findByTestId("data-list-new-record-button").click();
 
         cy.findByTestId("pb.menu.create.name").type(menuName);
@@ -30,7 +27,7 @@ context("Menus Module", () => {
         cy.findByText("Menu saved successfully.").should("exist");
         cy.wait(500);
 
-        //Edit the menu.
+        // Edit the menu.
         cy.findByTestId("pb.menu.create.name").clear().type(menuNameEdit);
         cy.findByTestId("pb.menu.create.slug").should("be.disabled");
         cy.findByTestId("pb.menu.create.description").clear().type(menuDescEdit);
@@ -38,7 +35,7 @@ context("Menus Module", () => {
         cy.findByText("Menu saved successfully.").should("exist");
         cy.wait(500);
 
-        //Assert the menu is being displayed properly on the right side of the screen.
+        // Assert the menu is being displayed properly on the right side of the screen.
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
                 .first()

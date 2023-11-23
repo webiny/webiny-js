@@ -1,4 +1,4 @@
-describe("Menus Module", () => {
+describe("Page Builder - List Menu Item Types", () => {
     const id = 4;
     const idEdited = `X-${id}-Y`;
     const totalPages = 3;

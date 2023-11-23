@@ -28,24 +28,13 @@ const PUBLISH_PAGE = /* GraphQL */ `
                         title
                         status
                         version
-                        __typename
                     }
-                    __typename
                 }
-                error {
-                    code
-                    message
-                    data
-                    __typename
-                }
-                __typename
             }
-            __typename
         }
     }
 `;
 
-// Update the pbPublishPage method
 Cypress.Commands.add("pbPublishPage", id => {
     cy.login().then(user => {
         return gqlClient
@@ -62,8 +51,7 @@ Cypress.Commands.add("pbPublishPage", id => {
                     throw new Error(`Failed to publish page: ${error.message}`);
                 }
 
-                // Return the published page data wrapped in Chainable
-                return cy.wrap(data);
+                return data;
             });
     });
 });

@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeletePage(data: any): Chainable<Promise<[]>>;
+            pbDeletePage(params: { id: string }): Chainable<Promise<any>>;
         }
     }
 }

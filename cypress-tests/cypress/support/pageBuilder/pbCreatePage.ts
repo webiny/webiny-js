@@ -14,24 +14,13 @@ const CREATE_PAGE = /* GraphQL */ `
                     category {
                         name
                         slug
-                        __typename
                     }
                     createdBy {
                         id
                         displayName
-                        __typename
                     }
-                    __typename
                 }
-                error {
-                    code
-                    message
-                    data
-                    __typename
-                }
-                __typename
             }
-            __typename
         }
     }
 `;

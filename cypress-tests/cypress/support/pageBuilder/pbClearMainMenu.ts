@@ -25,19 +25,9 @@ const CLEAR_MAIN_MENU = `
           createdBy {
             id
             displayName
-            __typename
           }
-          __typename
         }
-        error {
-          code
-          message
-          data
-          __typename
-        }
-        __typename
       }
-      __typename
     }
   }
 `;
@@ -53,7 +43,7 @@ Cypress.Commands.add("pbClearMainMenu", () => {
         }
     };
 
-    return cy.login().then(user => {
+    cy.login().then(user => {
         return gqlClient
             .request({
                 query: CLEAR_MAIN_MENU,

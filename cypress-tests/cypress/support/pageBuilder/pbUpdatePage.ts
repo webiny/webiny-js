@@ -19,7 +19,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbUpdatePage(data: PbUpdatePageInput): Chainable<Promise<string>>;
+            pbUpdatePage(data: PbUpdatePageInput): Promise<string>;
         }
     }
 }
@@ -35,17 +35,8 @@ const UPDATE_PAGE = /* GraphQL */ `
                     path
                     status
                     savedOn
-                    __typename
                 }
-                error {
-                    code
-                    message
-                    data
-                    __typename
-                }
-                __typename
             }
-            __typename
         }
     }
 `;
@@ -64,7 +55,7 @@ Cypress.Commands.add("pbUpdatePage", data => {
                     throw new Error(`Failed to update page: ${error.message}`);
                 }
 
-                return cy.wrap(data); // Wrap the data in a Chainable
+                return data;
             });
     });
 });

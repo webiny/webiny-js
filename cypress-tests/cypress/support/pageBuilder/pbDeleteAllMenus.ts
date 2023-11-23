@@ -13,13 +13,9 @@ const LIST_MENUS_QUERY = /* GraphQL */ `
                     createdBy {
                         id
                         displayName
-                        __typename
                     }
-                    __typename
                 }
-                __typename
             }
-            __typename
         }
     }
 `;
@@ -31,9 +27,7 @@ const DELETE_MENU_MUTATION = /* GraphQL */ `
                 error {
                     code
                     message
-                    __typename
                 }
-                __typename
             }
         }
     }

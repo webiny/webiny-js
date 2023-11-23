@@ -9,34 +9,30 @@ declare global {
     }
 }
 
-const ERROR_FIELDS = `
-  code
-  data
-  message
-`;
-
 const LIST_PAGES = /* GraphQL */ `
-  query PbListPages(
-    $where: PbListPagesWhereInput
-    $sort: [PbListPagesSort!]
-    $search: PbListPagesSearchInput
-    $limit: Int
-    $after: String
-  ) {
-    pageBuilder {
-      listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
-        data {
-          id
-          title
-          path
-          status
+    query PbListPages(
+        $where: PbListPagesWhereInput
+        $sort: [PbListPagesSort!]
+        $search: PbListPagesSearchInput
+        $limit: Int
+        $after: String
+    ) {
+        pageBuilder {
+            listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
+                data {
+                    id
+                    title
+                    path
+                    status
+                }
+                error {
+                    code
+                    data
+                    message
+                }
+            }
         }
-        error {
-          ${ERROR_FIELDS}
-        }
-      }
     }
-  }
 `;
 
 Cypress.Commands.add("pbListPages", data => {

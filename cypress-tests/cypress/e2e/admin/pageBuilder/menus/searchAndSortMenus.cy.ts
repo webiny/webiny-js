@@ -1,4 +1,4 @@
-context("Menus Module", () => {
+context("Page Builder -  Menu Search&Sort", () => {
     const menuData1 = {
         data: {
             title: "ABC",
@@ -41,14 +41,9 @@ context("Menus Module", () => {
         cy.wait(500);
     });
 
-    afterEach(() => {
-        cy.login();
-        cy.pbDeleteAllMenus();
-    });
-
     it("Should be able to search and sort through the menus.", () => {
         cy.visit("/page-builder/menus");
-        //Using the search filter assert all the options are being correctly displayed.
+        // Using the search filter assert all the options are being correctly displayed.
         cy.findByPlaceholderText("Search menus").should("exist");
         cy.contains(menuData1.data.title).should("exist");
         cy.contains(menuData2.data.title).should("exist");
@@ -89,10 +84,10 @@ context("Menus Module", () => {
 
         cy.findByPlaceholderText("Search menus").clear();
 
-        //Using the sorting filter assert all the options are being correctly displayed.
+        // Using the sorting filter assert all the options are being correctly displayed.
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            //sort by date created on, Descending.
+            // Sort by date created on, Descending.
             cy.get("select").select("createdOn_DESC");
             cy.findByTestId("default-data-list.filter").click();
         });
@@ -106,7 +101,7 @@ context("Menus Module", () => {
 
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            //sort by date created on, Ascending.
+            // Sort by date created on, Ascending.
             cy.get("select").select("createdOn_ASC");
             cy.findByTestId("default-data-list.filter").click();
         });
@@ -121,7 +116,7 @@ context("Menus Module", () => {
 
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            //sort by title, Ascending.
+            // Sort by title, Ascending.
             cy.get("select").select("title_ASC");
             cy.findByTestId("default-data-list.filter").click();
         });
@@ -135,7 +130,7 @@ context("Menus Module", () => {
 
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            //sort by title, Descending.
+            // Sort by title, Descending.
             cy.get("select").select("title_DESC");
             cy.findByTestId("default-data-list.filter").click();
         });
