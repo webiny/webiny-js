@@ -836,12 +836,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
+        const currentDate = new Date();
         const entry: CmsEntry = {
             ...originalEntry,
             id,
             version: nextVersion,
-            savedOn: getDate(rawInput.savedOn, new Date()),
-            createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
+            savedOn: getDate(rawInput.savedOn, currentDate),
+            createdOn: getDate(rawInput.createdOn, currentDate),
             publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
             createdBy: identity,
             modifiedBy: identity,
