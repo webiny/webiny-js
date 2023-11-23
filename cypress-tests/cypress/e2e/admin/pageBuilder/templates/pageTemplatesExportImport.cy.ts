@@ -40,13 +40,14 @@ context("Page Builder - Template Export&Import", () => {
     };
 
     beforeEach(() => {
-        cy.login()
-            .then(() => cy.pbDeleteAllTemplates())
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData1))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData2))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData3))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData4));
+        cy.login();
+        cy.pbDeleteAllTemplates();
+        cy.pbCreatePageTemplate(pageTemplateData1);
+        cy.pbCreatePageTemplate(pageTemplateData2);
+        cy.pbCreatePageTemplate(pageTemplateData3);
+        cy.pbCreatePageTemplate(pageTemplateData4);
     });
+    
 
     it("Should be able to export templates and then import them again", () => {
         cy.visit("/page-builder/page-templates");

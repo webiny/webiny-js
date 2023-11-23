@@ -29,12 +29,13 @@ context("Page Builder - Template Preview", () => {
     };
 
     beforeEach(() => {
-        cy.login()
-            .then(() => cy.pbDeleteAllTemplates())
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData1))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData2))
-            .then(() => cy.pbCreatePageTemplate(pageTemplateData3));
+        cy.login();
+        cy.pbDeleteAllTemplates();
+        cy.pbCreatePageTemplate(pageTemplateData1);
+        cy.pbCreatePageTemplate(pageTemplateData2);
+        cy.pbCreatePageTemplate(pageTemplateData3);
     });
+    
 
     it("Should be able to create a page and view all existing templates in it", () => {
         cy.visit("/page-builder/pages?folderId=root");
