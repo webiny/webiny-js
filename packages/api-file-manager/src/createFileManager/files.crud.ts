@@ -12,6 +12,7 @@ import {
 import { FileManagerConfig } from "~/createFileManager/index";
 import { ROOT_FOLDER } from "~/contants";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { getDate } from "@webiny/api-headless-cms/utils/date";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -59,6 +60,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             // Extract ID from file key
             const [id] = input.key.split("/");
 
+            const date = new Date();
             const file: File = {
                 ...input,
                 tags: Array.isArray(input.tags) ? input.tags : [],
@@ -72,13 +74,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     ...(input.meta || {})
                 },
                 tenant: getTenantId(),
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
+                createdOn: getDate(input.createdOn, date),
+                savedOn: getDate(input.savedOn, date),
+                createdBy: input.createdBy || identity,
+                ownedBy: input.createdBy || identity,
+                modifiedBy: input.modifiedBy,
                 locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
@@ -126,6 +126,10 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             const file: File = {
                 ...original,
                 ...input,
+                createdBy: input.createdBy || original.createdBy,
+                modifiedBy: input.modifiedBy,
+                createdOn: getDate(input.createdOn, original.createdOn),
+                savedOn: getDate(input.savedOn, new Date()),
                 tags: Array.isArray(input.tags)
                     ? input.tags
                     : Array.isArray(original.tags)

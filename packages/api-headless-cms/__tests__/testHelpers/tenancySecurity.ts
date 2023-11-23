@@ -18,6 +18,12 @@ interface Config {
     identity?: SecurityIdentity | null;
 }
 
+export const defaultIdentity: SecurityIdentity = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
+
 export const createTenancyAndSecurity = ({
     setupGraphQL,
     permissions,
@@ -39,13 +45,7 @@ export const createTenancyAndSecurity = ({
             } as any);
 
             context.security.addAuthenticator(async () => {
-                return (
-                    identity || {
-                        id: "id-12345678",
-                        type: "admin",
-                        displayName: "John Doe"
-                    }
-                );
+                return identity || defaultIdentity;
             });
 
             context.security.addAuthorizer(async () => {

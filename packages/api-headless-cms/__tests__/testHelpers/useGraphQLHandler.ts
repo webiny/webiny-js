@@ -47,6 +47,7 @@ import {
     CmsValidateStructureMutationVariables,
     CmsValidateStructureMutationResponse
 } from "~tests/testHelpers/graphql/structure";
+import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -113,7 +114,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         handler,
         invoke,
         tenant: core.tenant,
-        identity,
+        identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
         async introspect() {
