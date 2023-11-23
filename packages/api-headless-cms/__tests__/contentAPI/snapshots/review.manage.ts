@@ -197,7 +197,7 @@ export default /* GraphQL */ `
 
         deleteMultipleReviewsApiModel(entries: [ID!]!): CmsDeleteMultipleResponse!
 
-        publishReviewApiModel(revision: ID!): ReviewApiModelResponse
+        publishReviewApiModel(revision: ID!, options: CmsPublishEntryOptionsInput): ReviewApiModelResponse
     
         republishReviewApiModel(revision: ID!): ReviewApiModelResponse
 

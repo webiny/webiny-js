@@ -1112,7 +1112,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
-        await entriesPermissions.ensure({ rwd: "w" });
+        await entriesPermissions.ensure({ rwd: "p" });
+
         await modelsPermissions.ensureCanAccessModel({
             model
         });
@@ -1140,7 +1141,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...originalEntry,
             status: STATUS_PUBLISHED,
             publishedOn: getDate(originalEntry.publishedOn, new Date()),
-            savedOn: getDate(new Date()),
+            savedOn: getDate(originalEntry.savedOn, new Date()),
             webinyVersion: context.WEBINY_VERSION,
             values
         };
