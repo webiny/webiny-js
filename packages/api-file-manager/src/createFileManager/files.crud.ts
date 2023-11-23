@@ -12,25 +12,7 @@ import {
 import { FileManagerConfig } from "~/createFileManager/index";
 import { ROOT_FOLDER } from "~/contants";
 import { NotAuthorizedError } from "@webiny/api-security";
-
-const getDate = (input: Date | string | undefined | null, defaultValue: Date | string): string => {
-    if (!input) {
-        if (defaultValue instanceof Date) {
-            return defaultValue.toISOString();
-        }
-        return defaultValue;
-    } else if (input instanceof Date) {
-        return input.toISOString();
-    }
-    try {
-        return new Date(input).toISOString();
-    } catch {
-        if (defaultValue instanceof Date) {
-            return defaultValue.toISOString();
-        }
-        return defaultValue;
-    }
-};
+import { getDate } from "@webiny/api-headless-cms/utils/date";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -94,11 +76,9 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 tenant: getTenantId(),
                 createdOn: getDate(input.createdOn, date),
                 savedOn: getDate(input.savedOn, date),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
+                createdBy: input.createdBy || identity,
+                ownedBy: input.createdBy || identity,
+                modifiedBy: input.modifiedBy,
                 locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
@@ -146,6 +126,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             const file: File = {
                 ...original,
                 ...input,
+                createdBy: input.createdBy || original.createdBy,
+                modifiedBy: input.modifiedBy,
                 createdOn: getDate(input.createdOn, original.createdOn),
                 savedOn: getDate(input.savedOn, new Date()),
                 tags: Array.isArray(input.tags)

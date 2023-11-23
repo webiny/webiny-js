@@ -164,7 +164,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 where: { entryId: file.id, latest: true }
             });
 
-            const values = omit(file, ["id", "createdBy", "tenant", "locale", "webinyVersion"]);
+            const values = omit(file, ["id", "tenant", "locale", "webinyVersion"]);
 
             const updatedEntry = await this.cms.updateEntry(model, entry.id, {
                 ...values,
@@ -181,6 +181,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         return {
             id: entry.entryId,
             createdBy: entry.createdBy,
+            modifiedBy: entry.modifiedBy || null,
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
             locale: entry.locale,

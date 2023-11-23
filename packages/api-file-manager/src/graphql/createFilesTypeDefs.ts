@@ -75,22 +75,33 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             savedOn: DateTime!
             createdOn: DateTime!
             createdBy: FmCreatedBy!
+            modifiedBy: FmCreatedBy
             src: String
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
 
         ${inputCreateFields.map(f => f.typeDefs).join("\n")}
+        
+        input FmCreatedByInput {
+            id: ID!
+            displayName: String!
+            type: String!
+        }
 
         input FmFileCreateInput {
             id: ID!
             createdOn: DateTime
             savedOn: DateTime
+            createdBy: FmCreatedByInput
+            modifiedBy: FmCreatedByInput
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
         input FmFileUpdateInput {
             createdOn: DateTime
             savedOn: DateTime
+            createdBy: FmCreatedByInput
+            modifiedBy: FmCreatedByInput
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 

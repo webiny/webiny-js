@@ -98,6 +98,7 @@ export default /* GraphQL */ `
         savedOn: DateTime!
         createdOn: DateTime!
         createdBy: FmCreatedBy!
+        modifiedBy: FmCreatedBy
         src: String
         location: FmFile_Location
         name: String
@@ -127,10 +128,18 @@ export default /* GraphQL */ `
         article: RefFieldInput
     }
 
+    input FmCreatedByInput {
+        id: ID!
+        displayName: String!
+        type: String!
+    }
+
     input FmFileCreateInput {
         id: ID!
         createdOn: DateTime
         savedOn: DateTime
+        createdBy: FmCreatedByInput
+        modifiedBy: FmCreatedByInput
         location: FmFile_LocationInput
         name: String
         key: String
@@ -145,6 +154,8 @@ export default /* GraphQL */ `
     input FmFileUpdateInput {
         createdOn: DateTime
         savedOn: DateTime
+        createdBy: FmCreatedByInput
+        modifiedBy: FmCreatedByInput
         location: FmFile_LocationInput
         name: String
         key: String
