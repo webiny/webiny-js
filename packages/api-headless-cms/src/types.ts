@@ -2025,11 +2025,13 @@ export interface OnEntryMoveErrorTopicParams {
  */
 
 export interface OnEntryBeforePublishTopicParams {
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
 
 export interface OnEntryAfterPublishTopicParams {
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -2037,6 +2039,7 @@ export interface OnEntryAfterPublishTopicParams {
 
 export interface OnEntryPublishErrorTopicParams {
     error: Error;
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -2226,12 +2229,16 @@ export interface CmsDeleteEntryOptions {
 
 /**
  * @category CmsEntry
- * By default, doNotUpdatePublishedOn is false. User can set it to true to skip the publishedOn field update.
- * Same logic is for doNotUpdateSavedOn.
  */
 export interface CmsPublishEntryOptions {
-    doNotUpdatePublishedOn?: boolean;
-    doNotUpdateSavedOn?: boolean;
+    /**
+     * By default, updatePublishedOn is "true". User can set it to "false" to skip the publishedOn field update.
+     */
+    updatePublishedOn?: boolean;
+    /**
+     * By default, updateSavedOn is "true". User can set it to "false" to skip the publishedOn field update.
+     */
+    updateSavedOn?: boolean;
 }
 
 /**

@@ -153,8 +153,8 @@ describe("content entry custom dates", () => {
         const [publishCreatedFromResponse] = await manager.publishCategory({
             revision: `${entryId}#0002`,
             options: {
-                doNotUpdatePublishedOn: true,
-                doNotUpdateSavedOn: true
+                updatePublishedOn: false,
+                updateSavedOn: false
             }
         });
         expect(publishCreatedFromResponse).toMatchObject({

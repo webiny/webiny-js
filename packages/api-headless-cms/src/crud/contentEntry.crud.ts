@@ -828,7 +828,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             createdOn: getDate(rawInput.createdOn, currentDate),
             publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
             createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-            modifiedBy: getIdentity(rawInput.modifiedBy, getSecurityIdentity()),
+            modifiedBy: getIdentity(rawInput.modifiedBy, null),
             ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
             locked: false,
             status: STATUS_DRAFT,
@@ -1431,13 +1431,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * Same logic goes for the savedOn date.
          */
+        const { updatePublishedOn = true, updateSavedOn = true } = options || {};
         let publishedOn = originalEntry.publishedOn;
-        if (options?.doNotUpdatePublishedOn !== true || !publishedOn) {
+        if (updatePublishedOn || !publishedOn) {
             publishedOn = currentDate;
         }
 
         let savedOn = originalEntry.savedOn;
-        if (options?.doNotUpdateSavedOn !== true || !savedOn) {
+        if (updateSavedOn || !savedOn) {
             savedOn = currentDate;
         }
 
@@ -1453,6 +1454,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         try {
             await onEntryBeforePublish.publish({
+                original: originalEntry,
                 entry,
                 model
             });
@@ -1464,6 +1466,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             await onEntryAfterPublish.publish({
+                original: originalEntry,
                 entry,
                 storageEntry: result,
                 model
@@ -1471,6 +1474,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return entry;
         } catch (ex) {
             await onEntryPublishError.publish({
+                original: originalEntry,
                 entry,
                 model,
                 error: ex
