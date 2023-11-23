@@ -1112,7 +1112,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
-        await entriesPermissions.ensure({ rwd: "p" });
+        await entriesPermissions.ensure({ rwd: "w" });
 
         await modelsPermissions.ensureCanAccessModel({
             model
