@@ -182,7 +182,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!): ${singularName}Response
+            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

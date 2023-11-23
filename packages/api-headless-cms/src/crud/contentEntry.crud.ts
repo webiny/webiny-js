@@ -668,7 +668,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const createEntry: CmsEntryContext["createEntry"] = async (model, inputData, options) => {
+    const createEntry: CmsEntryContext["createEntry"] = async (model, rawInput, options) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -677,7 +677,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const initialInput = mapAndCleanCreateInputData(model, inputData);
+        const initialInput = mapAndCleanCreateInputData(model, rawInput);
 
         await validateModelEntryDataOrThrow({
             context,
@@ -697,7 +697,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const owner = getCreatedBy();
 
-        const { id, entryId, version } = createEntryId(inputData);
+        const { id, entryId, version } = createEntryId(rawInput);
         /**
          * There is a possibility that user sends an ID in the input, so we will use that one.
          * There is no check if the ID is unique or not, that is up to the user.
@@ -710,9 +710,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id,
             modelId: model.modelId,
             locale: locale.code,
-            createdOn: getDate(initialInput.createdOn, currentDate),
-            savedOn: getDate(initialInput.savedOn, currentDate),
-            publishedOn: getDate(initialInput.publishedOn),
+            createdOn: getDate(rawInput.createdOn, currentDate),
+            savedOn: getDate(rawInput.savedOn, currentDate),
+            publishedOn: getDate(rawInput.publishedOn),
             createdBy: owner,
             ownedBy: owner,
             modifiedBy: owner,
@@ -721,7 +721,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             status: STATUS_DRAFT,
             values: input,
             location: {
-                folderId: inputData.wbyAco_location?.folderId || ROOT_FOLDER
+                folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
             }
         };
 
@@ -770,7 +770,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
         model,
         sourceId,
-        inputData,
+        rawInput,
         options
     ) => {
         await entriesPermissions.ensure({ rwd: "w" });
@@ -781,7 +781,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model, inputData);
+        const input = mapAndCleanUpdatedInputData(model, rawInput);
 
         /**
          * Entries are identified by a common parent ID + Revision number.
@@ -840,9 +840,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...originalEntry,
             id,
             version: nextVersion,
-            savedOn: getDate(inputData.savedOn, new Date()),
-            createdOn: getDate(inputData.createdOn, originalEntry.createdOn),
-            publishedOn: getDate(inputData.publishedOn, originalEntry.publishedOn),
+            savedOn: getDate(rawInput.savedOn, new Date()),
+            createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
+            publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
             createdBy: identity,
             modifiedBy: identity,
             locked: false,
@@ -899,7 +899,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const updateEntry: CmsEntryContext["updateEntry"] = async (
         model,
         id,
-        inputData,
+        rawInput,
         metaInput,
         options
     ) => {
@@ -911,7 +911,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Make sure we only work with fields that are defined in the model.
          */
-        const input = mapAndCleanUpdatedInputData(model, inputData);
+        const input = mapAndCleanUpdatedInputData(model, rawInput);
 
         /**
          * The entry we are going to update.
@@ -969,15 +969,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const entry: CmsEntry = {
             ...originalEntry,
-            savedOn: getDate(inputData.savedOn, new Date()),
-            createdOn: getDate(inputData.createdOn, originalEntry.createdOn),
-            publishedOn: getDate(inputData.publishedOn, originalEntry.publishedOn),
+            savedOn: getDate(rawInput.savedOn, new Date()),
+            createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
+            publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
             modifiedBy: getCreatedBy(),
             values,
             meta,
             status: transformEntryStatus(originalEntry.status)
         };
-        const folderId = inputData.wbyAco_location?.folderId;
+        const folderId = rawInput.wbyAco_location?.folderId;
         if (folderId) {
             entry.location = {
                 folderId
@@ -1410,7 +1410,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entry
         });
     };
-    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
+    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id, options) => {
         await entriesPermissions.ensure({ pw: "p" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -1437,19 +1437,26 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const currentDate = new Date().toISOString();
         /**
-         * We need to reset the publishedOn if the entry was previously published and then unpublished.
-         * Otherwise, use the original entry publishedOn or the current date.
+         * The existing functionality is to set the publishedOn date to the current date.
+         * Users can now choose to skip updating the publishedOn date - unless it is not set.
+         *
+         * Same logic goes for the savedOn date.
          */
         let publishedOn = originalEntry.publishedOn;
-        if (!publishedOn || originalEntry.status === STATUS_UNPUBLISHED) {
+        if (options?.skipPublishedOn !== true || !publishedOn) {
             publishedOn = currentDate;
+        }
+
+        let savedOn = originalEntry.savedOn;
+        if (options?.skipSavedOn !== true || !savedOn) {
+            savedOn = currentDate;
         }
 
         const entry: CmsEntry = {
             ...originalEntry,
             status: STATUS_PUBLISHED,
             locked: true,
-            savedOn: currentDate,
+            savedOn,
             publishedOn
         };
 
@@ -1842,9 +1849,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async publishEntry(model, id) {
+        async publishEntry(model, id, options) {
             return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
-                return publishEntry(model, id);
+                return publishEntry(model, id, options);
             });
         },
         async unpublishEntry(model, id) {

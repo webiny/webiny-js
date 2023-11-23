@@ -2216,6 +2216,15 @@ export interface CmsDeleteEntryOptions {
 }
 
 /**
+ * @category CmsEntry
+ * By default, skipPublishedOn is false. User can set it to true to skip the publishedOn field update.
+ */
+export interface CmsPublishEntryOptions {
+    skipPublishedOn?: boolean;
+    skipSavedOn?: boolean;
+}
+
+/**
  * @category Context
  * @category CmsEntry
  */
@@ -2338,7 +2347,11 @@ export interface CmsEntryContext {
     /**
      * Publish entry.
      */
-    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    publishEntry: (
+        model: CmsModel,
+        id: string,
+        options?: CmsPublishEntryOptions
+    ) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */

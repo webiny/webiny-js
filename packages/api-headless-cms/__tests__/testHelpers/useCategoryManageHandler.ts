@@ -110,8 +110,8 @@ const createCategoryMutation = (model: CmsModel) => {
 
 const createCategoryFromMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation CreateCategoryFrom($revision: ID!) {
-            createCategoryFrom: create${model.singularApiName}From(revision: $revision) {
+        mutation CreateCategoryFrom($revision: ID!, $data: ${model.singularApiName}Input) {
+            createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {
                 data {
                     ${categoryFields}
                 }
@@ -174,8 +174,8 @@ const deleteCategoriesMutation = (model: CmsModel) => {
 
 const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation PublishCategory($revision: ID!) {
-            publishCategory: publish${model.singularApiName}(revision: $revision) {
+        mutation PublishCategory($revision: ID!, $options: CmsPublishEntryOptionsInput) {
+            publishCategory: publish${model.singularApiName}(revision: $revision, options: $options) {
                 data {
                     ${categoryFields}
                 }

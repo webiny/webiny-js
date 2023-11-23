@@ -105,6 +105,11 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
                 skipValidators: [SkipValidatorEnum!]
             }
 
+            input CmsPublishEntryOptionsInput {
+                skipPublishedOn: Boolean
+                skipSavedOn: Boolean
+            }
+
             type CmsEntryValidationResponseData {
                 error: String!
                 id: String!
