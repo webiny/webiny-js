@@ -4,7 +4,7 @@ context("Forms Creation", () => {
     beforeEach(() => cy.login());
 
     it("should be able to create, publish, unpublish, re-publish, and immediately delete everything", () => {
-        cy.fbDeleteAllForms();
+        cy.pbDeleteAllForms();
         const newFormTitle = `Test form ${uniqid()}`;
         // 1. Create form
         cy.visit("/form-builder/forms");

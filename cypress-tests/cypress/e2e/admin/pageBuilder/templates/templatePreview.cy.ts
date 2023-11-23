@@ -35,7 +35,6 @@ context("Page Builder - Template Preview", () => {
         cy.pbCreatePageTemplate(pageTemplateData2);
         cy.pbCreatePageTemplate(pageTemplateData3);
     });
-    
 
     it("Should be able to create a page and view all existing templates in it", () => {
         cy.visit("/page-builder/pages?folderId=root");

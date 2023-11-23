@@ -47,7 +47,6 @@ context("Page Builder - Template Export&Import", () => {
         cy.pbCreatePageTemplate(pageTemplateData3);
         cy.pbCreatePageTemplate(pageTemplateData4);
     });
-    
 
     it("Should be able to export templates and then import them again", () => {
         cy.visit("/page-builder/page-templates");

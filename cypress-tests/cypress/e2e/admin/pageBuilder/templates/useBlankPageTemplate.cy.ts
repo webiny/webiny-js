@@ -10,7 +10,8 @@ context("Page Builder - Template Blank Page", () => {
 
         cy.contains("Pick a template for your new page").should("exist");
 
-        cy.findByTestId("pb-pages-list-use-blank-template-btn").click();
+        cy.contains("Use a blank page template").click();
+
         cy.findByTestId("pb-content-add-block-button").should("exist");
         cy.contains("to start adding content").should("exist");
     });
