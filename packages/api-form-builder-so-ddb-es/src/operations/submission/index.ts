@@ -1,35 +1,6 @@
-
-import { Entity, Table } from "dynamodb-toolbox";
-import { Client } from "@elastic/elasticsearch";
-import { PluginsContainer } from "@webiny/plugins";
-import {
-    FormBuilderSubmissionStorageOperations,
-    FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
-} from "~/types";
-import { parseIdentifier } from "@webiny/utils";
-
-export interface CreateSubmissionStorageOperationsParams {
-    entity: Entity<any>;
-    esEntity: Entity<any>;
-    table: Table<string, string, string>;
-    elasticsearch: Client;
-    plugins: PluginsContainer;
-}
+import { FormBuilderSubmissionStorageOperations } from "@webiny/api-form-builder/types";
 
 export const createSubmissionStorageOperations = (): FormBuilderSubmissionStorageOperations => {
-    const createSubmissionPartitionKey = (
-        params: FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
-    ) => {
-        const { tenant, locale, formId } = params;
-
-        const { id } = parseIdentifier(formId);
-
-        return `T#${tenant}#L#${locale}#FB#F#${id}`;
-    };
-    const createSubmissionSortKey = (id: string) => {
-        return `FS#${id}`;
-    };
-
     const createSubmission = async () => {
         throw new Error(
             "api-form-builder-so-ddb-es does not implement the Form Builder storage operations."
@@ -54,19 +25,10 @@ export const createSubmissionStorageOperations = (): FormBuilderSubmissionStorag
         );
     };
 
-    const getSubmission = async () => {
-        throw new Error(
-            "api-form-builder-so-ddb-es does not implement the Form Builder storage operations."
-        );
-    };
-
     return {
         createSubmission,
         deleteSubmission,
         updateSubmission,
-        listSubmissions,
-        getSubmission,
-        createSubmissionPartitionKey,
-        createSubmissionSortKey
+        listSubmissions
     };
 };

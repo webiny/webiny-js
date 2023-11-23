@@ -34,28 +34,6 @@ export const setupFormBuilderContext = async (params: CreateFormBuilderCrudParam
         return context.tenancy.getCurrentTenant();
     };
 
-    try {
-        if (storageOperations.beforeInit) {
-            await storageOperations.beforeInit(context);
-        }
-
-        if (storageOperations.forms.beforeInit) {
-            await storageOperations.forms.beforeInit(context);
-        }
-
-        if (storageOperations.submissions.beforeInit) {
-            await storageOperations.submissions.beforeInit(context);
-        }
-    } catch (ex) {
-        throw new WebinyError(
-            ex.message || "Could not run before init in Form Builder storage operations.",
-            ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
-            {
-                ...ex
-            }
-        );
-    }
-
     const basePermissionsArgs = {
         getIdentity,
         fullAccessPermissionName: "fb.*"
@@ -96,26 +74,4 @@ export const setupFormBuilderContext = async (params: CreateFormBuilderCrudParam
             formsPermissions
         })
     };
-
-    try {
-        if (storageOperations.init) {
-            await storageOperations.init(context);
-        }
-
-        if (storageOperations.forms.init) {
-            await storageOperations.forms.init(context);
-        }
-
-        if (storageOperations.submissions.init) {
-            await storageOperations.submissions.init(context);
-        }
-    } catch (ex) {
-        throw new WebinyError(
-            ex.message || "Could not run init in Form Builder storage operations.",
-            ex.code || "STORAGE_OPERATIONS_INIT_ERROR",
-            {
-                ...ex
-            }
-        );
-    }
 };

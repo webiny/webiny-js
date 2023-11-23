@@ -1,19 +1,6 @@
-import { Entity, Table } from "dynamodb-toolbox";
-import { PluginsContainer } from "@webiny/plugins";
-import { FormBuilderFormCreatePartitionKeyParams, FormBuilderFormStorageOperations } from "~/types";
-export interface CreateFormStorageOperationsParams {
-    entity: Entity<any>;
-    table: Table<string, string, string>;
-    plugins: PluginsContainer;
-}
+import { FormBuilderFormStorageOperations } from "@webiny/api-form-builder/types";
 
 export const createFormStorageOperations = (): FormBuilderFormStorageOperations => {
-    const createFormPartitionKey = (params: FormBuilderFormCreatePartitionKeyParams): string => {
-        const { tenant, locale } = params;
-
-        return `T#${tenant}#L#${locale}#FB#F`;
-    };
-
     const createForm = () => {
         throw new Error(
             "api-form-builder-so-ddb does not implement the Form Builder storage operations."
@@ -84,7 +71,6 @@ export const createFormStorageOperations = (): FormBuilderFormStorageOperations 
         deleteForm,
         deleteFormRevision,
         publishForm,
-        unpublishForm,
-        createFormPartitionKey
+        unpublishForm
     };
 };

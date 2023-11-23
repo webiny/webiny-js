@@ -1,31 +1,6 @@
-import { Entity, Table } from "dynamodb-toolbox";
-import { PluginsContainer } from "@webiny/plugins";
-import {
-    FormBuilderSubmissionStorageOperations,
-    FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
-} from "~/types";
-import { parseIdentifier } from "@webiny/utils";
-
-export interface CreateSubmissionStorageOperationsParams {
-    entity: Entity<any>;
-    table: Table<string, string, string>;
-    plugins: PluginsContainer;
-}
+import { FormBuilderSubmissionStorageOperations } from "@webiny/api-form-builder/types";
 
 export const createSubmissionStorageOperations = (): FormBuilderSubmissionStorageOperations => {
-    const createSubmissionPartitionKey = (
-        params: FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
-    ) => {
-        const { tenant, locale, formId } = params;
-
-        const { id } = parseIdentifier(formId);
-
-        return `T#${tenant}#L#${locale}#FB#FS#${id}`;
-    };
-    const createSubmissionSortKey = (id: string) => {
-        return id;
-    };
-
     const createSubmission = () => {
         throw new Error(
             "api-form-builder-so-ddb does not implement the Form Builder storage operations."
@@ -50,19 +25,10 @@ export const createSubmissionStorageOperations = (): FormBuilderSubmissionStorag
         );
     };
 
-    const getSubmission = async () => {
-        throw new Error(
-            "api-form-builder-so-ddb does not implement the Form Builder storage operations."
-        );
-    };
-
     return {
         createSubmission,
         deleteSubmission,
         updateSubmission,
-        listSubmissions,
-        getSubmission,
-        createSubmissionPartitionKey,
-        createSubmissionSortKey
+        listSubmissions
     };
 };

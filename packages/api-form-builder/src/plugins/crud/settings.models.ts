@@ -1,30 +1,23 @@
-import { validation } from "@webiny/validation";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string, boolean, fields } from "@commodo/fields";
+import zod from "zod";
 
-export const CreateDataModel = withFields({
-    domain: string(),
-    reCaptcha: fields({
-        value: {},
-        instanceOf: withFields({
-            enabled: boolean(),
-            siteKey: string({ validation: validation.create("maxLength:100") }),
-            secretKey: string({ validation: validation.create("maxLength:100") })
-        })()
-    })
-})();
+export const CreateDataModel = () => {
+    return zod.object({
+        domain: zod.string(),
+        reCaptcha: zod.object({
+            enabled: zod.boolean(),
+            siteKey: zod.string().max(100),
+            secretKey: zod.string().max(100)
+        })
+    });
+};
 
-export const UpdateDataModel = withFields({
-    domain: string(),
-    reCaptcha: fields({
-        value: {},
-        instanceOf: withFields({
-            enabled: boolean(),
-            siteKey: string({ validation: validation.create("maxLength:100") }),
-            secretKey: string({ validation: validation.create("maxLength:100") })
-        })()
-    })
-})();
+export const UpdateDataModel = () => {
+    return zod.object({
+        domain: zod.string(),
+        reCaptcha: zod.object({
+            enabled: zod.boolean(),
+            siteKey: zod.string().max(100),
+            secretKey: zod.string().max(100)
+        })
+    });
+};

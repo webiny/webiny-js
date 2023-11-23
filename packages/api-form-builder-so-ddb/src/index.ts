@@ -1,19 +1,12 @@
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
-import formSubmissionFields from "~/operations/submission/fields";
-import formFields from "~/operations/form/fields";
 import WebinyError from "@webiny/error";
 import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
 import { createTable } from "~/definitions/table";
-import { createFormEntity } from "~/definitions/form";
-import { createSubmissionEntity } from "~/definitions/submission";
 import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
 import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
-import { PluginsContainer } from "@webiny/plugins";
-import { FormDynamoDbFieldPlugin, FormSubmissionDynamoDbFieldPlugin } from "~/plugins";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -29,33 +22,13 @@ const isReserved = (name: string): void => {
 export * from "./plugins";
 
 export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
-    const { attributes, table: tableName, documentClient, plugins: userPlugins } = params;
+    const { attributes, table: tableName, documentClient } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
             Object.keys(attrs).forEach(isReserved);
         });
     }
-
-    const plugins = new PluginsContainer([
-        /**
-         * User defined plugins.
-         */
-        userPlugins || [],
-        /**
-         * Form submission DynamoDB fields.
-         */
-        formSubmissionFields(),
-        /**
-         * Form DynamoDB fields.
-         */
-        formFields(),
-
-        /**
-         * DynamoDB filter plugins for the where conditions.
-         */
-        dynamoDbValueFilters()
-    ]);
 
     const table = createTable({
         tableName,
@@ -66,16 +39,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         /**
          * Regular entities.
          */
-        form: createFormEntity({
-            entityName: ENTITIES.FORM,
-            table,
-            attributes: attributes ? attributes[ENTITIES.FORM] : {}
-        }),
-        submission: createSubmissionEntity({
-            entityName: ENTITIES.SUBMISSION,
-            table,
-            attributes: attributes ? attributes[ENTITIES.SUBMISSION] : {}
-        }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table,
@@ -89,15 +52,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
-        beforeInit: async context => {
-            const types: string[] = [
-                FormDynamoDbFieldPlugin.type,
-                FormSubmissionDynamoDbFieldPlugin.type
-            ];
-            for (const type of types) {
-                plugins.mergeByType(context.plugins, type);
-            }
-        },
         getTable: () => table,
         getEntities: () => entities,
         ...createSystemStorageOperations({

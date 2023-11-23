@@ -1,7 +1,7 @@
 import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 import { CmsModelField, CmsModelGroup } from "@webiny/api-headless-cms/types";
 
-import { createModelField } from "../creteModelField";
+import { createModelField } from "../createModelField";
 
 const required = () => {
     return {
@@ -99,14 +99,16 @@ const field_IdField = () => {
     return createModelField({
         label: "ID",
         fieldId: "_id",
-        type: "text"
+        type: "text",
+        validation: [required()]
     });
 };
 
 const fieldIdField = () => {
     return createModelField({
         label: "FieldId",
-        type: "text"
+        type: "text",
+        validation: [required()]
     });
 };
 
@@ -166,7 +168,6 @@ const fieldOptionsField = (fields: CmsModelField[]) => {
     return createModelField({
         label: "Options",
         type: "object",
-        validation: [required()],
         multipleValues: true,
         settings: {
             fields
@@ -185,16 +186,14 @@ const fieldValidationNameField = () => {
 const fieldValidationMessageField = () => {
     return createModelField({
         label: "Message",
-        type: "text",
-        validation: [required()]
+        type: "text"
     });
 };
 
 const fieldValidationSettingsField = () => {
     return createModelField({
         label: "Settings",
-        type: "json",
-        validation: [required()]
+        type: "json"
     });
 };
 
@@ -202,7 +201,6 @@ const fieldValidationField = (fields: CmsModelField[]) => {
     return createModelField({
         label: "Validation",
         type: "object",
-        validation: [required()],
         multipleValues: true,
         settings: {
             fields
@@ -261,7 +259,7 @@ export const stepsField = (fields: CmsModelField[]) => {
 const settingsReCaptchaEnabledField = () => {
     return createModelField({
         label: "Enabled",
-        type: "text"
+        type: "boolean"
     });
 };
 
@@ -309,7 +307,6 @@ const settingsReCaptchaField = (fields: CmsModelField[]) => {
     return createModelField({
         label: "reCaptcha",
         type: "object",
-        validation: [required()],
         settings: {
             fields
         }

@@ -2,6 +2,7 @@ import { Plugin } from "@webiny/plugins/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
 
@@ -132,7 +133,7 @@ interface FormCreateInput {
 
 interface FormUpdateInput {
     name: string;
-    fields: Record<string, any>[];
+    fields: FbFormField[];
     steps: FbFormStep[];
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
@@ -356,7 +357,6 @@ export interface FbSubmission {
         name: string;
         version: number;
         fields: Record<string, any>[];
-        layout: string[][];
         steps: FbFormStep[];
     };
     logs: Record<string, any>[];
@@ -540,21 +540,16 @@ export interface FormBuilderStorageOperationsGetFormParams {
     };
 }
 
+export interface FormBuilderStorageOperationsListFormsWhereParams extends CmsEntryListWhere {
+    tenant: string;
+    locale: string;
+}
 /**
  * @category StorageOperations
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsListFormsParams {
-    where: {
-        id?: string;
-        version?: number;
-        slug?: string;
-        published?: boolean;
-        ownedBy?: string;
-        latest?: boolean;
-        tenant: string;
-        locale: string;
-    };
+    where: FormBuilderStorageOperationsListFormsWhereParams;
     after: string | null;
     limit: number;
     sort: string[];
@@ -565,7 +560,6 @@ export interface FormBuilderStorageOperationsListFormsParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsListFormRevisionsParamsWhere {
-    id?: string;
     formId: string;
     version_not?: number;
     publishedOn_not?: string | null;
@@ -600,7 +594,6 @@ export type FormBuilderStorageOperationsListFormsResponse = [
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsCreateFormParams {
-    input: Record<string, any>;
     form: FbForm;
 }
 
@@ -618,9 +611,6 @@ export interface FormBuilderStorageOperationsCreateFormFromParams {
  */
 export interface FormBuilderStorageOperationsUpdateFormParams {
     form: FbForm;
-    input: Record<string, any>;
-    meta?: Record<string, any>;
-    options?: Record<string, any>;
 }
 
 /**
@@ -644,9 +634,7 @@ export interface FormBuilderStorageOperationsDeleteFormRevisionParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsPublishFormParams {
-    original: FbForm;
     form: FbForm;
-    input: Record<string, any>;
 }
 
 /**
@@ -654,9 +642,7 @@ export interface FormBuilderStorageOperationsPublishFormParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsUnpublishFormParams {
-    original: FbForm;
     form: FbForm;
-    input: Record<string, any>;
 }
 
 /**
@@ -760,8 +746,6 @@ export interface FormBuilderFormStorageOperations {
     ): Promise<FbForm[]>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
-    beforeInit?: (context: FormBuilderContext) => Promise<void>;
-    init?: (context: FormBuilderContext) => Promise<void>;
 }
 
 /**
@@ -776,9 +760,6 @@ export interface FormBuilderStorageOperationsListSubmissionsResponse {
  * @category StorageOperations
  */
 export interface FormBuilderSubmissionStorageOperations {
-    getSubmission(
-        params: FormBuilderStorageOperationsGetSubmissionParams
-    ): Promise<FbSubmission | null>;
     listSubmissions(
         params: FormBuilderStorageOperationsListSubmissionsParams
     ): Promise<FormBuilderStorageOperationsListSubmissionsResponse>;
@@ -789,8 +770,6 @@ export interface FormBuilderSubmissionStorageOperations {
         params: FormBuilderStorageOperationsUpdateSubmissionParams
     ): Promise<FbSubmission>;
     deleteSubmission(params: FormBuilderStorageOperationsDeleteSubmissionParams): Promise<void>;
-    beforeInit?: (context: FormBuilderContext) => Promise<void>;
-    init?: (context: FormBuilderContext) => Promise<void>;
 }
 /**
  * @category StorageOperations
@@ -800,6 +779,4 @@ export interface FormBuilderStorageOperations
         FormBuilderSettingsStorageOperations {
     forms: FormBuilderFormStorageOperations;
     submissions: FormBuilderSubmissionStorageOperations;
-    beforeInit?: (context: FormBuilderContext) => Promise<void>;
-    init?: (context: FormBuilderContext) => Promise<void>;
 }

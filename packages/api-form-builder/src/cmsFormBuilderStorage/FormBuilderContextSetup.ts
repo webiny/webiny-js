@@ -2,7 +2,7 @@ import { CmsModelPlugin } from "@webiny/api-headless-cms";
 import { AppPermissions } from "@webiny/api-security/utils/AppPermissions";
 import WebinyError from "@webiny/error";
 
-import { createFormBuilder } from "~/index";
+import { createFormBuilderBasicContext } from "./createFormBuilderBasicContext";
 import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsFormsStorage } from "./CmsFormsStorage";
 import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
@@ -48,7 +48,7 @@ export class FormBuilderContextSetup {
             fullAccessPermissionName: "fb.*"
         });
 
-        return createFormBuilder({
+        return createFormBuilderBasicContext({
             storageOperations,
             formsPermissions,
             context: this.context

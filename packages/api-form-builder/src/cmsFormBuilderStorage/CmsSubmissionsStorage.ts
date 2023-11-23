@@ -9,7 +9,6 @@ import {
     FormBuilderStorageOperationsListSubmissionsParams,
     FormBuilderSubmissionStorageOperations,
     FormBuilderStorageOperationsDeleteSubmissionParams,
-    FormBuilderStorageOperationsGetSubmissionParams,
     FbSubmission
 } from "~/types";
 
@@ -86,19 +85,6 @@ export class CmsSubmissionsStorage implements FormBuilderSubmissionStorageOperat
             const updatedEntry = await this.cms.updateEntry(model, entry.id, values);
 
             return this.getSubmissionValues(updatedEntry);
-        });
-    }
-
-    async getSubmission(params: FormBuilderStorageOperationsGetSubmissionParams) {
-        const { where } = params;
-        const model = this.modelWithContext(where);
-
-        return await this.security.withoutAuthorization(async () => {
-            const entry = await this.cms.getEntry(model, {
-                where: { entryId: where.id, latest: true }
-            });
-
-            return this.getSubmissionValues(entry);
         });
     }
 

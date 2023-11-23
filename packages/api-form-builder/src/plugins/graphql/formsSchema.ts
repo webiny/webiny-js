@@ -10,14 +10,14 @@ import {
     createFormsTypeDefs,
     CreateFormsTypeDefsParams
 } from "~/plugins/graphql/createFormsTypeDefs";
-import { FormBuilderContext } from "~/types";
+import { FbForm, FormBuilderContext } from "~/types";
 
 export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
     const formsGraphQL = new GraphQLSchemaPlugin<FormBuilderContext>({
         typeDefs: createFormsTypeDefs(params),
         resolvers: {
             FbForm: {
-                overallStats: async (form, _, { formBuilder }) => {
+                overallStats: async (form: FbForm, _, { formBuilder }) => {
                     try {
                         return await formBuilder.getFormStats(form.id);
                     } catch (ex) {
@@ -30,7 +30,7 @@ export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
                         conversionRate: 0
                     };
                 },
-                settings: async (form, _, { formBuilder }) => {
+                settings: async (form: FbForm, _, { formBuilder }) => {
                     const settings = await formBuilder.getSettings({ auth: false });
 
                     return {

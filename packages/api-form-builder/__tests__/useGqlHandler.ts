@@ -6,11 +6,8 @@ import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security/types";
-import {
-    createFormBuilderContext,
-    createFormBuilderGraphQL
-} from "~/cmsFormBuilderStorage/createFormBuilderContext";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { createFormBuilder } from "~/index";
 // Graphql
 import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
 import {
@@ -99,7 +96,7 @@ export default (params: UseGqlHandlerParams = {}) => {
             }),
 
             createFileManagerGraphQL(),
-            createFormBuilderContext({
+            createFormBuilder({
                 storageOperations: formBuilderStorage.storageOperations
             }),
             {
@@ -127,7 +124,6 @@ export default (params: UseGqlHandlerParams = {}) => {
                     // dummy
                 }
             },
-            createFormBuilderGraphQL(),
             ...plugins
         ]
     });

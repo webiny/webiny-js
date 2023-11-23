@@ -5,10 +5,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import {
-    createFormBuilderContext,
-    createFormBuilderGraphQL
-} from "@webiny/api-form-builder/cmsFormBuilderStorage/createFormBuilderContext";
+import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import {
     createPageBuilderContext,
@@ -60,12 +57,11 @@ export const handler = createHandler({
             })
         }),
         createPageBuilderGraphQL(),
-        createFormBuilderContext({
+        createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
             })
         }),
-        createFormBuilderGraphQL(),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),

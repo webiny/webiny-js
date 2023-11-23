@@ -1,7 +1,7 @@
-import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsEntryValues, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { Security } from "@webiny/api-security/types";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, parseIdentifier } from "@webiny/utils";
 
 import {
     FbForm,
@@ -43,6 +43,17 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         return { ...this.model, tenant, locale };
     }
 
+    private async getSortedFormRevisions(
+        model: CmsModel,
+        formId: string
+    ): Promise<CmsEntry<CmsEntryValues>> {
+        const entries = (await this.cms.getEntryRevisions(model, formId))
+            .filter(entryItem => entryItem.values.published)
+            .sort((a, b) => b.version - a.version);
+
+        return entries[0];
+    }
+
     async getForm(params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm | null> {
         const {
             id,
@@ -54,30 +65,28 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
             locale
         } = params.where;
         const model = this.modelWithContext({ tenant, locale });
-        const formId = initialFormId || id?.split("#").shift() || "";
+        const formId = initialFormId || parseIdentifier(id).id;
 
         const entry = await this.security.withoutAuthorization(async () => {
             if (latest) {
-                const [entries] = await this.cms.listLatestEntries(model, {
-                    where: { entryId: formId }
+                const entry = await this.cms.getEntry(model, {
+                    where: { entryId: formId, latest: true }
                 });
 
-                return entries[0];
+                return entry;
             } else if (published && !version) {
-                const entries = (await this.cms.getEntryRevisions(model, formId))
-                    .filter(entryItem => entryItem.values.published)
-                    .sort((a, b) => b.version - a.version);
+                const entry = await this.getSortedFormRevisions(model, formId);
 
-                return entries[0];
+                return entry;
             } else if (id || version) {
-                return await this.cms.getEntryById(
-                    model,
-                    id ||
-                        createIdentifier({
-                            id: formId as string,
-                            version: version as number
-                        })
-                );
+                const fallbackId = createIdentifier({
+                    id: formId,
+                    version: version || 1
+                });
+
+                return await this.cms.getEntryById(model, id || fallbackId);
+            } else if (latest && published) {
+                throw new WebinyError("Cannot have both latest and published params.");
             } else {
                 throw new WebinyError("Missing parameter to get form", "MISSING_WHERE_PARAMETER", {
                     where: params.where
@@ -122,11 +131,11 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
     }
 
     async updateForm(params: FormBuilderStorageOperationsUpdateFormParams): Promise<FbForm> {
-        const { form, input, meta, options } = params;
+        const { form } = params;
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.updateEntry(model, form.id, input, meta, options);
+            return await this.cms.updateEntry(model, form.id, form);
         });
 
         return this.getFormFieldValues(entry);
@@ -157,7 +166,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
     async listForms(
         params: FormBuilderStorageOperationsListFormsParams
     ): Promise<FormBuilderStorageOperationsListFormsResponse> {
-        const { id, tenant, locale, ...restWhere } = params.where;
+        const { tenant, locale, ...restWhere } = params.where;
         const model = this.modelWithContext({ tenant, locale });
 
         const [entries, meta] = await this.security.withoutAuthorization(async () => {
@@ -165,7 +174,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where: { entryId: id, ...restWhere }
+                where: restWhere
             });
         });
 
@@ -186,22 +195,22 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
     }
 
     async publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm> {
-        const { form, input } = params;
+        const { form } = params;
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.updateEntry(model, form.id, input);
+            return await this.cms.updateEntry(model, form.id, form);
         });
 
         return this.getFormFieldValues(entry);
     }
 
     async unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm> {
-        const { form, input } = params;
+        const { form } = params;
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.updateEntry(model, form.id, input);
+            return await this.cms.updateEntry(model, form.id, form);
         });
 
         return this.getFormFieldValues(entry);

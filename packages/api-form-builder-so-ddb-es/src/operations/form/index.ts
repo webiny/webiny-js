@@ -1,32 +1,6 @@
-import { Entity, Table } from "dynamodb-toolbox";
-import { Client } from "@elastic/elasticsearch";
-import { parseIdentifier } from "@webiny/utils";
-import { PluginsContainer } from "@webiny/plugins";
-import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
-
-export type DbRecord<T = any> = T & {
-    PK: string;
-    SK: string;
-    TYPE: string;
-};
-
-export interface CreateFormStorageOperationsParams {
-    entity: Entity<any>;
-    esEntity: Entity<any>;
-    table: Table<string, string, string>;
-    elasticsearch: Client;
-    plugins: PluginsContainer;
-}
+import { FormBuilderFormStorageOperations } from "@webiny/api-form-builder/types";
 
 export const createFormStorageOperations = (): FormBuilderFormStorageOperations => {
-    const createFormPartitionKey = (params: FormBuilderFormCreateKeyParams): string => {
-        const { tenant, locale, id: targetId } = params;
-
-        const { id } = parseIdentifier(targetId);
-
-        return `T#${tenant}#L#${locale}#FB#F#${id}`;
-    };
-
     const createForm = () => {
         throw new Error(
             "api-form-builder-so-ddb-es does not implement the Form Builder storage operations."
@@ -97,7 +71,6 @@ export const createFormStorageOperations = (): FormBuilderFormStorageOperations 
         deleteForm,
         deleteFormRevision,
         publishForm,
-        unpublishForm,
-        createFormPartitionKey
+        unpublishForm
     };
 };

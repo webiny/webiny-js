@@ -1,9 +1,9 @@
-import { setupFormBuilderContext } from "./plugins/crud";
-import triggerHandlers from "./plugins/triggers";
-import validators from "./plugins/validators";
-import formBuilderPrerenderingPlugins from "~/plugins/prerenderingHooks";
 import { FormBuilderStorageOperations, FormBuilderContext } from "~/types";
 import { FormsPermissions } from "./plugins/crud/permissions/FormsPermissions";
+import {
+    createFormBuilderContext,
+    createFormBuilderGraphQL
+} from "./cmsFormBuilderStorage/createFormBuilderContext";
 
 export interface CreateFormBuilderParams {
     storageOperations: FormBuilderStorageOperations;
@@ -11,11 +11,8 @@ export interface CreateFormBuilderParams {
     context: FormBuilderContext;
 }
 
-export const createFormBuilder = (params: CreateFormBuilderParams) => {
-    return [
-        setupFormBuilderContext(params),
-        triggerHandlers,
-        validators,
-        formBuilderPrerenderingPlugins()
-    ];
+export const createFormBuilder = (storageOperations: {
+    storageOperations: FormBuilderStorageOperations;
+}) => {
+    return [createFormBuilderContext(storageOperations), createFormBuilderGraphQL()];
 };

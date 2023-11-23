@@ -3,7 +3,7 @@ import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import { createFormBuilderContext } from "@webiny/api-form-builder/cmsFormBuilderStorage/createFormBuilderContext";
+import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createPageBuilderContext } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
@@ -61,7 +61,7 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createFormBuilderContext({
+        createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
             })

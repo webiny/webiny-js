@@ -1,6 +1,5 @@
 import slugify from "slugify";
 import { NotFoundError } from "@webiny/handler-graphql";
-import * as models from "./forms.models";
 import {
     FbForm,
     FbFormStats,
@@ -26,9 +25,9 @@ import {
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { createIdentifier, mdbid } from "@webiny/utils";
+import { createIdentifier, mdbid, parseIdentifier } from "@webiny/utils";
 import { createTopic } from "@webiny/pubsub";
-import { getStatus } from "./utils";
+import { getStatus, createFormSettings } from "./utils";
 import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 export interface CreateFormsCrudParams {
@@ -254,10 +253,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async createForm(this: FormBuilder, input) {
             await formsPermissions.ensure({ rwd: "w" });
             const identity = context.security.getIdentity();
-            const dataModel = new models.FormCreateDataModel().populate(input);
-            await dataModel.validate();
-
-            const data = await dataModel.toJSON();
 
             /**
              * Forms are identified by a common parent ID + Revision number
@@ -265,7 +260,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             const formId = mdbid();
             const version = 1;
 
-            const slug = `${slugify(data.name)}-${formId}`.toLowerCase();
+            const slug = `${slugify(input.name)}-${formId}`.toLowerCase();
 
             const form: FbForm = {
                 id: formId,
@@ -284,7 +279,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                name: data.name,
+                name: input.name,
                 slug,
                 version,
                 locked: false,
@@ -310,7 +305,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                         layout: []
                     }
                 ],
-                settings: await new models.FormSettingsModel().toJSON(),
+                settings: createFormSettings(),
                 triggers: null,
                 webinyVersion: context.WEBINY_VERSION
             };
@@ -319,7 +314,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.forms.createForm({ form, input });
+                const result = await this.storageOperations.forms.createForm({ form });
                 await onFormAfterCreate.publish({
                     form: result
                 });
@@ -336,9 +331,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async updateForm(this: FormBuilder, id, input) {
             await formsPermissions.ensure({ rwd: "w" });
-            const updateData = new models.FormUpdateDataModel().populate(input);
-            await updateData.validate();
-            const data = await updateData.toJSON({ onlyDirty: true });
 
             const original = await this.storageOperations.forms.getForm({
                 where: {
@@ -360,7 +352,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             const form: FbForm = {
                 ...original,
-                ...data
+                ...input
             };
 
             try {
@@ -369,10 +361,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     original
                 });
                 const result = await this.storageOperations.forms.updateForm({
-                    form,
-                    input,
-                    meta: {},
-                    options: {}
+                    form
                 });
                 await onFormAfterUpdate.publish({
                     form,
@@ -384,7 +373,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.message || "Could not update form.",
                     ex.code || "UPDATE_FORM_ERROR",
                     {
-                        input: data,
+                        input,
                         form,
                         original
                     }
@@ -438,11 +427,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             await formsPermissions.ensure({ owns: form.ownedBy });
 
-            const formFormId = form.formId || form.id.split("#").pop();
+            const { id: formId } = parseIdentifier(form.id);
 
             const revisions = await this.storageOperations.forms.listFormRevisions({
                 where: {
-                    formId: formFormId || "",
+                    formId,
                     tenant: form.tenant,
                     locale: form.locale
                 },
@@ -483,11 +472,17 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async publishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "p" });
-            const [pid, revisionNumber = "0001"] = id.split("#");
+
+            const { id: pid, version } = parseIdentifier(id);
+            const formId = createIdentifier({
+                id: pid,
+                version: version || 1
+            });
+
             /**
              * getForm checks for existence of the form.
              */
-            const original = await this.getForm(`${pid}#${revisionNumber}`, {
+            const original = await this.getForm(formId, {
                 auth: false
             });
 
@@ -507,9 +502,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form
                 });
                 const result = await this.storageOperations.forms.publishForm({
-                    original,
-                    form,
-                    input: form
+                    form
                 });
                 await onFormAfterPublish.publish({
                     form
@@ -549,9 +542,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form
                 });
                 const result = await this.storageOperations.forms.unpublishForm({
-                    original,
-                    form,
-                    input: form
+                    form
                 });
                 await onFormAfterUnpublish.publish({
                     form: result
@@ -575,7 +566,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             const original = await this.getForm(id, {
                 auth: false
             });
-            const originalFormFormId = original.formId || (original.id.split("#").pop() as string);
+            const { id: originalFormFormId } = parseIdentifier(original.id);
             const latest = await this.storageOperations.forms.getForm({
                 where: {
                     id,
@@ -669,8 +660,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             try {
                 await this.storageOperations.forms.updateForm({
-                    form,
-                    input: form
+                    form
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -702,8 +692,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             try {
                 await this.storageOperations.forms.updateForm({
-                    form,
-                    input: form
+                    form
                 });
             } catch (ex) {
                 throw new WebinyError(

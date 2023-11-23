@@ -4,7 +4,7 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createPageBuilderContext } from "@webiny/api-page-builder/graphql";
-import { createFormBuilderContext } from "@webiny/api-form-builder/cmsFormBuilderStorage/createFormBuilderContext";
+import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -58,7 +58,7 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createFormBuilderContext({
+        createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
             })

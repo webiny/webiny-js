@@ -2,7 +2,7 @@ import { CmsModelField, CmsModelGroup } from "@webiny/api-headless-cms/types";
 import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
 import { fieldsField, stepsField, FIELD_FIELDS, STEP_FIELDS } from "./form.model";
-import { createModelField } from "../creteModelField";
+import { createModelField } from "../createModelField";
 
 const required = () => {
     return {
@@ -32,7 +32,7 @@ const metaSubmittedOnField = () => {
     return createModelField({
         label: "Submitted On",
         fieldId: "submittedOn",
-        type: "text"
+        type: "datetime"
     });
 };
 
