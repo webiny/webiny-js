@@ -2191,8 +2191,8 @@ export interface UpdateCmsEntryInput {
     createdOn?: Date | string | null;
     savedOn?: Date | string | null;
     publishedOn?: Date | string | null;
-    createdBy?: CmsIdentity;
-    modifiedBy?: CmsIdentity;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
     ownedBy?: CmsIdentity;
     wbyAco_location?: {
         folderId?: string | null;
