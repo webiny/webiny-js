@@ -180,12 +180,12 @@ export type PbElementDataType = {
     blockId?: string;
     variables?: PbBlockVariable[];
     action?: {
-        href?: string;
-        newTab?: boolean;
-        clickHandler?: string;
+        href: string;
+        newTab: boolean;
+        clickHandler: string;
         actionType: string;
-        variables?: PbButtonElementClickHandlerVariable[];
-        scrollToElement?: string;
+        variables: PbButtonElementClickHandlerVariable[];
+        scrollToElement: string;
         [key: string]: any;
     };
     settings?: PbElementDataSettingsType;
