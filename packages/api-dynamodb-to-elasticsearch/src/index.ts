@@ -29,7 +29,7 @@ interface BulkOperationsResponseBody {
 }
 
 const getError = (item: BulkOperationsResponseBodyItem): string | null => {
-    if (!item.index || !item.index.error || !item.index.error.reason) {
+    if (!item.index?.error?.reason) {
         return null;
     }
     const reason = item.index.error.reason;

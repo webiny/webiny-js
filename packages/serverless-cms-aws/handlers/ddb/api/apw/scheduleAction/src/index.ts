@@ -18,5 +18,5 @@ export const handler = createHandler({
             executeAction: String(process.env.APW_SCHEDULER_EXECUTE_ACTION_HANDLER)
         }
     }),
-    http: { debug }
+    debug
 });

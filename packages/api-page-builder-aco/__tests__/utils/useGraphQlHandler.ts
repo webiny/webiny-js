@@ -3,7 +3,7 @@ import { createI18NContext } from "@webiny/api-i18n";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 
@@ -103,9 +103,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createAcoPageBuilderContext(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

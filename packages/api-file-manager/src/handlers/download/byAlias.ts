@@ -1,7 +1,7 @@
 import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
 import { DynamoDBClient, QueryCommand, unmarshall } from "@webiny/aws-sdk/client-dynamodb";
 import { getEnvironment } from "../utils";
-import { RoutePlugin } from "@webiny/handler-aws/gateway";
+import { RoutePlugin } from "@webiny/handler-aws";
 import { extractFileInformation } from "./extractFileInformation";
 import { getS3Object, isSmallObject } from "./getS3Object";
 
