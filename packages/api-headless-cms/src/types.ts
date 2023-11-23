@@ -1457,23 +1457,28 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     id: string;
     /**
+     * @deprecated Use `revisionCreatedBy` instead.
      * CreatedBy object reference.
      */
     createdBy: CmsIdentity;
     /**
+     * @deprecated Use `entryCreatedBy` instead.
      * OwnedBy object reference. Can be different from CreatedBy.
      */
     ownedBy: CmsIdentity;
     /**
+     * @deprecated Use `revisionModifiedBy` instead.
      * ModifiedBy object reference. Last person who modified the entry.
      */
     modifiedBy?: CmsIdentity | null;
     /**
+     * @deprecated Use `revisionCreatedOn` instead.
      * A string of Date.toISOString() type.
      * Populated on creation.
      */
     createdOn: string;
     /**
+     * @deprecated Use `revisionSavedOn` instead.
      * A string of Date.toISOString() type.
      * Populated every time entry is saved.
      */
