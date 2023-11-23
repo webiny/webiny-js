@@ -11,6 +11,16 @@ const categoryFields = `
         displayName
         type
     }
+    modifiedBy {
+        id
+        displayName
+        type
+    }
+    ownedBy {
+        id
+        displayName
+        type
+    }
     savedOn
     meta {
         title

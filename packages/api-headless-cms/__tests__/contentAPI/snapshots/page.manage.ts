@@ -330,9 +330,14 @@ export default /* GraphQL */ `
 
     input PageModelApiNameInput {
         id: ID
+        # User can override the entry dates
         createdOn: DateTime
         savedOn: DateTime
         publishedOn: DateTime
+        # User can override the entry related user identities
+        createdBy: CmsIdentityInput
+        modifiedBy: CmsIdentityInput
+        ownedBy: CmsIdentityInput
         wbyAco_location: WbyAcoLocationInput
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput

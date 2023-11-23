@@ -1,6 +1,7 @@
 import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsContext } from "~/types";
+import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
 
 interface CmsHandlerEvent {
     path: string;
@@ -28,6 +29,7 @@ export const useHandler = (params: Params) => {
     });
     return {
         plugins,
+        identity: params.identity || defaultIdentity,
         tenant: core.tenant,
         handler: (payload: CmsHandlerEvent) => {
             return handler(payload, {} as any);

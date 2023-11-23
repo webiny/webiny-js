@@ -106,9 +106,14 @@ export const createManageSDL: CreateManageSDL = ({
         
         input ${singularName}Input {
             id: ID
+            # User can override the entry dates
             createdOn: DateTime
             savedOn: DateTime
             publishedOn: DateTime
+            # User can override the entry related user identities
+            createdBy: CmsIdentityInput
+            modifiedBy: CmsIdentityInput
+            ownedBy: CmsIdentityInput
             wbyAco_location: WbyAcoLocationInput
             ${inputGraphQLFields}
         }

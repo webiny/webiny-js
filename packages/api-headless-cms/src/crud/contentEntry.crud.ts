@@ -77,34 +77,13 @@ import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security/";
 import { ROOT_FOLDER } from "~/constants";
+import { getDate } from "~/utils/date";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
 export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
 export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
 type DefaultValue = boolean | number | string | null;
-
-const formatDate = (date?: Date | string | null): string | undefined => {
-    if (!date) {
-        return undefined;
-    } else if (date instanceof Date) {
-        return date.toISOString();
-    }
-    return date;
-};
-
-const getDate = <T extends string | undefined = string | undefined>(
-    input?: Date | string | null,
-    defaultValue?: Date | string | null
-): T => {
-    if (!input) {
-        return formatDate(defaultValue) as T;
-    }
-    if (input instanceof Date) {
-        return formatDate(input) as T;
-    }
-    return formatDate(new Date(input)) as T;
-};
 /**
  * Used for some fields to convert their values.
  */
@@ -268,6 +247,21 @@ const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
     return sort;
 };
 
+const getIdentity = <T extends SecurityIdentity | null>(
+    input: SecurityIdentity | null | undefined,
+    defaultValue: T
+): T => {
+    const identity = input?.id && input?.displayName && input?.type ? input : defaultValue;
+    if (!identity) {
+        return null as T;
+    }
+    return {
+        id: identity.id,
+        displayName: identity.displayName,
+        type: identity.type
+    } as T;
+};
+
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     entriesPermissions: EntriesPermissions;
@@ -284,19 +278,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         entriesPermissions,
         modelsPermissions,
         context,
-        getIdentity,
+        getIdentity: getSecurityIdentity,
         getTenant,
         getLocale
     } = params;
-
-    const getCreatedBy = () => {
-        const identity = getIdentity();
-        return {
-            id: identity.id,
-            displayName: identity.displayName,
-            type: identity.type
-        };
-    };
 
     /**
      * Create
@@ -594,7 +579,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.ownedBy = getIdentity().id;
+            where.ownedBy = getSecurityIdentity().id;
         }
 
         /**
@@ -695,7 +680,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const locale = getLocale();
 
-        const owner = getCreatedBy();
+        const identity = getSecurityIdentity();
 
         const { id, entryId, version } = createEntryId(rawInput);
         /**
@@ -713,9 +698,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             createdOn: getDate(rawInput.createdOn, currentDate),
             savedOn: getDate(rawInput.savedOn, currentDate),
             publishedOn: getDate(rawInput.publishedOn),
-            createdBy: owner,
-            ownedBy: owner,
-            modifiedBy: owner,
+            createdBy: getIdentity(rawInput.createdBy, identity),
+            ownedBy: getIdentity(rawInput.ownedBy, identity),
+            modifiedBy: getIdentity(rawInput.modifiedBy, null),
             version,
             locked: false,
             status: STATUS_DRAFT,
@@ -831,8 +816,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         await entriesPermissions.ensure({ owns: originalEntry.createdBy });
 
-        const identity = getIdentity();
-
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
@@ -844,8 +827,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             savedOn: getDate(rawInput.savedOn, currentDate),
             createdOn: getDate(rawInput.createdOn, currentDate),
             publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-            createdBy: identity,
-            modifiedBy: identity,
+            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
+            modifiedBy: getIdentity(rawInput.modifiedBy, getSecurityIdentity()),
+            ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
             locked: false,
             status: STATUS_DRAFT,
             values
@@ -961,6 +945,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: initialValues,
             validateEntries: false
         });
+
         /**
          * If users wants to remove a key from meta values, they need to send meta key with the null value.
          */
@@ -973,7 +958,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             savedOn: getDate(rawInput.savedOn, new Date()),
             createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
             publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-            modifiedBy: getCreatedBy(),
+            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
+            modifiedBy: getIdentity(rawInput.modifiedBy, getSecurityIdentity()),
+            ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
             values,
             meta,
             status: transformEntryStatus(originalEntry.status)
@@ -1445,12 +1432,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Same logic goes for the savedOn date.
          */
         let publishedOn = originalEntry.publishedOn;
-        if (options?.skipPublishedOn !== true || !publishedOn) {
+        if (options?.doNotUpdatePublishedOn !== true || !publishedOn) {
             publishedOn = currentDate;
         }
 
         let savedOn = originalEntry.savedOn;
-        if (options?.skipSavedOn !== true || !savedOn) {
+        if (options?.doNotUpdateSavedOn !== true || !savedOn) {
             savedOn = currentDate;
         }
 
@@ -1589,7 +1576,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.ownedBy = getIdentity().id;
+            where.ownedBy = getSecurityIdentity().id;
         }
 
         /**

@@ -2152,6 +2152,9 @@ export interface CreateCmsEntryInput {
     createdOn?: Date | string;
     savedOn?: Date | string;
     publishedOn?: Date | string;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
+    ownedBy?: CmsIdentity | null;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2170,6 +2173,9 @@ export interface CreateFromCmsEntryInput {
     createdOn?: Date;
     savedOn?: Date;
     publishedOn?: Date;
+    createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
+    ownedBy?: CmsIdentity;
     [key: string]: any;
 }
 
@@ -2185,6 +2191,9 @@ export interface UpdateCmsEntryInput {
     createdOn?: Date | string | null;
     savedOn?: Date | string | null;
     publishedOn?: Date | string | null;
+    createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
+    ownedBy?: CmsIdentity;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2217,11 +2226,12 @@ export interface CmsDeleteEntryOptions {
 
 /**
  * @category CmsEntry
- * By default, skipPublishedOn is false. User can set it to true to skip the publishedOn field update.
+ * By default, doNotUpdatePublishedOn is false. User can set it to true to skip the publishedOn field update.
+ * Same logic is for doNotUpdateSavedOn.
  */
 export interface CmsPublishEntryOptions {
-    skipPublishedOn?: boolean;
-    skipSavedOn?: boolean;
+    doNotUpdatePublishedOn?: boolean;
+    doNotUpdateSavedOn?: boolean;
 }
 
 /**

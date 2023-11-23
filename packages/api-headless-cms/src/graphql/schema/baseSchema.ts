@@ -105,9 +105,17 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
                 skipValidators: [SkipValidatorEnum!]
             }
 
+            # By default, doNotUpdatePublishedOn is false. User can set it to true to skip the publishedOn field update.
+            # Same logic is for the savedOn field.
             input CmsPublishEntryOptionsInput {
-                skipPublishedOn: Boolean
-                skipSavedOn: Boolean
+                doNotUpdatePublishedOn: Boolean
+                doNotUpdateSavedOn: Boolean
+            }
+
+            input CmsIdentityInput {
+                id: String!
+                displayName: String!
+                type: String!
             }
 
             type CmsEntryValidationResponseData {

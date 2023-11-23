@@ -153,8 +153,8 @@ describe("content entry custom dates", () => {
         const [publishCreatedFromResponse] = await manager.publishCategory({
             revision: `${entryId}#0002`,
             options: {
-                skipPublishedOn: true,
-                skipSavedOn: true
+                doNotUpdatePublishedOn: true,
+                doNotUpdateSavedOn: true
             }
         });
         expect(publishCreatedFromResponse).toMatchObject({
