@@ -9,10 +9,6 @@ context("Page Builder - Menu Items", () => {
     const folderNameEdit = "Folder name edited";
     const pageNameNew = "page-testing";
     const pageNameNewEdit = "page-editing";
-    const pageName = "Page menu item name";
-    const pageURL = "/page-test/";
-    const pageNameEdit = "Page menu item name edit";
-    const pageURLEdit = "/page-test-edit/";
 
     const menuData = {
         data: {
