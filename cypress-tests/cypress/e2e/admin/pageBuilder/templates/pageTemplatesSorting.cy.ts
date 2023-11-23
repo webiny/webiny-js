@@ -43,7 +43,6 @@ context("Page Builder - Template Sorting", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();
-        cy.wait(1000);
         cy.pbCreatePageTemplate(pageTemplateData1);
         cy.pbCreatePageTemplate(pageTemplateData2);
         cy.pbCreatePageTemplate(pageTemplateData3);
@@ -56,11 +55,9 @@ context("Page Builder - Template Sorting", () => {
         cy.findByTestId("default-data-list.filter").click();
         cy.get(".webiny-ui-select select").select("Newest to oldest");
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li .mdc-list-item__text")
+            cy.get("li")
                 .first()
-                .each($span => {
-                    cy.wrap($span).invoke("text").should("include", titleString4);
-                });
+                .within(() => cy.findByText(titleString4).should("exist"));
         });
         cy.visit("/page-builder/page-templates");
         cy.findByTestId("default-data-list.filter").click();

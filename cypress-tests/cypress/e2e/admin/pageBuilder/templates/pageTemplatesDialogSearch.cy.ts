@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Template Page Search", () => {
+context("Page Builder - Template Page Dialog Search", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
@@ -58,7 +58,9 @@ context("Page Builder - Template Page Search", () => {
         cy.contains(pageTemplateData2.title).should("exist");
         cy.contains(pageTemplateData3.title).should("exist");
         cy.contains(pageTemplateData4.title).should("exist");
-
+        cy.pbListPageTemplates().then(pageTemplates => {
+            cy.wrap(pageTemplates.length).should("eq", 4);
+        });
         cy.findByPlaceholderText("Search templates...").clear().type(titleString1);
         cy.contains(pageTemplateData1.title).should("exist");
         cy.contains(pageTemplateData2.title).should("not.exist");

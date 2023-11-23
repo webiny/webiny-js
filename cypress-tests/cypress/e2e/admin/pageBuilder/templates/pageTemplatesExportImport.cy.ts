@@ -2,6 +2,7 @@ import { customAlphabet } from "nanoid";
 
 context("Page Builder - Template Export&Import", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+    let url = "";
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
     const titleString3 = nanoid(6);
@@ -54,10 +55,8 @@ context("Page Builder - Template Export&Import", () => {
         cy.findByTestId("pb-templates-export-dialog-export-url")
             .invoke("text")
             .then(text => {
-                const url = text.trim();
-                console.log(url);
-                cy.pbDeleteAllBlockCategories();
-                cy.pbDeleteAllBlocks();
+                url = text.trim();
+                cy.pbDeleteAllTemplates();
 
                 cy.visit("/page-builder/page-templates");
                 cy.findByPlaceholderText("Search templates").should("exist");
@@ -75,6 +74,10 @@ context("Page Builder - Template Export&Import", () => {
                 cy.contains(pageTemplateData2.title).should("exist");
                 cy.contains(pageTemplateData3.title).should("exist");
                 cy.contains(pageTemplateData4.title).should("exist");
+
+                cy.pbListPageTemplates().then(pageTemplates => {
+                    cy.wrap(pageTemplates.length).should("eq", 4);
+                });
             });
     });
 });

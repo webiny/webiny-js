@@ -2,7 +2,6 @@ import { customAlphabet } from "nanoid";
 
 context("Page Builder - Template Preview", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    let counter = 3;
     const pageTemplateData1 = {
         title: "test1",
         slug: nanoid(6),
@@ -39,6 +38,7 @@ context("Page Builder - Template Preview", () => {
     it("Should be able to create a page and view all existing templates in it", () => {
         cy.visit("/page-builder/pages?folderId=root");
         cy.findByTestId("new-page-button").click();
+
         cy.contains("Pick a template for your new page").should("exist");
         cy.contains(pageTemplateData1.title).should("exist");
         cy.contains(pageTemplateData1.description).should("exist");
@@ -46,11 +46,12 @@ context("Page Builder - Template Preview", () => {
         cy.contains(pageTemplateData2.description).should("exist");
         cy.contains(pageTemplateData3.title).should("exist");
         cy.contains(pageTemplateData3.description).should("exist");
-        cy.findByTestId("pb-new-page-dialog-templates-list").as("ul");
+
         // Find and click on each li item within the ul element.
-        cy.get("@ul")
+        cy.findByTestId("pb-new-page-dialog-templates-list")
             .find("li")
-            .each($li => {
+            .each(($li, index) => {
+                const counter = 3 - index;
                 cy.wrap($li).click();
                 // Wait for the right panel to load.
                 cy.findByTestId("pb-new-page-dialog-template-preview").should("be.visible");
@@ -63,7 +64,6 @@ context("Page Builder - Template Preview", () => {
                 cy.findByTestId("pb-new-page-dialog-template-preview")
                     .contains(`${currentTemplateData.description}`)
                     .should("exist");
-                counter--;
             });
     });
 });
