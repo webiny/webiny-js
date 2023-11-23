@@ -1,6 +1,6 @@
 import { createLocaleEntity, createTenantEntity, queryAll } from "~/utils";
 import { I18NLocale, Tenant } from "~/migrations/5.37.0/003/types";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { Logger } from "@webiny/logger";
 
 type ForEachTenantLocaleCallback = (params: {
@@ -9,7 +9,7 @@ type ForEachTenantLocaleCallback = (params: {
 }) => boolean | Promise<boolean>;
 
 interface ForEachTenantLocaleParams {
-    table: Table;
+    table: Table<string, string, string>;
     logger: Logger;
     callback: ForEachTenantLocaleCallback;
 }

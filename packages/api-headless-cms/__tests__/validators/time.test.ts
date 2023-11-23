@@ -1,6 +1,6 @@
 import { createTimeLteValidator } from "~/validators/timeLte";
 import { createTimeGteValidator } from "~/validators/timeGte";
-import { CmsModelFieldValidation } from "~/types";
+import { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
@@ -38,8 +38,8 @@ describe("time validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as any,
-                model: {} as any
+                field: {} as CmsModelField,
+                model: {} as CmsModel
             });
             expect(result).toEqual(true);
         }
@@ -64,8 +64,8 @@ describe("time validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as any,
-                model: {} as any
+                field: {} as CmsModelField,
+                model: {} as CmsModel
             });
             expect(result).toEqual(false);
         }
@@ -91,8 +91,8 @@ describe("time validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as any,
-                model: {} as any
+                field: {} as CmsModelField,
+                model: {} as CmsModel
             });
             expect(result).toEqual(true);
         }
@@ -116,8 +116,8 @@ describe("time validators", () => {
                 value,
                 validator,
                 context,
-                field: {} as any,
-                model: {} as any
+                field: {} as CmsModelField,
+                model: {} as CmsModel
             });
             expect(result).toEqual(false);
         }
@@ -134,15 +134,15 @@ describe("time validators", () => {
             value,
             validator: lteValidator,
             context,
-            field: {} as any,
-            model: {} as any
+            field: {} as CmsModelField,
+            model: {} as CmsModel
         });
         const gteValid = await gtePlugin.validator.validate({
             value,
             validator: gteValidator,
             context,
-            field: {} as any,
-            model: {} as any
+            field: {} as CmsModelField,
+            model: {} as CmsModel
         });
         return lteValid && gteValid;
     };

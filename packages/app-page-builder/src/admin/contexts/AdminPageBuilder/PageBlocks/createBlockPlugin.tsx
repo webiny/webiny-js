@@ -1,22 +1,21 @@
 import React from "react";
-import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
 import { PbEditorBlockPlugin, PbPageBlock } from "~/types";
 import { PreviewBlock } from "~/admin/components/PreviewBlock";
 
-export default (element: PbPageBlock): void => {
+export const createBlockPlugin = (pageBlock: PbPageBlock): void => {
     const plugin: PbEditorBlockPlugin = {
-        id: element.id,
-        name: "pb-saved-block-" + element.id,
+        id: pageBlock.id,
+        name: "pb-saved-block-" + pageBlock.id,
         type: "pb-editor-block",
-        title: element.name,
-        blockCategory: element.blockCategory,
+        title: pageBlock.name,
+        blockCategory: pageBlock.blockCategory,
         tags: ["saved"],
         create() {
-            return cloneDeep({ ...element.content, source: element.id });
+            return structuredClone({ ...pageBlock.content, source: pageBlock.id });
         },
         preview() {
-            return <PreviewBlock element={element} />;
+            return <PreviewBlock element={pageBlock} />;
         }
     };
     plugins.register(plugin);

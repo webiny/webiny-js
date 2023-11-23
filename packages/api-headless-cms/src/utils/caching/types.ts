@@ -1,5 +1,8 @@
+export type ICacheKeyKeys = Record<string, string | undefined> | string | number;
+
 export interface ICacheKey {
     get(): string;
+    keys: ICacheKeyKeys;
 }
 
 export interface ICache<T = any> {

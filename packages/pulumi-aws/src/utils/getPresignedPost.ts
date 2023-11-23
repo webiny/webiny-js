@@ -1,7 +1,7 @@
-import S3Client from "aws-sdk/clients/s3";
+import { S3Client, createPresignedPost, PresignedPostOptions } from "@webiny/aws-sdk/client-s3";
 
 interface GetPresignedPostParams {
-    bucket: string;
+    bucket: PresignedPostOptions["Bucket"];
     key: string;
     acl: string;
     checksum: string;
@@ -28,13 +28,17 @@ export const getPresignedPost = async ({
     }
 
     const s3Params = {
+        Key: fields.key,
         Expires: 20,
         Bucket: bucket,
-        Conditions: [["content-length-range", 0, 26214400], { acl }],
+        Conditions: [
+            ["content-length-range", 0, 26214400],
+            { acl }
+        ] as PresignedPostOptions["Conditions"],
         Fields: fields
     };
 
     const s3 = new S3Client();
 
-    return s3.createPresignedPost(s3Params);
+    return createPresignedPost(s3, s3Params);
 };

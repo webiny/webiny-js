@@ -3,7 +3,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { FormBuilderFormCreatePartitionKeyParams, FormBuilderFormStorageOperations } from "~/types";
 export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     plugins: PluginsContainer;
 }
 

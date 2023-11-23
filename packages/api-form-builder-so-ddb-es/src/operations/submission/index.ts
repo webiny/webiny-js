@@ -1,3 +1,4 @@
+
 import { Entity, Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
@@ -10,7 +11,7 @@ import { parseIdentifier } from "@webiny/utils";
 export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }

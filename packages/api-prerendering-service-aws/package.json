@@ -12,9 +12,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
-    "@types/aws-lambda": "^8.10.93",
     "@webiny/api": "0.0.0",
     "@webiny/api-prerendering-service": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-client": "0.0.0",
@@ -42,12 +42,8 @@
   },
   "adio": {
     "ignore": {
-      "dependencies": [
-        "@types/aws-lambda"
-      ],
       "src": [
-        "aws-sdk",
-        "aws-lambda"
+        "aws-sdk"
       ]
     }
   },

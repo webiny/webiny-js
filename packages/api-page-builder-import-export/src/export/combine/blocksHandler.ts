@@ -62,7 +62,7 @@ export const blocksHandler = async (
             data: {
                 message: `Finish uploading block export.`,
                 key: blockExportUpload.Key,
-                url: s3Stream.getPresignedUrl(blockExportUpload.Key)
+                url: await s3Stream.getPresignedUrl(blockExportUpload.Key)
             }
         });
 

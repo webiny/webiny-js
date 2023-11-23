@@ -2,19 +2,15 @@ import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import {
     FolderDialogDelete,
-    FolderDialogUpdate,
-    FolderDialogManagePermissions
+    FolderDialogManagePermissions,
+    FolderDialogUpdate
 } from "@webiny/app-aco";
 import { FolderItem, Location } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 import bytes from "bytes";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileName, FolderName } from "./Name";
 import { FolderActionDelete } from "./FolderActionDelete";
 import { FolderActionEdit } from "./FolderActionEdit";

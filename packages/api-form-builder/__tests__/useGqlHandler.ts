@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs-extra";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import i18nContext from "@webiny/api-i18n/graphql/context";
@@ -15,30 +15,29 @@ import {
 import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
 import {
     GET_SETTINGS,
-    UPDATE_SETTINGS,
     INSTALL,
-    IS_INSTALLED
+    IS_INSTALLED,
+    UPDATE_SETTINGS
 } from "./graphql/formBuilderSettings";
 import {
     CREATE_FROM,
     CREATE_REVISION_FROM,
     DELETE_FORM,
-    UPDATE_REVISION,
-    PUBLISH_REVISION,
-    UNPUBLISH_REVISION,
     DELETE_REVISION,
-    SAVE_FORM_VIEW,
     GET_FORM,
     GET_FORM_REVISIONS,
+    GET_PUBLISHED_FORM,
     LIST_FORMS,
-    GET_PUBLISHED_FORM
+    PUBLISH_REVISION,
+    SAVE_FORM_VIEW,
+    UNPUBLISH_REVISION,
+    UPDATE_REVISION
 } from "./graphql/forms";
 import {
     CREATE_FROM_SUBMISSION,
-    LIST_FROM_SUBMISSIONS,
-    EXPORT_FORM_SUBMISSIONS
+    EXPORT_FORM_SUBMISSIONS,
+    LIST_FROM_SUBMISSIONS
 } from "./graphql/formSubmission";
-import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity, defaultIdentity } from "./tenancySecurity";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -47,6 +46,7 @@ import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { FormBuilderStorageOperations } from "~/types";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { createPageBuilderContext } from "@webiny/api-page-builder";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 
@@ -67,7 +67,7 @@ interface InvokeParams {
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
-    const i18nStorage = getStorageOps("i18n");
+    const i18nStorage = getStorageOps<any>("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
@@ -82,7 +82,7 @@ export default (params: UseGqlHandlerParams = {}) => {
             graphqlHandlerPlugins(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nStorage.storageOperations as any,
+            i18nStorage.storageOperations,
             mockLocalesPlugins(),
             new CmsParametersPlugin(async () => {
                 return {
@@ -145,8 +145,8 @@ export default (params: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

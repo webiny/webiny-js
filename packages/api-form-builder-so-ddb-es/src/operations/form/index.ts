@@ -13,7 +13,7 @@ export type DbRecord<T = any> = T & {
 export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }

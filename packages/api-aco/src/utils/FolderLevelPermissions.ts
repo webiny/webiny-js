@@ -51,6 +51,7 @@ export interface FolderLevelPermissionsParams {
     listAllFolders: (folderType: string) => Promise<Folder[]>;
     canUseTeams: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
+    isAuthorizationEnabled: () => boolean;
 }
 
 export class FolderLevelPermissions {
@@ -60,6 +61,7 @@ export class FolderLevelPermissions {
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
     private readonly canUseTeams: () => boolean;
     private readonly canUseFolderLevelPermissions: () => boolean;
+    private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
@@ -69,6 +71,16 @@ export class FolderLevelPermissions {
         this.listAllFoldersCallback = params.listAllFolders;
         this.canUseTeams = params.canUseTeams;
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
+
+        this.isAuthorizationEnabled = params.isAuthorizationEnabled;
+
+        // TODO: resolve this issue.
+        // We immediately enable authorization, because, at the moment, the rest of the system
+        // requires us to have FLP always enabled. We must now disable it, even if the security's
+        // `isAuthorizationEnabled` is set to false. To resolve this, we'll need to refactor CMS-based
+        // CRUD files and have them use CMS storage operations instead of CMS CRUD methods.
+        // We'll be handling this in the near future.
+        this.isAuthorizationEnabled = () => true;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
@@ -107,7 +119,7 @@ export class FolderLevelPermissions {
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return [];
         }
 
@@ -275,12 +287,8 @@ export class FolderLevelPermissions {
     }
 
     async canAccessFolder(params: CanAccessFolderParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
-        }
-
-        if (params.managePermissions && params.rwd !== "w") {
-            throw new Error(`Cannot check for "managePermissions" access without "w" access.`);
         }
 
         const { folder } = params;
@@ -311,44 +319,28 @@ export class FolderLevelPermissions {
             foldersList: params.foldersList
         });
 
-        // If dealing with a public folder, we only care if we're checking for "managePermissions" access.
-        // If we are, we can return false, because public folders cannot have permissions managed.
-        const isPublicFolder = folderPermissions?.permissions.some(p => p.level === "public");
-        if (isPublicFolder) {
-            return !params.managePermissions;
-        }
-
         const identity = this.getIdentity();
+        const currentIdentityPermission = folderPermissions?.permissions.find(p => {
+            return p.target === `admin:${identity.id}`;
+        });
 
-        const userAccessLevel = folderPermissions?.permissions.find(
-            p => p.target === "admin:" + identity.id
-        )?.level;
-
-        let teamAccessLevel: FolderAccessLevel | undefined;
-
-        if (this.canUseTeams()) {
-            const identityTeam = await this.getIdentityTeam();
-            if (identityTeam) {
-                teamAccessLevel = folderPermissions?.permissions.find(
-                    p => p.target === "team:" + identityTeam.id
-                )?.level;
-            }
+        if (!currentIdentityPermission) {
+            return false;
         }
 
-        const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
+        const { level } = currentIdentityPermission;
 
+        if (params.managePermissions) {
+            return level === "owner";
+        }
+
+        // Checking for "write" or "delete" access. Allow only if the
+        // user is an owner or the folder is public (no FLP assigned).
         if (params.rwd !== "r") {
-            return accessLevels.includes("owner");
+            return level === "owner" || level === "public";
         }
 
-        // If we are here, it means we are checking for "read" access.
-        // For starters, let's check if the user has any access level.
-        if (accessLevels.length > 0) {
-            return true;
-        }
-
-        // No conditions were met, so we can return false.
-        return false;
+        return true;
     }
 
     async ensureCanAccessFolder(params: CanAccessFolderParams) {
@@ -363,19 +355,31 @@ export class FolderLevelPermissions {
             return false;
         }
 
+        if (!this.isAuthorizationEnabled()) {
+            return true;
+        }
+
         return this.canAccessFolder({ folder, rwd: "w", managePermissions: true });
     }
 
     canManageFolderStructure(folder: Folder) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
         return this.canAccessFolder({ folder, rwd: "w" });
     }
 
+    canManageFolderContent(folder: Folder) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
+            return true;
+        }
+
+        return this.canAccessFolderContent({ folder, rwd: "w" });
+    }
+
     async canAccessFolderContent(params: CanAccessFolderContentParams) {
-        if (!this.canUseFolderLevelPermissions()) {
+        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -386,45 +390,23 @@ export class FolderLevelPermissions {
             foldersList
         });
 
-        // If dealing with a public folder, we only care if we're checking for "managePermissions" access.
-        // If we are, we can return false, because public folders cannot have permissions managed.
-        const isPublicFolder = folderPermissions?.permissions.some(p => p.level === "public");
-        if (isPublicFolder) {
-            return true;
-        }
-
         const identity = this.getIdentity();
+        const currentIdentityPermission = folderPermissions?.permissions.find(p => {
+            return p.target === `admin:${identity.id}`;
+        });
 
-        const userAccessLevel = folderPermissions?.permissions.find(
-            p => p.target === "admin:" + identity.id
-        )?.level;
-
-        let teamAccessLevel: FolderAccessLevel | undefined;
-        if (this.canUseTeams()) {
-            const identityTeam = await this.getIdentityTeam();
-            if (identityTeam) {
-                teamAccessLevel = folderPermissions?.permissions.find(
-                    p => p.target === "team:" + identityTeam.id
-                )?.level;
-            }
+        if (!currentIdentityPermission) {
+            return false;
         }
-
-        const accessLevels = [userAccessLevel, teamAccessLevel].filter(Boolean);
 
         // If the user is not an owner and we're checking for "write" or
         // "delete" access, then we can immediately return false.
         if (params.rwd !== "r") {
-            return accessLevels.includes("owner") || accessLevels.includes("editor");
+            const { level } = currentIdentityPermission;
+            return level !== "viewer";
         }
 
-        // If we are here, it means we are checking for "read" access.
-        // For starters, let's check if the user has any access level.
-        if (accessLevels.length > 0) {
-            return true;
-        }
-
-        // No conditions were met, so we can return false.
-        return false;
+        return true;
     }
 
     async ensureCanAccessFolderContent(params: CanAccessFolderContentParams) {

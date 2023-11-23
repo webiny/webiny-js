@@ -25,10 +25,6 @@ export const AddTenantFormField: React.FC<AddTenantSettingsFieldProps> = memo(
     function AddTenantFormField({ querySelection, element }) {
         const FieldHOC = useMemo(() => createFieldsHOC(element), []);
 
-        /**
-         * TODO @ts-refactor @pavel
-         * remove any in Compose.with parameter
-         */
         return (
             <Fragment>
                 <AddGraphQLQuerySelection
@@ -41,7 +37,7 @@ export const AddTenantFormField: React.FC<AddTenantSettingsFieldProps> = memo(
                     selectionPath={"tenancy.createTenant.data"}
                     addSelection={querySelection}
                 />
-                <Compose component={TenantFormFields} with={FieldHOC as any} />
+                <Compose component={TenantFormFields} with={FieldHOC} />
             </Fragment>
         );
     }

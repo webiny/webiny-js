@@ -18,7 +18,14 @@ import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFolderFieldValues } from "~/utils/getFieldValues";
 import { createFilterCrudMethods } from "~/filter/filter.crud";
 
-const setupAcoContext = async (context: AcoContext): Promise<void> => {
+interface CreateAcoContextParams {
+    useFolderLevelPermissions?: boolean;
+}
+
+const setupAcoContext = async (
+    context: AcoContext,
+    setupAcoContextParams: CreateAcoContextParams
+): Promise<void> => {
     const { tenancy, security, i18n } = context;
 
     const getLocale = (): I18NLocale => {
@@ -54,6 +61,10 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         getIdentityTeam: async () => {
             return security.withoutAuthorization(async () => {
                 const identity = security.getIdentity();
+                if (!identity) {
+                    return null;
+                }
+
                 const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
                 if (!adminUser) {
                     return null;
@@ -93,7 +104,14 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),
-        canUseFolderLevelPermissions: () => context.wcp.canUseFolderLevelPermissions()
+        canUseFolderLevelPermissions: () => {
+            if (setupAcoContextParams.useFolderLevelPermissions === false) {
+                return false;
+            }
+
+            return context.wcp.canUseFolderLevelPermissions();
+        },
+        isAuthorizationEnabled: () => context.security.isAuthorizationEnabled()
     });
 
     const params: CreateAcoParams = {
@@ -162,7 +180,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     }
 };
 
-export const createAcoContext = () => {
+export const createAcoContext = (params: CreateAcoContextParams = {}) => {
     const plugin = new ContextPlugin<AcoContext>(async context => {
         /**
          * We can skip the ACO initialization if the installation is pending.
@@ -171,7 +189,7 @@ export const createAcoContext = () => {
             return;
         }
         await context.benchmark.measure("aco.context.setup", async () => {
-            await setupAcoContext(context);
+            await setupAcoContext(context, params);
         });
 
         await context.benchmark.measure("aco.context.hooks", async () => {

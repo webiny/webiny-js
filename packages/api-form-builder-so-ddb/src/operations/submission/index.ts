@@ -8,7 +8,7 @@ import { parseIdentifier } from "@webiny/utils";
 
 export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
     plugins: PluginsContainer;
 }
 
