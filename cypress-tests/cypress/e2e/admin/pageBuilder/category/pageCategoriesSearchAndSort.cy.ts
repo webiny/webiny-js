@@ -28,10 +28,8 @@ context("Page Builder - Category Search&Sort", () => {
         cy.pbDeleteAllCategories();
         cy.wait(1500);
         cy.pbCreateCategory(categoryData1);
-        cy.wait(1500);
         cy.pbCreateCategory(categoryData2);
         cy.pbCreateCategory(categoryData3);
-        cy.wait(1500);
         cy.pbCreateCategory(categoryData4);
     });
 
