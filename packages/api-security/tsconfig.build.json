@@ -5,6 +5,7 @@
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-authentication/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },

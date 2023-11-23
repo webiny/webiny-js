@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -12,7 +12,7 @@ import { FileManager_5_35_0_001_FileManagerSettings } from "../FileSettingsMigra
 export class FileManager_5_35_0_001 implements DataMigration {
     private migrations: DataMigration[];
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.migrations = [
             new FileManager_5_35_0_001_FileData(table),
             new FileManager_5_35_0_001_FileManagerSettings(table)

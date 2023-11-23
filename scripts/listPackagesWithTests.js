@@ -111,6 +111,9 @@ const CUSTOM_HANDLERS = {
     },
     "app-aco": () => {
         return ["packages/app-aco"];
+    },
+    "app-file-manager": () => {
+        return ["packages/app-file-manager"];
     }
 };
 

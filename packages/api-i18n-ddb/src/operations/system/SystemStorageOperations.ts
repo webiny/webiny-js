@@ -5,11 +5,11 @@ import {
     I18NSystemStorageOperationsCreate,
     I18NSystemStorageOperationsUpdate
 } from "@webiny/api-i18n/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
 import defineTable from "~/definitions/table";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 interface ConstructorParams {
     context: I18NContext;
@@ -41,16 +41,17 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         });
     }
 
-    public async get(): Promise<I18NSystem> {
+    public async get() {
         const keys = {
             PK: this.partitionKey,
             SK: SORT_KEY
         };
 
         try {
-            const result = await this._entity.get(keys);
-
-            return cleanupItem(this._entity, result?.Item);
+            return await getClean<I18NSystem>({
+                entity: this._entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 "Could not load system data from the database.",
@@ -66,9 +67,12 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
             SK: SORT_KEY
         };
         try {
-            await this._entity.put({
-                ...keys,
-                ...system
+            await put({
+                entity: this._entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {
@@ -86,9 +90,12 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
             SK: SORT_KEY
         };
         try {
-            await this._entity.put({
-                ...keys,
-                ...system
+            await put({
+                entity: this._entity,
+                item: {
+                    ...system,
+                    ...keys
+                }
             });
             return system;
         } catch (ex) {

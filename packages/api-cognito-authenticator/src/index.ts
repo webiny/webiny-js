@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
 import util from "util";
+
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
@@ -71,7 +72,10 @@ export const createAuthenticator = (config: Config) => {
          * TODO @ts-refactor @pavel
          * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
          */
-        const token: TTokenData = await (verify as any)(idToken, jwkToPem(jwk));
+        const token = (await (verify as unknown as typeof jwt.verify)(
+            idToken,
+            jwkToPem(jwk)
+        )) as unknown as TTokenData;
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";

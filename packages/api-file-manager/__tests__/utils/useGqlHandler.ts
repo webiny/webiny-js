@@ -1,4 +1,5 @@
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import {
     CREATE_FILE,
@@ -45,8 +46,8 @@ export default (params: HandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

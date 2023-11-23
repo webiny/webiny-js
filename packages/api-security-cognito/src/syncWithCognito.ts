@@ -1,4 +1,7 @@
-import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import {
+    AdminCreateUserRequest,
+    CognitoIdentityProvider
+} from "@webiny/aws-sdk/client-cognito-identity-provider";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { AdminUser, AdminUsersContext, BaseUserAttributes } from "@webiny/api-admin-users/types";
@@ -57,24 +60,22 @@ export const syncWithCognito = ({
         ? initialUpdateAttributes
         : defaultUpdateAttributes;
 
-    const cognito = new CognitoIdentityServiceProvider({ region });
+    const cognito = new CognitoIdentityProvider({ region });
 
     return new ContextPlugin<AdminUsersContext>(({ adminUsers }) => {
         adminUsers.onUserBeforeCreate.subscribe(async ({ user, inputData }) => {
             // Immediately delete password from `user`, as that object will be stored to the database.
             // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
-            // Casting as any because password does not exist on user, but we know it does
-            delete (user as any)["password"];
+            // @ts-expect-error
+            delete user["password"];
 
             const username = getUsername(inputData);
 
             try {
-                await cognito
-                    .adminGetUser({
-                        Username: username,
-                        UserPoolId: userPoolId
-                    })
-                    .promise();
+                await cognito.adminGetUser({
+                    Username: username,
+                    UserPoolId: userPoolId
+                });
 
                 // User exists; there are multiple ways to resolve the conflict
                 // but for now, we simply prevent user creation.
@@ -90,7 +91,7 @@ export const syncWithCognito = ({
                 // User does not exist.
             }
 
-            const params: CognitoIdentityServiceProvider.Types.AdminCreateUserRequest = {
+            const params: AdminCreateUserRequest = {
                 UserPoolId: userPoolId,
                 Username: username,
                 DesiredDeliveryMediums: [],
@@ -121,7 +122,7 @@ export const syncWithCognito = ({
                 ]
             };
 
-            await cognito.adminCreateUser(params).promise();
+            await cognito.adminCreateUser(params);
 
             const verify = {
                 UserPoolId: userPoolId,
@@ -134,31 +135,29 @@ export const syncWithCognito = ({
                 ]
             };
 
-            await cognito.adminUpdateUserAttributes(verify).promise();
+            await cognito.adminUpdateUserAttributes(verify);
 
             // Check if this is the first user in the system, and if so, set permanent password.
             const users = await adminUsers.listUsers();
 
             if (!users.length) {
-                await cognito
-                    .adminSetUserPassword({
-                        Permanent: true,
+                await cognito.adminSetUserPassword({
+                    Permanent: true,
 
-                        // With Cognito, we are sure the password will be included
-                        // in the user creation input data.
-                        Password: inputData.password!,
+                    // With Cognito, we are sure the password will be included
+                    // in the user creation input data.
+                    Password: inputData.password!,
 
-                        Username: username,
-                        UserPoolId: userPoolId
-                    })
-                    .promise();
+                    Username: username,
+                    UserPoolId: userPoolId
+                });
             }
         });
 
         adminUsers.onUserBeforeUpdate.subscribe(({ updateData }) => {
             // Immediately delete password from `updateData`, as that object will be merged with the `user` data.
-            // Casting as any because password does not exist on user, but we know it does
-            delete (updateData as any)["password"];
+            // @ts-expect-error
+            delete updateData["password"];
         });
 
         adminUsers.onUserAfterUpdate.subscribe(async ({ originalUser, updatedUser, inputData }) => {
@@ -184,9 +183,9 @@ export const syncWithCognito = ({
                 Username: getUsername(originalUser)
             };
 
-            await cognito.adminUpdateUserAttributes(params).promise();
+            await cognito.adminUpdateUserAttributes(params);
 
-            const { password } = (inputData as any) || {};
+            const { password } = inputData || {};
             if (password) {
                 const pass = {
                     Permanent: true,
@@ -195,14 +194,12 @@ export const syncWithCognito = ({
                     UserPoolId: userPoolId
                 };
 
-                await cognito.adminSetUserPassword(pass).promise();
+                await cognito.adminSetUserPassword(pass);
             }
         });
 
         adminUsers.onUserAfterDelete.subscribe(async ({ user }) => {
-            await cognito
-                .adminDeleteUser({ UserPoolId: userPoolId, Username: getUsername(user) })
-                .promise();
+            await cognito.adminDeleteUser({ UserPoolId: userPoolId, Username: getUsername(user) });
         });
     });
 };
