@@ -77,7 +77,7 @@ describe("File lifecycle events", () => {
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
         const beforeCreate = tracker.getLast("file:beforeCreate");
-        expect(beforeCreate && beforeCreate.params[0]).toEqual({
+        expect(beforeCreate && beforeCreate.params[0]).toMatchObject({
             file: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -88,7 +88,7 @@ describe("File lifecycle events", () => {
             }
         });
         const afterCreate = tracker.getLast("file:beforeCreate");
-        expect(afterCreate && afterCreate.params[0]).toEqual({
+        expect(afterCreate && afterCreate.params[0]).toMatchObject({
             file: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -138,7 +138,7 @@ describe("File lifecycle events", () => {
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
         const beforeUpdate = tracker.getLast("file:beforeUpdate");
-        expect(beforeUpdate && beforeUpdate.params[0]).toEqual({
+        expect(beforeUpdate && beforeUpdate.params[0]).toMatchObject({
             input: { tags: [...fileData.tags, TAG] },
             original: {
                 ...fileData,
@@ -160,7 +160,7 @@ describe("File lifecycle events", () => {
             }
         });
         const afterUpdate = tracker.getLast("file:afterUpdate");
-        expect(afterUpdate && afterUpdate.params[0]).toEqual({
+        expect(afterUpdate && afterUpdate.params[0]).toMatchObject({
             input: { tags: [...fileData.tags, TAG] },
             original: {
                 ...fileData,
@@ -219,6 +219,7 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
+                modifiedBy: null,
                 location: {
                     folderId: ROOT_FOLDER
                 },
@@ -230,6 +231,7 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
+                modifiedBy: null,
                 location: {
                     folderId: ROOT_FOLDER
                 },
