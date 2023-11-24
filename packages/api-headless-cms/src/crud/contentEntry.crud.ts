@@ -674,13 +674,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const locale = getLocale();
 
-        const owner = getCreatedBy();
 
         const { id, entryId, version } = createEntryId(inputData);
         /**
          * There is a possibility that user sends an ID in the input, so we will use that one.
          * There is no check if the ID is unique or not, that is up to the user.
          */
+
+        const currentIdentity = getCreatedBy();
+        const currentDateTime = new Date().toISOString();
+
         const entry: CmsEntry = {
             webinyVersion: context.WEBINY_VERSION,
             tenant: getTenant().id,
@@ -688,11 +691,31 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id,
             modelId: model.modelId,
             locale: locale.code,
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString(),
-            createdBy: owner,
-            ownedBy: owner,
+
+            // Deprecated fields. We still have them here for backwards compatibility.
+            // We'll remove these in one of the future releases.
+            createdOn: currentDateTime,
+            savedOn: currentDateTime,
+            createdBy: currentIdentity,
+            ownedBy: currentIdentity,
             modifiedBy: null,
+
+            // Revision-level meta fields.
+            revisionCreatedOn: currentDateTime,
+            revisionSavedOn: currentDateTime,
+            revisionModifiedOn: null,
+            revisionCreatedBy: currentIdentity,
+            revisionSavedBy: currentIdentity,
+            revisionModifiedBy: null,
+
+            // Entry-level meta fields.
+            entryCreatedOn: currentDateTime,
+            entrySavedOn: currentDateTime,
+            entryModifiedOn: null,
+            entryCreatedBy: currentIdentity,
+            entrySavedBy: currentIdentity,
+            entryModifiedBy: null,
+
             version,
             locked: false,
             status: STATUS_DRAFT,

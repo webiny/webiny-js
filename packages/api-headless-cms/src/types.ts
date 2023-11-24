@@ -152,6 +152,7 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
+
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */
@@ -170,6 +171,7 @@ export type CmsModelFieldType =
     | "text"
     | "dynamicZone"
     | string;
+
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -353,6 +355,7 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
 export interface CmsModelFieldValidatorPluginValidateCb {
     (params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
 }
+
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
      * A plugin type.
@@ -425,6 +428,7 @@ export interface LockedField {
      * Field type.
      */
     type: string;
+
     [key: string]: any;
 }
 
@@ -1456,6 +1460,12 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Generated ID + version of the entry.
      */
     id: string;
+
+    /**
+     * 🚫 Deprecated meta fields below.
+     * Will be fully removed in one of the next releases.
+     */
+
     /**
      * @deprecated Use `revisionCreatedBy` instead.
      * CreatedBy object reference.
@@ -1483,6 +1493,70 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Populated every time entry is saved.
      */
     savedOn: string;
+
+    /**
+     * 🆕 New meta fields below.
+     * Users are encouraged to use these instead of the deprecated ones above.
+     */
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionCreatedOn: string;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionSavedOn: string;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionModifiedOn: string | null;
+    /**
+     * Identity that last ionCreated the entry.
+     */
+    revisionCreatedBy: CmsIdentity;
+    /**
+     * Identity that last ionSaved the entry.
+     */
+    revisionSavedBy: CmsIdentity;
+    /**
+     * Identity that last ionModified the entry.
+     */
+    revisionModifiedBy: CmsIdentity | null;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
+
+    /**
+     * An ISO 8601 date/time string.
+     */
+    entryCreatedOn: string;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    entrySavedOn: string;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    entryModifiedOn: string | null;
+    /**
+     * Identity that last created the entry.
+     */
+    entryCreatedBy: CmsIdentity;
+    /**
+     * Identity that last saved the entry.
+     */
+    entrySavedBy: CmsIdentity;
+    /**
+     * Identity that last modified the entry.
+     */
+    entryModifiedBy: CmsIdentity | null;
+
     /**
      * Model ID of the definition for the entry.
      * @see CmsModel
@@ -1853,6 +1927,7 @@ export interface CmsEntryListWhere {
         AND?: CmsEntryListWhere[];
         OR?: CmsEntryListWhere[];
     };
+
     /**
      * This is to allow querying by any content model field defined by the user.
      */
@@ -1867,6 +1942,7 @@ export interface CmsEntryListWhere {
         | CmsEntryListWhere[]
         | CmsEntryListWhere
         | CmsEntryListWhereRef;
+
     /**
      * To allow querying via nested queries, we added the AND / OR properties.
      */
@@ -2157,6 +2233,7 @@ export interface CreateCmsEntryInput {
     wbyAco_location?: {
         folderId?: string | null;
     };
+
     [key: string]: any;
 }
 
@@ -2184,6 +2261,7 @@ export interface UpdateCmsEntryInput {
     wbyAco_location?: {
         folderId?: string | null;
     };
+
     [key: string]: any;
 }
 
@@ -2224,6 +2302,7 @@ export type DeleteMultipleEntriesResponse = { id: string }[];
 export interface CmsEntryValidateResponse {
     [key: string]: any;
 }
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2492,6 +2571,7 @@ export interface CmsGroupStorageOperationsGetParams {
 export interface CmsGroupStorageOperationsListWhereParams {
     tenant: string;
     locale: string;
+
     [key: string]: any;
 }
 
@@ -2549,6 +2629,7 @@ export interface CmsModelStorageOperationsGetParams {
 export interface CmsModelStorageOperationsListWhereParams {
     tenant: string;
     locale: string;
+
     [key: string]: string;
 }
 
