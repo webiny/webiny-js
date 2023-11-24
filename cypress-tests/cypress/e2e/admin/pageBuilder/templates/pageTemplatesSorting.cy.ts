@@ -59,27 +59,25 @@ context("Page Builder - Template Sorting", () => {
                 .first()
                 .within(() => cy.findByText(titleString4).should("exist"));
         });
+
         cy.visit("/page-builder/page-templates");
         cy.findByTestId("default-data-list.filter").click();
         cy.get(".webiny-ui-select select").select("Oldest to newest");
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("li .mdc-list-item__text")
+            cy.get("li")
                 .first()
-                .each($span => {
-                    cy.wrap($span).invoke("text").should("include", titleString1);
-                });
+                .within(() => cy.findByText(titleString1).should("exist"));
         });
+
         cy.visit("/page-builder/page-templates");
         cy.findByTestId("default-data-list.filter").click();
         cy.get(".webiny-ui-select select").select("Title A-Z");
         cy.findByTestId("default-data-list")
             .first()
             .within(() => {
-                cy.get("li .mdc-list-item__text")
+                cy.get("li")
                     .first()
-                    .each($span => {
-                        cy.wrap($span).invoke("text").should("include", titleString4);
-                    });
+                    .within(() => cy.findByText(titleString4).should("exist"));
             });
 
         cy.visit("/page-builder/page-templates");
@@ -88,11 +86,9 @@ context("Page Builder - Template Sorting", () => {
         cy.findByTestId("default-data-list")
             .first()
             .within(() => {
-                cy.get("li .mdc-list-item__text")
+                cy.get("li")
                     .first()
-                    .each($span => {
-                        cy.wrap($span).invoke("text").should("include", titleString3);
-                    });
+                    .within(() => cy.findByText(titleString3).should("exist"));
             });
     });
 });
