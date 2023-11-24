@@ -687,7 +687,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
 
         const currentIdentity = getSecurityIdentity();
-        const currentDate = new Date();
+        const currentDateTime = new Date();
 
         const entry: CmsEntry = {
             webinyVersion: context.WEBINY_VERSION,
@@ -699,24 +699,24 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             // Deprecated fields. We still have them here for backwards compatibility.
             // We'll remove these in one of the future releases.
-            createdOn: getDate(rawInput.createdOn, currentDate),
-            savedOn: getDate(rawInput.savedOn, currentDate),
+            createdOn: getDate(rawInput.createdOn, currentDateTime),
+            savedOn: getDate(rawInput.savedOn, currentDateTime),
             publishedOn: getDate(rawInput.publishedOn),
             createdBy: getIdentity(rawInput.createdBy, currentIdentity),
             ownedBy: getIdentity(rawInput.ownedBy, currentIdentity),
             modifiedBy: getIdentity(rawInput.modifiedBy, null),
 
             // Revision-level meta fields.
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDate),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDate),
+            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
+            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
             revisionModifiedOn: null,
             revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
             revisionModifiedBy: null,
 
             // Entry-level meta fields.
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDate),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDate),
+            entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDateTime),
+            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
             entryModifiedOn: null,
             entryCreatedBy: getIdentity(rawInput.entryCreatedBy, currentIdentity),
             entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
