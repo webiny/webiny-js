@@ -83,13 +83,13 @@ export const pullRequestsTest = createWorkflow({
         validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
-            if: "github.ref != 'refs/heads/dev'",
+            if: "github.base_ref != 'dev'",
             steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
-            name: "Validate commit messages (dev branch)",
-            if: "github.ref == 'refs/heads/dev'",
+            name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
+            if: "github.base_ref == 'dev'",
             steps: [
                 {
                     uses: "webiny/action-conventional-commits@v1.2.0",
