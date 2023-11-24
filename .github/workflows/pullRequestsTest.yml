@@ -15,7 +15,7 @@ jobs:
         run: npx github-actions-wac validate
   validateCommits:
     name: Validate commit messages
-    if: github.ref != 'refs/heads/dev'
+    if: github.base_ref != 'dev'
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -28,7 +28,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch)
-    if: github.ref == 'refs/heads/dev'
+    if: github.base_ref == 'dev'
     steps:
       - uses: actions/setup-node@v3
         with:
