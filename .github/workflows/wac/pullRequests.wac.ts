@@ -76,14 +76,31 @@ const createJestTestsJob = (storage: string | null) => {
     return job;
 };
 
+const validCommitTypesDev = "fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip";
+const validCommitTypesNext =
+    "feat,fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip";
+
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
-    on: { pull_request: { branches: ["next"] } },
+    on: "pull_request",
     jobs: {
         validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.1.0" }]
+            steps: [
+                {
+                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    with: {
+                        // If dev, use "dev" commit types, otherwise use "next" commit types.
+                        "allowed-commit-types":
+                            "${{ github.ref == 'refs/heads/dev' ? '" +
+                            validCommitTypesDev +
+                            "' : '" +
+                            validCommitTypesNext +
+                            "' }}"
+                    }
+                }
+            ]
         }),
         init: createJob({
             name: "Init",
