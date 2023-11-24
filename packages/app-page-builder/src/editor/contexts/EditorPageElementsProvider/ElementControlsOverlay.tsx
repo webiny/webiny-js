@@ -59,7 +59,7 @@ const PbElementControlsOverlay = ({
         <>
             {isActive && <ElementControlsOverlayBorders zIndex={zIndex} color={ACTIVE_COLOR} />}
             <pb-eco
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+                // @ts-expect-error Not supported by `React.HTMLProps<HTMLDivElement>`.
                 class={className}
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}

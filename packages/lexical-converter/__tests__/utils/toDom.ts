@@ -1,4 +1,4 @@
-// @ts-ignore jsdom types are messing up with the repo, so they're disabled in the root package.json.
+// @ts-expect-error jsdom types are messing up with the repo, so they're disabled in the root package.json.
 import jsdom from "jsdom";
 
 interface HtmlToDom {

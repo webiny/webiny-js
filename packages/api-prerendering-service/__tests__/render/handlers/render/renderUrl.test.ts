@@ -8,10 +8,10 @@ describe(`"renderUrl" Function Test`, () => {
     it("should insert basic meta data into the received HTML", async () => {
         const [[html], meta] = await render("https://some-url.com", {
             context: {} as Context,
-            // @ts-ignore
+            // @ts-expect-error
             args: {},
             configuration: {},
-            // @ts-ignore
+            // @ts-expect-error
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
@@ -54,7 +54,7 @@ describe(`"renderUrl" Function Test`, () => {
                 tenant: "root",
                 locale: "en-US"
             },
-            // @ts-ignore
+            // @ts-expect-error
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,

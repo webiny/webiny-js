@@ -37,11 +37,6 @@ const Draggable: React.FC<DraggableProps> = props => {
     const [{ isDragging }, drag, preview] = useDrag({
         item: {
             type: "element",
-            /**
-             * TODO @ts-refactor
-             * There is no target on item in types.
-             */
-            // @ts-ignore
             target
         },
         collect: monitor => ({
