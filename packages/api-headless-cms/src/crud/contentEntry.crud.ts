@@ -810,6 +810,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
+        if (!latestStorageEntry) {
+            throw new NotFoundError(
+                `Latest entry "${uniqueId}" of model "${model.modelId}" was not found.`
+            );
+        }
+
         /**
          * We need to convert data from DB to its original form before using it further.
          */
