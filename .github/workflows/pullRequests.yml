@@ -15,12 +15,28 @@ jobs:
         run: npx github-actions-wac validate
   validateCommits:
     name: Validate commit messages
+    if: github.base_ref != 'dev'
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
       - uses: webiny/action-conventional-commits@v1.2.0
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  validateCommitsDev:
+    name: Validate commit messages (dev branch, 'feat' commits not allowed)
+    if: github.base_ref == 'dev'
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+      - uses: webiny/action-conventional-commits@v1.2.0
+        with:
+          allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
