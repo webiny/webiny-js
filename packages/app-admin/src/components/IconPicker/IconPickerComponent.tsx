@@ -80,10 +80,8 @@ export const IconPickerComponent = observer(
                                 )}
                             </IconPickerInput>
                         }
-                        onClose={() => {
-                            closeMenu();
-                            resetActiveTab();
-                        }}
+                        onClose={closeMenu}
+                        onOpen={resetActiveTab}
                     >
                         {() => (
                             <>

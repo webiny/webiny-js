@@ -1,41 +1,171 @@
-// @ts-nocheck
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 
-import { IconPickerPlugin } from "~/components/IconPicker/types";
-import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
-import { SkinToneSelect } from "~/components/IconPicker/SkinToneSelect";
+import { Menu } from "@webiny/ui/Menu";
 
-const EmojiStyled = styled.div<{ size: number }>`
+import { useIcon } from "~/components/IconPicker";
+import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
+import { IconProvider } from "~/components/IconPicker/IconRenderer";
+import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
+import { IconType } from "~/components/IconPicker/config/IconType";
+import { IconPickerConfig } from "~/components/IconPicker/config";
+import { Icon } from "~/components/IconPicker/types";
+
+const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
+
+const EmojiStyled = styled.div`
     color: black;
-    width: ${({ size }) => `${size}px`};
-    height: ${({ size }) => `${size}px`};
-    font-size: ${({ size }) => `${size * 0.8}px`};
-    line-height: ${({ size }) => `${size}px`};
+    width: 32px;
+    height: 32px;
+    font-size: 26px;
+    line-height: 32px;
 `;
 
-export const emojisPlugin = (): IconPickerPlugin => {
-    return {
-        type: "admin-icon-picker",
-        name: "admin-icon-picker-emojis",
-        iconType: "emoji",
-        renderIcon(icon, size) {
-            return (
-                <EmojiStyled size={size}>
-                    {icon.skinTone ? icon.value + icon.skinTone : icon.value}
-                </EmojiStyled>
-            );
-        },
-        renderTab(props) {
-            return (
-                <IconPickerTab key={props.label} {...props}>
-                    <SkinToneSelect
-                        icon={props.value}
-                        onChange={props.onChange}
-                        checkSkinToneSupport={props.checkSkinToneSupport}
-                    />
-                </IconPickerTab>
-            );
+const SkinToneSelectWrapper = styled.div`
+    padding: 4px;
+    width: 32px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    cursor: pointer;
+`;
+
+const SkinTonesGrid = styled.div`
+    display: grid;
+    gap: 4px;
+    padding: 4px;
+`;
+
+const SkinTone = styled.div`
+    cursor: pointer;
+`;
+
+interface Emoji extends Icon {
+    skinTone: string;
+}
+
+const Emoji = () => {
+    const { icon } = useIcon<Emoji>();
+
+    return <EmojiStyled>{icon.skinTone ? icon.value + icon.skinTone : icon.value}</EmojiStyled>;
+};
+
+type SkinToneSelectProps = {
+    icon: Icon | null;
+    hasSkinToneSupport: boolean;
+    onChange: (skinTone: string) => void;
+};
+
+export const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectProps) => {
+    if (!icon) {
+        return <SkinToneSelectWrapper />;
+    }
+
+    if (!hasSkinToneSupport) {
+        return (
+            <SkinToneSelectWrapper>
+                <IconProvider icon={icon}>
+                    <Emoji />
+                </IconProvider>
+            </SkinToneSelectWrapper>
+        );
+    }
+
+    return (
+        <Menu
+            handle={
+                <SkinToneSelectWrapper>
+                    <IconProvider icon={icon}>
+                        <Emoji />
+                    </IconProvider>
+                </SkinToneSelectWrapper>
+            }
+        >
+            {({ closeMenu }) => (
+                <SkinTonesGrid>
+                    {SKIN_TONES.map((skinTone, index) => (
+                        <SkinTone
+                            key={index}
+                            onClick={() => {
+                                onChange(skinTone);
+                                closeMenu();
+                            }}
+                        >
+                            <IconProvider icon={{ ...icon, skinTone }}>
+                                <Emoji />
+                            </IconProvider>
+                        </SkinTone>
+                    ))}
+                </SkinTonesGrid>
+            )}
+        </Menu>
+    );
+};
+
+/**
+ * @see https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+ */
+const isEmoji = (icon: Icon | null): icon is Emoji => {
+    if (!icon) {
+        return false;
+    }
+    return icon.type === "emoji";
+};
+
+const EmojiTab = () => {
+    const presenter = useIconPicker();
+    const { selectedIcon } = presenter.vm;
+
+    const onSkinToneChange = (skinTone: string) => {
+        if (isEmoji(selectedIcon)) {
+            presenter.setIcon({ ...selectedIcon, skinTone });
+        } else {
+            presenter.closeMenu();
         }
     };
+
+    const onIconSelect = (icon: Icon) => {
+        presenter.setIcon(icon);
+    };
+
+    const hasSkinToneSupport = useMemo(() => {
+        if (!selectedIcon) {
+            return false;
+        }
+
+        const icons = presenter.getIcons();
+
+        return (
+            icons
+                .filter(icon => icon.type === "emoji")
+                .find(icon => icon.value === selectedIcon.value)?.skinToneSupport || false
+        );
+    }, [selectedIcon]);
+
+    return (
+        <IconPickerTab
+            label={"Emojis"}
+            onChange={onIconSelect}
+            actions={
+                <SkinToneSelect
+                    icon={selectedIcon}
+                    hasSkinToneSupport={hasSkinToneSupport}
+                    onChange={onSkinToneChange}
+                />
+            }
+        />
+    );
+};
+
+export const EmojiPlugin = () => {
+    return (
+        <IconPickerConfig>
+            <IconType name={"emoji"}>
+                <IconType.Icon element={<Emoji />} />
+                <IconType.Tab element={<EmojiTab />} />
+            </IconType>
+        </IconPickerConfig>
+    );
 };

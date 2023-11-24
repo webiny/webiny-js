@@ -55,6 +55,10 @@ export const Cell = styled.div<{ isActive: boolean }>`
     background-color: ${({ isActive, theme }) =>
         isActive ? theme.styles.colors.color5 : theme.styles.colors.color6};
 
+    &:hover {
+        background: ${({ theme }) => theme.styles.colors.color5};
+    }
+
     & > * {
         padding: 4px;
     }

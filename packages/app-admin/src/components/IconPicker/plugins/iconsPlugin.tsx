@@ -9,49 +9,6 @@ import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvid
 import { IconType } from "~/components/IconPicker/config/IconType";
 import { IconPickerConfig } from "~/components/IconPicker/config";
 
-/*export const iconsPlugin = (): IconPickerPlugin => {
-    return {
-        type: "admin-icon-picker",
-        name: "admin-icon-picker-icons",
-        iconType: "icon",
-        renderIcon(icon, size) {
-            return (
-                <svg
-                    width={size}
-                    height={size}
-                    viewBox={`0 0 ${icon.width || 512} 512`}
-                    color={icon?.color || "inherit"}
-                    dangerouslySetInnerHTML={{ __html: icon.value }}
-                />
-            );
-        },
-        renderTab(props) {
-            return (
-                <IconPickerTab
-                    key={props.label}
-                    {...props}
-                    onChange={icon => props.onChange({ ...icon, color: props.color })}
-                >
-                    <DelayedOnChange
-                        value={props.color}
-                        onChange={color => {
-                            props.onColorChange(color);
-
-                            if (props.value && props.value.type === "icon") {
-                                props.onChange({ ...props.value, color }, false);
-                            }
-                        }}
-                    >
-                        {({ value, onChange }) => <ColorPicker value={value} onChange={onChange} />}
-                    </DelayedOnChange>
-                </IconPickerTab>
-            );
-        }
-    };
-};*/
-
-/****************** NEW IMPLEMENTATION ******************/
-
 interface SimpleIcon extends Icon {
     color: string;
 }

@@ -9,6 +9,7 @@ const COLUMN_COUNT = 8;
 
 export interface IconPickerPresenterInterface {
     load(icon: Icon): Promise<void>;
+    getIcons(): Icon[];
     setIcon(icon: Icon): void;
     addIcon(icon: Icon): void;
     setFilter(value: string): void;
@@ -77,6 +78,10 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     openMenu(): void {
         console.log("presenter.openMenu()");
         this.isMenuOpened = true;
+    }
+
+    getIcons(): Icon[] {
+        return this.repository.getIcons();
     }
 
     private getGroupedIcons() {
