@@ -87,20 +87,7 @@ export const pullRequests = createWorkflow({
         validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
-            steps: [
-                {
-                    uses: "webiny/action-conventional-commits@v1.2.0",
-                    with: {
-                        // If dev, use "dev" commit types, otherwise use "next" commit types.
-                        "allowed-commit-types":
-                            "${{ github.ref == 'refs/heads/dev' ? '" +
-                            validCommitTypesDev +
-                            "' : '" +
-                            validCommitTypesNext +
-                            "' }}"
-                    }
-                }
-            ]
+            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
         }),
         init: createJob({
             name: "Init",

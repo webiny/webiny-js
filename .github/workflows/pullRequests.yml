@@ -21,13 +21,6 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v3
       - uses: webiny/action-conventional-commits@v1.2.0
-        with:
-          allowed-commit-types: >-
-            ${{ github.ref == 'refs/heads/dev' ?
-            'fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip'
-            :
-            'feat,fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip'
-            }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
