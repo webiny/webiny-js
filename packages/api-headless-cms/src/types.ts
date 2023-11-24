@@ -1493,6 +1493,12 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Populated every time entry is saved.
      */
     savedOn: string;
+    /**
+     * @deprecated Use `entryFirstPublishedOn` instead. TODO: check this.
+     * A string of Date.toISOString() type - if published.
+     * Populated when entry is published.
+     */
+    publishedOn?: string | null;
 
     /**
      * 🆕 New meta fields below.
@@ -1567,11 +1573,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      * @see I18NLocale.code
      */
     locale: string;
-    /**
-     * A string of Date.toISOString() type - if published.
-     * Populated when entry is published.
-     */
-    publishedOn?: string | null;
     /**
      * A revision version of the entry.
      */
