@@ -2,26 +2,49 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests
-'on':
-  pull_request:
-    branches:
-      - adrian*
-env:
-  NODE_OPTIONS: '--max_old_space_size=4096'
+name: Pull Requests (TEST)
+'on': pull_request
 jobs:
-  validate-commits:
-    name: Validate commit messages
+  validateWorkflows:
+    name: Validate workflows
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Validate
+        run: npx github-actions-wac validate
+  validateCommits:
+    name: Validate commit messages
+    if: github.ref != 'refs/heads/dev'
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@v3
-      - uses: webiny/action-conventional-commits@v1.1.0
+      - uses: webiny/action-conventional-commits@v1.2.0
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  validateCommitsDev:
+    name: Validate commit messages (dev branch)
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+      - uses: webiny/action-conventional-commits@v1.2.0
+        with:
+          allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   init:
     name: Init
     runs-on: webiny-build-packages
     outputs:
-      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
-      day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
@@ -29,13 +52,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
-      - name: Get day of the month
-        id: get-day
-        run: >-
-          echo "day=$(node --eval "console.log(new Date().getDate())")" >>
-          $GITHUB_OUTPUT
       - name: Get timestamp
         id: get-timestamp
         run: >-
@@ -45,17 +61,6 @@ jobs:
         id: is-fork-pr
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
-          $GITHUB_OUTPUT
-      - name: Ignored Jest packages
-        id: get-ignored-jest-packages
-        if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
-        run: echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT
-      - name: List packages with Jest tests
-        id: list-jest-packages
-        run: >-
-          echo "jest-packages=$(node scripts/listPackagesWithTests.js
-          --ignore-packages=${{
-          steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >>
           $GITHUB_OUTPUT
       - uses: actions/cache@v3
         id: yarn-cache
@@ -67,7 +72,7 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: >-
-            ${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{
+            ${{ runner.os }}-${{ github.event.number }}-${{
             secrets.RANDOM_CACHE_KEY_SUFFIX }}
       - name: Install dependencies
         run: yarn --immutable
@@ -78,17 +83,17 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
-  code-analysis:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  staticCodeAnalysis:
     needs: init
     name: Static code analysis
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -107,7 +112,11 @@ jobs:
         run: yarn check-ts-configs
       - name: ESLint
         run: yarn eslint
-  code-analysis-typescript:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
@@ -115,8 +124,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -125,7 +132,10 @@ jobs:
         run: yarn --immutable
       - name: Build packages (full)
         run: yarn build
-  jest-tests:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  jestTestsNoStorage:
     needs: init
     name: ${{ matrix.package.cmd }}
     strategy:
@@ -135,21 +145,19 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
+        package: >-
+          ${{
+          fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-dynamodb-to-elasticsearch","id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
+          }}
     runs-on: ${{ matrix.os }}
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - uses: actions/cache@v3
         with:
           path: .yarn/cache
@@ -164,11 +172,119 @@ jobs:
         run: yarn build:quick
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-  verdaccio-publish:
-    if: needs.init.outputs.is-fork-pr != 'true'
+  jestTestsDdb:
     needs: init
+    name: ${{ matrix.package.cmd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 18
+        package: >-
+          ${{ fromJson('[{"cmd":"packages/api-aco
+          --storage=ddb","storage":"ddb","id":"api-aco_ddb"},{"cmd":"packages/api-apw
+          --storage=ddb","storage":"ddb","id":"api-apw_ddb"},{"cmd":"packages/api-audit-logs
+          --storage=ddb","storage":"ddb","id":"api-audit-logs_ddb"},{"cmd":"packages/api-file-manager
+          --storage=ddb","storage":"ddb","id":"api-file-manager_ddb"},{"cmd":"packages/api-form-builder
+          --storage=ddb","storage":"ddb","id":"api-form-builder_ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb","storage":"ddb","id":"api-headless-cms_ddb"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","id":"api-i18n_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb","storage":"ddb","id":"api-mailer_ddb"},{"cmd":"packages/api-page-builder
+          --storage=ddb","storage":"ddb","id":"api-page-builder_ddb"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb","storage":"ddb","id":"api-page-builder-aco_ddb"},{"cmd":"packages/api-page-builder-import-export
+          --storage=ddb","storage":"ddb","id":"api-page-builder-import-export_ddb"},{"cmd":"packages/api-prerendering-service
+          --storage=ddb","storage":"ddb","id":"api-prerendering-service_ddb"},{"cmd":"packages/api-security
+          --storage=ddb","storage":"ddb","id":"api-security_ddb"},{"cmd":"packages/api-security-cognito
+          --storage=ddb","storage":"ddb","id":"api-security-cognito_ddb"},{"cmd":"packages/api-tenancy
+          --storage=ddb","storage":"ddb","id":"api-tenancy_ddb"},{"cmd":"packages/api-tenant-manager
+          --storage=ddb","storage":"ddb","id":"api-tenant-manager_ddb"}]') }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+  jestTestsDdbEs:
+    needs: init
+    name: ${{ matrix.package.cmd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 18
+        package: >-
+          ${{ fromJson('[{"cmd":"packages/api-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-file-manager
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"}]')
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build:quick
+      - name: Run tests
+        run: yarn test ${{ matrix.package.cmd }}
+    permissions:
+      id-token: write
+    if: needs.init.outputs.is-fork-pr != 'true'
+  verdaccioPublish:
     name: Publish to Verdaccio
-    runs-on: ubuntu-latest
+    needs: init
+    if: needs.init.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -190,7 +306,6 @@ jobs:
       - name: Build packages
         run: yarn build:quick
       - name: Start Verdaccio local server
-        working-directory: verdaccio-files
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
@@ -210,9 +325,13 @@ jobs:
           path: |
             .verdaccio/
             .verdaccio.yaml
-  test-create-webiny-project:
-    needs: verdaccio-publish
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  testCreateWebinyProject:
     name: Test "create-webiny-project"
+    needs: verdaccioPublish
     strategy:
       fail-fast: false
       matrix:
@@ -221,9 +340,10 @@ jobs:
         node:
           - 18
     runs-on: ${{ matrix.os }}
-    env:
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -233,7 +353,9 @@ jobs:
           path: verdaccio-files
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
-        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -250,3 +372,6 @@ jobs:
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
