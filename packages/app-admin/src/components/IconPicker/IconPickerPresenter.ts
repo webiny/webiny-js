@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import groupBy from "lodash/groupBy";
 
 import { IconRepository } from "./IconRepository";
@@ -9,9 +9,8 @@ const COLUMN_COUNT = 8;
 
 export interface IconPickerPresenterInterface {
     load(icon: Icon): Promise<void>;
-    getIcons(): Icon[];
     setIcon(icon: Icon): void;
-    addIcon(icon: Icon): void;
+    // addIcon(icon: Icon): void;
     setFilter(value: string): void;
     setActiveTab(index: number): void;
     getActiveTab(type: string): number;
@@ -21,6 +20,10 @@ export interface IconPickerPresenterInterface {
         isLoading: boolean;
         activeTab: number;
         isMenuOpened: boolean;
+        // TODO: I would not do this grouping in the Presenter, but rather in the component that actually renders
+        // these groups. Its a VERY UI specific logic, which changes the shape of the data only to satisfy
+        // that UI list. Instead of `data`, assign all `icons`, filtered by keyword, and that's it. Then group into rows
+        // where you're rendering them, in the `<IconPickerTab>`
         data: { type: string; rows: IconPickerGridRow[] }[];
         iconTypes: IconType[];
         selectedIcon: Icon | null;
@@ -32,7 +35,6 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     private repository: IconRepository;
     private selectedIcon: Icon | null = null;
     private filter = "";
-    private color = "#757575";
     private activeTab = 0;
     private isMenuOpened = false;
 
@@ -43,10 +45,6 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
 
     async load(value: Icon | null = null) {
         this.selectedIcon = value;
-
-        if (value?.color) {
-            this.color = value.color;
-        }
 
         await this.repository.loadIcons();
     }
@@ -59,16 +57,16 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
             isLoading: this.repository.getLoading().isLoading,
             data: this.getData(),
             iconTypes: this.repository.getIconTypes(),
-            selectedIcon: this.selectedIcon,
-            filter: this.filter,
-            color: this.color
+            // `toJS` will unwrap an observable into a POJO. This will make it simple to use in child components.
+            selectedIcon: toJS(this.selectedIcon),
+            filter: this.filter
         };
     }
 
-    addIcon(icon: Icon) {
-        // TODO:
-        // this.repository.addIcon(icon)
-    }
+    // addIcon(icon: Icon) {
+    //     // TODO:
+    //     // this.repository.addIcon(icon)
+    // }
 
     closeMenu(): void {
         console.log("presenter.closeMenu()");
@@ -78,10 +76,6 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     openMenu(): void {
         console.log("presenter.openMenu()");
         this.isMenuOpened = true;
-    }
-
-    getIcons(): Icon[] {
-        return this.repository.getIcons();
     }
 
     private getGroupedIcons() {

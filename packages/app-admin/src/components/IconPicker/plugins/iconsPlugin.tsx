@@ -8,6 +8,7 @@ import { useIcon } from "~/components/IconPicker";
 import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
 import { IconType } from "~/components/IconPicker/config/IconType";
 import { IconPickerConfig } from "~/components/IconPicker/config";
+import { observer } from "mobx-react-lite";
 
 interface SimpleIcon extends Icon {
     color: string;
@@ -54,7 +55,7 @@ const isSimpleIcon = (icon: Icon | null): icon is SimpleIcon => {
     return icon.type === "icon";
 };
 
-const IconTab = () => {
+const IconTab = observer(() => {
     const presenter = useIconPicker();
     const { selectedIcon } = presenter.vm;
 
@@ -87,7 +88,7 @@ const IconTab = () => {
             actions={<IconColorPicker color={color} onChange={onColorChange} />}
         />
     );
-};
+});
 
 export const SimpleIconPlugin = () => {
     return (

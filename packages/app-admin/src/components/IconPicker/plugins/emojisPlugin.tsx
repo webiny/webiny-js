@@ -1,8 +1,7 @@
-import React, { useMemo } from "react";
+import React from "react";
+import { observer } from "mobx-react-lite";
 import styled from "@emotion/styled";
-
 import { Menu } from "@webiny/ui/Menu";
-
 import { useIcon } from "~/components/IconPicker";
 import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
 import { IconProvider } from "~/components/IconPicker/IconRenderer";
@@ -44,6 +43,7 @@ const SkinTone = styled.div`
 
 interface Emoji extends Icon {
     skinTone: string;
+    skinToneSupport: boolean;
 }
 
 const Emoji = () => {
@@ -59,7 +59,7 @@ type SkinToneSelectProps = {
 };
 
 export const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectProps) => {
-    if (!icon) {
+    if (!icon || !isEmoji(icon)) {
         return <SkinToneSelectWrapper />;
     }
 
@@ -114,9 +114,12 @@ const isEmoji = (icon: Icon | null): icon is Emoji => {
     return icon.type === "emoji";
 };
 
-const EmojiTab = () => {
+// `observer` is necessary to react to changes on the `presenter`, which is an observable.
+const EmojiTab = observer(() => {
     const presenter = useIconPicker();
     const { selectedIcon } = presenter.vm;
+
+    console.log("selectedIcon", selectedIcon);
 
     const onSkinToneChange = (skinTone: string) => {
         if (isEmoji(selectedIcon)) {
@@ -130,19 +133,9 @@ const EmojiTab = () => {
         presenter.setIcon(icon);
     };
 
-    const hasSkinToneSupport = useMemo(() => {
-        if (!selectedIcon) {
-            return false;
-        }
-
-        const icons = presenter.getIcons();
-
-        return (
-            icons
-                .filter(icon => icon.type === "emoji")
-                .find(icon => icon.value === selectedIcon.value)?.skinToneSupport || false
-        );
-    }, [selectedIcon]);
+    // For this, we don't need to look up the icon in the full icons list. We already have this
+    // information right here, in the `selectedIcon`.
+    const hasSkinToneSupport = isEmoji(selectedIcon) ? selectedIcon.skinToneSupport : false;
 
     return (
         <IconPickerTab
@@ -157,7 +150,7 @@ const EmojiTab = () => {
             }
         />
     );
-};
+});
 
 export const EmojiPlugin = () => {
     return (

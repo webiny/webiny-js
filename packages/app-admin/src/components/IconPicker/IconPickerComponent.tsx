@@ -34,13 +34,17 @@ export interface IconPickerComponentProps extends IconPickerProps {
 
 export const IconPickerComponent = observer(
     ({ presenter, label, description, ...props }: IconPickerComponentProps) => {
-        const { value, onChange } = props;
+        const { onChange } = props;
         const { isValid: validationIsValid, message: validationMessage } = props.validation || {};
         const { activeTab, isMenuOpened, isLoading, iconTypes, selectedIcon } = presenter.vm;
 
         useEffect(() => {
             if (onChange) {
-                onChange(selectedIcon);
+                // TODO: only call `onChange` if the values are different
+                // I tried `lodash/isEqual` to compare the 2 objects, but it didn't work.
+                // If you don't compare, you'll end up in an infinite loop, because of the
+                // `useEffect` in the `IconPickerInner` component.
+                // onChange(newIcon);
             }
         }, [selectedIcon]);
 
@@ -48,8 +52,8 @@ export const IconPickerComponent = observer(
         const getActiveTab = (type: string) => presenter.getActiveTab(type);
 
         const resetActiveTab = useCallback(() => {
-            setActiveTab(value ? getActiveTab(value.type) : 0);
-        }, [value?.type]);
+            setActiveTab(selectedIcon ? getActiveTab(selectedIcon.type) : 0);
+        }, [selectedIcon?.type]);
 
         const openMenu = () => presenter.openMenu();
         const closeMenu = () => presenter.closeMenu();

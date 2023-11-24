@@ -1,4 +1,5 @@
 import React from "react";
+import { toJS } from "mobx";
 import { makeComposable } from "@webiny/react-composition";
 import { Icon } from "./types";
 
@@ -16,7 +17,8 @@ interface IconProviderProps {
 }
 
 export const IconProvider = ({ icon, children }: IconProviderProps) => {
-    return <IconContext.Provider value={{ icon }}>{children}</IconContext.Provider>;
+    // I want to use the POJO via the context, to reduce the need of using `observer` HOC everywhere.
+    return <IconContext.Provider value={{ icon: toJS(icon) }}>{children}</IconContext.Provider>;
 };
 
 export function useIcon<T extends Icon = Icon>(): IconContext<T> {
