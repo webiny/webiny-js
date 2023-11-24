@@ -1,6 +1,4 @@
 import React, { useMemo } from "react";
-import { createConfigurableComponent } from "@webiny/react-properties";
-import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
 import {
     icons as fa6RegularIconsJson,
     categories as fa6RegularCategoriesJson
@@ -10,8 +8,13 @@ import {
     categories as fa6SolidCategoriesJson
 } from "@iconify/json/json/fa6-solid.json";
 import emojisJson from "unicode-emoji-json/data-by-emoji.json";
+
+import { createConfigurableComponent } from "@webiny/react-properties";
+
+import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
 import { SimpleIconPlugin } from "../plugins/iconsPlugin";
 import { EmojiPlugin } from "../plugins/emojisPlugin";
+import { CustomIconPlugin } from "../plugins/customPlugin";
 
 type FaIconSet = {
     [key: string]: {
@@ -200,6 +203,7 @@ export const DefaultIcons = () => {
             </IconPickerConfig>
             <SimpleIconPlugin />
             <EmojiPlugin />
+            <CustomIconPlugin />
         </>
     );
 };

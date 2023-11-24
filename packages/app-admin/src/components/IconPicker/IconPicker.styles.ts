@@ -110,12 +110,6 @@ export const InputsWrapper = styled.div`
     }
 `;
 
-export const addButtonStyle = css`
-    &.mdc-button {
-        height: 40px;
-    }
-`;
-
 export const placeholderIcon = css`
     fill: #00000040;
 `;

@@ -1,14 +1,16 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import styled from "@emotion/styled";
+
 import { Menu } from "@webiny/ui/Menu";
-import { useIcon } from "~/components/IconPicker";
-import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
-import { IconProvider } from "~/components/IconPicker/IconRenderer";
-import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
-import { IconType } from "~/components/IconPicker/config/IconType";
-import { IconPickerConfig } from "~/components/IconPicker/config";
-import { Icon } from "~/components/IconPicker/types";
+
+import { useIcon } from "..";
+import { IconPickerTab } from "../IconPickerTab";
+import { IconProvider } from "../IconRenderer";
+import { useIconPicker } from "../IconPickerPresenterProvider";
+import { IconType } from "../config/IconType";
+import { IconPickerConfig } from "../config";
+import { Icon } from "../types";
 
 const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
 
@@ -52,13 +54,13 @@ const Emoji = () => {
     return <EmojiStyled>{icon.skinTone ? icon.value + icon.skinTone : icon.value}</EmojiStyled>;
 };
 
-type SkinToneSelectProps = {
+interface SkinToneSelectProps {
     icon: Icon | null;
     hasSkinToneSupport: boolean;
     onChange: (skinTone: string) => void;
-};
+}
 
-export const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectProps) => {
+const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectProps) => {
     if (!icon || !isEmoji(icon)) {
         return <SkinToneSelectWrapper />;
     }
@@ -114,12 +116,9 @@ const isEmoji = (icon: Icon | null): icon is Emoji => {
     return icon.type === "emoji";
 };
 
-// `observer` is necessary to react to changes on the `presenter`, which is an observable.
 const EmojiTab = observer(() => {
     const presenter = useIconPicker();
     const { selectedIcon } = presenter.vm;
-
-    console.log("selectedIcon", selectedIcon);
 
     const onSkinToneChange = (skinTone: string) => {
         if (isEmoji(selectedIcon)) {
@@ -133,8 +132,6 @@ const EmojiTab = observer(() => {
         presenter.setIcon(icon);
     };
 
-    // For this, we don't need to look up the icon in the full icons list. We already have this
-    // information right here, in the `selectedIcon`.
     const hasSkinToneSupport = isEmoji(selectedIcon) ? selectedIcon.skinToneSupport : false;
 
     return (

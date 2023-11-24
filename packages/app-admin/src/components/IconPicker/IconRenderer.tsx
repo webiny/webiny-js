@@ -1,6 +1,8 @@
 import React from "react";
 import { toJS } from "mobx";
+
 import { makeComposable } from "@webiny/react-composition";
+
 import { Icon } from "./types";
 
 export const IconRenderer = makeComposable("IconPickerIcon");

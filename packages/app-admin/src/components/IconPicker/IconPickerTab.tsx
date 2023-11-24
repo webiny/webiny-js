@@ -1,10 +1,12 @@
 import React, { Fragment } from "react";
 import { List } from "react-virtualized";
+import groupBy from "lodash/groupBy";
 
 import { Tab } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Input } from "@webiny/ui/Input";
+import { makeComposable } from "@webiny/react-composition";
 
 import { IconProvider, IconRenderer } from "./IconRenderer";
 import {
@@ -16,24 +18,55 @@ import {
     NoResultsWrapper,
     InputsWrapper
 } from "./IconPicker.styles";
-import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
-import { makeComposable } from "@webiny/react-composition";
-import { useIconType } from "~/components/IconPicker/config/IconType";
+import { useIconPicker } from "./IconPickerPresenterProvider";
+import { useIconType } from "./config/IconType";
 import { Icon, IconPickerGridRow } from "./types";
 
-type RenderRowProps = {
-    onIconClick: (icon: Icon) => void;
-    style: Record<string, any>;
-    row: IconPickerGridRow;
-    cellDecorator: CellDecorator;
-};
+const COLUMN_COUNT = 8;
 
 export const IconPickerTabRenderer = makeComposable("IconPickerTabRenderer");
 
+const getRows = (icons: Icon[]) => {
+    // Group the icons by their category.
+    const groupedObjects = groupBy(icons, "category");
+    const rows: IconPickerGridRow[] = [];
+
+    // Iterate over each category in the grouped icons.
+    for (const key in groupedObjects) {
+        // Skip any group where the key is `undefined` (these icons will be handled separately).
+        if (key !== "undefined") {
+            const rowIcons = groupedObjects[key];
+
+            // Add a row for the category name.
+            rows.push({ type: "category-name", name: key });
+
+            // Split the icons in this category into groups of COLUMN_COUNT and add them as rows.
+            while (rowIcons.length) {
+                rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
+            }
+        }
+    }
+
+    // Handle icons that don't have a category (key is `undefined`).
+    if (groupedObjects.undefined) {
+        const rowIcons = groupedObjects.undefined;
+
+        // Add a row for the `Uncategorized` category name.
+        rows.push({ type: "category-name", name: "Uncategorized" });
+
+        // Split these icons into groups of COLUMN_COUNT and add them as rows.
+        while (rowIcons.length) {
+            rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
+        }
+    }
+
+    return rows;
+};
+
 const useIconTypeRows = (type: string) => {
     const presenter = useIconPicker();
-    const group = presenter.vm.data.find(group => group.type === type);
-    const rows = group ? group.rows : [];
+    const icons = presenter.vm.icons.filter(icon => icon.type === type);
+    const rows = getRows(icons);
 
     return {
         isEmpty: rows.length === 0,
@@ -41,6 +74,13 @@ const useIconTypeRows = (type: string) => {
         rowCount: rows.length
     };
 };
+
+interface RenderRowProps {
+    onIconClick: (icon: Icon) => void;
+    style: Record<string, any>;
+    row: IconPickerGridRow;
+    cellDecorator: CellDecorator;
+}
 
 const RowRenderer = ({ row, style, cellDecorator, onIconClick }: RenderRowProps) => {
     const presenter = useIconPicker();

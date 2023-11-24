@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 type Icon = {

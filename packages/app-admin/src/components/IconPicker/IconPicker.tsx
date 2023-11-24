@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 
 import { IconPickerWithConfig, useIconPickerConfig } from "./config";
 import { iconRepositoryFactory } from "./IconRepositoryFactory";
@@ -7,8 +8,9 @@ import { IconPickerComponent, IconPickerProps } from "./IconPickerComponent";
 import { IconRenderer } from "./IconRenderer";
 
 const IconPickerInner = (props: IconPickerProps) => {
+    const client = useApolloClient();
     const { iconTypes, iconPackProviders } = useIconPickerConfig();
-    const repository = iconRepositoryFactory.getRepository(iconTypes, iconPackProviders);
+    const repository = iconRepositoryFactory.getRepository(client, iconTypes, iconPackProviders);
 
     const presenter = useMemo(() => {
         return new IconPickerPresenter(repository);

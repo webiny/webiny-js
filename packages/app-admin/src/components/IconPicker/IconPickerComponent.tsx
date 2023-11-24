@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
+import isEqual from "lodash/isEqual";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
+
 import { Menu } from "@webiny/ui/Menu";
 import { Tabs } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
@@ -19,9 +21,9 @@ import {
     MenuHeader,
     placeholderIcon
 } from "./IconPicker.styles";
-import { IconPickerTabRenderer } from "~/components/IconPicker/IconPickerTab";
+import { IconPickerTabRenderer } from "./IconPickerTab";
 import { IconPickerPresenterProvider } from "./IconPickerPresenterProvider";
-import { IconTypeProvider } from "~/components/IconPicker/config/IconType";
+import { IconTypeProvider } from "./config/IconType";
 
 export interface IconPickerProps extends FormComponentProps {
     label?: string;
@@ -34,17 +36,13 @@ export interface IconPickerComponentProps extends IconPickerProps {
 
 export const IconPickerComponent = observer(
     ({ presenter, label, description, ...props }: IconPickerComponentProps) => {
-        const { onChange } = props;
+        const { value, onChange } = props;
         const { isValid: validationIsValid, message: validationMessage } = props.validation || {};
         const { activeTab, isMenuOpened, isLoading, iconTypes, selectedIcon } = presenter.vm;
 
         useEffect(() => {
-            if (onChange) {
-                // TODO: only call `onChange` if the values are different
-                // I tried `lodash/isEqual` to compare the 2 objects, but it didn't work.
-                // If you don't compare, you'll end up in an infinite loop, because of the
-                // `useEffect` in the `IconPickerInner` component.
-                // onChange(newIcon);
+            if (onChange && selectedIcon && !isEqual(selectedIcon, value)) {
+                onChange(selectedIcon);
             }
         }, [selectedIcon]);
 

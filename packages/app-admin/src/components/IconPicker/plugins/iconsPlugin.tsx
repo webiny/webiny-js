@@ -1,14 +1,16 @@
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
 import styled from "@emotion/styled";
+
 import { ColorPicker } from "@webiny/ui/ColorPicker";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
-import { Icon } from "~/components/IconPicker/types";
-import { IconPickerTab } from "~/components/IconPicker/IconPickerTab";
-import { useIcon } from "~/components/IconPicker";
-import { useIconPicker } from "~/components/IconPicker/IconPickerPresenterProvider";
-import { IconType } from "~/components/IconPicker/config/IconType";
-import { IconPickerConfig } from "~/components/IconPicker/config";
-import { observer } from "mobx-react-lite";
+
+import { useIcon } from "..";
+import { IconPickerTab } from "../IconPickerTab";
+import { useIconPicker } from "../IconPickerPresenterProvider";
+import { IconType } from "../config/IconType";
+import { IconPickerConfig } from "../config";
+import { Icon } from "../types";
 
 interface SimpleIcon extends Icon {
     color: string;
