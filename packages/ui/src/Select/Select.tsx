@@ -80,7 +80,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
     const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        // @ts-ignore
+        // @ts-expect-error
         .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;

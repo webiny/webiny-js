@@ -287,9 +287,8 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
                 if (!(key in field)) {
                     return false;
                 }
-                // TODO @ts-refactor figure if there is a way to fix this.
-                // @ts-ignore
-                if (field[key] !== query[key]) {
+
+                if (field[key as keyof typeof field] !== query[key as keyof typeof query]) {
                     return false;
                 }
             }

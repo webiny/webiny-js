@@ -88,6 +88,6 @@ export const CommentFile: React.FC<CommentFileProps> = props => {
         return <Component />;
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     return <Image src={value.src} {...commentFilePreviewProps} />;
 };

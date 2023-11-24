@@ -35,7 +35,7 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
          * TODO @ts-refactor
          * 'TProps' could be instantiated with an arbitrary type which could be unrelated to 'TRenderProps'
          */
-        // @ts-ignore
+        // @ts-expect-error
         this.config.label = label;
     }
 

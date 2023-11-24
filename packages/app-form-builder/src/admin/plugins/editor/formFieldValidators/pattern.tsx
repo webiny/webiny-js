@@ -18,7 +18,7 @@ const plugin: FbBuilderFormFieldValidatorPlugin = {
         description: "Entered value must match a specific pattern.",
         defaultMessage: "Invalid value.",
         // TODO @ts-refactor verify that settings is being used - there is no type written for it
-        // @ts-ignore
+        // @ts-expect-error
         defaultSettings: {
             preset: "custom"
         },

@@ -70,7 +70,7 @@ export const RefInputScalar = new GraphQLScalarType({
             for (let i = 0; i < ast.fields.length; i++) {
                 const { name, value } = ast.fields[i];
                 if (name.value === "id") {
-                    // @ts-ignore
+                    // @ts-expect-error
                     return isValidId(value.value);
                 }
             }

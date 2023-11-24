@@ -34,7 +34,6 @@ class Radio extends React.Component<Props> {
                     disabled={disabled}
                     checked={Boolean(value)}
                     onChange={this.onChange}
-                    // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                 />
                 {validationIsValid === false && (

@@ -32,6 +32,7 @@ export async function invokeHandlerClient<TParams>({
         headers,
         /**
          * Required until type augmentation works correctly.
+         * Keep @ts-ignore because it will not build if using @ts-expect-error.
          */
         // @ts-ignore
         cookies: request.cookies

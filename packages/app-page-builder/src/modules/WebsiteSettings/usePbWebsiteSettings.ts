@@ -3,10 +3,6 @@ import get from "lodash/get";
 import set from "lodash/set";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-/**
- * Package @webiny/telemetry is missing types.
- */
-// @ts-ignore
 import { sendEvent, setProperties } from "@webiny/telemetry/react";
 import {
     GET_SETTINGS,
