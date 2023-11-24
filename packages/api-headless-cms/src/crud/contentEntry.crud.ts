@@ -846,17 +846,39 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
-        const currentDate = new Date();
+        const currentIdentity = getSecurityIdentity();
+        const currentDateTime = new Date();
+
         const entry: CmsEntry = {
             ...originalEntry,
             id,
             version: nextVersion,
-            savedOn: getDate(rawInput.savedOn, currentDate),
-            createdOn: getDate(rawInput.createdOn, currentDate),
+
+            // Deprecated fields. We still have them here for backwards compatibility.
+            // We'll remove these in one of the future releases.1
+            savedOn: getDate(rawInput.savedOn, currentDateTime),
+            createdOn: getDate(rawInput.createdOn, currentDateTime),
             publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
             createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
             modifiedBy: getIdentity(rawInput.modifiedBy, null),
             ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
+
+            // Revision-level meta fields.
+            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
+            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
+            revisionModifiedOn: null,
+            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
+            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+            revisionModifiedBy: null,
+
+            // Entry-level meta fields. We copy the values from current latest entry.
+            entryCreatedOn: getDate(rawInput.entryCreatedOn, latestStorageEntry.entryCreatedOn),
+            entrySavedOn: getDate(rawInput.entrySavedOn, latestStorageEntry.entrySavedOn),
+            entryModifiedOn: null,
+            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, latestStorageEntry.entryCreatedBy),
+            entrySavedBy: getIdentity(rawInput.entrySavedBy, latestStorageEntry.entrySavedBy),
+            entryModifiedBy: null,
+
             locked: false,
             status: STATUS_DRAFT,
             values
