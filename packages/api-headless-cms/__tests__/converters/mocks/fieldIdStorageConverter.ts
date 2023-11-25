@@ -583,6 +583,8 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
     const fields = createModelFields();
     return {
         name: "Test model",
+        singularApiName: "TestModel",
+        pluralApiName: "TestModels",
         titleFieldId: fields[0].fieldId,
         group: {
             id: "group-id",
