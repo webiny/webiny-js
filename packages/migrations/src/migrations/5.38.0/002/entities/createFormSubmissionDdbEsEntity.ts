@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createStandardEntity } from "~/utils";
 
 const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
@@ -18,6 +18,6 @@ const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
     }
 };
 
-export const createFormSubmissionDdbEsEntity = (table: Table) => {
+export const createFormSubmissionDdbEsEntity = (table: Table<string, string, string>) => {
     return createStandardEntity(table, "FormBuilderSubmissionEs", ddbEsAttributes);
 };

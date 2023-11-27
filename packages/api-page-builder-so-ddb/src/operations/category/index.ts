@@ -7,7 +7,7 @@ import {
     CategoryStorageOperationsListParams,
     CategoryStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
@@ -17,13 +17,14 @@ import { CategoryDynamoDbFieldPlugin } from "~/plugins/definitions/CategoryDynam
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "~/operations/category/keys";
 import { CategoryStorageOperations } from "~/types";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 const createType = (): string => {
     return "pb.category";
 };
 
 export interface CreateCategoryStorageOperationsParams {
-    entity: Entity<any>;
+    entity: Entity;
     plugins: PluginsContainer;
 }
 export const createCategoryStorageOperations = ({
@@ -62,10 +63,13 @@ export const createCategoryStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...category,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...category,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -95,10 +99,13 @@ export const createCategoryStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...category,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...category,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             /**
              * Always clear data loader cache when modifying the records.
@@ -130,9 +137,9 @@ export const createCategoryStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                ...category,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             /**
              * Always clear data loader cache when modifying the records.

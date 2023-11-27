@@ -80,7 +80,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
     const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        // @ts-ignore
+        // @ts-expect-error
         .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;
@@ -114,7 +114,7 @@ export const Select: React.FC<SelectProps> = props => {
                     }
                 )}
                 onChange={e => {
-                    props.onChange && props.onChange((e.target as any).value);
+                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
                 }}
             />
 

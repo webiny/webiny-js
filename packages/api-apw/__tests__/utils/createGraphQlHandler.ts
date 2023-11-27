@@ -2,12 +2,12 @@ import { getIntrospectionQuery } from "graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { createI18NContext, createI18NGraphQL } from "@webiny/api-i18n";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
+import { createPermissions, PermissionsArg, sleep, until } from "./helpers";
 import {
     CREATE_WORKFLOW_MUTATION,
     DELETE_WORKFLOW_MUTATION,
@@ -16,7 +16,7 @@ import {
     UPDATE_WORKFLOW_MUTATION
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createApwPageBuilderContext, createApwGraphQL } from "~/index";
+import { createApwGraphQL, createApwPageBuilderContext } from "~/index";
 import {
     CmsParametersPlugin,
     createHeadlessCmsContext,
@@ -28,18 +28,18 @@ import {
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
 import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
-import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE, UPDATE_PAGE } from "./graphql/pages";
+import { CREATE_PAGE, DELETE_PAGE, GET_PAGE, PUBLISH_PAGE, UPDATE_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
     DELETE_CONTENT_REVIEW_MUTATION,
+    DELETE_SCHEDULED_ACTION_MUTATION,
     GET_CONTENT_REVIEW_QUERY,
+    IS_REVIEW_REQUIRED_QUERY,
     LIST_CONTENT_REVIEWS_QUERY,
     PROVIDE_SIGN_OFF_MUTATION,
-    RETRACT_SIGN_OFF_MUTATION,
-    IS_REVIEW_REQUIRED_QUERY,
     PUBLISH_CONTENT_MUTATION,
-    UNPUBLISH_CONTENT_MUTATION,
-    DELETE_SCHEDULED_ACTION_MUTATION
+    RETRACT_SIGN_OFF_MUTATION,
+    UNPUBLISH_CONTENT_MUTATION
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
@@ -71,6 +71,7 @@ import {
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -141,7 +142,11 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             new CmsParametersPlugin(async context => {
                 const locale = context.i18n.getContentLocale()?.code || "en-US";
                 return {
-                    // @ts-ignore
+                    /**
+                     * This will be fixed with type augmenting.
+                     * Currently, request.params.type is unknown.
+                     */
+                    // @ts-expect-error
                     type: context.request?.params?.type || "read",
                     locale
                 };
@@ -162,9 +167,7 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             createApwGraphQL(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
@@ -179,8 +182,8 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
         if (httpMethod === "OPTIONS" && !response.body) {
             return [null, response];
@@ -200,7 +203,9 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             return invoke({ body: { query: GET_REVIEWER_QUERY, variables } });
         },
         async listReviewersQuery(variables: Record<string, any>) {
-            return invoke({ body: { query: LIST_REVIEWERS_QUERY, variables } });
+            return invoke({
+                body: { query: LIST_REVIEWERS_QUERY, variables }
+            });
         }
     };
 

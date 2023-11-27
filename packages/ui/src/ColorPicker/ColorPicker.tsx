@@ -22,7 +22,7 @@ const classes = {
         display: "inline-block",
         cursor: "pointer"
     }),
-    // @ts-ignore
+    // @ts-expect-error
     popover: css({
         position: "absolute",
         zIndex: "2"

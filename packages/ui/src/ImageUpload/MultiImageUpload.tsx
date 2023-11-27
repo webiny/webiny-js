@@ -174,7 +174,7 @@ class MultiImageUpload extends React.Component<MultiImageUploadProps, State> {
          */
         let imageEditorImageSrc = "";
         if (this.state.imageEditor.image) {
-            // @ts-ignore
+            // @ts-expect-error
             imageEditorImageSrc = this.state.imageEditor.image.src;
             console.warn("Figure out correct type if this.state.imageEditor.image.src");
             console.log(this.state.imageEditor.image.src);

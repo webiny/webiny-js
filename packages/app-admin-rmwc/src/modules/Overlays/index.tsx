@@ -1,5 +1,5 @@
 import React from "react";
-import { Provider } from "@webiny/app-admin/";
+import { Provider } from "@webiny/app-admin";
 import Snackbar from "./Snackbar";
 import { DialogContainer } from "./Dialog";
 import { Portal } from "@rmwc/base";
@@ -28,9 +28,5 @@ const OverlaysHOC = (Component: React.FC): React.FC => {
 };
 
 export const Overlays: React.FC = () => {
-    /**
-     * TODO @ts-refactor @pavel
-     */
-    // @ts-ignore
     return <Provider hoc={OverlaysHOC} />;
 };

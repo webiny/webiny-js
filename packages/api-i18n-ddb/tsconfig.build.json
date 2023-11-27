@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },

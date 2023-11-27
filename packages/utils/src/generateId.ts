@@ -2,7 +2,7 @@ import { nanoid, customAlphabet } from "nanoid";
 /**
  * Package nanoid-dictionary is missing types
  */
-// @ts-ignore
+// @ts-expect-error
 import { lowercase, uppercase, alphanumeric, numbers } from "nanoid-dictionary";
 
 const DEFAULT_SIZE = 21;

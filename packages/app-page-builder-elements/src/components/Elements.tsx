@@ -61,7 +61,6 @@ export const Elements: React.FC<ElementsProps> = props => {
                         key={key}
                         element={element}
                         meta={{
-                            // @ts-ignore
                             depth: (currentRendererMeta.depth || 0) + 1,
                             parentElement: props.element,
                             parentBlockElement,

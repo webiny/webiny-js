@@ -6,11 +6,11 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/data-migration": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/migrations": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "aws-sdk": "^2.971.0"
+    "@webiny/project-utils": "0.0.0"
   }
 }

@@ -3,7 +3,7 @@ import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
 import { positionValues } from "react-custom-scrollbars";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";

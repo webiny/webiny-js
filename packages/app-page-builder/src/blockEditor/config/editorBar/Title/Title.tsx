@@ -54,7 +54,7 @@ const Title: React.FC = () => {
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent<HTMLInputElement>) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();

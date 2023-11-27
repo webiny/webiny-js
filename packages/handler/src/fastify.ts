@@ -4,7 +4,7 @@ import fastify, {
     preSerializationAsyncHookHandler
 } from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, HTTPMethods } from "~/types";
+import { ContextRoutes, DefinedContextRoutes, HTTPMethods, RouteMethodOptions } from "~/types";
 import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -54,8 +54,13 @@ const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string>
     };
 };
 
-const stringifyError = (error: Error) => {
-    const { name, message, code, stack, data } = error as any;
+interface CustomError extends Error {
+    code?: string;
+    data?: Record<string, any>;
+}
+
+const stringifyError = (error: CustomError) => {
+    const { name, message, code, stack, data } = error;
     return JSON.stringify({
         ...error,
         constructorName: error.constructor?.name || "UnknownError",
@@ -75,6 +80,7 @@ const OPTIONS_HEADERS: Record<string, string> = {
 export interface CreateHandlerParams {
     plugins: PluginCollection;
     options?: ServerOptions;
+    debug?: boolean;
 }
 
 export const createHandler = (params: CreateHandlerParams) => {

@@ -2,7 +2,7 @@ import { createTopic } from "@webiny/pubsub";
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { FileManagerSettings, SettingsCRUD } from "~/types";

@@ -13,7 +13,7 @@ export default (): FileUploaderPlugin => {
 
         upload(file: File, options: UploadOptions) {
             // Use "simple" strategy for files smaller than ~100MB
-            // @ts-ignore
+            // @ts-expect-error
             const multiPartThreshold = window["fmUploadMultiPartThreshold"] ?? 100;
             const simple = file.size < multiPartThreshold * 1024 * 1024;
 

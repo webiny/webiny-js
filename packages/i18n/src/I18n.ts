@@ -3,7 +3,7 @@ import * as fecha from "fecha";
 /**
  * Package short-hash has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import hash from "short-hash";
 import lodashAssign from "lodash/assign";
 import lodashGet from "lodash/get";

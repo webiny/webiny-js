@@ -126,7 +126,7 @@ export const createAdminUsers = ({
         /**
          * TODO @ts-refactor figure out better way to type this
          */
-        // @ts-ignore
+        // @ts-expect-error
         async createUser(this: AdminUsers, data) {
             await checkPermission();
 
@@ -171,8 +171,11 @@ export const createAdminUsers = ({
                 await onUserBeforeCreate.publish({ user, inputData: data });
                 /**
                  * Always delete `password` from the user data!
+                 *
+                 * Error is expected because password is not optional parameter.
                  */
-                delete (user as any)["password"];
+                // @ts-expect-error
+                delete user["password"];
 
                 try {
                     result = await storageOperations.createUser({ user });
@@ -281,7 +284,7 @@ export const createAdminUsers = ({
         /**
          * TODO @ts-refactor figure out better way to type this
          */
-        // @ts-ignore
+        // @ts-expect-error
         async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 

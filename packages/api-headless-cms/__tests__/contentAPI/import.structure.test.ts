@@ -954,7 +954,11 @@ describe("import cms structure", () => {
         expect(listGroupsResponse).toMatchObject({
             data: {
                 listContentModelGroups: {
-                    data: importData.groups.concat(pluginGroups as any).map(group => {
+                    /**
+                     * Mixed types for importData and pluginGroups but it is ok for testing.
+                     */
+                    // @ts-expect-error
+                    data: importData.groups.concat(pluginGroups).map(group => {
                         return {
                             id: group.id
                         };

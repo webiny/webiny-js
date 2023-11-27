@@ -1,4 +1,5 @@
 import { createRichTextStorageTransformPlugin } from "~/dynamoDb/storage/richText";
+import { FromStorageParams, ToStorageParams } from "@webiny/api-headless-cms";
 
 const defaultArgs = {
     field: {
@@ -53,7 +54,7 @@ describe("richTextStoragePlugin", () => {
         const result = await plugin.toStorage({
             ...defaultArgs,
             value: testValue
-        } as any);
+        } as ToStorageParams<any, any>);
 
         expect(result).toEqual({
             compression: "jsonpack",
@@ -71,7 +72,7 @@ describe("richTextStoragePlugin", () => {
         const result = await plugin.fromStorage({
             ...defaultArgs,
             value
-        } as any);
+        } as FromStorageParams<any, any>);
 
         expect(result).toEqual(testValue);
     });

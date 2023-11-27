@@ -1,7 +1,7 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createLegacyEntity } from "~/utils";
 
-export const createFormSubmissionEntity = (table: Table) => {
+export const createFormSubmissionEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "FormBuilderForm", {
         PK: {
             partitionKey: true

@@ -4,9 +4,10 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { Context } from "@webiny/api/types";
 import { FileLifecycleEvents } from "./types/file.lifecycle";
-import { File } from "./types/file";
+import { CreatedBy, File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+
 export * from "./types/file.lifecycle";
 export * from "./types/file";
 
@@ -31,6 +32,10 @@ export interface FilePermission extends SecurityPermission {
 
 export interface FileInput {
     id: string;
+    createdOn?: string | Date | null;
+    savedOn?: string | Date | null;
+    createdBy?: CreatedBy | null;
+    modifiedBy?: CreatedBy | null;
     key: string;
     name: string;
     size: number;

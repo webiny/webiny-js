@@ -7,7 +7,7 @@ import { ButtonSecondary, ButtonPrimary } from "../Button";
 /**
  * Package load-script does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import loadScript from "load-script";
 
 const toolbar = {
@@ -48,7 +48,7 @@ const ApplyCancelActions = styled("div")({
 
 const initScripts = (): Promise<string> => {
     return new Promise((resolve: any) => {
-        // @ts-ignore
+        // @ts-expect-error
         if (window.Caman) {
             return resolve();
         }

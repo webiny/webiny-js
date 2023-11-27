@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "~/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Typography } from "~/Typography";
-
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
 import classNames from "classnames";
@@ -60,38 +59,35 @@ const nonInteractive = css`
 `;
 
 const duration = 150;
-const defaultStyle = {
+const defaultStyle: CSSProperties = {
     transition: `all ${duration}ms ease-in-out`,
     opacity: 0,
     height: 0,
-    pointerEvents: "none",
+    pointerEvents: "auto",
     overflow: "hidden"
 };
 
 type TransitionStylesState = "entering" | "entered" | "exiting";
 
-/**
- * We are casting pointerEvents as any because csstype does not have PointerEvents exported. Or at least, that is the error.
- */
-const transitionStyles = {
+const transitionStyles: Record<string, CSSProperties> = {
     entering: {
         opacity: 0,
         height: 0,
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     },
     exiting: {
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     }
 };

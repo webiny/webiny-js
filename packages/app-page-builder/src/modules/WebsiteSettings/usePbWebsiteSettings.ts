@@ -3,10 +3,6 @@ import get from "lodash/get";
 import set from "lodash/set";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-/**
- * Package @webiny/telemetry is missing types.
- */
-// @ts-ignore
 import { sendEvent, setProperties } from "@webiny/telemetry/react";
 import {
     GET_SETTINGS,
@@ -20,6 +16,7 @@ import { PbErrorResponse } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 interface PageBuilderWebsiteSettings {
+    id?: string;
     websiteUrl?: string;
 }
 
@@ -76,7 +73,7 @@ export function usePbWebsiteSettings() {
                 /**
                  * sendEvent is async, why is it not awaited?
                  */
-                // TODO @ts-refactor
+                // TODO @pavel
                 sendEvent("custom-domain", {
                     domain: data.websiteUrl
                 });
@@ -84,14 +81,13 @@ export function usePbWebsiteSettings() {
                 /**
                  * setProperties is async, why is it not awaited?
                  */
-                // TODO @ts-refactor
+                // TODO @pavel
                 setProperties({
                     domain: data.websiteUrl
                 });
             }
 
-            // TODO @ts-refactor
-            delete (data as any).id;
+            delete data.id;
             const response = await update({ variables: { data } });
             const responseError = response.data?.pageBuilder.updateSettings.error;
             setError(responseError || null);

@@ -107,7 +107,7 @@ export const Okta: React.FC<OktaProps> = props => {
      */
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer as any} with={createLoginScreen(props)} />
+            <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
             <AppClientModule />
         </Fragment>
