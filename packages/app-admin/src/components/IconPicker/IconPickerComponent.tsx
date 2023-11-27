@@ -68,7 +68,7 @@ export const IconPickerComponent = observer(
                     <Menu
                         open={isMenuOpened}
                         handle={
-                            <IconPickerInput onClick={openMenu}>
+                            <IconPickerInput>
                                 {selectedIcon ? (
                                     <IconProvider icon={selectedIcon}>
                                         <IconRenderer />
@@ -83,7 +83,10 @@ export const IconPickerComponent = observer(
                             </IconPickerInput>
                         }
                         onClose={closeMenu}
-                        onOpen={resetActiveTab}
+                        onOpen={() => {
+                            openMenu();
+                            resetActiveTab();
+                        }}
                     >
                         {() => (
                             <>

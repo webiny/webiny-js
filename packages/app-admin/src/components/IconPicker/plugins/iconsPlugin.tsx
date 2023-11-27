@@ -8,7 +8,6 @@ import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { useIcon } from "..";
 import { IconPickerTab } from "../IconPickerTab";
 import { useIconPicker } from "../IconPickerPresenterProvider";
-import { IconType } from "../config/IconType";
 import { IconPickerConfig } from "../config";
 import { Icon } from "../types";
 
@@ -80,6 +79,7 @@ const IconTab = observer(() => {
     const onIconSelect = (icon: Icon) => {
         // Set icon and assign current color.
         presenter.setIcon({ ...icon, color });
+        presenter.closeMenu();
     };
 
     return (
@@ -95,10 +95,10 @@ const IconTab = observer(() => {
 export const SimpleIconPlugin = () => {
     return (
         <IconPickerConfig>
-            <IconType name={"icon"}>
-                <IconType.Icon element={<IconSvg />} />
-                <IconType.Tab element={<IconTab />} />
-            </IconType>
+            <IconPickerConfig.IconType name={"icon"}>
+                <IconPickerConfig.IconType.Icon element={<IconSvg />} />
+                <IconPickerConfig.IconType.Tab element={<IconTab />} />
+            </IconPickerConfig.IconType>
         </IconPickerConfig>
     );
 };

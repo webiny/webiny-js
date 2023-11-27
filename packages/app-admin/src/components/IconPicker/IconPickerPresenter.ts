@@ -44,7 +44,6 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     get vm() {
-        console.log("vm.isMenuOpened", this.isMenuOpened);
         return {
             activeTab: this.activeTab,
             isMenuOpened: this.isMenuOpened,
@@ -62,12 +61,10 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     closeMenu(): void {
-        console.log("presenter.closeMenu()");
         this.isMenuOpened = false;
     }
 
     openMenu(): void {
-        console.log("presenter.openMenu()");
         this.isMenuOpened = true;
     }
 
@@ -92,7 +89,6 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     }
 
     setIcon(icon: Icon) {
-        console.log("set icon", icon);
         this.selectedIcon = icon;
     }
 

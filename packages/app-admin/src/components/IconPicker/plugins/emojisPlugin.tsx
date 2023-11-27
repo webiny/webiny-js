@@ -8,7 +8,6 @@ import { useIcon } from "..";
 import { IconPickerTab } from "../IconPickerTab";
 import { IconProvider } from "../IconRenderer";
 import { useIconPicker } from "../IconPickerPresenterProvider";
-import { IconType } from "../config/IconType";
 import { IconPickerConfig } from "../config";
 import { Icon } from "../types";
 
@@ -123,6 +122,7 @@ const EmojiTab = observer(() => {
     const onSkinToneChange = (skinTone: string) => {
         if (isEmoji(selectedIcon)) {
             presenter.setIcon({ ...selectedIcon, skinTone });
+            presenter.closeMenu();
         } else {
             presenter.closeMenu();
         }
@@ -130,6 +130,7 @@ const EmojiTab = observer(() => {
 
     const onIconSelect = (icon: Icon) => {
         presenter.setIcon(icon);
+        presenter.closeMenu();
     };
 
     const hasSkinToneSupport = isEmoji(selectedIcon) ? selectedIcon.skinToneSupport : false;
@@ -152,10 +153,10 @@ const EmojiTab = observer(() => {
 export const EmojiPlugin = () => {
     return (
         <IconPickerConfig>
-            <IconType name={"emoji"}>
-                <IconType.Icon element={<Emoji />} />
-                <IconType.Tab element={<EmojiTab />} />
-            </IconType>
+            <IconPickerConfig.IconType name={"emoji"}>
+                <IconPickerConfig.IconType.Icon element={<Emoji />} />
+                <IconPickerConfig.IconType.Tab element={<EmojiTab />} />
+            </IconPickerConfig.IconType>
         </IconPickerConfig>
     );
 };

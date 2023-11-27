@@ -8,7 +8,10 @@ import { IconPickerTabRenderer } from "../IconPickerTab";
 
 export type IconTypeProps = {
     name: string;
-    children: React.ReactNode;
+    before?: string;
+    after?: string;
+    remove?: boolean;
+    children?: React.ReactNode;
 };
 
 interface IconTypeContext {
@@ -39,12 +42,28 @@ export interface IconType extends React.FC<IconTypeProps> {
     Tab: typeof Tab;
 }
 
-export const IconType: IconType = ({ name, children }) => {
+export const IconType: IconType = ({
+    name,
+    before = undefined,
+    after = undefined,
+    remove = false,
+    children
+}) => {
     const getId = useIdGenerator("iconType");
+
+    const placeBefore = before !== undefined ? getId(before) : undefined;
+    const placeAfter = after !== undefined ? getId(after) : undefined;
 
     return (
         <IconTypeProvider type={name}>
-            <Property id={getId(name)} name={"iconTypes"} array={true}>
+            <Property
+                id={getId(name)}
+                name={"iconTypes"}
+                before={placeBefore}
+                after={placeAfter}
+                remove={remove}
+                array={true}
+            >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
                 {children}
             </Property>

@@ -9,7 +9,6 @@ import { FileManager, FileManagerFileItem } from "~/base/ui/FileManager";
 import { IconPickerTab } from "../IconPickerTab";
 import { useIcon } from "..";
 import { useIconPicker } from "../IconPickerPresenterProvider";
-import { IconType } from "../config/IconType";
 import { IconPickerConfig } from "../config";
 import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "../config/graphql";
 import { Icon } from "../types";
@@ -60,6 +59,7 @@ const CustomIconTab = observer(() => {
 
     const onIconSelect = (icon: Icon) => {
         presenter.setIcon(icon);
+        presenter.closeMenu();
     };
 
     const onIconFileSelect = (file: FileManagerFileItem) => {
@@ -68,6 +68,7 @@ const CustomIconTab = observer(() => {
             name: file.name || file.id,
             value: file.src
         });
+        presenter.closeMenu();
     };
 
     const onIconFileUpload = (file: FileManagerFileItem) => {
@@ -79,6 +80,7 @@ const CustomIconTab = observer(() => {
 
         presenter.addIcon(icon);
         presenter.setIcon(icon);
+        presenter.closeMenu();
     };
 
     return (
@@ -122,10 +124,10 @@ export const CustomIconPlugin = () => {
                     }));
                 }}
             />
-            <IconType name={"custom"}>
-                <IconType.Icon element={<CustomIcon />} />
-                <IconType.Tab element={<CustomIconTab />} />
-            </IconType>
+            <IconPickerConfig.IconType name={"custom"}>
+                <IconPickerConfig.IconType.Icon element={<CustomIcon />} />
+                <IconPickerConfig.IconType.Tab element={<CustomIconTab />} />
+            </IconPickerConfig.IconType>
         </IconPickerConfig>
     );
 };

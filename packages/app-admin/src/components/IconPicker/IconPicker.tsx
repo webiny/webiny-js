@@ -4,7 +4,8 @@ import { IconPickerWithConfig, useIconPickerConfig } from "./config";
 import { iconRepositoryFactory } from "./IconRepositoryFactory";
 import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconPickerComponent, IconPickerProps } from "./IconPickerComponent";
-import { IconRenderer } from "./IconRenderer";
+import { IconProvider, IconRenderer } from "./IconRenderer";
+import { Icon } from "./types";
 
 const IconPickerInner = (props: IconPickerProps) => {
     const { iconTypes, iconPackProviders } = useIconPickerConfig();
@@ -43,6 +44,20 @@ const IconPicker = ({
     );
 };
 
-IconPicker.Icon = IconRenderer;
+interface IconRendererWithProviderProps {
+    icon: Icon;
+}
+
+const IconRendererWithProvider = ({ icon }: IconRendererWithProviderProps) => {
+    return (
+        <IconPickerWithConfig>
+            <IconProvider icon={icon}>
+                <IconRenderer />
+            </IconProvider>
+        </IconPickerWithConfig>
+    );
+};
+
+IconPicker.Icon = IconRendererWithProvider;
 
 export { IconPicker };

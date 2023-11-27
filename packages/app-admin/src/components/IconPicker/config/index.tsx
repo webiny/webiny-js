@@ -12,6 +12,7 @@ import emojisJson from "unicode-emoji-json/data-by-emoji.json";
 import { createConfigurableComponent } from "@webiny/react-properties";
 
 import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
+import { IconType } from "./IconType";
 import { SimpleIconPlugin } from "../plugins/iconsPlugin";
 import { EmojiPlugin } from "../plugins/emojisPlugin";
 import { CustomIconPlugin } from "../plugins/customPlugin";
@@ -46,23 +47,25 @@ const emojis: EmojiSet = emojisJson;
 
 const base = createConfigurableComponent<IconPickerConfig>("IconPicker");
 
-export const IconPickerConfig = Object.assign(base.Config, { IconPack });
+export const IconPickerConfig = Object.assign(base.Config, { IconPack, IconType });
 export const IconPickerWithConfig = base.WithConfig;
 
 export interface IconPackLoader {
     (): Promise<ProviderIcon[]>;
 }
 
+interface IconTypeInterface {
+    name: string;
+}
+
+export { IconTypeInterface as IconType };
+
 interface IconPickerConfig {
-    iconTypes: IconType[];
+    iconTypes: IconTypeInterface[];
     iconPackProviders: {
         name: string;
         load: IconPackLoader;
     }[];
-}
-
-export interface IconType {
-    name: string;
 }
 
 export interface IconPackProviderInterface {
