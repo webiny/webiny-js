@@ -2,7 +2,7 @@ import React from "react";
 /**
  * Package react-columned does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import Columned from "react-columned";
 
 export interface MosaicProps {

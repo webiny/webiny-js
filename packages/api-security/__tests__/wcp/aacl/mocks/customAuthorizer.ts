@@ -3,8 +3,9 @@ import { ContextPlugin } from "@webiny/handler";
 
 export const customAuthorizer = () => {
     return new ContextPlugin<SecurityContext>(({ security }) => {
-        // @ts-ignore Even though this object doesn't contain the `name` property
+        // Even though this object doesn't contain the `name` property
         // and it's not valid according to TS, we still want to have it in our test.
+        // @ts-expect-error
         security.addAuthorizer(async () => {
             // Use customPermission object.
             return [

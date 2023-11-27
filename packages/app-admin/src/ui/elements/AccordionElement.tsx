@@ -62,7 +62,7 @@ export class AccordionElement extends UIElement<Config> {
          * Figure out correct way to have props.children typed.
          * TODO @ts-refactor
          */
-        // @ts-ignore
+        // @ts-expect-error
         return <Accordion elevation={0}>{super.render(props)}</Accordion>;
     }
 }

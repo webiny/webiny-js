@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
 import { Header } from "./Header";

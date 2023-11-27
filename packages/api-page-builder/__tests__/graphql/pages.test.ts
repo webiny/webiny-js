@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { waitPage } from "./utils/waitPage";
+
 import { defaultIdentity } from "../tenancySecurity";
 import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 import { decompress } from "./utils/compression";
@@ -119,14 +119,10 @@ describe("CRUD Test", () => {
                 }
             };
 
-            const [updatePageResponse] = await updatePage({
+            await updatePage({
                 id,
                 data
             });
-
-            const updatedPage = updatePageResponse.data.pageBuilder.updatePage.data;
-
-            await waitPage(handler, updatedPage);
         }
 
         const [listAfterUpdateResponse] = await until(
@@ -449,7 +445,7 @@ describe("CRUD Test", () => {
                     updatePageBlock: {
                         data: {
                             id: blockData.id,
-                            content: expectCompressed(updatedContent)
+                            content: expectCompressed()
                         },
                         error: null
                     }

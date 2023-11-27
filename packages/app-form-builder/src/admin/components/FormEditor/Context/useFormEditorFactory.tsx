@@ -11,25 +11,25 @@ import {
     UpdateFormRevisionMutationVariables
 } from "./graphql";
 import {
+    deleteField,
     getFieldPosition,
     moveField,
     moveFieldBetweenSteps,
     moveRow,
-    deleteField,
-    moveStep,
-    moveRowBetweenSteps
+    moveRowBetweenSteps,
+    moveStep
 } from "./functions";
 import { plugins } from "@webiny/plugins";
 
 import {
+    FbBuilderFieldPlugin,
+    FbErrorResponse,
+    FbFormModel,
     FbFormModelField,
+    FbFormStep,
+    FbUpdateFormInput,
     FieldIdType,
     FieldLayoutPositionType,
-    FbBuilderFieldPlugin,
-    FbFormModel,
-    FbUpdateFormInput,
-    FbErrorResponse,
-    FbFormStep,
     MoveFieldParams
 } from "~/types";
 import { ApolloClient } from "apollo-client";
@@ -279,20 +279,22 @@ export const useFormEditorFactory = (
              * Returns complete layout with fields data in it (not just field IDs)
              */
             getLayoutFields: targetStepId => {
-                const stepLayout = state.data.steps
-                    .find(v => v.id === targetStepId)
-                    ?.layout.filter(row => Boolean(row));
+                const step = state.data.steps.find(v => v.id === targetStepId);
+                if (!step) {
+                    return [];
+                }
                 // Replace every field ID with actual field object.
-                // @ts-ignore
-                return stepLayout.map(row => {
-                    return row
-                        .map(id => {
-                            return self.getField({
-                                _id: id
-                            });
-                        })
-                        .filter(Boolean) as FbFormModelField[];
-                });
+                return step.layout
+                    .filter(row => Boolean(row))
+                    .map(row => {
+                        return row
+                            .map(id => {
+                                return self.getField({
+                                    _id: id
+                                });
+                            })
+                            .filter(Boolean) as FbFormModelField[];
+                    });
             },
 
             /**

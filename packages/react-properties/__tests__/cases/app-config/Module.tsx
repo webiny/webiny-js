@@ -1,4 +1,7 @@
-// @ts-nocheck
+/**
+ * Not meant to work, just to show how the config looks like.
+ */
+// @ts-nocheck keep it
 /* eslint-disable */
 import React from "react";
 export const FilesRepositorySymbol = Symbol.for("FilesRepositorySymbol");

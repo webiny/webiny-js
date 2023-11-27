@@ -35,7 +35,8 @@ export class PageBuilderCrudDecorators {
 
         const originalPbGetPage = context.pageBuilder.getPage.bind(context.pageBuilder);
 
-        // @ts-ignore TODO: Couldn't figure out how to resolve the issue.
+        // TODO: Couldn't figure out how to resolve the issue.
+        // @ts-expect-error
         context.pageBuilder.getPage = async (pageId, options) => {
             const page = await originalPbGetPage(pageId, options);
             const pageSearchRecord = await context.pageBuilderAco.app.search.get(page.pid);

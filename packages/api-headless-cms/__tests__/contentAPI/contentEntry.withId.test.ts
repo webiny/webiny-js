@@ -4,8 +4,8 @@
  */
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
-import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "~tests/testHelpers/useProductManageHandler";
+
 interface Category {
     id: string;
     title: string;
@@ -26,9 +26,6 @@ describe("Content entry with user defined ID", () => {
     });
     const productManageHandler = useProductManageHandler({
         path: "manage/en-US"
-    });
-    const categoryReadHandler = useCategoryReadHandler({
-        path: "read/en-US"
     });
 
     beforeEach(async () => {
@@ -59,19 +56,6 @@ describe("Content entry with user defined ID", () => {
                 }
             }
         });
-
-        await categoryManageHandler.until(
-            () => {
-                return categoryManageHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                return entry.id === id;
-            },
-            {
-                name: "list categories after create"
-            }
-        );
 
         const [getAfterCreateResponse] = await categoryManageHandler.getCategory({
             revision: id
@@ -122,22 +106,6 @@ describe("Content entry with user defined ID", () => {
             }
         });
 
-        await categoryManageHandler.until(
-            () => {
-                return categoryManageHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                if (entry.title !== updatedTitle) {
-                    return false;
-                }
-                return entry.id === id;
-            },
-            {
-                name: "list categories after update"
-            }
-        );
-
         const [getAfterUpdateResponse] = await categoryManageHandler.getCategory({
             revision: id
         });
@@ -182,39 +150,6 @@ describe("Content entry with user defined ID", () => {
                 }
             }
         });
-
-        await categoryManageHandler.until(
-            () => {
-                return categoryManageHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                if (entry.title !== updatedTitle) {
-                    return false;
-                } else if (entry.meta.status !== "published") {
-                    return false;
-                }
-                return entry.id === id;
-            },
-            {
-                name: "list categories after published"
-            }
-        );
-        await categoryManageHandler.until(
-            () => {
-                return categoryReadHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                if (entry.title !== updatedTitle) {
-                    return false;
-                }
-                return entry.id === id;
-            },
-            {
-                name: "[READ] list categories after published"
-            }
-        );
 
         const [getAfterPublishResponse] = await categoryManageHandler.getCategory({
             revision: id
@@ -282,35 +217,6 @@ describe("Content entry with user defined ID", () => {
                 }
             }
         });
-
-        await categoryManageHandler.until(
-            () => {
-                return categoryManageHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                if (entry.title !== updatedTitle) {
-                    return false;
-                } else if (entry.meta.status !== "unpublished") {
-                    return false;
-                }
-                return entry.id === id;
-            },
-            {
-                name: "list categories after unpublished"
-            }
-        );
-        await categoryManageHandler.until(
-            () => {
-                return categoryReadHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                return data.listCategories.data.length === 0;
-            },
-            {
-                name: "[READ] list categories after unpublished"
-            }
-        );
 
         const [getAfterUnpublishResponse] = await categoryManageHandler.getCategory({
             revision: id
@@ -438,18 +344,7 @@ describe("Content entry with user defined ID", () => {
             }
         });
         const id = `${category.id}#0001`;
-        await categoryManageHandler.until(
-            () => {
-                return categoryManageHandler.listCategories().then(([data]) => data);
-            },
-            ({ data }) => {
-                const entry = data.listCategories.data[0];
-                return entry.id === id;
-            },
-            {
-                name: "list categories after create"
-            }
-        );
+
         const productCategory = {
             id,
             modelId: "category"

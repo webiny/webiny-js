@@ -38,7 +38,6 @@ const plugin: CmsIconsPlugin = {
                 icons.push({
                     id: [pack, icon],
                     name: icon,
-                    // @ts-ignore
                     svg: createSvg(defs[icon])
                 });
             });

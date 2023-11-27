@@ -126,7 +126,7 @@ export const createAdminUsers = ({
         /**
          * TODO @ts-refactor figure out better way to type this
          */
-        // @ts-ignore
+        // @ts-expect-error
         async createUser(this: AdminUsers, data) {
             await checkPermission();
 
@@ -284,7 +284,7 @@ export const createAdminUsers = ({
         /**
          * TODO @ts-refactor figure out better way to type this
          */
-        // @ts-ignore
+        // @ts-expect-error
         async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 

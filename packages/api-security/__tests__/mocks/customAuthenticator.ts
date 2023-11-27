@@ -6,13 +6,9 @@ interface Context extends BaseContext, SecurityContext {}
 
 export const customAuthenticator = () => {
     return new ContextPlugin<Context>(context => {
-        /**
-         * TODO @pavel can we return null?
-         */
-        // @ts-ignore
         context.security.addAuthenticator(async () => {
             if ("authorization" in context.request.headers) {
-                return;
+                return null;
             }
 
             return {
