@@ -15,6 +15,7 @@ export const createBaseSchema = () => {
             type FmCreatedBy {
                 id: ID
                 displayName: String
+                type: String
             }
 
             type FmListMeta {

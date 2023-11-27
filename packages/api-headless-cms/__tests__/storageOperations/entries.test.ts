@@ -1,16 +1,11 @@
-import {
-    createPersonEntries,
-    createPersonModel,
-    deletePersonModel,
-    waitPersonRecords
-} from "./helpers";
+import { createPersonEntries, createPersonModel, deletePersonModel } from "./helpers";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsContext } from "~/types";
 
 jest.setTimeout(60000);
 
 describe("Entries storage operations", () => {
-    const { storageOperations, until, plugins } = useGraphQLHandler({
+    const { storageOperations, plugins } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
@@ -55,14 +50,6 @@ describe("Entries storage operations", () => {
             expect(result.last.version).toEqual(result.revisions.length);
         }
 
-        await waitPersonRecords({
-            records: results,
-            storageOperations,
-            name: "list all person entries after create",
-            until,
-            model: personModel
-        });
-
         /**
          * There must be "amount" of results.
          */
@@ -103,18 +90,11 @@ describe("Entries storage operations", () => {
     it("should list all entries", async () => {
         const personModel = createPersonModel();
         const amount = 10;
-        const results = await createPersonEntries({
+        await createPersonEntries({
             amount,
             storageOperations,
             maxRevisions: 1,
             plugins
-        });
-        await waitPersonRecords({
-            records: results,
-            storageOperations,
-            name: "list all person entries after create",
-            until,
-            model: personModel
         });
 
         const result = await storageOperations.entries.list(personModel, {
@@ -141,14 +121,6 @@ describe("Entries storage operations", () => {
             storageOperations,
             maxRevisions: 1,
             plugins
-        });
-
-        await waitPersonRecords({
-            records: results,
-            storageOperations,
-            name: "list all person entries after create",
-            until,
-            model: personModel
         });
 
         const items = Object.values(results);

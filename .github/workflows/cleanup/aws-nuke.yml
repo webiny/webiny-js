@@ -16,6 +16,8 @@ accounts:
         - "s3://webiny-ci"
       IAMRole:
         - "GitHubActionsWebinyJs"
+      IAMRolePolicyAttachment:
+        - "GitHubActionsWebinyJs -> AdministratorAccess"
 
 resource-types:
   # These resource types will be destroyed.

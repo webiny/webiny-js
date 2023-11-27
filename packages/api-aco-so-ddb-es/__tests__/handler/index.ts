@@ -15,7 +15,6 @@ import elasticsearchClientContextPlugin, {
     createGzipCompression,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
-// @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 

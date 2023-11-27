@@ -38,7 +38,7 @@ const DragPreview: React.FC = () => {
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
-            // @ts-ignore
+            // @ts-expect-error
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }

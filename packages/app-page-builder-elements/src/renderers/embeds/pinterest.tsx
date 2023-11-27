@@ -31,9 +31,7 @@ function appendSDK(element: Element): Promise<void> {
 
 function initEmbed(element: Element): void {
     const node = document.getElementById(element.id);
-    // @ts-ignore
     if (node && window.PinUtils) {
-        // @ts-ignore
         window.PinUtils.build();
     }
 }

@@ -11,7 +11,7 @@ describe(`"Login" test`, () => {
 
         if (response.data.security.install.error) {
             throw new Error(response.data.security.install.error.message);
-            // @ts-ignore
+            // @ts-expect-error
             process.exit(0);
         }
     });

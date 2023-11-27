@@ -26,7 +26,7 @@ const applyDefaults = (
         (config, key) => {
             const configKey = key as unknown as keyof SmtpTransportConfig;
             if (config[configKey] === undefined || config[configKey] === null) {
-                // @ts-ignore
+                // @ts-expect-error
                 config[configKey] = configDefaults[configKey];
             }
 

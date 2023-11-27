@@ -44,7 +44,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
          * TODO @ts-refactor @ashutosh
          * Please check this. args.toolbar() and defaultToolbar are totally different types
          */
-        // @ts-ignore
+        // @ts-expect-error
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,

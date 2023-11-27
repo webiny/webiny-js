@@ -134,7 +134,7 @@ export class Context implements ContextInterface {
              * TODO @ts-refactor
              * Problem with possible subtype initialization
              */
-            // @ts-ignore
+            // @ts-expect-error
             cb
         });
     }

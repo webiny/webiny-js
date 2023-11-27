@@ -111,7 +111,6 @@ export class ListNode extends ElementNode {
         return node;
     }
 
-    // @ts-ignore
     override exportJSON(): SerializedWebinyListNode {
         return {
             ...super.exportJSON(),
@@ -282,7 +281,7 @@ function convertListNode(domNode: Node): DOMConversionOutput {
     }
 
     return {
-        // @ts-ignore
+        // @ts-expect-error
         after: normalizeChildren,
         node
     };

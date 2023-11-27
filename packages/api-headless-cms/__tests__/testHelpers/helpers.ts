@@ -2,9 +2,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { CmsContext } from "~/types";
 
-export { until } from "@webiny/project-utils/testing/helpers/until";
-export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
-
 export interface PermissionsArg {
     name: string;
     locales?: string[];

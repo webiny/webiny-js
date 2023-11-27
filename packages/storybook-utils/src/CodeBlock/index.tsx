@@ -2,7 +2,7 @@ import * as React from "react";
 /**
  * No types for react-highlight.js
  */
-// @ts-ignore
+// @ts-expect-error
 import Highlight from "react-highlight.js";
 import copy from "copy-to-clipboard";
 import elementToString from "react-element-to-jsx-string";

@@ -16,12 +16,12 @@ const createCacheKey = (context: Context) => {
     // TODO: in the near future, we have to assign a fixed name to every
     // TODO: GraphQLSchema plugin, to be able to create a reliable cache key.
 
-    // @ts-ignore TODO: `getCurrentTenant` should be injected as a parameter.
-    // @ts-ignore TODO: We should not be accessing `context` like this here.
+    // TODO: `getCurrentTenant` should be injected as a parameter.
+    // @ts-expect-error TODO: We should not be accessing `context` like this here.
     const tenant = context.tenancy?.getCurrentTenant();
 
-    // @ts-ignore TODO: `getContentLocale` should be injected as a parameter.
-    // @ts-ignore TODO: We should not be accessing `context` like this here.
+    // TODO: `getContentLocale` should be injected as a parameter.
+    // @ts-expect-error TODO: We should not be accessing `context` like this here.
     const contentLocale = context.i18n?.getContentLocale();
 
     return [

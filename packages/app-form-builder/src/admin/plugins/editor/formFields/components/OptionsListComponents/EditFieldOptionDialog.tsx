@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 /**
  * Package react-hotkeys does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
 import { validation } from "@webiny/validation";
 
