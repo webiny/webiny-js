@@ -72,7 +72,7 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
                                             key={item.slug}
                                             onClick={() => {
                                                 onSelect(item);
-                                                // @ts-ignore
+                                                // @ts-expect-error
                                                 onClose();
                                             }}
                                         >

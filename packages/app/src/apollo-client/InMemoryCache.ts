@@ -16,7 +16,7 @@ export class InMemoryCache extends BaseInMemoryCache {
     }
 
     public override transformDocument(document: DocumentNode): DocumentNode {
-        // @ts-ignore
+        // @ts-expect-error
         const operationName = document.definitions[0].name.value;
 
         for (const pl of this.transformPlugins) {

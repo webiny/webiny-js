@@ -1245,7 +1245,7 @@ describe("MANAGE - Resolvers", () => {
                                 ...webiny.meta,
                                 locked: false,
                                 status: "draft",
-                                publishedOn: null,
+                                publishedOn: expect.stringMatching(/^20/),
                                 version: i + 2,
                                 revisions: expect.any(Array)
                             },

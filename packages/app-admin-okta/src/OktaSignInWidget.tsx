@@ -45,7 +45,7 @@ const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
                     /**
                      * TODO @ts-refactor figure out correct widgetRef type @pavel
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     el: widgetRef.current
                 },
                 res => {

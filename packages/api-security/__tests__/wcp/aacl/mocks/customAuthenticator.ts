@@ -1,9 +1,7 @@
-// @ts-nocheck
 import { SecurityContext } from "@webiny/api-security/types";
-// import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler";
 
-interface Context extends HttpContext, SecurityContext {}
+type Context = SecurityContext;
 
 export const customAuthenticator = () => {
     return new ContextPlugin<Context>(context => {

@@ -5,7 +5,7 @@ import { EmptyElement } from "~/renderers/components";
 /**
  * Package react-columned does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import Columned from "react-columned";
 import Lightbox from "react-images";
 

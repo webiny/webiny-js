@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 /**
  * Package react-lazy-load has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import LazyLoad from "react-lazy-load";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { IconButton } from "@webiny/ui/Button";

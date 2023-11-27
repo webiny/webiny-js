@@ -34,15 +34,14 @@ const plugin: PbIconsPlugin = {
         /**
          * Ignoring TS errors. We know what we coded is good, but cannot get it to work with typescript.
          */
-        // @ts-ignore
+        // @ts-expect-error
         Object.keys(definitions).forEach((pack: IconPrefix) => {
             const defs = definitions[pack];
-            // @ts-ignore
+            // @ts-expect-error
             Object.keys(defs).forEach((icon: IconName) => {
                 icons.push({
                     id: [pack, icon],
                     name: icon,
-                    // @ts-ignore
                     svg: createSvg(defs[icon])
                 });
             });

@@ -53,7 +53,7 @@ class Release {
         this.resetAllChanges = reset;
     }
 
-    async execute() {
+    async versionPackages() {
         this.__validateConfig();
 
         this.logger.info("Attempting to release tag %s", this.tag);
@@ -97,6 +97,14 @@ class Release {
         this.logger.debug(lernaVersionArgs.join(" "));
         await execa("yarn", lernaVersionArgs, { stdio: "inherit" });
         this.logger.info("Packages versioning completed");
+
+        // Read the new version
+        const lernaJSON = await loadJSON("lerna.json");
+        return { version: lernaJSON.version, tag: this.tag };
+    }
+
+    async execute() {
+        await this.versionPackages();
 
         // Run `lerna` to publish packages
         const lernaPublishArgs = [

@@ -13,7 +13,7 @@ export const getPopulated = (
         /**
          * TODO figure out better types.
          */
-        // @ts-ignore
+        // @ts-expect-error
         result[key] = value;
     }
     return result;
