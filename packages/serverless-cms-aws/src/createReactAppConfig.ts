@@ -27,7 +27,7 @@ export interface ReactAppFactoryParams {
 }
 
 export interface ReactAppCommands {
-    [key: string]: Function;
+    [key: string]: () => Promise<any>;
 }
 
 export interface ReactAppCommandsModifier {

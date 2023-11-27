@@ -11,7 +11,7 @@ interface CreateTermsOfServiceComponentArgs {
 
 type ChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: String;
+    errorMessage: string;
     message: OutputBlockData[];
 }) => React.ReactNode;
 

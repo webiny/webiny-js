@@ -117,7 +117,7 @@ export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
 
 export type TermsOfServiceChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: String;
+    errorMessage: string;
     // Should be `OutputBlockData` from `@editorjs/editorjs`, but didn't want to introduce an extra dependency.
     message: any;
 }) => React.ReactNode;
