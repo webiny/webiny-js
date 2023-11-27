@@ -1,4 +1,5 @@
 import React from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 import { observer } from "mobx-react-lite";
 import { css } from "emotion";
 
@@ -10,6 +11,7 @@ import { useIcon } from "..";
 import { useIconPicker } from "../IconPickerPresenterProvider";
 import { IconType } from "../config/IconType";
 import { IconPickerConfig } from "../config";
+import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "../config/graphql";
 import { Icon } from "../types";
 
 const addButtonStyle = css`
@@ -89,8 +91,37 @@ const CustomIconTab = observer(() => {
 });
 
 export const CustomIconPlugin = () => {
+    const client = useApolloClient();
+
     return (
         <IconPickerConfig>
+            <IconPickerConfig.IconPack
+                name="custom"
+                provider={async () => {
+                    const { data: response } = await client.query<ListCustomIconsQueryResponse>({
+                        query: LIST_CUSTOM_ICONS,
+                        variables: {
+                            limit: 10000
+                        }
+                    });
+
+                    if (!response) {
+                        throw new Error("Network error while listing custom icons.");
+                    }
+
+                    const { data, error } = response.fileManager.listFiles;
+
+                    if (!data) {
+                        throw new Error(error?.message || "Could not fetch custom icons.");
+                    }
+
+                    return data.map(customIcon => ({
+                        type: "custom",
+                        name: customIcon.name,
+                        value: customIcon.src
+                    }));
+                }}
+            />
             <IconType name={"custom"}>
                 <IconType.Icon element={<CustomIcon />} />
                 <IconType.Tab element={<CustomIconTab />} />

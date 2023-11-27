@@ -1,29 +1,14 @@
-import { ApolloClient } from "apollo-client";
-
 import { IconRepository } from "./IconRepository";
-import { CustomIconsGateway, CustomIconsGatewayInterface } from "./gateways";
 import { IconPackProviderInterface as IconPackProvider, IconType } from "./config";
 
 class IconRepositoryFactory {
-    private gateway: CustomIconsGatewayInterface | undefined;
     private cache: Map<string, IconRepository> = new Map();
 
-    getRepository(
-        client: ApolloClient<any>,
-        iconTypes: IconType[],
-        iconPackProviders: IconPackProvider[]
-    ) {
-        if (!this.gateway) {
-            this.gateway = new CustomIconsGateway(client);
-        }
-
+    getRepository(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
         const cacheKey = this.getCacheKey(iconTypes, iconPackProviders);
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(
-                cacheKey,
-                new IconRepository(this.gateway, iconTypes, iconPackProviders)
-            );
+            this.cache.set(cacheKey, new IconRepository(iconTypes, iconPackProviders));
         }
 
         return this.cache.get(cacheKey) as IconRepository;
