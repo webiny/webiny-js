@@ -1,13 +1,12 @@
 import React from "react";
-import { useOptionsMenuItem } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
-export interface ActionConfig {
+export interface ColumnConfig {
     name: string;
     element: React.ReactElement;
 }
 
-export interface ActionProps {
+export interface ColumnProps {
     name: string;
     element?: React.ReactElement;
     remove?: boolean;
@@ -15,23 +14,23 @@ export interface ActionProps {
     after?: string;
 }
 
-export const BaseAction: React.FC<ActionProps> = ({
+export const BaseColumn: React.FC<ColumnProps> = ({
     name,
     after = undefined,
     before = undefined,
     remove = false,
     element
 }) => {
-    const getId = useIdGenerator("folderAction");
+    const getId = useIdGenerator("tableColumn");
 
     const placeAfter = after !== undefined ? getId(after) : undefined;
     const placeBefore = before !== undefined ? getId(before) : undefined;
 
     return (
-        <Property id="folder" name={"folder"}>
+        <Property id="table" name={"table"}>
             <Property
                 id={getId(name)}
-                name={"actions"}
+                name={"columns"}
                 remove={remove}
                 array={true}
                 before={placeBefore}
@@ -46,6 +45,4 @@ export const BaseAction: React.FC<ActionProps> = ({
     );
 };
 
-export const Action = Object.assign(BaseAction, {
-    useOptionsMenuItem
-});
+export const Column = Object.assign(BaseColumn, {});
