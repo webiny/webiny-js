@@ -258,7 +258,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
             /**
              * TODO @ts-refactor try to get the heads and tails of this.
              */
-            // @ts-ignore
+            // @ts-expect-error
             repo = await octokit.rest.repos
                 .get({
                     repo: existingRepo.name,

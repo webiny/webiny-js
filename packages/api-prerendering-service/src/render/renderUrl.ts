@@ -5,7 +5,7 @@ import { noopener } from "posthtml-noopener";
 /**
  * Package posthtml-plugin-link-preload has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
 import absoluteAssetUrls from "./absoluteAssetUrls";
 import injectApolloState from "./injectApolloState";
@@ -63,7 +63,7 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
     const render = await renderUrl(url, args);
 
     // Process HTML.
-    // TODO: should be plugins (will also eliminate lower @ts-ignore instructions).
+    // TODO: should be plugins (will also eliminate lower ts-ignore instructions).
     console.log("Processing HTML...");
 
     // TODO: regular text processing plugins...
@@ -207,7 +207,7 @@ export const defaultRenderUrlFunction = async (
         await browserPage.goto(url, { waitUntil: "networkidle0" });
 
         const apolloState = await browserPage.evaluate(() => {
-            // @ts-ignore
+            // @ts-expect-error
             return window.getApolloState();
         });
 

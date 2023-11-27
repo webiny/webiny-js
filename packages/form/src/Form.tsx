@@ -437,7 +437,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
-            // @ts-ignore
+            // @ts-expect-error
             e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();

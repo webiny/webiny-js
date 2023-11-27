@@ -22,7 +22,7 @@ export const BaseFields = ({ model }: BaseFieldsProps) => {
                     /**
                      * TODO: Figure out correct Bind type
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     Bind={Bind}
                     fields={fields}
                     layout={model.layout || []}

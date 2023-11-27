@@ -4,7 +4,7 @@ import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
 import { createModelField } from "~/cmsFileStorage/createModelField";
 import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
-type CmsModelField = Omit<BaseModelField, "storageId">;
+type CmsModelField = Omit<BaseModelField, "storageId"> & { bulkEdit?: boolean };
 
 class CmsModelFieldsModifier {
     private fields: BaseModelField[];
@@ -14,8 +14,11 @@ class CmsModelFieldsModifier {
     }
 
     addField(field: CmsModelField) {
+        const { bulkEdit, tags, ...rest } = field;
+
         this.fields.push({
-            ...field,
+            ...rest,
+            tags: (tags ?? []).concat(bulkEdit ? ["$bulk-edit"] : []),
             storageId: `${field.type}@${field.id}`
         });
     }

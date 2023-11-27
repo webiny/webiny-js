@@ -4,7 +4,7 @@ import * as aws from "@pulumi/aws";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb";
 
 import { PulumiApp } from "@webiny/pulumi";
-// @ts-ignore
+// @ts-expect-error
 import { getLayerArn } from "@webiny/aws-layers";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";

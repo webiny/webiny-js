@@ -108,7 +108,7 @@ export interface FbForm {
     version: number;
     locked: boolean;
     published: boolean;
-    publishedOn: string | null;
+    publishedOn: string | Date | undefined;
     status: string;
     fields: FbFormField[];
     steps: FbFormStep[];

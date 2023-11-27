@@ -193,7 +193,7 @@ export const Settings: React.FC = () => {
                                                                 type="password"
                                                                 autoComplete="new-password"
                                                                 value={""}
-                                                                // @ts-ignore
+                                                                // @ts-expect-error
                                                                 inputRef={password}
                                                             />
                                                         </Bind>

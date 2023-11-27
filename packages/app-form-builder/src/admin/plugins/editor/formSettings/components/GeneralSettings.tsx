@@ -36,11 +36,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
     }, []);
 
     const rteProps = useMemo(() => {
-        /**
-         * TODO @ts-refactor
-         * Missing plugin type for fb-rte-config
-         */
-        // @ts-ignore
         return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 
