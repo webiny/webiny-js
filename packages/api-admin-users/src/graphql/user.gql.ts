@@ -1,7 +1,3 @@
-/**
- * Package md5 does not have types.
- */
-// @ts-ignore
 import md5 from "md5";
 import {
     ErrorResponse,
@@ -90,7 +86,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                                  * What happens if tenant has no parent?
                                  * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
                                  */
-                                // @ts-ignore
+                                // @ts-expect-error
                                 tenant: tenant.parent
                             }
                         });

@@ -19,10 +19,7 @@ import type {
 } from "lexical";
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
 
-const ImageComponent = React.lazy(
-    // @ts-ignore
-    () => import("./components/ImageNode/ImageComponent")
-);
+const ImageComponent = React.lazy(() => import("./components/ImageNode/ImageComponent"));
 
 export type SerializedImageNode = Spread<
     {

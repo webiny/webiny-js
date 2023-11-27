@@ -35,7 +35,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
              * createGetIdentityData return function does not have payload param so TS is complaining.
              * createGetIdentityData does not need the payload param
              */
-            // @ts-ignore
+            // @ts-expect-error
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
         };
 

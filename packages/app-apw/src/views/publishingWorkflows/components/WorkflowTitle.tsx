@@ -68,7 +68,7 @@ const Title: React.FunctionComponent<{ value: string; onChange: Function }> = ({
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();

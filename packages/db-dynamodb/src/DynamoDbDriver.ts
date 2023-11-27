@@ -1,13 +1,12 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { DbDriver, Result } from "@webiny/db";
-import BatchProcess from "./BatchProcess";
 
 interface ConstructorArgs {
     documentClient: DynamoDBClient;
 }
 
 class DynamoDbDriver implements DbDriver {
-    batchProcesses: Record<string, BatchProcess>;
+    batchProcesses: Record<string, any>;
     documentClient: DynamoDBClient;
     constructor({ documentClient }: ConstructorArgs) {
         this.batchProcesses = {};
