@@ -112,8 +112,8 @@ const styles = {
 
 type ColorPickerProps = {
     value: string;
-    onChange: Function;
-    onChangeComplete: Function;
+    onChange: (value: string) => void;
+    onChangeComplete: (value: string) => void;
     compact?: boolean;
     handlerClassName?: string;
 };

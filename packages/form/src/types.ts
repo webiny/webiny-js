@@ -45,7 +45,7 @@ export interface BindComponentProps<T = any> {
     defaultValue?: any;
     validators?: Validator | Validator[];
     children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
-    validate?: () => void;
+    validate?: Validator;
 }
 
 export type BindComponent = React.FC<BindComponentProps>;

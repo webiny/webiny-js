@@ -18,8 +18,8 @@ type ChildrenFunction = (params: {
 export interface TermsOfServiceProps {
     children: ChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any) => void;
+    onExpired?: (...args: any) => void;
 }
 
 export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
