@@ -1,5 +1,4 @@
 import useGqlHandler from "./useGqlHandler";
-import { waitPage } from "./utils/waitPage";
 
 jest.setTimeout(100000);
 
@@ -9,7 +8,7 @@ describe("deleting pages", () => {
     const { getPage, createPage, deletePage, listPages, listPublishedPages, publishPage, until } =
         handler;
 
-    let p1v1, p1v2, p1v3, category;
+    let p1v1: any, p1v2: any, p1v3: any, category;
 
     beforeEach(async () => {
         const { createCategory } = useGqlHandler();
@@ -25,17 +24,14 @@ describe("deleting pages", () => {
         p1v1 = await createPage({ category: category.slug }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
-        await waitPage(handler, p1v1);
 
         p1v2 = await createPage({ from: p1v1.id }).then(([res]) => {
             return res.data.pageBuilder.createPage.data;
         });
-        await waitPage(handler, p1v2);
 
         p1v3 = await createPage({ from: p1v2.id }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
-        await waitPage(handler, p1v3);
     });
 
     test("deleting page via `pid` should delete all related DB / index entries", async () => {

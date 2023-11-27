@@ -1,5 +1,5 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
-import { createApiGatewayHandler as createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -105,7 +105,8 @@ export const handler = createHandler({
                 type: "text",
                 renderer: {
                     name: "text-input"
-                }
+                },
+                bulkEdit: true
             });
 
             modifier.addField({
@@ -120,5 +121,5 @@ export const handler = createHandler({
         }),
         createAuditLogs()
     ],
-    http: { debug }
+    debug
 });

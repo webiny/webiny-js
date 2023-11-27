@@ -1,17 +1,17 @@
 /**
  * Package deep-equal does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import deepEqual from "deep-equal";
 /**
  * Package commodo-fields-object does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { object } from "commodo-fields-object";
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { withFields, string } from "@commodo/fields";
 import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";

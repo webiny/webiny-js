@@ -1,5 +1,5 @@
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import {
     createDownloadFileByAliasPlugins,
     createDownloadFileByExactKeyPlugins

@@ -76,5 +76,5 @@ export const handler = createHandler({
         }),
         createAcoPageBuilderImportExportContext()
     ],
-    http: { debug }
+    debug
 });

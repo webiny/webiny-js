@@ -1,7 +1,7 @@
 /**
  * We can safely ignore the error being thrown for the path import.
  */
-// @ts-ignore
+// @ts-expect-error
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
@@ -9,7 +9,7 @@ import elasticsearchClientContextPlugin, {
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
 import { logger } from "../logger";
-import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
@@ -81,7 +81,7 @@ export class ElasticsearchClientConfig {
             await elasticsearchClientContext.apply(context);
         });
 
-        const dynamoDbHandler = createDynamoDBHandler({
+        const dynamoDbHandler = createHandler({
             plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
         });
         simulateStream(documentClient, dynamoDbHandler);

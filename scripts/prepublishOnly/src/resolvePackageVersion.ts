@@ -12,8 +12,7 @@ export const resolvePackageVersion = (packageName: string, { cwd }: Options) => 
     const packageJson = findUp.sync(searchPath, { cwd });
     if (packageJson) {
         const json = sync<PackageJson>(packageJson);
-        // @ts-ignore
-        return json ? json.version : undefined;
+        return json?.version;
     }
 
     return undefined;

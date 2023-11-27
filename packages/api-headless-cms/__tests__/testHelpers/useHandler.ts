@@ -1,6 +1,7 @@
 import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsContext } from "~/types";
+import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
 import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface CmsHandlerEvent {
@@ -23,12 +24,11 @@ export const useHandler = (params: Params) => {
 
     const handler = createRawHandler<CmsHandlerEvent, CmsContext>({
         plugins,
-        http: {
-            debug: process.env.DEBUG === "true"
-        }
+        debug: process.env.DEBUG === "true"
     });
     return {
         plugins,
+        identity: params.identity || defaultIdentity,
         tenant: core.tenant,
         handler: (payload: CmsHandlerEvent) => {
             return handler(payload, {} as LambdaContext);

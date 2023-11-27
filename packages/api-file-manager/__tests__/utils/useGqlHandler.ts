@@ -1,22 +1,23 @@
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import {
     CREATE_FILE,
     CREATE_FILES,
-    UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
     LIST_FILES,
-    LIST_TAGS
+    LIST_TAGS,
+    UPDATE_FILE
 } from "~tests/graphql/file";
 import {
+    GET_SETTINGS,
     INSTALL,
     IS_INSTALLED,
-    GET_SETTINGS,
     UPDATE_SETTINGS
 } from "~tests/graphql/fileManagerSettings";
 import { HandlerParams, handlerPlugins } from "./plugins";
+import { defaultIdentity } from "~tests/utils/tenancySecurity";
 
 interface InvokeParams {
     httpMethod?: "POST";
@@ -58,6 +59,7 @@ export default (params: HandlerParams = {}) => {
         until,
         handler,
         invoke,
+        identity: params.identity || defaultIdentity,
         // Files
         async createFile(variables: Record<string, any>, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FILE(fields), variables } });

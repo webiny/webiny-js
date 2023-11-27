@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import omit from "lodash/omit";
 import styled from "@emotion/styled";

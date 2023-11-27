@@ -36,6 +36,14 @@ export default /* GraphQL */ `
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInput {
         id: ID
+        # User can override the entry dates
+        createdOn: DateTime
+        savedOn: DateTime
+        publishedOn: DateTime
+        # User can override the entry related user identities
+        createdBy: CmsIdentityInput
+        modifiedBy: CmsIdentityInput
+        ownedBy: CmsIdentityInput
         wbyAco_location: WbyAcoLocationInput
         title: String
         slug: String
@@ -72,6 +80,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -175,7 +190,7 @@ export default /* GraphQL */ `
 
         deleteMultipleCategoriesApiModel(entries: [ID!]!): CmsDeleteMultipleResponse!
 
-        publishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+        publishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, options: CmsPublishEntryOptionsInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
     
         republishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 

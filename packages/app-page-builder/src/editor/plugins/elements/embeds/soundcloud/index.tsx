@@ -26,7 +26,7 @@ const PreviewBox = styled("div")({
 });
 
 const render: EmbedPluginConfigRenderCallable = props => (
-    // @ts-ignore Sync `elements` property type.
+    // @ts-expect-error Sync `elements` property type.
     <PeSoundcloud {...props} />
 );
 
@@ -50,7 +50,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             /**
              * TODO @ts-refactor @ashutosh
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             settings: args.settings,

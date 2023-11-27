@@ -21,7 +21,7 @@ export const initializeAos = async () => {
 
     await pbDocumentCheck;
 
-    // @ts-ignore Complains about the `.css` format, but all works correctly.
+    // @ts-expect-error Complains about the `.css` format, but all works correctly.
     await import("aos/dist/aos.css");
     const aos = await import("aos");
 

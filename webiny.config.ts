@@ -1,4 +1,6 @@
+// @ts-expect-error
 import { defineProject } from "@webiny/core";
+// @ts-expect-error
 import { configurePreset } from "@webiny/preset-aws";
 
 export default defineProject({

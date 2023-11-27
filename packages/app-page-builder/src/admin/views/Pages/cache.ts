@@ -46,7 +46,7 @@ const modifyCacheForAllListPagesQuery = (
     /**
      * Figure out correct type for cache object because DataProxy does not have data type on it.
      */
-    // @ts-ignore
+    // @ts-expect-error
     const existingQueriesInCache = Object.keys(cache.data.data).filter(
         key => key.includes(".listPages") && !key.endsWith(".meta")
     );

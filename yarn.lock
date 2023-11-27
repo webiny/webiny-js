@@ -12055,7 +12055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:^8.10.83, @types/aws-lambda@npm:^8.10.93":
+"@types/aws-lambda@npm:^8.10.83":
   version: 8.10.110
   resolution: "@types/aws-lambda@npm:8.10.110"
   checksum: 57be33940035f68c93ecb2c43d82b6f47a9f91f7f2114870d5fbab30c4b93084f12c4353da4aaffdfb0b612f2e7f13ee3ac53e0cc7b9f8e536b04bda0a593615
@@ -13976,6 +13976,7 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    aws-lambda: ^1.0.7
     p-retry: ^4.6.2
     typescript: 4.7.4
   languageName: unknown
@@ -15553,6 +15554,7 @@ __metadata:
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 
@@ -16449,8 +16451,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/aws-helpers@workspace:packages/aws-helpers"
   dependencies:
-    "@types/aws-lambda": ^8.10.93
     "@webiny/project-utils": 0.0.0
+    aws-lambda: ^1.0.7
     cheerio: ^1.0.0-rc.10
     srcset: ^4.0.0
   languageName: unknown
@@ -16993,6 +16995,7 @@ __metadata:
     "@webiny/handler-client": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     aws-lambda: ^1.0.7
     fastify: 4.11.0
     rimraf: ^3.0.2
@@ -45890,5 +45893,12 @@ __metadata:
   version: 3.21.4
   resolution: "zod@npm:3.21.4"
   checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4":
+  version: 3.22.4
+  resolution: "zod@npm:3.22.4"
+  checksum: 80bfd7f8039b24fddeb0718a2ec7c02aa9856e4838d6aa4864335a047b6b37a3273b191ef335bf0b2002e5c514ef261ffcda5a589fb084a48c336ffc4cdbab7f
   languageName: node
   linkType: hard

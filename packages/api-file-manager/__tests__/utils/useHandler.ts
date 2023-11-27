@@ -14,9 +14,7 @@ export const useHandler = (params: HandlerParams = {}) => {
 
     const handler = createRawHandler<any, FileManagerContext>({
         plugins,
-        http: {
-            debug: process.env.DEBUG === "true"
-        }
+        debug: process.env.DEBUG === "true"
     });
     return {
         plugins,

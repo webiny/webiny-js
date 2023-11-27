@@ -12,9 +12,7 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
             }),
             ...createHandlerPlugins(params)
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     return {

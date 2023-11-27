@@ -78,7 +78,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
 
             const { fieldId } = field;
             // TODO @ts-refactor figure out types for parameters
-            // @ts-ignore
+            // @ts-expect-error
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 /**
                  * This is required because due to ref field can be requested without the populated data.
