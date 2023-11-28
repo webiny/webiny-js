@@ -23,7 +23,6 @@ context("Page Builder - Menu Items", () => {
         cy.login();
         cy.pbDeleteAllMenus();
         cy.pbCreateMenu(menuData);
-        cy.wait(500);
         cy.pbCreatePage({ category: "static" }).then(page => {
             // eslint-disable-next-line jest/valid-expect-in-promise
             cy.pbUpdatePage({
@@ -136,7 +135,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete the link menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${linkNameEdit}`).should("not.exist");
 
         // Create folder menu item.
@@ -160,7 +158,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${folderNameEdit}`).should("not.exist");
 
         // Create page menu item.
@@ -187,7 +184,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`).should("not.exist");
     });
 });

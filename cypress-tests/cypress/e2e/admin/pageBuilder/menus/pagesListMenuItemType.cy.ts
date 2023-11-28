@@ -33,13 +33,10 @@ describe("Page Builder - List Menu Item Types", () => {
 
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
         cy.pbClearMainMenu();
-        cy.wait(500);
         cy.visit("/page-builder/menus");
 
-        cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.contains("Main Menu").click();
-            cy.wait(500);
         });
 
         // Test "Page List".
@@ -108,8 +105,6 @@ describe("Page Builder - List Menu Item Types", () => {
         cy.findByTestId("default-data-list").within(() => {
             cy.contains(`Main Menu`).click({ force: true });
         });
-
-        cy.wait(500);
 
         cy.findByTestId(`pb-menu-item-render-added-menu-${id}`)
             .eq(0)

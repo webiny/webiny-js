@@ -1,6 +1,9 @@
+import { customAlphabet } from "nanoid";
+
 context("Page Builder - Menu CRUD", () => {
-    const menuName = "Test menu";
-    const menuSlug = "test-slug";
+    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+    const menuName = nanoid(10);
+    const menuSlug = nanoid(10);
 
     const menuNameEdit = "Testing Menu123";
     const menuDescEdit = "This is an edited description.";
@@ -25,7 +28,6 @@ context("Page Builder - Menu CRUD", () => {
         cy.findByTestId("pb.menu.save.button").click();
 
         cy.findByText("Menu saved successfully.").should("exist");
-        cy.wait(500);
 
         // Edit the menu.
         cy.findByTestId("pb.menu.create.name").clear().type(menuNameEdit);
@@ -33,7 +35,6 @@ context("Page Builder - Menu CRUD", () => {
         cy.findByTestId("pb.menu.create.description").clear().type(menuDescEdit);
         cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.").should("exist");
-        cy.wait(500);
 
         // Assert the menu is being displayed properly on the right side of the screen.
         cy.findByTestId("default-data-list").within(() => {
@@ -42,16 +43,15 @@ context("Page Builder - Menu CRUD", () => {
                 .within(() => {
                     cy.findByText(menuNameEdit).should("exist");
                     cy.findByText(menuDescEdit).should("exist");
-                    cy.get("button").click({ force: true });
+                    cy.findByTestId("pb-menus-list-delete-menu-btn").click({ force: true });
                 });
         });
 
-        //Finish deleting the menu and assert it is deleted.
+        // Finish deleting the menu and assert it is deleted.
         cy.contains("Are you sure you want to continue?").should("exist");
         cy.findAllByTestId("confirmationdialog-confirm-action").click();
 
         cy.findByText(`Menu "${menuSlug}" deleted.`).should("exist");
-        cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(menuNameEdit).should("not.exist");
         });

@@ -6,7 +6,9 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbClearMainMenu(): Chainable<Promise<any>>;
+            pbClearMainMenu(): Chainable<
+                Promise<{ title: string; slug: string; description: string; items: string[] }>
+            >;
         }
     }
 }
@@ -21,11 +23,6 @@ const CLEAR_MAIN_MENU = `
           slug
           description
           items
-          createdOn
-          createdBy {
-            id
-            displayName
-          }
         }
       }
     }

@@ -6,29 +6,22 @@ const CREATE_PAGE = /* GraphQL */ `
             createPage(from: $from, category: $category, meta: $meta) {
                 data {
                     id
-                    pid
-                    status
                     title
-                    version
-                    savedOn
                     category {
                         name
                         slug
-                    }
-                    createdBy {
-                        id
-                        displayName
                     }
                 }
             }
         }
     }
 `;
+
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbCreatePage(data: any): Promise<any>;
+            pbCreatePage(data: any): Promise<{ id: string; title: string; category: string[] }>;
         }
     }
 }
