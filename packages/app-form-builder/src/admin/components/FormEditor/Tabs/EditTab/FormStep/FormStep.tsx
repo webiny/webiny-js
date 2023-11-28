@@ -24,18 +24,10 @@ import { Center, Vertical, Horizontal } from "~/admin/components/FormEditor/Drop
 import { useFormDragAndDrop } from "~/hooks/useFormDragAndDrop";
 
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
-export const FormStep = ({
-    title,
-    deleteStepDisabled,
-    formStep,
-    onDelete,
-    onEdit,
-    getLayoutFields,
-    updateField,
-    deleteField
-}: {
+export interface FormStepProps {
     title: string;
     deleteStepDisabled: boolean;
     formStep: FbFormStep;
@@ -44,7 +36,20 @@ export const FormStep = ({
     getLayoutFields: (stepId: string) => FbFormModelField[][];
     updateField: (field: FbFormModelField) => void;
     deleteField: (field: FbFormModelField, stepId: string) => void;
-}) => {
+}
+
+export const FormStep: React.FC<FormStepProps> = props => {
+    const {
+        title,
+        deleteStepDisabled,
+        formStep,
+        onDelete,
+        onEdit,
+        getLayoutFields,
+        updateField,
+        deleteField
+    } = props;
+
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
     const [dropDestination, setDropDestination] = useState<DropDestination | null>(null);
 
