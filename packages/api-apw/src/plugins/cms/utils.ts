@@ -172,7 +172,7 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
     }
 };
 
-export const hasEntries = (workflow: ApwWorkflow): Boolean => {
+export const hasEntries = (workflow: ApwWorkflow): boolean => {
     const { app, scope } = workflow;
     return (
         app === ApwWorkflowApplications.CMS &&

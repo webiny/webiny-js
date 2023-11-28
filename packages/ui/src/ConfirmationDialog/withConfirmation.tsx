@@ -9,10 +9,10 @@ type ConfirmationProps = {
 type WithConfirmationParams = (props: Record<string, any>) => ConfirmationProps;
 
 export type WithConfirmationProps = {
-    showConfirmation: (confirm: Function, cancel: Function) => void;
+    showConfirmation: (confirm: () => void, cancel: () => void) => void;
 };
 
-export const withConfirmation = (dialogProps: WithConfirmationParams): Function => {
+export const withConfirmation = (dialogProps: WithConfirmationParams) => {
     return (Component: typeof React.Component) => {
         return function withConfirmationRender(ownProps: Record<string, any>) {
             const props = typeof dialogProps === "function" ? dialogProps(ownProps) : dialogProps;

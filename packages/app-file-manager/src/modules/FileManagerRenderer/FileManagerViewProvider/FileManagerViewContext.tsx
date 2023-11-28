@@ -36,7 +36,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
     moveFileToFolder: (fileId: string, folderId: string) => Promise<void>;
     multiple: boolean;
     onClose: () => void;
-    onChange: Function;
+    onChange: (value: FileItem[] | FileItem) => void;
     onUploadCompletion: (files: FileItem[]) => void;
     own: boolean;
     scope?: string;
@@ -83,14 +83,14 @@ const getCurrentFolderList = (
 };
 
 export interface FileManagerViewProviderProps {
-    onChange?: Function;
+    onChange?: (value: FileItem[] | FileItem) => void;
     onClose?: () => void;
     multiple?: boolean;
     accept: string[];
     maxSize?: number | string;
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
-    onUploadCompletion?: Function;
+    onUploadCompletion?: (files: FileItem[]) => void;
     tags?: string[];
     scope?: string;
     own?: boolean;
@@ -392,7 +392,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         meta,
         moveFileToFolder,
         multiple: Boolean(props.multiple),
-        onChange(value: any[]) {
+        onChange(value: FileItem[] | FileItem) {
             if (typeof props.onChange === "function") {
                 props.onChange(value);
             }
