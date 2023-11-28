@@ -107,8 +107,8 @@ const styles = {
 
 interface LexicalColorPickerProps {
     value: string;
-    onChange?: Function;
-    onChangeComplete: Function;
+    onChange?: (color: string) => void;
+    onChangeComplete: (color: string, name?: string) => void;
     handlerClassName?: string;
 }
 

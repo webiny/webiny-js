@@ -56,7 +56,7 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
             }
 
             if (Array.isArray(value)) {
-                const finalValue: FileManagerFileItem[] = value.map(formatFileItem);
+                const finalValue = value.map(formatFileItem);
                 (onChange as FileManagerOnChange<FileManagerFileItem[]>)(finalValue);
                 return;
             }
@@ -66,6 +66,11 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
 
         const viewProps: FileManagerViewProviderProps = {
             ...forwardProps,
+            /**
+             * TODO @pavel - verify that this is correct
+             */
+            onUploadCompletion:
+                forwardProps.onUploadCompletion as FileManagerViewProviderProps["onUploadCompletion"],
             onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
             accept: images ? accept || imagesAccept : accept || []
         };

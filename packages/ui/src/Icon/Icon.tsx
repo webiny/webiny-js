@@ -11,7 +11,7 @@ export type IconProps = {
     /**
      * Optional onclick handler
      */
-    onClick?: Function;
+    onClick?: (value: any) => void;
 
     /**
      * CSS class to be added to the icon

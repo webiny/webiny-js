@@ -41,7 +41,7 @@ interface ListMenusResponse {
 export interface MenusDialogProps {
     open: boolean;
     onClose: DialogOnClose;
-    onSelect: Function;
+    onSelect: (item: PbMenu) => void;
     children: any;
 }
 

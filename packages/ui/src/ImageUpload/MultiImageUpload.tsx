@@ -46,7 +46,7 @@ interface MultiImageUploadProps extends FormComponentProps {
     className?: string;
 
     // Define a list of accepted image types.
-    accept?: Array<string>;
+    accept?: string[];
 
     // Define file's max allowed size (default is "5mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
@@ -54,7 +54,9 @@ interface MultiImageUploadProps extends FormComponentProps {
 
     // Image editor options.
     // Please check the docs of ImageEditor component for the list of all available options.
-    imageEditor?: Object;
+    imageEditor?: {
+        [key: string]: any;
+    };
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {

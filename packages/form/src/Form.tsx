@@ -151,7 +151,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         if (!onChangeFns.current[name]) {
             const linkStateChange = (
                 value: unknown,
-                inlineCallback: Function = lodashNoop
+                inlineCallback: (value?: any) => void = lodashNoop
             ): Promise<unknown> => {
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
