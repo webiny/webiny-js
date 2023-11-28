@@ -5,6 +5,7 @@ import WebinyError from "@webiny/error";
 import { createFormBuilderBasicContext } from "./createFormBuilderBasicContext";
 import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsFormsStorage } from "./CmsFormsStorage";
+import { isInstallationPending } from "./isInstallationPending";
 import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
 import { FormBuilderContext, FbFormPermission, FormBuilderStorageOperations } from "~/types";
 
@@ -32,15 +33,18 @@ export class FormBuilderContextSetup {
         const formsStorageOps = await this.context.security.withoutAuthorization(() => {
             return this.setupFormsCmsStorageOperations();
         });
+
+        if (formsStorageOps) {
+            storageOperations.forms = formsStorageOps;
+        }
+
         const submissionsStorageOps = await this.context.security.withoutAuthorization(() => {
             return this.setupSubmissionsCmsStorageOperations();
         });
 
-        storageOperations = {
-            ...storageOperations,
-            forms: formsStorageOps,
-            submissions: submissionsStorageOps
-        };
+        if (submissionsStorageOps) {
+            storageOperations.submissions = submissionsStorageOps;
+        }
 
         const formsPermissions = new FormsPermissions({
             getIdentity: this.getIdentity.bind(this),
@@ -60,6 +64,10 @@ export class FormBuilderContextSetup {
     }
 
     private async setupFormsCmsStorageOperations() {
+        if (isInstallationPending({ tenancy: this.context.tenancy, i18n: this.context.i18n })) {
+            return;
+        }
+
         const model = await this.getModel("fbForm");
 
         return await CmsFormsStorage.create({
@@ -70,6 +78,10 @@ export class FormBuilderContextSetup {
     }
 
     private async setupSubmissionsCmsStorageOperations() {
+        if (isInstallationPending({ tenancy: this.context.tenancy, i18n: this.context.i18n })) {
+            return;
+        }
+
         const model = await this.getModel("fbSubmission");
 
         return await CmsSubmissionsStorage.create({

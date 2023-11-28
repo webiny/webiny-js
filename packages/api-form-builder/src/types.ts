@@ -373,9 +373,9 @@ export interface FbSubmission {
 export interface Settings {
     domain: string;
     reCaptcha: {
-        enabled: boolean;
-        siteKey: string;
-        secretKey: string;
+        enabled: boolean | null;
+        siteKey: string | null;
+        secretKey: string | null;
     };
     tenant: string;
     locale: string;
