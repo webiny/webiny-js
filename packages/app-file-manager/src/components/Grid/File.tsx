@@ -26,12 +26,17 @@ import {
 } from "./styled";
 import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
 
+export interface FileOptions {
+    label: string;
+    // TODO fix the type!
+    onClick: (file: boolean) => void;
+}
 export interface FileProps {
     file: FileItem;
     selected: boolean;
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
-    options?: Array<{ label: string; onClick: (file: Object) => void }>;
+    options?: FileOptions[];
     multiple?: boolean;
     children: React.ReactNode;
     showFileDetails: (id: string) => void;

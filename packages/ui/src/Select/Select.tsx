@@ -27,10 +27,12 @@ export type SelectProps = FormComponentProps &
         box?: string;
 
         // One or more <option> or <optgroup> elements.
-        children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
+        children?: (React.ReactElement<"option"> | React.ReactElement<"optgroup">)[];
 
         // IconProps for the root element. By default, additional props spread to the native select element.
-        rootProps?: Object;
+        rootProps?: {
+            [key: string]: any;
+        };
 
         // A className for the root element.
         className?: string;

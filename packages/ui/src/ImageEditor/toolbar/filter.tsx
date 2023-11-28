@@ -18,7 +18,7 @@ interface RenderFormState {
 
 interface RenderFormProps {
     canvas: any;
-    renderApplyCancel?: Function;
+    renderApplyCancel?: () => void;
 }
 
 const Wrapper = styled("div")({

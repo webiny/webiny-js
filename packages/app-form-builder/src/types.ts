@@ -294,8 +294,8 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 };
 
 export type FormRenderPropsType<T = Record<string, any>> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
+    getFieldById: (id: string) => FbFormModelField | null;
+    getFieldByFieldId: (id: string) => FbFormModelField | null;
     getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;

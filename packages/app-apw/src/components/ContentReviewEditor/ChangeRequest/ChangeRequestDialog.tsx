@@ -161,7 +161,7 @@ export const ChangeRequestDialog: React.FC = () => {
          */
         if (isValidId(changeRequestId)) {
             await update({
-                variables: { id: changeRequestId, data: pick(data, fields) }
+                variables: { id: changeRequestId as string, data: pick(data, fields) }
             });
         } else {
             await create({ variables: { data } });

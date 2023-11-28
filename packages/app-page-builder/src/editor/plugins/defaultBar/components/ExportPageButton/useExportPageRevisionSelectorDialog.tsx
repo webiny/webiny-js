@@ -42,7 +42,10 @@ const ExportPageDialogMessage: React.FC<ExportPageDialogMessageProps> = ({ selec
                         data={{ revision: value }}
                         onChange={data => {
                             const { revision } = data as unknown as PbElementDataSettingsFormType;
-                            return setValue(revision);
+                            /**
+                             * We expect revision to be string.
+                             */
+                            return setValue(revision as string);
                         }}
                     >
                         {({ Bind }) => (
