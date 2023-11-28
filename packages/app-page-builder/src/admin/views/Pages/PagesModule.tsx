@@ -9,6 +9,13 @@ import {
     ActionUnpublish
 } from "~/admin/components/BulkActions";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+import {
+    CellActions,
+    CellAuthor,
+    CellModified,
+    CellName,
+    CellStatus
+} from "~/admin/components/Table/Table";
 
 const { Browser } = PageListConfig;
 
@@ -24,6 +31,29 @@ export const PagesModule: React.FC = () => {
                 <Browser.FolderAction name={"edit"} element={<EditFolder />} />
                 <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.Table.Column
+                    name={"title"}
+                    header={"Name"}
+                    cell={<CellName />}
+                    size={400}
+                    enableSorting={true}
+                />
+                <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
+                <Browser.Table.Column
+                    name={"savedOn"}
+                    header={"Modified"}
+                    cell={<CellModified />}
+                    enableSorting={true}
+                />
+                <Browser.Table.Column name={"status"} header={"Status"} cell={<CellStatus />} />
+                <Browser.Table.Column
+                    name={"actions"}
+                    header={" "}
+                    cell={<CellActions />}
+                    size={60}
+                    className={"rmwc-data-table__cell--align-end"}
+                    enableResizing={false}
+                />
             </PageListConfig>
         </>
     );

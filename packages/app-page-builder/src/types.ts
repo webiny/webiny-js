@@ -12,6 +12,7 @@ import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
+import { FolderTableItem, RecordTableItem } from "@webiny/app-aco/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -1011,3 +1012,7 @@ declare global {
         }
     }
 }
+
+export type PbPageTableItem = PbPageDataItem & RecordTableItem;
+
+export type TableItem = FolderTableItem | PbPageTableItem;

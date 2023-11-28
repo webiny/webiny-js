@@ -1,56 +1,45 @@
 import React, { forwardRef, useMemo } from "react";
 import { useAcoConfig } from "@webiny/app-aco";
-import { FolderItem, FolderTableItem } from "@webiny/app-aco/types";
+import { FolderItem, FolderTableItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-
-import { TableCellProvider } from "~/hooks/useTableCell";
-
-import { FileItem } from "@webiny/app-admin/types";
-import { Settings, TableItem, FileTableItem } from "~/types";
+import { PbPageDataItem, PbPageTableItem, TableItem } from "~/types";
+import { TableCellProvider } from "~/admin/hooks/useTableCell";
 
 export interface TableProps {
-    records: FileItem[];
+    records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
-    selectedRecords: FileItem[];
     loading?: boolean;
-    onRecordClick: (id: string) => void;
-    onFolderClick: (id: string) => void;
-    onSelectRow: ((rows: TableItem[] | []) => void) | undefined;
-    onToggleRow: ((row: TableItem) => void) | undefined;
+    openPreviewDrawer: () => void;
+    onSelectRow: (rows: TableItem[] | []) => void;
+    selectedRows: PbPageDataItem[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
-    settings?: Settings;
 }
 
-const createRecordsData = (items: FileItem[]): FileTableItem[] => {
-    return items.map(item => {
+const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PbPageTableItem[] => {
+    return items.map(({ data, location }) => {
         return {
             $type: "RECORD",
-            $selectable: true, // Files a.k.a. records are always selectable to perform bulk actions
-            ...item
+            $selectable: true,
+            location,
+            ...data
         };
     });
 };
 
 const createFoldersData = (items: FolderItem[]): FolderTableItem[] => {
-    return items.map(item => ({
-        $type: "FOLDER",
-        $selectable: false,
-        ...item
-    }));
+    return items.map(item => {
+        return {
+            $type: "FOLDER",
+            $selectable: false,
+            ...item
+        };
+    });
 };
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
-    const {
-        folders,
-        records,
-        selectedRecords,
-        onSelectRow,
-        onToggleRow,
-        loading,
-        sorting,
-        onSortingChange
-    } = props;
+    const { folders, records, loading, onSelectRow, sorting, onSortingChange, selectedRows } =
+        props;
 
     const { folder: folderConfig, table } = useAcoConfig();
 
@@ -85,17 +74,18 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
-                onToggleRow={onToggleRow}
-                isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
+                selectedRows={data.filter(record =>
+                    selectedRows.find(row => row.pid === record.id)
+                )}
+                isRowSelectable={row => row.original.$selectable}
+                onSortingChange={onSortingChange}
                 initialSorting={[
                     {
                         id: "createdOn",
                         desc: true
                     }
                 ]}
-                onSortingChange={onSortingChange}
-                selectedRows={createRecordsData(selectedRecords)}
             />
         </div>
     );
