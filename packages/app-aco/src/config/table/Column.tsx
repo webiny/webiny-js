@@ -1,14 +1,25 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
+import { DataTableCellProps } from "@rmwc/data-table";
 
 export interface ColumnConfig {
     name: string;
-    element: React.ReactElement;
+    header: string;
+    cell: ReactElement;
+    enableSorting: boolean;
+    enableResizing: boolean;
+    size: number;
+    className: string;
 }
 
 export interface ColumnProps {
     name: string;
-    element?: React.ReactElement;
+    header?: string;
+    cell?: ReactElement;
+    enableSorting?: boolean;
+    enableResizing?: boolean;
+    size?: number;
+    className?: string;
     remove?: boolean;
     before?: string;
     after?: string;
@@ -19,7 +30,12 @@ export const BaseColumn: React.FC<ColumnProps> = ({
     after = undefined,
     before = undefined,
     remove = false,
-    element
+    cell,
+    header = undefined,
+    enableSorting = false,
+    enableResizing = true,
+    size = 200,
+    className = undefined
 }) => {
     const getId = useIdGenerator("tableColumn");
 
@@ -37,8 +53,23 @@ export const BaseColumn: React.FC<ColumnProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
-                {element ? (
-                    <Property id={getId(name, "element")} name={"element"} value={element} />
+                {header ? (
+                    <Property id={getId(name, "header")} name={"header"} value={header} />
+                ) : null}
+                {cell ? <Property id={getId(name, "element")} name={"cell"} value={cell} /> : null}
+                <Property
+                    id={getId(name, "enableSorting")}
+                    name={"enableSorting"}
+                    value={enableSorting}
+                />
+                <Property
+                    id={getId(name, "enableResizing")}
+                    name={"enableResizing"}
+                    value={enableResizing}
+                />
+                <Property id={getId(name, "size")} name={"size"} value={size} />
+                {className ? (
+                    <Property id={getId(name, "className")} name={"className"} value={className} />
                 ) : null}
             </Property>
         </Property>

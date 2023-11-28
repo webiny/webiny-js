@@ -5,7 +5,10 @@ import { ReactComponent as FolderShared } from "@material-design-icons/svg/outli
 import { ReactComponent as Image } from "@material-design-icons/svg/outlined/insert_photo.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 
-import { RowIcon, RowText, RowTitle } from "./styled";
+import { useTableCell } from "~/hooks/useTableCell";
+
+import { RowIcon, RowText, RowTitle } from "./Cells.styled";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 interface DefaultProps {
     name: string;
@@ -13,22 +16,22 @@ interface DefaultProps {
     onClick: (id: string) => void;
 }
 
-interface FileProps extends DefaultProps {
+interface FileCellNameProps extends DefaultProps {
     type?: string;
 }
 
-interface FolderProps extends DefaultProps {
+interface FolderCellNameProps extends DefaultProps {
     canManagePermissions: boolean;
     hasNonInheritedPermissions: boolean;
 }
 
-export const FolderName: React.FC<FolderProps> = ({
+export const FolderCellName = ({
     name,
     id,
     onClick,
     canManagePermissions,
     hasNonInheritedPermissions
-}) => {
+}: FolderCellNameProps) => {
     let icon = <Folder />;
     if (hasNonInheritedPermissions && canManagePermissions) {
         icon = <FolderShared />;
@@ -41,11 +44,37 @@ export const FolderName: React.FC<FolderProps> = ({
     );
 };
 
-export const FileName: React.FC<FileProps> = ({ name, id, type, onClick }) => {
+export const FileCellName = ({ name, id, type, onClick }: FileCellNameProps) => {
     return (
         <RowTitle onClick={() => onClick(id)}>
             <RowIcon>{type && type.includes("image") ? <Image /> : <File />}</RowIcon>
             <RowText use={"subtitle2"}>{name}</RowText>
         </RowTitle>
+    );
+};
+
+export const CellName = () => {
+    const { item, isFileItem } = useTableCell();
+    const { showFileDetails, setFolderId } = useFileManagerView();
+
+    if (isFileItem(item)) {
+        return (
+            <FileCellName
+                name={item.name}
+                id={item.id}
+                type={item.type}
+                onClick={showFileDetails}
+            />
+        );
+    }
+
+    return (
+        <FolderCellName
+            name={item.title}
+            id={item.id}
+            onClick={setFolderId}
+            canManagePermissions={item.canManagePermissions}
+            hasNonInheritedPermissions={item.hasNonInheritedPermissions}
+        />
     );
 };
