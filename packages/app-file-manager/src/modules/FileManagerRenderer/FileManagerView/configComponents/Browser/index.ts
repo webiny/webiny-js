@@ -9,7 +9,7 @@ export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
-    filterByTags: Boolean;
+    filterByTags: boolean;
     folderActions: FolderActionConfig[];
     table: TableConfig;
 }

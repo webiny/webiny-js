@@ -38,7 +38,7 @@ module.exports = {
                 "ts-expect-error": false
             }
         ],
-        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/ban-types": "error",
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-unused-vars": getNoUnusedVars(),
         "@typescript-eslint/no-var-requires": 0,

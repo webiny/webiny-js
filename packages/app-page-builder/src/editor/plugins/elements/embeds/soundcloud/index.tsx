@@ -53,6 +53,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            // @ts-expect-error
             settings: args.settings,
             create: args.create,
             render

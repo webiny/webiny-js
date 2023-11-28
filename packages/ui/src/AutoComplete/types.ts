@@ -55,12 +55,12 @@ export interface AutoCompleteBaseProps extends FormComponentProps {
     /**
      * Callback that gets executed on change of input value.
      */
-    onInput?: Function;
+    onInput?: (value: any) => void;
 
     /**
      * Callback that gets executed when the input is focused.
      */
-    onFocus?: Function;
+    onFocus?: (ev: React.FocusEvent<any>) => void;
 
     /**
      * Set if you are saving plain strings as values.
@@ -70,5 +70,5 @@ export interface AutoCompleteBaseProps extends FormComponentProps {
     /**
      * Renders a single suggestion item.
      */
-    renderItem: Function;
+    renderItem: (item: any, index?: number) => React.ReactNode;
 }

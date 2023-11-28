@@ -22,7 +22,7 @@ export const ImageAction = () => {
 
     const handleClick = () => {
         if (typeof imageActionPlugin?.plugin === "function") {
-            imageActionPlugin?.plugin((data: FileManagerFileItem) => {
+            const cb = (data: FileManagerFileItem) => {
                 const imagePayload = fileToImagePayload(data);
                 if (imagePayload) {
                     editor.dispatchCommand<LexicalCommand<ImagePayload>>(
@@ -30,7 +30,8 @@ export const ImageAction = () => {
                         imagePayload
                     );
                 }
-            });
+            };
+            imageActionPlugin.plugin(cb);
         }
     };
 

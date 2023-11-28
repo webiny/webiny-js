@@ -122,9 +122,10 @@ export interface PageProviderProps {
     layoutProps?: Record<string, any>;
 }
 
-export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
-    RendererProps<TElementData> & T
->;
+export type Renderer<
+    T = Record<string, any>,
+    TElementData = Record<string, any>
+> = React.ComponentType<RendererProps<TElementData> & T>;
 
 export type ElementAttributesModifier = (args: {
     element: Element;

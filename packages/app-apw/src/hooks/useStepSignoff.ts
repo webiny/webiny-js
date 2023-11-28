@@ -16,8 +16,8 @@ import {
 } from "~/graphql/contentReview.gql";
 
 interface UseStepSignOffResult {
-    provideSignOff: Function;
-    retractSignOff: Function;
+    provideSignOff: () => Promise<void>;
+    retractSignOff: () => Promise<void>;
     loading: boolean;
 }
 
