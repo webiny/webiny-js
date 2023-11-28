@@ -30,7 +30,7 @@ const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
-    className?: String;
+    className?: string;
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;

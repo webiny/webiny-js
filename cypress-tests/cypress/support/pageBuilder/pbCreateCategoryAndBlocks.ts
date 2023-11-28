@@ -9,7 +9,9 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbCreateCategoryAndBlocks(params: CreateCategoryAndBlocksParams): Promise<Array<{}>>;
+            pbCreateCategoryAndBlocks(
+                params: CreateCategoryAndBlocksParams
+            ): Promise<Array<Record<string, any>>>;
         }
     }
 }
