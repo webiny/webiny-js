@@ -57,7 +57,7 @@ function setup(props: SetupProps = {}) {
  * @param {...Function} fns the functions to call
  * @return {Function} the function that calls all the functions
  */
-function callAll(...fns: Function[]) {
+function callAll(...fns: ((...params: any) => void)[]) {
     return (...args: any) => {
         fns.forEach(fn => {
             fn && fn(...args);

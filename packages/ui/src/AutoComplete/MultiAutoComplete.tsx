@@ -105,7 +105,7 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     /**
      * Render list item when `useMultipleSelectionList` is used.
      */
-    renderListItemLabel?: Function;
+    renderListItemLabel?: (item: any) => React.ReactNode;
     /**
      * Render in meta wrapper
      */

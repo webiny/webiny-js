@@ -98,7 +98,7 @@ const CmsEntriesList: React.FC<CmsEntriesListProps> = ({ bind, models }) => {
         models
     });
 
-    const render = useCallback((item: CmsEntryOption) => {
+    const render = useCallback((item: CmsEntryOption): React.ReactNode => {
         return (
             <div>
                 <div className={entryNameStyle}>{item.name}</div>

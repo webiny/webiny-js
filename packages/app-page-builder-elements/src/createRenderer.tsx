@@ -23,7 +23,7 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
-export function createRenderer<TRenderComponentProps = {}>(
+export function createRenderer<TRenderComponentProps = Record<string, any>>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
     options: CreateRendererOptions<TRenderComponentProps> = {}
 ): Renderer<TRenderComponentProps> {
