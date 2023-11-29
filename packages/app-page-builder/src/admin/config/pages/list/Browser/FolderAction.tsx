@@ -6,10 +6,6 @@ const { Folder } = AcoConfig;
 
 export { FolderActionConfig };
 
-export interface FolderActionProps extends React.ComponentProps<typeof AcoConfig.Folder.Action> {
-    modelIds?: string[];
-}
-
 export const FolderAction: React.FC<
     React.ComponentProps<typeof AcoConfig.Folder.Action>
 > = props => {

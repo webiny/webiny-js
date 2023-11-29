@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-import { useBind } from "@webiny/form";
+import { GenericFormData, useBind } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete";
@@ -23,8 +23,6 @@ interface UseSetPermissionsDialogResponse {
 interface FormComponentProps {
     folder: FolderItem;
 }
-
-type SubmitData = Pick<FolderItem, "permissions">;
 
 const FormComponent = ({ folder }: FormComponentProps) => {
     const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
@@ -104,7 +102,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder: FolderItem, data: SubmitData) => {
+    const onAccept = useCallback(async (folder, data) => {
         const updateData = { ...folder, ...data };
 
         try {
@@ -122,7 +120,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             loadingLabel: "Updating permissions",
-            onAccept: (data: SubmitData) => onAccept(folder, data)
+            onAccept: (data: GenericFormData) => onAccept(folder, data)
         });
     };
 
