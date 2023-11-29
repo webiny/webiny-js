@@ -12,7 +12,6 @@ import { useDialogsContext } from "~/dialogs/useDialogsContext";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
-import { FolderItem } from "~/types";
 
 interface ShowDialogParams {
     currentParentId?: string | null;
@@ -25,8 +24,6 @@ interface UseCreateDialogResponse {
 interface FormComponentProps {
     currentParentId?: string | null;
 }
-
-type SubmitData = Omit<FolderItem, "id">;
 
 const FormComponent = ({ currentParentId }: FormComponentProps) => {
     const [parentId, setParentId] = useState<string | null>(currentParentId || null);
@@ -89,7 +86,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
     const { createFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (data: SubmitData) => {
+    const onAccept = useCallback(async data => {
         try {
             await createFolder({
                 ...data,
