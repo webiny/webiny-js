@@ -105,7 +105,7 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     /**
      * Render list item when `useMultipleSelectionList` is used.
      */
-    renderListItemLabel?: Function;
+    renderListItemLabel?: (item: any) => React.ReactNode;
     /**
      * Render in meta wrapper
      */
@@ -636,7 +636,7 @@ export class MultiAutoComplete extends React.Component<
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
-                    // @ts-ignore there is no className on Downshift
+                    // @ts-expect-error there is no className on Downshift
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}
@@ -669,7 +669,7 @@ export class MultiAutoComplete extends React.Component<
                             <Input
                                 {...getInputProps({
                                     ...otherInputProps,
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     validation,
 
                                     // Only pass description if not using "useMultipleSelectionList".

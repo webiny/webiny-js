@@ -11,7 +11,7 @@ import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
-import { middleware } from "~/middleware";
+import { middleware, MiddlewareCallable } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
@@ -471,7 +471,7 @@ export const createHandler = (params: CreateHandlerParams) => {
 
         const handler = middleware(
             plugins.map(pl => {
-                return (context: Context, error: Error, next: Function) => {
+                return (context: Context, error: Error, next: MiddlewareCallable) => {
                     return pl.handle(context, error, next);
                 };
             })

@@ -94,7 +94,7 @@ describe("Schedule action CRUD Test - Page type", () => {
          */
         let updateItemResultWithError;
         try {
-            // @ts-ignore
+            // @ts-expect-error
             updateItemResultWithError = await scheduleActionCrud.update(scheduledAction.id, {
                 action: ApwScheduleActionTypes.UNPUBLISH
             });

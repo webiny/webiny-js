@@ -1,5 +1,5 @@
 /**
  * We need to ignore here because commodo-fields-date do not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 export * from "commodo-fields-date";

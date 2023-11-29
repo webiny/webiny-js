@@ -34,7 +34,7 @@ describe("filtering", () => {
         "should filter entries by createdOn - %s results",
         async (expectedResults, modifier) => {
             const records = createEntries(100).map(r => {
-                // @ts-ignore
+                // @ts-expect-error
                 delete r.values;
 
                 return r;

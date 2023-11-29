@@ -1,7 +1,7 @@
 import React from "react";
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
-// @ts-ignore
+// @ts-expect-error
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";

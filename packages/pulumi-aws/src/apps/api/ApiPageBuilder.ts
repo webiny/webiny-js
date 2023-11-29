@@ -1,8 +1,6 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-
-//@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { CoreOutput } from "../common";

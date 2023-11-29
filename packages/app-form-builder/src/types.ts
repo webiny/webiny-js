@@ -28,25 +28,26 @@ export interface FbBuilderFieldValidator {
     message: string;
     settings: any;
 }
-
+export interface FbBuilderFormFieldValidatorPluginValidator {
+    name: string;
+    label: string;
+    description: string;
+    defaultMessage: string;
+    defaultSettings?: Record<string, any>;
+    renderSettings?: (props: {
+        Bind: BindComponent;
+        setValue: (name: string, value: any) => void;
+        setMessage: (message: string) => void;
+        data: FbBuilderFieldValidator;
+        // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
+        formFieldData?: {
+            [key: string]: any;
+        };
+    }) => React.ReactElement;
+}
 export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     type: "form-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        renderSettings?: (props: {
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: FbBuilderFieldValidator;
-            // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
-            formFieldData?: {
-                [key: string]: any;
-            };
-        }) => React.ReactElement;
-    };
+    validator: FbBuilderFormFieldValidatorPluginValidator;
 };
 
 export type FbBuilderFormFieldPatternValidatorPlugin = Plugin & {
@@ -293,8 +294,8 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 };
 
 export type FormRenderPropsType<T = Record<string, any>> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
+    getFieldById: (id: string) => FbFormModelField | null;
+    getFieldByFieldId: (id: string) => FbFormModelField | null;
     getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;

@@ -18,7 +18,7 @@ interface Portal {
 const portal: Portal = {};
 
 export default function RecoilExternal() {
-    // @ts-ignore
+    // @ts-expect-error
     portal.getState = useRecoilCallback<[atom: RecoilState<any>], any>(
         ({ snapshot }) =>
             function <T>(atom: RecoilState<T>) {
@@ -27,7 +27,7 @@ export default function RecoilExternal() {
         []
     );
 
-    // @ts-ignore
+    // @ts-expect-error
     portal.setState = useRecoilCallback(({ set }) => set, []);
 
     return null;

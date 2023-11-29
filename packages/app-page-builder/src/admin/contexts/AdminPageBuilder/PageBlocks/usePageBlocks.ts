@@ -79,5 +79,10 @@ export function usePageBlocks() {
         [blocksRepository]
     );
 
-    return { ...vm, listBlocks, getBlockById, createBlock, updateBlock, deleteBlock };
+    const refetchBlock = useCallback(
+        (id: string) => blocksRepository.refetchById(id),
+        [blocksRepository]
+    );
+
+    return { ...vm, listBlocks, getBlockById, createBlock, updateBlock, deleteBlock, refetchBlock };
 }

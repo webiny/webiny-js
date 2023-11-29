@@ -1,7 +1,7 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import kebabCase from "lodash/kebabCase";
-import { PbRenderResponsiveModePlugin } from "~/types";
+import { DisplayMode, PbRenderResponsiveModePlugin } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 interface UseResponsiveClassName {
@@ -55,8 +55,10 @@ const useResponsiveClassName = (): UseResponsiveClassName => {
                     mode = config.displayMode;
                 }
             });
-
-            setDisplayMode(mode);
+            /**
+             * We can safely cast.
+             */
+            setDisplayMode(mode as DisplayMode);
         },
         [responsiveModeConfigs]
     );

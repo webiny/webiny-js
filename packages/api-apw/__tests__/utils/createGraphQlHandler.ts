@@ -142,7 +142,11 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             new CmsParametersPlugin(async context => {
                 const locale = context.i18n.getContentLocale()?.code || "en-US";
                 return {
-                    // @ts-ignore
+                    /**
+                     * This will be fixed with type augmenting.
+                     * Currently, request.params.type is unknown.
+                     */
+                    // @ts-expect-error
                     type: context.request?.params?.type || "read",
                     locale
                 };

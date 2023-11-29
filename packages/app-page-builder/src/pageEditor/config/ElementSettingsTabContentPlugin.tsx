@@ -18,7 +18,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
             const [element] = useActiveElement();
             const elementSettings = useElementSettings();
             const [isTemplateMode] = useTemplateMode();
-            const refreshBlock = useRefreshBlock(element as PbEditorElement);
+            const { refreshBlock, loading } = useRefreshBlock(element as PbEditorElement);
 
             if (isTemplateMode) {
                 return <VariableSettings />;
@@ -53,7 +53,8 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                     }
                                 />
                                 <Action
-                                    tooltip={"Refresh block"}
+                                    disabled={loading}
+                                    tooltip={loading ? "Refreshing..." : "Refresh block"}
                                     onClick={refreshBlock}
                                     icon={<RefreshIcon />}
                                 />

@@ -20,9 +20,9 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
         <UiMultiImageUpload
             /**
              * TODO @ts-refactor
-             * It appers that renderImagePreview does not exist on  UiMultiImageUpload. So how did this work?
+             * It appears that renderImagePreview does not exist on  UiMultiImageUpload. So how did this work?
              */
-            // @ts-ignore
+            // @ts-expect-error
             renderImagePreview={(renderImageProps: Record<string, any>) => {
                 return (
                     <Image
