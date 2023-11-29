@@ -4,23 +4,15 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbCreatePageTemplate(data: Record<string, any>): Promise<{
-                id: string;
-                title: string;
-                slug: string;
-                tags: string[];
-                description: string;
-                layout: string;
-                pageCategory: string;
-            }>;
+            pbUpdatePageTemplate(id: string, data: any): Promise<any>;
         }
     }
 }
 
 const MUTATION = /* GraphQL */ `
-    mutation pbCreatePageTemplate($data: PbCreatePageTemplateInput!) {
+    mutation UpdatePageTemplate($id: ID!, $data: PbUpdatePageTemplateInput!) {
         pageBuilder {
-            pageTemplate: createPageTemplate(data: $data) {
+            pageTemplate: updatePageTemplate(id: $id, data: $data) {
                 data {
                     id
                     title
@@ -28,23 +20,37 @@ const MUTATION = /* GraphQL */ `
                     tags
                     description
                     layout
+                    content
                     pageCategory
+                    createdOn
+                    savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
                 }
             }
         }
     }
 `;
 
-Cypress.Commands.add("pbCreatePageTemplate", data => {
+Cypress.Commands.add("pbUpdatePageTemplate", (id, data) => {
     return cy.login().then(user => {
         return gqlClient
             .request({
                 query: MUTATION,
                 variables: {
+                    id,
                     data
                 },
                 authToken: user.idToken.jwtToken
             })
-            .then(response => response.pageBuilder.pageTemplate.data);
+            .then(response => response.pageBuilder.pageTemplate);
     });
 });
