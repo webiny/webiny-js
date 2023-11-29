@@ -5,10 +5,9 @@ import { ReactComponent as FolderShared } from "@material-design-icons/svg/outli
 import { ReactComponent as Image } from "@material-design-icons/svg/outlined/insert_photo.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 
-import { useTableCell } from "~/hooks/useTableCell";
-
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 interface DefaultProps {
     name: string;
@@ -54,7 +53,8 @@ export const FileCellName = ({ name, id, type, onClick }: FileCellNameProps) => 
 };
 
 export const CellName = () => {
-    const { item, isFileItem } = useTableCell();
+    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { item } = useTableCell();
     const { showFileDetails, setFolderId } = useFileManagerView();
 
     if (isFileItem(item)) {

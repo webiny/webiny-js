@@ -1,5 +1,4 @@
 import React from "react";
-import { useTableCell } from "~/hooks/useTableCell";
 
 import { OptionsMenu } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
@@ -13,9 +12,11 @@ import { menuStyles } from "./Cells.styled";
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { FileProvider } from "~/contexts/FileProvider";
+import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellActions = () => {
-    const { item, isFileItem } = useTableCell();
+    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { item } = useTableCell();
     const { showFileDetails } = useFileManagerView();
     const { folder: folderConfig } = useAcoConfig();
 

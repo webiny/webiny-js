@@ -1,10 +1,9 @@
-import React, { createContext } from "react";
+import React, { createContext, useContext } from "react";
 
-import { PbPageTableItem, TableItem } from "~/types";
+import { TableItem } from "~/types";
 
 export interface TableCellContext {
     item: TableItem;
-    isPbPageItem: (item: TableItem) => item is PbPageTableItem;
 }
 
 export const TableCellContext = createContext<TableCellContext | undefined>(undefined);
@@ -19,20 +18,16 @@ export const TableCellProvider = ({ item, children }: TableCellProviderProps) =>
         return null;
     }
 
-    function isPbPageItem(item: TableItem): item is PbPageTableItem {
-        return item?.$type === "RECORD";
-    }
-
-    const value: TableCellContext = { item, isPbPageItem };
+    const value: TableCellContext = { item };
 
     return <TableCellContext.Provider value={value}>{children}</TableCellContext.Provider>;
 };
 
 export const useTableCell = () => {
-    const context = React.useContext(TableCellContext);
+    const context = useContext(TableCellContext);
     if (!context) {
         throw Error(
-            `TableCelContext is missing in the component tree. Are you using "useTableCell()" hook in the right place?`
+            `TableCellContext is missing in the component tree. Are you using "useTableCell()" hook in the right place?`
         );
     }
 

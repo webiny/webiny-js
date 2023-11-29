@@ -50,6 +50,7 @@ export const FileManagerRendererModule = () => {
                     name={"savedOn"}
                     header={"Modified"}
                     cell={<CellModified />}
+                    enableSorting={true}
                 />
                 <Browser.Table.Column
                     name={"actions"}

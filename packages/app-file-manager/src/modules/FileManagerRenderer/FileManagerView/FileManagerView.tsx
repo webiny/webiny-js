@@ -26,7 +26,7 @@ import { Empty } from "~/components/Empty";
 import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
 import { LayoutSwitch } from "~/components/LayoutSwitch";
-import { Entry, Table, TableProps } from "~/components/Table";
+import { Table, TableProps } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
@@ -34,6 +34,7 @@ import { SearchWidget } from "./components/SearchWidget";
 import { Filters } from "./components/Filters";
 import { TagsList } from "~/modules/FileManagerRenderer/FileManagerView/components/TagsList";
 import { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql";
+import { FileTableItem, TableItem } from "~/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -186,7 +187,7 @@ const FileManagerView = () => {
         }
 
         if (view.listTable) {
-            const getSelectableRow = (rows: Entry[]) =>
+            const getSelectableRow = (rows: TableItem[]) =>
                 rows.filter(row => row.$type === "RECORD").map(row => row as FileItem);
 
             const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback

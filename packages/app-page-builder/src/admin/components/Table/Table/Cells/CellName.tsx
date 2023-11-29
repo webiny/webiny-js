@@ -1,14 +1,13 @@
 import React from "react";
 
+import { useNavigateFolder } from "@webiny/app-aco";
+import { useRouter } from "@webiny/react-router";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 
-import { useTableCell } from "~/admin/hooks/useTableCell";
-
+import { PageListConfig } from "~/admin/config/pages";
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
-import { useNavigateFolder } from "@webiny/app-aco";
-import { useRouter } from "@webiny/react-router";
 
 interface DefaultProps {
     name: string;
@@ -64,7 +63,8 @@ export const PageCellName = ({ name, id }: PageCellNameProps) => {
 };
 
 export const CellName = () => {
-    const { item, isPbPageItem } = useTableCell();
+    const { useTableCell, isPbPageItem } = PageListConfig.Browser.Table.Column;
+    const { item } = useTableCell();
 
     if (isPbPageItem(item)) {
         return <PageCellName name={item.title} id={item.id} />;

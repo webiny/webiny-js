@@ -1,8 +1,9 @@
 import React from "react";
-import { useTableCell } from "~/hooks/useTableCell";
+import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellType = () => {
-    const { item, isFileItem } = useTableCell();
+    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { item } = useTableCell();
 
     if (isFileItem(item)) {
         return <>{item.type}</>;

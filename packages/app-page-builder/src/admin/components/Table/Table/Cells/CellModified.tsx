@@ -1,8 +1,9 @@
 import React from "react";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
-import { useTableCell } from "~/admin/hooks/useTableCell";
+import { PageListConfig } from "~/admin/config/pages";
 
 export const CellModified = () => {
+    const { useTableCell } = PageListConfig.Browser.Table.Column;
     const { item } = useTableCell();
 
     return <TimeAgo datetime={item.createdOn} />;
