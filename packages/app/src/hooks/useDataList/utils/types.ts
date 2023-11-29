@@ -4,9 +4,15 @@ export type UseDataListParams = {
     type: string;
     fields: string;
     limit?: number;
-    sort?: Object;
-    where?: Object;
-    search?: Object;
+    sort?: {
+        [key: string]: string;
+    };
+    where?: {
+        [key: string]: any;
+    };
+    search?: {
+        [key: string]: any;
+    };
 };
 
 export type SearchParams = {
@@ -16,22 +22,22 @@ export type SearchParams = {
 };
 
 export type UseDataListProps = {
-    data: Array<Object>;
-    meta: Object;
+    data: Record<string, any>[];
+    meta: Record<string, any>;
     init: () => void;
-    refresh: (params?: Object) => void;
-    delete: (id: string, options: Object) => void;
+    refresh: (params?: Record<string, any>) => void;
+    delete: (id: string, options: Record<string, any>) => void;
     setPerPage: (perPage: number) => void;
     setPage: (page: number) => void;
     setSearch: (search: SearchParams | any) => void;
-    setWhere: (where: Object) => void;
-    setSorters: (sort: Object) => void;
-    multiSelect: (item: Object, value: boolean) => void;
+    setWhere: (where: Record<string, any>) => void;
+    setSorters: (sort: Record<string, any>) => void;
+    multiSelect: (item: Record<string, any>, value: boolean) => void;
     multiSelectAll: (value: boolean) => void;
 
-    isMultiSelected: (item: Object) => boolean;
+    isMultiSelected: (item: Record<string, any>) => boolean;
     isAllMultiSelected: () => boolean;
     isNoneMultiSelected: () => boolean;
-    getMultiSelected: () => Array<Object>;
+    getMultiSelected: () => Record<string, any>[];
     __loadParams: UseDataListParams;
 };

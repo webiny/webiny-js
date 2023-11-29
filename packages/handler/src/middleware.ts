@@ -1,8 +1,11 @@
+export interface MiddlewareCallable {
+    (...args: any[]): Promise<any>;
+}
 /**
  * Compose a single middleware from the array of middleware functions
  */
-export const middleware = (functions: Function[] = []): Function => {
-    return (...args: string[]): Promise<any> => {
+export const middleware = (functions: MiddlewareCallable[] = []) => {
+    return (...args: any[]): Promise<any> => {
         if (!functions.length) {
             return Promise.resolve();
         }

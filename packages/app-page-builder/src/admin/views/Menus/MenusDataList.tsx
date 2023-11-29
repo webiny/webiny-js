@@ -194,7 +194,10 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
                             {canDelete(item?.createdBy?.id) && (
                                 <ListItemMeta>
                                     <ListActions>
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={"pb-menus-list-delete-menu-btn"}
+                                        />
                                     </ListActions>
                                 </ListItemMeta>
                             )}

@@ -52,6 +52,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            // @ts-expect-error
             settings: args.settings,
             render(props) {
                 // @ts-expect-error No need to worry about different `element.elements` type.
