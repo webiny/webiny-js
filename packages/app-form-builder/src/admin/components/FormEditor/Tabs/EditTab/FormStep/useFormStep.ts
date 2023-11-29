@@ -85,7 +85,7 @@ export const useFormStep = () => {
         [data]
     );
 
-    const composeHandleDropParams = (params: ComposeHandleDropParams) => {
+    const onFormStepDrop = (params: ComposeHandleDropParams) => {
         const { item, formStep, destinationPosition } = params;
 
         // We don't want to drop steps inside of steps.
@@ -136,9 +136,7 @@ export const useFormStep = () => {
         editField,
         editingField,
         dropDestination,
-        handleDrop,
-        composeHandleDropParams,
-        onFormStepDrop: composeHandleDropParams,
+        onFormStepDrop,
         createCustomField
     };
 };
