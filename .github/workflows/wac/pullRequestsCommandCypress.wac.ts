@@ -285,6 +285,7 @@ export const pullRequestsCommandCypress = createWorkflow({
             ]
         }),
         ...createJobs("ddb"),
-        ...createJobs("ddb-es")
+        ...createJobs("ddb-es"),
+        ...createJobs("ddb-os")
     }
 });
