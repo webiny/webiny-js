@@ -239,12 +239,11 @@ const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus =
 };
 
 const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
-    if (!Array.isArray(sort)) {
-        return ["createdOn_DESC"];
-    } else if (sort.filter(s => !!s).length === 0) {
-        return ["createdOn_DESC"];
+    if (Array.isArray(sort) && sort.filter(Boolean).length > 0) {
+        return sort;
     }
-    return sort;
+
+    return ["revisionCreatedOn_DESC"];
 };
 
 const getIdentity = <T extends SecurityIdentity | null>(
@@ -1421,12 +1420,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         if (!storageEntry && !force) {
             throw new NotFoundError(`Entry "${id}" was not found!`);
         }
-            /**
-             * In the case we are forcing the deletion, we do not need the storageEntry to exist as it might be an error when loading single database record.
-             *
-             * This happens, sometimes, in the Elasticsearch system as the entry might get deleted from the DynamoDB but not from the Elasticsearch.
-             * This is due to high load on the Elasticsearch at the time of the deletion.
-             */
+        /**
+         * In the case we are forcing the deletion, we do not need the storageEntry to exist as it might be an error when loading single database record.
+         *
+         * This happens, sometimes, in the Elasticsearch system as the entry might get deleted from the DynamoDB but not from the Elasticsearch.
+         * This is due to high load on the Elasticsearch at the time of the deletion.
+         */
         //
         else if (!storageEntry && force) {
             const { id: entryId } = parseIdentifier(id);

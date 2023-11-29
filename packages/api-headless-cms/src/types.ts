@@ -2234,12 +2234,43 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+
+    /**
+     * 🚫 Deprecated meta fields below.
+     * Will be fully removed in one of the next releases.
+     */
     createdOn?: Date | string;
     savedOn?: Date | string;
     publishedOn?: Date | string;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
     ownedBy?: CmsIdentity | null;
+
+    /**
+     * 🆕 New meta fields below.
+     * Users are encouraged to use these instead of the deprecated ones above.
+     */
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string;
+    revisionSavedOn?: Date | string;
+    revisionModifiedOn?: Date | string | null;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
+    entryCreatedOn?: Date | string;
+    entrySavedOn?: Date | string;
+    entryModifiedOn?: Date | string | null;
+    entryCreatedBy?: CmsIdentity;
+    entryModifiedBy?: CmsIdentity | null;
+    entrySavedBy?: CmsIdentity;
+
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2256,12 +2287,42 @@ export interface CreateCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
+    /**
+     * 🚫 Deprecated meta fields below.
+     * Will be fully removed in one of the next releases.
+     */
     createdOn?: Date;
     savedOn?: Date;
     publishedOn?: Date;
     createdBy?: CmsIdentity;
     modifiedBy?: CmsIdentity;
     ownedBy?: CmsIdentity;
+
+    /**
+     * 🆕 New meta fields below.
+     * Users are encouraged to use these instead of the deprecated ones above.
+     */
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date;
+    revisionSavedOn?: Date;
+    revisionModifiedOn?: Date;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity;
+    revisionSavedBy?: CmsIdentity;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
+    entryCreatedOn?: Date;
+    entrySavedOn?: Date;
+    entryModifiedOn?: Date;
+    entryCreatedBy?: CmsIdentity;
+    entryModifiedBy?: CmsIdentity;
+    entrySavedBy?: CmsIdentity;
+
     [key: string]: any;
 }
 
@@ -2274,12 +2335,42 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    /**
+     * 🚫 Deprecated meta fields below.
+     * Will be fully removed in one of the next releases.
+     */
     createdOn?: Date | string | null;
     savedOn?: Date | string | null;
     publishedOn?: Date | string | null;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
     ownedBy?: CmsIdentity;
+
+    /**
+     * 🆕 New meta fields below.
+     * Users are encouraged to use these instead of the deprecated ones above.
+     */
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string | null;
+    revisionSavedOn?: Date | string | null;
+    revisionModifiedOn?: Date | string | null;
+    revisionCreatedBy?: CmsIdentity | null;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity | null;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
+    entryCreatedOn?: Date | string | null;
+    entrySavedOn?: Date | string | null;
+    entryModifiedOn?: Date | string | null;
+    entryCreatedBy?: CmsIdentity | null;
+    entryModifiedBy?: CmsIdentity | null;
+    entrySavedBy?: CmsIdentity | null;
+
     wbyAco_location?: {
         folderId?: string | null;
     };

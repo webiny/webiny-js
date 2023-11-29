@@ -5,6 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { mapEntryMetaFields } from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
@@ -61,19 +62,41 @@ export const createManageSDL: CreateManageSDL = ({
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
     const inputGraphQLFields = inputFields.map(f => f.fields).join("\n");
+
     /**
      * TODO check for 5.38.0
      */
-    return /* GraphQL */ `
+
+    const deprecatedOnByMetaFields = [
+        `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")`,
+        `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
+        `createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")`,
+        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")`,
+        `modifiedBy: CmsIdentity @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")`
+    ].join("\n");
+
+    const onByMetaFields = mapEntryMetaFields(field => {
+        const nonNullable = !field.endsWith("ModifiedOn");
+        const dateTimeField = field.endsWith("On");
+
+        let gqlField = `${field}: ${dateTimeField ? "DateTime" : "CmsIdentity"}`;
+        if (nonNullable) {
+            gqlField += "!";
+        }
+
+        return gqlField;
+    }).join("\n");
+
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    return `
         """${model.description || singularName}"""
         type ${singularName} {
             id: ID!
             entryId: String!
-            createdOn: DateTime!
-            savedOn: DateTime!
-            createdBy: CmsIdentity!
-            ownedBy: CmsIdentity!
-            modifiedBy: CmsIdentity
+            
+            ${deprecatedOnByMetaFields}
+            ${onByMetaFields}
+    
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
             # Advanced Content Organization - make required in 5.38.0
@@ -106,14 +129,25 @@ export const createManageSDL: CreateManageSDL = ({
         
         input ${singularName}Input {
             id: ID
-            # User can override the entry dates
-            createdOn: DateTime
-            savedOn: DateTime
-            publishedOn: DateTime
-            # User can override the entry related user identities
-            createdBy: CmsIdentityInput
-            modifiedBy: CmsIdentityInput
-            ownedBy: CmsIdentityInput
+            
+            # Set a different date/time as the creation date/time of the entry. 
+            createdOn: DateTime @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+            
+            # Set a different date/time as the last modification date/time of the entry.
+            savedOn: DateTime @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+            
+            # Set a different date/time as the publication date/time of the entry.
+            publishedOn: DateTime @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
+            
+            # Set a different identity as the creator of the entry. 
+            createdBy: CmsIdentityInput @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+            
+            # Set a different identity as the last editor of the entry. 
+            modifiedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+            
+            # Set a different identity as the owner of the entry.
+            ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
+            
             wbyAco_location: WbyAcoLocationInput
             ${inputGraphQLFields}
         }

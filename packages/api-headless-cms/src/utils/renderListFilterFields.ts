@@ -6,6 +6,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
+import { mapEntryMetaFields } from "~/constants";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -23,25 +24,20 @@ type CreateListFiltersType =
     | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
     | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
 
-const createOnFields = (prefix: "revision" | "entry", field: string) => {
+const createOnFields = (field: string) => {
     return [
-        `${prefix}${field}On: DateTime`,
-        `${prefix}${field}On_gt: DateTime`,
-        `${prefix}${field}On_gte: DateTime`,
-        `${prefix}${field}On_lt: DateTime`,
-        `${prefix}${field}On_lte: DateTime`,
-        `${prefix}${field}On_between: [DateTime!]`,
-        `${prefix}${field}On_not_between: [DateTime!]`
+        `${field}: DateTime`,
+        `${field}_gt: DateTime`,
+        `${field}_gte: DateTime`,
+        `${field}_lt: DateTime`,
+        `${field}_lte: DateTime`,
+        `${field}_between: [DateTime!]`,
+        `${field}_not_between: [DateTime!]`
     ];
 };
 
-const createByFields = (prefix: "revision" | "entry", field: string) => {
-    return [
-        `${prefix}${field}: ID"`,
-        `${prefix}${field}_not: ID"`,
-        `${prefix}${field}_in: [ID!]"`,
-        `${prefix}${field}_not_in: [ID!]"`
-    ];
+const createByFields = (field: string) => {
+    return [`${field}: ID"`, `${field}_not: ID"`, `${field}_in: [ID!]"`, `${field}_not_in: [ID!]"`];
 };
 
 export const renderListFilterFields: RenderListFilterFields = (params): string => {
@@ -104,27 +100,26 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
          * 🆕 New meta fields below.
          * Users are encouraged to use these instead of the deprecated ones above.
          */
+        ...mapEntryMetaFields(field => {
+            if (field.endsWith("On")) {
+                return [
+                    `${field}: DateTime`,
+                    `${field}_gt: DateTime`,
+                    `${field}_gte: DateTime`,
+                    `${field}_lt: DateTime`,
+                    `${field}_lte: DateTime`,
+                    `${field}_between: [DateTime!]`,
+                    `${field}_not_between: [DateTime!]`
+                ];
+            }
 
-        /**
-         * Revision-level meta fields. 👇
-         */
-
-        ...createOnFields("revision", "CreatedOn"),
-        ...createOnFields("revision", "SavedOn"),
-        ...createOnFields("revision", "ModifiedOn"),
-        ...createByFields("revision", "CreatedBy"),
-        ...createByFields("revision", "SavedBy"),
-        ...createByFields("revision", "ModifiedBy"),
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        ...createOnFields("entry", "CreatedOn"),
-        ...createOnFields("entry", "SavedOn"),
-        ...createOnFields("entry", "ModifiedOn"),
-        ...createByFields("entry", "CreatedBy"),
-        ...createByFields("entry", "SavedBy"),
-        ...createByFields("entry", "ModifiedBy")
+            return [
+                `${field}: ID"`,
+                `${field}_not: ID"`,
+                `${field}_in: [ID!]"`,
+                `${field}_not_in: [ID!]"`
+            ];
+        }).flat()
     ];
 
     /**

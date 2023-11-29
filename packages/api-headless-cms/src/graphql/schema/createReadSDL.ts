@@ -4,6 +4,7 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { mapEntryMetaFields } from "~/constants";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
@@ -11,6 +12,7 @@ interface CreateReadSDLParams {
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
+
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
@@ -55,16 +57,35 @@ export const createReadSDL: CreateReadSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
+    const deprecatedOnByMetaFields = [
+        `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")`,
+        `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
+        `createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")`,
+        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")`
+    ].join("\n");
+
+    const onByMetaFields = mapEntryMetaFields(field => {
+        const nonNullable = !field.endsWith("ModifiedOn");
+        const dateTimeField = field.endsWith("On");
+
+        let gqlField = `${field}: ${dateTimeField ? "DateTime" : "CmsIdentity"}`;
+        if (nonNullable) {
+            gqlField += "!";
+        }
+
+        return gqlField;
+    }).join("\n");
+
     return `
         """${model.description || singularName}"""
         type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
-            createdOn: DateTime!
-            savedOn: DateTime!
-            createdBy: CmsIdentity!
-            ownedBy: CmsIdentity!
+            
+            ${deprecatedOnByMetaFields}
+            ${onByMetaFields} 
+            
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         
