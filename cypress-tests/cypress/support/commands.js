@@ -30,6 +30,7 @@ import "./headlessCms/cmsDeleteContentModel";
 import "./headlessCms/cmsListContentModelGroup";
 import "./headlessCms/cmsCreateContentModelGroup";
 import "./headlessCms/cmsDeleteContentModelGroup";
+import "./headlessCms/cmsDeleteAllContentModelGroups";
 import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
 import "./security/securityDeleteAllUsers";
