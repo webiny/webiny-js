@@ -246,7 +246,6 @@ const createJobs = (dbSetup: string) => {
     };
 };
 
-// Create "Pull requests" workflow.
 export const pullRequestsCommandCypress = createWorkflow({
     name: "Pull Requests Command - Cypress",
     on: "issue_comment",
@@ -268,6 +267,48 @@ export const pullRequestsCommandCypress = createWorkflow({
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
                         command: "cypress",
+                        reaction: "true",
+                        "reaction-type": "eyes",
+                        "allow-edits": "false",
+                        "permission-level": "write"
+                    }
+                },
+                {
+                    name: "Create comment",
+                    uses: "peter-evans/create-or-update-comment@v2",
+                    with: {
+                        "issue-number": "${{ github.event.issue.number }}",
+                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
+                    }
+                }
+            ]
+        }),
+        ...createJobs("ddb"),
+        ...createJobs("ddb-es")
+    }
+});
+
+export const pullRequestsCommandCypressTest = createWorkflow({
+    name: "Pull Requests Command - Cypress (TEST)",
+    on: "issue_comment",
+    env: {
+        NODE_OPTIONS,
+        AWS_REGION: "eu-central-1"
+    },
+    jobs: {
+        validateWorkflows: createValidateWorkflowsJob(),
+        checkComment: createJob({
+            name: `Check comment for /cypress_test`,
+            if: "${{ github.event.issue.pull_request }}",
+            checkout: false,
+            steps: [
+                {
+                    name: "Check for Command",
+                    id: "command",
+                    uses: "xt0rted/slash-command-action@v2",
+                    with: {
+                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
+                        command: "cypress_test",
                         reaction: "true",
                         "reaction-type": "eyes",
                         "allow-edits": "false",
