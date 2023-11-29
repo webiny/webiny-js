@@ -122,7 +122,7 @@ export class Context implements ContextInterface {
          * If there are no targets to be awaited, just fire the callable.
          */
         if (targets.length === 0) {
-            cb(this as any);
+            cb(this as unknown as T);
             return;
         }
         /**
@@ -134,7 +134,7 @@ export class Context implements ContextInterface {
              * TODO @ts-refactor
              * Problem with possible subtype initialization
              */
-            // @ts-ignore
+            // @ts-expect-error
             cb
         });
     }

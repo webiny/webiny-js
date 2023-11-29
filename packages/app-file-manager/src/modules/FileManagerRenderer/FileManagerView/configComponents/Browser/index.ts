@@ -7,7 +7,7 @@ export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
-    filterByTags: Boolean;
+    filterByTags: boolean;
 }
 
 export const Browser = {

@@ -1,9 +1,9 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
-    table: Table;
+    table: Table<string, string, string>;
     attributes?: Attributes;
 }
 

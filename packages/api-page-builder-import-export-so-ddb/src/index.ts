@@ -14,13 +14,13 @@ import {
     ImportExportTaskStorageOperationsUpdateSubTaskParams,
     ImportExportTaskStorageOperationsUpdateTaskStatsParams
 } from "@webiny/api-page-builder-import-export/types";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
-import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { queryAllClean, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { createTable } from "~/definitions/table";
 import { createImportExportTaskEntity } from "~/definitions/importExportTaskEntity";
 import { CreateStorageOperations } from "./types";
+import { deleteItem, getClean, put, update } from "@webiny/db-dynamodb";
 
 interface PartitionKeyOptions {
     tenant: string;
@@ -68,9 +68,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
         getEntity() {
             return entity;
         },
-        async getTask(
-            params: ImportExportTaskStorageOperationsGetParams
-        ): Promise<ImportExportTask | null> {
+        async getTask(params: ImportExportTaskStorageOperationsGetParams) {
             const { where } = params;
 
             const keys = {
@@ -79,11 +77,10 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                const result = await entity.get(keys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entity, result.Item);
+                return await getClean<ImportExportTask>({
+                    entity,
+                    keys
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load element by given parameters.",
@@ -104,7 +101,6 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 entity: entity,
                 partitionKey: PARENT_TASK_GSI1_PK,
                 options: {
-                    beginsWith: "",
                     index: "GSI1",
                     limit: limit || undefined
                 }
@@ -113,7 +109,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             let results: ImportExportTask[] = [];
 
             try {
-                results = await queryAll<ImportExportTask>(queryAllParams);
+                results = await queryAllClean<ImportExportTask>(queryAllParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list import export tasks by given parameters.",
@@ -125,16 +121,12 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 );
             }
 
-            const items = results.map(item =>
-                cleanupItem<ImportExportTask>(entity, item)
-            ) as ImportExportTask[];
-
             // TODO: Implement sort and filter
 
             return createListResponse({
-                items: items,
+                items: results,
                 limit,
-                totalCount: items.length,
+                totalCount: results.length,
                 after: null
             });
         },
@@ -156,10 +148,13 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.put({
-                    ...task,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...task,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return task;
             } catch (ex) {
@@ -190,10 +185,13 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.put({
-                    ...task,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...task,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return task;
             } catch (ex) {
@@ -223,7 +221,10 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.delete(keys);
+                await deleteItem({
+                    entity,
+                    keys
+                });
                 return task;
             } catch (ex) {
                 throw new WebinyError(
@@ -257,13 +258,16 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.update({
-                    TYPE: createType(),
-                    ...keys,
-                    stats: {
-                        $set: {
-                            [prevStatus]: { $add: -1 },
-                            [nextStatus]: { $add: 1 }
+                await update({
+                    entity,
+                    item: {
+                        TYPE: createType(),
+                        ...keys,
+                        stats: {
+                            $set: {
+                                [prevStatus]: { $add: -1 },
+                                [nextStatus]: { $add: 1 }
+                            }
                         }
                     }
                 });
@@ -297,10 +301,13 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.put({
-                    ...subTask,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...subTask,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return subTask;
             } catch (ex) {
@@ -332,10 +339,13 @@ export const createStorageOperations: CreateStorageOperations = params => {
             };
 
             try {
-                await entity.put({
-                    ...subTask,
-                    TYPE: createType(),
-                    ...keys
+                await put({
+                    entity,
+                    item: {
+                        ...subTask,
+                        TYPE: createType(),
+                        ...keys
+                    }
                 });
                 return subTask;
             } catch (ex) {
@@ -351,9 +361,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             }
         },
 
-        async getSubTask(
-            params: ImportExportTaskStorageOperationsGetSubTaskParams
-        ): Promise<ImportExportTask | null> {
+        async getSubTask(params: ImportExportTaskStorageOperationsGetSubTaskParams) {
             const { where } = params;
 
             const keys = {
@@ -365,11 +373,10 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 SK: createSortKey(where.id)
             };
             try {
-                const result = await entity.get(keys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entity, result.Item);
+                return await getClean<ImportExportTask>({
+                    entity,
+                    keys
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load import export subTask by given parameters.",
@@ -404,7 +411,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             let results: ImportExportTask[] = [];
 
             try {
-                results = await queryAll<ImportExportTask>(queryAllParams);
+                results = await queryAllClean<ImportExportTask>(queryAllParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list import export tasks by given parameters.",
@@ -416,14 +423,10 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 );
             }
 
-            const items = results.map(item =>
-                cleanupItem<ImportExportTask>(entity, item)
-            ) as ImportExportTask[];
-
             return createListResponse({
-                items: items,
+                items: results,
                 limit,
-                totalCount: items.length,
+                totalCount: results.length,
                 after: null
             });
         }

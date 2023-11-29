@@ -3,18 +3,18 @@ import { createI18NContext } from "@webiny/api-i18n";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 
 import {
     CREATE_PAGE,
     DELETE_PAGE,
+    GET_PAGE,
+    LIST_PAGES,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
-    UPDATE_PAGE,
-    GET_PAGE,
-    LIST_PAGES
+    UPDATE_PAGE
 } from "~tests/graphql/page.gql";
 import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 
@@ -38,10 +38,12 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
 import { createWcpContext } from "@webiny/api-wcp";
+import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -72,7 +74,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const i18nStorage = getStorageOps<any[]>("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const adminUsersStorage = getStorageOps<HeadlessCmsStorageOperations>("adminUsers");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
@@ -101,9 +103,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createAcoPageBuilderContext(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -119,8 +119,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

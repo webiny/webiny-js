@@ -106,6 +106,14 @@ export const createManageSDL: CreateManageSDL = ({
         
         input ${singularName}Input {
             id: ID
+            # User can override the entry dates
+            createdOn: DateTime
+            savedOn: DateTime
+            publishedOn: DateTime
+            # User can override the entry related user identities
+            createdBy: CmsIdentityInput
+            modifiedBy: CmsIdentityInput
+            ownedBy: CmsIdentityInput
             wbyAco_location: WbyAcoLocationInput
             ${inputGraphQLFields}
         }
@@ -179,7 +187,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!): ${singularName}Response
+            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

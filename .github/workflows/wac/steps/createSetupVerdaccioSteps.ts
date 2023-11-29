@@ -3,7 +3,7 @@ export const createSetupVerdaccioSteps = ({ workingDirectory = "" } = {}) => {
         {
             name: "Start Verdaccio local server",
             "working-directory": workingDirectory,
-            run: " yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
+            run: "yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
         },
         {
             name: "Configure NPM to use local registry",

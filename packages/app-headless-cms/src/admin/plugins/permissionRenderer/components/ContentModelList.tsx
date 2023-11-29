@@ -46,7 +46,7 @@ const ContentModelList: React.FC<ContentModelListProps> = ({ items, onChange, ge
                         <Typography use={"caption"} className={labelStyles}>
                             {key}
                         </Typography>
-                        {(value as any[]).map(({ id, label }) => (
+                        {value.map(({ id, label }) => (
                             <div key={id}>
                                 <Checkbox
                                     key={id}

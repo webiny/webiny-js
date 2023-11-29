@@ -47,7 +47,7 @@ export const createCrudContext = () => {
         });
 
         context.i18n = {
-            ...(context.i18n || ({} as any)),
+            ...context.i18n,
             locales: createLocalesCrud({
                 context,
                 storageOperations: localeStorageOperations,

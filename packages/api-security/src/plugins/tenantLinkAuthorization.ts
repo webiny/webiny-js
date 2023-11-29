@@ -15,12 +15,12 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     const identity = context.security.getIdentity();
     const tenant = context.tenancy.getCurrentTenant();
 
-    // @ts-ignore
     // I18N is not a dependency of this package. Yet, it always goes hand in hand with it.
     // Since, in the future, we'll most probably merge all of these base packages into one,
     // we'll just ignore the TS error for now and pretend I18N is always available.
     // This way we make the setup easier for the end user; no need to create an extra
     // NPM package just to get the I18N context which the user would need to set up manually.
+    // @ts-expect-error
     const locale = context.i18n?.getContentLocale() as { code: string };
     if (!locale) {
         return null;

@@ -6,6 +6,8 @@ interface ParagraphLexicalEditorProps extends RichTextEditorProps {
     tag?: "p";
 }
 
+const styles = { padding: 5 };
+
 const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
     return (
         <RichTextEditor
@@ -13,7 +15,7 @@ const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, t
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}
-            styles={{ padding: 5 }}
+            styles={styles}
         >
             {rest?.children}
         </RichTextEditor>

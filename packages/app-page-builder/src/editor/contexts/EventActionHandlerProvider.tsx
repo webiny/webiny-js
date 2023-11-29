@@ -198,6 +198,7 @@ export const EventActionHandlerProvider = makeComposable<
                     id: element.id,
                     type: element.type,
                     data: element.data,
+                    source: element.source,
                     elements: await Promise.all(
                         /**
                          * We are positive that element.elements is array of strings.
@@ -456,7 +457,7 @@ export const EventActionHandlerProvider = makeComposable<
         for (const cb of callables) {
             const r =
                 (await cb(
-                    // @ts-ignore TODO: figure this out!
+                    // @ts-expect-error TODO: figure this out!
                     getCallableState({ ...initialState, ...results.state }),
                     {
                         client: apolloClient,
@@ -477,7 +478,7 @@ export const EventActionHandlerProvider = makeComposable<
         for (const action of results.actions) {
             const r = await triggerEventAction(
                 action,
-                // @ts-ignore TODO: figure this out!
+                // @ts-expect-error TODO: figure this out!
                 getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );

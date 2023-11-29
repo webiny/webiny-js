@@ -30,7 +30,7 @@ const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
-    className?: String;
+    className?: string;
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
@@ -59,7 +59,7 @@ const PbElementControlsOverlay = ({
         <>
             {isActive && <ElementControlsOverlayBorders zIndex={zIndex} color={ACTIVE_COLOR} />}
             <pb-eco
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+                // @ts-expect-error Not supported by `React.HTMLProps<HTMLDivElement>`.
                 class={className}
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
@@ -220,7 +220,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     ];
 
     const isActive = activeElementId === element.id;
-    const isHighlighted = editorElement.isHighlighted;
+    const isHighlighted = editorElement?.isHighlighted ?? false;
 
     const { children, dropRef, ...rest } = props;
 

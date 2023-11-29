@@ -62,7 +62,7 @@ export const formsHandler = async (
             data: {
                 message: `Finish uploading form export.`,
                 key: formExportUpload.Key,
-                url: s3Stream.getPresignedUrl(formExportUpload.Key)
+                url: await s3Stream.getPresignedUrl(formExportUpload.Key)
             }
         });
 

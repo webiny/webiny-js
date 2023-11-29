@@ -31,6 +31,7 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../data-migration/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../feature-flags/tsconfig.build.json" },

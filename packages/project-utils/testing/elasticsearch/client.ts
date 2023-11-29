@@ -12,7 +12,10 @@ const esEndpoint: string | undefined = process.env.ELASTIC_SEARCH_ENDPOINT;
 
 const defaultOptions: Partial<ElasticsearchClientOptions> = {
     node: `http://localhost:${ELASTICSEARCH_PORT}`,
-    auth: {} as any,
+    auth: {
+        username: "",
+        password: ""
+    },
     maxRetries: 10,
     pingTimeout: 500
 };
@@ -116,23 +119,23 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
         }
     };
 
-    // @ts-ignore
+    // @ts-expect-error
     client.indices.exists = async (
         params: RequestParams.IndicesExists,
         options: TransportRequestOptions = {}
     ) => {
         registerIndex(params.index);
-        // @ts-ignore
+        // @ts-expect-error
         return originalExists.apply(client.indices, [params, options]);
     };
 
-    // @ts-ignore
+    // @ts-expect-error
     client.indices.create = async (
         params: RequestParams.IndicesCreate<any>,
         options: TransportRequestOptions = {}
     ) => {
         await deleteIndexCallable(params.index);
-        // @ts-ignore
+        // @ts-expect-error
         const response = await originalCreate.apply(client.indices, [params, options]);
 
         registerIndex(params.index);

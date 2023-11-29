@@ -1,7 +1,7 @@
 /**
  * We can safely ignore the error being thrown for the path import.
  */
-// @ts-ignore
+// @ts-expect-error
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
@@ -9,13 +9,13 @@ import elasticsearchClientContextPlugin, {
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
 import { logger } from "../logger";
-import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
-import { createElasticsearchClient } from "./createClient";
-import { simulateStream, getDocumentClient } from "../dynamodb";
-import { ElasticsearchClient } from "./createClient";
+import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
+import { getDocumentClient, simulateStream } from "../dynamodb";
 import { PluginCollection } from "../environment";
+import { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
 
 interface GetElasticsearchClientParams {
     name: string;
@@ -76,17 +76,15 @@ export class ElasticsearchClientConfig {
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
         const gzipCompression = createGzipCompression();
-        const simulationContext = new ContextPlugin(async context => {
+        const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
             context.plugins.register(gzipCompression);
-            await elasticsearchClientContext.apply(context as any);
+            await elasticsearchClientContext.apply(context);
         });
 
-        simulateStream(
-            documentClient,
-            createDynamoDBHandler({
-                plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
-            })
-        );
+        const dynamoDbHandler = createHandler({
+            plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+        });
+        simulateStream(documentClient, dynamoDbHandler);
 
         elasticIndexManager({
             global: global,

@@ -1,29 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createSetupVerdaccioSteps } from "./steps";
-import { NODE_OPTIONS, NODE_VERSION } from "./utils";
-import { listPackagesWithJestTests } from "./utils";
-
-// Let's assign some of the common steps into a standalone const.
-const createSetupSteps = ({ workingDirectory = "" } = {}) =>
-    [
-        {
-            uses: "actions/setup-node@v3",
-            with: {
-                "node-version": NODE_VERSION
-            }
-        },
-        { uses: "actions/checkout@v3", with: { path: workingDirectory } }
-    ] as NonNullable<NormalJob["steps"]>;
-
-// Create "Pull requests" workflow.
+import { createValidateWorkflowsJob, createJob } from "./jobs";
+import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
 
 const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = {};
 
     if (storage) {
-        env["AWS_ACCESS_KEY_ID"] = "${{ secrets.AWS_ACCESS_KEY_ID }}";
-        env["AWS_SECRET_ACCESS_KEY"] = "${{ secrets.AWS_SECRET_ACCESS_KEY }}";
-
         if (storage === "ddb-es") {
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
@@ -41,7 +23,7 @@ const createJestTestsJob = (storage: string | null) => {
         storage
     });
 
-    const job: NormalJob = {
+    const job: NormalJob = createJob({
         needs: "init",
         name: "${{ matrix.package.cmd }}",
         strategy: {
@@ -54,8 +36,8 @@ const createJestTestsJob = (storage: string | null) => {
         },
         "runs-on": "${{ matrix.os }}",
         env,
+        awsAuth: storage === "ddb-es" || storage === "ddb-os",
         steps: [
-            ...createSetupSteps(),
             {
                 uses: "actions/cache@v3",
                 with: {
@@ -83,7 +65,7 @@ const createJestTestsJob = (storage: string | null) => {
                 run: "yarn test ${{ matrix.package.cmd }}"
             }
         ]
-    };
+    });
 
     // We prevent running of Jest tests if a PR was created from a fork.
     // This is because we don't want to expose our AWS credentials to forks.
@@ -94,55 +76,39 @@ const createJestTestsJob = (storage: string | null) => {
     return job;
 };
 
-export const pullRequestsTest = createWorkflow({
+export const pullRequests = createWorkflow({
     name: "Pull Requests",
-    on: {
-        pull_request: {
-            branches: ["next-ci-workflows"]
-        }
-    },
-
-    env: {
-        NODE_OPTIONS
-    },
+    on: "pull_request",
     jobs: {
-        "validate-workflows": {
-            name: "Validate workflows",
-            "runs-on": "ubuntu-latest",
-            steps: [
-                {
-                    name: "Validate",
-                    run: "npx github-actions-wac validate"
-                }
-            ]
-        },
-        "validate-commits": {
+        validateWorkflows: createValidateWorkflowsJob(),
+        validateCommits: createJob({
             name: "Validate commit messages",
-            "runs-on": "ubuntu-latest",
+            if: "github.base_ref != 'dev'",
+            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
+        }),
+        // Don't allow "feat" commits to be merged into "dev" branch.
+        validateCommitsDev: createJob({
+            name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
+            if: "github.base_ref == 'dev'",
             steps: [
                 {
-                    uses: "actions/checkout@v3"
-                },
-                {
-                    uses: "webiny/action-conventional-commits@v1.1.0"
+                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    with: {
+                        // If dev, use "dev" commit types, otherwise use "next" commit types.
+                        "allowed-commit-types":
+                            "fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip"
+                    }
                 }
             ]
-        },
-        init: {
+        }),
+        init: createJob({
             name: "Init",
             "runs-on": "webiny-build-packages",
             outputs: {
-                day: "${{ steps.get-day.outputs.day }}",
                 ts: "${{ steps.get-timestamp.outputs.ts }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
             },
             steps: [
-                ...createSetupSteps(),
-                {
-                    name: "Get day of the month",
-                    id: "get-day",
-                    run: 'echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT'
-                },
                 {
                     name: "Get timestamp",
                     id: "get-timestamp",
@@ -166,7 +132,7 @@ export const pullRequestsTest = createWorkflow({
                     id: "cached-packages",
                     with: {
                         path: ".webiny/cached-packages",
-                        key: "${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}"
+                        key: "${{ runner.os }}-${{ github.event.number }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}"
                     }
                 },
                 {
@@ -186,13 +152,11 @@ export const pullRequestsTest = createWorkflow({
                     }
                 }
             ]
-        },
-        "code-analysis": {
+        }),
+        staticCodeAnalysis: createJob({
             needs: "init",
             name: "Static code analysis",
-            "runs-on": "ubuntu-latest",
             steps: [
-                ...createSetupSteps(),
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -228,12 +192,11 @@ export const pullRequestsTest = createWorkflow({
                     run: "yarn eslint"
                 }
             ]
-        },
-        "code-analysis-typescript": {
+        }),
+        staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
             "runs-on": "webiny-build-packages",
             steps: [
-                ...createSetupSteps(),
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -250,30 +213,20 @@ export const pullRequestsTest = createWorkflow({
                     run: "yarn build"
                 }
             ]
-        },
-        "jest-tests-no-storage": createJestTestsJob(null),
-        "jest-tests-ddb": createJestTestsJob("ddb"),
-        "jest-tests-ddb-es": createJestTestsJob("ddb-es"),
-        "jest-tests-ddb-os": createJestTestsJob("ddb-os"),
-        "verdaccio-publish": {
-            if: "needs.init.outputs.is-fork-pr != 'true'",
-            needs: "init",
+        }),
+        jestTestsNoStorage: createJestTestsJob(null),
+        jestTestsDdb: createJestTestsJob("ddb"),
+        jestTestsDdbEs: createJestTestsJob("ddb-es"),
+
+        verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            "runs-on": "ubuntu-latest",
+            needs: "init",
+            if: "needs.init.outputs.is-fork-pr != 'true'",
+            checkout: {
+                "fetch-depth": 0,
+                ref: "${{ github.event.pull_request.head.ref }}"
+            },
             steps: [
-                {
-                    uses: "actions/setup-node@v3",
-                    with: {
-                        "node-version": NODE_VERSION
-                    }
-                },
-                {
-                    uses: "actions/checkout@v3",
-                    with: {
-                        "fetch-depth": 0,
-                        ref: "${{ github.event.pull_request.head.ref }}"
-                    }
-                },
                 {
                     uses: "actions/cache@v3",
                     with: {
@@ -296,7 +249,22 @@ export const pullRequestsTest = createWorkflow({
                     name: "Build packages",
                     run: "yarn build:quick"
                 },
-                ...createSetupVerdaccioSteps(),
+                {
+                    name: "Start Verdaccio local server",
+                    run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
+                },
+                {
+                    name: "Configure NPM to use local registry",
+                    run: "npm config set registry http://localhost:4873"
+                },
+                {
+                    name: "Set git email",
+                    run: 'git config --global user.email "webiny-bot@webiny.com"'
+                },
+                {
+                    name: "Set git username",
+                    run: 'git config --global user.name "webiny-bot"'
+                },
                 {
                     name: 'Create ".npmrc" file in the project root, with a dummy auth token',
                     run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
@@ -315,10 +283,10 @@ export const pullRequestsTest = createWorkflow({
                     }
                 }
             ]
-        },
-        "test-create-webiny-project": {
-            needs: "verdaccio-publish",
+        }),
+        testCreateWebinyProject: createJob({
             name: 'Test "create-webiny-project"',
+            needs: "verdaccioPublish",
             strategy: {
                 "fail-fast": false,
                 matrix: {
@@ -327,9 +295,7 @@ export const pullRequestsTest = createWorkflow({
                 }
             },
             "runs-on": "${{ matrix.os }}",
-            env: {
-                YARN_ENABLE_IMMUTABLE_INSTALLS: false
-            },
+            checkout: false,
             steps: [
                 {
                     uses: "actions/setup-node@v3",
@@ -344,7 +310,23 @@ export const pullRequestsTest = createWorkflow({
                         path: "verdaccio-files"
                     }
                 },
-                ...createSetupVerdaccioSteps({ workingDirectory: "verdaccio-files" }),
+                {
+                    name: "Start Verdaccio local server",
+                    "working-directory": "verdaccio-files",
+                    run: "yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
+                },
+                {
+                    name: "Configure NPM to use local registry",
+                    run: "npm config set registry http://localhost:4873"
+                },
+                {
+                    name: "Set git email",
+                    run: 'git config --global user.email "webiny-bot@webiny.com"'
+                },
+                {
+                    name: "Set git username",
+                    run: 'git config --global user.name "webiny-bot"'
+                },
                 {
                     name: "Disable Webiny telemetry",
                     run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
@@ -354,6 +336,6 @@ export const pullRequestsTest = createWorkflow({
                     run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
                 }
             ]
-        }
+        })
     }
 });

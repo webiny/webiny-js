@@ -10,13 +10,19 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TestContext } from "./types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 
 interface Config {
     setupGraphQL?: boolean;
     permissions: SecurityPermission[];
     identity?: SecurityIdentity | null;
 }
+
+export const defaultIdentity: SecurityIdentity = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
 
 export const createTenancyAndSecurity = ({
     setupGraphQL,
@@ -36,16 +42,10 @@ export const createTenancyAndSecurity = ({
                 id: "root",
                 name: "Root",
                 webinyVersion: context.WEBINY_VERSION
-            } as any);
+            } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {
-                return (
-                    identity || {
-                        id: "id-12345678",
-                        type: "admin",
-                        displayName: "John Doe"
-                    }
-                );
+                return identity || defaultIdentity;
             });
 
             context.security.addAuthorizer(async () => {

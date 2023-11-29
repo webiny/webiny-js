@@ -102,7 +102,7 @@ export interface AcoFilterCrud {
     list(params: ListFiltersParams): Promise<[Filter[], ListMeta]>;
     create(data: CreateFilterParams): Promise<Filter>;
     update(id: string, data: UpdateFilterParams): Promise<Filter>;
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
     onFilterBeforeCreate: Topic<OnFilterBeforeCreateTopicParams>;
     onFilterAfterCreate: Topic<OnFilterAfterCreateTopicParams>;
     onFilterBeforeUpdate: Topic<OnFilterBeforeUpdateTopicParams>;

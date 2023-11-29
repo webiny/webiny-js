@@ -156,6 +156,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             { cmd: "packages/api-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
+    "api-audit-logs": () => {
+        return [
+            { cmd: "packages/api-audit-logs --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-audit-logs --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-audit-logs --storage=ddb-os,ddb", storage: "ddb-os" }
+        ];
+    },
     "api-page-builder-aco": () => {
         return [
             { cmd: "packages/api-page-builder-aco --storage=ddb", storage: "ddb" },

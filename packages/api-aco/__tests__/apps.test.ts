@@ -12,6 +12,7 @@ import { AcoApp } from "~/apps";
 import { createSearchModelDefinition, SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createAcoAppModifier } from "~/plugins";
+import { IAcoAppRegisterParams } from "~/types";
 
 describe("aco apps", () => {
     const { handler } = useHandler();
@@ -212,7 +213,7 @@ describe("aco apps", () => {
                         isPrivate: true,
                         titleFieldId: "id"
                     }
-                } as any)
+                } as Partial<IAcoAppRegisterParams>)
             );
         } catch (ex) {
             error = ex;

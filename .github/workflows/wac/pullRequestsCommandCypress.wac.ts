@@ -1,17 +1,10 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createSetupVerdaccioSteps, createDeployWebinySteps } from "./steps";
 import { NODE_OPTIONS, NODE_VERSION } from "./utils";
+import { createJob, createValidateWorkflowsJob } from "./jobs";
 
-// Let's assign some of the common steps into a standalone const.
-const createSetupSteps = ({ workingDirectory = "" } = {}) =>
+const createCheckoutPrSteps = ({ workingDirectory = "" } = {}) =>
     [
-        {
-            uses: "actions/setup-node@v3",
-            with: {
-                "node-version": NODE_VERSION
-            }
-        },
-        { uses: "actions/checkout@v3", with: { path: workingDirectory } },
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
             name: "Checkout Pull Request",
@@ -30,17 +23,16 @@ const createJobs = (dbSetup: string) => {
         cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
     };
 
-    const initJob: NormalJob = {
+    const initJob: NormalJob = createJob({
         needs: "checkComment",
         name: `E2E (${dbSetup.toUpperCase()}) - Init`,
-        "runs-on": "ubuntu-latest",
         outputs: {
             day: "${{ steps.get-day.outputs.day }}",
             ts: "${{ steps.get-timestamp.outputs.ts }}",
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}"
         },
         steps: [
-            ...createSetupSteps(),
+            ...createCheckoutPrSteps(),
             {
                 name: "Get day of the month",
                 id: "get-day",
@@ -57,11 +49,9 @@ const createJobs = (dbSetup: string) => {
                 run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
             }
         ]
-    };
+    });
 
     const env: Record<string, string> = {
-        AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}",
-        AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
         CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
@@ -81,17 +71,18 @@ const createJobs = (dbSetup: string) => {
         env["ELASTIC_SEARCH_INDEX_PREFIX"] = `$\{{ needs.${jobNames.init}.outputs.ts }}_`;
     }
 
-    const projectSetupJob: NormalJob = {
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
+    const projectSetupJob: NormalJob = createJob({
         needs: jobNames.init,
-        "runs-on": "ubuntu-latest",
+        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
         },
         environment: "next",
         env,
+        checkout: { path: "dev" },
+        awsAuth: true,
         steps: [
-            ...createSetupSteps({ workingDirectory: "dev" }),
+            ...createCheckoutPrSteps({ workingDirectory: "dev" }),
             {
                 uses: "actions/cache@v3",
                 id: "yarn-cache",
@@ -126,7 +117,7 @@ const createJobs = (dbSetup: string) => {
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
-            ...createSetupVerdaccioSteps(),
+            ...createSetupVerdaccioSteps({ workingDirectory: "dev" }),
             {
                 name: 'Create ".npmrc" file in the project root, with a dummy auth token',
                 "working-directory": "dev",
@@ -192,9 +183,9 @@ const createJobs = (dbSetup: string) => {
                 run: 'yarn cypress run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
             }
         ]
-    };
+    });
 
-    const cypressTestsJob = {
+    const cypressTestsJob = createJob({
         name: `$\{{ matrix.cypress-folder }} (${dbSetup}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
         needs: [jobNames.init, jobNames.projectSetup],
         strategy: {
@@ -205,11 +196,11 @@ const createJobs = (dbSetup: string) => {
                 "cypress-folder": `$\{{ fromJson(needs.${jobNames.init}.outputs.cypress-folders) }}`
             }
         },
-        "runs-on": "ubuntu-latest",
         environment: "next",
         env,
+        checkout: { path: "dev" },
         steps: [
-            ...createSetupSteps({ workingDirectory: "dev" }),
+            ...createCheckoutPrSteps({ workingDirectory: "dev" }),
             {
                 uses: "actions/cache@v3",
                 with: {
@@ -246,7 +237,7 @@ const createJobs = (dbSetup: string) => {
                 run: 'yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"'
             }
         ]
-    };
+    });
 
     return {
         [jobNames.init]: initJob,
@@ -256,7 +247,7 @@ const createJobs = (dbSetup: string) => {
 };
 
 // Create "Pull requests" workflow.
-export const pullRequestsCommandCypressTest = createWorkflow({
+export const pullRequestsCommandCypress = createWorkflow({
     name: "Pull Requests Command - Cypress",
     on: "issue_comment",
     env: {
@@ -264,10 +255,11 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         AWS_REGION: "eu-central-1"
     },
     jobs: {
-        checkComment: {
+        validateWorkflows: createValidateWorkflowsJob(),
+        checkComment: createJob({
             name: `Check comment for /cypress`,
-            "runs-on": "ubuntu-latest",
             if: "${{ github.event.issue.pull_request }}",
+            checkout: false,
             steps: [
                 {
                     name: "Check for Command",
@@ -291,9 +283,8 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                     }
                 }
             ]
-        },
+        }),
         ...createJobs("ddb"),
-        ...createJobs("ddb-es"),
-        ...createJobs("ddb-os")
+        ...createJobs("ddb-es")
     }
 });

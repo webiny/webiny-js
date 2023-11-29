@@ -1,8 +1,12 @@
 import { Plugin } from "@webiny/plugins";
 import { Context } from "~/types";
 
+export interface NextCallable {
+    (): Promise<any>;
+}
+
 export interface HandlerErrorCallable<T extends Context = Context> {
-    (context: T, error: Error, next: Function): Promise<any>;
+    (context: T, error: Error, next: NextCallable): Promise<any>;
 }
 
 export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
@@ -15,7 +19,7 @@ export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
         this._callable = callable;
     }
 
-    public async handle(context: T, error: Error, next: Function): Promise<any> {
+    public async handle(context: T, error: Error, next: NextCallable): Promise<any> {
         return this._callable(context, error, next);
     }
 }

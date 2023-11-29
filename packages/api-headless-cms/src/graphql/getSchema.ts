@@ -45,10 +45,12 @@ const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<string>
 
     const keys: string[] = [];
     for (const model of models) {
-        const savedOn = model.savedOn as any;
+        const savedOn = model.savedOn;
         const value =
+            // @ts-expect-error
             savedOn instanceof Date || savedOn?.toISOString
-                ? savedOn.toISOString()
+                ? // @ts-expect-error
+                  savedOn.toISOString()
                 : savedOn || "unknown";
         keys.push(model.modelId, model.singularApiName, model.pluralApiName, value);
     }

@@ -3,10 +3,10 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
+    groupMigrations,
     insertDynamoDbTestData,
-    scanTable,
     logTestNameBeforeEachTest,
-    groupMigrations
+    scanTable
 } from "~tests/utils";
 import { testData } from "./001.data";
 import {
@@ -134,9 +134,9 @@ describe("5.35.0-001", () => {
         });
 
         expect(legacyRecord).toBeTruthy();
-        expect(legacyRecord.SK).toEqual("default");
-        expect(legacyRecord.uploadMaxFileSize).toEqual(26214401);
-        expect(legacyRecord.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
+        expect(legacyRecord!.SK).toEqual("default");
+        expect(legacyRecord!.uploadMaxFileSize).toEqual(26214401);
+        expect(legacyRecord!.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
 
         const newSettings = createSettingsEntity(table);
         const { Item: newRecord } = await newSettings.get({
@@ -145,9 +145,9 @@ describe("5.35.0-001", () => {
         });
 
         expect(newRecord).toBeTruthy();
-        expect(newRecord.SK).toEqual("A");
-        expect(newRecord.data.uploadMaxFileSize).toEqual(26214401);
-        expect(newRecord.data.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
+        expect(newRecord!.SK).toEqual("A");
+        expect(newRecord!.data.uploadMaxFileSize).toEqual(26214401);
+        expect(newRecord!.data.srcPrefix).toEqual("https://d30lvz3v210qz3.cloudfront.net/files/");
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

@@ -10,15 +10,15 @@ import isEmpty from "lodash/isEmpty";
 
 import { Checkbox } from "../../Checkbox";
 import { Menu, MenuItem } from "../../Menu";
-import { Grid, Cell } from "../../Grid";
+import { Cell, Grid } from "../../Grid";
 
 import {
-    RefreshIcon,
-    SortIcon,
     FilterIcon,
-    PreviousPageIcon,
     NextPageIcon,
-    OptionsIcon
+    OptionsIcon,
+    PreviousPageIcon,
+    RefreshIcon,
+    SortIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "..";
 import { DataListModalOverlayProvider } from "./DataListModalOverlay";
@@ -161,7 +161,7 @@ interface DataListWithSectionsProps {
     pagination?: PaginationProp;
 
     // Triggered once a sorter has been selected.
-    setSorters?: Function | null;
+    setSorters?: ((sorter: any) => void) | null;
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp | null;

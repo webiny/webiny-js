@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import omit from "lodash/omit";
 import styled from "@emotion/styled";
@@ -30,6 +30,7 @@ import { CmsModelField } from "@webiny/app-headless-cms/types";
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
 const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
+    z-index: 70;
     &.mdc-drawer {
         width: ${props => props.width};
     }

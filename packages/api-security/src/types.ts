@@ -90,22 +90,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
 
-    /**
-     * Replace in favor of withoutAuthorization.
-     *
-     * If really required, should be used carefully.
-     * @deprecated
-     */
-    enableAuthorization(): void;
-
-    /**
-     * Replace in favor of withoutAuthorization.
-     *
-     * If really required, should be used carefully.
-     * @deprecated
-     */
-    disableAuthorization(): void;
-
     addAuthorizer(authorizer: Authorizer): void;
 
     getAuthorizers(): Authorizer[];
@@ -255,7 +239,7 @@ export interface SecurityStorageOperations {
         params: StorageOperationsGetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
 
-    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
+    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
 
     getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
 

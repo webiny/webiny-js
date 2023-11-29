@@ -5,7 +5,7 @@ const loadJsonFile = require("load-json-file");
 
 const getAllPackages = targetKeywords => {
     const yargs = require("yargs");
-    const { storage } = yargs.argv;
+    const { storage = "ddb" } = yargs.argv;
 
     if (!storage) {
         throw Error(`Missing required --storage parameter!`);

@@ -1,4 +1,8 @@
-// @ts-nocheck
+/**
+ * TODO @pavel
+ *
+ * eslint is disabled due to too much variables arent used, not sure why.
+ */
 /* eslint-disable */
 import React, { useEffect, useRef } from "react";
 import { PbEditorElement } from "~/types";
@@ -37,7 +41,7 @@ const trackedAtoms = ["elements"];
 
 const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     for (const atom of trackedAtoms) {
-        if (!state[atom]) {
+        if (!state[atom as keyof PbState]) {
             continue;
         }
         return true;
@@ -80,6 +84,10 @@ export const EditorState: React.FunctionComponent<any> = () => {
         // when saving new state history we must remove everything after the current one
         // since this is the new starting point of the state history
         snapshotsHistory.current.future = [];
+        /**
+         * TODO @pavel check this
+         */
+        // @ts-expect-error
         snapshotsHistory.current.past.push(takeSnapshot());
         snapshotsHistory.current.present = currentSnapshot;
         snapshotsHistory.current.busy = false;
@@ -91,7 +99,7 @@ export const EditorState: React.FunctionComponent<any> = () => {
                 return {
                     ...prevValue,
                     ...item,
-                    parent: item.parent !== undefined ? item.parent : prevValue.parent
+                    parent: item.parent !== undefined ? item.parent : prevValue?.parent
                 };
             });
             return item.id;

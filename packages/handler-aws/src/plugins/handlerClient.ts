@@ -1,4 +1,4 @@
-import LambdaClient from "aws-sdk/clients/lambda";
+import { LambdaClient, InvokeCommand } from "@webiny/aws-sdk/client-lambda";
 import { HandlerClientPlugin } from "@webiny/handler-client";
 
 export const createHandlerClientPlugin = () => {
@@ -8,20 +8,20 @@ export const createHandlerClientPlugin = () => {
             const lambdaClient = new LambdaClient({
                 region: process.env.AWS_REGION
             });
-            const response = await lambdaClient
-                .invoke({
+            const response = await lambdaClient.send(
+                new InvokeCommand({
                     FunctionName: name,
                     InvocationType: useAwait === false ? "Event" : "RequestResponse",
                     Payload: JSON.stringify(payload)
                 })
-                .promise();
+            );
 
             if (useAwait === false) {
                 return null;
             }
 
-            const Payload = response.Payload as string;
-            return JSON.parse(Payload);
+            const decoder = new TextDecoder("utf-8");
+            return JSON.parse(decoder.decode(response.Payload));
         },
         canUse: params => {
             if (!params?.name) {

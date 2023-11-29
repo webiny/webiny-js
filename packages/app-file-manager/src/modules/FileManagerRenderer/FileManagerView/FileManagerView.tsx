@@ -3,7 +3,7 @@ import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
 import { positionValues } from "react-custom-scrollbars";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
@@ -39,6 +39,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const FileListWrapper = styled("div")({
     float: "right",
+    zIndex: 60,
     display: "inline-block",
     width: "calc(100vw - 286px)",
     height: "calc(100vh - 94px)",
@@ -205,6 +206,21 @@ const FileManagerView = () => {
                       view.setSelected(files);
                   };
 
+            const onToggleRow: TableProps["onToggleRow"] = view.hasOnSelectCallback
+                ? row => {
+                      const files = getSelectableRow([row]);
+
+                      if (view.multiple) {
+                          view.toggleSelected(files[0]);
+                      } else {
+                          view.onChange(files[0]);
+                      }
+                  }
+                : row => {
+                      const files = getSelectableRow([row]);
+                      view.toggleSelected(files[0]);
+                  };
+
             return (
                 <Table
                     folders={view.folders}
@@ -214,6 +230,7 @@ const FileManagerView = () => {
                     onRecordClick={view.showFileDetails}
                     onFolderClick={view.setFolderId}
                     onSelectRow={onSelectRow}
+                    onToggleRow={onToggleRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
                     settings={view.settings}
@@ -231,6 +248,7 @@ const FileManagerView = () => {
                 selected={view.selected}
                 multiple={view.multiple}
                 toggleSelected={view.toggleSelected}
+                deselectAll={view.deselectAll}
                 onChange={view.onChange}
                 onClose={view.onClose}
                 hasOnSelectCallback={view.hasOnSelectCallback}
@@ -261,7 +279,6 @@ const FileManagerView = () => {
                     uploadFiles(filesToUpload);
                 }}
                 onError={errors => {
-                    console.log("onError", errors);
                     const message = outputFileSelectionError(errors);
                     showSnackbar(message);
                 }}
@@ -319,17 +336,13 @@ const FileManagerView = () => {
                             </LeftSidebar>
                             <FileListWrapper
                                 {...getDropZoneProps({
-                                    onDragEnter: () =>
-                                        view.hasPreviouslyUploadedFiles && view.setDragging(true)
+                                    onDragOver: () => view.setDragging(true),
+                                    onDragLeave: () => view.setDragging(false),
+                                    onDrop: () => view.setDragging(false)
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >
-                                {view.dragging && view.hasPreviouslyUploadedFiles && (
-                                    <DropFilesHere
-                                        onDragLeave={() => view.setDragging(false)}
-                                        onDrop={() => view.setDragging(false)}
-                                    />
-                                )}
+                                {view.dragging && <DropFilesHere />}
                                 <BulkActions />
                                 <Filters />
                                 <Scrollbar

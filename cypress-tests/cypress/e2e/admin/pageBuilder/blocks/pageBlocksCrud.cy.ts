@@ -74,7 +74,7 @@ context("Page Builder - Blocks", () => {
         cy.contains(blockCategoryName).click();
         cy.findAllByTestId("pb-blocks-list-block-delete-btn").eq(0).click();
         cy.findByTestId("confirmationdialog-confirm-action").click();
-        cy.findAllByTestId("pb-blocks-list-block-delete-btn").eq(1).click();
+        cy.findAllByTestId("pb-blocks-list-block-delete-btn").eq(0).click();
         cy.findByTestId("confirmationdialog-confirm-action").click();
         cy.contains("New Block").should("exist");
 

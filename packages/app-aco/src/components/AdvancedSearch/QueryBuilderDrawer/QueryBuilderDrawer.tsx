@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -27,9 +27,9 @@ interface QueryBuilderDrawerProps {
 }
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
-    const [presenter] = useState<QueryBuilderDrawerPresenter>(
-        new QueryBuilderDrawerPresenter(props.fields)
-    );
+    const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
+        return new QueryBuilderDrawerPresenter(props.fields);
+    }, [props.fields]);
 
     useEffect(() => {
         presenter.load(filter);

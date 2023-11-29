@@ -13,7 +13,6 @@ jobs:
     name: Init
     runs-on: ubuntu-latest
     outputs:
-      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:

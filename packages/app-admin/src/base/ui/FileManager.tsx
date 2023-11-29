@@ -58,7 +58,7 @@ export type MultipleProps =
       };
 
 export type FileManagerProps = {
-    accept?: Array<string>;
+    accept?: string[];
     images?: boolean;
     maxSize?: number | string;
     /**
@@ -69,7 +69,7 @@ export type FileManagerProps = {
     onUploadCompletion?: (files: FileManagerFileItem[]) => void;
     own?: boolean;
     scope?: string;
-    tags?: Array<string>;
+    tags?: string[];
     show?: boolean;
     /**
      * @deprecated This prop is no longer used. Use the `render` prop to get better TS autocomplete.
@@ -119,11 +119,15 @@ export const FileManager: React.FC<FileManagerProps> = ({
         <>
             {show &&
                 ReactDOM.createPortal(
+                    /**
+                     * TODO @pavel
+                     */
+                    // @ts-expect-error
                     <FileManagerRenderer
                         onClose={() => setShow(false)}
                         onChange={
                             /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current as any
+                            onChangeRef.current
                         }
                         {...rest}
                     />,
