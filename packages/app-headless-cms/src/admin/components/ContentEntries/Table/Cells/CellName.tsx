@@ -3,11 +3,11 @@ import React from "react";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
+import { useNavigateFolder } from "@webiny/app-aco";
 
-import { useTableCell } from "~/admin/views/contentEntries/hooks";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
-import { useNavigateFolder } from "@webiny/app-aco";
 
 interface DefaultProps {
     name: string;
@@ -56,7 +56,8 @@ export const EntryCellName = ({ name, id }: FileCellNameProps) => {
 };
 
 export const CellName = () => {
-    const { item, isEntryItem } = useTableCell();
+    const { useTableCell, isEntryItem } = ContentEntryListConfig.Browser.Table.Column;
+    const { item } = useTableCell();
 
     if (isEntryItem(item)) {
         return <EntryCellName name={item.meta.title} id={item.id} />;

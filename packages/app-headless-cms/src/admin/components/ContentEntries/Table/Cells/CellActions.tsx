@@ -1,10 +1,14 @@
 import React, { useCallback } from "react";
 
+import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import { Menu } from "@webiny/ui/Menu";
-import { useTableCell } from "~/admin/views/contentEntries/hooks";
+
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { usePermission } from "~/admin/hooks";
+import { CreatableItem } from "~/admin/hooks/usePermission";
 
 import { RecordActionDelete } from "../Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "../Row/Record/RecordActionEdit";
@@ -12,12 +16,10 @@ import { RecordActionMove } from "../Row/Record/RecordActionMove";
 import { RecordActionPublish } from "../Row/Record/RecordActionPublish";
 
 import { menuStyles } from "./Cells.styled";
-import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
-import { usePermission } from "~/admin/hooks";
-import { CreatableItem } from "~/admin/hooks/usePermission";
 
 export const CellActions = () => {
-    const { item, isEntryItem } = useTableCell();
+    const { useTableCell, isEntryItem } = ContentEntryListConfig.Browser.Table.Column;
+    const { item } = useTableCell();
     const { folder: folderConfig } = useAcoConfig();
     const { canEdit: baseCanEdit } = usePermission();
 

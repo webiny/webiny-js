@@ -1,9 +1,10 @@
 import React from "react";
 import { statuses } from "~/admin/constants";
-import { useTableCell } from "~/admin/views/contentEntries/hooks";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 
 export const CellStatus = () => {
-    const { item, isEntryItem } = useTableCell();
+    const { useTableCell, isEntryItem } = ContentEntryListConfig.Browser.Table.Column;
+    const { item } = useTableCell();
 
     if (isEntryItem(item)) {
         return (
