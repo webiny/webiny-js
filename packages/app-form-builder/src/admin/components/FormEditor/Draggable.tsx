@@ -10,7 +10,7 @@ export type DraggableChildrenFunction = (params: {
     drag: ConnectDragSource;
 }) => ReactElement;
 
-interface BeginDragProps {
+export interface BeginDragProps {
     ui?: "row" | "field" | "step";
     pos?: {
         row: number;
@@ -27,8 +27,8 @@ interface BeginDragProps {
     };
 }
 
-type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
-type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
+export type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
+export type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
 
 export interface DraggableProps extends BeginDragProps {
     children: DraggableChildrenFunction;

@@ -6,11 +6,9 @@ import { FormEditorFieldError, useFormEditor } from "../../Context";
 import { FbFormStep, MoveStepParams } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import styled from "@emotion/styled";
-
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/outlined/add_circle_outline.svg";
-
-import { FormStep } from "./FormStep/FormStep";
+import { FormStep } from "./FormStep";
 import { EditFormStepDialog } from "./FormStep/EditFormStepDialog";
 import { DragObjectWithFieldInfo, IsVisibleCallableParams } from "../../Droppable";
 
@@ -29,9 +27,11 @@ const keyNames: Record<string, string> = {
 interface FieldErrorsProps {
     errors: FormEditorFieldError[] | null;
 }
+
 interface FieldErrorProps {
     error: FormEditorFieldError;
 }
+
 const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
     return (
         <>
@@ -80,7 +80,7 @@ const RowContainerWrapper = styled.div`
 
 export const EditTab: React.FC = () => {
     const {
-        getLayoutFields,
+        getStepFields,
         updateField,
         deleteField,
         data,
@@ -140,7 +140,7 @@ export const EditTab: React.FC = () => {
     };
 
     // This function will render drop zones on the top of the step,
-    // if steps are locatted below "source" ("source" step is the step that we move).
+    // if steps are located below "source" ("source" step is the step that we move).
     const renderBottomDropZone = (item: IsVisibleCallableParams, targetStepId: string) => {
         if (item.ui !== "step") {
             return false;
@@ -198,7 +198,7 @@ export const EditTab: React.FC = () => {
                                             });
                                         }}
                                         deleteStepDisabled={data.steps.length <= 1}
-                                        getLayoutFields={getLayoutFields}
+                                        getStepFields={getStepFields}
                                         updateField={updateField}
                                         deleteField={deleteField}
                                     />

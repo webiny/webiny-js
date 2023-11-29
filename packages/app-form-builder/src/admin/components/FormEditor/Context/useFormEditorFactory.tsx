@@ -58,7 +58,7 @@ export interface FormEditor {
     ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
-    getLayoutFields: (targetStepId: string) => FbFormModelField[][];
+    getStepFields: (targetStepId: string) => FbFormModelField[][];
     getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
@@ -284,7 +284,7 @@ export const useFormEditorFactory = (
             /**
              * Returns complete layout with fields data in it (not just field IDs)
              */
-            getLayoutFields: targetStepId => {
+            getStepFields: targetStepId => {
                 const stepLayout = state.data.steps
                     .find(v => v.id === targetStepId)
                     ?.layout.filter(row => Boolean(row));
@@ -362,7 +362,7 @@ export const useFormEditorFactory = (
                 });
             },
             deleteStep: (targetStepId: string) => {
-                const stepFields = self.getLayoutFields(targetStepId).flat(1);
+                const stepFields = self.getStepFields(targetStepId).flat(1);
 
                 const deleteStepFields = (data: FbFormModel) => {
                     const stepLayout = stepFields.map(field =>
