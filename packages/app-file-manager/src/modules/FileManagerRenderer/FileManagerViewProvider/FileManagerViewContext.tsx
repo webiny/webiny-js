@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import omit from "lodash/omit";
 import { useShiftKey } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
-import { FileTag } from "~/types";
+import { FileTableItem, FileTag } from "~/types";
 import { useFileManagerApi } from "~/index";
 import { initializeState, State } from "./state";
 import { FolderItem, ListMeta, ListSearchRecordsSort } from "@webiny/app-aco/types";
@@ -46,7 +46,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
     setListSort: (state: ListSearchRecordsSort) => void;
     setListTable: (mode: boolean) => void;
     setSearchQuery: (query: string) => void;
-    setSelected: (files: TFileItem[]) => void;
+    setSelected: (files: FileTableItem[]) => void;
     showFileDetails: (id: string) => void;
     showFilters: () => void;
     tags: {
@@ -57,7 +57,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         setFilterMode(mode: "AND" | "OR"): void;
         loading: boolean;
     };
-    toggleSelected: (file: TFileItem) => void;
+    toggleSelected: (file: FileTableItem) => void;
     deselectAll: () => void;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
@@ -80,6 +80,10 @@ const getCurrentFolderList = (
         );
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
+};
+
+const createFileItem = (item: FileTableItem): FileItem => {
+    return omit(item, ["$type", "$selectable"]);
 };
 
 export interface FileManagerViewProviderProps {
@@ -453,7 +457,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 searchQuery: search
             }));
         },
-        setSelected(files: FileItem[]) {
+        setSelected(items: FileTableItem[]) {
+            const files = items.map(item => createFileItem(item));
             setState(state => ({
                 ...state,
                 selected: files
@@ -489,7 +494,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 }));
             }
         },
-        toggleSelected(file: FileItem) {
+        toggleSelected(item: FileTableItem) {
+            const file = createFileItem(item);
             setState(state =>
                 setSelection({
                     state,
