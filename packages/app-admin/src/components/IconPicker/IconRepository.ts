@@ -10,7 +10,6 @@ export class IconRepository {
     private readonly iconTypes: IconType[];
     private loading: Loading;
     private icons: ProviderIcon[] = [];
-    private customIcons: ProviderIcon[] = [];
 
     constructor(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
         this.iconTypes = iconTypes;
@@ -40,7 +39,7 @@ export class IconRepository {
     }
 
     getIcons() {
-        return cloneDeep([...this.icons, ...this.customIcons]);
+        return cloneDeep(this.icons);
     }
 
     addIcon(icon: ProviderIcon) {
