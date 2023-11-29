@@ -14,6 +14,13 @@ import {
     SaveContentButton
 } from "~/admin/components/ContentEntryForm/Header";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+import {
+    CellActions,
+    CellAuthor,
+    CellModified,
+    CellName,
+    CellStatus
+} from "~/admin/components/ContentEntries/Table/Cells";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -30,6 +37,41 @@ export const ContentEntriesModule: React.FC = () => {
                 <Browser.FolderAction name={"edit"} element={<EditFolder />} />
                 <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.Table.Column
+                    name={"name"}
+                    header={"Name"}
+                    cell={<CellName />}
+                    enableSorting={true}
+                    size={400}
+                    className={"cms-aco-list-title"}
+                />
+                <Browser.Table.Column
+                    name={"createdBy"}
+                    header={"Author"}
+                    cell={<CellAuthor />}
+                    className={"cms-aco-list-createdBy"}
+                />
+                <Browser.Table.Column
+                    name={"savedOn"}
+                    header={"Modified"}
+                    cell={<CellModified />}
+                    enableSorting={true}
+                    className={"cms-aco-list-savedOn"}
+                />
+                <Browser.Table.Column
+                    name={"status"}
+                    header={"Status"}
+                    cell={<CellStatus />}
+                    className={"cms-aco-list-status"}
+                />
+                <Browser.Table.Column
+                    name={"actions"}
+                    header={" "}
+                    cell={<CellActions />}
+                    size={60}
+                    enableResizing={false}
+                    className={"rmwc-data-table__cell--align-end cms-aco-list-actions"}
+                />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />

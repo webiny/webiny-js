@@ -124,9 +124,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     };
 
     const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(
-            initialRecords as unknown as CmsContentEntry[]
-        );
+        return transformCmsContentEntriesToRecordEntries(initialRecords);
     }, [initialRecords]);
 
     const folders = useMemo(() => {
