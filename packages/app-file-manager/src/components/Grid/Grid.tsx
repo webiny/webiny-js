@@ -21,8 +21,8 @@ interface GridProps {
     multiple?: boolean;
     toggleSelected: (file: FileItem) => void;
     deselectAll: () => void;
-    onChange?: Function;
-    onClose?: Function;
+    onChange?: (file: FileItem) => void;
+    onClose?: () => void;
     hasOnSelectCallback: boolean;
 }
 

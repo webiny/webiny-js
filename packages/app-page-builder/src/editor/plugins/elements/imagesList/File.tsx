@@ -77,7 +77,7 @@ const imageStyles = css({
 interface FileProps {
     file: ImagesListFile;
     selected?: boolean;
-    uploadFile?: Function;
+    uploadFile?: () => void;
     onSelect?: (e: SyntheticEvent) => void;
     onClick?: (e: SyntheticEvent) => void;
     onRemove?: (e: SyntheticEvent) => void;
