@@ -103,7 +103,7 @@ export const OpenSearch = createAppModule({
             const accountId = getAwsAccountId(app);
 
             domainPolicy = app.addResource(aws.opensearch.DomainPolicy, {
-                name: `${domainName}-policy`,
+                name: `${domainLogicalName}-policy`,
                 config: {
                     domainName: domain.output.domainName,
                     accessPolicies: pulumi
