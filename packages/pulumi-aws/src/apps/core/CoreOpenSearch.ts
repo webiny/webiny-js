@@ -1,6 +1,7 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as random from "@pulumi/random";
 import {
     createAppModule,
     PulumiApp,
@@ -34,12 +35,11 @@ function getProdClusterConfig(): aws.types.input.opensearch.DomainClusterConfig 
     };
 }
 
+const OS_ENGINE_VERSION = "OpenSearch_2.11";
+
 export const OpenSearch = createAppModule({
     name: "OpenSearch",
     config(app, params: OpenSearchParams) {
-        const domainName = "webiny-js";
-        const accountId = getAwsAccountId(app);
-
         const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
         const isProduction = productionEnvironments.includes(app.params.run.env);
 
@@ -60,11 +60,17 @@ export const OpenSearch = createAppModule({
                 return aws.opensearch.getDomain({ domainName }, { async: true });
             });
         } else {
-            // Regular OpenSearch deployment.
+            const baseDomainName = "webiny-js";
+            const randomId = new random.RandomId("osDomainRandomId", { byteLength: 8 });
+            const domainName = randomId.hex.apply(
+                (hex: string) => `${baseDomainName}-${hex.slice(-7)}`
+            );
+
             domain = app.addResource(aws.opensearch.Domain, {
-                name: domainName,
+                name: baseDomainName,
                 config: {
-                    engineVersion: "OpenSearch_2.9",
+                    domainName,
+                    engineVersion: OS_ENGINE_VERSION,
                     clusterConfig: isProduction ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
                         ? {
@@ -92,6 +98,8 @@ export const OpenSearch = createAppModule({
              * For details on OpenSearch security, read the official documentation:
              * https://docs.aws.amazon.com/openSearch-service/latest/developerguide/security.html
              */
+            const accountId = getAwsAccountId(app);
+
             domainPolicy = app.addResource(aws.opensearch.DomainPolicy, {
                 name: `${domainName}-policy`,
                 config: {
