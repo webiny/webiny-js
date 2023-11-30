@@ -13,6 +13,7 @@ export interface File {
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
+    modifiedBy?: CreatedBy | null;
     /**
      * Added with new storage operations refactoring.
      */

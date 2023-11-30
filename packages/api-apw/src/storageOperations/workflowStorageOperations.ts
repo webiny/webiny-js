@@ -87,7 +87,8 @@ export const createWorkflowStorageOperations = (
             const existingEntry = await getWorkflow({ id: params.id });
             const input = {
                 ...existingEntry,
-                ...params.data
+                ...params.data,
+                savedOn: new Date()
             };
             const data = formatReviewersForRefInput(
                 input as CreateApwWorkflowParams,

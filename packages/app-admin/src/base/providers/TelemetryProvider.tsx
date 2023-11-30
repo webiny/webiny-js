@@ -1,8 +1,4 @@
 import React, { useEffect } from "react";
-/**
- * Package @webiny/telemetry is not a typescript project.
- */
-// @ts-ignore
 import { sendEvent } from "@webiny/telemetry/react";
 
 let eventSent = false;

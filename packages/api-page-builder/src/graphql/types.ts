@@ -3,37 +3,38 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
-import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
+import { FlushEvent, QueueAddJob, RenderEvent } from "@webiny/api-prerendering-service/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
-    PageBlock,
-    PageTemplate,
     BlockCategory,
     Category,
     DefaultSettings,
     Menu,
     Page,
+    PageBlock,
     PageElement,
     PageSettings,
     PageSpecialType,
+    PageTemplate,
+    PageTemplateInput,
     Settings,
-    System,
-    PageTemplateInput
+    System
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
+export interface ListPagesParamsWhere {
+    category?: string;
+    status?: string;
+    tags?: { query: string[]; rule?: "any" | "all" };
+    [key: string]: any;
+}
 export interface ListPagesParams {
     limit?: number;
     after?: string | null;
-    where?: {
-        category?: string;
-        status?: string;
-        tags?: { query: string[]; rule?: "any" | "all" };
-        [key: string]: any;
-    };
+    where?: ListPagesParamsWhere;
     exclude?: string[];
     search?: { query?: string };
     sort?: string[];

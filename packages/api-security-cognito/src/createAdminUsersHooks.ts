@@ -46,7 +46,7 @@ export const createAdminUsersHooks = () => {
                     /**
                      * Check few lines up.
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     tenant,
                     // IMPORTANT!
                     // Use the `id` that was assigned in the user creation process.
@@ -115,7 +115,7 @@ export const createAdminUsersHooks = () => {
                      * TODO @ts-refactor @pavel
                      * Same as in afterCreate method
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     tenant,
                     identity: updatedUser.id,
 
@@ -142,7 +142,7 @@ export const createAdminUsersHooks = () => {
                      * TODO @ts-refactor @pavel
                      * Same as in afterCreate method
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     tenant,
                     identity: user.id,
 

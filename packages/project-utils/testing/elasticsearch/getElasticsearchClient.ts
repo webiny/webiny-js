@@ -1,7 +1,7 @@
 /**
  * We can safely ignore the error being thrown for the path import.
  */
-// @ts-ignore
+// @ts-expect-error
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {

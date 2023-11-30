@@ -86,7 +86,7 @@ export const createAuthentication: AuthenticationFactory = ({
     /**
      * TODO @ts-refactor
      */
-    // @ts-ignore
+    // @ts-expect-error
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 

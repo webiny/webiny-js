@@ -23,6 +23,9 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
 
+      # We need this step because of the `aws-nuke.yml` config which is stored in our repo.
+      - uses: actions/checkout@v3
+
       - name: Run AWS Nuke
         run: >
           aws-nuke

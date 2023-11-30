@@ -27,6 +27,7 @@ export interface CreatePageTemplateStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
+
 export const createPageTemplateStorageOperations = ({
     entity,
     plugins
@@ -96,27 +97,29 @@ export const createPageTemplateStorageOperations = ({
             );
         }
 
+        const itemsData = items.map(item => item?.data).filter(Boolean);
+
         const fields = plugins.byType<PageTemplateDynamoDbFieldPlugin>(
             PageTemplateDynamoDbFieldPlugin.type
         );
 
-        const filteredItems = filterItems<DataContainer<PageTemplate>>({
+        const filteredItems = filterItems<PageTemplate>({
             plugins,
             where: restWhere,
-            items,
+            items: itemsData,
             fields
         });
 
-        const sortedItems = sortItems<DataContainer<PageTemplate>>({
+        const sortedItems = sortItems<PageTemplate>({
             items: filteredItems,
             sort,
             fields
         });
 
         return createListResponse({
-            items: sortedItems.map(item => item?.data).filter(Boolean),
+            items: sortedItems,
             limit: limit || 100000,
-            totalCount: filteredItems.length,
+            totalCount: sortedItems.length,
             after: null
         });
     };

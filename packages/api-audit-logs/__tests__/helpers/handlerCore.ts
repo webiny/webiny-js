@@ -108,7 +108,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            // @ts-ignore
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {

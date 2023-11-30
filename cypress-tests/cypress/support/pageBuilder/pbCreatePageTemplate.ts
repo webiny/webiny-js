@@ -4,13 +4,21 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbCreatePageTemplate(data: any): Promise<any>; // Update the data type as needed
+            pbCreatePageTemplate(data: Record<string, any>): Promise<{
+                id: string;
+                title: string;
+                slug: string;
+                tags: string[];
+                description: string;
+                layout: string;
+                pageCategory: string;
+            }>;
         }
     }
 }
 
 const MUTATION = /* GraphQL */ `
-    mutation CreatePageTemplate($data: PbCreatePageTemplateInput!) {
+    mutation pbCreatePageTemplate($data: PbCreatePageTemplateInput!) {
         pageBuilder {
             pageTemplate: createPageTemplate(data: $data) {
                 data {
@@ -20,20 +28,7 @@ const MUTATION = /* GraphQL */ `
                     tags
                     description
                     layout
-                    content
                     pageCategory
-                    createdOn
-                    savedOn
-                    createdBy {
-                        id
-                        displayName
-                        type
-                    }
-                }
-                error {
-                    code
-                    message
-                    data
                 }
             }
         }
@@ -50,6 +45,6 @@ Cypress.Commands.add("pbCreatePageTemplate", data => {
                 },
                 authToken: user.idToken.jwtToken
             })
-            .then(response => response.pageBuilder.pageTemplate);
+            .then(response => response.pageBuilder.pageTemplate.data);
     });
 });

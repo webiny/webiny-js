@@ -15,11 +15,11 @@ export interface ContextParams extends BaseContextParams {
 export class Context extends BaseContext implements ContextInterface {
     public readonly server: ContextInterface["server"];
     public readonly routes: ContextInterface["routes"];
-    // @ts-ignore
+    // @ts-expect-error
     public handlerClient: ContextInterface["handlerClient"];
-    // @ts-ignore
+    // @ts-expect-error
     public request: ContextInterface["request"];
-    // @ts-ignore
+    // @ts-expect-error
     public reply: ContextInterface["reply"];
 
     public constructor(params: ContextParams) {

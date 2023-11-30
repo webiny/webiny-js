@@ -64,7 +64,7 @@ describe("Extend model via DI container activation", () => {
     });
 
     it("should apply class extensions correctly", async () => {
-        // @ts-ignore for now
+        // @ts-expect-error for now
         createPageModelPlugin(Page => {
             return class MyPage extends Page {
                 price = 0;
@@ -90,7 +90,7 @@ describe("Extend model via DI container activation", () => {
             };
         });
 
-        // @ts-ignore for now
+        // @ts-expect-error for now
         createPageModelPlugin(Page => {
             return class MyPage extends Page {
                 category = "";
@@ -136,7 +136,7 @@ describe("Extend model via DI container activation", () => {
         const secondRun = page.validate();
         expect(secondRun.success).toBe(true);
 
-        // @ts-ignore
+        // @ts-expect-error
         expect(page["bogus"]).toBeUndefined();
         expect(page.title).toEqual("My title");
         expect(page.price).toEqual(200);

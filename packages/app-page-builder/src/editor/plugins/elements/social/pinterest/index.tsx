@@ -48,13 +48,14 @@ export default (args: PbEditorElementPluginArgs = {}) => {
              * TODO @ts-refactor @ashutosh
              * Completely different types between method result and variable
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            // @ts-expect-error
             settings: args.settings,
             render(props) {
-                // @ts-ignore No need to worry about different `element.elements` type.
+                // @ts-expect-error No need to worry about different `element.elements` type.
                 return <PePinterest {...props} />;
             }
         }),

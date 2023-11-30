@@ -50,7 +50,7 @@ export const RouterConsumer: React.FC = ({ children }) => (
             /**
              * TODO: Figure out correct type for children.
              */
-            // @ts-ignore
+            // @ts-expect-error
             return React.cloneElement(children, props);
         }}
     </RouterContext.Consumer>

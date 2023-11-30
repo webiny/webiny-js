@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { waitPage } from "./utils/waitPage";
+
 import { Page } from "~/types";
 
 jest.setTimeout(100000);
@@ -36,8 +36,6 @@ describe("getting published pages", () => {
                 throw new Error(`Missing page data: ${letter}`);
             }
 
-            await waitPage(handler, page);
-
             const title = `page-${letter}`;
             const path = `/path-${letter}`;
 
@@ -52,7 +50,6 @@ describe("getting published pages", () => {
             if (!updatedPage) {
                 throw new Error(`Missing updated page data: ${letter}`);
             }
-            await waitPage(handler, updatedPage);
 
             pages.push(updatedPage);
 
@@ -67,7 +64,7 @@ describe("getting published pages", () => {
         await until(
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
-                const data = res.data.pageBuilder.listPublishedPages.data;
+                const data: any[] = res.data.pageBuilder.listPublishedPages.data;
                 const published = data.every(p => p.status === "published");
                 return published && data[0].title === "page-c";
             },

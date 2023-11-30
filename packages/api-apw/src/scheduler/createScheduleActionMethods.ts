@@ -1,7 +1,7 @@
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { string, withFields } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { mdbid } from "@webiny/utils";

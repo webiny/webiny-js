@@ -1,5 +1,5 @@
 import dotPropImmutable from "dot-prop-immutable";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery, useMutation, MutationTuple } from "@apollo/react-hooks";
 import cloneDeep from "lodash/cloneDeep";
 import {
     CREATE_CHANGE_REQUEST_MUTATION,
@@ -27,8 +27,14 @@ interface UseChangeRequestParams {
 }
 
 interface UseChangeRequestResult {
-    create: Function;
-    update: Function;
+    create: MutationTuple<
+        CreateChangeRequestMutationResponse,
+        CreateChangeRequestMutationVariables
+    >[0];
+    update: MutationTuple<
+        UpdateChangeRequestMutationResponse,
+        UpdateChangeRequestMutationVariables
+    >[0];
     deleteChangeRequest: (id: string) => Promise<any>;
     changeRequest: ApwChangeRequest;
     markResolved: (resolved: boolean) => Promise<void>;

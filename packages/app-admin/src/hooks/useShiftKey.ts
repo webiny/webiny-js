@@ -18,7 +18,6 @@ export function useShiftKey() {
     }, []);
 
     useEffect(() => {
-        // @ts-ignore
         document.onselectstart = () => !pressed;
 
         return () => {

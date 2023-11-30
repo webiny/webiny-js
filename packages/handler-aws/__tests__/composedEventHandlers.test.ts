@@ -3,6 +3,7 @@ import {
     EventBridgeEvent,
     S3Event,
     S3EventRecord,
+    SNSEvent,
     SQSEvent,
     SQSRecord
 } from "aws-lambda";
@@ -11,6 +12,7 @@ import {
     createDynamoDBEventHandler,
     createEventBridgeEventHandler,
     createS3EventHandler,
+    createSNSEventHandler,
     createSQSEventHandler
 } from "~/index";
 import { LambdaContext } from "~/types";
@@ -30,6 +32,11 @@ interface DynamoDBEventHandlerResponse {
 interface SQSEventHandlerResponse {
     isSQSEvent?: boolean;
     isAnotherSQSEvent?: boolean;
+}
+
+interface SNSEventHandlerResponse {
+    isSNSEvent?: boolean;
+    isAnotherSNSEvent?: boolean;
 }
 
 describe("composed event handlers", () => {
@@ -114,6 +121,21 @@ describe("composed event handlers", () => {
             return {
                 ...result,
                 isAnotherEventBridgeEvent: true
+            };
+        }),
+        /**
+         * SNS
+         */
+        createSNSEventHandler<SNSEventHandlerResponse>(async () => {
+            return {
+                isSNSEvent: true
+            };
+        }),
+        createSNSEventHandler<SNSEventHandlerResponse>(async ({ next }) => {
+            const result = await next();
+            return {
+                ...result,
+                isAnotherSNSEvent: true
             };
         })
     ];
@@ -202,6 +224,27 @@ describe("composed event handlers", () => {
         expect(result).toEqual({
             isEventBridgeEvent: true,
             isAnotherEventBridgeEvent: true
+        });
+    });
+
+    it("should be possible to execute multiple event handlers for a single event using next() callback - sns", async () => {
+        const handler = createHandler({
+            plugins
+        });
+
+        const event = {
+            Records: [
+                {
+                    Sns: {}
+                }
+            ]
+        } as SNSEvent;
+
+        const result = await handler(event, context);
+
+        expect(result).toEqual({
+            isSNSEvent: true,
+            isAnotherSNSEvent: true
         });
     });
 });

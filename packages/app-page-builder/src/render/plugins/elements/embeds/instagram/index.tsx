@@ -7,7 +7,7 @@ const oembed: Partial<OEmbedProps> = {
     sdk: "https://www.instagram.com/embed.js",
     init({ node }) {
         // TODO @ts-refactor any way to use key on window?
-        // @ts-ignore
+        // @ts-expect-error
         window.instgrm.Embeds.process(node.firstChild);
     }
 };

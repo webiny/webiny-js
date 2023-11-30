@@ -38,14 +38,14 @@ export const createApolloClient = () => {
         }
     });
 
-    // @ts-ignore
+    // @ts-expect-error
     cache.restore("__APOLLO_STATE__" in window ? window.__APOLLO_STATE__ : {});
 
     const uri = process.env.REACT_APP_GRAPHQL_API_URL;
     const link = ApolloLink.from([new ApolloDynamicLink(), new BatchHttpLink({ uri })]);
 
     window.getApolloState = () => {
-        // @ts-ignore `cache.data` is marked as private in the `apollo-cache-inmemory` package.
+        // @ts-expect-error `cache.data` is marked as private in the `apollo-cache-inmemory` package.
         return cache?.data?.data;
     };
 
