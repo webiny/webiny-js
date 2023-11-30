@@ -34,6 +34,9 @@ interface PagesListProviderContext {
     setSelected: (data: SearchRecordItem<PbPageDataItem>[]) => void;
     setSorting: OnSortingChange;
     sorting: Sorting;
+    showPreviewDrawer: boolean;
+    openPreviewDrawer: (id: string) => void;
+    closePreviewDrawer: () => void;
 }
 
 export const PagesListContext = React.createContext<PagesListProviderContext | undefined>(
@@ -64,6 +67,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
+    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
 
@@ -112,6 +116,18 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
         setSelected(pageEntries);
     };
 
+    const openPreviewDrawer = useCallback((id: string) => {
+        query.set("id", id);
+        history.push({ search: query.toString() });
+        setPreviewDrawer(true);
+    }, []);
+
+    const closePreviewDrawer = useCallback(() => {
+        query.delete("id");
+        history.push({ search: query.toString() });
+        setPreviewDrawer(false);
+    }, []);
+
     useEffect(() => {
         if (!sorting?.length) {
             return;
@@ -124,6 +140,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
     }, [sorting]);
 
     const context: PagesListProviderContext = {
+        closePreviewDrawer,
         folders,
         isListLoading,
         isListLoadingMore,
@@ -132,12 +149,14 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
         listTitle,
         meta,
         onSelectRow,
+        openPreviewDrawer,
         records,
         search,
         selected,
         setSearch,
         setSelected,
         setSorting,
+        showPreviewDrawer,
         sorting
     };
 

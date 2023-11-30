@@ -9,7 +9,6 @@ export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
     loading?: boolean;
-    openPreviewDrawer: () => void;
     onSelectRow: (rows: TableItem[] | []) => void;
     selectedRows: SearchRecordItem<PbPageDataItem>[];
     sorting: Sorting;

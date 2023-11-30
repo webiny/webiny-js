@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog, useFolders } from "@webiny/app-aco";
-import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
@@ -28,9 +27,6 @@ interface Props {
 }
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
-    const location = useLocation();
-    const history = useHistory();
-
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList();
@@ -44,10 +40,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const [showTemplatesDialog, setTemplatesDialog] = useState(false);
     const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
-
-    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
-    const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
-    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
@@ -95,21 +87,9 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, 200);
 
-    useEffect(() => {
-        if (!showPreviewDrawer) {
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete("id");
-            history.push({
-                search: queryParams.toString()
-            });
-        }
-    }, [showPreviewDrawer]);
-
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });
     }, [folderId]);
-
-    console.log("records", list.records);
 
     return (
         <>
@@ -140,8 +120,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     ) : (
                         <>
                             <Preview
-                                open={showPreviewDrawer}
-                                onClose={() => closePreviewDrawer()}
+                                open={list.showPreviewDrawer}
+                                onClose={list.closePreviewDrawer}
                                 canCreate={canCreate()}
                                 onCreatePage={openTemplatesDialog}
                             />
@@ -154,7 +134,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     folders={list.folders}
                                     records={list.records}
                                     loading={list.isListLoading}
-                                    openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={list.onSelectRow}
                                     selectedRows={list.selected}
                                     sorting={list.sorting}

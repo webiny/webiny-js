@@ -1,12 +1,12 @@
 import React from "react";
 
 import { useNavigateFolder } from "@webiny/app-aco";
-import { useRouter } from "@webiny/react-router";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 
 import { PageListConfig } from "~/admin/config/pages";
+import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
 
 interface DefaultProps {
@@ -43,17 +43,10 @@ export const FolderCellName = ({
 };
 
 export const PageCellName = ({ name, id }: PageCellNameProps) => {
-    const { history } = useRouter();
-    const query = new URLSearchParams(location.search);
+    const { openPreviewDrawer } = usePagesList();
 
     return (
-        <RowTitle
-            onClick={() => {
-                query.set("id", id);
-                history.push({ search: query.toString() });
-                //onClick();
-            }}
-        >
+        <RowTitle onClick={() => openPreviewDrawer(id)}>
             <RowIcon>
                 <File />
             </RowIcon>
