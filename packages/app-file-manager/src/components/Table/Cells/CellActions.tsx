@@ -33,6 +33,11 @@ export const CellActions = () => {
         );
     }
 
+    // If the user cannot manage folder structure, no need to show the menu.
+    if (!item.canManageStructure) {
+        return null;
+    }
+
     return (
         <FolderProvider folder={item}>
             <OptionsMenu
