@@ -4,7 +4,7 @@ import { EntryTableItem } from "~/types";
 
 export const transformCmsContentEntriesToRecordEntries = (
     items: CmsContentEntry[]
-): EntryTableItem => {
+): EntryTableItem[] => {
     return items.map(item => ({
         $type: "RECORD",
         $selectable: true,

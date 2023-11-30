@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry } from "~/types";
+import { CmsContentEntry, EntryTableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, createSort } from "@webiny/app-aco";
+import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
-import { ListMeta } from "@webiny/app-aco/types";
+import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
 import {
-    isRecordEntry,
     transformCmsContentEntriesToRecordEntries,
     transformFolderItemsToFolderEntries
 } from "~/utils/acoRecordTransform";
-import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 import { TableProps } from "~/admin/components/ContentEntries/Table";
+import { usePermission } from "~/admin/hooks";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -24,7 +24,7 @@ interface UpdateSearchCallable {
 }
 
 export interface ContentEntriesListProviderContext {
-    folders: FolderEntry[];
+    folders: FolderTableItem[];
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
@@ -33,7 +33,8 @@ export interface ContentEntriesListProviderContext {
     listTitle?: string;
     meta: ListMeta;
     onSelectRow: TableProps["onSelectRow"];
-    records: RecordEntry[];
+    onEditEntry: (item: EntryTableItem) => void;
+    records: EntryTableItem[];
     search: string;
     selected: CmsContentEntry[];
     setSearch: (value: string) => void;
@@ -56,6 +57,8 @@ interface ContentEntriesListProviderProps {
 export const ContentEntriesListProvider = ({ children }: ContentEntriesListProviderProps) => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
+    const { currentFolderId } = useNavigateFolder();
+    const { canEdit } = usePermission();
 
     const {
         folders: initialFolders,
@@ -118,10 +121,30 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     }, [search]);
 
     const onSelectRow: TableProps["onSelectRow"] = rows => {
-        const recordEntries = rows.filter(isRecordEntry) as RecordEntry[];
-        const cmsContentEntries = recordEntries.map(record => record.original);
+        const items = rows.filter(item => item.$type === "RECORD");
+
+        const cmsContentEntries = items
+            .map(item => omit(item, ["$type", "$selectable"]))
+            .map(item => item as unknown as CmsContentEntry);
         setSelected(cmsContentEntries);
     };
+
+    const onEditEntry = useCallback(
+        (entry: EntryTableItem) => {
+            if (!canEdit(entry, "cms.contentEntry")) {
+                return;
+            }
+
+            const folderPath = currentFolderId
+                ? `&folderId=${encodeURIComponent(currentFolderId)}`
+                : "";
+
+            const idPath = encodeURIComponent(entry.id);
+
+            history.push(`${baseUrl}?id=${idPath}${folderPath}`);
+        },
+        [canEdit, baseUrl, currentFolderId]
+    );
 
     const records = useMemo(() => {
         return transformCmsContentEntriesToRecordEntries(initialRecords);
@@ -151,6 +174,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         listMoreRecords,
         meta,
         onSelectRow,
+        onEditEntry,
         records,
         search,
         selected,

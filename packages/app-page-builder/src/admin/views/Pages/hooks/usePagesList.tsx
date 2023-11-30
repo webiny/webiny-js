@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
 import { createSort, useAcoList } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { PageEntry, TableProps, isPageEntry } from "~/admin/components/Table/Table";
+import { TableProps } from "~/admin/components/Table/Table";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -28,9 +29,9 @@ interface PagesListProviderContext {
     onSelectRow: TableProps["onSelectRow"];
     records: SearchRecordItem<PbPageDataItem>[];
     search: string;
-    selected: PbPageDataItem[];
+    selected: SearchRecordItem<PbPageDataItem>[];
     setSearch: (value: string) => void;
-    setSelected: (data: PbPageDataItem[]) => void;
+    setSelected: (data: SearchRecordItem<PbPageDataItem>[]) => void;
     setSorting: OnSortingChange;
     sorting: Sorting;
 }
@@ -59,7 +60,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
         setSearchQuery,
         setSelected,
         setListSort
-    } = useAcoList<PbPageDataItem>();
+    } = useAcoList<SearchRecordItem<PbPageDataItem>>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
@@ -103,8 +104,11 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
 
     // Handle rows selection.
     const onSelectRow: TableProps["onSelectRow"] = rows => {
-        const recordEntries = rows.filter(isPageEntry) as PageEntry[];
-        const pageEntries = recordEntries.map(record => record.original);
+        const recordEntries = rows.filter(item => item.$type === "RECORD");
+        const pageEntries = recordEntries.map(
+            item =>
+                omit(item, ["$type", "$selectable"]) as unknown as SearchRecordItem<PbPageDataItem>
+        );
         setSelected(pageEntries);
     };
 

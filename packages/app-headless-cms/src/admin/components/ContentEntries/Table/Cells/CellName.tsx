@@ -6,51 +6,46 @@ import { ReactComponent as File } from "@material-design-icons/svg/outlined/desc
 import { useNavigateFolder } from "@webiny/app-aco";
 
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
 
-interface DefaultProps {
-    name: string;
-    id: string;
+import { FolderTableItem } from "@webiny/app-aco/types";
+import { EntryTableItem } from "~/types";
+
+interface FolderCellNameProps {
+    folder: FolderTableItem;
 }
 
-interface FileCellNameProps extends DefaultProps {
-    type?: string;
-}
-
-interface FolderCellNameProps extends DefaultProps {
-    canManagePermissions: boolean;
-    hasNonInheritedPermissions: boolean;
-}
-
-export const FolderCellName = ({
-    name,
-    id,
-    canManagePermissions,
-    hasNonInheritedPermissions
-}: FolderCellNameProps) => {
+export const FolderCellName = ({ folder }: FolderCellNameProps) => {
     const { navigateToFolder } = useNavigateFolder();
 
     let icon = <Folder />;
-    if (hasNonInheritedPermissions && canManagePermissions) {
+    if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
         icon = <FolderShared />;
     }
 
     return (
-        <RowTitle onClick={() => navigateToFolder(id)}>
+        <RowTitle onClick={() => navigateToFolder(folder.id)}>
             <RowIcon>{icon}</RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+            <RowText use={"subtitle2"}>{folder.title}</RowText>
         </RowTitle>
     );
 };
 
-export const EntryCellName = ({ name, id }: FileCellNameProps) => {
+interface EntryCellNameProps {
+    entry: EntryTableItem;
+}
+
+export const EntryCellName = ({ entry }: EntryCellNameProps) => {
+    const { onEditEntry } = useContentEntriesList();
+
     return (
-        <RowTitle onClick={() => console.log("id", id)}>
+        <RowTitle onClick={() => onEditEntry(entry)}>
             <RowIcon>
                 <File />
             </RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+            <RowText use={"subtitle2"}>{entry.meta.title}</RowText>
         </RowTitle>
     );
 };
@@ -60,15 +55,8 @@ export const CellName = () => {
     const { item } = useTableCell();
 
     if (isEntryItem(item)) {
-        return <EntryCellName name={item.meta.title} id={item.id} />;
+        return <EntryCellName entry={item} />;
     }
 
-    return (
-        <FolderCellName
-            name={item.title}
-            id={item.id}
-            canManagePermissions={item.canManagePermissions}
-            hasNonInheritedPermissions={item.hasNonInheritedPermissions}
-        />
-    );
+    return <FolderCellName folder={item} />;
 };

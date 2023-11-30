@@ -188,7 +188,7 @@ const FileManagerView = () => {
 
         if (view.listTable) {
             const getSelectableRow = (rows: TableItem[]) =>
-                rows.filter(row => row.$type === "RECORD").map(row => row as FileItem);
+                rows.filter(row => row.$type === "RECORD").map(row => row as FileTableItem);
 
             const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback
                 ? rows => {

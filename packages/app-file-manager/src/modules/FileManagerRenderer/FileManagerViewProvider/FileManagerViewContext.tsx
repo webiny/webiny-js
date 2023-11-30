@@ -57,7 +57,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         setFilterMode(mode: "AND" | "OR"): void;
         loading: boolean;
     };
-    toggleSelected: (file: FileTableItem) => void;
+    toggleSelected: (file: FileItem) => void;
     deselectAll: () => void;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
@@ -80,10 +80,6 @@ const getCurrentFolderList = (
         );
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
-};
-
-const createFileItem = (item: FileTableItem): FileItem => {
-    return omit(item, ["$type", "$selectable"]);
 };
 
 export interface FileManagerViewProviderProps {
@@ -458,7 +454,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             }));
         },
         setSelected(items: FileTableItem[]) {
-            const files = items.map(item => createFileItem(item));
+            const files = items.map(item => omit(item, ["$type", "$selectable"]));
             setState(state => ({
                 ...state,
                 selected: files
@@ -494,8 +490,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 }));
             }
         },
-        toggleSelected(item: FileTableItem) {
-            const file = createFileItem(item);
+        toggleSelected(file: FileItem) {
             setState(state =>
                 setSelection({
                     state,

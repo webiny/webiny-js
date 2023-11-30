@@ -22,7 +22,7 @@ export const ActionDelete = observer(() => {
     }, [worker.items.length]);
 
     const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => canDelete(item?.createdBy?.id));
+        return worker.items.every(item => canDelete(item.data.createdBy.id));
     }, [worker.items]);
 
     const openDeletePagesDialog = () =>
@@ -34,7 +34,7 @@ export const ActionDelete = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await deletePage(
-                            { id: item.id },
+                            { id: item.data.id },
                             {
                                 client: client,
                                 mutationOptions: {
@@ -55,7 +55,7 @@ export const ActionDelete = observer(() => {
                             );
                         }
 
-                        removeRecordFromCache(item.pid);
+                        removeRecordFromCache(item.data.pid);
 
                         report.success({
                             title: `${item.title}`,

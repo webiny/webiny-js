@@ -1,14 +1,12 @@
-import React, { useCallback } from "react";
+import React from "react";
 
+import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import { Menu } from "@webiny/ui/Menu";
 
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { usePermission } from "~/admin/hooks";
-import { CreatableItem } from "~/admin/hooks/usePermission";
 
 import { RecordActionDelete } from "../Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "../Row/Record/RecordActionEdit";
@@ -21,24 +19,12 @@ export const CellActions = () => {
     const { useTableCell, isEntryItem } = ContentEntryListConfig.Browser.Table.Column;
     const { item } = useTableCell();
     const { folder: folderConfig } = useAcoConfig();
-    const { canEdit: baseCanEdit } = usePermission();
-
-    const canEdit = useCallback(
-        (entry: CreatableItem) => {
-            return baseCanEdit(entry, "cms.contentEntry");
-        },
-        [baseCanEdit]
-    );
 
     if (isEntryItem(item)) {
         return (
             <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-                {/*<RecordActionEdit*/}
-                {/*    record={item}*/}
-                {/*    onClick={() => console.log("item", item)}*/}
-                {/*    canEdit={canEdit}*/}
-                {/*/>*/}
-                {/*<RecordActionPublish record={item} />*/}
+                <RecordActionEdit record={item} />
+                <RecordActionPublish record={item} />
                 <RecordActionMove record={item} />
                 <RecordActionDelete record={item} />
             </Menu>

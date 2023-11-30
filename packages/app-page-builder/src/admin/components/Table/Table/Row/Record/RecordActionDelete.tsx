@@ -9,18 +9,18 @@ import { usePagesPermissions } from "~/hooks/permissions";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
-import { PbPageDataItem } from "~/types";
+import { PbPageTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/delete");
 
 interface Props {
-    record: PbPageDataItem;
+    record: PbPageTableItem;
 }
 export const RecordActionDelete = ({ record }: Props): ReactElement => {
     const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page: record });
 
-    if (!canDelete(record?.createdBy?.id)) {
+    if (!canDelete(record.data.createdBy.id)) {
         console.log("Does not have permission to delete page.");
         return <></>;
     }

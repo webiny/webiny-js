@@ -19,7 +19,7 @@ const BaseColumn: React.FC<React.ComponentProps<typeof AcoConfig.Table.Column>> 
 };
 
 const isPbPageItem = (item: TableItem): item is PbPageTableItem => {
-    return item?.$type === "RECORD";
+    return item.$type === "RECORD";
 };
 
 export const Column = Object.assign(BaseColumn, { isPbPageItem, useTableCell });

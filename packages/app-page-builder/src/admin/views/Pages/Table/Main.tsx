@@ -109,6 +109,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         showCreateFolderDialog({ currentParentId: folderId });
     }, [folderId]);
 
+    console.log("records", list.records);
+
     return (
         <>
             <MainContainer>

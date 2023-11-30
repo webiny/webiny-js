@@ -11,18 +11,17 @@ export interface TableProps {
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: TableItem[] | []) => void;
-    selectedRows: PbPageDataItem[];
+    selectedRows: SearchRecordItem<PbPageDataItem>[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
 const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PbPageTableItem[] => {
-    return items.map(({ data, location }) => {
+    return items.map(item => {
         return {
             $type: "RECORD",
             $selectable: true,
-            location,
-            ...data
+            ...item
         };
     });
 };
@@ -76,7 +75,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onSelectRow={onSelectRow}
                 sorting={sorting}
                 selectedRows={data.filter(record =>
-                    selectedRows.find(row => row.pid === record.id)
+                    selectedRows.find(row => row.data.pid === record.id)
                 )}
                 isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}

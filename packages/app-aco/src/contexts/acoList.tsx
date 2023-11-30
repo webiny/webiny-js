@@ -25,7 +25,7 @@ export interface AcoListContextData<T> {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    records: SearchRecordItem<T>[];
+    records: T[];
     selected: T[];
     setFilters: (data: Record<string, any>) => void;
     setListSort: (state: ListSearchRecordsSort) => void;

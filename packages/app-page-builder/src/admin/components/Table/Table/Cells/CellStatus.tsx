@@ -7,7 +7,11 @@ export const CellStatus = () => {
     const { item } = useTableCell();
 
     if (isPbPageItem(item)) {
-        return <>{`${statuses[item.status]}${item.version ? ` (v${item.version})` : ""}`}</>;
+        return (
+            <>{`${statuses[item.data.status]}${
+                item.data.version ? ` (v${item.data.version})` : ""
+            }`}</>
+        );
     }
 
     return <>{"-"}</>;

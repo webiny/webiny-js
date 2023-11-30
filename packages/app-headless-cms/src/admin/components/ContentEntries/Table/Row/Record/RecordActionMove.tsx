@@ -5,12 +5,12 @@ import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { useMoveContentEntryToFolder } from "~/admin/views/contentEntries/hooks";
-import { RecordEntry } from "~/admin/components/ContentEntries/Table/types";
+import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
 interface Props {
-    record: RecordEntry;
+    record: EntryTableItem;
 }
 export const RecordActionMove: React.VFC<Props> = ({ record }) => {
     const moveContentEntry = useMoveContentEntryToFolder({ record });
