@@ -1,25 +1,21 @@
 {
-    "extends": "../../tsconfig.json",
-    "include": [
-        "src",
-        "__tests__"
-    ],
-    "references": [],
-    "compilerOptions": {
-        "rootDirs": [
-            "./src",
-            "./__tests__"
-        ],
-        "outDir": "./dist",
-        "declarationDir": "./dist",
-        "paths": {
-            "~/*": [
-                "./src/*"
-            ],
-            "~tests/*": [
-                "./__tests__/*"
-            ]
-        },
-        "baseUrl": "."
-    }
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../api" }, { "path": "../api-headless-cms" }, { "path": "../plugins" }],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
 }

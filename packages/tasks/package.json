@@ -12,7 +12,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6"
+    "@babel/runtime": "^7.22.6",
+    "@webiny/api": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/plugins": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

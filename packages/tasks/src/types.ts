@@ -1,4 +1,5 @@
 import { Context as BaseContext } from "@webiny/api";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 export interface Context extends BaseContext {}
 
@@ -55,12 +56,37 @@ export interface ITaskRunDoneResponse {
     error?: never;
 }
 
+export interface TaskField
+    extends Pick<
+        CmsModelField,
+        | "id"
+        | "fieldId"
+        | "storageId"
+        | "type"
+        | "label"
+        | "renderer"
+        | "validation"
+        | "listValidation"
+        | "multipleValues"
+    > {}
+
 export type TaskRunResponse =
     | ITaskRunContinueResponse
     | ITaskRunDoneResponse
     | ITaskRunErrorResponse;
 
 export interface ITask<C extends Context, I> {
+    /**
+     * Must be unique in the system.
+     */
+    name: string;
+    /**
+     * Run methods.
+     */
     run: (params: ITaskParams<C, I>) => Promise<TaskRunResponse>;
-    onSuccess: (params: ITaskParams<C, I>) => Promise<void>;
+    onSuccess: (params: Omit<ITaskParams<C, I>, "manager">) => Promise<void>;
+    /**
+     * Custom input fields and layout for the task input.
+     */
+    fields?: TaskField[];
 }
