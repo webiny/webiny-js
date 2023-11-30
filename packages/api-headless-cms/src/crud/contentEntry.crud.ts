@@ -826,7 +826,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             version: nextVersion,
             savedOn: getDate(rawInput.savedOn, currentDate),
             createdOn: getDate(rawInput.createdOn, currentDate),
-            publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
+            publishedOn: getDate(rawInput.publishedOn, undefined),
             createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
             modifiedBy: getIdentity(rawInput.modifiedBy, null),
             ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),

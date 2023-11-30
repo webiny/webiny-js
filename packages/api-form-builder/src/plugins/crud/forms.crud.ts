@@ -284,7 +284,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 version,
                 locked: false,
                 published: false,
-                publishedOn: undefined,
                 status: getStatus({
                     published: false,
                     locked: false
@@ -610,7 +609,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 },
                 locked: false,
                 published: false,
-                publishedOn: undefined,
                 status: getStatus({ published: false, locked: false }),
                 tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION

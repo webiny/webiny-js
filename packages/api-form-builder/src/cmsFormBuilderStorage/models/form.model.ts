@@ -402,14 +402,6 @@ const triggersField = () => {
     });
 };
 
-const publishedOnField = () => {
-    return createModelField({
-        label: "Published On",
-        fieldId: "publishedOn",
-        type: "datetime"
-    });
-};
-
 const slugField = () => {
     return createModelField({
         label: "Slug",
@@ -500,7 +492,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
             stepsField(STEP_FIELDS),
             settingsField(SETTINGS_FIELDS),
             triggersField(),
-            publishedOnField(),
             slugField()
         ],
         description: "Form Builder - Form builder create data model",

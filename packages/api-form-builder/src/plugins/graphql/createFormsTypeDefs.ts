@@ -103,6 +103,7 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
             ownedBy: FbFormUser!
             createdOn: DateTime!
             savedOn: DateTime!
+            publishedOn: DateTime
             version: Number!
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
