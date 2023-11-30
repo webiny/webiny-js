@@ -60,16 +60,18 @@ export const OpenSearch = createAppModule({
                 return aws.opensearch.getDomain({ domainName }, { async: true });
             });
         } else {
-            const baseDomainName = "webiny-js";
             const randomId = new random.RandomId("osDomainRandomId", { byteLength: 8 });
-            const domainName = randomId.hex.apply(
-                (hex: string) => `${baseDomainName}-${hex.slice(-7)}`
-            );
+            const namePrefix = app.getParam(app.params.create.pulumiResourceNamePrefix) || "";
+
+            const domainLogicalName = "webiny-js";
+            const domainPhysicalName = randomId.hex.apply((hex: string) => {
+                return `${namePrefix}${domainLogicalName}-${hex.slice(-7)}`;
+            });
 
             domain = app.addResource(aws.opensearch.Domain, {
-                name: baseDomainName,
+                name: domainLogicalName,
                 config: {
-                    domainName,
+                    domainName: domainPhysicalName,
                     engineVersion: OS_ENGINE_VERSION,
                     clusterConfig: isProduction ? getProdClusterConfig() : getDevClusterConfig(),
                     vpcOptions: vpc
