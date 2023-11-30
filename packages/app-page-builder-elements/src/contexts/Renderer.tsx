@@ -2,7 +2,9 @@ import React, { createContext } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { RendererContextValue, RendererProviderProps } from "~/types";
 
-export const RendererContext = createContext<RendererContextValue>(null as unknown as any);
+export const RendererContext = createContext<RendererContextValue>(
+    null as unknown as RendererContextValue
+);
 
 export const RendererProvider: React.FC<RendererProviderProps> = ({
     children,
@@ -15,7 +17,7 @@ export const RendererProvider: React.FC<RendererProviderProps> = ({
 
     const pageElements = usePageElements();
 
-    // @ts-ignore Resolve the `getElement` issue.
+    // @ts-expect-error Resolve the `getElement` issue.
     const value: RendererContextValue = { ...pageElements, getElement, getAttributes, meta };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;

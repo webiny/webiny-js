@@ -57,7 +57,7 @@ function setup(props: SetupProps = {}) {
  * @param {...Function} fns the functions to call
  * @return {Function} the function that calls all the functions
  */
-function callAll(...fns: Function[]) {
+function callAll(...fns: ((...params: any) => void)[]) {
     return (...args: any) => {
         fns.forEach(fn => {
             fn && fn(...args);
@@ -69,7 +69,7 @@ describe("Input tests", () => {
     test("passes expected props to render prop", () => {
         const { renderArg } = setup();
 
-        // @ts-ignore
+        // @ts-expect-error
         expect(renderArg).toContainKeys(["value", "validation", "onChange", "onBlur"]);
     });
 

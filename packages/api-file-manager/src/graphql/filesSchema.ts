@@ -62,15 +62,19 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
             },
             FmMutation: {
                 async createFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.createFile(args.data, args.meta));
+                    return resolve(() => {
+                        return context.fileManager.createFile(args.data, args.meta);
+                    });
                 },
                 async createFiles(_, args: any, context) {
-                    return resolve(() =>
-                        context.fileManager.createFilesInBatch(args.data, args.meta)
-                    );
+                    return resolve(() => {
+                        return context.fileManager.createFilesInBatch(args.data, args.meta);
+                    });
                 },
                 async updateFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.updateFile(args.id, args.data));
+                    return resolve(() => {
+                        return context.fileManager.updateFile(args.id, args.data);
+                    });
                 },
                 async deleteFile(_, args: any, context) {
                     return resolve(async () => {

@@ -42,12 +42,12 @@ interface TagsProps extends FormComponentProps {
     /**
      * Callback that gets executed on change of input value.
      */
-    onInput?: Function;
+    onInput?: <T = unknown>(value: T) => void;
 
     /**
      * Callback that gets executed when the input is focused.
      */
-    onFocus?: Function;
+    onFocus?: (ev: Event) => void;
 
     /**
      * Automatically focus on the tags input.

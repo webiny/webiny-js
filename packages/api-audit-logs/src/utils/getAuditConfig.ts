@@ -74,7 +74,9 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
 
         // Check if the latest audit log is saved within delay range.
         if (newLogDate - existingLogDate < delay * 1000) {
-            const existingLogData = await compressor.decompress(existingLog.data as any);
+            const existingLogData = await compressor.decompress(
+                existingLog.data as unknown as string
+            );
             // Update latest audit log with new "after" payload.
             const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
             const afterPayloadData = payload.data?.after;

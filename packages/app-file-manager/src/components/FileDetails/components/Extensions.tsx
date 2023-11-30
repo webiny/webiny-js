@@ -44,7 +44,11 @@ export const Extensions = ({ model }: ExtensionsProps) => {
                         <HideEmptyCells>
                             <Fields
                                 contentModel={model}
-                                Bind={Bind as any}
+                                /**
+                                 * TODO: Figure out correct Bind type
+                                 */
+                                // @ts-expect-error
+                                Bind={Bind}
                                 fields={fields}
                                 layout={layout}
                             />

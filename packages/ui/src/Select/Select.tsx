@@ -27,10 +27,12 @@ export type SelectProps = FormComponentProps &
         box?: string;
 
         // One or more <option> or <optgroup> elements.
-        children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
+        children?: (React.ReactElement<"option"> | React.ReactElement<"optgroup">)[];
 
         // IconProps for the root element. By default, additional props spread to the native select element.
-        rootProps?: Object;
+        rootProps?: {
+            [key: string]: any;
+        };
 
         // A className for the root element.
         className?: string;
@@ -80,7 +82,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
     const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        // @ts-ignore
+        // @ts-expect-error
         .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;
@@ -114,7 +116,7 @@ export const Select: React.FC<SelectProps> = props => {
                     }
                 )}
                 onChange={e => {
-                    props.onChange && props.onChange((e.target as any).value);
+                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
                 }}
             />
 

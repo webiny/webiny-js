@@ -1,8 +1,7 @@
-import { Table } from "dynamodb-toolbox";
-import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
+import { Table, AttributeDefinitions } from "@webiny/db-dynamodb/toolbox";
 import { createLegacyEntity } from "~/utils";
 
-const oldAttributes: EntityAttributes = {
+const oldAttributes: AttributeDefinitions = {
     PK: {
         partitionKey: true
     },
@@ -41,11 +40,11 @@ const oldAttributes: EntityAttributes = {
     }
 };
 
-export const createOldPageBlockEntity = (table: Table) => {
+export const createOldPageBlockEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "PbPageBlocks", oldAttributes);
 };
 
-export const createNewPageBlockEntity = (table: Table) => {
+export const createNewPageBlockEntity = (table: Table<string, string, string>) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { preview, ...attrs } = oldAttributes;
 

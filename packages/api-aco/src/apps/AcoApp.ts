@@ -45,9 +45,6 @@ export class AcoApp implements IAcoApp {
             },
             update: async <TData>(id: string, data: SearchRecord<TData>) => {
                 await this.execOnAnyRequest("update");
-                /**
-                 * Required to have as any atm as TS is breaking on the return type.
-                 */
                 const result = await this.context.aco.search.update<TData>(
                     this.getModel(),
                     id,
@@ -81,7 +78,7 @@ export class AcoApp implements IAcoApp {
                 const items = await onEntryList(entries);
                 return [items, meta];
             },
-            delete: async (id: string): Promise<Boolean> => {
+            delete: async (id: string): Promise<boolean> => {
                 await this.execOnAnyRequest("delete");
                 return this.context.aco.search.delete(this.getModel(), id);
             },

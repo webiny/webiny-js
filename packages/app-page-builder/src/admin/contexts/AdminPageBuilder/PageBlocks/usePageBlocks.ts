@@ -20,17 +20,25 @@ export function usePageBlocks() {
 
     useEffect(() => {
         blocksRepository.listPageBlocks();
+    }, [blocksRepository]);
 
-        autorun(() => {
+    useEffect(() => {
+        return autorun(() => {
             const loading = blocksRepository.getLoading();
 
-            setVm({
-                pageBlocks: blocksRepository.getPageBlocks().map(pageBlock => {
-                    return structuredClone(pageBlock);
-                }),
+            setVm(vm => ({
+                ...vm,
                 loading: loading.isLoading,
                 loadingLabel: loading.loadingLabel
-            });
+            }));
+        });
+    }, [blocksRepository]);
+
+    useEffect(() => {
+        return autorun(() => {
+            const pageBlocks = blocksRepository.getPageBlocks();
+
+            setVm(vm => ({ ...vm, pageBlocks }));
         });
     }, [blocksRepository]);
 
@@ -71,5 +79,10 @@ export function usePageBlocks() {
         [blocksRepository]
     );
 
-    return { ...vm, listBlocks, getBlockById, createBlock, updateBlock, deleteBlock };
+    const refetchBlock = useCallback(
+        (id: string) => blocksRepository.refetchById(id),
+        [blocksRepository]
+    );
+
+    return { ...vm, listBlocks, getBlockById, createBlock, updateBlock, deleteBlock, refetchBlock };
 }

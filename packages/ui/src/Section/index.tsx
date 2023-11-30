@@ -28,7 +28,7 @@ const ElevationContent = styled("div")({
 });
 
 interface SectionProps {
-    title?: String;
+    title?: string;
 }
 
 const Section: React.FC<SectionProps> = ({ children, title, ...props }) => {

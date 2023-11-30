@@ -74,7 +74,7 @@ export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) =>
             /**
              * TODO @ts-refactor Problem with possibility of a different subtype.
              */
-            // @ts-ignore
+            // @ts-expect-error
             return filter(pl);
         })
         /**

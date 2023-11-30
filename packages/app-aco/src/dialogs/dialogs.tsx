@@ -14,8 +14,8 @@ interface ShowDialogParams {
     acceptLabel: ReactNode;
     cancelLabel: ReactNode;
     loadingLabel: ReactNode;
-    onAccept?: Function;
-    onClose?: Function;
+    onAccept?: (data: GenericFormData) => void;
+    onClose?: () => void;
 }
 
 export interface DialogsContext {
@@ -32,8 +32,8 @@ interface State {
     acceptLabel: ReactNode;
     cancelLabel: ReactNode;
     loadingLabel: ReactNode;
-    onAccept?: Function;
-    onClose?: Function;
+    onAccept?: (data: GenericFormData) => void;
+    onClose?: () => void;
     open: boolean;
     loading: boolean;
 }

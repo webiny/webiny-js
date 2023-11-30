@@ -26,8 +26,11 @@ const onOffsetChange = (monitor: DragLayerMonitor) => () => {
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
-    // TODO @ts-refactor
-    dragPreviewRef.style["-webkit-transform" as any] = transform;
+    /**
+     * TS is complaining about -webkit.
+     */
+    // @ts-expect-error
+    dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
 const DragPreview: React.FC = () => {
@@ -35,7 +38,7 @@ const DragPreview: React.FC = () => {
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
-            // @ts-ignore
+            // @ts-expect-error
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }

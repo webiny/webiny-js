@@ -19,9 +19,9 @@ interface Resolvers {
 }
 
 export const createAppResolvers = (params: Params): Resolvers => {
-    const { app, models, plugins } = params;
+    const { app: targetApp, models, plugins } = params;
 
-    const model = app.model;
+    const model = targetApp.model;
     const apiName = model.singularApiName;
 
     const createFieldResolvers = createFieldResolversFactory({
@@ -33,7 +33,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
 
     const fieldResolvers = createFieldResolvers({
         graphQLType: apiName,
-        fields: app.model.fields,
+        fields: targetApp.model.fields,
         isRoot: true,
         extraResolvers: {
             id: (entry: CmsEntry) => {
@@ -46,18 +46,21 @@ export const createAppResolvers = (params: Params): Resolvers => {
     const resolvers: Resolvers = {
         SearchQuery: {
             [`get${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
                     ensureAuthentication(context);
                     return app.search.get(args.id);
                 });
             },
             [`list${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolveList(() => {
                     ensureAuthentication(context);
                     return app.search.list(args);
                 });
             },
             [`list${apiName}Tags`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolveList(() => {
                     ensureAuthentication(context);
                     return app.search.listTags(args);
@@ -66,6 +69,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
         },
         SearchMutation: {
             [`create${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
                     ensureAuthentication(context);
                     const { id } = parseIdentifier(args.data?.id);
@@ -76,6 +80,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
                 });
             },
             [`update${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
                     ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);
@@ -83,6 +88,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
                 });
             },
             [`move${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
                     ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);
@@ -90,6 +96,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
                 });
             },
             [`delete${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
                     ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);

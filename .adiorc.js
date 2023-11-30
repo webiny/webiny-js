@@ -1,4 +1,4 @@
-const get = require("lodash.get");
+const get = require("lodash/get");
 const getWorkspaces = require("get-yarn-workspaces");
 const path = require("path");
 
@@ -22,23 +22,25 @@ module.exports = {
     },
     ignore: {
         src: [
-            "http",
-            "path",
-            "https",
-            "follow-redirects",
-            "child_process",
-            "os",
-            "buffer",
-            "fs",
-            "readline",
-            "util",
-            "events",
-            "crypto",
-            "aws-sdk",
-            "url",
-            "worker_threads",
             "~tests",
-            "~"
+            "~",
+            "async_hooks",
+            "aws-sdk",
+            "buffer",
+            "child_process",
+            "crypto",
+            "events",
+            "follow-redirects",
+            "fs",
+            "http",
+            "https",
+            "os",
+            "path",
+            "readline",
+            "stream",
+            "util",
+            "url",
+            "worker_threads"
         ],
         dependencies: [
             "@babel/runtime",

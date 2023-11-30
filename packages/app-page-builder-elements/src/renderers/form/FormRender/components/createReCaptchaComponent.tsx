@@ -16,8 +16,8 @@ interface ChildrenFunction {
 export type ReCaptchaProps = {
     children?: React.ReactNode | ChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any[]) => void;
+    onExpired?: (...args: any[]) => void;
 };
 
 export type ReCaptchaComponent = React.FC<ReCaptchaProps>;

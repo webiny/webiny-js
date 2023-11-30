@@ -2,17 +2,27 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Cypress
+name: Pull Requests Command - Cypress (TEST)
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
+  validateWorkflows:
+    name: Validate workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Validate
+        run: npx github-actions-wac validate
   checkComment:
     name: Check comment for /cypress_test
-    runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Check for Command
         id: command
         uses: xt0rted/slash-command-action@v2
@@ -31,10 +41,13 @@ jobs:
             Cypress E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-init:
     needs: checkComment
     name: E2E (DDB) - Init
-    runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -44,8 +57,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -68,27 +79,34 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
-  e2e-wby-cms-ddb-project-setup:
-    name: E2E (DDB) - Project setup
-    needs: e2e-wby-cms-ddb-init
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-wby-cms-ddb-project-setup:
+    needs: e2e-wby-cms-ddb-init
+    name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     steps:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
       - uses: actions/checkout@v3
         with:
           path: dev
@@ -123,8 +141,10 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: ''
-        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+        working-directory: dev
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -198,6 +218,9 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
   e2e-wby-cms-ddb-cypress-tests:
     name: >-
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
@@ -213,18 +236,16 @@ jobs:
         node:
           - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -264,10 +285,10 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
+    runs-on: ubuntu-latest
   e2e-wby-cms-ddb-es-init:
     needs: checkComment
     name: E2E (DDB-ES) - Init
-    runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -277,8 +298,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -301,23 +320,25 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
-  e2e-wby-cms-ddb-es-project-setup:
-    name: E2E (DDB-ES) - Project setup
-    needs: e2e-wby-cms-ddb-es-init
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-wby-cms-ddb-es-project-setup:
+    needs: e2e-wby-cms-ddb-es-init
+    name: E2E (DDB-ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
@@ -325,6 +346,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
       - uses: actions/checkout@v3
         with:
           path: dev
@@ -359,8 +385,10 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: ''
-        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+        working-directory: dev
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -434,6 +462,9 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
   e2e-wby-cms-ddb-es-cypress-tests:
     name: >-
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
@@ -449,18 +480,16 @@ jobs:
         node:
           - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
@@ -504,10 +533,10 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
+    runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-init:
     needs: checkComment
     name: E2E (DDB-OS) - Init
-    runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -517,8 +546,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v3
-        with:
-          path: ''
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -541,23 +568,25 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
-  e2e-wby-cms-ddb-os-project-setup:
-    name: E2E (DDB-OS) - Project setup
-    needs: e2e-wby-cms-ddb-os-init
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-wby-cms-ddb-os-project-setup:
+    needs: e2e-wby-cms-ddb-os-init
+    name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
@@ -565,6 +594,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
       - uses: actions/checkout@v3
         with:
           path: dev
@@ -599,8 +633,10 @@ jobs:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: ''
-        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+        working-directory: dev
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -674,6 +710,9 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
   e2e-wby-cms-ddb-os-cypress-tests:
     name: >-
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
@@ -689,18 +728,16 @@ jobs:
         node:
           - 18
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-os-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
@@ -744,3 +781,4 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
+    runs-on: ubuntu-latest

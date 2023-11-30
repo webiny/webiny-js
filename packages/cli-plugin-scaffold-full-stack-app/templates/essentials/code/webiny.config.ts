@@ -22,7 +22,7 @@ const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument,
  */
 export default {
     commands: {
-        // @ts-ignore
+        // @ts-expect-error
         async watch(options) {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(
@@ -41,7 +41,7 @@ export default {
             const watch = createWatchApp({ cwd: __dirname });
             await watch(options);
         },
-        // @ts-ignore
+        // @ts-expect-error
         async build(options) {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(

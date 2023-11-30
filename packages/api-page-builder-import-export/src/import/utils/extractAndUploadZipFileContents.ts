@@ -37,7 +37,7 @@ export async function extractAndUploadZipFileContents(zipFileUrl: string): Promi
     const ZIP_FILE_PATH = path.join(INSTALL_DIR, zipFileName);
 
     const writeStream = createWriteStream(ZIP_FILE_PATH);
-    // @ts-ignore
+
     await streamPipeline(readStream, writeStream);
     log(`Downloaded file "${zipFileName}" at ${ZIP_FILE_PATH}`);
 

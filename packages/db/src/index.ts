@@ -99,7 +99,7 @@ class Db {
 
     constructor({ driver, table, logTable }: ConstructorArgs) {
         this.driver = driver;
-        // @ts-ignore
+        // @ts-expect-error
         this.table = table;
         this.logTable = logTable;
     }

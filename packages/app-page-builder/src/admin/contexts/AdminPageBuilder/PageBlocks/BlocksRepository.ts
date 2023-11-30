@@ -3,7 +3,6 @@ import { plugins } from "@webiny/plugins";
 import { Loading } from "./Loading";
 import { BlockGatewayInterface } from "./BlockGatewayInterface";
 import { PbEditorBlockPlugin, PbPageBlock } from "~/types";
-import { decompress } from "~/admin/components/useDecompress";
 import { getDefaultBlockContent } from "./defaultBlockContent";
 import { addElementId } from "~/editor/helpers";
 import { createBlockPlugin } from "./createBlockPlugin";
@@ -34,7 +33,7 @@ export class BlocksRepository {
     }
 
     private async runWithLoading<T>(
-        action: Promise<T>,
+        action: () => Promise<T>,
         loadingLabel?: string,
         successMessage?: string,
         failureMessage?: string
@@ -58,7 +57,7 @@ export class BlocksRepository {
 
         return (this.listOperation = (async () => {
             const pageBlocks = await this.runWithLoading<PbPageBlock[]>(
-                this.gateway.list(),
+                () => this.gateway.list(),
                 "Loading page blocks"
             );
 
@@ -66,15 +65,13 @@ export class BlocksRepository {
                 return [];
             }
 
-            const decompressedPageBlocks = await Promise.all(
-                pageBlocks.map(pageBlock => this.decompressPageBlock(pageBlock))
+            const processedBlocks = await Promise.all(
+                pageBlocks.map(pageBlock => this.processBlockFromApi(pageBlock))
             );
 
             runInAction(() => {
-                this.pageBlocks = decompressedPageBlocks;
+                this.pageBlocks = processedBlocks;
             });
-
-            this.pageBlocks.map(pageBlock => this.createBlockPlugin(pageBlock));
 
             return this.pageBlocks;
         })());
@@ -87,31 +84,56 @@ export class BlocksRepository {
             return structuredClone(blockInCache);
         }
 
-        const pageBlock = await this.runWithLoading<PbPageBlock>(this.gateway.getById(id));
+        const pageBlock = await this.runWithLoading<PbPageBlock>(async () => {
+            const block = await this.gateway.getById(id);
+            return this.processBlockFromApi(block);
+        });
+
+        runInAction(() => {
+            this.pageBlocks = [...this.pageBlocks, pageBlock];
+        });
+
+        return structuredClone(pageBlock);
+    }
+
+    async refetchById(id: string): Promise<PbPageBlock> {
+        const pageBlock = await this.runWithLoading<PbPageBlock>(async () => {
+            const block = await this.gateway.getById(id);
+            return this.processBlockFromApi(block);
+        });
+
+        runInAction(() => {
+            const blockIndex = this.pageBlocks.findIndex(pb => pb.id === id);
+            if (blockIndex > -1) {
+                this.pageBlocks = this.pageBlocks.splice(blockIndex, 1, pageBlock);
+            } else {
+                this.pageBlocks = [...this.pageBlocks, pageBlock];
+            }
+        });
 
         return structuredClone(pageBlock);
     }
 
     async createPageBlock(input: { name: string; category: string; content?: unknown }) {
         const pageBlock = await this.runWithLoading(
-            this.gateway.create({
-                name: input.name,
-                blockCategory: input.category,
-                content: input.content ?? getDefaultBlockContent()
-            }),
+            () => {
+                return this.gateway.create({
+                    name: input.name,
+                    blockCategory: input.category,
+                    content: input.content ?? getDefaultBlockContent()
+                });
+            },
             "Creating page block",
             `Page block "${input.name}" was created successfully.`
         );
 
-        const decompressed = this.decompressPageBlock(pageBlock);
+        const processedBlock = this.processBlockFromApi(pageBlock);
 
         runInAction(() => {
-            this.pageBlocks.push(decompressed);
+            this.pageBlocks = [...this.pageBlocks, processedBlock];
         });
 
-        this.createBlockPlugin(decompressed);
-
-        return decompressed;
+        return processedBlock;
     }
 
     async updatePageBlock(pageBlock: {
@@ -130,16 +152,18 @@ export class BlocksRepository {
             ...block,
             name: pageBlock.name ?? block.name,
             blockCategory: pageBlock.category ?? block.blockCategory,
-            content: pageBlock.content ?? block.content
+            content: addElementId(pageBlock.content ?? block.content)
         };
 
         await this.runWithLoading(
-            this.gateway.update({
-                id: updatePageBlock.id,
-                name: updatePageBlock.name,
-                content: updatePageBlock.content,
-                blockCategory: updatePageBlock.blockCategory
-            }),
+            () => {
+                return this.gateway.update({
+                    id: updatePageBlock.id,
+                    name: updatePageBlock.name,
+                    content: updatePageBlock.content,
+                    blockCategory: updatePageBlock.blockCategory
+                });
+            },
             "Updating page block",
             `Filter "${updatePageBlock.name}" was updated successfully.`
         );
@@ -167,7 +191,7 @@ export class BlocksRepository {
         }
 
         await this.runWithLoading(
-            this.gateway.delete(id),
+            () => this.gateway.delete(id),
             "Deleting page block",
             `Filter "${block.name}" was deleted successfully.`
         );
@@ -179,11 +203,10 @@ export class BlocksRepository {
         this.removeBlockPlugin(block);
     }
 
-    private decompressPageBlock(pageBlock: PbPageBlock) {
-        return {
-            ...pageBlock,
-            content: addElementId(decompress(pageBlock.content))
-        };
+    private processBlockFromApi(pageBlock: PbPageBlock) {
+        const withElementIds = { ...pageBlock, content: addElementId(pageBlock.content) };
+        this.createBlockPlugin(withElementIds);
+        return withElementIds;
     }
 
     /**

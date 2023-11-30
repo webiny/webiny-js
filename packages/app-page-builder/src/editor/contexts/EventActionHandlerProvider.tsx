@@ -457,7 +457,7 @@ export const EventActionHandlerProvider = makeComposable<
         for (const cb of callables) {
             const r =
                 (await cb(
-                    // @ts-ignore TODO: figure this out!
+                    // @ts-expect-error TODO: figure this out!
                     getCallableState({ ...initialState, ...results.state }),
                     {
                         client: apolloClient,
@@ -478,7 +478,7 @@ export const EventActionHandlerProvider = makeComposable<
         for (const action of results.actions) {
             const r = await triggerEventAction(
                 action,
-                // @ts-ignore TODO: figure this out!
+                // @ts-expect-error TODO: figure this out!
                 getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );
