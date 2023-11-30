@@ -15,35 +15,35 @@ import { FileProvider } from "~/contexts/FileProvider";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellActions = () => {
-    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
     const { item } = useTableCell();
     const { showFileDetails } = useFileManagerView();
     const { folder: folderConfig } = useAcoConfig();
 
-    if (isFileItem(item)) {
+    if (isFolderItem(item)) {
+        // If the user cannot manage folder structure, no need to show the menu.
+        if (!item.canManageStructure) {
+            return null;
+        }
+
         return (
-            <FileProvider file={item}>
-                <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-                    <RecordActionCopy record={item} />
-                    <RecordActionEdit id={item.id} onClick={showFileDetails} />
-                    <RecordActionMove />
-                    <RecordActionDelete record={item} />
-                </Menu>
-            </FileProvider>
+            <FolderProvider folder={item}>
+                <OptionsMenu
+                    actions={folderConfig.actions}
+                    data-testid={"table.row.folder.menu-action"}
+                />
+            </FolderProvider>
         );
     }
 
-    // If the user cannot manage folder structure, no need to show the menu.
-    if (!item.canManageStructure) {
-        return null;
-    }
-
     return (
-        <FolderProvider folder={item}>
-            <OptionsMenu
-                actions={folderConfig.actions}
-                data-testid={"table.row.folder.menu-action"}
-            />
-        </FolderProvider>
+        <FileProvider file={item}>
+            <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
+                <RecordActionCopy record={item} />
+                <RecordActionEdit id={item.id} onClick={showFileDetails} />
+                <RecordActionMove />
+                <RecordActionDelete record={item} />
+            </Menu>
+        </FileProvider>
     );
 };

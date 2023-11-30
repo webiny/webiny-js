@@ -8,73 +8,52 @@ import { ReactComponent as File } from "@material-design-icons/svg/outlined/desc
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
+import { FileTableItem } from "~/types";
+import { FolderTableItem } from "@webiny/app-aco/types";
 
 interface DefaultProps {
-    name: string;
-    id: string;
     onClick: (id: string) => void;
 }
 
-interface FileCellNameProps extends DefaultProps {
-    type?: string;
-}
-
 interface FolderCellNameProps extends DefaultProps {
-    canManagePermissions: boolean;
-    hasNonInheritedPermissions: boolean;
+    folder: FolderTableItem;
 }
 
-export const FolderCellName = ({
-    name,
-    id,
-    onClick,
-    canManagePermissions,
-    hasNonInheritedPermissions
-}: FolderCellNameProps) => {
+export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
     let icon = <Folder />;
-    if (hasNonInheritedPermissions && canManagePermissions) {
+    if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
         icon = <FolderShared />;
     }
+
     return (
-        <RowTitle onClick={() => onClick(id)}>
+        <RowTitle onClick={() => onClick(folder.id)}>
             <RowIcon>{icon}</RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+            <RowText use={"subtitle2"}>{folder.title}</RowText>
         </RowTitle>
     );
 };
 
-export const FileCellName = ({ name, id, type, onClick }: FileCellNameProps) => {
+interface FileCellNameProps extends DefaultProps {
+    file: FileTableItem;
+}
+
+export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
     return (
-        <RowTitle onClick={() => onClick(id)}>
-            <RowIcon>{type && type.includes("image") ? <Image /> : <File />}</RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+        <RowTitle onClick={() => onClick(file.id)}>
+            <RowIcon>{file.type && file.type.includes("image") ? <Image /> : <File />}</RowIcon>
+            <RowText use={"subtitle2"}>{file.name}</RowText>
         </RowTitle>
     );
 };
 
 export const CellName = () => {
-    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
     const { item } = useTableCell();
     const { showFileDetails, setFolderId } = useFileManagerView();
 
-    if (isFileItem(item)) {
-        return (
-            <FileCellName
-                name={item.name}
-                id={item.id}
-                type={item.type}
-                onClick={showFileDetails}
-            />
-        );
+    if (isFolderItem(item)) {
+        return <FolderCellName folder={item} onClick={setFolderId} />;
     }
 
-    return (
-        <FolderCellName
-            name={item.title}
-            id={item.id}
-            onClick={setFolderId}
-            canManagePermissions={item.canManagePermissions}
-            hasNonInheritedPermissions={item.hasNonInheritedPermissions}
-        />
-    );
+    return <FileCellName file={item} onClick={showFileDetails} />;
 };

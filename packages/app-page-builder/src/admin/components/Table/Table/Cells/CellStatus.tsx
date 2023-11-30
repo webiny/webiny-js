@@ -3,16 +3,14 @@ import { statuses } from "~/admin/constants";
 import { PageListConfig } from "~/admin/config/pages";
 
 export const CellStatus = () => {
-    const { useTableCell, isPbPageItem } = PageListConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
     const { item } = useTableCell();
 
-    if (isPbPageItem(item)) {
-        return (
-            <>{`${statuses[item.data.status]}${
-                item.data.version ? ` (v${item.data.version})` : ""
-            }`}</>
-        );
+    if (isFolderItem(item)) {
+        return <>{"-"}</>;
     }
 
-    return <>{"-"}</>;
+    return (
+        <>{`${statuses[item.data.status]}${item.data.version ? ` (v${item.data.version})` : ""}`}</>
+    );
 };

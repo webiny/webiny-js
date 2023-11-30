@@ -3,12 +3,12 @@ import bytes from "bytes";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellSize = () => {
-    const { useTableCell, isFileItem } = FileManagerViewConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
     const { item } = useTableCell();
 
-    if (isFileItem(item)) {
-        return <>{bytes.format(item.size, { unitSeparator: " " })}</>;
+    if (isFolderItem(item)) {
+        return <>{"-"}</>;
     }
 
-    return <>{"-"}</>;
+    return <>{bytes.format(item.size, { unitSeparator: " " })}</>;
 };

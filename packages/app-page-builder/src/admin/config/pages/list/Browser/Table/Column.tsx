@@ -2,9 +2,9 @@ import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import { useTableCell } from "~/admin/hooks/useTableCell";
-import { PbPageTableItem, TableItem } from "~/types";
 
 const { Table } = AcoConfig;
+const { isFolderItem } = Table.Column;
 
 export { ColumnConfig };
 
@@ -18,8 +18,4 @@ const BaseColumn: React.FC<React.ComponentProps<typeof AcoConfig.Table.Column>> 
     );
 };
 
-const isPbPageItem = (item: TableItem): item is PbPageTableItem => {
-    return item.$type === "RECORD";
-};
-
-export const Column = Object.assign(BaseColumn, { isPbPageItem, useTableCell });
+export const Column = Object.assign(BaseColumn, { useTableCell, isFolderItem });

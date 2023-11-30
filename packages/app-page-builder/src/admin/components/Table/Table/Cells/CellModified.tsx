@@ -3,12 +3,12 @@ import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { PageListConfig } from "~/admin/config/pages";
 
 export const CellModified = () => {
-    const { useTableCell, isPbPageItem } = PageListConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
     const { item } = useTableCell();
 
-    if (isPbPageItem(item)) {
-        return <>{item.data.createdOn}</>;
+    if (isFolderItem(item)) {
+        return <TimeAgo datetime={item.createdOn} />;
     }
 
-    return <TimeAgo datetime={item.createdOn} />;
+    return <>{item.data.createdOn}</>;
 };

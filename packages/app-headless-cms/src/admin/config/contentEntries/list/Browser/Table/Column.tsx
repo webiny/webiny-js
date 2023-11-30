@@ -3,9 +3,9 @@ import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import { useModel } from "~/admin/components/ModelProvider";
 import { useTableCell } from "~/admin/views/contentEntries/hooks";
-import { EntryTableItem, TableItem } from "~/types";
 
 const { Table } = AcoConfig;
+const { isFolderItem } = Table.Column;
 
 export { ColumnConfig };
 
@@ -29,8 +29,4 @@ const BaseColumn: React.FC<ColumnProps> = ({ modelIds = [], ...props }) => {
     );
 };
 
-const isEntryItem = (item: TableItem): item is EntryTableItem => {
-    return item?.$type === "RECORD";
-};
-
-export const Column = Object.assign(BaseColumn, { isEntryItem, useTableCell });
+export const Column = Object.assign(BaseColumn, { useTableCell, isFolderItem });

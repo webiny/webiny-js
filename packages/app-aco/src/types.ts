@@ -199,8 +199,9 @@ export interface AcoApp {
     getFields: () => AcoModelField[];
 }
 
-interface BaseTableItem {
+export interface BaseTableItem {
     $selectable: boolean;
+    $type: string;
 }
 
 export interface FolderTableItem extends BaseTableItem, FolderItem {

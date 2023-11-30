@@ -9,66 +9,53 @@ import { PageListConfig } from "~/admin/config/pages";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 import { RowIcon, RowText, RowTitle } from "./Cells.styled";
 
-interface DefaultProps {
-    name: string;
-    id: string;
+import { FolderTableItem } from "@webiny/app-aco/types";
+import { PbPageTableItem } from "~/types";
+
+interface FolderCellNameProps {
+    folder: FolderTableItem;
 }
 
-type PageCellNameProps = DefaultProps;
-
-interface FolderCellNameProps extends DefaultProps {
-    canManagePermissions: boolean;
-    hasNonInheritedPermissions: boolean;
-}
-
-export const FolderCellName = ({
-    name,
-    id,
-    canManagePermissions,
-    hasNonInheritedPermissions
-}: FolderCellNameProps) => {
+export const FolderCellName = ({ folder }: FolderCellNameProps) => {
     const { navigateToFolder } = useNavigateFolder();
 
     let icon = <Folder />;
-    if (hasNonInheritedPermissions && canManagePermissions) {
+    if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
         icon = <FolderShared />;
     }
 
     return (
-        <RowTitle onClick={() => navigateToFolder(id)}>
+        <RowTitle onClick={() => navigateToFolder(folder.id)}>
             <RowIcon>{icon}</RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+            <RowText use={"subtitle2"}>{folder.title}</RowText>
         </RowTitle>
     );
 };
 
-export const PageCellName = ({ name, id }: PageCellNameProps) => {
+interface PageCellNameProps {
+    page: PbPageTableItem;
+}
+
+export const PageCellName = ({ page }: PageCellNameProps) => {
     const { openPreviewDrawer } = usePagesList();
 
     return (
-        <RowTitle onClick={() => openPreviewDrawer(id)}>
+        <RowTitle onClick={() => openPreviewDrawer(page.data.id)}>
             <RowIcon>
                 <File />
             </RowIcon>
-            <RowText use={"subtitle2"}>{name}</RowText>
+            <RowText use={"subtitle2"}>{page.data.title}</RowText>
         </RowTitle>
     );
 };
 
 export const CellName = () => {
-    const { useTableCell, isPbPageItem } = PageListConfig.Browser.Table.Column;
+    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
     const { item } = useTableCell();
 
-    if (isPbPageItem(item)) {
-        return <PageCellName name={item.title} id={item.id} />;
+    if (isFolderItem(item)) {
+        return <FolderCellName folder={item} />;
     }
 
-    return (
-        <FolderCellName
-            name={item.title}
-            id={item.id}
-            canManagePermissions={item.canManagePermissions}
-            hasNonInheritedPermissions={item.hasNonInheritedPermissions}
-        />
-    );
+    return <PageCellName page={item} />;
 };
