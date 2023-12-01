@@ -82,6 +82,19 @@ export const GET_FORM = gql`
                     steps {
                         title
                         layout
+                        rules {
+                            title
+                            action
+                            chain
+                            id
+                            conditions {
+                                id
+                                fieldName
+                                filterType
+                                filterValue
+                            }
+                            isValid
+                        }
                     }
                     settings ${SETTINGS_FIELDS}
                     triggers
@@ -124,6 +137,19 @@ export const UPDATE_REVISION = gql`
                     steps {
                         title
                         layout
+                        rules {
+                            title
+                            action
+                            chain
+                            id
+                            conditions {
+                                id
+                                fieldName
+                                filterType
+                                filterValue
+                            }
+                            isValid
+                        }
                     }
                     settings ${SETTINGS_FIELDS}
                     triggers

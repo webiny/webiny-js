@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
-import { FbFormStep } from "~/types";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -17,8 +16,15 @@ interface BeginDragProps {
         row: number;
         index?: number;
     };
-    formStep?: FbFormStep;
     name?: string;
+    id?: string;
+    /*
+        "container" contains info about source element.
+    */
+    container?: {
+        type: "step" | "conditionGroup";
+        id: string;
+    };
 }
 
 type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;

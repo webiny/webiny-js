@@ -19,7 +19,24 @@ interface FbSubmissionMeta {
 interface FbFormStep {
     title: string;
     layout: string[][];
+    rules: FbFormRule[];
 }
+
+export type FbFormRule = {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FbFormCondition[];
+    isValid: boolean;
+};
+
+export type FbFormCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
 
 interface FbFormFieldValidator {
     name: string;

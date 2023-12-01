@@ -1,0 +1,139 @@
+import { useCallback } from "react";
+import { useFormEditor } from "~/admin/components/FormEditor";
+import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
+import { DropTarget, DropSource, DropDestination, FbFormModelField } from "~/types";
+
+interface UseFormDragParams {
+    editField: (field: FbFormModelField | null) => void;
+    setDropDestination: (desitnation: DropDestination | null) => void;
+}
+
+interface HadleDropParams {
+    target: DropTarget;
+    source: DropSource;
+    destination: DropDestination;
+}
+
+interface CreateCustomFieldParams {
+    data: FbFormModelField;
+    dropDestination: DropDestination;
+}
+
+export interface ComposeHadleDropParams {
+    item: DragObjectWithFieldInfo;
+    destination: DropDestination;
+}
+
+export const useFormDragAndDrop = (params: UseFormDragParams) => {
+    const { data, moveRow, moveField, getFieldPlugin, insertField } = useFormEditor();
+
+    const { editField, setDropDestination } = params;
+
+    const handleDrop = useCallback(
+        (params: HadleDropParams) => {
+            const { target, source, destination } = params;
+
+            if (target.name === "custom") {
+                /**
+                 * We can cast because field is empty in the start
+                 */
+                editField({} as FbFormModelField);
+                setDropDestination(destination);
+                return;
+            }
+
+            if (target.type === "row") {
+                // Reorder rows.
+                // Reorder logic is different depending on the source and destination position.
+                // "source" is a container from which we move row.
+                // "destination" is a container in which we move row.
+                moveRow(source.position.row, destination.position.row, source, destination);
+                return;
+            }
+
+            if (source.position) {
+                if (source.position.index === null) {
+                    console.log("Tried to move Form Field but its position index is null.");
+                    console.log(source);
+                    return;
+                }
+
+                const sourceContainer =
+                    source.containerType === "conditionGroup"
+                        ? data.fields.find(f => f._id === source.containerId)?.settings
+                        : data.steps.find(step => step.id === source.containerId);
+
+                const fieldId = sourceContainer?.layout[source.position.row][source.position.index];
+
+                if (!fieldId) {
+                    console.log("Missing data when moving field.");
+                    return;
+                }
+
+                moveField({ field: fieldId, target, source, destination });
+                return;
+            }
+
+            // Find field plugin which handles the dropped field type "name".
+            const plugin = getFieldPlugin({ name: target.name });
+            if (!plugin) {
+                return;
+            }
+            insertField({
+                data: plugin.field.createField(),
+                target,
+                destination
+            });
+        },
+        [data]
+    );
+
+    const composeHandleDropParams = (params: ComposeHadleDropParams) => {
+        const { item, destination } = params;
+
+        // We don't want to drop steps inside of steps.
+        if (item.ui === "step") {
+            return undefined;
+        }
+
+        handleDrop({
+            target: {
+                type: item.ui,
+                id: item.id,
+                name: item.name
+            },
+            source: {
+                containerId: item.container?.id,
+                containerType: item.container?.type,
+                position: item.pos
+            },
+            destination
+        });
+
+        return undefined;
+    };
+
+    const createCustomField = (params: CreateCustomFieldParams) => {
+        const { data, dropDestination } = params;
+
+        insertField({
+            data,
+            target: {
+                id: data._id,
+                type: "field",
+                name: data.name
+            },
+            destination: {
+                containerType: dropDestination.containerType,
+                containerId: dropDestination.containerId,
+                position: dropDestination.position
+            }
+        });
+    };
+
+    return {
+        handleDrop,
+        composeHandleDropParams,
+        createCustomField
+    };
+};

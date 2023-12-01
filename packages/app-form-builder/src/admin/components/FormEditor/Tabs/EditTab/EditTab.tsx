@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Horizontal } from "../../DropZone";
-import Draggable from "../../Draggable";
+import { Horizontal } from "~/admin/components/FormEditor/DropZone";
+import Draggable from "~/admin/components/FormEditor/Draggable";
 import { EditContainer, RowContainer } from "./Styled";
 import { FormEditorFieldError, useFormEditor } from "../../Context";
-import { FbFormStep } from "~/types";
+import { FbFormStep, MoveStepParams } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import styled from "@emotion/styled";
 
@@ -11,7 +11,8 @@ import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/outlined/add_circle_outline.svg";
 
 import { FormStep } from "./FormStep/FormStep";
-import { EditFormStepDialog } from "./FormStep/EditFormStepDialog";
+import { EditFormStepDialog } from "./FormStep/EditFormStepDialog/EditFormStepDialog";
+import { DragObjectWithFieldInfo, IsVisibleCallableParams } from "../../Droppable";
 
 const Block = styled("span")({
     display: "block"
@@ -80,68 +81,85 @@ const RowContainerWrapper = styled.div`
 export const EditTab: React.FC = () => {
     const {
         getLayoutFields,
-        insertField,
         updateField,
         deleteField,
         data,
         errors,
-        moveField,
-        moveRow,
-        getFieldPlugin,
         addStep,
         deleteStep,
         updateStep,
-        moveStep
+        moveStep,
+        deleteConditionGroup
     } = useFormEditor();
 
-    const [isEditStep, setIsEditStep] = useState<{ isOpened: boolean; id: string | null }>({
+    const [editStep, setEditStep] = useState<{
+        isOpened: boolean;
+        step: FbFormStep;
+    }>({
         isOpened: false,
-        id: null
+        step: {} as FbFormStep
     });
 
-    const stepTitle = data.steps.find(step => step.id === isEditStep.id)?.title || "";
+    const stepTitle = data.steps.find(step => step.id === editStep.step.id)?.title || "";
 
-    const handleStepMove = (source: any, step: FbFormStep): void => {
-        const { pos, formStep } = source;
-
-        if (pos) {
-            if (pos.index === null) {
+    const handleStepMove = (item: DragObjectWithFieldInfo, formStep: FbFormStep) => {
+        if (item.pos) {
+            if (item.pos.index === null) {
                 return;
             }
         }
 
-        moveStep({
-            step,
-            formStep
-        });
+        const moveStepParams: MoveStepParams = {
+            target: {
+                containerId: item.container?.id || "",
+                position: item.pos
+            },
+            destination: {
+                containerId: formStep.id
+            }
+        };
+
+        moveStep(moveStepParams);
+
+        return undefined;
     };
 
     // This function will render drop zones on the top of the step,
     // if steps are locatted above "source" ("source" step is the step that we move).
-    const renderTopDropZone = (sourceStepId: string | undefined, targetStepId: string) => {
-        if (!sourceStepId) {
+    const renderTopDropZone = (item: IsVisibleCallableParams, targetStepId: string) => {
+        if (item.ui !== "step") {
             return false;
         }
+
+        if (!item.container?.id) {
+            return false;
+        }
+
         const stepsIds = data.steps.reduce(
             (prevVal, currVal) => [...prevVal, currVal.id],
             [] as string[]
         );
 
-        return stepsIds.slice(0, stepsIds.indexOf(sourceStepId)).includes(targetStepId);
+        return stepsIds.slice(0, stepsIds.indexOf(item.container?.id)).includes(targetStepId);
     };
 
     // This function will render drop zones on the top of the step,
     // if steps are locatted below "source" ("source" step is the step that we move).
-    const renderBottomDropZone = (sourceStepId: string | undefined, targetStepId: string) => {
-        if (!sourceStepId) {
+    const renderBottomDropZone = (item: IsVisibleCallableParams, targetStepId: string) => {
+        if (item.ui !== "step") {
             return false;
         }
+
+        if (!item.container?.id) {
+            return false;
+        }
+
         const stepsIds = data.steps.reduce(
             (prevVal, currVal) => [...prevVal, currVal.id],
             [] as string[]
         );
 
-        return stepsIds.slice(stepsIds.indexOf(sourceStepId)).includes(targetStepId);
+        return stepsIds.slice(stepsIds.indexOf(item.container?.id)).includes(targetStepId);
     };
 
     return (
@@ -149,7 +167,15 @@ export const EditTab: React.FC = () => {
             <FieldErrors errors={errors} />
             {data.steps.map((formStep: FbFormStep, index: number) => (
                 <Draggable
-                    beginDrag={{ ui: "step", name: "step", pos: { row: index, index }, formStep }}
+                    beginDrag={{
+                        ui: "step",
+                        name: "step",
+                        pos: { row: index, index },
+                        container: {
+                            type: "step",
+                            id: formStep.id
+                        }
+                    }}
                     key={`step-${index}`}
                 >
                     {({ drag, isDragging }) => (
@@ -170,46 +196,26 @@ export const EditTab: React.FC = () => {
                                         title={formStep.title}
                                         onDelete={() => deleteStep(formStep.id)}
                                         onEdit={() => {
-                                            setIsEditStep({
+                                            setEditStep({
                                                 isOpened: true,
-                                                id: formStep.id
+                                                step: formStep
                                             });
                                         }}
                                         deleteStepDisabled={data.steps.length <= 1}
-                                        moveRow={moveRow}
-                                        moveField={moveField}
-                                        getFieldPlugin={getFieldPlugin}
-                                        insertField={insertField}
                                         getLayoutFields={getLayoutFields}
                                         updateField={updateField}
                                         deleteField={deleteField}
-                                        data={data}
+                                        deleteConditionGroup={deleteConditionGroup}
                                     />
                                 </div>
                                 <Horizontal
-                                    onDrop={item => {
-                                        handleStepMove(item, formStep);
-                                        return undefined;
-                                    }}
-                                    isVisible={item => {
-                                        return (
-                                            item.ui === "step" &&
-                                            renderTopDropZone(item?.formStep?.id, formStep.id)
-                                        );
-                                    }}
+                                    onDrop={item => handleStepMove(item, formStep)}
+                                    isVisible={item => renderTopDropZone(item, formStep.id)}
                                 />
                                 <Horizontal
                                     last
-                                    onDrop={item => {
-                                        handleStepMove(item, formStep);
-                                        return undefined;
-                                    }}
-                                    isVisible={item => {
-                                        return (
-                                            item.ui === "step" &&
-                                            renderBottomDropZone(item?.formStep?.id, formStep.id)
-                                        );
-                                    }}
+                                    onDrop={item => handleStepMove(item, formStep)}
+                                    isVisible={item => renderBottomDropZone(item, formStep.id)}
                                 />
                             </RowContainer>
                             {data.steps[data.steps.length - 1].id === formStep.id && (
@@ -222,12 +228,15 @@ export const EditTab: React.FC = () => {
                     )}
                 </Draggable>
             ))}
-            <EditFormStepDialog
-                isEditStep={isEditStep}
-                setIsEditStep={setIsEditStep}
-                updateStep={updateStep}
-                stepTitle={stepTitle}
-            />
+            {editStep.isOpened && (
+                <EditFormStepDialog
+                    editStep={editStep}
+                    setEditStep={setEditStep}
+                    updateStep={updateStep}
+                    stepTitle={stepTitle}
+                    formData={data}
+                />
+            )}
         </EditContainer>
     );
 };
