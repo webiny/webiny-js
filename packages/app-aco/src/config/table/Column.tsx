@@ -4,8 +4,8 @@ import { FolderTableItem, BaseTableItem } from "~/types";
 
 export interface ColumnConfig {
     name: string;
-    header: string;
-    cell: ReactElement;
+    header: string | ReactElement;
+    cell: string | ReactElement;
     enableSorting: boolean;
     enableResizing: boolean;
     size: number;
@@ -14,8 +14,8 @@ export interface ColumnConfig {
 
 export interface ColumnProps {
     name: string;
-    header?: string;
-    cell?: ReactElement;
+    header?: string | ReactElement;
+    cell?: string | ReactElement;
     enableSorting?: boolean;
     enableResizing?: boolean;
     size?: number;
