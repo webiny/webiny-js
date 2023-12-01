@@ -25,7 +25,7 @@ import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
-import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
@@ -98,7 +98,8 @@ export const handler = createHandler({
         }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
-                documentClient
+                documentClient,
+                elasticsearch: elasticsearchClient
             })
         }),
         createGzipCompression(),
