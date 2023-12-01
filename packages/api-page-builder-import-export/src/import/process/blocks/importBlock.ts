@@ -2,16 +2,16 @@ import path from "path";
 import dotProp from "dot-prop-immutable";
 import loadJson from "load-json-file";
 import { ensureDirSync, createWriteStream } from "fs-extra";
-import { FileInput } from "@webiny/api-file-manager/types";
 import { PbImportExportContext } from "~/graphql/types";
-import { File as ImageFile, FileUploadsData } from "~/types";
-import { ExportedBlockData } from "~/export/utils";
+import { FileUploadsData } from "~/types";
+import { PageBlock } from "@webiny/api-page-builder/types";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { updateFilesInData } from "~/import/utils/updateFilesInData";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
+import { ExportedBlockData } from "~/export/process/exporters/BlockExporter";
 
 interface ImportBlockParams {
     key: string;
@@ -20,17 +20,11 @@ interface ImportBlockParams {
     fileUploadsData: FileUploadsData;
 }
 
-interface UpdateBlockPreviewImage {
-    fileIdToNewFileMap: Map<string, FileInput>;
-    srcPrefix: string;
-    file: ImageFile;
-}
-
 export async function importBlock({
     blockKey,
     context,
     fileUploadsData
-}: ImportBlockParams): Promise<ExportedBlockData["block"]> {
+}: ImportBlockParams): Promise<Pick<PageBlock, "name" | "content" | "blockCategory">> {
     const log = console.log;
 
     // Making Directory for block in which we're going to extract the block data file.
@@ -42,18 +36,16 @@ export async function importBlock({
 
     log(`Downloading Block data file: ${blockDataFileKey} at "${BLOCK_DATA_FILE_PATH}"`);
     // Download and save block data file in disk.
+    const readStream = await s3Stream.readStream(blockDataFileKey);
+    const writeStream = createWriteStream(BLOCK_DATA_FILE_PATH);
+
     await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(blockDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(BLOCK_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
+        readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 
     // Load the block data file from disk.
     log(`Load file ${blockDataFileKey}`);
-    const { block, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
+    const { block, category, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
 
     // Only update block data if there are files.
     if (files && Array.isArray(files) && files.length > 0) {
@@ -77,15 +69,32 @@ export async function importBlock({
             fileIdToNewFileMap,
             srcPrefix
         });
+    }
 
-        block.preview = updateBlockPreviewImage({
-            /**
-             * Casting as this is only a type error.
-             */
-            file: (block.preview as ImageFile) || {},
-            fileIdToNewFileMap,
-            srcPrefix
-        });
+    let loadedCategory;
+    if (category) {
+        loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
+        if (!loadedCategory) {
+            loadedCategory = await context.pageBuilder.createBlockCategory({
+                name: category.name,
+                slug: category.slug,
+                icon: category.icon,
+                description: category.description
+            });
+        }
+    } else {
+        let importedBlocksCategory = await context.pageBuilder.getBlockCategory("imported-blocks");
+
+        if (!importedBlocksCategory) {
+            importedBlocksCategory = await context.pageBuilder.createBlockCategory({
+                name: "Imported Blocks",
+                slug: "imported-blocks",
+                description: "Imported blocks",
+                icon: "fas/star"
+            });
+        }
+
+        loadedCategory = importedBlocksCategory;
     }
 
     log("Removing Directory for block...");
@@ -94,27 +103,5 @@ export async function importBlock({
     log(`Remove block contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    console.log("block", JSON.stringify(block, null, 2));
-
-    return block;
-}
-
-function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
-    const { file: blockPreview, fileIdToNewFileMap, srcPrefix } = params;
-    const newFile = fileIdToNewFileMap.get(blockPreview.id || "");
-
-    console.log("updateBlockPreviewImage", blockPreview.id, newFile);
-
-    if (!newFile) {
-        console.log("Block preview file not found!");
-        return blockPreview;
-    }
-
-    const srcPrefixWithoutTrailingSlash = srcPrefix.endsWith("/")
-        ? srcPrefix.slice(0, -1)
-        : srcPrefix;
-
-    blockPreview.src = `${srcPrefixWithoutTrailingSlash}/${newFile.key}`;
-
-    return blockPreview;
+    return { ...block, blockCategory: loadedCategory!.slug };
 }

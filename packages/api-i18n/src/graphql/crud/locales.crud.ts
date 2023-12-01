@@ -12,17 +12,19 @@ import {
     OnLocaleBeforeUpdateTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { LocalesPermissions } from "./permissions/LocalesPermissions";
 
 export interface CreateLocalesCrudParams {
     context: I18NContext;
     storageOperations: I18NLocalesStorageOperations;
+    localesPermissions: LocalesPermissions;
     getTenant: () => Tenant;
 }
+
 export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD => {
-    const { storageOperations, context, getTenant } = params;
+    const { storageOperations, context, localesPermissions, getTenant } = params;
 
     const getTenantId = () => {
         return getTenant().id;
@@ -136,12 +138,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async createLocale(input) {
-            const { security } = context;
-            const permission = await security.getPermission("i18n.locale");
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+            await localesPermissions.ensure();
 
             const original = await storageOperations.get({
                 tenant: getTenantId(),
@@ -152,7 +149,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 throw new WebinyError(`Locale with key "${original.code}" already exists.`);
             }
 
-            const identity = security.getIdentity();
+            const identity = context.security.getIdentity();
 
             const defaultLocale = await storageOperations.getDefault({
                 tenant: getTenantId()
@@ -186,6 +183,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale: result
                     });
                 }
+
+                // We want to reload the internally cached locales after a new locale is created.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterCreate.publish({
                     context,
                     locale: result,
@@ -205,13 +206,8 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async updateLocale(this: LocalesCRUD, code, input) {
-            const { security } = context;
+            await localesPermissions.ensure();
 
-            const permission = await security.getPermission("i18n.locale");
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
             const original = await this.getLocale(code);
             if (!original) {
                 throw new NotFoundError(`Locale "${code}" not found.`);
@@ -259,6 +255,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale
                     });
                 }
+
+                // We want to reload the internally cached locales after a locale is updated.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterUpdate.publish({
                     context,
                     locale: result,
@@ -278,13 +278,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async deleteLocale(this: LocalesCRUD, code) {
-            const { security, tenancy } = context;
+            const { tenancy } = context;
 
-            const permission = await security.getPermission("i18n.locale");
+            await localesPermissions.ensure();
 
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
             const locale = await this.getLocale(code);
             if (!locale) {
                 throw new NotFoundError(`Locale "${code}" not found.`);
@@ -311,6 +308,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await storageOperations.delete({
                     locale
                 });
+
+                // We want to reload the internally cached locales after a locale is deleted.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterDelete.publish({
                     context,
                     locale,

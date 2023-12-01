@@ -16,7 +16,4 @@ export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/Edi
 export { SidebarActions } from "./components/Editor/Sidebar/ElementSettingsTabContent";
 export { ToolbarActions } from "./components/Editor/Toolbar";
 export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";
-export * from "../render/components/ElementRoot";
 export { default as DropZone } from "../editor/components/DropZone";
-export { default as ImageContainer } from "./plugins/elements/image/ImageContainer";
-export { default as ImagesList } from "./plugins/elements/imagesList/PbImagesList";

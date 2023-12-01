@@ -1,14 +1,17 @@
-import { SecurityContext } from "@webiny/api-security/types";
+import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { I18NContext } from "@webiny/api-i18n/types";
+import { getPermissionsFromSecurityGroupsForLocale } from "@webiny/api-security";
 
-type Context = TenancyContext & SecurityContext;
+type Context = TenancyContext & SecurityContext & I18NContext;
 
 export interface GroupAuthorizerConfig {
     // Specify an `identityType` if you want to only run this authorizer for specific identities.
     identityType?: string;
+
     // Get a group slug to load permissions from.
-    getGroupSlug(context: Context): string;
+    getGroupSlug(context: Context): SecurityIdentity["group"];
 }
 
 export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
@@ -27,13 +30,22 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                 return null;
             }
 
+            const locale = context.i18n?.getContentLocale();
+            if (!locale) {
+                return null;
+            }
+
             const groupSlug = config.getGroupSlug(context);
+            if (!groupSlug) {
+                return null;
+            }
+
             let group = await security
                 .getStorageOperations()
                 .getGroup({ where: { slug: groupSlug, tenant: tenant.id } });
 
             if (group) {
-                return group.permissions;
+                return getPermissionsFromSecurityGroupsForLocale([group], locale.code);
             }
 
             // If no security group was found, it could be due to an identity accessing a sub-tenant.
@@ -47,7 +59,9 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                     where: { slug: groupSlug, tenant: tenant.parent }
                 });
 
-                return group ? group.permissions : null;
+                if (group) {
+                    return getPermissionsFromSecurityGroupsForLocale([group], locale.code);
+                }
             }
 
             return null;

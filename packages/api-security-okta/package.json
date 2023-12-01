@@ -11,18 +11,20 @@
   "license": "Webiny Enterprise",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-admin-users": "0.0.0",
+    "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenant-manager": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.1",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@types/node-fetch": "^2.6.1",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

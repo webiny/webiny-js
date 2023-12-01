@@ -10,9 +10,11 @@ import {
 } from "@webiny/app-admin/ui/elements/AccordionElement";
 import { InputElement } from "@webiny/app-admin/ui/elements/form/InputElement";
 import { ReactComponent as SecurityIcon } from "~/assets/icons/security-24px.svg";
+import { ReactComponent as SecurityTeamsIcon } from "~/assets/icons/security-teams-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import AvatarImage from "../../components/AvatarImage";
 import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement";
+import { TeamAutocompleteElement } from "~/ui/elements/TeamAutocompleteElement";
 import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
@@ -26,9 +28,17 @@ const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"
 });
 
+interface UsersFormViewParams {
+    teams?: boolean;
+}
+
 export class UsersFormView extends UIView {
-    public constructor() {
+    teams: boolean;
+
+    public constructor(params: UsersFormViewParams) {
         super("UsersFormView");
+
+        this.teams = params.teams || false;
 
         this.useGrid(false);
         this.addHookDefinition("userForm", useUserForm);
@@ -90,29 +100,49 @@ export class UsersFormView extends UIView {
 
         avatar.moveAbove(simpleForm.getFormContainer());
 
-        const accordion = new AccordionElement("accordion", {
-            items: [
-                {
-                    id: "bio",
-                    title: "Bio",
-                    description: "Account information",
-                    icon: <SettingsIcon />,
-                    open: true
-                },
-                {
-                    id: "groups",
-                    title: "Groups",
-                    description: "Assign to security group",
-                    icon: <SecurityIcon />,
-                    open: true
-                }
-            ]
-        });
+        const items = [
+            {
+                id: "bio",
+                title: "Bio",
+                description: "Account information",
+                icon: <SettingsIcon />,
+                open: true
+            },
+            {
+                id: "groups",
+                title: "Roles",
+                description: "Assign to security role",
+                icon: <SecurityIcon />,
+                open: true
+            }
+        ];
+
+        if (this.teams) {
+            items.push({
+                id: "teams",
+                title: "Teams",
+                description: "Assign to team",
+                icon: <SecurityTeamsIcon />,
+                open: true
+            });
+        }
+
+        const accordion = new AccordionElement("accordion", { items });
 
         simpleForm.getFormContentElement().useGrid(false);
         simpleForm.getFormContentElement().addElement(accordion);
 
         const bioAccordion = accordion.getAccordionItemElement("bio");
+
+        // TODO: Let's only display this when dealing with 3rd party IdPs (Okta, Auth0, ...).
+        // bioAccordion.addElement(
+        //     new InputElement("displayName", {
+        //         name: "displayName",
+        //         label: "Display Name",
+        //         validators: () => validation.create("required")
+        //     })
+        // );
+
         bioAccordion.addElement(
             new InputElement("firstName", {
                 name: "firstName",
@@ -149,12 +179,30 @@ export class UsersFormView extends UIView {
         );
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
+
         if (groupAccordion) {
             groupAccordion.addElement(
                 new GroupAutocompleteElement("group", {
                     name: "group",
-                    label: "Group",
-                    validators: () => validation.create("required")
+                    label: "Role",
+                    validators: () => {
+                        const validators = [];
+                        if (!this.teams) {
+                            validators.push(validation.create("required"));
+                        }
+                        return validators;
+                    }
+                })
+            );
+        }
+
+        const teamAccordion = accordion.getElement<AccordionItemElement>("teams");
+
+        if (teamAccordion) {
+            teamAccordion.addElement(
+                new TeamAutocompleteElement("team", {
+                    name: "team",
+                    label: "Team"
                 })
             );
         }

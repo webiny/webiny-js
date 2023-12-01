@@ -1,4 +1,5 @@
 import {
+    createAppModifier,
     PageBuilderAcoModifyCreatePayloadPlugin,
     PageBuilderAcoModifyUpdatePayloadPlugin
 } from "@webiny/api-page-builder-aco";
@@ -13,6 +14,15 @@ import {
  */
 export const createAcoPlugins = () => {
     return [
+        createAppModifier(({ addField }) => {
+            addField({
+                id: "customViews",
+                fieldId: "customViews",
+                storageId: "number@customViews",
+                type: "number",
+                label: "Custom Views"
+            });
+        }),
         new PageBuilderAcoModifyCreatePayloadPlugin<CustomFieldsPbCreatePayload, CustomFieldsPage>(
             async ({ payload, page }) => {
                 payload.data.customViews = page.settings.customViews;

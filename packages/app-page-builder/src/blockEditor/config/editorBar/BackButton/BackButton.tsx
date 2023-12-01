@@ -1,10 +1,11 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { useNavigate } from "@webiny/react-router";
+import { useLocation, useNavigate } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
 import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
+import { useBlock } from "~/blockEditor/hooks/useBlock";
 
 const backStyles = css({
     marginLeft: -10
@@ -12,11 +13,18 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
+        const { key } = useLocation();
         const navigate = useNavigate();
+        const [block] = useBlock();
 
         const onClick = useCallback(() => {
-            navigate(-1);
-        }, [navigate]);
+            // If location.key is "default", then we are in a new tab.
+            if (key === "default") {
+                navigate(`/page-builder/page-blocks?category=${block.blockCategory}`);
+            } else {
+                navigate(-1);
+            }
+        }, [key, navigate]);
 
         return (
             <IconButton

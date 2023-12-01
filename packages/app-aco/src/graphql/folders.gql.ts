@@ -13,6 +13,15 @@ const DATA_FIELD = /* GraphQL */ `
         id
         title
         slug
+        permissions {
+            target
+            level
+            inheritedFrom
+        }
+        hasNonInheritedPermissions
+        canManagePermissions
+        canManageStructure
+        canManageContent
         parentId
         type
         savedOn
@@ -36,7 +45,7 @@ export const CREATE_FOLDER = gql`
 `;
 
 export const LIST_FOLDERS = gql`
-    query ListFolders ($type: String!, $limit: Int) {
+    query ListFolders ($type: String!, $limit: Int!) {
         aco {
             listFolders(where: { type: $type }, limit: $limit) {
                 data ${DATA_FIELD}

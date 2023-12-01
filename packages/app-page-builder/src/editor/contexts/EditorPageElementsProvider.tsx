@@ -79,13 +79,16 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
 
         return {
             ...pageBuilder.theme,
-            breakpoints: Object.keys(theme.breakpoints).reduce((result, breakpointName) => {
-                const breakpoint = theme.breakpoints[breakpointName];
-                return {
-                    ...result,
-                    [breakpointName]: mediaToContainer(breakpoint)
-                };
-            }, {})
+            breakpoints: {
+                ...theme.breakpoints,
+                ...Object.keys(theme.breakpoints).reduce((result, breakpointName) => {
+                    const breakpoint = theme.breakpoints[breakpointName];
+                    return {
+                        ...result,
+                        [breakpointName]: mediaToContainer(breakpoint)
+                    };
+                }, {})
+            }
         } as Theme;
     }, [pageBuilder.theme]);
 

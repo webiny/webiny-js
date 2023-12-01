@@ -1,26 +1,26 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
 import {
-    createCreateFromMutation,
-    createCreateMutation,
-    createUpdateMutation,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
     CmsEntryCreateMutationResponse,
     CmsEntryCreateMutationVariables,
     CmsEntryUpdateMutationResponse,
     CmsEntryUpdateMutationVariables,
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables
-} from "~/admin/graphql/contentEntries";
-import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
-import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation,
+    prepareFormData
+} from "@webiny/app-headless-cms-common";
+import { useCms, useModel, useMutation } from "~/admin/hooks";
+import { CmsContentEntry, CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 /**
  * Used for some fields to convert their values.
@@ -45,21 +45,23 @@ interface UseContentEntryForm {
     data: Record<string, any>;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
-    onChange: FormOnSubmit;
-    onSubmit: FormOnSubmit;
+    onChange: FormOnSubmit<CmsContentEntry>;
+    onSubmit: FormOnSubmit<CmsContentEntry>;
     invalidFields: Record<string, string>;
-    renderPlugins: CmsEditorFieldRendererPlugin[];
+    renderPlugins: CmsModelFieldRendererPlugin[];
 }
 
 export interface UseContentEntryFormParams {
-    entry: Partial<CmsEditorContentEntry>;
-    onChange?: FormOnSubmit;
-    onSubmit?: FormOnSubmit;
+    entry: Partial<CmsContentEntry>;
+    onChange?: FormOnSubmit<CmsContentEntry>;
+    onSubmit?: FormOnSubmit<CmsContentEntry>;
     addEntryToListCache: boolean;
 }
 
-function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
-    // We need to keep track of the entry locally
+function useEntry(entryFromProps: Partial<CmsContentEntry>) {
+    /**
+     * We need to keep track of the entry locally
+     */
     const [entry, setEntry] = useState(entryFromProps);
     const { onEntryRevisionPublish } = useCms();
 
@@ -83,27 +85,35 @@ function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
 }
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
-    const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
-    const { history } = useRouter();
-    const client = useApolloClient();
+    const { history, search: routerSearch } = useRouter();
+    const [query] = routerSearch;
+    const { currentFolderId } = useNavigateFolder();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const entry = useEntry(params.entry);
 
+    const { addRecordToCache, updateRecordInCache } = useRecords();
+
     const renderPlugins = useMemo(
-        () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
+        () => plugins.byType<CmsModelFieldRendererPlugin>("cms-editor-field-renderer"),
         []
     );
 
-    const goToRevision = useCallback(id => {
-        history.push(`/cms/content-entries/${model.modelId}?id=${encodeURIComponent(id)}`);
-    }, []);
+    const goToRevision = useCallback(
+        id => {
+            const fId = query.get("folderId");
+            const folderId = fId ? `&folderId=${encodeURIComponent(fId)}` : "";
+            history.push(
+                `/cms/content-entries/${model.modelId}?id=${encodeURIComponent(id)}${folderId}`
+            );
+        },
+        [query]
+    );
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            // LIST_CONTENT: createListQuery(model),
             CREATE_CONTENT: createCreateMutation(model),
             UPDATE_CONTENT: createUpdateMutation(model),
             CREATE_CONTENT_FROM: createCreateFromMutation(model)
@@ -141,17 +151,33 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         setInvalidFields(() => ({}));
     };
 
-    const createContent: FormOnSubmit = useCallback(
+    const createContent: FormOnSubmit<CmsContentEntry> = useCallback(
         async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data: formData },
+                variables: {
+                    data: {
+                        ...formData,
+                        /**
+                         * Added for the ACO to work.
+                         * TODO: introduce hook like onEntryPublish, or similar.
+                         */
+                        wbyAco_location: {
+                            folderId: currentFolderId || ROOT_FOLDER
+                        }
+                    },
+                    options: {
+                        skipValidators: form.options.skipValidators
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
 
             setLoading(false);
 
-            // Finalize "create" process
+            /**
+             * Finalize "create" process
+             */
             if (!response.data) {
                 showSnackbar("Missing response data in Create Entry.");
                 return;
@@ -166,26 +192,33 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
+
             if (params.addEntryToListCache) {
-                GQLCache.addEntryToListCache(model, client.cache, entry, listQueryVariables);
+                addRecordToCache(entry);
             }
 
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
-            } else {
-                goToRevision(entry.id);
+                return entry;
             }
+            goToRevision(entry.id);
             return entry;
         },
-        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
+        [model.modelId, params.onSubmit, params.addEntryToListCache, query, currentFolderId]
     );
 
     const updateContent = useCallback(
-        async (revision, data) => {
+        async (revision, data, form) => {
             setLoading(true);
             const response = await updateMutation({
-                variables: { revision, data },
+                variables: {
+                    revision,
+                    data,
+                    options: {
+                        skipValidators: form.options.skipValidators
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
             setLoading(false);
@@ -204,16 +237,25 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
+
+            updateRecordInCache(entry);
+
             return entry;
         },
         [model.modelId]
     );
 
     const createContentFrom = useCallback(
-        async (revision: string, formData: Record<string, any>) => {
+        async (revision: string, formData: Record<string, any>, form) => {
             setLoading(true);
             const response = await createFromMutation({
-                variables: { revision, data: formData },
+                variables: {
+                    revision,
+                    data: formData,
+                    options: {
+                        skipValidators: form.options.skipValidators
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
 
@@ -231,13 +273,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
-            GQLCache.updateLatestRevisionInListCache(
-                model,
-                client.cache,
-                newRevision,
-                listQueryVariables
-            );
-            GQLCache.addRevisionToRevisionsCache(model, client.cache, newRevision);
+
+            updateRecordInCache(newRevision);
 
             showSnackbar("A new revision was created!");
             goToRevision(newRevision.id);
@@ -246,17 +283,17 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
             return newRevision;
         },
-        [model.modelId, listQueryVariables]
+        [model.modelId]
     );
 
-    const onChange: FormOnSubmit = (data, form) => {
+    const onChange: FormOnSubmit<CmsContentEntry> = (data, form) => {
         if (!params.onChange) {
             return;
         }
         return params.onChange(data, form);
     };
 
-    const onSubmit: FormOnSubmit = async (data, form) => {
+    const onSubmit: FormOnSubmit<CmsContentEntry> = async (data, form) => {
         const fieldsIds = model.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
@@ -269,10 +306,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         const { locked: isLocked } = meta || {};
 
         if (!isLocked) {
-            return updateContent(entry.id, gqlData);
+            return updateContent(entry.id, gqlData, form);
         }
 
-        return createContentFrom(entry.id, gqlData);
+        return createContentFrom(entry.id, gqlData, form);
     };
 
     const defaultValues = useMemo((): Record<string, any> => {

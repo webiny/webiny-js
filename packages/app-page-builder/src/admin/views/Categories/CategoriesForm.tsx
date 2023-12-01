@@ -30,15 +30,15 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
 import { plugins } from "@webiny/plugins";
-import { PageBuilderSecurityPermission, PbCategory, PbPageLayoutPlugin } from "~/types";
+import { PbCategory, PbPageLayoutPlugin } from "~/types";
 import { Select } from "@webiny/ui/Select";
-import { useSecurity } from "@webiny/app-security";
 import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { useCategoriesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
@@ -50,6 +50,7 @@ const ButtonWrapper = styled("div")({
 interface CategoriesFormProps {
     canCreate: boolean;
 }
+
 const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -159,32 +160,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
         return getQuery.data?.pageBuilder?.getCategory.data || ({} as PbCategory);
     }, [loadedCategory.slug]);
 
-    const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.category");
-    }, [identity]);
-
-    const canSave = useMemo((): boolean => {
-        if (!pbMenuPermission) {
-            return false;
-        }
-        // User should be able to save the form
-        // if it's a new entry and user has the "own" permission set.
-        if (!loadedCategory.slug && pbMenuPermission.own) {
-            return true;
-        }
-
-        if (pbMenuPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return loadedCategory?.createdBy?.id === identityId;
-        }
-
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("w");
-        }
-
-        return true;
-    }, [loadedCategory.slug]);
+    const { canWrite } = useCategoriesPermissions();
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.
@@ -275,7 +251,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                 onClick={() => history.push("/page-builder/categories")}
                                 data-testid="pb.category.new.form.button.cancel"
                             >{t`Cancel`}</ButtonDefault>
-                            {canSave && (
+                            {canWrite(loadedCategory?.createdBy?.id) && (
                                 <ButtonPrimary
                                     data-testid="pb.category.new.form.button.save"
                                     onClick={ev => {

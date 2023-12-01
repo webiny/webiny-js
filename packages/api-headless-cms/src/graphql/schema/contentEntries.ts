@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CmsIdentity } from "~/types";
+import { CmsContext, CmsEntry, CmsEntryListWhere, CmsIdentity, CmsModel } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
@@ -40,6 +40,9 @@ interface CmsEntryRecord {
      */
     createdOn: Date;
     savedOn: Date;
+    wbyAco_location?: {
+        folderId?: string | null;
+    };
 }
 
 const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord => {
@@ -57,7 +60,10 @@ const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord 
         createdBy: entry.createdBy,
         modifiedBy: entry.modifiedBy,
         createdOn: createDate(entry.createdOn),
-        savedOn: createDate(entry.savedOn)
+        savedOn: createDate(entry.savedOn),
+        wbyAco_location: {
+            folderId: entry.location?.folderId || null
+        }
     };
 };
 
@@ -285,6 +291,7 @@ export const createContentEntriesSchema = ({
                 published: CmsPublishedContentEntry
                 createdOn: DateTime!
                 savedOn: DateTime!
+                wbyAco_location: WbyAcoLocation
             }
 
             type CmsContentEntriesResponse {
@@ -360,7 +367,7 @@ export const createContentEntriesSchema = ({
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
-                            const modelManager = await context.cms.getModelManager(model.modelId);
+                            const modelManager = await context.cms.getEntryManager(model.modelId);
                             const where: CmsEntryListWhere = {};
 
                             const [items] = await modelManager.listLatest({

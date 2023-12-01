@@ -31,8 +31,8 @@ const convertFromStorage = (
     }
 };
 
-const convertValueToStorage = (field: CmsModelField, value: any): any => {
-    if ((value as any).toISOString) {
+const convertValueToStorage = (field: CmsModelField, value: any): string => {
+    if (value instanceof Date || (value as Record<string, any>).toISOString) {
         return (value as Date).toISOString();
     } else if (typeof value === "string") {
         return value as string;
@@ -67,16 +67,7 @@ export const createDateStorageTransformPlugin = () => {
                         return convertValueToStorage(field, v);
                     });
             }
-            if ((value as any).toISOString) {
-                return (value as Date).toISOString();
-            } else if (typeof value === "string") {
-                return value as string;
-            }
-            throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
-                value,
-                fieldId: field.fieldId,
-                storageId: field.storageId
-            });
+            return convertValueToStorage(field, value);
         }
     });
 };

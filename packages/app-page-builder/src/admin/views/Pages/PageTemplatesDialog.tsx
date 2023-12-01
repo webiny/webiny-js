@@ -13,7 +13,6 @@ import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonSecondary } from "@webiny/ui/Button";
 
-import ElementAnimation from "~/render/components/ElementAnimation";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { LIST_PAGE_TEMPLATES } from "~/admin/views/PageTemplates/graphql";
@@ -38,6 +37,7 @@ const DetailsContainer = styled.div`
     height: calc(100% - 10px);
     overflow: hidden;
     position: relative;
+
     nav {
         background-color: var(--mdc-theme-surface);
     }
@@ -172,7 +172,10 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                             </DelayedOnChange>
                         </Styled.Input>
                     </SearchInputWrapper>
-                    <ScrollList className={listStyle}>
+                    <ScrollList
+                        className={listStyle}
+                        data-testid={"pb-new-page-dialog-templates-list"}
+                    >
                         {filteredPageTemplates.map(template => (
                             <ListItem
                                 key={template.id}
@@ -192,48 +195,49 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                         ))}
                     </ScrollList>
                     <BlankTemplateButtonWrapper>
-                        <ButtonSecondary disabled={isLoading} onClick={() => onSelect()}>
+                        <ButtonSecondary
+                            disabled={isLoading}
+                            onClick={() => onSelect()}
+                            data-testid={"pb-new-page-dialog-use-blank-template-btn"}
+                        >
                             Use a blank page template
                         </ButtonSecondary>
                     </BlankTemplateButtonWrapper>
                 </LeftPanel>
-                <RightPanel span={9}>
+                <RightPanel span={9} data-testid={"pb-new-page-dialog-template-preview"}>
                     {activeTemplate && (
-                        <ElementAnimation>
-                            {({ refresh }) => (
-                                <DetailsContainer onScroll={refresh}>
-                                    <RenderBlock>
-                                        <Elevation z={2}>
-                                            <div style={{ position: "relative" }}>
-                                                <HeaderTitle>
-                                                    <PageTemplateTitle>
-                                                        <Typography use="headline5">
-                                                            {activeTemplate.title}
-                                                        </Typography>
-                                                        <Typography use="body2">
-                                                            {activeTemplate.description}
-                                                        </Typography>
-                                                    </PageTemplateTitle>
-                                                    <HeaderActions>
-                                                        <ButtonSecondary
-                                                            disabled={isLoading}
-                                                            onClick={() =>
-                                                                handleCreatePageFromTemplate(
-                                                                    activeTemplate
-                                                                )
-                                                            }
-                                                        >
-                                                            Use Template
-                                                        </ButtonSecondary>
-                                                    </HeaderActions>
-                                                </HeaderTitle>
-                                                <PagePreview page={activeTemplate} />
-                                            </div>
-                                        </Elevation>
-                                    </RenderBlock>
-                                </DetailsContainer>
-                            )}
-                        </ElementAnimation>
+                        <DetailsContainer>
+                            <RenderBlock>
+                                <Elevation z={2}>
+                                    <div style={{ position: "relative" }}>
+                                        <HeaderTitle>
+                                            <PageTemplateTitle>
+                                                <Typography use="headline5">
+                                                    {activeTemplate.title}
+                                                </Typography>
+                                                <Typography use="body2">
+                                                    {activeTemplate.description}
+                                                </Typography>
+                                            </PageTemplateTitle>
+                                            <HeaderActions>
+                                                <ButtonSecondary
+                                                    disabled={isLoading}
+                                                    data-testid={
+                                                        "pb-new-page-dialog-use-template-btn"
+                                                    }
+                                                    onClick={() =>
+                                                        handleCreatePageFromTemplate(activeTemplate)
+                                                    }
+                                                >
+                                                    Use Template
+                                                </ButtonSecondary>
+                                            </HeaderActions>
+                                        </HeaderTitle>
+                                        <PagePreview page={activeTemplate} />
+                                    </div>
+                                </Elevation>
+                            </RenderBlock>
+                        </DetailsContainer>
                     )}
                 </RightPanel>
             </SplitView>

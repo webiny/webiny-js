@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { WcpContext } from "@webiny/api-wcp/types";
 import {
     SecurityAuthenticationPlugin,
     SecurityAuthorizationPlugin,
@@ -12,7 +13,6 @@ import { createSecurity } from "~/createSecurity";
 import { attachGroupInstaller } from "~/installation/groups";
 import {
     applyMultiTenancyGraphQLPlugins,
-    applyMultiTenancyPlugins,
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
 } from "~/enterprise/multiTenancy";
@@ -24,13 +24,19 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
     storageOperations: SecurityStorageOperations;
 }
 
-type Context = SecurityContext & TenancyContext;
+export * from "./utils/AppPermissions";
+export * from "./utils/getPermissionsFromSecurityGroupsForLocale";
 
-export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {
+type Context = SecurityContext & TenancyContext & WcpContext;
+
+export const createSecurityContext = ({ storageOperations }: SecurityConfig) => {
     return new ContextPlugin<Context>(async context => {
         context.plugins.register(gqlInterfaces);
 
+        const license = context.wcp.getProjectLicense();
+
         context.security = await createSecurity({
+            advancedAccessControlLayer: license?.package?.features?.advancedAccessControlLayer,
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;
@@ -58,16 +64,17 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
             });
 
         // Backwards Compatibility - END
-
-        if (context.tenancy.isMultiTenant()) {
-            applyMultiTenancyPlugins(config, context);
-        }
     });
 };
 
 export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) => {
     return new ContextPlugin<Context>(context => {
-        context.plugins.register(graphqlPlugins);
+        const license = context.wcp.getProjectLicense();
+        context.plugins.register(
+            graphqlPlugins({
+                teams: license?.package?.features?.advancedAccessControlLayer?.options?.teams
+            })
+        );
 
         if (context.tenancy.isMultiTenant()) {
             applyMultiTenancyGraphQLPlugins(config, context);

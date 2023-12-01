@@ -1,12 +1,11 @@
 import React, { ReactElement } from "react";
-
+import styled from "@emotion/styled";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
-import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useRouter } from "@webiny/react-router";
-
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigateFolder } from "@webiny/app-aco";
+import { ReactComponent as FolderShared } from "@material-design-icons/svg/outlined/folder_shared.svg";
 
 const Title = styled("div")`
     display: flex;
@@ -28,20 +27,30 @@ const Text = styled(Typography)`
 interface Props {
     name: string;
     id: string;
+    hasNonInheritedPermissions?: boolean;
+    canManagePermissions?: boolean;
 }
 
 interface PageProps extends Props {
     onClick: () => void;
 }
 
-export const FolderName = ({ name, id }: Props): ReactElement => {
-    const { navigateToFolder } = usePageViewNavigation();
+export const FolderName = ({
+    name,
+    id,
+    hasNonInheritedPermissions,
+    canManagePermissions
+}: Props): ReactElement => {
+    const { navigateToFolder } = useNavigateFolder();
+
+    let icon = <Folder />;
+    if (hasNonInheritedPermissions && canManagePermissions) {
+        icon = <FolderShared />;
+    }
 
     return (
         <Title onClick={() => navigateToFolder(id)}>
-            <Icon>
-                <Folder />
-            </Icon>
+            <Icon>{icon}</Icon>
             <Text use={"subtitle2"}>{name}</Text>
         </Title>
     );

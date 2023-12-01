@@ -43,12 +43,18 @@ export interface FormDataRevision {
     createdBy: FormDataCreatedBy;
 }
 
+export interface FormDataStep {
+    id: string;
+    title: string;
+    layout: string[][];
+}
+
 export interface FormData {
     id: string;
     formId: string;
     version: number;
-    layout: FormDataFieldsLayout;
     fields: FormDataField[];
+    steps: FormDataStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -75,10 +81,17 @@ export interface ErrorResponse {
 }
 
 export type FormLayoutComponentProps<T = any> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
-    getFields: () => FormRenderComponentDataField[][];
+    getFieldById: (id: string) => FormDataField | null;
+    getFieldByFieldId: (id: string) => FormDataField | null;
+    getFields: (stepIndex?: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
+    goToNextStep: () => void;
+    goToPreviousStep: () => void;
+    isLastStep: boolean;
+    isFirstStep: boolean;
+    isMultiStepForm: boolean;
+    currentStepIndex: number;
+    currentStep: FormDataStep;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
@@ -96,15 +109,15 @@ export interface ReCaptchaChildrenFunction {
 export type ReCaptchaProps = {
     children?: React.ReactNode | ReCaptchaChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any[]) => void;
+    onExpired?: (...args: any[]) => void;
 };
 
 export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
 
 export type TermsOfServiceChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: String;
+    errorMessage: string;
     // Should be `OutputBlockData` from `@editorjs/editorjs`, but didn't want to introduce an extra dependency.
     message: any;
 }) => React.ReactNode;
@@ -112,8 +125,8 @@ export type TermsOfServiceChildrenFunction = (params: {
 export interface TermsOfServiceProps {
     children: TermsOfServiceChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any[]) => void;
+    onExpired?: (...args: any[]) => void;
 }
 
 export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;

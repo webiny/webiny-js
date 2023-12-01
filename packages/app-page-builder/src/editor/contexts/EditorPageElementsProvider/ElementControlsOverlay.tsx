@@ -14,6 +14,7 @@ import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
 import { ConnectDragSource } from "react-dnd";
 import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 declare global {
     // eslint-disable-next-line
@@ -29,7 +30,7 @@ const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
-    className?: String;
+    className?: string;
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
@@ -58,7 +59,7 @@ const PbElementControlsOverlay = ({
         <>
             {isActive && <ElementControlsOverlayBorders zIndex={zIndex} color={ACTIVE_COLOR} />}
             <pb-eco
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+                // @ts-expect-error Not supported by `React.HTMLProps<HTMLDivElement>`.
                 class={className}
                 onClick={onClick}
                 onMouseEnter={onMouseEnter}
@@ -84,7 +85,6 @@ const PbElementControlsOverlay = ({
 
 const titleContainerBaseStyles = {
     color: "#fff",
-    textTransform: "lowercase",
     position: "absolute",
     padding: "2px 5px",
     fontSize: "10px",
@@ -128,12 +128,21 @@ const StyledPbElementControlsOverlay = styled(
                 // We are putting it "in front of the user", above the element controls overlay.
                 // This enables us to actually interact with the page element. For example, when
                 // activating a paragraph page element, we get to type the paragraph text.
-                Object.assign(activeStyles, {
-                    "& + *": {
-                        zIndex: zIndex + 5,
-                        position: "relative"
-                    }
-                });
+
+                // Note that we don't want to assign the z-index to the element if it's part of
+                // a block (created via Block module or if it's a page created from a template).
+                // In that case, we want the block to be on top of the element at all times. No
+                // need to increase the z-index of the element and make it interactive.
+                const isSavedBlock =
+                    elementRendererMeta.blockId || elementRendererMeta.templateBlockId;
+                if (!isSavedBlock) {
+                    Object.assign(activeStyles, {
+                        "& + *": {
+                            zIndex: zIndex + 5,
+                            position: "relative"
+                        }
+                    });
+                }
 
                 // Note that we don't apply active border styles here. We do that via the `pb-eco-border`
                 // elements, rendered within the `PbElementControlsOverlayBaseComponent` component.
@@ -211,7 +220,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     ];
 
     const isActive = activeElementId === element.id;
-    const isHighlighted = editorElement.isHighlighted;
+    const isHighlighted = editorElement?.isHighlighted ?? false;
 
     const { children, dropRef, ...rest } = props;
 
@@ -238,15 +247,18 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const title = useMemo(() => {
         if (element.data.blockId) {
-            const blockName = plugins
+            const blockPlugin = plugins
                 .byType<PbEditorBlockPlugin>("pb-editor-block")
-                .find(block => block.id === element.data.blockId)
-                ?.title?.toLowerCase();
+                .find(block => block.id === element.data.blockId);
 
-            return `block | ${blockName}`;
+            if (blockPlugin) {
+                return `block | ${blockPlugin.title}`;
+            }
+
+            return "block | unknown";
         }
 
-        return element.type;
+        return getElementTitle(element.type);
     }, [element.data.blockId]);
 
     // Z-index of element controls overlay depends on the depth of the page element.

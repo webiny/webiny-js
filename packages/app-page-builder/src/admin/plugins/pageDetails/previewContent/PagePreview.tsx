@@ -1,15 +1,12 @@
 import React, { CSSProperties } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import { Page } from "@webiny/app-page-builder-elements/components/Page";
 import { Zoom } from "./Zoom";
 import { PbPageData, PbPageTemplate } from "~/types";
-import useResponsiveClassName from "~/hooks/useResponsiveClassName";
-import RenderElement from "~/render/components/Element";
-import { isLegacyRenderingEngine } from "~/utils";
+import { QueryResult } from "@apollo/react-common";
 
 const webinyZoomStyles = css`
     &.mdc-select--no-label:not(.mdc-select--outlined)
@@ -85,29 +82,10 @@ const SelectPageZoom: React.ComponentType<PagePreviewInnerProps> = ({ zoom, setZ
 
 interface PagePreviewProps {
     page: PbPageData | PbPageTemplate;
-    getPageQuery?: Function;
+    getPageQuery?: QueryResult;
 }
 
 const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
-    if (isLegacyRenderingEngine) {
-        // @deprecation-warning pb-legacy-rendering-engine
-        const { pageElementRef, responsiveClassName } = useResponsiveClassName();
-        return (
-            <Zoom>
-                {({ zoom, setZoom }) => (
-                    <div
-                        ref={pageElementRef}
-                        className={classNames(pageInnerWrapper, responsiveClassName)}
-                        style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
-                    >
-                        <RenderElement key={page.id} element={page.content} />
-                        <SelectPageZoom zoom={zoom} setZoom={setZoom} />
-                    </div>
-                )}
-            </Zoom>
-        );
-    }
-
     return (
         <Zoom>
             {({ zoom, setZoom }) => (

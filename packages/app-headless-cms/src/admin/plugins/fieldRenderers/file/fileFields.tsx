@@ -1,6 +1,6 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
 import { imageWrapperStyles } from "./utils";
@@ -19,6 +19,27 @@ const FileUploadWrapper = styled("div")({
     },
     ".mdc-text-field-helper-text": {
         color: "var(--mdc-theme-text-secondary-on-background)"
+    }
+});
+
+const InnerImageFieldWrapper = styled("div")({
+    background: "repeating-conic-gradient(#efefef 0% 25%, transparent 0% 50%) 50%/25px 25px",
+    height: "100%",
+    width: "100%",
+    boxSizing: "border-box",
+    backgroundColor: "#fff",
+    border: "1px solid var(--mdc-theme-background)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexBasis: "100%",
+    maxHeight: "180px",
+    padding: "30px",
+    ">div": {
+        maxHeight: "180px",
+        img: {
+            padding: "15px"
+        }
     }
 });
 
@@ -71,30 +92,38 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                                         <>
                                             {value.map((url: string, index: number) => (
                                                 <Cell span={3} key={url}>
-                                                    <File
-                                                        url={url}
-                                                        showFileManager={() => selectFiles(index)}
-                                                        onRemove={() =>
-                                                            onChange(dotProp.delete(value, index))
-                                                        }
-                                                        placeholder={t`Select a file"`}
-                                                        data-testid={`fr.input.file.${field.label}.${index}`}
-                                                    />
+                                                    <InnerImageFieldWrapper>
+                                                        <File
+                                                            url={url}
+                                                            showFileManager={() =>
+                                                                selectFiles(index)
+                                                            }
+                                                            onRemove={() =>
+                                                                onChange(
+                                                                    dotProp.delete(value, index)
+                                                                )
+                                                            }
+                                                            placeholder={t`Select a file"`}
+                                                            data-testid={`fr.input.file.${field.label}.${index}`}
+                                                        />
+                                                    </InnerImageFieldWrapper>
                                                 </Cell>
                                             ))}
                                         </>
 
                                         <Cell span={3}>
-                                            <File
-                                                url={""}
-                                                onRemove={() => {
-                                                    return void 0;
-                                                }}
-                                                {...bind}
-                                                showFileManager={() => selectFiles()}
-                                                placeholder={t`Select a file"`}
-                                                data-testid={`fr.input.file.${field.label}`}
-                                            />
+                                            <InnerImageFieldWrapper>
+                                                <File
+                                                    url={""}
+                                                    onRemove={() => {
+                                                        return void 0;
+                                                    }}
+                                                    {...bind}
+                                                    showFileManager={() => selectFiles()}
+                                                    placeholder={t`Select a file"`}
+                                                    data-testid={`fr.input.file.${field.label}`}
+                                                />
+                                            </InnerImageFieldWrapper>
                                         </Cell>
                                     </GridInner>
                                 );
@@ -117,7 +146,7 @@ FieldRenderer.defaultProps = {
     styles: { width: "100%", height: "auto" }
 } as Partial<FieldRendererProps>;
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-files",
     renderer: {

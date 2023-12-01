@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 import omit from "lodash/omit";
@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { COLORS } from "./StyledComponents";
 import { Validation } from "@webiny/form";
+import debounce from "lodash/debounce";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -54,9 +55,11 @@ interface GetValueCallableParams {
     type: string;
     defaultValue: string | number;
 }
+
 interface GetValueCallable {
     (params: GetValueCallableParams): string | number;
 }
+
 const getValue: GetValueCallable = ({ value, defaultValue, type }) => {
     if (type === "number") {
         return isNaN(value as number) ? defaultValue : value;
@@ -73,8 +76,10 @@ interface InputBoxProps {
     className?: string;
     validation?: Validation;
     type?: "string" | "number";
+
     [key: string]: any;
 }
+
 const InputField: React.FC<InputBoxProps> = ({
     className,
     value,
@@ -87,6 +92,32 @@ const InputField: React.FC<InputBoxProps> = ({
     defaultValue = "",
     ...props
 }) => {
+    // We introduced the local value concept in order to fix the cursor positioning issue.
+    // Basically, users would type into the field, and the cursor would jump to the end of the input field.
+    // This is because the value was being set from the outside, and the component was re-rendering.
+    // By introducing the local value, we can control when the value is updated.
+    // Original PR: https://github.com/webiny/webiny-js/pull/3146
+
+    // Also note that we've tried to get rid of this and fix the root issue that's causing
+    // the cursor to jump to the end of the input field, but we couldn't find a solution.
+    // This was mainly because of the async nature of the onChange callback. For example,
+    // if we removed the async validation in PropertySettings.tsx, the cursor would no longer jump.
+    const [localValue, setLocalValue] = useState<string | number | undefined>();
+
+    const debouncedSetLocalValue = useCallback(
+        debounce(value => {
+            setLocalValue(value);
+        }, 100),
+        []
+    );
+
+    // On all outside changes, we need to update the local value. Note the debounced
+    // `setLocalValue` call. This resolves the issue where the cursor would jump to
+    // the end of the input field while typing.
+    useEffect(() => {
+        debouncedSetLocalValue(value);
+    }, [localValue, value]);
+
     return (
         <React.Fragment>
             {label && (
@@ -97,7 +128,7 @@ const InputField: React.FC<InputBoxProps> = ({
             <input
                 className={classNames(inputStyle, className)}
                 value={getValue({
-                    value: value as string,
+                    value: localValue as string,
                     type: props.type || "string",
                     defaultValue
                 })}
@@ -106,6 +137,7 @@ const InputField: React.FC<InputBoxProps> = ({
                         return;
                     }
                     onChange(value);
+                    setLocalValue(value);
                 }}
                 {...omit(props, "validate")}
             />

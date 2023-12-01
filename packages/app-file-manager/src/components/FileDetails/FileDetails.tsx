@@ -1,250 +1,131 @@
 import React, { useMemo, useState } from "react";
-import styled from "@emotion/styled";
-import { css } from "emotion";
-import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
-import { ReactComponent as CopyContentIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
-import { ReactComponent as ImageIcon } from "@material-design-icons/svg/outlined/insert_photo.svg";
-import { ReactComponent as FileIcon } from "@material-design-icons/svg/outlined/insert_drive_file.svg";
-import { ReactComponent as CalendarIcon } from "@material-design-icons/svg/outlined/today.svg";
-import { ReactComponent as HighlightIcon } from "@material-design-icons/svg/outlined/highlight.svg";
-import { i18n } from "@webiny/app/i18n";
-import { FileItem } from "@webiny/app-admin/types";
-import { IconButton } from "@webiny/ui/Button";
-import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
-import { Icon } from "@webiny/ui/Icon";
-import { CircularProgress } from "@webiny/ui/Progress";
-import { Typography } from "@webiny/ui/Typography";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import bytes from "bytes";
-import classNames from "classnames";
-import dayjs from "dayjs";
-import get from "lodash/get";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
-import { Aliases } from "./Aliases";
-import { DeleteImageAction } from "./DeleteImageAction";
-import { FileProvider } from "./FileProvider";
-import Name from "./Name";
-import Tags from "./Tags";
-import { useCopyFile } from "~/hooks/useCopyFile";
-import getFileTypePlugin from "~/getFileTypePlugin";
+import omit from "lodash/omit";
+import styled from "@emotion/styled";
+import { FileItem } from "@webiny/app-admin/types";
+import { Form, FormOnSubmit } from "@webiny/form";
+import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Tab, Tabs } from "@webiny/ui/Tabs";
+import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
+import { Preview } from "./components/Preview";
+import { PreviewMeta } from "./components/PreviewMeta";
+import { Actions } from "./components/Actions";
+import { Header } from "./components/Header";
+import { Elevation } from "@webiny/ui/Elevation";
+import { Content } from "./components/Content";
+import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
+import { Footer } from "./components/Footer";
+import { Extensions } from "./components/Extensions";
+import { useFileModel } from "~/hooks/useFileModel";
+import { useFileManagerView, useFileManagerViewConfig } from "~/index";
+import { useSnackbar } from "@webiny/app-admin";
+import { useFileDetails } from "~/hooks/useFileDetails";
+import { FileProvider } from "~/contexts/FileProvider";
+import { prepareFormData } from "@webiny/app-headless-cms-common";
+import { CmsModelField } from "@webiny/app-headless-cms/types";
 
-const t = i18n.ns("app-admin/file-manager/file-details");
+type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
-const fileDetailsSidebar = css({
-    "&.mdc-drawer": {
-        width: 360
+const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
+    z-index: 70;
+    &.mdc-drawer {
+        width: ${props => props.width};
     }
-});
-
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "li-title": {
-                children?: React.ReactNode;
-            };
-
-            "li-content": {
-                children?: React.ReactNode;
-            };
-        }
-    }
-}
-
-const CloseButton = styled(IconButton)`
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    z-index: 10;
 `;
 
-const style: any = {
-    wrapper: css({
-        height: "100vh",
-        overflowY: "auto"
-    }),
-    header: css({
-        textAlign: "center",
-        marginBottom: 24,
-        paddingTop: 16,
-        "& span": {
-            textTransform: "capitalize",
-            color: "var(--mdc-theme-on-surface)",
-            fontWeight: 600
-        }
-    }),
-    preview: css({
-        boxSizing: "border-box",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative",
-        width: "100%",
-        height: 300,
-        margin: "0 auto 24px",
-        img: {
-            objectFit: "contain",
-            maxHeight: 300,
-            maxWidth: 300,
-            width: "100%",
-            position: "static",
-            transform: "none"
-        },
-        "&.dark": {
-            backgroundColor: "var(--mdc-theme-background)"
-        }
-    }),
-    download: css({
-        textAlign: "center",
-        margin: "0 auto",
-        width: "100%",
-        "& .icon--active": {
-            "&.mdc-icon-button": {
-                color: "var(--mdc-theme-text-on-primary)"
-            }
-        }
-    }),
-    list: css({
-        textAlign: "left",
-        color: "var(--mdc-theme-on-surface)",
-        li: {
-            padding: "12px 16px",
-            lineHeight: "22px",
-            "li-title": {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                minHeight: 48,
-                "& .list-item__title": {
-                    fontWeight: 600
-                },
-                "& .list-item__icon": {
-                    marginRight: 24
-                },
-                "& .list-item__content": {
-                    flex: "1 0 200px"
-                }
-            },
-            "li-content": {
-                width: "100%",
-                display: "block",
-                "& .list-item__truncate": {
-                    display: "block",
-                    width: "100%",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                }
-            }
-        }
-    }),
-    drawerContent: css({
-        "&.mdc-drawer__content": {
-            height: "auto",
-            overflowY: "inherit"
-        }
-    })
-};
+const FormContainer = styled(SimpleForm)`
+    margin: 0;
+    /* Fix for the dir=rtl when a form is inside a drawer placed on the right side */
+    .mdc-floating-label {
+        transform-origin: left top !important;
+        left: 16px !important;
+        right: initial !important;
+    }
+`;
 
 interface FileDetailsInnerProps {
     file: FileItem;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
-const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file, onClose, scope, own }) => {
-    const { copyFileUrl } = useCopyFile({ file });
-    const filePlugin = getFileTypePlugin(file);
-    const [darkImageBackground, setDarkImageBackground] = useState(false);
+const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => {
+    const output = omit(data, ["createdBy", "createdOn", "src"]);
+    if (fields.length === 0) {
+        return output;
+    }
+    return {
+        ...output,
+        extensions: prepareFormData(output.extensions, fields)
+    };
+};
 
-    const actions: React.FC[] =
-        get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
+const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
+    const [isLoading, setLoading] = useState(false);
+    const { showSnackbar } = useSnackbar();
+    const fileModel = useFileModel();
+    const { updateFile } = useFileManagerView();
+    const { close } = useFileDetails();
+    const { fileDetails } = useFileManagerViewConfig();
 
-    const fileTypeIcon = useMemo(() => {
-        if (file && typeof file.type === "string") {
-            return file.type.includes("image") ? <ImageIcon /> : <FileIcon />;
+    const extensionFields = useMemo(() => {
+        const fields = fileModel.fields.find(field => field.fieldId === "extensions");
+        if (!fields?.settings?.fields) {
+            return [];
         }
-        return <ImageIcon />;
-    }, [file]);
+        return fields?.settings?.fields || [];
+    }, [fileModel]);
+
+    const onSubmit: FormOnSubmit<FileItem> = async ({ id, ...data }) => {
+        setLoading(true);
+        const fileData = prepareFileData(data, extensionFields);
+        await updateFile(id, fileData);
+        setLoading(false);
+        showSnackbar("File updated successfully!");
+        close();
+    };
 
     return (
-        <FileProvider file={file}>
-            <div className={style.wrapper} dir="ltr">
-                <div className={style.header}>
-                    <Typography use={"headline5"}>{t`File details`}</Typography>
-                    <CloseButton icon={<CloseIcon />} onClick={onClose} />
-                </div>
-
-                <div
-                    className={classNames(style.preview, {
-                        dark: darkImageBackground
-                    })}
-                >
-                    {filePlugin && filePlugin.render({ file })}
-                </div>
-                <div className={style.download}>
-                    <>
-                        <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
-                            <IconButton
-                                onClick={copyFileUrl}
-                                icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
-                            />
-                        </Tooltip>
-
-                        {actions.map((Component: React.FC<{ file: FileItem }>, index: number) => (
-                            <Component key={index} file={file} />
-                        ))}
-                        <DeleteImageAction onDelete={onClose} />
-                        {/* Render background switcher */}
-                        <Tooltip content={t`Toggle background`} placement={"bottom"}>
-                            <IconButton
-                                icon={<HighlightIcon />}
-                                onClick={() => setDarkImageBackground(!darkImageBackground)}
-                                className={classNames({
-                                    "icon--active": darkImageBackground
-                                })}
-                            />
-                        </Tooltip>
-                    </>
-                </div>
-                <DrawerContent dir="ltr" className={style.drawerContent}>
-                    <ul className={style.list}>
-                        <li>
-                            <Name />
-                        </li>
-                        <li>
-                            <li-title>
-                                <Icon className={"list-item__icon"} icon={fileTypeIcon} />
-                                <div>
-                                    <Typography use={"subtitle1"}>{file.type}</Typography> {" - "}
-                                    <Typography use={"subtitle1"}>
-                                        {bytes.format(file.size, { unitSeparator: " " })}
-                                    </Typography>
-                                </div>
-                            </li-title>
-                        </li>
-                        <li>
-                            <li-title>
-                                <Icon className={"list-item__icon"} icon={<CalendarIcon />} />
-                                <div>
-                                    <Typography use={"subtitle1"}>
-                                        {dayjs(file.createdOn).format("DD MMM YYYY [at] HH:mm")}
-                                    </Typography>
-                                </div>
-                            </li-title>
-                        </li>
-                        <li>
-                            <Tags scope={scope} own={own} />
-                        </li>
-                        <li>
-                            <Aliases />
-                        </li>
-                    </ul>
+        <Form data={file} onSubmit={onSubmit}>
+            {() => (
+                <DrawerContent dir="ltr">
+                    {isLoading ? <CircularProgress label={"Saving file..."} /> : null}
+                    <FormContainer>
+                        <Header />
+                        <Content>
+                            <Content.Panel>
+                                <Elevation z={2} style={{ margin: 20 }}>
+                                    <Actions />
+                                    <Preview />
+                                    <PreviewMeta />
+                                </Elevation>
+                            </Content.Panel>
+                            <Content.Panel>
+                                <Tabs>
+                                    <Tab label={"Basic Details"}>
+                                        <Grid>
+                                            {fileDetails.fields.map(field => (
+                                                <Cell span={12} key={field.name}>
+                                                    {field.element}
+                                                </Cell>
+                                            ))}
+                                        </Grid>
+                                    </Tab>
+                                    {extensionFields.length > 0 ? (
+                                        <Tab label={"Advanced Details"}>
+                                            <Extensions model={fileModel} />
+                                        </Tab>
+                                    ) : null}
+                                </Tabs>
+                            </Content.Panel>
+                        </Content>
+                        <Footer />
+                    </FormContainer>
                 </DrawerContent>
-            </div>
-        </FileProvider>
+            )}
+        </Form>
     );
 };
 
@@ -252,18 +133,10 @@ export interface FileDetailsProps {
     file?: FileItem;
     open: boolean;
     loading: boolean;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({
-    open,
-    onClose,
-    loading,
-    file,
-    ...rest
-}) => {
+export const FileDetails: React.FC<FileDetailsProps> = ({ open, onClose, loading, file }) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -272,9 +145,11 @@ export const FileDetails: React.FC<FileDetailsProps> = ({
         }
     });
 
+    const { fileDetails } = useFileManagerViewConfig();
+
     return (
-        <Drawer
-            className={fileDetailsSidebar}
+        <FileDetailsDrawer
+            width={fileDetails.width}
             dir="rtl"
             modal
             open={open}
@@ -282,11 +157,15 @@ export const FileDetails: React.FC<FileDetailsProps> = ({
             data-testid={"fm.file-details.drawer"}
         >
             <DrawerContent dir="ltr">
-                {loading && <CircularProgress label={t`Loading file details...`} />}
-                {file && <FileDetailsInner file={file} onClose={onClose} {...rest} />}
+                {loading && <CircularProgress label={"Loading file details..."} />}
+                {file && (
+                    <FileProvider file={file}>
+                        <FileDetailsProvider hideFileDetails={onClose}>
+                            <FileDetailsInner file={file} onClose={onClose} />
+                        </FileDetailsProvider>
+                    </FileProvider>
+                )}
             </DrawerContent>
-        </Drawer>
+        </FileDetailsDrawer>
     );
 };
-
-export { useFile } from "./FileProvider";

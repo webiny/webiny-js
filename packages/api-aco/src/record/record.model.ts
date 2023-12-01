@@ -19,7 +19,13 @@ const typeField = () =>
 const titleField = () =>
     createModelField({
         label: "Title",
-        type: "text"
+        type: "text",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
     });
 
 const contentField = () =>
@@ -33,7 +39,15 @@ const locationField = (fields: CmsModelField[]) =>
         label: "Location",
         type: "object",
         multipleValues: false,
-        settings: { fields }
+        validation: [
+            {
+                name: "required",
+                message: "The location field must be populated."
+            }
+        ],
+        settings: {
+            fields
+        }
     });
 
 const locationFolderIdField = () =>
@@ -48,33 +62,58 @@ const locationFolderIdField = () =>
         ]
     });
 
-const dataField = () =>
-    createModelField({
+const dataField = (fields?: CmsModelField[]) => {
+    return createModelField({
         label: "Data",
-        type: "wby-aco-json"
+        type: "object",
+        multipleValues: false,
+        validation: [
+            {
+                name: "required",
+                message: "The data field must be populated."
+            }
+        ],
+        settings: {
+            fields
+        }
     });
+};
 
 const tagsField = () =>
     createModelField({
         label: "Tags",
         type: "text",
-        multipleValues: true
+        multipleValues: true,
+        validation: [
+            {
+                name: "required",
+                message: "The tags field must be populated."
+            }
+        ]
     });
 
 export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
-export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
+interface CreateSearchModelDefinitionParams {
+    fields?: CmsModelField[];
+}
+
+export const DEFAULT_FIELDS = ["type", "title", "content", "location", "data", "tags"];
+
+export const createSearchModelDefinition = (
+    params?: CreateSearchModelDefinitionParams
+): SearchRecordModelDefinition => {
     return {
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
-        layout: [["type"], ["title"], ["content"], ["location"], ["data"], ["tags"]],
+        layout: DEFAULT_FIELDS.map(field => [field]),
         fields: [
             typeField(),
             titleField(),
             contentField(),
             locationField([locationFolderIdField()]),
-            dataField(),
+            dataField(params?.fields),
             tagsField()
         ],
         description: "ACO - Search record model",

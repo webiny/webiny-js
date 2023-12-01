@@ -12,8 +12,6 @@ import {
     PageElementStorageOperationsListParams,
     PbContext
 } from "~/types";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
@@ -22,18 +20,18 @@ import {
     createPageElementsUpdateValidation
 } from "~/graphql/crud/pageElements/validation";
 import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
-
-const PERMISSION_NAME = "pb.page";
+import { PagesPermissions } from "~/graphql/crud/permissions/PagesPermissions";
 
 export interface CreatePageElementsCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    pagesPermissions: PagesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
 
 export const createPageElementsCrud = (params: CreatePageElementsCrudParams): PageElementsCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, pagesPermissions, getLocaleCode, getTenantId } = params;
 
     // create
     const onPageElementBeforeCreate = createTopic<OnPageElementBeforeCreateTopicParams>(
@@ -59,15 +57,6 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
 
     return {
         /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforePageElementCreate: onPageElementBeforeCreate,
-        onAfterPageElementCreate: onPageElementAfterCreate,
-        onBeforePageElementUpdate: onPageElementBeforeUpdate,
-        onAfterPageElementUpdate: onPageElementAfterUpdate,
-        onBeforePageElementDelete: onPageElementBeforeDelete,
-        onAfterPageElementDelete: onPageElementAfterDelete,
-        /**
          * Introduced in 5.34.0
          */
         onPageElementBeforeCreate,
@@ -77,9 +66,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         onPageElementBeforeDelete,
         onPageElementAfterDelete,
         async getPageElement(id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+            await pagesPermissions.ensure({ rwd: "r" });
 
             const params = {
                 where: {
@@ -106,16 +93,13 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                 );
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageElement);
+            await pagesPermissions.ensure({ owns: pageElement.createdBy });
 
             return pageElement;
         },
 
         async listPageElements(params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+            await pagesPermissions.ensure({ rwd: "r" });
 
             const { sort } = params || {};
 
@@ -128,7 +112,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (permission.own) {
+            if (await pagesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -148,7 +132,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         },
 
         async createPageElement(input) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await pagesPermissions.ensure({ rwd: "w" });
 
             const validation = await createPageElementsCreateValidation().safeParseAsync(input);
             if (!validation.success) {
@@ -196,16 +180,14 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         },
 
         async updatePageElement(this: PageBuilderContextObject, id, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
+
             const original = await this.getPageElement(id);
             if (!original) {
                 throw new NotFoundError(`Page element "${id}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            await pagesPermissions.ensure({ owns: original.createdBy });
 
             const validation = await createPageElementsUpdateValidation().safeParseAsync(input);
             if (!validation.success) {
@@ -248,29 +230,27 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         },
 
         async deletePageElement(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await pagesPermissions.ensure({ rwd: "d" });
 
             const pageElement = await this.getPageElement(slug);
             if (!pageElement) {
                 throw new NotFoundError(`PageElement "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageElement);
+            await pagesPermissions.ensure({ owns: pageElement.createdBy });
 
             try {
                 await onPageElementBeforeDelete.publish({
                     pageElement
                 });
-                const result = await storageOperations.pageElements.delete({
+
+                await storageOperations.pageElements.delete({
                     pageElement
                 });
+
                 await onPageElementAfterDelete.publish({
-                    pageElement: result
+                    pageElement
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page element.",

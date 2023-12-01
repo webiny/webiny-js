@@ -6,6 +6,8 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
+import { useSnackbar } from "@webiny/app-admin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 interface WrapperDroppableProps {
     below: boolean;
@@ -70,6 +72,7 @@ export const ElementControlHorizontalDropZones = () => {
     const { isDragging } = useRecoilValue(uiAtom);
     const element = getElement();
     const handler = useEventActionHandler();
+    const { showSnackbar } = useSnackbar();
 
     const { type } = element;
 
@@ -81,6 +84,9 @@ export const ElementControlHorizontalDropZones = () => {
         // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(meta.parentElement.type)) {
+                const sourceTitle = getElementTitle(source.type);
+                const targetTitle = getElementTitle(meta.parentElement.type);
+                showSnackbar(`${sourceTitle} cannot be dropped into ${targetTitle}.`);
                 return;
             }
         }

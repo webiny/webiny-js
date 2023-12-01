@@ -1,8 +1,9 @@
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import lodash from "lodash";
+import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
 
 const createModelTypeName = (model: CmsModel): string => {
-    return lodash.upperFirst(lodash.camelCase(model.modelId));
+    return upperFirst(camelCase(model.modelId));
 };
 
 const createErrorFields = (): string => {

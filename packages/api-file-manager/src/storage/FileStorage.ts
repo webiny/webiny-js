@@ -30,11 +30,14 @@ export interface FileStorageParams {
     context: FileManagerContext;
 }
 export class FileStorage {
-    private readonly storagePlugin: FilePhysicalStoragePlugin;
     private readonly context: FileManagerContext;
 
     constructor({ context }: FileStorageParams) {
-        const storagePlugin = context.plugins
+        this.context = context;
+    }
+
+    get storagePlugin() {
+        const storagePlugin = this.context.plugins
             .byType<FilePhysicalStoragePlugin>(storagePluginType)
             .pop();
 
@@ -44,8 +47,8 @@ export class FileStorage {
                 "STORAGE_PLUGIN_ERROR"
             );
         }
-        this.storagePlugin = storagePlugin;
-        this.context = context;
+
+        return storagePlugin;
     }
 
     async upload(params: FileStorageUploadParams): Promise<Result> {
@@ -62,7 +65,7 @@ export class FileStorage {
 
         // Save file in DB.
         return this.context.fileManager.createFile({
-            ...(fileData as any),
+            ...fileData,
             meta: {
                 private: Boolean(params.hideInFileManager)
             },

@@ -93,6 +93,11 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     loading?: boolean;
 
     /**
+     * Use custom renderer for selected items.
+     */
+    renderMultipleSelection?: ((items: any) => React.ReactNode | null) | null;
+
+    /**
      * Use data list instead of default Chips component. Useful when expecting a lot of data.
      */
     useMultipleSelectionList?: boolean;
@@ -100,7 +105,7 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     /**
      * Render list item when `useMultipleSelectionList` is used.
      */
-    renderListItemLabel?: Function;
+    renderListItemLabel?: (item: any) => React.ReactNode;
     /**
      * Render in meta wrapper
      */
@@ -400,8 +405,17 @@ export class MultiAutoComplete extends React.Component<
             useMultipleSelectionList,
             description,
             renderListItemLabel,
+            renderMultipleSelection,
             renderListItemOptions
         } = this.props;
+
+        if (renderMultipleSelection !== undefined) {
+            if (renderMultipleSelection === null) {
+                return null;
+            }
+
+            return renderMultipleSelection.call(this, this.props);
+        }
 
         if (useMultipleSelectionList) {
             const { data, meta } = this.paginateMultipleSelection();
@@ -622,7 +636,7 @@ export class MultiAutoComplete extends React.Component<
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
-                    // @ts-ignore there is no className on Downshift
+                    // @ts-expect-error there is no className on Downshift
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}
@@ -655,7 +669,7 @@ export class MultiAutoComplete extends React.Component<
                             <Input
                                 {...getInputProps({
                                     ...otherInputProps,
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     validation,
 
                                     // Only pass description if not using "useMultipleSelectionList".

@@ -5,10 +5,9 @@ import {
     CmsEntryDeleteMutationResponse,
     CmsEntryDeleteMutationVariables,
     createDeleteMutation
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { DocumentNode } from "graphql";
 import { OnEntryDeleteRequest } from "~/admin/contexts/Cms";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { parseIdentifier } from "@webiny/utils";
 
 interface Mutations {
@@ -38,14 +37,8 @@ const OnEntryDelete: React.FC = () => {
         return mutations.current[key];
     };
 
-    const handleOnDelete = async ({
-        entry,
-        model,
-        id,
-        client,
-        listQueryVariables = {},
-        locale
-    }: OnEntryDeleteRequest) => {
+    const handleOnDelete = async (params: OnEntryDeleteRequest) => {
+        const { entry, model, id, client, locale } = params;
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate<
@@ -80,18 +73,11 @@ const OnEntryDelete: React.FC = () => {
          */
         const { version } = parseIdentifier(id);
         if (version === null) {
-            GQLCache.removeEntryFromListCache(model, client.cache, entry, listQueryVariables);
             return {
                 data: true,
                 error: null
             };
         }
-
-        // We have other revisions, update entry's cache
-        const revisions = GQLCache.removeRevisionFromEntryCache(model, client.cache, {
-            ...entry,
-            id
-        });
 
         if (entry.id !== id) {
             return {
@@ -99,15 +85,8 @@ const OnEntryDelete: React.FC = () => {
                 error: null
             };
         }
-        GQLCache.updateLatestRevisionInListCache(
-            model,
-            client.cache,
-            revisions[0],
-            listQueryVariables
-        );
-
         return {
-            entry: revisions[0] || entry,
+            entry,
             data: true,
             error: null
         };

@@ -16,6 +16,7 @@ interface PageListVariables {
     };
     // [key: string]: any;
 }
+
 export const readPageListVariables = (): PageListVariables => {
     let variables;
 
@@ -45,7 +46,7 @@ const modifyCacheForAllListPagesQuery = (
     /**
      * Figure out correct type for cache object because DataProxy does not have data type on it.
      */
-    // @ts-ignore
+    // @ts-expect-error
     const existingQueriesInCache = Object.keys(cache.data.data).filter(
         key => key.includes(".listPages") && !key.endsWith(".meta")
     );
@@ -176,7 +177,7 @@ export const removeRevisionFromEntryCache = (
 ): PbPageRevision[] => {
     const gqlParams = {
         query: GQL.GET_PAGE,
-        variables: { id: revision.id }
+        variables: { id: revision.pid }
     };
 
     const data = cache.readQuery(gqlParams);

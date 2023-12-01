@@ -12,7 +12,7 @@ import { SimpleButton } from "../../../elementSettings/components/StyledComponen
 import { OnCreateActions, PbEditorElementPluginArgs } from "~/types";
 import kebabCase from "lodash/kebabCase";
 import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PElementsYouTube } from "./PElementsYouTube";
 
 const PreviewBox = styled("div")({
@@ -28,13 +28,10 @@ const ButtonContainer = styled("div")({
     marginTop: 16
 });
 
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PElementsYouTube {...props} />
-    );
-}
+const render: EmbedPluginConfigRenderCallable = props => (
+    // @ts-expect-error Sync `elements` property type.
+    <PElementsYouTube {...props} />
+);
 
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "youtube");
@@ -56,10 +53,11 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             /**
              * TODO @ts-refactor @ashutosh
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            // @ts-expect-error
             settings: args.settings,
             onCreate: OnCreateActions.OPEN_SETTINGS,
             oembed: {

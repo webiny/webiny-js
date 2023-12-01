@@ -1,12 +1,10 @@
 import React from "react";
-import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import {
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    DialogButton,
     DialogCancel,
     DialogOnClose
 } from "@webiny/ui/Dialog";
@@ -18,27 +16,17 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 600,
-        minWidth: 600
-    }
-});
+const StyledDialog = styled(Dialog)`
+    // We need to have this z-index because without it Edit Block Dialog will be rendered below All Blocks Component.
+    z-index: 100;
 
-const PreviewBox = styled("div")({
-    width: 500,
-    minHeight: 250,
-    border: "1px solid var(--mdc-theme-on-background)",
-    backgroundColor: "#fff", // this must always be white
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    img: {
-        maxHeight: 500,
-        maxWidth: 500
+    & .mdc-dialog__surface {
+        width: 600px;
+        min-width: 600px;
     }
-});
+`;
 
 interface EditBlockDialogProps {
     open: boolean;
@@ -60,7 +48,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
     }));
 
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <StyledDialog open={open} onClose={onClose}>
             {loading && <CircularProgress label={"Saving block..."} />}
             {plugin && (
                 <Form onSubmit={onSubmit} data={plugin}>
@@ -92,23 +80,16 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
                                         </Bind>
                                     </Cell>
                                 </Grid>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <PreviewBox>
-                                            {plugin.preview ? plugin.preview() : null}
-                                        </PreviewBox>
-                                    </Cell>
-                                </Grid>
                             </DialogContent>
                             <DialogActions>
                                 <DialogCancel>Cancel</DialogCancel>
-                                <DialogButton onClick={submit}>Save</DialogButton>
+                                <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
                             </DialogActions>
                         </React.Fragment>
                     )}
                 </Form>
             )}
-        </Dialog>
+        </StyledDialog>
     );
 };
 

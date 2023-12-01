@@ -4,19 +4,11 @@ import { assignPageElementLifecycleEvents, tracker } from "./mocks/lifecycleEven
 
 const name = "Page Element";
 const type = "block";
-const category = "blocks";
 const content = {
     contentTest: true
 };
 const updatedContent = {
     ...content,
-    updated: true
-};
-const preview = {
-    previewTest: true
-};
-const updatedPreview = {
-    ...preview,
     updated: true
 };
 
@@ -36,9 +28,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
-                content,
-                preview
+                content
             }
         });
         expect(response).toMatchObject({
@@ -49,9 +39,7 @@ describe("Page Element Lifecycle Events", () => {
                             id: expect.any(String),
                             name,
                             type,
-                            category,
-                            content,
-                            preview
+                            content
                         },
                         error: null
                     }
@@ -72,9 +60,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
-                content,
-                preview
+                content
             }
         });
 
@@ -87,9 +73,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
-                content: updatedContent,
-                preview: updatedPreview
+                content: updatedContent
             }
         });
         expect(response).toMatchObject({
@@ -100,9 +84,7 @@ describe("Page Element Lifecycle Events", () => {
                             id: expect.any(String),
                             name,
                             type,
-                            category,
-                            content: updatedContent,
-                            preview: updatedPreview
+                            content: updatedContent
                         },
                         error: null
                     }
@@ -123,9 +105,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 name,
                 type,
-                category,
-                content,
-                preview
+                content
             }
         });
 
@@ -141,14 +121,7 @@ describe("Page Element Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     deletePageElement: {
-                        data: {
-                            id: expect.any(String),
-                            name,
-                            type,
-                            category,
-                            content,
-                            preview
-                        },
+                        data: true,
                         error: null
                     }
                 }

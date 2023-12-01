@@ -1,29 +1,37 @@
-import React, { ReactElement } from "react";
+import React from "react";
+import { Search } from "@webiny/app-aco";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { ButtonsCreate } from "~/admin/components/Table/Header/ButtonsCreate";
 import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
 
-import { Container, WrapperActions } from "./styled";
+import { Container, Divider, WrapperActions } from "./styled";
+import { PbPageDataItem } from "~/types";
 
 export interface HeaderProps {
     title?: string;
-    canCreate: boolean;
+    canCreateFolder: boolean;
+    canCreateContent: boolean;
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
-    selected: string[];
+    selected: PbPageDataItem[];
+    searchValue: string;
+    onSearchChange: (value: string) => void;
 }
 
-export const Header = ({
-    canCreate,
+export const Header: React.VFC<HeaderProps> = ({
+    canCreateFolder,
+    canCreateContent,
     onCreatePage,
     onImportPage,
     onCreateFolder,
     title,
-    selected
-}: HeaderProps): ReactElement => {
+    selected,
+    searchValue,
+    onSearchChange
+}) => {
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>
@@ -32,13 +40,16 @@ export const Header = ({
                 </Cell>
                 <Cell span={8}>
                     <WrapperActions>
+                        <Search value={searchValue} onChange={onSearchChange} />
+                        <Divider />
                         <TableActions selected={selected} onImportPage={onImportPage} />
-                        {canCreate && (
-                            <ButtonsCreate
-                                onCreateFolder={onCreateFolder}
-                                onCreatePage={onCreatePage}
-                            />
-                        )}
+                        <Divider />
+                        <ButtonsCreate
+                            canCreateFolder={canCreateFolder}
+                            canCreatePage={canCreateContent}
+                            onCreateFolder={onCreateFolder}
+                            onCreatePage={onCreatePage}
+                        />
                     </WrapperActions>
                 </Cell>
             </Grid>

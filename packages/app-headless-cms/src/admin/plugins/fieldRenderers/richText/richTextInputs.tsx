@@ -4,10 +4,16 @@ import { i18n } from "@webiny/app/i18n";
 import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
-import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
+import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
+import { modelHasLexicalField } from "~/admin/plugins/fieldRenderers/lexicalText/utils";
+import {
+    isLegacyRteFieldSaved,
+    modelHasLegacyRteField
+} from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -45,24 +51,35 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-rich-text-inputs",
     renderer: {
         rendererName: "rich-text-inputs",
-        name: t`Rich Text Inputs`,
-        description: t`Renders a simple list of rich text editors.`,
-        canUse({ field }) {
-            return (
+        name: t`(Legacy) EditorJS Text Inputs`,
+        description: t`Renders a simple list of legacy rich text editors.`,
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse) {
+                // Check for legacy RTE usage for saved and new field
+                if (modelHasLexicalField(model)) {
+                    return false;
+                }
+
+                if (!allowCmsLegacyRichTextInput) {
+                    if (isLegacyRteFieldSaved(field) || modelHasLegacyRteField(model)) {
+                        return true;
+                    }
+                    // When feature flag is disabled by default and legacy RTE will not be used
+                    return false;
+                }
+            }
+
+            return canUse;
         },
         render(props) {
             const { field } = props;
 
             const rteProps = useMemo(() => {
-                /**
-                 * TODO @ts-refactor
-                 * Missing cms-rte-config plugin.
-                 */
-                // @ts-ignore
                 return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
             }, []);
 

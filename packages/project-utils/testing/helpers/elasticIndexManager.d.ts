@@ -1,4 +1,4 @@
-import { ElasticsearchClient } from "../elasticsearch/client";
+import { ElasticsearchClient } from "../elasticsearch/createClient";
 
 interface Params {
     global: any;

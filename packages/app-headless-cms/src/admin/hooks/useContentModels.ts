@@ -11,7 +11,8 @@ export const useContentModels = () => {
     const {
         data,
         loading,
-        error: apolloError
+        error: apolloError,
+        refetch
     } = useQuery<ListCmsModelsQueryResponse>(GQL.LIST_CONTENT_MODELS);
 
     const models = useMemo<CmsModel[]>(() => {
@@ -28,7 +29,8 @@ export const useContentModels = () => {
     return {
         models,
         loading,
-        error
+        error,
+        refresh: refetch
     };
 };
 

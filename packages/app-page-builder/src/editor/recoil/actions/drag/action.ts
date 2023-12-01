@@ -4,6 +4,7 @@ import { EventActionCallable } from "~/types";
 export const dragStartAction: EventActionCallable<DragStartActionEvent> = state => {
     return {
         state: {
+            ...state,
             ui: {
                 ...state.ui,
                 isDragging: true
@@ -16,6 +17,7 @@ export const dragStartAction: EventActionCallable<DragStartActionEvent> = state 
 export const dragEndAction: EventActionCallable<DragEndActionEvent> = state => {
     return {
         state: {
+            ...state,
             ui: {
                 ...state.ui,
                 isDragging: false

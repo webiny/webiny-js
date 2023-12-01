@@ -25,7 +25,7 @@ async function output(target, content) {
 }
 
 (async () => {
-    const workspaces = getPackages({ includes: ["/packages/", "/packages-v6/"] });
+    const workspaces = getPackages({ includes: ["/packages/"] });
 
     for (const wpObject of workspaces) {
         if (!wpObject.isTs) {

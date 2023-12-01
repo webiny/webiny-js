@@ -17,6 +17,7 @@ import {
     entryToStorageTransform
 } from "./utils/entryStorage";
 import { createFieldConverters } from "~/fieldConverters";
+import { createExportGraphQL } from "~/export";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -30,7 +31,8 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
         /**
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
-        ...baseCreateGraphQL(params)
+        ...baseCreateGraphQL(params),
+        createExportGraphQL()
     ];
 };
 
@@ -53,5 +55,6 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
 export * from "~/graphqlFields";
 export * from "~/plugins";
 export * from "~/utils/incrementEntryIdVersion";
+export * from "~/utils/access";
 export * from "./graphql/handleRequest";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

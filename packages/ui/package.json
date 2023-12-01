@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.19.0",
+    "@babel/runtime": "^7.22.6",
     "@editorjs/editorjs": "^2.24.3",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -64,14 +64,15 @@
     "react-loading-skeleton": "^3.1.0",
     "react-spinner-material": "1.1.4",
     "react-transition-group": "^4.3.0",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "timeago-react": "^3.0.6"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "^7.19.4",
-    "@babel/preset-typescript": "^7.18.6",
+    "@babel/preset-env": "^7.22.7",
+    "@babel/preset-typescript": "^7.22.5",
     "@storybook/addon-info": "^5.2.8",
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
@@ -87,7 +88,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/storybook-utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "babel-loader": "^8.0.0-beta.6",
+    "babel-loader": "9.1.2",
     "babel-plugin-emotion": "^9.2.8",
     "execa": "^5.0.0",
     "jest-dom": "^3.0.0",

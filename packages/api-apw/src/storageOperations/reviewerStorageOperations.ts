@@ -64,7 +64,8 @@ export const createReviewerStorageOperations = ({
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
                     ...existingEntry,
-                    ...params.data
+                    ...params.data,
+                    savedOn: new Date()
                 });
             });
             return getFieldValues(entry, baseFields);

@@ -1,7 +1,7 @@
 import * as React from "react";
 import invariant from "invariant";
 import { plugins } from "@webiny/plugins";
-import { get } from "lodash";
+import get from "lodash/get";
 import { ImageComponentPlugin, ImageProps } from "~/types";
 
 export const Image: React.FC<ImageProps> = ({ preset: presetName, ...props }) => {

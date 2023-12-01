@@ -1,10 +1,8 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useState } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useSecurity } from "@webiny/app-security";
-
-import { PageBuilderSecurityPermission } from "~/types";
 import BlocksByCategoriesDataList from "./BlocksByCategoriesDataList";
 import PageBlocksDataList from "./PageBlocksDataList";
+import { useBlocksPermissions } from "~/hooks/permissions";
 
 export interface CreatableItem {
     createdBy?: {
@@ -14,66 +12,23 @@ export interface CreatableItem {
 
 const PageBlocks: React.FC = () => {
     const [filter, setFilter] = useState<string>("");
-    const { identity, getPermission } = useSecurity();
-    const pbPageBlockPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.block");
-    }, [identity]);
-
-    const canCreate = useMemo((): boolean => {
-        if (!pbPageBlockPermission) {
-            return false;
-        }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("w");
-        }
-        return true;
-    }, []);
-
-    const canEdit = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageBlockPermission) {
-            return false;
-        }
-        if (pbPageBlockPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy?.id === identityId;
-        }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("w");
-        }
-
-        return true;
-    }, []);
-
-    const canDelete = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageBlockPermission) {
-            return false;
-        }
-        if (pbPageBlockPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy?.id === identityId;
-        }
-        if (typeof pbPageBlockPermission.rwd === "string") {
-            return pbPageBlockPermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
+    const { canCreate, canUpdate, canDelete } = useBlocksPermissions();
 
     return (
         <SplitView>
-            <LeftPanel>
+            <LeftPanel span={4}>
                 <BlocksByCategoriesDataList
                     filter={filter}
                     setFilter={setFilter}
-                    canCreate={canCreate}
+                    canCreate={canCreate()}
                 />
             </LeftPanel>
-            <RightPanel>
+            <RightPanel span={8}>
                 <PageBlocksDataList
                     filter={filter}
-                    canCreate={canCreate}
-                    canEdit={canEdit}
-                    canDelete={canDelete}
+                    canCreate={canCreate()}
+                    canEdit={record => canUpdate(record?.createdBy?.id)}
+                    canDelete={record => canDelete(record?.createdBy?.id)}
                 />
             </RightPanel>
         </SplitView>

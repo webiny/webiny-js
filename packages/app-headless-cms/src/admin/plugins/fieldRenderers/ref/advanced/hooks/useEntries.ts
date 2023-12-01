@@ -111,7 +111,10 @@ export const useEntries = (params: Params) => {
                             createdBy: entry.createdBy,
                             modifiedBy: entry.modifiedBy,
                             createdOn: entry.createdOn,
-                            savedOn: entry.savedOn
+                            savedOn: entry.savedOn,
+                            location: {
+                                folderId: entry.wbyAco_location?.folderId
+                            }
                         };
                     });
                     setEntries(items.concat(newItems));

@@ -22,7 +22,7 @@ export interface CreateHandlerCoreParams {
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path?: string;
+    path?: `manage/${string}-${string}}` | `read/${string}-${string}}` | string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const tenant = {
@@ -70,7 +70,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            // @ts-ignore
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {

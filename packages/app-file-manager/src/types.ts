@@ -29,3 +29,8 @@ export interface QueryGetSettingsResult {
         };
     };
 }
+
+export interface FileTag {
+    tag: string;
+    count: number;
+}

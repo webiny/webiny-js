@@ -1,8 +1,8 @@
-// @ts-ignore
+// @ts-expect-error
 import getYarnWorkspaces from "get-yarn-workspaces";
 import { blueBright, gray } from "chalk";
 import fs from "fs-extra";
-import get from "lodash.get";
+import get from "lodash/get";
 import path from "path";
 import loadJson from "load-json-file";
 import writeJson from "write-json-file";
@@ -51,8 +51,9 @@ class FileLocker {
                 });
 
                 if (resolvedVersion) {
-                    // @ts-ignore
-                    lockPackageJson[depKey][key] = resolvedVersion;
+                    const newDepValue = lockPackageJson[depKey] || {};
+                    newDepValue[key] = resolvedVersion;
+                    lockPackageJson[depKey] = newDepValue;
                 } else {
                     console.log(`Failed to resolve`, dependencies[key]);
                 }

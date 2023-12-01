@@ -1,12 +1,12 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { exportBlock } from "~/export/utils";
 import { Payload as ExtractPayload } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/export/process";
+import { BlockExporter } from "./exporters/BlockExporter";
 
 /**
  * Handles the export blocks process workflow.
@@ -61,6 +61,13 @@ export const blocksHandler = async (
 
         log(`Processing block key "${blockId}"`);
 
+        const blockCategory = await pageBuilder.getBlockCategory(block.blockCategory);
+
+        if (!blockCategory) {
+            log(`Unable to load block category "${block.blockCategory}"`);
+            throw new NotFoundError(`Unable to load block category "${block.blockCategory}"`);
+        }
+
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
             status: ImportExportTaskStatus.PROCESSING
@@ -73,8 +80,9 @@ export const blocksHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Extracting block data and uploading to storage...`);
-        // Extract Block
-        const blockDataZip = await exportBlock(block, exportBlocksDataKey, fileManager);
+        const blockExporter = new BlockExporter(fileManager);
+        const blockDataZip = await blockExporter.execute(block, blockCategory, exportBlocksDataKey);
+
         log(`Finish uploading zip...`);
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {

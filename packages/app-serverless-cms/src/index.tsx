@@ -2,6 +2,7 @@ export { Admin } from "./Admin";
 export type { AdminProps } from "./Admin";
 export {
     useApp,
+    useWcp,
     useUserMenuItem,
     useUserMenu,
     useMenuItem,
@@ -23,6 +24,7 @@ export {
     BrandRenderer,
     Provider,
     Compose,
+    CompositionScope,
     Plugins,
     Plugin,
     makeComposable,
@@ -64,3 +66,4 @@ export { useTenancy } from "@webiny/app-tenancy";
 export type { Tenant } from "@webiny/app-tenancy";
 
 export { AddPbWebsiteSettings } from "@webiny/app-page-builder";
+export * from "./apolloClientFactory";

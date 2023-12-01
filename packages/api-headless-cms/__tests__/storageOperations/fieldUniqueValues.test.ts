@@ -1,13 +1,13 @@
+import { CmsContext } from "~/types";
 import {
     createPersonEntries,
     createPersonModel,
-    deletePersonModel,
-    waitPersonRecords
+    deletePersonModel
 } from "~tests/storageOperations/helpers";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 
 describe("field unique values listing", () => {
-    const { storageOperations, until, plugins } = useGraphQLHandler({
+    const { storageOperations, plugins } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
@@ -19,7 +19,7 @@ describe("field unique values listing", () => {
     beforeAll(async () => {
         await storageOperations.beforeInit({
             plugins
-        } as any);
+        } as unknown as CmsContext);
     });
 
     beforeEach(async () => {
@@ -62,29 +62,36 @@ describe("field unique values listing", () => {
             results[entryId] = evenMoreResults[entryId];
         }
 
-        await waitPersonRecords({
-            records: results,
-            storageOperations,
-            name: "list all person entries after create",
-            until,
-            model: personModel
-        });
-
         /**
          * There must be "amount" * 3 of results.
          */
         expect(Object.values(results)).toHaveLength(amount * 3);
 
-        const values = await storageOperations.entries.getUniqueFieldValues(personModel, {
-            where: {
-                latest: true
-            },
-            fieldId: "name"
+        const values = (
+            await storageOperations.entries.getUniqueFieldValues(personModel, {
+                where: {
+                    latest: true
+                },
+                fieldId: "name"
+            })
+        ).sort((a, b) => {
+            const p1 = Number(a.value.split("#")[1]);
+            const p2 = Number(b.value.split("#")[1]);
+            return p1 < p2 ? -1 : 1;
         });
+
         /**
          * There should be the "amount" of unique values.
          */
-        expect(values.length).toBe(amount);
-        expect(values.every(item => item.count === 3)).toBe(true);
+        expect(values).toEqual(
+            Array.from({ length: 17 })
+                .map((_, index) => {
+                    return {
+                        value: `Person #${index + 1}`,
+                        count: 3
+                    };
+                })
+                .sort()
+        );
     });
 });

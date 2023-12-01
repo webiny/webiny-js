@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
@@ -12,58 +12,68 @@ import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
     CREATE_MENU,
     DELETE_MENU,
-    LIST_MENUS,
-    UPDATE_MENU,
     GET_MENU,
-    GET_PUBLIC_MENU
+    GET_PUBLIC_MENU,
+    LIST_MENUS,
+    UPDATE_MENU
 } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
     DELETE_PAGE_ELEMENT,
+    GET_PAGE_ELEMENT,
     LIST_PAGE_ELEMENTS,
-    UPDATE_PAGE_ELEMENT,
-    GET_PAGE_ELEMENT
+    UPDATE_PAGE_ELEMENT
 } from "./graphql/pageElements";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
-    LIST_PAGES,
-    LIST_PUBLISHED_PAGES,
-    LIST_PAGE_TAGS,
-    UPDATE_PAGE,
     GET_PAGE,
     GET_PUBLISHED_PAGE,
+    LIST_PAGE_TAGS,
+    LIST_PAGES,
+    LIST_PUBLISHED_PAGES,
+    OEMBED_DATA,
     PUBLISH_PAGE,
+    UNLINK_PAGE_FROM_TEMPLATE,
     UNPUBLISH_PAGE,
-    OEMBED_DATA
+    UPDATE_PAGE
 } from "./graphql/pages";
 
 import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
+    GET_CATEGORY,
     LIST_CATEGORIES,
-    UPDATE_CATEGORY,
-    GET_CATEGORY
+    UPDATE_CATEGORY
 } from "./graphql/categories";
 
-import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { GET_DEFAULT_SETTINGS, GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 
 import {
     CREATE_BLOCK_CATEGORY,
     DELETE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY,
     LIST_BLOCK_CATEGORIES,
-    UPDATE_BLOCK_CATEGORY,
-    GET_BLOCK_CATEGORY
+    UPDATE_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
 import {
     CREATE_PAGE_BLOCK,
-    UPDATE_PAGE_BLOCK,
     DELETE_PAGE_BLOCK,
+    GET_PAGE_BLOCK,
     LIST_PAGE_BLOCKS,
-    GET_PAGE_BLOCK
+    UPDATE_PAGE_BLOCK
 } from "./graphql/pageBlocks";
+
+import {
+    CREATE_PAGE_FROM_TEMPLATE,
+    CREATE_PAGE_TEMPLATE,
+    DELETE_PAGE_TEMPLATE,
+    GET_PAGE_TEMPLATE,
+    LIST_PAGE_TEMPLATES,
+    UPDATE_PAGE_TEMPLATE
+} from "./graphql/pageTemplates";
 
 import path from "path";
 import fs from "fs";
@@ -72,6 +82,9 @@ import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "~/types";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     permissions?: any;
@@ -81,21 +94,24 @@ interface Params {
 }
 
 export default ({ permissions, identity, plugins }: Params = {}) => {
-    const i18nStorage = getStorageOps("i18n");
+    const i18nStorage = getStorageOps<any>("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createHandler({
         plugins: [
+            ...cmsStorage.plugins,
             ...pageBuilderStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
-            createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nStorage.storageOperations as any,
+            i18nStorage.storageOperations,
             mockLocalesPlugins(),
+            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
             createPageBuilderGraphQL(),
             createPageBuilderContext({ storageOperations: pageBuilderStorage.storageOperations }),
             prerenderingHookPlugins(),
@@ -108,6 +124,13 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
                         process: "process"
                     }
                 }
+            }),
+            new CmsParametersPlugin(async context => {
+                const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+                return {
+                    type: "manage",
+                    locale
+                };
             }),
             {
                 type: "api-file-manager-storage",
@@ -149,7 +172,7 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
                 body: JSON.stringify(body),
                 ...rest
             },
-            {} as any
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.
@@ -225,6 +248,9 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         },
         async unpublishPage(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
+        },
+        async unlinkPageFromTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: UNLINK_PAGE_FROM_TEMPLATE, variables } });
         },
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
@@ -307,6 +333,25 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         },
         async getPageBlock(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE_BLOCK, variables } });
+        },
+        // Page Templates.
+        async createPageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_TEMPLATE, variables } });
+        },
+        async updatePageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_PAGE_TEMPLATE, variables } });
+        },
+        async deletePageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_PAGE_TEMPLATE, variables } });
+        },
+        async listPageTemplates(variables: any = {}) {
+            return invoke({ body: { query: LIST_PAGE_TEMPLATES, variables } });
+        },
+        async getPageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PAGE_TEMPLATE, variables } });
+        },
+        async createPageFromTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_FROM_TEMPLATE, variables } });
         }
     };
 };

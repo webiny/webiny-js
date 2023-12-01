@@ -22,17 +22,18 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
-import { LIST_PAGE_BLOCKS, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
-import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbErrorResponse, PbPageBlock, PbBlockCategory, PbEditorElement } from "~/types";
+import { PbErrorResponse, PbBlockCategory, PbEditorElement } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
 import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -77,6 +78,9 @@ export const PageEditor: React.FC = () => {
         CreatePageFromMutationVariables
     >(CREATE_PAGE_FROM);
 
+    const { navigateToPageEditor } = useNavigatePage();
+    const { listBlocks } = usePageBlocks();
+
     const pageId = decodeURIComponent(params["id"]);
 
     const { page, revisions } = data;
@@ -97,16 +101,9 @@ export const PageEditor: React.FC = () => {
                     }
                 });
             });
-        const savedBLocks = client
-            .query<ListPageBlocksQueryResponse>({ query: LIST_PAGE_BLOCKS })
-            .then(({ data }) => {
-                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
-                blocks.forEach(element => {
-                    createBlockPlugin({
-                        ...element
-                    });
-                });
-            });
+
+        const savedBLocks = listBlocks();
+
         const blockCategories = client
             .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
             .then(({ data }) => {
@@ -172,7 +169,7 @@ export const PageEditor: React.FC = () => {
                     showSnackbar("Missing ID in Create Page From Mutation Response.");
                     return;
                 }
-                history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
+                navigateToPageEditor(id);
                 setTimeout(() => showSnackbar("New revision created."), 1500);
             });
 
@@ -181,7 +178,7 @@ export const PageEditor: React.FC = () => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );
-    }, [pageId]);
+    }, [pageId, navigateToPageEditor]);
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>

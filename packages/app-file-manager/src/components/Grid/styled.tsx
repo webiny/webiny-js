@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/react";
 
 export const FolderList = styled("div")`
     margin: 16px;
@@ -17,23 +16,6 @@ export const FileList = styled("div")`
 const COMPONENT_WIDTH = 200;
 const COMPONENT_HEIGHT = 200;
 
-const grow = keyframes`
-  0% {
-    transform: scale(1)
-  }
-  50% {
-    transform: scale(1.2)
-  }
-  100% {
-    transform: scale(1)
-  }
-`;
-
-type FileWrapperProps = {
-    disableSelect: boolean;
-    selected: boolean;
-};
-
 export const FileBody = styled("div")`
     transition: 200ms ease-in opacity;
     width: ${COMPONENT_WIDTH};
@@ -41,32 +23,139 @@ export const FileBody = styled("div")`
     overflow: hidden;
 `;
 
-export const FileInfoIcon = styled("div")`
-    opacity: 0;
+export const FileControls = styled("div")`
+    opacity: 1;
     position: absolute;
-    top: 0;
+    top: -25px;
     right: 0;
     z-index: 10;
-    transition: all 150ms ease-in;
+    transition: all 150ms ease-out;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 
-    &:hover {
-        animation-name: ${grow};
-        animation-duration: 0.4s;
-        animation-timing-function: ease-in;
-        animation-delay: 0.2s;
+export const FileSelectedMarker = styled("div")`
+    position: absolute;
+    z-index: 9;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    > div {
+        width: 32px;
+        height: 32px;
+        position: absolute;
+        right: 0;
+        top: 24px;
+        padding: 2px;
+        margin: 5px;
+        background-color: var(--mdc-theme-surface);
+        box-shadow: 0px 0px 4px var(--mdc-theme-on-background);
+        border-radius: 50%;
+        border: 1px solid var(--mdc-theme-on-background);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.95;
     }
+    svg {
+        transition: all 150ms ease-out;
+        fill: var(--mdc-theme-text-secondary-on-background);
+        width: 32px;
+        height: 32px;
+        opacity: 0.35;
+        scale: 0.8;
+    }
+    &:hover {
+        svg {
+            opacity: 0.9;
+            scale: 0.9;
+        }
+    }
+    &.selected {
+        > div {
+            background-color: var(--mdc-theme-primary);
+        }
+        svg {
+            opacity: 1;
+            scale: 1;
+            fill: var(--mdc-theme-surface);
+        }
+    }
+`;
 
-    & .mdc-icon-button svg {
-        color: var(--mdc-theme-secondary);
+export const FileInfoIcon = styled("div")`
+    display: flex;
+    & button {
+        transition: all 150ms ease-out;
+        top: 50px;
+        opacity: 0;
+        padding: 0;
+        svg {
+            border: 1px solid var(--mdc-theme-on-background);
+            border-radius: 50%;
+            background-color: var(--mdc-theme-surface);
+            padding: 10px;
+
+            transition: all 150ms ease-out;
+            color: var(--mdc-theme-text-primary-on-background);
+            scale: 0.7;
+            &:hover {
+                scale: 1;
+            }
+        }
+        &:nth-of-type(1) {
+            transition-delay: 0ms;
+        }
+        &:nth-of-type(2) {
+            transition-delay: 50ms;
+        }
+        &:nth-of-type(3) {
+            transition-delay: 100ms;
+        }
     }
 `;
 
 export const FilePreview = styled("div")`
     text-align: center;
     position: relative;
-    background-color: var(--mdc-theme-surface);
+    background: repeating-conic-gradient(var(--mdc-theme-surface) 0% 25%, transparent 0% 50%) 50%/18px
+        18px;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    display: flex;
+    object-fit: cover;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    svg,
+    img {
+        width: 100%;
+        height: 100%;
+        max-height: 210px;
+        max-width: 210px;
+        object-fit: contain;
+        box-sizing: border-box;
+        transition: all 150ms ease-out;
+    }
+    svg {
+        fill: var(--mdc-theme-text-secondary-on-background);
+    }
+    &.selected {
+        img,
+        svg {
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            border-radius: 2px;
+            scale: 0.8;
+            box-shadow: 2px 2px 4px var(--mdc-theme-on-background);
+            border: 2px solid var(--mdc-theme-primary);
+        }
+    }
 `;
 
 export const FileClickable = styled("div")`
@@ -79,29 +168,50 @@ export const FileClickable = styled("div")`
 `;
 
 export const FileLabel = styled("div")`
-    padding: 15px 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.8rem;
+    padding: 25px 10px 15px 10px;
     color: var(--mdc-theme-on-surface);
     background-color: var(--mdc-theme-on-background);
+    span {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.5;
+        &.type {
+            font-size: 0.7em;
+        }
+        &.name {
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+    }
 `;
 
-export const FileWrapper = styled("div")<FileWrapperProps>`
+export const FileWrapper = styled("div")`
     display: inline-block;
     float: left;
     position: relative;
     z-index: 1;
-    cursor: ${({ disableSelect }) => (disableSelect ? "auto" : "pointer")};
     width: 100%;
     max-width: ${COMPONENT_WIDTH};
     border: 1px solid var(--mdc-theme-on-background);
     border-radius: 2px;
-    box-shadow: ${({ selected }) =>
-        selected ? "0px 0px 0px 2px var(--mdc-theme-primary)" : "none"};
+    overflow: hidden;
+    box-shadow: 0 1px 3px var(--mdc-theme-on-background);
 
-    &:hover ${FileInfoIcon} {
+    &:hover ${FileControls} {
         opacity: 1;
+        button {
+            opacity: 1;
+            top: 125px;
+            width: 100%;
+            svg {
+                fill: var(--mdc-theme-primary);
+            }
+            span.mdc-button__label > span {
+                display: inline-block;
+                width: 75px;
+            }
+        }
     }
 `;

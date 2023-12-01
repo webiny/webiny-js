@@ -1,9 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
-/**
- * Package timeago-react does not have types
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import orderBy from "lodash/orderBy";
@@ -108,7 +104,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     const { location, history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { canEdit, canDelete } = usePermission();
+    const { canUpdate, canDelete } = usePermission();
 
     const deleteRecord = useCallback(
         async item => {
@@ -237,7 +233,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     const { showImportDialog } = useImportForm();
 
     const listActions = useMemo(() => {
-        if (!canCreate) {
+        if (!canCreate()) {
             return null;
         }
         return (
@@ -257,7 +253,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                 />
             </DataListActionsWrapper>
         );
-    }, [canCreate, showImportDialog]);
+    }, [canCreate(), showImportDialog]);
 
     const multiSelectProps = useMultiSelect({
         useRouter: false,
@@ -290,7 +286,11 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                     {data.map(form => {
                         const name = form.createdBy.displayName;
                         return (
-                            <ListItem key={form.id} className={listItemMinHeight}>
+                            <ListItem
+                                key={form.id}
+                                className={listItemMinHeight}
+                                data-testid="default-data-list-element"
+                            >
                                 <ListSelectBox>
                                     <Checkbox
                                         onChange={() => multiSelectProps.multiSelect(form)}
@@ -319,13 +319,19 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                         {upperFirst(form.status)} (v{form.version})
                                     </Typography>
                                     <ListActions>
-                                        {canEdit(form) && <EditIcon onClick={editRecord(form)} />}
+                                        {canUpdate(form) && (
+                                            <EditIcon
+                                                onClick={editRecord(form)}
+                                                data-testid="edit-form-action"
+                                            />
+                                        )}
                                         {canDelete(form) && (
                                             <ConfirmationDialog
                                                 title={"Confirmation required!"}
                                                 message={
                                                     "This will delete the form and all of its revisions. Are you sure you want to continue?"
                                                 }
+                                                data-testid="form-deletion-confirmation-dialog"
                                             >
                                                 {({ showConfirmation }) => (
                                                     <DeleteIcon
@@ -335,6 +341,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                                                 history.push("/form-builder/forms");
                                                             })
                                                         }
+                                                        data-testid="delete-form-action"
                                                     />
                                                 )}
                                             </ConfirmationDialog>

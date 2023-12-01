@@ -1,39 +1,30 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useRef } from "react";
 import {
     $getSelection,
-    $isRangeSelection,
-    COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
+    RangeSelection,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { makeComposable } from "@webiny/react-composition";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
+import { $isLinkNode } from "@webiny/lexical-nodes";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
-import { ToolbarType } from "~/types";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
+import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { getSelectedNode } from "~/utils/getSelectedNode";
 
 interface FloatingToolbarProps {
-    type: ToolbarType;
     anchorElem: HTMLElement;
-    children?: React.ReactNode;
     editor: LexicalEditor;
 }
 
-const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
+const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
-    const { toolbarType, setToolbarType } = useRichTextEditor();
-
-    useEffect(() => {
-        if (toolbarType !== type) {
-            setToolbarType(type);
-        }
-    }, [type]);
+    const { toolbarElements } = useLexicalEditorConfig();
 
     const mouseMoveListener = useCallback(
         (e: MouseEvent) => {
@@ -149,120 +140,44 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
 
     return (
         <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
-            {editor.isEditable() && children}
+            {editor.isEditable() && (
+                <>
+                    {toolbarElements.map(action => (
+                        <Fragment key={action.name}>{action.element}</Fragment>
+                    ))}
+                </>
+            )}
         </div>
     );
 };
 
-interface useToolbarProps {
-    editor: LexicalEditor;
-    type: ToolbarType;
-    anchorElem: HTMLElement;
-    children?: React.ReactNode;
+/**
+ * TODO: this logic should live in Node classes. A toolbar should not decide when to show itself.
+ */
+function isLinkNode(selection: RangeSelection) {
+    const node = getSelectedNode(selection);
+    const parent = node.getParent();
+
+    return $isLinkNode(parent) || $isLinkNode(node);
 }
 
-const useToolbar: FC<useToolbarProps> = ({
-    editor,
-    anchorElem = document.body,
-    type,
-    children
-}): JSX.Element | null => {
-    const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
-        useRichTextEditor();
+export interface ToolbarProps {
+    anchorElem?: HTMLElement;
+}
 
-    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
+export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
+    const [editor] = useLexicalComposerContext();
+    const showToolbar = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return false;
+        }
 
-    const updateToolbar = useCallback(() => {
-        editor.getEditorState().read(() => {
-            // Should not to pop up the floating toolbar when using IME input
-            if (editor.isComposing()) {
-                return;
-            }
+        return !isLinkNode(rangeSelection) && !rangeSelection.isCollapsed();
+    });
 
-            const selection = $getSelection();
-
-            if ($isRangeSelection(selection)) {
-                const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
-                if (selectionState) {
-                    setTextBlockSelection(selectionState);
-                    if (selectionState.selectedText !== "") {
-                        setNodeIsText(true);
-                    } else {
-                        setNodeIsText(false);
-                    }
-                }
-            }
-
-            if (!$isRangeSelection(selection)) {
-                setNodeIsText(false);
-                return;
-            }
-        });
-    }, [toolbarActiveEditor]);
-
-    useEffect(() => {
-        document.addEventListener("selectionchange", updateToolbar);
-        return () => {
-            document.removeEventListener("selectionchange", updateToolbar);
-        };
-    }, [updateToolbar]);
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setToolbarActiveEditor(newEditor);
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
-
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerEditableListener(editable => {
-                setIsEditable(editable);
-            }),
-            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            }),
-            editor.registerRootListener(() => {
-                if (editor.getRootElement() === null) {
-                    setNodeIsText(false);
-                }
-            })
-        );
-    }, [updateToolbar, editor, toolbarActiveEditor]);
-
-    if (!nodeIsText) {
+    if (!showToolbar) {
         return null;
     }
 
-    return createPortal(
-        <FloatingToolbar type={type} anchorElem={anchorElem} editor={editor}>
-            {children}
-        </FloatingToolbar>,
-        anchorElem
-    );
+    return createPortal(<FloatingToolbar anchorElem={anchorElem} editor={editor} />, anchorElem);
 };
-
-export interface ToolbarProps {
-    type: ToolbarType;
-    anchorElem: HTMLElement;
-    children?: React.ReactNode;
-}
-
-/**
- * @description Main toolbar container
- */
-export const Toolbar = makeComposable<ToolbarProps>(
-    "Toolbar",
-    ({ anchorElem, type, children }): JSX.Element | null => {
-        const [editor] = useLexicalComposerContext();
-        return useToolbar({ editor, anchorElem, type, children });
-    }
-);

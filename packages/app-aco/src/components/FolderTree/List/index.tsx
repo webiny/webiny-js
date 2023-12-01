@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DropOptions,
     getBackendOptions,
@@ -10,112 +9,114 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
-import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
-
-import { createTreeData, createInitialOpenList } from "./utils";
-
+import { createInitialOpenList, createTreeData } from "./utils";
 import { useFolders } from "~/hooks";
+import { ROOT_FOLDER } from "~/constants";
+import { DndFolderItem, FolderItem } from "~/types";
 
-import { ROOT_ID } from "./constants";
-
-import { DndItemData, FolderItem } from "~/types";
-
-type ListProps = {
-    type: string;
+interface ListProps {
     folders: FolderItem[];
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
     enableActions?: boolean;
-    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
-    onDragStart: () => void;
-    onDragEnd: () => void;
-};
+    onFolderClick: (data: FolderItem) => void;
+}
 
 export const List: React.VFC<ListProps> = ({
-    type,
     folders,
     onFolderClick,
     focusedFolderId,
     hiddenFolderIds,
-    enableActions,
-    onDragStart,
-    onDragEnd
+    enableActions
 }) => {
-    const { updateFolder } = useFolders(type);
+    const { updateFolder, folderLevelPermissions: flp } = useFolders();
     const { showSnackbar } = useSnackbar();
-    const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
-    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
-    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndItemData>["id"][]>([]);
+    const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
+    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
+    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [permissionsDialogOpen, setPermissionsDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-
-    useDeepCompareEffect(() => {
-        if (folders) {
-            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
-        }
-
-        /**
-         *  We are spreading the `folders`:
-         *  in case of folder value update (e.g. name) from any component within the UI does not trigger the tree data update.
-         *  TODO: need investigation.
-         */
-    }, [{ ...folders }, focusedFolderId]);
 
     useEffect(() => {
         if (folders) {
-            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
+            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
-    }, []);
+    }, [folders, focusedFolderId]);
+
+    useEffect(() => {
+        if (!folders) {
+            return;
+        }
+        setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
+    }, [focusedFolderId]);
 
     const handleDrop = async (
-        newTree: NodeModel<DndItemData>[],
+        newTree: NodeModel<DndFolderItem>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         try {
             const item = folders.find(folder => folder.id === dragSourceId);
 
             if (!item) {
-                throw new Error("Folder not found");
+                throw new Error("Folder not found!");
             }
 
             setTreeData(newTree);
-            await updateFolder({
-                ...item,
-                parentId: dropTargetId !== ROOT_ID ? (dropTargetId as string) : null
-            });
+
+            await updateFolder(
+                {
+                    ...item,
+                    parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
+                },
+                { refetchFoldersList: true }
+            );
         } catch (error) {
             return showSnackbar(error.message);
         }
     };
 
     const sort = useMemo(
-        () => (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
+        () => (a: NodeModel<DndFolderItem>, b: NodeModel<DndFolderItem>) => {
+            if (a.data!.id === ROOT_FOLDER || b.data!.id === ROOT_FOLDER) {
+                return 1;
+            }
             return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
         },
         []
     );
 
-    const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
-        setOpenFolderIds(folderIds);
+    const handleChangeOpen = (folderIds: string[]) => {
+        setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
+
+    const canDrag = useCallback(
+        (folderId: string) => {
+            const isRootFolder = folderId === ROOT_FOLDER;
+            return !isRootFolder && flp.canManageStructure(folderId);
+        },
+        [flp.canManageStructure]
+    );
 
     return (
         <>
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
                 <Tree
                     tree={treeData}
-                    rootId={ROOT_ID}
+                    rootId={"0"}
                     onDrop={handleDrop}
-                    onChangeOpen={handleChangeOpen}
-                    onDragStart={onDragStart}
-                    onDragEnd={onDragEnd}
+                    onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
+                    canDrag={item => canDrag(item!.id as string)}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}
@@ -128,6 +129,10 @@ export const List: React.VFC<ListProps> = ({
                                 setSelectedFolder(data);
                                 setUpdateDialogOpen(true);
                             }}
+                            onSetFolderPermissions={data => {
+                                setSelectedFolder(data);
+                                setPermissionsDialogOpen(true);
+                            }}
                             onDeleteFolder={data => {
                                 setSelectedFolder(data);
                                 setDeleteDialogOpen(true);
@@ -136,7 +141,6 @@ export const List: React.VFC<ListProps> = ({
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
                     classes={{
-                        root: "treeRoot",
                         dropTarget: "dropTarget",
                         draggingSource: "draggingSource",
                         placeholder: "placeholderContainer"
@@ -162,6 +166,14 @@ export const List: React.VFC<ListProps> = ({
                         open={deleteDialogOpen}
                         onClose={() => {
                             setDeleteDialogOpen(false);
+                            setSelectedFolder(undefined);
+                        }}
+                    />{" "}
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={permissionsDialogOpen}
+                        onClose={() => {
+                            setPermissionsDialogOpen(false);
                             setSelectedFolder(undefined);
                         }}
                     />

@@ -7,9 +7,10 @@ import {
     SettingsStorageOperationsGetParams,
     SettingsStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
-import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
 import WebinyError from "@webiny/error";
+import { put } from "@webiny/db-dynamodb";
 
 /**
  * Because it is a possibility that tenant and locale are set as false (for the global settings) we must take
@@ -39,7 +40,14 @@ const createType = (): string => {
 };
 
 export interface CreateSettingsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: Entity;
+}
+
+export interface DbDefaultSettings {
+    data: {
+        appUrl: string;
+        deliveryUrl: string;
+    };
 }
 
 export const createSettingsStorageOperations = ({
@@ -52,14 +60,18 @@ export const createSettingsStorageOperations = ({
         };
 
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
+            const result = await getClean<DbDefaultSettings>({
+                entity,
+                keys
+            });
+            if (!result) {
                 return null;
             }
 
-            const { appUrl, deliveryUrl } = result.Item.data;
-
-            return { websiteUrl: deliveryUrl, websitePreviewUrl: appUrl };
+            return {
+                websiteUrl: result.data.deliveryUrl,
+                websitePreviewUrl: result.data.appUrl
+            };
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load default settings record.",
@@ -79,8 +91,11 @@ export const createSettingsStorageOperations = ({
             SK: "A"
         };
         try {
-            const result = await getRecord<{ data: Settings }>({ entity, keys });
-            return result ? result.data : null;
+            const result = await getClean<{ data: Settings }>({
+                entity,
+                keys
+            });
+            return result?.data || null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",
@@ -99,10 +114,13 @@ export const createSettingsStorageOperations = ({
             SK: "A"
         };
         try {
-            await entity.put({
-                ...keys,
-                TYPE: createType(),
-                data: settings
+            await put({
+                entity,
+                item: {
+                    TYPE: createType(),
+                    data: settings,
+                    ...keys
+                }
             });
 
             return settings;
@@ -125,10 +143,13 @@ export const createSettingsStorageOperations = ({
             SK: "A"
         };
         try {
-            await entity.put({
-                ...keys,
-                TYPE: createType(),
-                data: settings
+            await put({
+                entity,
+                item: {
+                    data: settings,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
 
             return settings;

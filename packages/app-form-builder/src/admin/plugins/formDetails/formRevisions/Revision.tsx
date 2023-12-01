@@ -1,10 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import {
     ListItem,
     ListItemText,
@@ -72,9 +68,9 @@ const Revision: React.FC<RevisionProps> = props => {
             revision,
             form
         });
-    const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
+    const { canPublish, canUnpublish, canDelete, canUpdate } = usePermission();
 
-    const showMenu = canEdit(form) || canDelete(form) || canPublish() || canUnpublish();
+    const showMenu = canUpdate(form) || canDelete(form) || canPublish() || canUnpublish();
 
     return (
         <ListItem>
@@ -97,7 +93,7 @@ const Revision: React.FC<RevisionProps> = props => {
                         className={revisionsMenu}
                         data-testid={"fb.form-revisions.action-menu"}
                     >
-                        {canEdit(form) && (
+                        {canUpdate(form) && (
                             <MenuItem
                                 onClick={() => createRevision()}
                                 data-testid={"fb.form-revisions.action-menu.create-revision"}
@@ -108,7 +104,7 @@ const Revision: React.FC<RevisionProps> = props => {
                                 New from current
                             </MenuItem>
                         )}
-                        {revision.status === "draft" && canEdit(form) && (
+                        {revision.status === "draft" && canUpdate(form) && (
                             <MenuItem
                                 onClick={() => editRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.edit"}

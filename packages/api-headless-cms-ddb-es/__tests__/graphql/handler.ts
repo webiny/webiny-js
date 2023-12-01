@@ -15,9 +15,11 @@ import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/getElasticsearchClient";
 import { createTable } from "~/definitions/table";
 import { createEntryEntity } from "~/definitions/entry";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
+    path?: "/graphql" | `/cms/manage/${Lowercase<string>}-${Uppercase<string>}`;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
@@ -69,7 +71,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         /**
          * If no path defined, use /graphql as we want to make request to main api
          */
-        path: "/cms/manage/en-US",
+        path: params.path || "/cms/manage/en-US",
         headers: {
             ["x-tenant"]: "root",
             ["Content-Type"]: "application/json"
@@ -78,7 +80,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     return {
         createContext: async () => {
-            return handler(payload, {} as any);
+            return handler(payload, {} as LambdaContext);
         },
         elasticsearch: elasticsearchClient,
         documentClient,

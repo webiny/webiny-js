@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Droppable, IsVisibleCallable } from "../Droppable";
-import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
+import { DragSource } from "~/types";
 
 const InnerDiv = styled("div")({
     height: 15,
@@ -38,11 +38,11 @@ const OuterDiv = styled("div")(
     },
     (props: OuterDivProps) => ({
         [props.last ? "bottom" : "top"]: -15,
-        // @ts-ignore
+        // @ts-expect-error
         [InnerDiv]: {
             borderColor: props.isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
             display: props.isDragging ? "block" : "none",
-            // @ts-ignore
+            // @ts-expect-error
             [BackgroundColorDiv]: {
                 opacity: 0.5,
                 backgroundColor: props.isOver

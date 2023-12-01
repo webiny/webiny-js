@@ -8,7 +8,7 @@ import { UIRenderer } from "./UIRenderer";
 type Class<T> = new (...args: any[]) => T;
 
 export interface ShouldRender<TProps = any> {
-    (params: { props: TProps; next: Function }): boolean;
+    (params: { props: TProps; next: () => any }): boolean;
 }
 
 export interface UIElementConfig<TProps = any> {
@@ -128,7 +128,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     public getParentByType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
         let parent = this.getParent();
         while (parent) {
-            if (parent instanceof (type as any)) {
+            if (parent instanceof type) {
                 break;
             }
 
@@ -349,7 +349,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
 
     public shouldRender(props: Record<string, any>): boolean {
         const shouldRender = [...this._shouldRender];
-        const next = (nextProps: Record<string, any>) => {
+        const next = (nextProps: Record<string, any>): any => {
             const shouldRenderCallable = shouldRender.pop();
             if (!shouldRenderCallable) {
                 return false;

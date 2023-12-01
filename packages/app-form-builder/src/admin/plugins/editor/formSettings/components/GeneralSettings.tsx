@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { get } from "lodash";
+import get from "lodash/get";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { plugins } from "@webiny/plugins";
@@ -36,11 +36,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
     }, []);
 
     const rteProps = useMemo(() => {
-        /**
-         * TODO @ts-refactor
-         * Missing plugin type for fb-rte-config
-         */
-        // @ts-ignore
         return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 

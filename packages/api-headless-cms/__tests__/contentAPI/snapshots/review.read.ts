@@ -46,6 +46,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -61,6 +68,8 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
 
         product: RefFieldWhereInput
 
@@ -115,6 +124,7 @@ export default /* GraphQL */ `
             sort: [ReviewApiModelListSorter]
             limit: Int
             after: String
+            search: String
         ): ReviewApiModelListResponse
     }
 `;

@@ -14,12 +14,12 @@ env:
 jobs:
   npm-release:
     name: NPM release ("${{ github.event.client_payload.tag }}" tag)
-    runs-on: ubuntu-latest
+    runs-on: webiny-build-packages
     environment: release
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/checkout@v3
         with:

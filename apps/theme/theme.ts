@@ -32,7 +32,8 @@ export const borderRadius = 4;
 const headings = {
     fontFamily: fonts.font2,
     color: colors.color3,
-    WebkitFontSmoothing: "antialiased"
+    WebkitFontSmoothing: "antialiased",
+    lineHeight: "150%"
 };
 
 const paragraphs = {
@@ -153,13 +154,6 @@ const theme = createTheme({
                 b: { fontWeight: "bold" },
                 i: { fontStyle: "italic" }
             },
-            quote: {
-                "blockquote > q": {
-                    quotes: "auto",
-                    "&:before": { content: "open-quote" },
-                    "&:after": { content: "close-quote" }
-                }
-            },
             button: {
                 default: buttons({ background: colors.color5, color: colors.color3 }),
                 primary: buttons({ background: colors.color1, color: colors.color6 }),
@@ -176,42 +170,6 @@ const theme = createTheme({
                     color: colors.color1,
                     "&:hover": { transform: "translateY(-1px)" }
                 })
-            },
-
-            list: {
-                "ul, ol": {
-                    li: {
-                        marginBottom: "12px",
-                        marginLeft: "1.875rem",
-                        position: "relative"
-                    }
-                },
-                ul: {
-                    li: {
-                        "&:before,&:after": {
-                            position: "absolute",
-                            content: '""',
-                            borderRadius: "50%"
-                        },
-                        "&:before": {
-                            backgroundColor: "#90c418",
-                            height: "1.25rem",
-                            width: "1.25rem",
-                            left: "-1.875rem",
-                            top: "0.125rem"
-                        },
-                        "&:after": {
-                            backgroundColor: "#ffffff",
-                            height: "0.5rem",
-                            left: "-1.5rem",
-                            top: "0.5rem",
-                            width: "0.5rem"
-                        }
-                    }
-                },
-                ol: {
-                    listStyleType: "decimal"
-                }
             }
         }
     }

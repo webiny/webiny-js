@@ -1,8 +1,7 @@
 import { Context } from "@webiny/api/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { ApwIdentity } from "~/types";
 
 export interface ListWhere {
@@ -94,7 +93,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
     update(id: string, data: TUpdateEntryParams): Promise<TEntry>;
 
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 }
 
 export interface ApwScheduleActionCrud
@@ -105,7 +104,7 @@ export interface ApwScheduleActionCrud
 
     updateCurrentTask(item: ApwScheduleAction): Promise<ApwScheduleAction>;
 
-    deleteCurrentTask(): Promise<Boolean>;
+    deleteCurrentTask(): Promise<boolean>;
 }
 
 export interface ScheduleActionContext extends Context, I18NContext, TenancyContext {
@@ -184,7 +183,7 @@ export interface ApwScheduleActionStorageOperations {
 
     update(params: StorageOperationsUpdateScheduleActionParams): Promise<ApwScheduleAction>;
 
-    delete(params: StorageOperationsDeleteScheduleActionParams): Promise<Boolean>;
+    delete(params: StorageOperationsDeleteScheduleActionParams): Promise<boolean>;
 
     getCurrentTask(
         params: StorageOperationsGetCurrentTaskParams
@@ -192,7 +191,7 @@ export interface ApwScheduleActionStorageOperations {
 
     updateCurrentTask(params: StorageOperationsUpdateCurrentTaskParams): Promise<ApwScheduleAction>;
 
-    deleteCurrentTask(params: StorageOperationsDeleteCurrentTaskParams): Promise<Boolean>;
+    deleteCurrentTask(params: StorageOperationsDeleteCurrentTaskParams): Promise<boolean>;
 }
 
 export interface CreateApwContextParams {

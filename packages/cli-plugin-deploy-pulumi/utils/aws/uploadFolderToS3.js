@@ -1,6 +1,6 @@
-const _ = require("lodash");
+const isString = require("lodash/isString");
 const fs = require("fs");
-const S3Client = require("aws-sdk/clients/s3");
+const { S3Client } = require("@webiny/aws-sdk/client-s3");
 const mime = require("mime");
 const chunk = require("lodash/chunk");
 const { relative } = require("path");
@@ -45,7 +45,7 @@ module.exports = async ({
 
     const pathsChunks = chunk(paths, 20);
 
-    if (_.isString(cacheControl)) {
+    if (isString(cacheControl)) {
         cacheControl = [{ pattern: /.*/, value: cacheControl }];
     }
 

@@ -7,10 +7,10 @@ import { FileInput } from "@webiny/api-file-manager/types";
 import { PageSettings } from "@webiny/api-page-builder/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { FileUploadsData } from "~/types";
-import { ExportedPageData } from "~/export/utils";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
 import { s3Stream } from "~/export/s3Stream";
 import { deleteS3Folder, updateFilesInData, uploadAssets } from "~/import/utils";
+import { ExportedPageData } from "~/export/process/exporters/PageExporter";
 
 interface ImportPageParams {
     key: string;
@@ -35,13 +35,11 @@ export async function importPage({
 
     log(`Downloading Page data file: ${pageDataFileKey} at "${PAGE_DATA_FILE_PATH}"`);
     // Download and save page data file in disk.
+    const readStream = await s3Stream.readStream(pageDataFileKey);
+    const writeStream = createWriteStream(PAGE_DATA_FILE_PATH);
+
     await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(pageDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(PAGE_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
+        readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 
     // Load the page data file from disk.

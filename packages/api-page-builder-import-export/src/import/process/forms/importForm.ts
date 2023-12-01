@@ -5,9 +5,9 @@ import loadJson from "load-json-file";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { FileUploadsData } from "~/types";
 import { s3Stream } from "~/export/s3Stream";
-import { ExportedFormData } from "~/export/utils";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
+import { ExportedFormData } from "~/export/process/exporters/FormExporter";
 
 interface ImportFormParams {
     key: string;
@@ -30,13 +30,11 @@ export async function importForm({
 
     log(`Downloading Form data file: ${formDataFileKey} at "${FORM_DATA_FILE_PATH}"`);
     // Download and save form data file in disk.
+    const readStream = await s3Stream.readStream(formDataFileKey);
+    const writeStream = createWriteStream(FORM_DATA_FILE_PATH);
+
     await new Promise((resolve, reject) => {
-        s3Stream
-            .readStream(formDataFileKey)
-            .on("error", reject)
-            .pipe(createWriteStream(FORM_DATA_FILE_PATH))
-            .on("error", reject)
-            .on("finish", resolve);
+        readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 
     // Load the form data file from disk.

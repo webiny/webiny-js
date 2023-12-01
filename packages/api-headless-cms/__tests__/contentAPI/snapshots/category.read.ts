@@ -44,6 +44,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -59,6 +66,8 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
 
         slug: String
         slug_not: String
@@ -66,6 +75,8 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+        slug_startsWith: String
+        slug_not_startsWith: String
 
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
@@ -105,6 +116,7 @@ export default /* GraphQL */ `
             sort: [CategoryApiNameWhichIsABitDifferentThanModelIdListSorter]
             limit: Int
             after: String
+            search: String
         ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 `;

@@ -1,6 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 import { ErrorOptions } from "@webiny/error";
+import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 
 jest.setTimeout(100000);
 
@@ -34,7 +35,6 @@ describe("Page Blocks Test", () => {
             const data = {
                 name: `${prefix}name`,
                 blockCategory: `block-category`,
-                preview: { src: `https://test.com/${prefix}name/src.jpg` },
                 content: { some: `${prefix}content` }
             };
 
@@ -45,6 +45,7 @@ describe("Page Blocks Test", () => {
                         createPageBlock: {
                             data: {
                                 ...data,
+                                content: expectCompressed(data.content),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
@@ -61,7 +62,10 @@ describe("Page Blocks Test", () => {
                 data: {
                     pageBuilder: {
                         getPageBlock: {
-                            data,
+                            data: {
+                                ...data,
+                                content: expectCompressed(data.content)
+                            },
                             error: null
                         }
                     }
@@ -71,7 +75,6 @@ describe("Page Blocks Test", () => {
             const updateData = {
                 name: `${prefix}name-UPDATED`,
                 blockCategory: `block-category`,
-                preview: { src: `https://test.com/${prefix}name-UPDATED/src.jpg` },
                 content: { some: `${prefix}content-UPDATED` }
             };
 
@@ -85,6 +88,7 @@ describe("Page Blocks Test", () => {
                         updatePageBlock: {
                             data: {
                                 ...updateData,
+                                content: expectCompressed(updateData.content),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
@@ -104,42 +108,33 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category",
-                                content: {
+                                content: expectCompressed({
                                     some: "page-block-one-content-UPDATED"
-                                },
+                                }),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[0],
-                                name: "page-block-one-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-one-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-one-name-UPDATED"
                             },
                             {
                                 blockCategory: "block-category",
-                                content: {
+                                content: expectCompressed({
                                     some: "page-block-two-content-UPDATED"
-                                },
+                                }),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[1],
-                                name: "page-block-two-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-two-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-two-name-UPDATED"
                             },
                             {
                                 blockCategory: "block-category",
-                                content: {
+                                content: expectCompressed({
                                     some: "page-block-three-content-UPDATED"
-                                },
+                                }),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[2],
-                                name: "page-block-three-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-three-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-three-name-UPDATED"
                             }
                         ],
                         error: null
@@ -155,9 +150,7 @@ describe("Page Blocks Test", () => {
                 data: {
                     pageBuilder: {
                         deletePageBlock: {
-                            data: {
-                                id: ids[i]
-                            },
+                            data: true,
                             error: null
                         }
                     }
@@ -184,7 +177,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -218,7 +210,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "invalid-block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -255,7 +246,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -267,7 +257,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -279,8 +268,7 @@ describe("Page Blocks Test", () => {
                         data: {
                             name: "name",
                             blockCategory: "block-category",
-                            preview: { src: "https://test.com/src.jpg" },
-                            content: { some: "content" }
+                            content: expectCompressed({ some: "content" })
                         },
                         error: null
                     }
@@ -293,7 +281,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "invalid-block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -356,7 +343,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: `page-block-one-name`,
                 blockCategory: `block-category-one`,
-                preview: { src: `https://test.com/page-block-one-name/src.jpg` },
                 content: { some: `page-block-one-content` }
             }
         });
@@ -366,7 +352,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: `page-block-two-name`,
                 blockCategory: `block-category-two`,
-                preview: { src: `https://test.com/page-block-two-name/src.jpg` },
                 content: { some: `page-block-two-content` }
             }
         });
@@ -385,16 +370,13 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category-one",
-                                content: {
+                                content: expectCompressed({
                                     some: "page-block-one-content"
-                                },
+                                }),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockOneId,
-                                name: "page-block-one-name",
-                                preview: {
-                                    src: "https://test.com/page-block-one-name/src.jpg"
-                                }
+                                name: "page-block-one-name"
                             }
                         ],
                         error: null
@@ -416,16 +398,13 @@ describe("Page Blocks Test", () => {
                         data: [
                             {
                                 blockCategory: "block-category-two",
-                                content: {
+                                content: expectCompressed({
                                     some: "page-block-two-content"
-                                },
+                                }),
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockTwoId,
-                                name: "page-block-two-name",
-                                preview: {
-                                    src: "https://test.com/page-block-two-name/src.jpg"
-                                }
+                                name: "page-block-two-name"
                             }
                         ],
                         error: null

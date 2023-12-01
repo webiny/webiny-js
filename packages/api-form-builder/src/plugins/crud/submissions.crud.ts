@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
-import * as utils from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
@@ -17,19 +16,24 @@ import {
     OnFormSubmissionBeforeUpdate,
     OnFormSubmissionAfterUpdate,
     OnFormSubmissionBeforeDelete,
-    OnFormSubmissionAfterDelete
+    OnFormSubmissionAfterDelete,
+    OnFormSubmissionsBeforeExport,
+    OnFormSubmissionsAfterExport
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
+import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 import { mdbid } from "@webiny/utils";
+import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
+    formsPermissions: FormsPermissions;
 }
 
 export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
-    const { context } = params;
+    const { context, formsPermissions } = params;
 
     // create
     const onFormSubmissionBeforeCreate = createTopic<OnFormSubmissionBeforeCreate>(
@@ -55,6 +59,14 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
         "formBuilder.onFormSubmissionAfterDelete"
     );
 
+    // export
+    const onFormSubmissionsBeforeExport = createTopic<OnFormSubmissionsBeforeExport>(
+        "formBuilder.onFormSubmissionsBeforeExport"
+    );
+    const onFormSubmissionsAfterExport = createTopic<OnFormSubmissionsAfterExport>(
+        "formBuilder.onFormSubmissionsAfterExport"
+    );
+
     return {
         onFormSubmissionBeforeCreate,
         onFormSubmissionAfterCreate,
@@ -62,6 +74,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
         onFormSubmissionAfterUpdate,
         onFormSubmissionBeforeDelete,
         onFormSubmissionAfterDelete,
+        onFormSubmissionsBeforeExport,
+        onFormSubmissionsAfterExport,
         async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
             let form: FbForm;
             if (typeof formId === "string") {
@@ -101,9 +115,20 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             }
         },
         async listFormSubmissions(this: FormBuilder, formId, options = {}) {
-            const { submissions } = await utils.checkBaseFormPermissions(context);
+            await formsPermissions.ensure();
 
-            if (typeof submissions !== "undefined" && submissions !== true) {
+            const permissions = await formsPermissions.getPermissions();
+
+            let hasAccessToSubmissions = false;
+            for (let i = 0; i < permissions.length; i++) {
+                const { submissions } = permissions[i];
+                if (typeof submissions === "undefined" || submissions === true) {
+                    hasAccessToSubmissions = true;
+                    break;
+                }
+            }
+
+            if (!hasAccessToSubmissions) {
                 throw new NotAuthorizedError();
             }
 
@@ -171,10 +196,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     "https://www.google.com/recaptcha/api/siteverify",
                     {
                         method: "POST",
-                        body: JSON.stringify({
-                            secret: secretKey,
-                            response: reCaptchaResponseToken
-                        })
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `secret=${secretKey}&response=${reCaptchaResponseToken}`
                     }
                 );
 
@@ -259,7 +282,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     name: form.name,
                     version: form.version,
                     fields: form.fields,
-                    layout: form.layout
+                    steps: form.steps
                 }
             });
 
@@ -327,7 +350,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                 addLog: (log: Record<string, any>) => {
                                     submission.logs.push(log);
                                 },
-                                data: utils.sanitizeFormSubmissionData(form.fields, data),
+                                data: sanitizeFormSubmissionData(form.fields, data),
                                 meta,
                                 trigger: form.triggers[plugin.trigger]
                             });

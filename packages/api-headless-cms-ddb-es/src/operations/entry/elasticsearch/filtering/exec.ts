@@ -83,7 +83,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         };
 
         for (const key in where) {
-            const value = where[key] as unknown as any;
+            const value = where[key];
             /**
              * We always skip if no value is defined.
              * Only skip undefined value, null is valid.
@@ -172,7 +172,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
 
             const field = fields[fieldId];
             if (!field) {
-                throw new WebinyError(`There is no field "${fieldId}".`);
+                throw new WebinyError(`There is no field "${fieldId}".`, "EXEC_FILTERING_ERROR");
             }
             const filterPlugin = getFilterPlugin(field.type);
 

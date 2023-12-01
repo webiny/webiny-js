@@ -17,7 +17,7 @@ import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 import { ValidatorsList } from "./EditFieldDialog/ValidatorsList";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { useModelField, useModelEditor } from "~/admin/hooks";
+import { useModelField, useModelEditor, useModel } from "~/admin/hooks";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 import { ValidationsSection } from "~/admin/components/FieldEditor/EditFieldDialog/ValidationsSection";
 import { getFieldValidators, getListValidators } from "./EditFieldDialog/getValidators";
@@ -47,11 +47,12 @@ function setupState(
     contentModel: CmsEditorContentModel
 ): EditFieldState {
     const clonedField = cloneDeep(field);
+    const { model } = useModel();
 
     if (!clonedField.renderer || !clonedField.renderer.name) {
         const [renderPlugin] = plugins
             .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-            .filter(item => item.renderer.canUse({ field, fieldPlugin }));
+            .filter(item => item.renderer.canUse({ field, fieldPlugin, model }));
 
         if (renderPlugin) {
             clonedField.renderer = { name: renderPlugin.renderer.rendererName };

@@ -3,7 +3,6 @@ import { Input } from "./Input";
 import { Select } from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import {
-    UTC_TIMEZONES,
     RemoveFieldButton,
     getDefaultFieldValue,
     DEFAULT_TIMEZONE,
@@ -13,6 +12,7 @@ import {
 } from "./utils";
 import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import { UTC_TIMEZONES } from "@webiny/utils";
 
 interface State {
     date: string;
@@ -55,8 +55,6 @@ const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
 
 export interface DateTimeWithTimezoneProps {
     bind: BindComponentRenderProp;
-    // TODO @ts-refactor figure out correct trailing icon type
-    // @ts-ignore
     trailingIcon?: any;
     field: CmsModelField;
 }

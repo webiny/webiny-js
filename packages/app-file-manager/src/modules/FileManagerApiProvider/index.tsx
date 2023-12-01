@@ -1,13 +1,16 @@
 import React from "react";
-import { Plugin, HigherOrderComponent } from "@webiny/app-admin";
+import { Plugin, Decorator } from "@webiny/app-admin";
 import { FileManagerApiProvider } from "./FileManagerApiContext";
+import { FileModelProvider } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileModelContext";
 
-const fileManagerApiProvider: HigherOrderComponent = Original => {
-    return function FileManager({ children }: { children: React.ReactNode }) {
+const fileManagerApiProvider: Decorator<{ children: React.ReactNode }> = Original => {
+    return function FileManager({ children }) {
         return (
-            <FileManagerApiProvider>
-                <Original>{children}</Original>
-            </FileManagerApiProvider>
+            <FileModelProvider>
+                <FileManagerApiProvider>
+                    <Original>{children}</Original>
+                </FileManagerApiProvider>
+            </FileModelProvider>
         );
     };
 };

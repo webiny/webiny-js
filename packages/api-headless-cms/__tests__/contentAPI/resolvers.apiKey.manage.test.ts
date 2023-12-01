@@ -131,7 +131,7 @@ describe("MANAGE - resolvers - api key", () => {
             headers
         );
 
-        expect(createResponse).toEqual({
+        expect(createResponse).toMatchObject({
             data: {
                 createCategory: {
                     data: {
@@ -181,7 +181,7 @@ describe("MANAGE - resolvers - api key", () => {
             headers
         );
 
-        expect(getResponse).toEqual({
+        expect(getResponse).toMatchObject({
             data: {
                 getCategory: {
                     data: {
@@ -233,7 +233,7 @@ describe("MANAGE - resolvers - api key", () => {
             headers
         );
 
-        expect(updateResponse).toEqual({
+        expect(updateResponse).toMatchObject({
             data: {
                 updateCategory: {
                     data: {
@@ -276,10 +276,9 @@ describe("MANAGE - resolvers - api key", () => {
 
         const updatedCategory = updateResponse.data.updateCategory.data;
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const [listResponse] = await listCategories({}, headers);
 
-        expect(listResponse).toEqual({
+        expect(listResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [

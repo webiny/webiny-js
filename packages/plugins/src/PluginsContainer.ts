@@ -24,6 +24,20 @@ const assign = (
             continue;
         }
 
+        if (typeof plugin !== "object") {
+            throw new Error(
+                `Could not register plugin. Expected an object, but got ${typeof plugin}.`
+            );
+        }
+
+        if (!plugin.type) {
+            let name = "";
+            if (plugin.name) {
+                name = ` "${plugin.name}"`;
+            }
+            throw new Error(`Could not register plugin${name}. Missing "type" definition.`);
+        }
+
         let name = plugin._name || plugin.name;
         if (!name) {
             plugin.name = name = uniqid(plugin.type + "-");

@@ -14,7 +14,7 @@ import {
 } from "../../../elementSettings/components/StyledComponents";
 import { PbEditorElementPluginArgs } from "~/types";
 import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PeVimeo } from "./PeVimeo";
 
 const PreviewBox = styled("div")({
@@ -26,13 +26,10 @@ const PreviewBox = styled("div")({
     }
 });
 
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeVimeo {...props} />
-    );
-}
+const render: EmbedPluginConfigRenderCallable = props => (
+    // @ts-expect-error Sync `elements` property type.
+    <PeVimeo {...props} />
+);
 
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "vimeo");
@@ -54,10 +51,14 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             /**
              * TODO @ts-refactor @ashutosh
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            /**
+             * TODO Figure out types.
+             */
+            // @ts-expect-error
             settings: args.settings,
             oembed: {
                 renderEmbed(props) {

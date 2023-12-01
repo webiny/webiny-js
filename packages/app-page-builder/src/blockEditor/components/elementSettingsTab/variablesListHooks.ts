@@ -9,7 +9,7 @@ interface UseMoveVariable {
 export const useMoveVariable = (element: PbEditorElement): UseMoveVariable => {
     const updateElement = useUpdateElement();
     const move = (current: number, next: number) => {
-        const reorderedVariables = moveInPlace(element?.data?.variables, current, next);
+        const reorderedVariables = moveInPlace(element?.data?.variables ?? [], current, next);
 
         updateElement({
             ...element,

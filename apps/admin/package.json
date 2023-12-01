@@ -64,9 +64,12 @@
         "@okta/okta-auth-js",
         "@webiny/app-admin-okta",
         "@webiny/app-admin-auth0",
+        "@webiny/app-file-manager",
         "@webiny/app-tenant-manager",
         "@webiny/app-theme-manager",
-        "@webiny/app-page-builder-elements"
+        "@webiny/app-page-builder-elements",
+        "@webiny/form",
+        "@webiny/ui"
       ]
     }
   }

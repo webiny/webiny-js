@@ -9,6 +9,7 @@ import {
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { sanitizeFormSubmissionData, flattenSubmissionMeta } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
+import { mdbid } from "@webiny/utils";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
     type: "graphql-schema",
@@ -38,7 +39,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
                 slug: String!
                 fields: [FbFormFieldType!]!
-                layout: [[String]]!
+                steps: [FbFormStepType!]!
                 settings: FbFormSettingsType!
                 triggers: JSON
                 published: Boolean!
@@ -51,6 +52,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbFieldOptionsType {
                 label: String
                 value: String
+            }
+
+            input FbFormStepInput {
+                title: String
+                layout: [[String]]
             }
 
             input FbFieldOptionsInput {
@@ -68,6 +74,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
                 message: String
                 settings: JSON
+            }
+
+            type FbFormStepType {
+                title: String
+                layout: [[String]]
             }
 
             type FbFormFieldType {
@@ -167,7 +178,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             input FbUpdateFormInput {
                 name: String
                 fields: [FbFormFieldInput]
-                layout: [[String]]
+                steps: [FbFormStepInput]
                 settings: FbFormSettingsInput
                 triggers: JSON
             }
@@ -200,8 +211,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 parent: ID
                 name: String
                 version: Int
-                layout: [[String]]
                 fields: [FbFormFieldType]
+                steps: [FbFormStepType]
             }
 
             type FbFormSubmission {
@@ -443,7 +454,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 createRevisionFrom: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createFormRevision(args.revision);
-
                         return new Response(form);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -455,7 +465,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 updateRevision: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.updateForm(args.revision, args.data);
-
                         return new Response(form);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -523,6 +532,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     const { form } = args;
 
                     try {
+                        await formBuilder.onFormSubmissionsBeforeExport.publish({ form });
                         const [submissions] = await formBuilder.listFormSubmissions(form, {
                             limit: 10000
                         });
@@ -619,15 +629,22 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         const csv = await parseAsync(rows, {
                             fields: ["Date submitted (UTC)", ...Object.values(fields)]
                         });
+
                         const buffer = Buffer.from(csv);
-                        const { key } = await fileManager.storage.upload({
+                        const id = mdbid();
+
+                        const fileData = {
                             buffer,
+                            id,
                             size: buffer.length,
                             name: "form_submissions_export.csv",
+                            key: `${id}/form_submissions_export.csv`,
                             type: "text/csv",
                             keyPrefix: "form-submissions",
                             hideInFileManager: true
-                        });
+                        };
+
+                        const { key } = await fileManager.storage.upload(fileData);
 
                         const settings = await fileManager.getSettings();
 
@@ -635,6 +652,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             key,
                             src: (settings?.srcPrefix || "") + key
                         };
+                        await formBuilder.onFormSubmissionsAfterExport.publish({ result });
 
                         return new Response(result);
                     } catch (e) {

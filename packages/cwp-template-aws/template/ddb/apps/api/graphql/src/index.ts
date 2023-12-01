@@ -1,5 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -26,13 +26,13 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
+import { createAuditLogs } from "@webiny/api-audit-logs";
 /**
  * APW
  */
-import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
+import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
@@ -40,10 +40,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
@@ -60,6 +57,12 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -85,20 +88,14 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createAcoFileManagerContext(),
+        createAuditLogs(),
         scaffoldsPlugins()
     ],
-    http: { debug }
+    debug
 });

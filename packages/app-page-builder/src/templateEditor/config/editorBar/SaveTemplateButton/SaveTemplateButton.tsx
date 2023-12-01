@@ -12,6 +12,8 @@ import { SaveTemplateActionEvent } from "~/templateEditor/config/eventActions/sa
 
 const SpinnerWrapper = styled.div`
     position: relative;
+    width: 18px !important;
+    margin-left: -4px !important;
 `;
 
 const DefaultSaveTemplateButton: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { FC, Fragment, useEffect, useRef, useState } from "react";
 import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
-import get from "lodash.get";
+import get from "lodash/get";
 import { Compose, LoginScreenRenderer, useTenancy } from "@webiny/app-serverless-cms";
 import { createAuthentication } from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
@@ -107,7 +107,7 @@ export const Okta: React.FC<OktaProps> = props => {
      */
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer as any} with={createLoginScreen(props)} />
+            <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
             <AppClientModule />
         </Fragment>

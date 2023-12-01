@@ -1,18 +1,30 @@
 /**
  * Sharp is included in the AWS Lambda layer
  */
-// @ts-ignore
 import sharp from "sharp";
-import { Body } from "aws-sdk/clients/s3";
+import type { Readable } from "stream";
 
 interface Transformation {
-    width: string;
+    width: number;
 }
+
+export interface TransformOptions {
+    animated?: boolean;
+}
+
 /**
  * Only processing "width" at the moment.
  * Check "sanitizeImageTransformations.js" to allow additional image processing transformations.
  */
-export default async (buffer: Body, transformations: Transformation): Promise<Body> => {
+export const transformImage = async (
+    stream: Readable,
+    transformations: Transformation,
+    options: TransformOptions = {}
+): Promise<Buffer> => {
     const { width } = transformations;
-    return await sharp(buffer).resize({ width }).toBuffer();
+    const transformedImage = sharp({ animated: options.animated ?? false }).resize({
+        width
+    });
+
+    return await stream.pipe(transformedImage).toBuffer();
 };

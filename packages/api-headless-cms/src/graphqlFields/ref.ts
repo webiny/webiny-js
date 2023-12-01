@@ -135,7 +135,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
              * TS is complaining about mixed types for createResolver.
              * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
              */
-            // @ts-ignore
+            // @ts-expect-error
             createResolver({ field, models }) {
                 // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
                 const fieldModels = field.settings?.models || [];
@@ -187,7 +187,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         const getters = Object.keys(entriesByModel).map(async modelId => {
                             const idList = entriesByModel[modelId];
                             // Get model manager, to get access to CRUD methods
-                            const model = await cms.getModelManager(modelId);
+                            const model = await cms.getEntryManager(modelId);
 
                             let entries: CmsEntry[];
                             // `read` API works with `published` data

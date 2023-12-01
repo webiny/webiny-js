@@ -60,6 +60,10 @@ export const createManageSDL: CreateManageSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
+    const inputGraphQLFields = inputFields.map(f => f.fields).join("\n");
+    /**
+     * TODO check for 5.38.0
+     */
     return /* GraphQL */ `
         """${model.description || singularName}"""
         type ${singularName} {
@@ -72,6 +76,8 @@ export const createManageSDL: CreateManageSDL = ({
             modifiedBy: CmsIdentity
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
+            # Advanced Content Organization - make required in 5.38.0
+            wbyAco_location: WbyAcoLocation
         }
 
         type ${singularName}Meta {
@@ -97,11 +103,19 @@ export const createManageSDL: CreateManageSDL = ({
         ${fields.map(f => f.typeDefs).join("\n")}
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
-
-
+        
         input ${singularName}Input {
             id: ID
-            ${inputFields.map(f => f.fields).join("\n")}
+            # User can override the entry dates
+            createdOn: DateTime
+            savedOn: DateTime
+            publishedOn: DateTime
+            # User can override the entry related user identities
+            createdBy: CmsIdentityInput
+            modifiedBy: CmsIdentityInput
+            ownedBy: CmsIdentityInput
+            wbyAco_location: WbyAcoLocationInput
+            ${inputGraphQLFields}
         }
 
         input ${singularName}GetWhereInput {
@@ -109,6 +123,7 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         input ${singularName}ListWhereInput {
+            wbyAco_location: WbyAcoLocationWhereInput
             ${listFilterFieldsRender}
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
@@ -117,6 +132,11 @@ export const createManageSDL: CreateManageSDL = ({
 
         type ${singularName}Response {
             data: ${singularName}
+            error: CmsError
+        }
+        
+        type ${singularName}MoveResponse {
+            data: Boolean
             error: CmsError
         }
 
@@ -148,21 +168,26 @@ export const createManageSDL: CreateManageSDL = ({
                 sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
+                search: String
             ): ${singularName}ListResponse
         }
 
         extend type Mutation {
-            create${singularName}(data: ${singularName}Input!): ${singularName}Response
+            create${singularName}(data: ${singularName}Input!, options: CreateCmsEntryOptionsInput): ${singularName}Response
 
-            create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
+            create${singularName}From(revision: ID!, data: ${singularName}Input, options: CreateRevisionCmsEntryOptionsInput): ${singularName}Response
     
-            update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
+            update${singularName}(revision: ID!, data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
+
+            validate${singularName}(revision: ID, data: ${singularName}Input!): CmsEntryValidationResponse!
+            
+            move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!): ${singularName}Response
+            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

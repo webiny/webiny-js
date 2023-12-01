@@ -6,8 +6,8 @@ import {
 } from "@rmwc/select";
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
-import { css } from "emotion";
 import classNames from "classnames";
+import { webinySelect, noLabel } from "./styled";
 
 export type SelectProps = FormComponentProps &
     RmwcSelectProps & {
@@ -27,45 +27,20 @@ export type SelectProps = FormComponentProps &
         box?: string;
 
         // One or more <option> or <optgroup> elements.
-        children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
+        children?: (React.ReactElement<"option"> | React.ReactElement<"optgroup">)[];
 
         // IconProps for the root element. By default, additional props spread to the native select element.
-        rootProps?: Object;
+        rootProps?: {
+            [key: string]: any;
+        };
 
         // A className for the root element.
         className?: string;
+
+        // Size - small, medium or large
+        size?: "small" | "medium" | "large";
     };
 
-const webinySelect = css`
-    display: grid;
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--webiny-theme-color-primary);
-
-    .rmwc-select__native-control {
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-`;
-
-const noLabel = css({
-    "&.mdc-select": {
-        height: 35,
-        ".mdc-select__native-control": {
-            paddingTop: 0
-        },
-        "&.mdc-select--box": {
-            ".mdc-select__native-control": {
-                height: 35,
-                paddingTop: 5
-            }
-        }
-    }
-});
 /**
  * TODO verify that this is correct method get all options.
  */
@@ -107,7 +82,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
     const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        // @ts-ignore
+        // @ts-expect-error
         .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;
@@ -134,13 +109,14 @@ export const Select: React.FC<SelectProps> = props => {
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
+                    props.size ? `webiny-ui-select--size-${props.size}` : null,
                     props.className,
                     {
                         [noLabel]: !props.label
                     }
                 )}
                 onChange={e => {
-                    props.onChange && props.onChange((e.target as any).value);
+                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
                 }}
             />
 

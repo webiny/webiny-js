@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { FolderGrid } from "@webiny/app-aco";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
-import getFileTypePlugin from "~/getFileTypePlugin";
-import FileThumbnail, { FileProps } from "./File";
-
+import { FileThumbnail } from "./File";
 import { FileList, FolderList } from "./styled";
-
 import { FolderItem } from "@webiny/app-aco/types";
-import { FileItem } from "@webiny/app/types";
+import { FileItem } from "@webiny/app-admin/types";
+import { Thumbnail } from "~/components/FileDetails/components/Thumbnail";
+import { FileProvider } from "~/contexts/FileProvider";
 
 const t = i18n.ns("app-admin/file-manager/components/grid");
 
@@ -21,34 +20,11 @@ interface GridProps {
     selected: FileItem[];
     multiple?: boolean;
     toggleSelected: (file: FileItem) => void;
-    onChange?: Function;
-    onClose?: Function;
+    deselectAll: () => void;
+    onChange?: (file: FileItem) => void;
+    onClose?: () => void;
+    hasOnSelectCallback: boolean;
 }
-
-interface RenderFileProps extends Omit<FileProps, "children"> {
-    file: FileItem;
-    children?: React.ReactNode;
-}
-
-const renderFile: React.FC<RenderFileProps> = props => {
-    const { file } = props;
-    const plugin = getFileTypePlugin(file);
-    if (!plugin) {
-        return null;
-    }
-
-    return (
-        <FileThumbnail {...props} key={file.id}>
-            {plugin.render({
-                /**
-                 * TODO @ts-refactor
-                 */
-                // @ts-ignore
-                file
-            })}
-        </FileThumbnail>
-    );
-};
 
 export const Grid: React.FC<GridProps> = ({
     folders,
@@ -60,36 +36,53 @@ export const Grid: React.FC<GridProps> = ({
     onChange,
     onClose,
     toggleSelected,
-    multiple
+    deselectAll,
+    multiple,
+    hasOnSelectCallback
 }) => {
     if (loading) {
         return <CircularProgress label={t`Loading Files...`} style={{ opacity: 1 }} />;
     }
+
+    const onSelect = useMemo(() => {
+        if (!onChange) {
+            return undefined;
+        }
+
+        return (record: FileItem) => (event?: React.MouseEvent) => {
+            if (event) {
+                event.stopPropagation();
+            }
+
+            if (!hasOnSelectCallback || multiple) {
+                toggleSelected(record);
+                return;
+            }
+
+            onChange(record);
+            onClose && onClose();
+        };
+    }, [onChange]);
 
     return (
         <>
             <FolderList>
                 <FolderGrid folders={folders} onFolderClick={onFolderClick} />
             </FolderList>
-            <FileList>
-                {records.map(record =>
-                    renderFile({
-                        file: record,
-                        showFileDetails: onRecordClick,
-                        selected: selected.some(current => current.id === record.id),
-                        onSelect: async () => {
-                            if (typeof onChange === "function") {
-                                if (multiple) {
-                                    toggleSelected(record);
-                                    return;
-                                }
-
-                                await onChange(record);
-                                onClose && onClose();
-                            }
-                        }
-                    })
-                )}
+            <FileList onClick={deselectAll}>
+                {records.map(record => (
+                    <FileProvider file={record} key={record.id}>
+                        <FileThumbnail
+                            file={record}
+                            multiple={Boolean(multiple)}
+                            showFileDetails={onRecordClick}
+                            selected={selected.some(current => current.id === record.id)}
+                            onSelect={onSelect ? onSelect(record) : undefined}
+                        >
+                            <Thumbnail />
+                        </FileThumbnail>
+                    </FileProvider>
+                ))}
             </FileList>
         </>
     );

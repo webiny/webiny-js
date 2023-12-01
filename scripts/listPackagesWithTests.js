@@ -25,6 +25,10 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-security --storage=ddb"];
     },
 
+    "api-security-cognito": () => {
+        return ["packages/api-security-cognito --storage=ddb"];
+    },
+
     "api-i18n": () => {
         return ["packages/api-i18n --storage=ddb"];
     },
@@ -33,8 +37,11 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-tenant-manager --storage=ddb"];
     },
 
-    "api-admin-users-cognito": () => {
-        return ["packages/api-admin-users-cognito --storage=ddb"];
+    "api-audit-logs": () => {
+        return [
+            "packages/api-audit-logs --storage=ddb",
+            "packages/api-audit-logs --storage=ddb-es,ddb"
+        ];
     },
 
     "api-file-manager": () => {
@@ -42,9 +49,6 @@ const CUSTOM_HANDLERS = {
             "packages/api-file-manager --storage=ddb",
             "packages/api-file-manager --storage=ddb-es,ddb"
         ];
-    },
-    "api-file-manager-ddb-es": () => {
-        return ["packages/api-file-manager-ddb-es --storage=ddb-es,ddb"];
     },
 
     "api-form-builder": () => {
@@ -105,11 +109,11 @@ const CUSTOM_HANDLERS = {
             "packages/api-page-builder-aco --storage=ddb-es,ddb"
         ];
     },
-    "api-file-manager-aco": () => {
-        return [
-            "packages/api-file-manager-aco --storage=ddb",
-            "packages/api-file-manager-aco --storage=ddb-es,ddb"
-        ];
+    "app-aco": () => {
+        return ["packages/app-aco"];
+    },
+    "app-file-manager": () => {
+        return ["packages/app-file-manager"];
     }
 };
 
@@ -170,4 +174,20 @@ if (ignorePackagesPattern) {
     output = output.filter(current => !current.includes(ignorePackagesPattern));
 }
 
-console.log(JSON.stringify(output));
+const cmdToId = cmd => {
+    return cmd
+        .replace("packages/", "")
+        .replace("--storage=", "")
+        .replace(/[,\s]/g, "_")
+        .replace(/[\(\)\[\]]/g, "")
+        .toLowerCase();
+};
+
+const tasks = output.map(pkg => {
+    return {
+        cmd: pkg,
+        id: cmdToId(pkg)
+    };
+});
+
+console.log(JSON.stringify(tasks));

@@ -1,6 +1,5 @@
-import S3 from "aws-sdk/clients/s3";
-import { Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
-import { FbForm } from "@webiny/api-form-builder/types";
+import { CompleteMultipartUploadOutput } from "@webiny/aws-sdk/client-s3";
+import { BlockCategory, Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
 import Zipper from "./zipper";
@@ -19,7 +18,7 @@ export async function exportPage(
     page: Page,
     exportPagesDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(page.content || {});
     // Extract images from page settings
@@ -32,7 +31,7 @@ export async function exportPage(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
     }
 
@@ -63,35 +62,38 @@ export async function exportPage(
 }
 
 export interface ExportedBlockData {
-    block: Pick<PageBlock, "name" | "content" | "preview">;
+    block: Pick<PageBlock, "name" | "content">;
+    category: BlockCategory;
     files: File[];
 }
 
 export async function exportBlock(
     block: PageBlock,
+    blockCategory: BlockCategory,
     exportBlocksDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(block.content || {});
     const fileIds = files.map(imageFile => imageFile.id);
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
-    }
-    // Add block preview image file data
-    if (block.preview.id) {
-        imageFilesData.push(await fileManager.getFile(block.preview.id));
     }
 
     // Extract the block data in a json file and upload it to S3
     const blockData = {
         block: {
             name: block.name,
-            content: block.content,
-            preview: block.preview
+            content: block.content
+        },
+        category: {
+            name: blockCategory.name,
+            slug: blockCategory.slug,
+            icon: blockCategory.icon,
+            description: blockCategory.description
         },
         files: imageFilesData
     };
@@ -121,14 +123,14 @@ export async function exportTemplate(
     template: PageTemplate,
     exportTemplatesDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(template.content || {});
     const fileIds = files.map(imageFile => imageFile.id);
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
     }
 
@@ -159,11 +161,11 @@ export async function exportTemplate(
     return zipper.process();
 }
 
-export function extractFilesFromData(data: Record<string, any>, files: any[] = []): File[] {
-    // Base case: termination
+export function extractFilesFromData(data: Record<string, any>, files: File[] = []) {
     if (!data || typeof data !== "object") {
         return files;
     }
+
     // Recursively call function for each element
     if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
@@ -177,7 +179,6 @@ export function extractFilesFromData(data: Record<string, any>, files: any[] = [
     const tuple = Object.entries(data);
     for (let i = 0; i < tuple.length; i++) {
         const [key, value] = tuple[i];
-        // TODO: @ashutosh extract it to plugins, so that, we can handle cases for other components too.
         if (key === "file" && value) {
             files.push(value);
         } else if (key === "images" && Array.isArray(value)) {
@@ -188,42 +189,4 @@ export function extractFilesFromData(data: Record<string, any>, files: any[] = [
         }
     }
     return files;
-}
-
-export interface ExportedFormData {
-    form: Pick<
-        FbForm,
-        "name" | "status" | "version" | "fields" | "layout" | "settings" | "triggers"
-    >;
-    files: File[];
-}
-
-export async function exportForm(
-    form: FbForm,
-    exportFormsDataKey: string
-): Promise<S3.ManagedUpload.SendData> {
-    // Extract the form data in a json file and upload it to S3
-    const formData = {
-        form: {
-            name: form.name,
-            status: form.status,
-            version: form.version,
-            fields: form.fields,
-            layout: form.layout,
-            settings: form.settings,
-            triggers: form.triggers
-        }
-    };
-    const formDataBuffer = Buffer.from(JSON.stringify(formData));
-
-    const zipper = new Zipper({
-        exportInfo: {
-            files: [],
-            name: form.name,
-            dataBuffer: formDataBuffer
-        },
-        archiveFileKey: exportFormsDataKey
-    });
-
-    return zipper.process();
 }

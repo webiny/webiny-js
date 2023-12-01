@@ -3,6 +3,7 @@ import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { usePageElements } from "~/hooks/usePageElements";
+import { assignStyles } from "~/utils";
 
 export const createParagraph = () => {
     return createRenderer(() => {
@@ -12,7 +13,18 @@ export const createParagraph = () => {
 
         const __html = element.data.text.data.text;
         if (isValidLexicalData(__html)) {
-            return <LexicalHtmlRenderer theme={theme} value={__html} />;
+            return (
+                <LexicalHtmlRenderer
+                    theme={theme}
+                    themeStylesTransformer={styles => {
+                        return assignStyles({
+                            breakpoints: theme.breakpoints,
+                            styles
+                        });
+                    }}
+                    value={__html}
+                />
+            );
         }
 
         // If the text already contains `p` tags (happens when c/p-ing text into the editor),
@@ -22,7 +34,7 @@ export const createParagraph = () => {
         // were cases where the received text was not just one `p` tag, but an array of `p` tags.
         // In that case, we still need a separate wrapper element. So, we're leaving this solution.
         if (__html.startsWith("<p")) {
-            // @ts-ignore We don't need type-checking here.
+            // @ts-expect-error We don't need type-checking here.
             return <p-wrap dangerouslySetInnerHTML={{ __html }} />;
         }
 

@@ -69,7 +69,7 @@ export function withCommonLambdaEnvVariables<T extends PulumiApp>(
         // We must first execute the original program, and pass in the augmented app.
         const resources = await originalProgram({
             ...app,
-            // @ts-ignore because currently, we don't have a way of passing in a custom app type.
+            // @ts-expect-error because currently, we don't have a way of passing in a custom app type.
             setCommonLambdaEnvVariables
         });
 

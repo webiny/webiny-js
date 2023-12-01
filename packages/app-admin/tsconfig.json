@@ -7,11 +7,13 @@
     { "path": "../app-theme" },
     { "path": "../app-wcp" },
     { "path": "../form" },
+    { "path": "../lexical-editor" },
     { "path": "../plugins" },
     { "path": "../react-composition" },
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../ui-composer" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -31,6 +33,8 @@
       "@webiny/app-wcp": ["../app-wcp/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
+      "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
@@ -41,6 +45,8 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

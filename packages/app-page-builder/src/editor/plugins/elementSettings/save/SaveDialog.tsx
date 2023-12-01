@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import ElementPreview from "./SaveDialog/ElementPreview";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { PageElementsProvider } from "~/contexts/PageBuilder/PageElementsProvider";
 
 import {
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    DialogButton,
     DialogCancel,
     DialogOnClose
 } from "@webiny/ui/Dialog";
@@ -20,7 +20,13 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
-import { PbEditorBlockCategoryPlugin, PbEditorElement } from "~/types";
+import { PbEditorBlockCategoryPlugin, PbEditorElement, PbElement } from "~/types";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import {
+    SaveBlockFormData,
+    SaveElementFormData
+} from "~/editor/plugins/elementSettings/save/SaveAction";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -48,14 +54,24 @@ const PreviewBox = styled("div")({
 interface Props {
     open: boolean;
     onClose: DialogOnClose;
-    onSubmit: FormOnSubmit;
+    onSubmit: FormOnSubmit<SaveElementFormData | SaveBlockFormData>;
     element: PbEditorElement;
-    type: string;
+    type: SaveElementFormData["type"] | SaveBlockFormData["type"];
 }
 
 const SaveDialog = (props: Props) => {
     const { element, open, onClose, type } = props;
     const [loading, setLoading] = useState(false);
+
+    const [pbElement, setPbElement] = useState<PbElement>();
+    const { getElementTree } = useEventActionHandler();
+
+    // We need to get element children to show on preview.
+    useEffect(() => {
+        setTimeout(async () => {
+            setPbElement((await getElementTree({ element })) as PbElement);
+        });
+    }, [element.id]);
 
     const blockCategoriesOptions = plugins
         .byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
@@ -66,15 +82,18 @@ const SaveDialog = (props: Props) => {
             };
         });
 
-    const onSubmit: FormOnSubmit = async (data, form) => {
-        setLoading(true);
-        await props.onSubmit(data, form);
-        setLoading(false);
+    const onSubmit: FormOnSubmit<SaveElementFormData | SaveBlockFormData> = async (data, form) => {
+        try {
+            setLoading(true);
+            await props.onSubmit(data, form);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type, category: "general" }}>
+            <Form onSubmit={onSubmit} data={{ type, id: element.id }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogTitle>Save {type}</DialogTitle>
@@ -90,7 +109,7 @@ const SaveDialog = (props: Props) => {
                                     </Cell>
                                 </Grid>
                             )}
-                            {!data.overwrite && (
+                            {data.type === "block" && data.overwrite ? null : (
                                 <Grid>
                                     <Cell span={12}>
                                         <Bind
@@ -123,28 +142,16 @@ const SaveDialog = (props: Props) => {
                             <Grid>
                                 <Cell span={12}>
                                     <PreviewBox>
-                                        <Bind name={"preview"}>
-                                            {({ value, onChange }) =>
-                                                value ? (
-                                                    <img src={value} alt={""} />
-                                                ) : open ? (
-                                                    <ElementPreview
-                                                        key={element.id}
-                                                        onChange={onChange}
-                                                        element={element}
-                                                    />
-                                                ) : (
-                                                    <></>
-                                                )
-                                            }
-                                        </Bind>
+                                        <PageElementsProvider>
+                                            <ElementPreview element={pbElement} />
+                                        </PageElementsProvider>
                                     </PreviewBox>
                                 </Cell>
                             </Grid>
                         </DialogContent>
                         <DialogActions>
                             <DialogCancel>Cancel</DialogCancel>
-                            <DialogButton onClick={submit}>Save</DialogButton>
+                            <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
                         </DialogActions>
                     </React.Fragment>
                 )}

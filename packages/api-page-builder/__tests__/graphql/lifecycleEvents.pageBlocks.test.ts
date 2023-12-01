@@ -8,7 +8,6 @@ const blockCategory = "block-category-lifecycle-events";
 const pageBlockData = {
     name: "Page Block Lifecycle Events",
     blockCategory,
-    preview: { src: "https://test.com/src.jpg" },
     content: { some: "page-block-content" }
 };
 
@@ -58,7 +57,13 @@ describe("Page Block Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     createPageBlock: {
-                        data: pageBlockData,
+                        data: {
+                            ...pageBlockData,
+                            content: {
+                                compression: "gzip",
+                                value: expect.any(String)
+                            }
+                        },
                         error: null
                     }
                 }
@@ -86,7 +91,11 @@ describe("Page Block Lifecycle Events", () => {
                     updatePageBlock: {
                         data: {
                             ...pageBlockData,
-                            name: `${pageBlockData.name} Updated`
+                            name: `${pageBlockData.name} Updated`,
+                            content: {
+                                compression: "gzip",
+                                value: expect.any(String)
+                            }
                         },
                         error: null
                     }
@@ -110,7 +119,7 @@ describe("Page Block Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     deletePageBlock: {
-                        data: pageBlockData,
+                        data: true,
                         error: null
                     }
                 }

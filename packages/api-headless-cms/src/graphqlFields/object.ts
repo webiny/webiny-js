@@ -1,13 +1,11 @@
-import WebinyError from "@webiny/error";
 import upperFirst from "lodash/upperFirst";
+import lodashUpperFirst from "lodash/upperFirst";
 import {
     CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { attachRequiredFieldValue } from "./helpers";
-import lodashUpperFirst from "lodash/upperFirst";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
 interface AttachTypeDefinitionsParams {
@@ -53,7 +51,7 @@ const createChildTypeDefs = (params: AttachTypeDefinitionsParams): string => {
         .join("\n");
     return `input ${typeName}WhereInput {
         ${filters || "_empty: String"}
-    }`;
+    }\n`;
 };
 
 interface CreateTypeNameParams {
@@ -97,25 +95,8 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         validateChildFields: params => {
             const { field, originalField, validate } = params;
 
-            const fields = field.settings?.fields || [];
-            /**
-             * At the moment we do not allow dynamic zone fields inside the object field.
-             */
-            const hasDynamicZone = fields.some(f => f.type === "dynamicZone");
-            if (hasDynamicZone) {
-                throw new WebinyError(
-                    "Dynamic zones cannot be used inside of an object field.",
-                    "DYNAMIC_ZONE_INSIDE_OBJECT",
-                    {
-                        id: field.id,
-                        fieldId: field.fieldId,
-                        fieldLabel: field.label
-                    }
-                );
-            }
-
             validate({
-                fields,
+                fields: field.settings?.fields ?? [],
                 originalFields: originalField?.settings?.fields || []
             });
         },
@@ -204,7 +185,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     fields: `${field.fieldId}: ${
                         field.multipleValues ? `[${fieldType}!]` : fieldType
                     }`,
-                    typeDefs: `${typeDefs}${childTypeDefs}`
+                    typeDefs: `${typeDefs}\n${childTypeDefs}`
                 };
             },
             createInputField({ models, model, field, fieldTypePlugins }) {
@@ -227,10 +208,9 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 const { fieldType, typeDefs } = result;
 
                 return {
-                    fields: attachRequiredFieldValue(
-                        `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
-                        field
-                    ),
+                    fields: `${field.fieldId}: ${
+                        field.multipleValues ? `[${fieldType}!]` : fieldType
+                    }`,
                     typeDefs
                 };
             },

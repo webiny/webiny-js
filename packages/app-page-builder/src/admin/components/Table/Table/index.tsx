@@ -1,193 +1,241 @@
 import React, { forwardRef, useMemo, useState } from "react";
-
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import {
+    FolderDialogDelete,
+    FolderDialogUpdate,
+    FolderDialogManagePermissions
+} from "@webiny/app-aco";
+import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FolderName, PageName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
+import { FolderActionManagePermissions } from "./Row/Folder/FolderActionManagePermissions";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
+import { statuses as statusLabels } from "~/admin/constants";
+import { PbPageDataItem, PbPageDataStatus } from "~/types";
+import { menuStyles } from "./styled";
 
-import statusLabels from "~/admin/constants/pageStatusesLabels";
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-
-import { PbPageDataItem } from "~/types";
-import { actionsColumnStyles, menuStyles } from "./styled";
-
-interface Props {
+export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
+    selectedRows: PbPageDataItem[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-interface Entry {
+interface BaseEntry {
+    $selectable: boolean;
     id: string;
-    type: "RECORD" | "FOLDER";
     title: string;
     createdBy: string;
+    createdOn: string;
     savedOn: string;
-    status?: string;
-    version?: number;
-    original: PbPageDataItem | FolderItem;
-    selectable: boolean;
 }
 
-export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
-        props;
+export interface PageEntry extends BaseEntry {
+    $type: "RECORD";
+    original: PbPageDataItem;
+    status: PbPageDataStatus;
+    location: Location;
+    version?: number;
+}
 
-    const [data, setData] = useState<Entry[]>([]);
+interface FolderEntry extends BaseEntry {
+    $type: "FOLDER";
+    original: FolderItem;
+}
+
+type Entry = PageEntry | FolderEntry;
+
+const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry[] => {
+    return items.map(({ data, location }) => {
+        return {
+            $type: "RECORD",
+            $selectable: true,
+            id: data.pid,
+            title: data.title,
+            createdBy: data.createdBy?.displayName || "-",
+            createdOn: data.createdOn,
+            savedOn: data.savedOn,
+            status: data.status,
+            version: data.version,
+            original: data || {},
+            location: location
+        };
+    });
+};
+
+const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
+    return items.map(item => {
+        return {
+            $type: "FOLDER",
+            $selectable: false,
+            id: item.id,
+            title: item.title,
+            createdBy: item.createdBy?.displayName || "-",
+            createdOn: item.createdOn,
+            savedOn: item.createdOn,
+            original: item
+        };
+    });
+};
+
+export const isPageEntry = (entry: Entry): entry is PageEntry => {
+    return entry.$type === "RECORD";
+};
+
+export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
+    const {
+        folders,
+        records,
+        loading,
+        openPreviewDrawer,
+        onSelectRow,
+        sorting,
+        onSortingChange,
+        selectedRows
+    } = props;
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
 
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
-    const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
+    const data = useMemo<Entry[]>(() => {
+        return [...createFoldersData(folders), ...createRecordsData(records)];
+    }, [folders, records]);
 
-    const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =>
-            items.map(({ data }) => ({
-                id: data.id,
-                type: "RECORD",
-                title: data.title,
-                createdBy: data.createdBy.displayName,
-                savedOn: data.savedOn,
-                status: data.status,
-                version: data.version,
-                original: data || {},
-                selectable: true
-            }));
-    }, [records]);
+    const columns: Columns<Entry> = useMemo(() => {
+        return {
+            title: {
+                header: "Name",
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        return (
+                            <PageName
+                                name={entry.title}
+                                id={entry.id}
+                                onClick={openPreviewDrawer}
+                            />
+                        );
+                    }
 
-    const createFoldersData = useMemo(() => {
-        return (items: FolderItem[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "FOLDER",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
-                original: item,
-                selectable: false
-            }));
-    }, [folders]);
-
-    useDeepCompareEffect(() => {
-        const foldersData = createFoldersData(folders);
-        const pagesData = createRecordsData(records);
-        setData([...foldersData, ...pagesData]);
-    }, [{ ...folders }, { ...records }]);
-
-    const columns: Columns<Entry> = {
-        title: {
-            header: "Name",
-            cell: ({ id, title, type }) => {
-                if (type === "RECORD") {
-                    return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
-                } else {
-                    return <FolderName name={title} id={id} />;
-                }
+                    return (
+                        <FolderName
+                            name={entry.title}
+                            id={entry.id}
+                            canManagePermissions={entry.original.canManagePermissions}
+                            hasNonInheritedPermissions={entry.original.hasNonInheritedPermissions}
+                        />
+                    );
+                },
+                enableSorting: true,
+                size: 400
             },
-            enableSorting: true
-        },
-        savedOn: {
-            header: "Last modified",
-            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />,
-            enableSorting: true
-        },
-        createdBy: {
-            header: "Author"
-        },
-        status: {
-            header: "Status",
-            cell: ({ status, version }) => {
-                if (status && version) {
-                    return `${statusLabels[status]} (v${version})`;
-                } else {
+            createdBy: {
+                header: "Author"
+            },
+            savedOn: {
+                header: "Modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
+            },
+            status: {
+                header: "Status",
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        const { status, version } = entry;
+                        return `${statusLabels[status]}${version ? ` (v${version})` : ""}`;
+                    }
                     return "-";
                 }
-            }
-        },
-        original: {
-            header: "",
-            meta: {
-                alignEnd: true
             },
-            className: actionsColumnStyles,
-            cell: ({ type, original }) => {
-                if (!original) {
-                    return <></>;
-                }
+            original: {
+                header: "",
+                meta: {
+                    alignEnd: true
+                },
+                size: 60,
+                enableResizing: false,
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        return (
+                            <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
+                                <RecordActionEdit record={entry.original} />
+                                <RecordActionPreview record={entry.original} />
+                                <RecordActionPublish record={entry.original} />
+                                <RecordActionMove record={entry} />
+                                <RecordActionDelete record={entry.original} />
+                            </Menu>
+                        );
+                    }
 
-                if (type === "RECORD") {
-                    return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit record={original as PbPageDataItem} />
-                            <RecordActionPreview record={original as PbPageDataItem} />
-                            <RecordActionPublish record={original as PbPageDataItem} />
-                            <RecordActionMove
-                                onClick={() => {
-                                    setMoveSearchRecordDialogOpen(true);
-                                    setSelectedSearchRecord(() =>
-                                        records.find(
-                                            record => record.id === (original as PbPageDataItem).pid
-                                        )
-                                    );
-                                }}
-                            />
-                            <RecordActionDelete record={original as PbPageDataItem} />
-                        </Menu>
-                    );
-                } else {
+                    // If the user cannot manage folder structure, no need to show the menu.
+                    if (!entry.original.canManageStructure) {
+                        return null;
+                    }
+
                     return (
                         <Menu handle={<IconButton icon={<More />} />}>
                             <FolderActionEdit
                                 onClick={() => {
                                     setUpdateDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
+                                    setSelectedFolder(entry.original);
                                 }}
                             />
+
+                            {entry.original.canManagePermissions && (
+                                <FolderActionManagePermissions
+                                    onClick={() => {
+                                        setManagePermissionsDialogOpen(true);
+                                        setSelectedFolder(entry.original);
+                                    }}
+                                />
+                            )}
+
                             <FolderActionDelete
                                 onClick={() => {
                                     setDeleteDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
+                                    setSelectedFolder(entry.original);
                                 }}
                             />
                         </Menu>
                     );
                 }
             }
-        }
-    };
+        };
+    }, []);
 
     return (
         <div ref={ref}>
-            <DataTable
+            <DataTable<Entry>
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
+                selectedRows={data.filter(record =>
+                    selectedRows.find(row => row.pid === record.id)
+                )}
+                isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
             />
             {selectedFolder && (
                 <>
@@ -196,20 +244,17 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                         open={updateDialogOpen}
                         onClose={() => setUpdateDialogOpen(false)}
                     />
+                    <FolderDialogManagePermissions
+                        folder={selectedFolder}
+                        open={managePermissionsDialogOpen}
+                        onClose={() => setManagePermissionsDialogOpen(false)}
+                    />{" "}
                     <FolderDialogDelete
                         folder={selectedFolder}
                         open={deleteDialogOpen}
                         onClose={() => setDeleteDialogOpen(false)}
                     />
                 </>
-            )}
-            {selectedSearchRecord && (
-                <EntryDialogMove
-                    type={FOLDER_TYPE}
-                    searchRecord={selectedSearchRecord}
-                    open={moveSearchRecordDialogOpen}
-                    onClose={() => setMoveSearchRecordDialogOpen(false)}
-                />
             )}
         </div>
     );

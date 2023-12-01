@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { css } from "emotion";
-import { cloneDeep, debounce } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";
 import { Form, Bind } from "@webiny/form";

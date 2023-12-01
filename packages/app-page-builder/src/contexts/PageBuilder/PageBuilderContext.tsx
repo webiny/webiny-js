@@ -1,23 +1,25 @@
 import * as React from "react";
 import { DisplayMode, PbTheme } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { Theme } from "@webiny/app-theme/types";
 import { useTheme } from "@webiny/app-theme";
 import { PageElementsProvider } from "./PageElementsProvider";
 
 export interface ResponsiveDisplayMode {
     displayMode: DisplayMode;
-    setDisplayMode: Function;
+    setDisplayMode: (value: DisplayMode) => void;
 }
 
 export interface ExportPageData {
     revisionType: string;
-    setRevisionType: Function;
+    setRevisionType: (value: string) => void;
 }
 
 export interface PageBuilderContext {
     theme: Theme | PbTheme | undefined;
+
     loadThemeFromPlugins(): void;
+
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
@@ -35,14 +37,8 @@ export const PageBuilderContext = React.createContext<PageBuilderContext | undef
 
 export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
-    const [revisionType, setRevisionType] = React.useState("published");
+    const [revisionType, setRevisionType] = React.useState<string>("published");
     const { theme, loadThemeFromPlugins } = useTheme();
-
-    let childrenToRender = children;
-    if (!isLegacyRenderingEngine) {
-        // With the new page elements rendering engine, we also want to include the configured `PageElementsProvider`.
-        childrenToRender = <PageElementsProvider>{childrenToRender}</PageElementsProvider>;
-    }
 
     return (
         <PageBuilderContext.Provider
@@ -59,7 +55,7 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
                 }
             }}
         >
-            {childrenToRender}
+            <PageElementsProvider>{children}</PageElementsProvider>
         </PageBuilderContext.Provider>
     );
 };

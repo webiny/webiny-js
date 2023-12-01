@@ -3,6 +3,7 @@ import * as Ui from "@webiny/ui/ImageUpload";
 import { Image } from "@webiny/app/components";
 import { ApwMediaFile } from "~/types";
 import { createRenderImagePreview, imagePlugins } from "./utils";
+import { FileManagerFileItem } from "@webiny/app-admin";
 
 const imageContainerStyle = { width: 184, height: 187 };
 
@@ -23,7 +24,7 @@ const defaultStyles = {
 
 interface ApwFileProps {
     value: ApwMediaFile;
-    onChange: Function;
+    onChange: (file: FileManagerFileItem | null) => void;
     showFileManager: () => void;
 }
 
@@ -88,6 +89,6 @@ export const CommentFile: React.FC<CommentFileProps> = props => {
         return <Component />;
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     return <Image src={value.src} {...commentFilePreviewProps} />;
 };

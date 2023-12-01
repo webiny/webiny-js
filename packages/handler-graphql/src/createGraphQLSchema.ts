@@ -14,6 +14,10 @@ import {
 } from "./builtInTypes";
 import { GraphQLScalarType } from "graphql/type/definition";
 
+export const getSchemaPlugins = (context: Context) => {
+    return context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+};
+
 export const createGraphQLSchema = (context: Context) => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
@@ -59,15 +63,15 @@ export const createGraphQLSchema = (context: Context) => {
         }
     ];
 
-    const plugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+    const plugins = getSchemaPlugins(context);
     for (const plugin of plugins) {
         /**
          * TODO @ts-refactor
          * Figure out correct types on typeDefs and resolvers
          */
-        // @ts-ignore
+        // @ts-expect-error
         typeDefs.push(plugin.schema.typeDefs);
-        // @ts-ignore
+        // @ts-expect-error
         resolvers.push(plugin.schema.resolvers);
     }
 

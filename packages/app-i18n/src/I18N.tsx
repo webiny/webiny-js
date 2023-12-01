@@ -2,7 +2,7 @@ import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
 import { Provider, Plugins, AddMenu } from "@webiny/app-admin";
 import { I18NProvider as ContextProvider } from "./contexts/I18N";
-import { HasPermission } from "@webiny/app-security/";
+import { HasPermission } from "@webiny/app-security";
 import { AddRoute } from "@webiny/app-admin";
 import { Layout } from "@webiny/app-admin";
 import { LocalesView } from "./admin/views/locales";

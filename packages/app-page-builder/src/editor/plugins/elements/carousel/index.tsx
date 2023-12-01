@@ -50,12 +50,12 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         type: "pb-editor-page-element",
         name: `pb-editor-page-element-${elementType}`,
         elementType: elementType,
-        // @ts-ignore
+        // @ts-expect-error
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         canDelete: () => {
-            return false;
+            return true;
         },
         create: () => {
             const defaultValue = {

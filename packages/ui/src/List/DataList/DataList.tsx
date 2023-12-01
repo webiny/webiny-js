@@ -150,7 +150,7 @@ interface DataListProps {
     pagination?: PaginationProp;
 
     // Triggered once a sorter has been selected.
-    setSorters?: Function | null;
+    setSorters?: ((sorter: any) => void) | null;
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp | null;

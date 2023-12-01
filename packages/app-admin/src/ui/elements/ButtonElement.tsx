@@ -1,7 +1,7 @@
 import React from "react";
 import { ButtonDefault, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { UIElement, UIElementConfig } from "../UIElement";
-import { kebabCase } from "lodash";
+import kebabCase from "lodash/kebabCase";
 
 export type ButtonElementType = "default" | "primary" | "secondary";
 
@@ -35,7 +35,7 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
          * TODO @ts-refactor
          * 'TProps' could be instantiated with an arbitrary type which could be unrelated to 'TRenderProps'
          */
-        // @ts-ignore
+        // @ts-expect-error
         this.config.label = label;
     }
 

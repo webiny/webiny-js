@@ -1,4 +1,7 @@
-import _ from "lodash";
+import isObject from "lodash/isObject";
+import isString from "lodash/isString";
+import has from "lodash/has";
+import keys from "lodash/keys";
 import ValidationError from "~/validationError";
 
 export default (value: any, params?: string[]) => {
@@ -7,17 +10,17 @@ export default (value: any, params?: string[]) => {
     }
 
     let lengthOfValue = null;
-    if (_.has(value, "length")) {
+    if (has(value, "length")) {
         lengthOfValue = value.length;
-    } else if (_.isObject(value)) {
-        lengthOfValue = _.keys(value).length;
+    } else if (isObject(value)) {
+        lengthOfValue = keys(value).length;
     }
 
     if (lengthOfValue === null || lengthOfValue <= params[0]) {
         return;
     }
 
-    if (_.isString(value)) {
+    if (isString(value)) {
         throw new ValidationError("Value requires " + params[0] + " characters at most.");
     }
     throw new ValidationError("Value requires " + params[0] + " items at most.");

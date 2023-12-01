@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -65,28 +65,23 @@ const CMSInstaller: React.FC<CMSInstallerProps> = ({ onInstalled }) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Temporary fix for the ES index creation failure.
-        // Let's try waiting a bit before running the installation.
-        setTimeout(() => {
-            client
-                .mutate<CmsInstallMutationResponse>({
-                    mutation: INSTALL
-                })
-                .then(result => {
-                    if (!result || !result.data) {
-                        setError("Missing Install Mutation response data.");
-                        return;
-                    }
-                    const { error } = result.data.cms.install;
-                    if (error) {
-                        setError(error.message);
-                        return;
-                    }
+        client
+            .mutate<CmsInstallMutationResponse>({
+                mutation: INSTALL
+            })
+            .then(result => {
+                if (!result || !result.data) {
+                    setError("Missing Install Mutation response data.");
+                    return;
+                }
+                const { error } = result.data.cms.install;
+                if (error) {
+                    setError(error.message);
+                    return;
+                }
 
-                    // Just so the user sees the actual message.
-                    setTimeout(onInstalled, 3000);
-                });
-        }, 10000);
+                onInstalled();
+            });
     }, []);
 
     const label = error ? (
@@ -111,11 +106,7 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-cms",
     type: "admin-installation",
     title: t`Headless CMS`,
-    dependencies: [
-        "admin-installation-security",
-        "admin-installation-i18n",
-        "admin-installation-fm"
-    ],
+    dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
     async getInstalledVersion({ client }) {
         const { data } = await client.query<CmsIsInstalledQueryResponse>({ query: IS_INSTALLED });

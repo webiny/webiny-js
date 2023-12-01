@@ -9,6 +9,7 @@ export interface OptionItem {
     published: string | null;
     latest: string | null;
     status: CmsContentEntryStatusType;
+    folderId?: string;
 }
 
 export interface OptionItemCollection {
@@ -29,6 +30,9 @@ export interface CmsReferenceContentEntry {
         id: string;
         entryId: string;
         title: string;
+    };
+    wbyAco_location?: {
+        folderId?: string;
     };
     createdOn: Date;
     savedOn: Date;

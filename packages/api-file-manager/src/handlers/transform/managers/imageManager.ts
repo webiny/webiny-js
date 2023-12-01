@@ -1,5 +1,5 @@
 import { dirname } from "path";
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import { getObjectParams, getEnvironment } from "~/handlers/utils";
 import * as newUtils from "../utils";
 import * as legacyUtils from "../legacyUtils";
@@ -38,7 +38,7 @@ export default {
         const utils = key.includes("/") ? newUtils : legacyUtils;
 
         // 1. Get optimized image key.
-        await s3.deleteObject(getObjectParams(utils.getImageKey({ key }))).promise();
+        await s3.deleteObject(getObjectParams(utils.getImageKey({ key })));
 
         if (!utils.SUPPORTED_TRANSFORMABLE_IMAGES.includes(extension)) {
             return;
@@ -60,12 +60,10 @@ export default {
             : dirname(key) + "/";
 
         const env = getEnvironment();
-        const imagesList = await s3
-            .listObjects({
-                Bucket: env.bucket,
-                Prefix: prefix
-            })
-            .promise();
+        const imagesList = await s3.listObjects({
+            Bucket: env.bucket,
+            Prefix: prefix
+        });
 
         if (!imagesList.Contents) {
             return;
@@ -75,7 +73,7 @@ export default {
             if (!imageObject.Key) {
                 continue;
             }
-            await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
+            await s3.deleteObject(getObjectParams(imageObject.Key));
         }
     }
 };

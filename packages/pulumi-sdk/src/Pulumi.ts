@@ -2,7 +2,9 @@ import os from "os";
 import execa from "execa";
 import * as path from "path";
 import fs from "fs-extra";
-import { merge, kebabCase, set } from "lodash";
+import merge from "lodash/merge";
+import kebabCase from "lodash/kebabCase";
+import set from "lodash/set";
 import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];

@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
-import { waitPage } from "./utils/waitPage";
+
 import { defaultIdentity } from "../tenancySecurity";
+import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
+import { decompress } from "./utils/compression";
 
 jest.setTimeout(100000);
 
@@ -117,14 +119,10 @@ describe("CRUD Test", () => {
                 }
             };
 
-            const [updatePageResponse] = await updatePage({
+            await updatePage({
                 id,
                 data
             });
-
-            const updatedPage = updatePageResponse.data.pageBuilder.updatePage.data;
-
-            await waitPage(handler, updatedPage);
         }
 
         const [listAfterUpdateResponse] = await until(
@@ -371,11 +369,13 @@ describe("CRUD Test", () => {
                     getPage: {
                         data: {
                             id: page.id,
-                            revisions: revisions.map(rev => {
-                                return {
-                                    id: rev
-                                };
-                            })
+                            revisions: revisions
+                                .map(rev => {
+                                    return {
+                                        id: rev
+                                    };
+                                })
+                                .reverse() // We reverse the array because API returns revisions in DESC order.
                         },
                         error: null
                     }
@@ -411,7 +411,6 @@ describe("CRUD Test", () => {
             data: {
                 name: "block-name",
                 blockCategory: "block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { data: {}, elements: [], type: "block" }
             }
         });
@@ -422,17 +421,17 @@ describe("CRUD Test", () => {
             data: {
                 name: "element-name",
                 type: "element",
-                category: "element-category",
-                preview: { src: "https://test.com/element/src.jpg" },
                 content: { some: "element-content" }
             }
         });
 
         const pageElementData = createPageElementResponse.data.pageBuilder.createPageElement.data;
 
+        const uncompressedBlock = await decompress(blockData);
+
         const updatedContent = {
-            ...blockData.content,
-            elements: [...blockData.content.elements, pageElementData]
+            ...uncompressedBlock,
+            elements: [...uncompressedBlock.content.elements, pageElementData]
         };
         const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
@@ -446,7 +445,7 @@ describe("CRUD Test", () => {
                     updatePageBlock: {
                         data: {
                             id: blockData.id,
-                            content: updatedContent
+                            content: expectCompressed()
                         },
                         error: null
                     }
@@ -496,8 +495,6 @@ describe("CRUD Test", () => {
             elements: [
                 {
                     id: pageElementData.id,
-                    category: "element-category",
-                    preview: { src: "https://test.com/element/src.jpg" },
                     name: "element-name",
                     content: { some: "element-content" },
                     type: "element",

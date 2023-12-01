@@ -1,24 +1,11 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { createFilterModelDefinition } from "~/filter/filter.model";
 import { createFolderModelDefinition } from "~/folder/folder.model";
 import { createSearchModelDefinition } from "~/record/record.model";
-import { isInstallationPending } from "~/utils/isInstallationPending";
 import { modelFactory } from "~/utils/modelFactory";
 
 export const createAcoModels = (context: CmsContext) => {
-    /**
-     * This should never happen in the actual project.
-     * It is to make sure that we load setup context before the CRUD init in our internal code.
-     */
-    if (!context.cms) {
-        console.warn("Creating model before cms init.");
-        return;
-    }
-
-    if (isInstallationPending({ tenancy: context.tenancy, i18n: context.i18n })) {
-        return;
-    }
-
     const groupId = "contentModelGroup_aco";
 
     /**
@@ -36,7 +23,11 @@ export const createAcoModels = (context: CmsContext) => {
     /**
      * Create  CmsModel plugins.
      */
-    const modelDefinitions = [createFolderModelDefinition(), createSearchModelDefinition()];
+    const modelDefinitions = [
+        createFolderModelDefinition(),
+        createSearchModelDefinition(),
+        createFilterModelDefinition()
+    ];
     const cmsModelPlugins = modelDefinitions.map(modelDefinition => {
         return modelFactory({
             group: cmsGroupPlugin.contentModelGroup,

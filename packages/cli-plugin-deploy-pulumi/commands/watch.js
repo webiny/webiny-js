@@ -144,17 +144,18 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output = terminalOutput;
+    let output;
 
+    // TODO: deprecate browser/terminal options with 5.40.0 release.
     switch (inputs.output) {
         case "browser":
             output = browserOutput;
             break;
-        case "simple":
-            output = simpleOutput;
+        case "terminal":
+            output = terminalOutput;
             break;
         default:
-            output = terminalOutput;
+            output = simpleOutput;
     }
 
     if (typeof output.initialize === "function") {
@@ -171,6 +172,41 @@ module.exports = async (inputs, context) => {
             const tunnel = await localtunnel({ port: 3010 });
 
             logging.url = tunnel.url;
+
+            const uniqueLocalTunnelErrorMessages = [];
+            tunnel.on("error", e => {
+                // We're ensuring the same message is not printed twice or more.
+                // We're doing this because we've seen the same error message being printed
+                // multiple times, and it's not really helpful. This way we're ensuring
+                // the user sees the error only once.
+                if (!uniqueLocalTunnelErrorMessages.includes(e.message)) {
+                    uniqueLocalTunnelErrorMessages.push(e.message);
+
+                    if (uniqueLocalTunnelErrorMessages.length === 1) {
+                        output.log({
+                            type: "logs",
+                            message: chalk.red("Could not initialize logs forwarding.")
+                        });
+                    }
+
+                    output.log({
+                        type: "logs",
+                        message: chalk.red("Could not initialize logs forwarding.")
+                    });
+
+                    output.log({
+                        type: "logs",
+                        message: chalk.red(e.message)
+                    });
+
+                    if (inputs.debug) {
+                        output.log({
+                            type: "logs",
+                            message: chalk.red(e.stack)
+                        });
+                    }
+                }
+            });
 
             const app = express();
             app.use(bodyParser.urlencoded({ extended: false }));
@@ -192,11 +228,16 @@ module.exports = async (inputs, context) => {
             app.listen(3010);
 
             [
-                chalk.green(`Listening for incoming logs on port 3010...`),
-                `Note: everything you log in your code will be forwarded here ${chalk.underline(
-                    "over public internet"
+                `webiny ${chalk.blueBright(
+                    "info"
+                )}: Log forwarding enabled. Listening for incoming logs on port ${chalk.blueBright(
+                    3010
                 )}.`,
-                `To learn more, please visit https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding.`
+                `webiny ${chalk.blueBright(
+                    "info"
+                )}: Everything you log in your application code will be forwarded here over ${chalk.bold(
+                    "public internet"
+                )}. Learn more: https://webiny.link/enable-logs-forwarding.`
             ].forEach(message => output.log({ type: "logs", message }));
 
             output.log({ type: "logs", message: "" });
@@ -222,6 +263,14 @@ module.exports = async (inputs, context) => {
                 });
             }
         }
+    } else if (inputs.deploy) {
+        [
+            `webiny ${chalk.blueBright(
+                "info"
+            )}: To enable log forwarding, rerun the command with the ${chalk.blueBright(
+                "-r"
+            )} flag. Learn more: https://webiny.link/enable-logs-forwarding.`
+        ].forEach(message => output.log({ type: "logs", message }));
     }
 
     // Add deploy logs.

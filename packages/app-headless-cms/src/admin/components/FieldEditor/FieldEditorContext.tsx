@@ -2,37 +2,24 @@ import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
-    CmsModelField,
     CmsEditorFieldId,
     CmsEditorFieldRendererPlugin,
     CmsEditorFieldsLayout,
     CmsEditorFieldTypePlugin,
+    CmsModelField,
+    DragSource,
     FieldLayoutPosition
 } from "~/types";
 import { plugins } from "@webiny/plugins";
 import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
-import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
+import { DragSourceMonitor } from "react-dnd";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
     index: number | null;
-}
-
-interface Position {
-    row: number;
-    index: number;
-}
-
-export interface DragSource extends DragObjectWithType {
-    parent?: string;
-    pos?: Partial<Position>;
-    type: "row" | "field" | "newField";
-    fieldType?: string;
-    field?: CmsModelField | null;
-    fields?: CmsModelField[];
 }
 
 /**
@@ -300,9 +287,8 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
                 if (!(key in field)) {
                     return false;
                 }
-                // TODO @ts-refactor figure if there is a way to fix this.
-                // @ts-ignore
-                if (field[key] !== query[key]) {
+
+                if (field[key as keyof typeof field] !== query[key as keyof typeof query]) {
                     return false;
                 }
             }

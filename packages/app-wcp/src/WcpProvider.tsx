@@ -17,8 +17,16 @@ export const GET_WCP_PROJECT = gql`
                             }
                             multiTenancy {
                                 enabled
+                                options
                             }
                             advancedPublishingWorkflow {
+                                enabled
+                            }
+                            advancedAccessControlLayer {
+                                enabled
+                                options
+                            }
+                            auditLogs {
                                 enabled
                             }
                         }

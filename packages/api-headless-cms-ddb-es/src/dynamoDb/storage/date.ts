@@ -25,17 +25,21 @@ const convertFromStorage = (field: PartialCmsModelField, value: string | string[
     }
 };
 
-const convertValueToStorage = (field: PartialCmsModelField, value: any): any => {
-    if ((value as any).toISOString) {
-        return (value as Date).toISOString();
-    } else if (typeof value === "string") {
+const convertValueToStorage = (
+    field: PartialCmsModelField,
+    value: Date | Record<string, any> | string
+): string => {
+    if (typeof value === "string") {
         return value as string;
+    } else if (value instanceof Date || value.toISOString) {
+        return (value as Date).toISOString();
+    } else {
+        throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
+            value: value,
+            fieldId: field.fieldId,
+            storageId: field.storageId
+        });
     }
-    throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
-        value: value,
-        fieldId: field.fieldId,
-        storageId: field.storageId
-    });
 };
 
 export const createDateStorageTransformPlugin = () => {
@@ -55,22 +59,16 @@ export const createDateStorageTransformPlugin = () => {
             }
             if (field.multipleValues) {
                 const multipleValues = value as (string | Date | null | undefined)[];
-                return (multipleValues || [])
-                    .filter(v => !!v)
-                    .map(v => {
-                        return convertValueToStorage(field, v);
-                    });
+
+                return (multipleValues || []).reduce<string[]>((result, value) => {
+                    if (!value) {
+                        return result;
+                    }
+                    result.push(convertValueToStorage(field, value));
+                    return result;
+                }, []);
             }
-            if ((value as any).toISOString) {
-                return (value as Date).toISOString();
-            } else if (typeof value === "string") {
-                return value as string;
-            }
-            throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
-                value,
-                fieldId: field.fieldId,
-                storageId: field.storageId
-            });
+            return convertValueToStorage(field, value);
         }
     });
     plugin.name = `headless-cms.dynamodb.storageTransform.date`;

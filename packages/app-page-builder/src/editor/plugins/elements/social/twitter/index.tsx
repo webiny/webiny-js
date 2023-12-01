@@ -13,8 +13,6 @@ import {
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
 import { PbEditorElementPluginArgs } from "~/types";
-import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
-import { isLegacyRenderingEngine } from "~/utils";
 import { PeTwitter } from "./PeTwitter";
 
 declare global {
@@ -31,14 +29,6 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
-
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeTwitter {...props} />
-    );
-}
 
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "twitter");
@@ -61,10 +51,11 @@ export default (args: PbEditorElementPluginArgs = {}) => {
              * TODO @ts-refactor @ashutosh
              * Completely different types between method result and variable
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            // @ts-expect-error
             settings: args.settings,
             oembed: {
                 global: "twttr",
@@ -76,7 +67,10 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             renderElementPreview({ width, height }) {
                 return <img style={{ width, height }} src={placeholder} alt={"Tweet"} />;
             },
-            render
+            render(props) {
+                // @ts-expect-error No need to worry about different element.elements type.
+                return <PeTwitter {...props} />;
+            }
         }),
         createEmbedSettingsPlugin({
             type: elementType,

@@ -3,12 +3,16 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { CmsParametersPlugin, CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin";
 import { createSystemCrud } from "~/crud/system.crud";
-import { createSettingsCrud } from "~/crud/settings.crud";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
+import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
+import { createExportCrud } from "~/export";
+import { createImportCrud } from "~/export/crud/importing";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -30,7 +34,7 @@ export interface CrudParams {
 }
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
-    return new ContextPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {
@@ -58,6 +62,25 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         await context.benchmark.measure("headlessCms.createContext", async () => {
             await storageOperations.beforeInit(context);
 
+            const modelGroupsPermissions = new ModelGroupsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
+                fullAccessPermissionName: "cms.*"
+            });
+
+            const modelsPermissions = new ModelsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModel"),
+                fullAccessPermissionName: "cms.*",
+                modelGroupsPermissions
+            });
+
+            const entriesPermissions = new EntriesPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentEntry"),
+                fullAccessPermissionName: "cms.*"
+            });
+
             context.cms = {
                 type,
                 locale,
@@ -66,6 +89,11 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
+                permissions: {
+                    groups: modelGroupsPermissions,
+                    models: modelsPermissions,
+                    entries: entriesPermissions
+                },
                 ...createSystemCrud({
                     context,
                     getTenant,
@@ -73,33 +101,37 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getIdentity,
                     storageOperations
                 }),
-                ...createSettingsCrud({
-                    context,
-                    getTenant,
-                    getLocale,
-                    storageOperations
-                }),
                 ...createModelGroupsCrud({
                     context,
                     getTenant,
                     getLocale,
                     getIdentity,
-                    storageOperations
+                    storageOperations,
+                    modelGroupsPermissions
                 }),
                 ...createModelsCrud({
                     context,
                     getLocale,
                     getTenant,
                     getIdentity,
-                    storageOperations
+                    storageOperations,
+                    modelsPermissions
                 }),
                 ...createContentEntryCrud({
                     context,
                     getIdentity,
                     getTenant,
                     getLocale,
-                    storageOperations
-                })
+                    storageOperations,
+                    entriesPermissions,
+                    modelsPermissions
+                }),
+                export: {
+                    ...createExportCrud(context)
+                },
+                importing: {
+                    ...createImportCrud(context)
+                }
             };
 
             if (!storageOperations.init) {
@@ -108,4 +140,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             await storageOperations.init(context);
         });
     });
+
+    plugin.name = "cms.createContext";
+
+    return plugin;
 };

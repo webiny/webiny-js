@@ -22,6 +22,27 @@ describe("where", () => {
                 field: "id",
                 operator: "not_in"
             }
+        ],
+        [
+            "wbyAco_location",
+            {
+                field: "wbyAco_location",
+                operator: "eq"
+            }
+        ],
+        [
+            "wbyAco_location_in",
+            {
+                field: "wbyAco_location",
+                operator: "in"
+            }
+        ],
+        [
+            "wbyAco_location_not_in",
+            {
+                field: "wbyAco_location",
+                operator: "not_in"
+            }
         ]
     ];
 
@@ -44,14 +65,4 @@ describe("where", () => {
             }).toThrow(`It is not possible to search by key "${key}"`);
         }
     );
-
-    /**
-     * Skipped because fields can contain numbers.
-     */
-    test.skip("should throw error when malformed field is parsed out", () => {
-        const key = "a0_in";
-        expect(() => {
-            parseWhereKey(key);
-        }).toThrow(`Cannot filter by "a0".`);
-    });
 });

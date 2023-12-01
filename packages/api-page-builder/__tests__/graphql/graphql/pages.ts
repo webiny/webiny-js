@@ -236,6 +236,16 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
         }
     }
 `;
+export const UNLINK_PAGE_FROM_TEMPLATE = /* GraphQL */ `
+    mutation UnlinkPageFromTemplate($id: ID!) {
+        pageBuilder {
+            unlinkPageFromTemplate(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
 
 export const OEMBED_DATA = /* GraphQL */ `
     query GetOEmbedData($url: String!, $width: String, $height: String) {

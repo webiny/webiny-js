@@ -5,7 +5,7 @@ import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { get } from "lodash";
+import get from "lodash/get";
 import { set, merge } from "dot-prop-immutable";
 import { ReactComponent as BorderOuterIcon } from "../../../assets/icons/border_outer.svg";
 import { ReactComponent as BorderLeftIcon } from "../../../assets/icons/border_left.svg";

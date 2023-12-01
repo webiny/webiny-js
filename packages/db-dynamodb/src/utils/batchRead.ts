@@ -1,14 +1,14 @@
-import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
 import WebinyError from "@webiny/error";
+import { TableDef } from "~/toolbox";
 
-interface Item {
-    Table: Table;
+export interface BatchReadItem {
+    Table?: TableDef;
     Key: any;
 }
-interface Params {
-    table: Table;
-    items: Item[];
+export interface BatchReadParams {
+    table?: TableDef;
+    items: BatchReadItem[];
 }
 
 const MAX_BATCH_ITEMS = 100;
@@ -23,12 +23,16 @@ const flatten = (responses: Record<string, any[]>): any[] => {
 };
 
 interface BatchReadAllChunkParams {
-    table: Table;
-    items: Item[];
+    table?: TableDef;
+    items: BatchReadItem[];
 }
 const batchReadAllChunk = async <T = any>(params: BatchReadAllChunkParams): Promise<T[]> => {
     const { table, items } = params;
     const records: T[] = [];
+
+    if (!table) {
+        return records;
+    }
 
     const result = await table.batchGet(items);
     if (!result || !result.Responses) {
@@ -54,7 +58,7 @@ const batchReadAllChunk = async <T = any>(params: BatchReadAllChunkParams): Prom
  * It will fetch all results, as there is a next() method call built in.
  */
 export const batchReadAll = async <T = any>(
-    params: Params,
+    params: BatchReadParams,
     maxChunk = MAX_BATCH_ITEMS
 ): Promise<T[]> => {
     if (params.items.length === 0) {
@@ -71,7 +75,7 @@ export const batchReadAll = async <T = any>(
 
     const records: T[] = [];
 
-    const chunkItemsList: Item[][] = lodashChunk(params.items, maxChunk);
+    const chunkItemsList: BatchReadItem[][] = lodashChunk(params.items, maxChunk);
 
     for (const chunkItems of chunkItemsList) {
         const results = await batchReadAllChunk<T>({

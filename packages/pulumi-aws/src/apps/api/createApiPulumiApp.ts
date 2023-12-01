@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
@@ -62,6 +63,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.elasticSearch) {
+                const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+                if (typeof elasticSearch === "object") {
+                    if (elasticSearch.domainName) {
+                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+                    }
+
+                    if (elasticSearch.indexPrefix) {
+                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+                    }
+                }
+            }
+
             const pulumiResourceNamePrefix = app.getParam(
                 projectAppParams.pulumiResourceNamePrefix
             );
@@ -201,7 +215,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             }
 
             app.addOutputs({
-                region: process.env.AWS_REGION,
+                region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -211,7 +225,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
-                migrationLambdaArn: migration.function.output.arn
+                migrationLambdaArn: migration.function.output.arn,
+                graphqlLambdaName: graphql.functions.graphql.output.name
             });
 
             app.addHandler(() => {
@@ -242,19 +257,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             };
         }
     });
-
-    if (projectAppParams.elasticSearch) {
-        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
-        if (typeof elasticSearch === "object") {
-            if (elasticSearch.domainName) {
-                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
-            }
-
-            if (elasticSearch.indexPrefix) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
-            }
-        }
-    }
 
     return withCommonLambdaEnvVariables(app);
 };

@@ -32,6 +32,7 @@ export default /* GraphQL */ `
         categories(populate: Boolean = true): [CategoryApiNameWhichIsABitDifferentThanModelId!]
         longText: [String]
     }
+
     input ProductApiSingular_Variant_OptionsWhereInput {
         name: String
         name_not: String
@@ -39,6 +40,8 @@ export default /* GraphQL */ `
         name_not_in: [String]
         name_contains: String
         name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
 
         price: Number
         price_not: Number
@@ -68,6 +71,7 @@ export default /* GraphQL */ `
         category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         options: [ProductApiSingular_Variant_Options!]
     }
+
     input ProductApiSingular_VariantWhereInput {
         name: String
         name_not: String
@@ -75,6 +79,8 @@ export default /* GraphQL */ `
         name_not_in: [String]
         name_contains: String
         name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
 
         price: Number
         price_not: Number
@@ -97,6 +103,7 @@ export default /* GraphQL */ `
     type ProductApiSingular_FieldsObject {
         text: String
     }
+
     input ProductApiSingular_FieldsObjectWhereInput {
         text: String
         text_not: String
@@ -104,6 +111,8 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
     }
 
     input ProductApiSingularGetWhereInput {
@@ -141,6 +150,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -156,6 +172,8 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
 
         category: RefFieldWhereInput
 
@@ -203,6 +221,8 @@ export default /* GraphQL */ `
         color_not_in: [String]
         color_contains: String
         color_not_contains: String
+        color_startsWith: String
+        color_not_startsWith: String
 
         availableSizes: String
         availableSizes_not: String
@@ -210,6 +230,8 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
+        availableSizes_startsWith: String
+        availableSizes_not_startsWith: String
 
         variant: ProductApiSingular_VariantWhereInput
         fieldsObject: ProductApiSingular_FieldsObjectWhereInput
@@ -259,6 +281,7 @@ export default /* GraphQL */ `
             sort: [ProductApiSingularListSorter]
             limit: Int
             after: String
+            search: String
         ): ProductApiSingularListResponse
     }
 `;

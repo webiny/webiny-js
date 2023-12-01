@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -6,15 +6,13 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
-import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito";
+import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users-cognito";
-import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
+import createAdminUsersApp from "@webiny/api-admin-users";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
-export default ({ documentClient }: { documentClient: DocumentClient }) => [
+export default ({ documentClient }: { documentClient: DynamoDBClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */
@@ -87,12 +85,12 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    groupAuthorization({ identityType: "admin" }),
+    tenantLinkAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to fetch permissions from the parent tenant.
      */
-    parentTenantGroupAuthorization({ identityType: "admin" }),
+    tenantLinkAuthorization({ identityType: "admin", parent: true }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

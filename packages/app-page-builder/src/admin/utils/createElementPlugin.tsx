@@ -2,6 +2,7 @@ import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
 import { OnCreateActions, PbEditorElement, PbEditorPageElementPlugin } from "~/types";
+import { PreviewBlock } from "~/admin/components/PreviewBlock";
 import Title from "./components/Title";
 
 /**
@@ -22,33 +23,23 @@ export default (el: PbEditorElement): void => {
 
     const plugin: PbEditorPageElementPlugin = {
         name,
-        // @ts-ignore
         title: el.name,
         type: "pb-editor-page-element",
         elementType: name,
         target: rootPlugin.target,
         toolbar: {
             title({ refresh }) {
-                // @ts-ignore
                 return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
             },
             group: "pb-editor-element-group-saved",
             preview() {
-                return (
-                    <img
-                        // @ts-ignore
-                        src={el.preview.src}
-                        // @ts-ignore
-                        alt={el.name}
-                        style={{ width: "100%", height: "auto", backgroundColor: "#fff" }}
-                    />
-                );
+                return <PreviewBlock element={el} />;
             }
         },
 
         onCreate: OnCreateActions.SKIP,
         settings: rootPlugin ? rootPlugin.settings : [],
-        // @ts-ignore
+        // @ts-expect-error
         create() {
             return cloneDeep(el.content);
         },

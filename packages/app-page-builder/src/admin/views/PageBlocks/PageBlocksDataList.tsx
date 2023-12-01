@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { useQuery, useMutation } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
 
 import { useRouter } from "@webiny/react-router";
@@ -17,26 +16,22 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
 
 import { PbPageBlock } from "~/types";
-import {
-    LIST_PAGE_BLOCKS,
-    LIST_PAGE_BLOCKS_AND_CATEGORIES,
-    CREATE_PAGE_BLOCK,
-    DELETE_PAGE_BLOCK
-} from "./graphql";
 import { CreatableItem } from "./PageBlocks";
-import previewFallback from "./assets/preview.png";
+import { PreviewBlock } from "~/admin/components/PreviewBlock";
+import { ResponsiveElementsProvider } from "~/admin/components/ResponsiveElementsProvider";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
-const List = styled("div")({
-    display: "flex",
-    flexDirection: "column",
-    padding: "8px",
-    margin: "17px 50px",
-    backgroundColor: "white",
-    boxShadow:
-        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)"
-});
+const List = styled("div")`
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin: 17px 50px;
+    background-color: white;
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%),
+        0px 1px 3px 0px rgb(0 0 0 / 12%);
+`;
 
 const ListItem = styled.div`
     position: relative;
@@ -49,13 +44,9 @@ const ListItem = styled.div`
     :last-of-type {
         margin-bottom: 0;
     }
-    img {
-        position: relative;
-        width: 100%;
-    }
 `;
 
-const ListItemText = styled("span")({
+const ListItemText = styled("div")({
     textTransform: "uppercase",
     alignSelf: "start",
     marginTop: "15px"
@@ -132,40 +123,24 @@ type PageBlocksDataListProps = {
 const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog();
+    const [loadingLabel, setLoadingLabel] = useState("");
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Delete page block",
+        message: "Are you sure you want to delete this page block?"
+    });
     const { showExportBlockInitializeDialog } = useExportBlockDialog();
+    const pageBlocks = usePageBlocks();
+    const [blocks, setPageBlocks] = useState<PbPageBlock[]>([]);
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
-    const { data, loading, refetch } = useQuery(LIST_PAGE_BLOCKS, {
-        variables: { blockCategory: selectedBlocksCategory as string },
-        skip: !selectedBlocksCategory,
-        onCompleted: data => {
-            const error = data?.pageBuilder?.listPageBlocks?.error;
-            if (error) {
-                history.push("/page-builder/page-blocks");
-                showSnackbar(error.message);
-            }
-        }
-    });
-
     useEffect(() => {
         if (selectedBlocksCategory) {
-            refetch();
+            pageBlocks.listBlocks(selectedBlocksCategory).then(pageBlocks => {
+                setPageBlocks(pageBlocks);
+            });
         }
-    }, [selectedBlocksCategory]);
-
-    const [deleteIt, deleteMutation] = useMutation(DELETE_PAGE_BLOCK, {
-        // To update block counters on the left side
-        refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }],
-        onCompleted: () => refetch()
-    });
-
-    const [duplicateIt, duplicateMutation] = useMutation(CREATE_PAGE_BLOCK, {
-        // To update block counters on the left side and blocks list in pageEditor
-        refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }, { query: LIST_PAGE_BLOCKS }],
-        onCompleted: () => refetch()
-    });
+    }, [selectedBlocksCategory, pageBlocks.pageBlocks]);
 
     const filterData = useCallback(
         ({ name }) => {
@@ -174,58 +149,45 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         [filter]
     );
 
-    const pageBlocksData: PbPageBlock[] = data?.pageBuilder?.listPageBlocks?.data || [];
-    const filteredBlocksData: PbPageBlock[] =
-        filter === "" ? pageBlocksData : pageBlocksData.filter(filterData);
+    const filteredBlocksData: PbPageBlock[] = filter === "" ? blocks : blocks.filter(filterData);
 
     const deleteItem = useCallback(
-        item => {
+        (pageBlock: PbPageBlock) => {
             showConfirmation(async () => {
-                const response = await deleteIt({
-                    variables: item
-                });
-
-                const error = response?.data?.pageBuilder?.deletePageBlock?.error;
-                if (error) {
-                    return showSnackbar(error.message);
+                try {
+                    await pageBlocks.deleteBlock(pageBlock.id);
+                    showSnackbar(t`Block "{name}" deleted.`({ name: pageBlock.name }));
+                } catch (error) {
+                    showSnackbar(error.message);
                 }
-
-                showSnackbar(t`Block "{name}" deleted.`({ name: item.name }));
             });
         },
         [selectedBlocksCategory]
     );
 
-    const duplicateItem = useCallback(
-        async item => {
-            const response = await duplicateIt({
-                variables: {
-                    data: {
-                        name: `${item.name} (copy)`,
-                        blockCategory: item.blockCategory,
-                        content: item.content,
-                        preview: item.preview
-                    }
-                }
+    const duplicateItem = useCallback(async item => {
+        setLoadingLabel(t`Creating a copy of "{name}"...`({ name: item.name }));
+
+        const newName = `${item.name} (copy)`;
+        try {
+            await pageBlocks.createBlock({
+                name: newName,
+                category: item.blockCategory,
+                content: item.content
             });
+        } catch (error) {
+            showSnackbar(error.message);
+        }
 
-            const error = response?.data?.pageBuilder?.deletePageBlock?.error;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(t`Duplicated "{name}".`({ name: item.name }));
-        },
-        [duplicateIt]
-    );
+        showSnackbar(t`"{name}" was created successfully!`({ name: newName }));
+    }, []);
 
     const handleExportClick = useCallback((id: string) => {
         showExportBlockInitializeDialog({ ids: [id] });
     }, []);
 
-    const isLoading = [deleteMutation, duplicateMutation].find(item => item.loading) || loading;
+    const showEmptyView = !pageBlocks.loading && !selectedBlocksCategory;
 
-    const showEmptyView = !isLoading && !selectedBlocksCategory;
     // Render "No content selected" view.
     if (showEmptyView) {
         return (
@@ -236,7 +198,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         );
     }
 
-    const showNoRecordsView = !isLoading && isEmpty(filteredBlocksData);
+    const showNoRecordsView = !pageBlocks.loading && isEmpty(filteredBlocksData);
     // Render "No records found" view.
     if (showNoRecordsView) {
         return (
@@ -247,23 +209,24 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     }
 
     return (
-        <>
-            <List>
-                {isLoading && <CircularProgress />}
+        <List>
+            {pageBlocks.loading && (
+                <CircularProgress label={loadingLabel || pageBlocks.loadingLabel || "Loading..."} />
+            )}
+            <ResponsiveElementsProvider>
                 {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
-                        <img
-                            src={pageBlock?.preview?.src || previewFallback}
-                            alt={pageBlock.name}
-                        />
+                        <PreviewBlock element={pageBlock} />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             <ExportButton
+                                data-testid={"pb-blocks-list-block-export-btn"}
                                 icon={<ExportIcon />}
                                 onClick={() => handleExportClick(pageBlock.id)}
                             />
                             {canEdit(pageBlock) && (
                                 <EditButton
+                                    data-testid={"pb-blocks-list-block-edit-btn"}
                                     onClick={() =>
                                         history.push(`/page-builder/block-editor/${pageBlock.id}`)
                                     }
@@ -271,18 +234,22 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                             )}
                             {canCreate && (
                                 <DuplicateButton
+                                    data-testid={"pb-blocks-list-block-duplicate-btn"}
                                     icon={<DuplicateIcon />}
                                     onClick={() => duplicateItem(pageBlock)}
                                 />
                             )}
                             {canDelete(pageBlock) && (
-                                <DeleteButton onClick={() => deleteItem(pageBlock)} />
+                                <DeleteButton
+                                    data-testid={"pb-blocks-list-block-delete-btn"}
+                                    onClick={() => deleteItem(pageBlock)}
+                                />
                             )}
                         </Controls>
                     </ListItem>
                 ))}
-            </List>
-        </>
+            </ResponsiveElementsProvider>
+        </List>
     );
 };
 

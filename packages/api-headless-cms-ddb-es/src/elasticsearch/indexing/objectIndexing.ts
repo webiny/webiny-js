@@ -33,7 +33,7 @@ interface ProcessFromIndex {
     (params: {
         fields: CmsModelField[];
         value: Record<string, any>;
-        rawValue: Record<string, any>;
+        rawValue?: Record<string, any> | null;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
         getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
         plugins: PluginsContainer;
@@ -117,7 +117,9 @@ const processFromIndex: ProcessFromIndex = ({
             model,
             field,
             value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
-            rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
+            rawValue: sourceRawValue
+                ? sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier]
+                : null,
             getFieldIndexPlugin,
             getFieldTypePlugin
         });

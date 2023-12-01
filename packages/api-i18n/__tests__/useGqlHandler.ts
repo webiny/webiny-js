@@ -1,8 +1,5 @@
-/**
- * We use @ts-ignore because __getStorageOperationsPlugins and __getStorageOperationsPlugins are attached from other projects directly to JEST context.
- */
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import i18nPlugins from "~/graphql";
@@ -10,6 +7,7 @@ import { apiCallsFactory } from "./helpers";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { I18NContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -33,12 +31,13 @@ export default (params: UseGqlHandlerParams = {}) => {
             {
                 type: "context",
                 apply(context: I18NContext) {
+                    // @ts-expect-error
                     context.tenancy.getCurrentTenant = () => {
                         return {
                             id: "root",
                             name: "Root",
                             parent: null
-                        } as any;
+                        };
                     };
                 }
             },
@@ -60,8 +59,8 @@ export default (params: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

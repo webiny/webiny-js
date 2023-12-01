@@ -1,5 +1,3 @@
-import { isLegacyRenderingEngine } from "~/utils";
-
 const legacyText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
      Suspendisse varius enim in eros elementum tristique.
      Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.
@@ -37,5 +35,5 @@ const lexicalText = JSON.stringify({
     }
 });
 
-export const defaultText = isLegacyRenderingEngine ? legacyText : lexicalText;
+export const defaultText = lexicalText;
 export const displayText = legacyText;

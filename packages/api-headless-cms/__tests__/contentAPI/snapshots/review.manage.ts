@@ -17,6 +17,8 @@ export default /* GraphQL */ `
         product: RefField
         rating: Number
         author: RefField
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type ReviewApiModelMeta {
@@ -36,7 +38,16 @@ export default /* GraphQL */ `
 
     input ReviewApiModelInput {
         id: ID
-        text: String!
+        # User can override the entry dates
+        createdOn: DateTime
+        savedOn: DateTime
+        publishedOn: DateTime
+        # User can override the entry related user identities
+        createdBy: CmsIdentityInput
+        modifiedBy: CmsIdentityInput
+        ownedBy: CmsIdentityInput
+        wbyAco_location: WbyAcoLocationInput
+        text: String
         product: RefFieldInput
         rating: Number
         author: RefFieldInput
@@ -50,6 +61,7 @@ export default /* GraphQL */ `
     }
 
     input ReviewApiModelListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -72,6 +84,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -91,6 +110,8 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
         
         product: RefFieldWhereInput
 
@@ -115,6 +136,11 @@ export default /* GraphQL */ `
 
     type ReviewApiModelResponse {
         data: ReviewApiModel
+        error: CmsError
+    }
+
+    type ReviewApiModelMoveResponse {
+        data: Boolean
         error: CmsError
     }
     
@@ -154,15 +180,20 @@ export default /* GraphQL */ `
             sort: [ReviewApiModelListSorter]
             limit: Int
             after: String
+            search: String
         ): ReviewApiModelListResponse
     }
 
     extend type Mutation {
-        createReviewApiModel(data: ReviewApiModelInput!): ReviewApiModelResponse
+        createReviewApiModel(data: ReviewApiModelInput!, options: CreateCmsEntryOptionsInput): ReviewApiModelResponse
 
-        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput): ReviewApiModelResponse
+        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput, options: CreateRevisionCmsEntryOptionsInput): ReviewApiModelResponse
 
-        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
+        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!, options: UpdateCmsEntryOptionsInput): ReviewApiModelResponse
+        
+        validateReviewApiModel(revision: ID, data: ReviewApiModelInput!): CmsEntryValidationResponse!
+        
+        moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
         deleteReviewApiModel(
             revision: ID!
@@ -171,7 +202,7 @@ export default /* GraphQL */ `
 
         deleteMultipleReviewsApiModel(entries: [ID!]!): CmsDeleteMultipleResponse!
 
-        publishReviewApiModel(revision: ID!): ReviewApiModelResponse
+        publishReviewApiModel(revision: ID!, options: CmsPublishEntryOptionsInput): ReviewApiModelResponse
     
         republishReviewApiModel(revision: ID!): ReviewApiModelResponse
 

@@ -1,10 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import {
     ListItem,
     ListItemText,
@@ -25,7 +21,7 @@ import { ReactComponent as AddIcon } from "~/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsContentEntry } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
 import usePermission from "~/admin/hooks/usePermission";
@@ -43,7 +39,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: CmsEditorContentEntry) => {
+const getIcon = (rev: CmsContentEntry) => {
     switch (true) {
         case rev.meta.locked && rev.meta.status !== "published":
             return {
@@ -70,7 +66,7 @@ const getIcon = (rev: CmsEditorContentEntry) => {
 };
 
 interface RevisionListItemProps {
-    revision: CmsEditorContentEntry;
+    revision: CmsContentEntry;
 }
 
 const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
@@ -142,7 +138,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                             <ListItemGraphic>
                                 <Icon icon={<EditIcon />} />
                             </ListItemGraphic>
-                            {t` Edit`}
+                            {t`Edit`}
                         </MenuItem>
                     )}
 

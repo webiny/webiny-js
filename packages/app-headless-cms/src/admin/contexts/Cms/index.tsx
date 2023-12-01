@@ -3,16 +3,17 @@ import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
-import { ListQueryVariables } from "~/admin/views/contentEntries/ContentEntriesContext";
 
-interface PublishEntryOptions {
+interface MutationEntryOptions {
     mutationOptions?: MutationHookOptions;
 }
 
-type DeleteEntryOptions = PublishEntryOptions;
+type PublishEntryOptions = MutationEntryOptions;
+type UnpublishEntryOptions = MutationEntryOptions;
+type DeleteEntryOptions = MutationEntryOptions;
 
 interface EntryError {
     message: string;
@@ -22,34 +23,47 @@ interface EntryError {
 
 export interface OnEntryPublishRequest {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: CmsContentEntry;
     id: string;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryPublishResponse extends Omit<OnEntryPublishRequest, "entry"> {
-    entry: CmsEditorContentEntry | undefined;
+    entry: CmsContentEntry | undefined;
 }
 
 export interface OnEntryDeleteRequest {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: Pick<CmsContentEntry, "id">;
     id: string;
-    options: PublishEntryOptions;
+    options: DeleteEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry"> {
-    entry: CmsEditorContentEntry | undefined;
+    entry: Pick<CmsContentEntry, "id"> | undefined;
+}
+
+export interface OnEntryUnpublishRequest {
+    model: CmsModel;
+    entry: Pick<CmsContentEntry, "id">;
+    id: string;
+    options: UnpublishEntryOptions;
+    // TODO: Maybe a different input and output type for compose.
+    error?: EntryError | null;
+    locale: string;
+    client: ApolloClient<any>;
+}
+
+export interface OnEntryUnpublishResponse extends Omit<OnEntryUnpublishRequest, "entry"> {
+    entry: CmsContentEntry | undefined;
 }
 
 type OnEntryRevisionPublishSubscriber = AsyncProcessor<
@@ -57,27 +71,41 @@ type OnEntryRevisionPublishSubscriber = AsyncProcessor<
     OnEntryPublishResponse
 >;
 type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDeleteResponse>;
+type OnEntryRevisionUnpublishSubscriber = AsyncProcessor<
+    OnEntryUnpublishRequest,
+    OnEntryUnpublishResponse
+>;
 
 interface PublishEntryRevisionParams {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: CmsContentEntry;
     options?: PublishEntryOptions;
     id: string;
-    listQueryVariables: ListQueryVariables;
 }
 interface DeleteEntryParams {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: Pick<CmsContentEntry, "id">;
     id: string;
     options?: DeleteEntryOptions;
-    listQueryVariables: ListQueryVariables;
 }
+
+interface UnpublishEntryRevisionParams {
+    model: CmsModel;
+    entry: Pick<CmsContentEntry, "id">;
+    id: string;
+    options?: UnpublishEntryOptions;
+}
+
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     publishEntryRevision: (params: PublishEntryRevisionParams) => Promise<OnEntryPublishResponse>;
     onEntryRevisionPublish: (fn: OnEntryRevisionPublishSubscriber) => () => void;
+    unpublishEntryRevision: (
+        params: UnpublishEntryRevisionParams
+    ) => Promise<OnEntryUnpublishResponse>;
+    onEntryRevisionUnpublish: (fn: OnEntryRevisionUnpublishSubscriber) => () => void;
     deleteEntry: (params: DeleteEntryParams) => Promise<OnEntryDeleteResponse>;
     onEntryDelete: (fn: OnEntryDeleteSubscriber) => () => void;
 }
@@ -111,6 +139,7 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const { getCurrentLocale } = useI18N();
 
     const onEntryRevisionPublish = useRef<OnEntryRevisionPublishSubscriber[]>([]);
+    const onEntryRevisionUnpublish = useRef<OnEntryRevisionUnpublishSubscriber[]>([]);
     const onEntryDelete = useRef<OnEntryDeleteSubscriber[]>([]);
 
     const currentLocale = getCurrentLocale("content");
@@ -151,6 +180,21 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
             return () => {
                 const index = onEntryRevisionPublish.current.length;
                 onEntryRevisionPublish.current.splice(index, 1);
+            };
+        },
+        unpublishEntryRevision: async params => {
+            return await composeAsync([...onEntryRevisionUnpublish.current].reverse())({
+                locale: currentLocale,
+                ...params,
+                client: getApolloClient(currentLocale),
+                options: params.options || {}
+            });
+        },
+        onEntryRevisionUnpublish: fn => {
+            onEntryRevisionUnpublish.current.push(fn);
+            return () => {
+                const index = onEntryRevisionUnpublish.current.length;
+                onEntryRevisionUnpublish.current.splice(index, 1);
             };
         },
         deleteEntry: async params => {

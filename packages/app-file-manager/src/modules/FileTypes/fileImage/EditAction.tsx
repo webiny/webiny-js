@@ -1,14 +1,14 @@
 import React from "react";
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
-// @ts-ignore
+// @ts-expect-error
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { FileItem } from "@webiny/app-admin/types";
-import { useFileManagerApi, useFileManagerAcoView } from "~/index";
+import { useFileManagerApi, useFileManagerView } from "~/index";
 
 function toDataUrl(url: string): Promise<string> {
     return new Promise((resolve: (value: string) => void) => {
@@ -65,7 +65,7 @@ interface EditActionProps {
 export const EditAction: React.FC<EditActionProps> = props => {
     const { file } = props;
     const { canEdit } = useFileManagerApi();
-    const { uploadFile } = useFileManagerAcoView();
+    const { uploadFile } = useFileManagerView();
     const [state, dispatch] = React.useReducer(reducer, initialState);
     // Render nothing if the user don't have required permission for "edit".
     if (!canEdit(file)) {

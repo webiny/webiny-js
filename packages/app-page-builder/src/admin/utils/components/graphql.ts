@@ -12,9 +12,7 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         id
         name
         type
-        category
         content
-        preview
     }
 `;
 

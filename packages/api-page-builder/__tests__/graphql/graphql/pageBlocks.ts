@@ -2,7 +2,6 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         blockCategory
-        preview
         name
         content
         createdOn
@@ -70,7 +69,7 @@ export const DELETE_PAGE_BLOCK = /* GraphQL */ `
     mutation DeletePageBlock($id: ID!) {
         pageBuilder {
             deletePageBlock(id: $id) {
-                data ${DATA_FIELD}
+                data
                 error ${ERROR_FIELD}
             }
         }

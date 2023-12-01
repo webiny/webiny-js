@@ -11,6 +11,16 @@ const categoryFields = `
         displayName
         type
     }
+    modifiedBy {
+        id
+        displayName
+        type
+    }
+    ownedBy {
+        id
+        displayName
+        type
+    }
     savedOn
     meta {
         title
@@ -29,6 +39,9 @@ const categoryFields = `
             }
         }
         data
+    }
+    wbyAco_location {
+        folderId
     }
     # user defined fields
     title
@@ -107,8 +120,8 @@ const createCategoryMutation = (model: CmsModel) => {
 
 const createCategoryFromMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation CreateCategoryFrom($revision: ID!) {
-            createCategoryFrom: create${model.singularApiName}From(revision: $revision) {
+        mutation CreateCategoryFrom($revision: ID!, $data: ${model.singularApiName}Input) {
+            createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {
                 data {
                     ${categoryFields}
                 }
@@ -125,6 +138,20 @@ const updateCategoryMutation = (model: CmsModel) => {
                 data {
                     ${categoryFields}
                 }
+                ${errorFields}
+            }
+        }
+    `;
+};
+export interface MoveCategoryVariables {
+    revision: string;
+    folderId: string;
+}
+const moveCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation MoveCategory($revision: ID!, $folderId: ID!) {
+            moveCategory: move${model.singularApiName}(revision: $revision, folderId: $folderId) {
+                data
                 ${errorFields}
             }
         }
@@ -157,8 +184,8 @@ const deleteCategoriesMutation = (model: CmsModel) => {
 
 const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation PublishCategory($revision: ID!) {
-            publishCategory: publish${model.singularApiName}(revision: $revision) {
+        mutation PublishCategory($revision: ID!, $options: CmsPublishEntryOptionsInput) {
+            publishCategory: publish${model.singularApiName}(revision: $revision, options: $options) {
                 data {
                     ${categoryFields}
                 }
@@ -247,6 +274,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke({
                 body: {
                     query: updateCategoryMutation(model),
+                    variables
+                },
+                headers
+            });
+        },
+        async moveCategory(variables: MoveCategoryVariables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: moveCategoryMutation(model),
                     variables
                 },
                 headers

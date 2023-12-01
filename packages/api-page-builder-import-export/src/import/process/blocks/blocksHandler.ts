@@ -48,7 +48,7 @@ export const blocksHandler = async (
         log(`Fetched sub task => ${subTask.id}`);
         console.log("subTask", subTask);
 
-        const { blockKey, category, zipFileKey, input } = subTask.data;
+        const { blockKey, zipFileKey, input } = subTask.data;
         const { fileUploadsData } = input;
 
         log(`Processing block key "${blockKey}"`);
@@ -75,9 +75,8 @@ export const blocksHandler = async (
         // Create a block
         const pbBlock = await context.pageBuilder.createPageBlock({
             name: block.name,
-            blockCategory: category,
-            content: block.content,
-            preview: block.preview
+            blockCategory: block.blockCategory,
+            content: block.content
         });
 
         // Update task record in DB
@@ -98,7 +97,11 @@ export const blocksHandler = async (
         });
         prevStatusOfSubTask = subTask.status;
     } catch (e) {
-        log("[IMPORT_BLOCKS_PROCESS] Error => ", e.message);
+        console.error(
+            "[IMPORT_BLOCKS_PROCESS] Error => ",
+            e.message,
+            JSON.stringify(e.data, null, 2)
+        );
 
         if (subTask && subTask.id) {
             /**

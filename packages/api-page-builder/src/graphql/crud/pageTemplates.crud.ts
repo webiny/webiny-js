@@ -20,12 +20,11 @@ import {
     Page,
     PageContentWithTemplate
 } from "~/types";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 import { mdbid } from "@webiny/utils";
+import { PageTemplatesPermissions } from "~/graphql/crud/permissions/PageTemplatesPermissions";
 
 const createSchema = zod.object({
     title: zod.string().max(100),
@@ -47,13 +46,15 @@ const updateSchema = zod.object({
     content: zod.any()
 });
 
-const PERMISSION_NAME = "pb.template";
-
 const getDefaultContent = () => {
     return {
         id: uniqid.time(),
         type: "document",
-        data: {},
+        data: {
+            template: {
+                variables: []
+            }
+        },
         elements: []
     };
 };
@@ -61,6 +62,7 @@ const getDefaultContent = () => {
 export interface CreatePageTemplatesCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    pageTemplatesPermissions: PageTemplatesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
@@ -68,7 +70,8 @@ export interface CreatePageTemplatesCrudParams {
 export const createPageTemplatesCrud = (
     params: CreatePageTemplatesCrudParams
 ): PageTemplatesCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, pageTemplatesPermissions, getLocaleCode, getTenantId } =
+        params;
 
     const onPageTemplateBeforeCreate = createTopic<OnPageTemplateBeforeCreateTopicParams>();
     const onPageTemplateAfterCreate = createTopic<OnPageTemplateAfterCreateTopicParams>();
@@ -99,11 +102,8 @@ export const createPageTemplatesCrud = (
                 }
             };
 
-            let permission;
             if (auth) {
-                permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pageTemplatesPermissions.ensure({ rwd: "r" });
             }
 
             let pageTemplate: PageTemplate | null = null;
@@ -124,18 +124,15 @@ export const createPageTemplatesCrud = (
                 throw new NotFoundError(`Page template not found.`);
             }
 
-            if (auth && permission) {
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, pageTemplate);
+            if (auth) {
+                await pageTemplatesPermissions.ensure({ owns: pageTemplate.createdBy });
             }
 
             return pageTemplate;
         },
 
         async listPageTemplates(this: PageBuilderContextObject, params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+            await pageTemplatesPermissions.ensure({ rwd: "r" });
 
             const { sort } = params || {};
 
@@ -144,11 +141,11 @@ export const createPageTemplatesCrud = (
                     tenant: getTenantId(),
                     locale: getLocaleCode()
                 },
-                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_DESC"]
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (permission.own) {
+            if (await pageTemplatesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -168,7 +165,7 @@ export const createPageTemplatesCrud = (
         },
 
         async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await pageTemplatesPermissions.ensure({ rwd: "w" });
 
             let pageTemplateExists = true;
             try {
@@ -227,16 +224,14 @@ export const createPageTemplatesCrud = (
         },
 
         async updatePageTemplate(this: PageBuilderContextObject, id, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pageTemplatesPermissions.ensure({ rwd: "w" });
+
             const original = await this.getPageTemplate({ where: { id } });
             if (!original) {
                 throw new NotFoundError(`Page template "${id}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            await pageTemplatesPermissions.ensure({ owns: original.createdBy });
 
             const data = await updateSchema.parseAsync(input);
 
@@ -275,17 +270,14 @@ export const createPageTemplatesCrud = (
         },
 
         async deletePageTemplate(this: PageBuilderContextObject, id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await pageTemplatesPermissions.ensure({ rwd: "d" });
 
             const pageTemplate = await this.getPageTemplate({ where: { id } });
             if (!pageTemplate) {
                 throw new NotFoundError(`Page template "${id}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageTemplate);
+            await pageTemplatesPermissions.ensure({ owns: pageTemplate.createdBy });
 
             try {
                 await onPageTemplateBeforeDelete.publish({

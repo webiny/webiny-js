@@ -5,6 +5,7 @@ import { useRenderer } from "@webiny/app-page-builder-elements/hooks/useRenderer
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { createRenderer } from "@webiny/app-page-builder-elements";
+import { CompositionScope } from "@webiny/app-admin";
 
 const mediumEditorOptions: CoreOptions = {
     toolbar: {
@@ -25,7 +26,11 @@ const PeParagraph = createRenderer(() => {
     const isActive = activeElementId === element.id;
 
     if (isActive) {
-        return <Text tag={"p"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
+        return (
+            <CompositionScope name={"pb.paragraph"}>
+                <Text tag={"p"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
+            </CompositionScope>
+        );
     }
 
     const __html = variableValue || element.data.text.data.text;
@@ -33,7 +38,7 @@ const PeParagraph = createRenderer(() => {
     // If the text already contains `p` tags (happens when c/p-ing text into the editor),
     // we don't want to wrap it with another pair of `p` tag.
     if (__html.startsWith("<p")) {
-        // @ts-ignore We don't need type-checking here.
+        // @ts-expect-error We don't need type-checking here.
         return <p-wrap dangerouslySetInnerHTML={{ __html }} />;
     }
 

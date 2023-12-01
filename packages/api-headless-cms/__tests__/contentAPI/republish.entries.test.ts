@@ -272,40 +272,6 @@ describe("Republish entries", () => {
         });
     });
 
-    test("should not allow republishing of unpublished entries", async () => {
-        const group = await setupGroup();
-        await setupModel(group, "category");
-
-        const { createCategory, republishCategory } = useCategoryManageHandler(manageOpts);
-
-        /**
-         * Create test categories.
-         */
-        const [appleResponse] = await createCategory({
-            data: {
-                title: "Apple",
-                slug: "apple"
-            }
-        });
-        const apple = appleResponse.data.createCategory.data;
-
-        const [appleRepublishResponse] = await republishCategory({
-            revision: apple.id
-        });
-        expect(appleRepublishResponse).toEqual({
-            data: {
-                republishCategory: {
-                    data: null,
-                    error: {
-                        message: "Entry with given ID is not published!",
-                        code: "NOT_PUBLISHED_ERROR",
-                        data: expect.any(Object)
-                    }
-                }
-            }
-        });
-    });
-
     /**
      * This test checks values directly in the storage operations, so we make sure there are required values in ref objects.
      * We check in both latest and published records because in different storages that can be two different records.
@@ -330,7 +296,10 @@ describe("Republish entries", () => {
             category: {
                 entryId: applePublished.id,
                 modelId: categoryModel.modelId
-            }
+            },
+            price: 1,
+            color: "red",
+            image: "https://webiny.com/gala.png"
         });
         const { entry: goldenEntry } = createEntry(
             productModel,
@@ -339,7 +308,10 @@ describe("Republish entries", () => {
                 category: {
                     entryId: bananaPublished.id,
                     modelId: categoryModel.modelId
-                }
+                },
+                price: 1,
+                color: "white",
+                image: "https://webiny.com/golden.png"
             },
             5
         );

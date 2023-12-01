@@ -1,8 +1,7 @@
-import S3 from "aws-sdk/clients/s3";
+import { S3Client, createPresignedPost, PresignedPostOptions } from "@webiny/aws-sdk/client-s3";
 import { validation } from "@webiny/validation";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
-import { prepareFileData } from "~/utils/prepareFileData";
-import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
+import { FileData, PresignedPostPayloadDataResponse } from "~/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
@@ -17,12 +16,10 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     }
 };
 
-export const getPresignedPostPayload = (
-    data: PresignedPostPayloadData,
+export const getPresignedPostPayload = async (
+    file: FileData,
     settings: FileManagerSettings
-): PresignedPostPayloadDataResponse => {
-    const file = prepareFileData(data);
-
+): Promise<PresignedPostPayloadDataResponse> => {
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
         settings.uploadMaxFileSize,
@@ -30,21 +27,23 @@ export const getPresignedPostPayload = (
     );
 
     const params = {
+        Key: file.key,
         Expires: 60,
-        Bucket: S3_BUCKET,
-        Conditions: [["content-length-range", uploadMinFileSize, uploadMaxFileSize]],
+        Bucket: S3_BUCKET as string,
+        Conditions: [
+            ["content-length-range", uploadMinFileSize, uploadMaxFileSize]
+        ] as PresignedPostOptions["Conditions"],
         Fields: {
-            "Content-Type": file.type,
-            key: file.key
+            "Content-Type": file.type
         }
     };
 
-    if (params.Fields.key.startsWith("/")) {
-        params.Fields.key = params.Fields.key.slice(1);
+    if (params.Key.startsWith("/")) {
+        params.Key = params.Key.slice(1);
     }
 
-    const s3 = new S3();
-    const payload = s3.createPresignedPost(params);
+    const s3 = new S3Client();
+    const payload = await createPresignedPost(s3, params);
 
     return {
         data: payload,

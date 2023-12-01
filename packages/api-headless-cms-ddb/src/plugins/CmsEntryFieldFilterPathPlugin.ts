@@ -13,6 +13,7 @@ export interface CmsEntryFieldFilterPathPluginParams {
     fieldType: string;
     fieldId?: string[];
     path: string | CreatePathCallable;
+    canUse?: (field: Pick<CmsModelField, "fieldId" | "type">, parents?: string[]) => boolean;
 }
 export class CmsEntryFieldFilterPathPlugin extends Plugin {
     public static override readonly type: string = "cms-field-filter-path";
@@ -28,12 +29,18 @@ export class CmsEntryFieldFilterPathPlugin extends Plugin {
 
         this.config = config;
 
-        this.name = `${(this.constructor as any).type}-${this.config.fieldType}`;
+        /**
+         * We expect error here because we know that `this.constructor.type` is defined, but TS does not.
+         */
+        // @ts-expect-error
+        this.name = `${this.constructor.type}-${this.config.fieldType}`;
     }
 
-    public canUse(field: Pick<CmsModelField, "fieldId" | "type">): boolean {
+    public canUse(field: Pick<CmsModelField, "fieldId" | "type">, parents: string[]): boolean {
         if (field.type !== this.config.fieldType) {
             return false;
+        } else if (this.config.canUse) {
+            return this.config.canUse(field, parents);
         }
         const fieldId = this.config.fieldId;
         if (!fieldId || Array.isArray(fieldId) === false || fieldId.length === 0) {

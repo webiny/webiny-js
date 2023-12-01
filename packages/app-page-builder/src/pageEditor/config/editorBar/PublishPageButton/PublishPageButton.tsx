@@ -3,19 +3,19 @@ import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const DefaultPublishPageButton: React.FC = () => {
     const [page] = usePage();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
-    const { canPublish } = usePermission();
-    const { navigateToLatestFolder } = usePageViewNavigation();
+    const { canPublish } = usePagesPermissions();
+    const { navigateToLatestFolder } = useNavigatePage();
 
     if (!canPublish()) {
         return null;

@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import { PresignedPost } from "@webiny/aws-sdk/client-s3";
 
 export interface PresignedPostPayloadData {
     name: string;
@@ -11,13 +11,13 @@ export interface PresignedPostPayloadData {
 
 export interface FileData {
     id: string;
-    name: string;
     key: string;
-    type: string;
+    name: string;
     size: number;
+    type: string;
 }
 
 export interface PresignedPostPayloadDataResponse {
-    data: S3.PresignedPost;
+    data: PresignedPost;
     file: FileData;
 }
