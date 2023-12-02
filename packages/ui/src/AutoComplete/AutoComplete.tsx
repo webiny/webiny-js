@@ -284,9 +284,8 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     // This prop is above `otherInputProps` since it can be overridden by the user.
                                     trailingIcon: this.props.loading && <Spinner />,
                                     ...otherInputProps,
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     size: this.props.size,
-                                    // @ts-ignore
                                     validation,
                                     rawOnChange: true,
                                     onChange: ev => ev,

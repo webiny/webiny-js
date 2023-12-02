@@ -1,10 +1,10 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { Converter } from "aws-sdk/clients/dynamodb";
+import { marshall } from "@webiny/aws-sdk/client-dynamodb";
 
 import { PulumiApp } from "@webiny/pulumi";
-// @ts-ignore
+// @ts-expect-error
 import { getLayerArn } from "@webiny/aws-layers";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
@@ -75,7 +75,7 @@ function createPrerenderingSettingsDbItem(
                 }
             }`
                 // We're using the native DynamoDB converter to avoid building those nested objects ourselves.
-                .apply(v => JSON.stringify(Converter.marshall(JSON.parse(v))))
+                .apply(v => JSON.stringify(marshall(JSON.parse(v))))
         }
     });
 

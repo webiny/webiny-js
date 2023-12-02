@@ -172,7 +172,10 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                             </DelayedOnChange>
                         </Styled.Input>
                     </SearchInputWrapper>
-                    <ScrollList className={listStyle}>
+                    <ScrollList
+                        className={listStyle}
+                        data-testid={"pb-new-page-dialog-templates-list"}
+                    >
                         {filteredPageTemplates.map(template => (
                             <ListItem
                                 key={template.id}
@@ -195,13 +198,13 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                         <ButtonSecondary
                             disabled={isLoading}
                             onClick={() => onSelect()}
-                            data-testid={"pb-pages-list-use-blank-template-btn"}
+                            data-testid={"pb-new-page-dialog-use-blank-template-btn"}
                         >
                             Use a blank page template
                         </ButtonSecondary>
                     </BlankTemplateButtonWrapper>
                 </LeftPanel>
-                <RightPanel span={9}>
+                <RightPanel span={9} data-testid={"pb-new-page-dialog-template-preview"}>
                     {activeTemplate && (
                         <DetailsContainer>
                             <RenderBlock>
@@ -219,7 +222,9 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                                             <HeaderActions>
                                                 <ButtonSecondary
                                                     disabled={isLoading}
-                                                    data-testid={"pb-pages-list-use-template-btn"}
+                                                    data-testid={
+                                                        "pb-new-page-dialog-use-template-btn"
+                                                    }
                                                     onClick={() =>
                                                         handleCreatePageFromTemplate(activeTemplate)
                                                     }

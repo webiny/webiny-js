@@ -1,8 +1,8 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Attributes } from "~/types";
 
 export interface CreateGroupEntityParams {
-    table: Table;
+    table: Table<string, string, string>;
     entityName: string;
     attributes: Attributes;
 }

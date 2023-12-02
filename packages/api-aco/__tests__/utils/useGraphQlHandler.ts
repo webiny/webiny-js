@@ -2,7 +2,7 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createI18NContext } from "@webiny/api-i18n";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -34,11 +34,11 @@ import {
 import {
     CREATE_FILE,
     CREATE_FILES,
-    UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
     LIST_FILES,
-    LIST_TAGS as LIST_FILE_TAGS
+    LIST_TAGS as LIST_FILE_TAGS,
+    UPDATE_FILE
 } from "~tests/graphql/file";
 import {
     CREATE_CONTENT_MODEL,
@@ -55,6 +55,7 @@ import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
 import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import {
     createFileManagerContext,
@@ -133,9 +134,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createAco(),
             plugins
         ],
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -151,8 +150,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as unknown as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.
@@ -178,8 +177,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

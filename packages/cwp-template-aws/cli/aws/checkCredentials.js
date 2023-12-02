@@ -1,4 +1,4 @@
-const STS = require("aws-sdk/clients/sts");
+const { STS } = require("@webiny/aws-sdk/client-sts");
 const { green } = require("chalk");
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
         const config = sts.config;
 
         try {
-            await sts.getCallerIdentity({}).promise();
+            await sts.getCallerIdentity({});
         } catch (err) {
             console.log();
             context.error("Looks like your AWS credentials are not configured correctly!");
@@ -40,11 +40,12 @@ module.exports = {
             process.exit(1);
         }
 
-        // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
-        process.env.AWS_REGION = config.region;
+        const region = await config.region();
 
-        const { region } = config;
-        const { profile, accessKeyId } = config.credentials;
+        // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
+        process.env.AWS_REGION = region;
+
+        const { profile, accessKeyId } = await config.credentials();
 
         if (profile) {
             context.info(`Using profile ${green(profile)} in ${green(region)} region.`);

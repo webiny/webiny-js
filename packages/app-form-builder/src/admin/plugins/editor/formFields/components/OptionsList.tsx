@@ -7,7 +7,7 @@ import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./Option
 /**
  * Package react-sortable-hoc is missing types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";

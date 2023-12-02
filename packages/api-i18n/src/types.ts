@@ -314,7 +314,7 @@ export interface I18NSystemStorageOperationsUpdate {
 }
 
 export interface I18NSystemStorageOperations {
-    get: () => Promise<I18NSystem>;
+    get: () => Promise<I18NSystem | null>;
     create: (input: I18NSystemStorageOperationsCreate) => Promise<I18NSystem>;
     update: (input: I18NSystemStorageOperationsUpdate) => Promise<I18NSystem>;
 }

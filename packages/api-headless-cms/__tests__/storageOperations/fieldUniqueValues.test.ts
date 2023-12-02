@@ -1,13 +1,13 @@
+import { CmsContext } from "~/types";
 import {
     createPersonEntries,
     createPersonModel,
-    deletePersonModel,
-    waitPersonRecords
+    deletePersonModel
 } from "~tests/storageOperations/helpers";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 
 describe("field unique values listing", () => {
-    const { storageOperations, until, plugins } = useGraphQLHandler({
+    const { storageOperations, plugins } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
@@ -19,7 +19,7 @@ describe("field unique values listing", () => {
     beforeAll(async () => {
         await storageOperations.beforeInit({
             plugins
-        } as any);
+        } as unknown as CmsContext);
     });
 
     beforeEach(async () => {
@@ -61,14 +61,6 @@ describe("field unique values listing", () => {
         for (const entryId in evenMoreResults) {
             results[entryId] = evenMoreResults[entryId];
         }
-
-        await waitPersonRecords({
-            records: results,
-            storageOperations,
-            name: "list all person entries after create",
-            until,
-            model: personModel
-        });
 
         /**
          * There must be "amount" * 3 of results.

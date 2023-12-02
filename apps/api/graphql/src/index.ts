@@ -1,5 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createApiGatewayHandler as createHandler } from "@webiny/handler-aws";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -41,10 +41,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 
 const debug = process.env.DEBUG === "true";
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.AWS_REGION
-});
+const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
@@ -108,7 +105,8 @@ export const handler = createHandler({
                 type: "text",
                 renderer: {
                     name: "text-input"
-                }
+                },
+                bulkEdit: true
             });
 
             modifier.addField({
@@ -123,5 +121,5 @@ export const handler = createHandler({
         }),
         createAuditLogs()
     ],
-    http: { debug }
+    debug
 });

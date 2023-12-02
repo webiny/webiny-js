@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigrationContext, PrimaryDynamoTableSymbol } from "@webiny/data-migration";
 import { queryOne, queryAll, batchWriteAll } from "~/utils";
 import { createTenantEntity } from "./createTenantEntity";
@@ -11,7 +11,7 @@ export class AdminUsers_5_35_0_003 {
     private readonly legacyUserEntity: ReturnType<typeof createLegacyUserEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newUserEntity = createUserEntity(table);
         this.legacyUserEntity = createLegacyUserEntity(table);
         this.tenantEntity = createTenantEntity(table);

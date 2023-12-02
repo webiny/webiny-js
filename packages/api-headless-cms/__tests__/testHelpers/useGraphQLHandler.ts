@@ -1,6 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws/gateway";
-import { sleep, until } from "./helpers";
+import { createHandler } from "@webiny/handler-aws";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     ContentModelGroupsMutationVariables,
@@ -38,15 +37,17 @@ import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import {
     CMS_EXPORT_STRUCTURE_QUERY,
-    CmsExportStructureQueryVariables,
     CMS_IMPORT_STRUCTURE_MUTATION,
-    CmsImportStructureMutationVariables,
     CMS_VALIDATE_STRUCTURE_MUTATION,
-    CmsValidateStructureMutationVariables,
-    CmsValidateStructureMutationResponse
+    CmsExportStructureQueryVariables,
+    CmsImportStructureMutationVariables,
+    CmsValidateStructureMutationResponse,
+    CmsValidateStructureMutationVariables
 } from "~tests/testHelpers/graphql/structure";
+import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -75,9 +76,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: plugins.all(),
-        http: {
-            debug: false
-        }
+        debug: false
     });
 
     const invoke = async <T = any>({
@@ -100,20 +99,18 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as unknown as LambdaContext
         );
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
     };
 
     return {
-        until,
-        sleep,
         handler,
         invoke,
         tenant: core.tenant,
-        identity,
+        identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
         async introspect() {

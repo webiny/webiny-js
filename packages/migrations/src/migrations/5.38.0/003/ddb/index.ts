@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { executeWithRetry } from "@webiny/utils";
 import {
@@ -24,9 +24,9 @@ const isGroupMigrationCompleted = (
 export class PageBlocks_5_38_0_003 implements DataMigration {
     private readonly oldPageBlockEntity: ReturnType<typeof createOldPageBlockEntity>;
     private readonly newPageBlockEntity: ReturnType<typeof createNewPageBlockEntity>;
-    private readonly table: Table;
+    private readonly table: Table<string, string, string>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.table = table;
         this.oldPageBlockEntity = createOldPageBlockEntity(table);
         this.newPageBlockEntity = createNewPageBlockEntity(table);

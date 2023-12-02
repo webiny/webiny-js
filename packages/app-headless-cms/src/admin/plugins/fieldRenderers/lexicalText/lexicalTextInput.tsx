@@ -1,7 +1,7 @@
 import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
@@ -10,7 +10,7 @@ const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const getKey = (
     field: CmsModelField,
-    bind: BindComponentRenderProp<string, CmsEditorContentEntry>
+    bind: BindComponentRenderProp<string, CmsContentEntry>
 ): string => {
     const formId = bind.form.data.id || "new";
     return `${formId}.${field.fieldId}`;
@@ -36,7 +36,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return canUse;
         },
         render({ field, getBind }) {
-            const Bind = getBind();
+            const Bind = getBind<string, CmsContentEntry>();
             return (
                 <Bind>
                     {bind => {
@@ -44,7 +44,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             <LexicalCmsEditor
                                 value={bind.value}
                                 onChange={bind.onChange}
-                                key={getKey(field, bind as any)}
+                                key={getKey(field, bind)}
                                 placeholder={field.placeholderText}
                                 data-testid={`fr.input.lexical.${field.label}`}
                             />

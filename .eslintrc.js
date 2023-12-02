@@ -29,8 +29,15 @@ module.exports = {
         "import/no-unresolved": 0, // [2, { commonjs: true, amd: true }],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/ban-ts-comment": [
+            2,
+            {
+                "ts-check": true,
+                "ts-ignore": "allow-with-description",
+                "ts-nocheck": "allow-with-description",
+                "ts-expect-error": false
+            }
+        ],
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-unused-vars": getNoUnusedVars(),
@@ -45,7 +52,18 @@ module.exports = {
         "jest/no-conditional-expect": 0,
         "jest/no-commented-out-tests": 0,
         "jest/no-disabled-tests": 0,
-        "lodash/import-scope": [2, "method"]
+        "lodash/import-scope": [2, "method"],
+        "no-restricted-imports": [
+            "error",
+            {
+                patterns: [
+                    {
+                        group: ["@aws-sdk/*"],
+                        message: "Please use @webiny/aws-sdk instead."
+                    }
+                ]
+            }
+        ]
     },
     settings: {
         react: {
