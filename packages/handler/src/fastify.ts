@@ -9,7 +9,7 @@ import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
-import fastifyCookie from "@fastify/cookie";
+import * as fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
 import { middleware } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
@@ -18,40 +18,44 @@ import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
 import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
 import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
 import { HandlerOnRequestPlugin } from "~/plugins/HandlerOnRequestPlugin";
+import { ResponseHeaders } from "~/ResponseHeaders";
 
-const DEFAULT_HEADERS: Record<string, string> = {
-    "Cache-Control": "no-store",
-    "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
-    ...getWebinyVersionHeaders()
-};
+function createDefaultHeaders() {
+    return ResponseHeaders.create({
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+        "access-control-allow-origin": "*",
+        "access-control-allow-headers": "*",
+        "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
+        ...getWebinyVersionHeaders()
+    });
+}
 
-const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string> => {
+const getDefaultHeaders = (routes: DefinedContextRoutes): ResponseHeaders => {
+    const headers = createDefaultHeaders();
+
     /**
      * If we are accepting all headers, just output that one.
      */
     const keys = Object.keys(routes) as HTTPMethods[];
     const all = keys.every(key => routes[key].length > 0);
     if (all) {
-        return {
-            ...DEFAULT_HEADERS,
-            "Access-Control-Allow-Methods": "*"
-        };
-    }
-    return {
-        ...DEFAULT_HEADERS,
-        "Access-Control-Allow-Methods": keys
+        headers.set("access-control-allow-methods", "*");
+    } else {
+        const allowedMethods = keys
             .filter(type => {
-                if (!routes[type] || Array.isArray(routes[type]) === false) {
+                if (!routes[type] || !Array.isArray(routes[type])) {
                     return false;
                 }
                 return routes[type].length > 0;
             })
             .sort()
-            .join(",")
-    };
+            .join(",");
+
+        headers.set("access-control-allow-methods", allowedMethods);
+    }
+
+    return headers;
 };
 
 interface CustomError extends Error {
@@ -70,11 +74,6 @@ const stringifyError = (error: CustomError) => {
         data,
         stack: process.env.DEBUG === "true" ? stack : "Turn on the debug flag to see the stack."
     });
-};
-
-const OPTIONS_HEADERS: Record<string, string> = {
-    "Access-Control-Max-Age": "86400",
-    "Cache-Control": "public, max-age=86400"
 };
 
 export interface CreateHandlerParams {
@@ -180,7 +179,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      *
      * https://github.com/fastify/fastify-cookie
      */
-    app.register(fastifyCookie, {
+    app.register(fastifyCookie.fastifyCookie, {
         parseOptions: {} // options for parsing cookies
     });
     /**
@@ -304,7 +303,7 @@ export const createHandler = (params: CreateHandlerParams) => {
          * Our default headers are always set. Users can override them.
          */
         const defaultHeaders = getDefaultHeaders(definedRoutes);
-        reply.headers(defaultHeaders);
+        reply.headers(defaultHeaders.getHeaders());
         /**
          * Users can define their own custom handlers for the onRequest event - so let's run them first.
          */
@@ -353,11 +352,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             return;
         }
 
-        reply
-            .headers({ ...defaultHeaders, ...OPTIONS_HEADERS })
-            .code(204)
-            .send("")
-            .hijack();
+        const headers = createDefaultHeaders();
+
+        headers.set("access-control-max-age", "86400");
+        headers.set("cache-control", "public, max-age=86400");
+
+        reply.headers(headers.getHeaders()).code(204).send("").hijack();
     });
 
     app.addHook("preParsing", async (request, reply) => {

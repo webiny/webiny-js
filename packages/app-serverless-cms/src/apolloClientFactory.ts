@@ -20,7 +20,8 @@ export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) 
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
-            new BatchHttpLink({ uri, ...batching })
+            // TODO: `credentials` can be set via a request context, only if WCP is enabled (ApolloLinkPlugin)
+            new BatchHttpLink({ uri, credentials: "include", ...batching })
         ]),
         cache: new InMemoryCache({
             addTypename: true,

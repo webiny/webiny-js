@@ -21,6 +21,10 @@ import {
     createFileManagerGraphQL,
     createFileModelModifier
 } from "@webiny/api-file-manager";
+import {
+    createDownloadFileByAliasPlugins,
+    createDownloadFileByExactKeyPlugins
+} from "@webiny/api-file-manager/handlers/download";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
@@ -39,6 +43,7 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
+import { createPrivateFilesFastifyPlugin } from "~/plugins/privateFiles";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -119,7 +124,10 @@ export const handler = createHandler({
                 }
             });
         }),
-        createAuditLogs()
+        createAuditLogs(),
+        createDownloadFileByExactKeyPlugins(),
+        createDownloadFileByAliasPlugins({ documentClient }),
+        createPrivateFilesFastifyPlugin()
     ],
     debug
 });

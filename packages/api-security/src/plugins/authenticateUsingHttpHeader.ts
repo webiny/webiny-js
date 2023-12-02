@@ -1,6 +1,8 @@
-import { BeforeHandlerPlugin } from "@webiny/handler";
-import { SecurityContext } from "~/types";
+import { createBeforeHandlerPlugin } from "@webiny/handler";
 import { Context as BaseContext } from "@webiny/handler/types";
+import { createContextPlugin } from "@webiny/api";
+import { authenticateUsingCookie } from "./authenticateUsingCookie";
+import { SecurityContext } from "~/types";
 
 type Context = BaseContext & SecurityContext;
 
@@ -15,13 +17,21 @@ const defaultGetHeader: GetHeader = context => {
 };
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
-    return new BeforeHandlerPlugin<Context>(async context => {
-        const token = getHeader(context);
+    return createContextPlugin<SecurityContext>(context => {
+        context.plugins.register(
+            createBeforeHandlerPlugin<Context>(async context => {
+                const token = getHeader(context);
 
-        if (!token) {
-            return;
+                if (!token) {
+                    return;
+                }
+
+                await context.security.authenticate(token);
+            })
+        );
+
+        if (context.wcp.canUsePrivateFiles()) {
+            authenticateUsingCookie(context);
         }
-
-        await context.security.authenticate(token);
     });
 };

@@ -64,6 +64,8 @@ export interface GetTeamWhere {
     tenant?: string;
 }
 
+export type AuthenticationToken = string;
+
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
     /**
      * @deprecated
@@ -81,6 +83,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onLogin: Topic<LoginEvent<TIdentity>>;
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
+
+    /**
+     * Returns the token which was used to authenticate (if authentication was successful).
+     */
+    getToken(): AuthenticationToken | undefined;
 
     config: SecurityConfig;
 
