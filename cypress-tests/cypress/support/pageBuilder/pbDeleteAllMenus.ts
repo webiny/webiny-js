@@ -5,15 +5,7 @@ const LIST_MENUS_QUERY = /* GraphQL */ `
         pageBuilder {
             listMenus {
                 data {
-                    title
                     slug
-                    description
-                    items
-                    createdOn
-                    createdBy {
-                        id
-                        displayName
-                    }
                 }
             }
         }
@@ -45,7 +37,7 @@ declare global {
 }
 
 Cypress.Commands.add("listMenus", () => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request({
                 query: LIST_MENUS_QUERY,
@@ -56,7 +48,7 @@ Cypress.Commands.add("listMenus", () => {
 });
 
 Cypress.Commands.add("deleteMenu", slug => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request({
                 query: DELETE_MENU_MUTATION,
@@ -68,7 +60,7 @@ Cypress.Commands.add("deleteMenu", slug => {
 });
 
 Cypress.Commands.add("pbDeleteAllMenus", () => {
-    cy.listMenus().then(menus => {
+    return cy.listMenus().then(menus => {
         return Promise.all(
             menus.map(menu => {
                 if (menu.slug !== "main-menu") {

@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeletePage(params: { id: string }): Chainable<Promise<any>>;
+            pbDeletePage(params: { id: string }): Promise<any>;
         }
     }
 }
@@ -24,7 +24,7 @@ const DELETE_PAGE = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbDeletePage", data => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request<any>({
                 query: DELETE_PAGE,
