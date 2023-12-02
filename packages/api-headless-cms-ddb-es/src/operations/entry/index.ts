@@ -58,6 +58,7 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -755,7 +756,7 @@ export const createEntriesStorageOperations = (
             });
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
             /**
-             * In the end we need to set the new latest entry
+             * In the end we need to set the new latest entry.
              */
             items.push(
                 entity.putBatch({
@@ -765,6 +766,12 @@ export const createEntriesStorageOperations = (
                     TYPE: createLatestRecordType()
                 })
             );
+            /**
+             * Also perform an update on the actual revision. This is needed
+             * because of updates on the entry-level meta fields.
+             */
+            items.push(entity.putBatch(latestStorageEntry));
+
             esItems.push(
                 esEntity.putBatch({
                     PK: partitionKey,

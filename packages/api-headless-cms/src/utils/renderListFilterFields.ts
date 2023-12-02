@@ -6,7 +6,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import { mapEntryMetaFields } from "~/constants";
+import { ENTRY_META_FIELDS } from "~/constants";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -23,22 +23,6 @@ interface RenderListFilterFields {
 type CreateListFiltersType =
     | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
     | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
-
-const createOnFields = (field: string) => {
-    return [
-        `${field}: DateTime`,
-        `${field}_gt: DateTime`,
-        `${field}_gte: DateTime`,
-        `${field}_lt: DateTime`,
-        `${field}_lte: DateTime`,
-        `${field}_between: [DateTime!]`,
-        `${field}_not_between: [DateTime!]`
-    ];
-};
-
-const createByFields = (field: string) => {
-    return [`${field}: ID"`, `${field}_not: ID"`, `${field}_in: [ID!]"`, `${field}_not_in: [ID!]"`];
-};
 
 export const renderListFilterFields: RenderListFilterFields = (params): string => {
     const { model, fields, type, fieldTypePlugins, excludeFields = [] } = params;
@@ -100,7 +84,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
          * 🆕 New meta fields below.
          * Users are encouraged to use these instead of the deprecated ones above.
          */
-        ...mapEntryMetaFields(field => {
+        ...ENTRY_META_FIELDS.map(field => {
             if (field.endsWith("On")) {
                 return [
                     `${field}: DateTime`,
@@ -114,10 +98,10 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
             }
 
             return [
-                `${field}: ID"`,
-                `${field}_not: ID"`,
-                `${field}_in: [ID!]"`,
-                `${field}_not_in: [ID!]"`
+                `${field}: ID`,
+                `${field}_not: ID`,
+                `${field}_in: [ID!]`,
+                `${field}_not_in: [ID!]`
             ];
         }).flat()
     ];

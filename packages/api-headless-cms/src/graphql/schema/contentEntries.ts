@@ -8,7 +8,7 @@ import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import { mapEntryMetaFields } from "~/constants";
+import { ENTRY_META_FIELDS } from "~/constants";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -23,9 +23,9 @@ const createDate = (date: string | null): Date | null => {
 
     try {
         return new Date(date);
-    } catch {}
-
-    return new Date();
+    } catch {
+        return new Date();
+    }
 };
 
 interface CmsEntryRecord {
@@ -337,6 +337,22 @@ export const createContentEntriesSchema = ({
         return plugin;
     }
 
+    const deprecatedOnByMetaFields = [
+        `createdBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
+        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
+        `modifiedBy: CmsIdentity @deprecated(reason: "Use 'entryModifiedBy'.")`,
+        `published: CmsPublishedContentEntry`,
+        `createdOn: DateTime! @deprecated(reason: "Use 'entryCreatedOn'.")`,
+        `savedOn: DateTime! @deprecated(reason: "Use 'entrySavedOn'.")`
+    ].join("\n");
+
+    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
+        const nullable = field.includes("Modified") ? "" : "!";
+        const fieldType = field.endsWith("On") ? "DateTime" : "CmsIdentity";
+
+        return `${field}: ${fieldType}${nullable}`;
+    }).join("\n");
+
     const plugin = new CmsGraphQLSchemaPlugin({
         // Had to remove /* GraphQL */ because prettier would not format the code correctly.
         typeDefs: `
@@ -361,26 +377,9 @@ export const createContentEntriesSchema = ({
                 title: String!
                 description: String
                 image: String
-                createdBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")
-                ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")
-                modifiedBy: CmsIdentity @deprecated(reason: "Use 'entryModifiedBy'.")
-                published: CmsPublishedContentEntry
-                createdOn: DateTime! @deprecated(reason: "Use 'entryCreatedOn'.")
-                savedOn: DateTime! @deprecated(reason: "Use 'entrySavedOn'.")
-
-                ${mapEntryMetaFields(field => {
-                    const nonNullable = !field.endsWith("ModifiedOn");
-                    const byField = field.endsWith("By");
-
-                    let gqlField = byField ? `${field}: CmsIdentity` : "DateTime";
-                    if (nonNullable) {
-                        gqlField += "!";
-                    }
-
-                    return gqlField;
-                }).join("\n")}
-            
-                # prettier-ignore-end
+                
+                ${deprecatedOnByMetaFields}
+                ${onByMetaFields}
             
                 wbyAco_location: WbyAcoLocation
             }

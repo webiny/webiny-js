@@ -51,6 +51,7 @@ interface ConvertStorageEntryParams {
     storageEntry: CmsStorageEntry;
     model: StorageOperationsCmsModel;
 }
+
 const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
     const { model, storageEntry } = params;
 
@@ -520,6 +521,7 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
+
         if (initialLatestStorageEntry) {
             const latestStorageEntry = convertToStorageEntry({
                 storageEntry: initialLatestStorageEntry,
@@ -535,6 +537,17 @@ export const createEntriesStorageOperations = (
                     GSI1_SK: createGSISortKey(latestStorageEntry)
                 })
             );
+
+            // Do an update on the latest revision. We need to update the latest revision's
+            // entry-level meta fields to match the previous revision's entry-level meta fields.
+            items.push(entity.putBatch({
+                ...initialLatestStorageEntry,
+                PK: partitionKey,
+                SK: createRevisionSortKey(initialLatestStorageEntry),
+                TYPE: createType(),
+                GSI1_PK: createGSIPartitionKey(model, "A"),
+                GSI1_SK: createGSISortKey(initialLatestStorageEntry)
+            }));
         }
         try {
             await batchWriteAll({

@@ -22,6 +22,44 @@ const categoryFields = `
         type
     }
     savedOn
+    
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionCreatedBy {
+        id
+        displayName
+        type
+    }
+    revisionSavedBy {
+        id
+        displayName
+        type
+    }
+    revisionModifiedBy {
+        id
+        displayName
+        type
+    }
+    entryCreatedOn
+    entrySavedOn
+    entryModifiedOn
+    entryCreatedBy {
+        id
+        displayName
+        type
+    }
+    entrySavedBy {
+        id
+        displayName
+        type
+    }
+    entryModifiedBy {
+        id
+        displayName
+        type
+    }
+    
     meta {
         title
         modelId
@@ -60,11 +98,11 @@ const getCategoryQuery = (model: CmsModel) => {
     return /* GraphQL */ `
         query GetCategory($revision: ID, $entryId: ID, $status: CmsEntryStatusType) {
             getCategory: get${model.singularApiName}(revision: $revision, entryId: $entryId, status: $status) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
+            data {
+                ${categoryFields}
             }
+            ${errorFields}
+        }
         }
     `;
 };
@@ -86,21 +124,21 @@ const listCategoriesQuery = (model: CmsModel) => {
     return /* GraphQL */ `
         query ListCategories(
             $where: ${model.singularApiName}ListWhereInput
-            $sort: [${model.singularApiName}ListSorter]
-            $limit: Int
-            $after: String
+        $sort: [${model.singularApiName}ListSorter]
+        $limit: Int
+        $after: String
         ) {
-            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
-                data {
-                    ${categoryFields}
-                }
-                meta {
-                    cursor
-                    hasMoreItems
-                    totalCount
-                }
-                ${errorFields}
-            }
+        listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+        data {
+        ${categoryFields}
+        }
+        meta {
+        cursor
+        hasMoreItems
+        totalCount
+        }
+        ${errorFields}
+        }
         }
     `;
 };
@@ -108,12 +146,12 @@ const listCategoriesQuery = (model: CmsModel) => {
 const createCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation CreateCategory($data: ${model.singularApiName}Input!) {
-            createCategory: create${model.singularApiName}(data: $data) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
+        createCategory: create${model.singularApiName}(data: $data) {
+        data {
+        ${categoryFields}
+        }
+        ${errorFields}
+        }
         }
     `;
 };
@@ -121,12 +159,12 @@ const createCategoryMutation = (model: CmsModel) => {
 const createCategoryFromMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation CreateCategoryFrom($revision: ID!, $data: ${model.singularApiName}Input) {
-            createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
+        createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {
+        data {
+        ${categoryFields}
+        }
+        ${errorFields}
+        }
         }
     `;
 };
@@ -134,26 +172,28 @@ const createCategoryFromMutation = (model: CmsModel) => {
 const updateCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation UpdateCategory($revision: ID!, $data: ${model.singularApiName}Input!) {
-            updateCategory: update${model.singularApiName}(revision: $revision, data: $data) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
+        updateCategory: update${model.singularApiName}(revision: $revision, data: $data) {
+        data {
+        ${categoryFields}
+        }
+        ${errorFields}
+        }
         }
     `;
 };
+
 export interface MoveCategoryVariables {
     revision: string;
     folderId: string;
 }
+
 const moveCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation MoveCategory($revision: ID!, $folderId: ID!) {
             moveCategory: move${model.singularApiName}(revision: $revision, folderId: $folderId) {
-                data
-                ${errorFields}
-            }
+            data
+            ${errorFields}
+        }
         }
     `;
 };
@@ -162,9 +202,9 @@ const deleteCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation DeleteCategory($revision: ID!) {
             deleteCategory: delete${model.singularApiName}(revision: $revision) {
-                data
-                ${errorFields}
-            }
+            data
+            ${errorFields}
+        }
         }
     `;
 };
@@ -173,11 +213,11 @@ const deleteCategoriesMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation DeleteCategories($entries: [ID!]!) {
             deleteCategories: deleteMultiple${model.pluralApiName}(entries: $entries) {
-                data {
-                    id
-                }
-                ${errorFields}
+            data {
+                id
             }
+            ${errorFields}
+        }
         }
     `;
 };
@@ -186,11 +226,11 @@ const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation PublishCategory($revision: ID!, $options: CmsPublishEntryOptionsInput) {
             publishCategory: publish${model.singularApiName}(revision: $revision, options: $options) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
+            data {
+                ${categoryFields}
             }
+            ${errorFields}
+        }
         }
     `;
 };
@@ -199,11 +239,11 @@ const republishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation RepublishCategory($revision: ID!) {
             republishCategory: republish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
+            data {
+                ${categoryFields}
             }
+            ${errorFields}
+        }
         }
     `;
 };
@@ -212,11 +252,11 @@ const unpublishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation UnpublishCategory($revision: ID!) {
             unpublishCategory: unpublish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
+            data {
+                ${categoryFields}
             }
+            ${errorFields}
+        }
         }
     `;
 };
@@ -332,6 +372,78 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                     variables
                 },
                 headers
+            });
+        }
+    };
+};
+
+export const useCategoryManageHandlerV2 = (params: GraphQLHandlerParams) => {
+    const manageCategoryHandler = useCategoryManageHandler(params);
+
+    return {
+        ...manageCategoryHandler,
+        async getCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.getCategory(variables, headers).then(([body]) => {
+                return body.data.getCategory;
+            });
+        },
+        async getCategoriesByIds(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
+            return manageCategoryHandler.getCategory(variables, headers).then(([body]) => {
+                return body.data.getCategoriesByIds;
+            });
+        },
+        async listCategories(
+            variables: CmsEntryListParams = {},
+            headers: Record<string, any> = {}
+        ) {
+            return manageCategoryHandler.listCategories(variables, headers).then(([body]) => {
+                return body.data.listCategories;
+            });
+        },
+        async createCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.createCategory(variables, headers).then(([body]) => {
+                return body.data.createCategory;
+            });
+        },
+        async createCategoryFrom(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
+            return manageCategoryHandler.createCategoryFrom(variables, headers).then(([body]) => {
+                return body.data.createCategoryFrom;
+            });
+        },
+        async updateCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.updateCategory(variables, headers).then(([body]) => {
+                return body.data.updateCategory;
+            });
+        },
+        async moveCategory(variables: MoveCategoryVariables, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.moveCategory(variables, headers).then(([body]) => {
+                return body.data.moveCategory;
+            });
+        },
+        async deleteCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.deleteCategory(variables, headers).then(([body]) => {
+                return body.data.deleteCategory;
+            });
+        },
+        async publishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.publishCategory(variables, headers).then(([body]) => {
+                return body.data.publishCategory;
+            });
+        },
+        async republishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.republishCategory(variables, headers).then(([body]) => {
+                return body.data;
+            });
+        },
+        async unpublishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return manageCategoryHandler.unpublishCategory(variables, headers).then(([body]) => {
+                return body.data.unpublishCategory;
             });
         }
     };

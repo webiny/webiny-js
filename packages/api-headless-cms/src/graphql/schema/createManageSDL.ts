@@ -5,7 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { mapEntryMetaFields } from "~/constants";
+import { ENTRY_META_FIELDS } from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
@@ -66,7 +66,6 @@ export const createManageSDL: CreateManageSDL = ({
     /**
      * TODO check for 5.38.0
      */
-
     const deprecatedOnByMetaFields = [
         `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")`,
         `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
@@ -75,16 +74,11 @@ export const createManageSDL: CreateManageSDL = ({
         `modifiedBy: CmsIdentity @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")`
     ].join("\n");
 
-    const onByMetaFields = mapEntryMetaFields(field => {
-        const nonNullable = !field.endsWith("ModifiedOn");
-        const dateTimeField = field.endsWith("On");
+    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
+        const nullable = field.includes("Modified") ? "" : "!";
+        const fieldType = field.endsWith("On") ? "DateTime" : "CmsIdentity";
 
-        let gqlField = `${field}: ${dateTimeField ? "DateTime" : "CmsIdentity"}`;
-        if (nonNullable) {
-            gqlField += "!";
-        }
-
-        return gqlField;
+        return `${field}: ${fieldType}${nullable}`;
     }).join("\n");
 
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.
