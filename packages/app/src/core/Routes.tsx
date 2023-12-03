@@ -34,6 +34,9 @@ export const Routes: React.FC<RoutesProps> = props => {
         return 0;
     });
 
+    // @ts-expect-error
+    window["routes"] = routes.map(r => r.props);
+
     return (
         <ReactRouterRoutes>
             {routes.map((route, index) =>

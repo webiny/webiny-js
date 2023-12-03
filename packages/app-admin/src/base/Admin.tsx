@@ -1,4 +1,4 @@
-import React, {useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import { App, Provider, ContentDecorator } from "@webiny/app";
 import { WcpProvider } from "@webiny/app-wcp";
 import { createBrowserHistory } from "history";
@@ -12,8 +12,8 @@ import { createUiStateProvider } from "./providers/UiStateProvider";
 import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
-import { AdminRouter } from "./AdminRouter";
-import { AdminHistory } from "~/base/AdminHistory";
+import { AdminRouter, RouteContent } from "./AdminRouter";
+// import { Routes as SortRoutes } from "@webiny/app/core/Routes";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -25,14 +25,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
 
-    const adminHistory = useRef(new AdminHistory(createBrowserHistory()));
-
-    const onTenant = useCallback(
-        (tenantId: string) => {
-            adminHistory.current.setTenant(tenantId);
-        },
-        [adminHistory.current]
-    );
+    const adminHistory = useRef(createBrowserHistory());
 
     const withRouter: ContentDecorator = element => (
         <AdminRouter history={adminHistory.current}>{element}</AdminRouter>
@@ -42,8 +35,11 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
         <ApolloProvider>
             <ThemeProvider>
                 <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                    <TenancyProvider onTenant={onTenant}>
-                        <App contentDecorator={withRouter}>
+                    <TenancyProvider>
+                        <App
+                            contentDecorator={withRouter}
+                            contentElement={<RouteContent history={adminHistory.current} />}
+                        >
                             <Provider hoc={TelemetryProvider} />
                             <Provider hoc={UiStateProvider} />
                             <Provider hoc={SearchProvider} />

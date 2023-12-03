@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { RouteProps, Route } from "@webiny/react-router";
 import { compose, CompositionProvider, Decorator } from "@webiny/react-composition";
-import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
 
@@ -52,6 +51,7 @@ export interface AppProps {
     routes?: Array<RouteProps>;
     providers?: Array<Decorator>;
     contentDecorator?: ContentDecorator;
+    contentElement?: React.ReactNode;
     children?: React.ReactNode | React.ReactNode[];
 }
 
@@ -60,6 +60,7 @@ export const App = ({
     routes = [],
     providers = [],
     contentDecorator = el => el,
+    contentElement = <span>No `contentElement` was configured to render the app!</span>,
     children
 }: AppProps) => {
     const [state, setState] = useState<State>({
@@ -111,13 +112,6 @@ export const App = ({
         [state]
     );
 
-    const AppRouter = useMemo(() => {
-        return function AppRouter() {
-            const routes = Object.values(state.routes);
-            return <SortRoutes key={routes.length} routes={routes} />;
-        };
-    }, [state.routes]);
-
     const Providers = useMemo(() => {
         return compose(...(state.providers || []))(({ children }: any) => (
             <DebounceRender wait={debounceRender}>{children}</DebounceRender>
@@ -126,7 +120,6 @@ export const App = ({
 
     Providers.displayName = "Providers";
 
-    // @ts-ignore
     return (
         <AppContext.Provider value={appContext}>
             <CompositionProvider>
@@ -134,9 +127,7 @@ export const App = ({
                 {contentDecorator(
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender wait={debounceRender}>
-                            <AppRouter />
-                        </DebounceRender>
+                        <DebounceRender wait={debounceRender}>{contentElement}</DebounceRender>
                     </Providers>
                 )}
             </CompositionProvider>

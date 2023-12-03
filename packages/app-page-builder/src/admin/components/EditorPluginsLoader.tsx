@@ -33,7 +33,13 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         "/page-builder/editor",
         "/page-builder/block-editor",
         "/page-builder/template-editor"
-    ].some(path => location.pathname.startsWith(path));
+    ].some(path => location.pathname.includes(path));
+
+    const isPreviewRoute = [
+        "/page-builder/pages",
+        "/page-builder/page-blocks",
+        "/page-builder/page-templates"
+    ].some(path => location.pathname.includes(path));
 
     const loadPlugins = async () => {
         const pbPlugins = plugins.byType<PbPluginsLoader>("pb-plugins-loader");
@@ -44,6 +50,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
                     .map(plugin => plugin.loadEditorPlugins && plugin.loadEditorPlugins())
                     .filter(Boolean)
             );
+
         // load all editor render plugins
         const loadRenderPlugins = async () =>
             await Promise.all(
@@ -53,7 +60,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
             );
 
         // If we are on pages list route, import plugins required to render the page content.
-        if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
+        if (isPreviewRoute && !loaded.render) {
             const renderPlugins = await loadRenderPlugins();
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
@@ -63,42 +70,14 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
             setLoaded({ render: true });
         }
 
-        // If we are on pages list route, import plugins required to render the page content.
-        if (location.pathname.startsWith("/page-builder/page-blocks") && !loaded.render) {
-            const renderPlugins = await loadRenderPlugins();
-
-            // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            plugins.register(renderPlugins, { skipExisting: true });
-
-            globalState.render = true;
-            setLoaded({ render: true });
-        }
-
-        // If we are on page templates list route, import plugins required to render the template content.
-        if (location.pathname.startsWith("/page-builder/page-templates") && !loaded.render) {
-            const renderPlugins = await loadRenderPlugins();
-
-            // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            plugins.register(renderPlugins, { skipExisting: true });
-
-            globalState.render = true;
-            setLoaded({ render: true });
-        }
-
-        // If we are on the Editor route, import plugins required to render both editor and preview.
         if (isEditorRoute && !loaded.editor) {
-            const renderPlugins = !loaded.render ? await loadRenderPlugins() : [];
-            const editorAdminPlugins = await loadEditorPlugins();
-            // merge both editor admin and render plugins
-            const editorRenderPlugins = [...editorAdminPlugins, ...renderPlugins].filter(Boolean);
+            const editorPlugins = await loadEditorPlugins();
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            plugins.register(editorRenderPlugins, { skipExisting: true });
+            plugins.register(editorPlugins, { skipExisting: true });
 
             globalState.editor = true;
-            globalState.render = true;
-
-            setLoaded({ editor: true, render: true });
+            setLoaded({ editor: true });
         }
     };
 
@@ -110,21 +89,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
      * This condition is for the list of pages.
      * Page can be selected at this point.
      */
-    if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
-        return children as unknown as React.ReactElement;
-    }
-    /**
-     * This condition is for the list of page blocks.
-     * Blocks can be selected at this point.
-     */
-    if (location.pathname.startsWith("/page-builder/page-blocks") && loaded.render) {
-        return children as unknown as React.ReactElement;
-    }
-    /**
-     * This condition is for the list of page templates.
-     * Page template can be selected at this point.
-     */
-    if (location.pathname.startsWith("/page-builder/page-templates") && loaded.render) {
+    if (isPreviewRoute && loaded.render) {
         return children as unknown as React.ReactElement;
     }
     /**

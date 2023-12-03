@@ -12529,6 +12529,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/navigo@npm:^8.1.2":
+  version: 8.1.2
+  resolution: "@types/navigo@npm:8.1.2"
+  dependencies:
+    navigo: "*"
+  checksum: 84107e6ed826ff50b62f614e5aa7ca191f8a07839588d5113da4ac76bd33a8d0143832756ed7cfeeac2e51dfc558180fd35ae206c5fe84b5e6384e86d4b6bf4f
+  languageName: node
+  linkType: hard
+
 "@types/ncp@npm:^2.0.4":
   version: 2.0.5
   resolution: "@types/ncp@npm:2.0.5"
@@ -15320,6 +15329,7 @@ __metadata:
     "@types/graphlib": ^2.1.8
     "@types/is-hotkey": ^0.1.7
     "@types/mime": ^2.0.3
+    "@types/navigo": ^8.1.2
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
@@ -15361,6 +15371,7 @@ __metadata:
     store: ^2.0.12
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    universal-router: 9.2.0
   languageName: unknown
   linkType: soft
 
@@ -34553,6 +34564,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"navigo@npm:*":
+  version: 8.11.1
+  resolution: "navigo@npm:8.11.1"
+  checksum: ad82170d0551a2c93665b3e26e0f783a9dcaca632edfdc7db4adff13c4127131bb0aba11d7af4d32b58e7019cdd361ce815f0d5d3c4a2de4dc816e97dff01804
+  languageName: node
+  linkType: hard
+
 "ncp@npm:2.0.0, ncp@npm:^2.0.0, ncp@npm:~2.0.0":
   version: 2.0.0
   resolution: "ncp@npm:2.0.0"
@@ -36284,6 +36302,13 @@ __metadata:
   dependencies:
     isarray: 0.0.1
   checksum: 709f6f083c0552514ef4780cb2e7e4cf49b0cc89a97439f2b7cc69a608982b7690fb5d1720a7473a59806508fc2dae0be751ba49f495ecf89fd8fbc62abccbcd
+  languageName: node
+  linkType: hard
+
+"path-to-regexp@npm:^6.2.0":
+  version: 6.2.1
+  resolution: "path-to-regexp@npm:6.2.1"
+  checksum: f0227af8284ea13300f4293ba111e3635142f976d4197f14d5ad1f124aebd9118783dd2e5f1fe16f7273743cc3dbeddfb7493f237bb27c10fdae07020cc9b698
   languageName: node
   linkType: hard
 
@@ -44149,6 +44174,15 @@ __metadata:
     "@types/jsonwebtoken": ^9.0.0
     jsonwebtoken: ^9.0.0
   checksum: 31d30150b9eafa9fa8bf57bd6f97d7d91d4509ad24fa673a6e29ac2295b8f1fc293a70cb44fa807af7cfd787db1cf6edd3876fc0cae31230c5292b76677159fc
+  languageName: node
+  linkType: hard
+
+"universal-router@npm:9.2.0":
+  version: 9.2.0
+  resolution: "universal-router@npm:9.2.0"
+  dependencies:
+    path-to-regexp: ^6.2.0
+  checksum: 5c506a52d27d2f2ee7fe7686dff5e3af6f7590bfcc4e8de70536cd0a424aed13368984e7b7efc9cb8fb8836404700591e89e29440de8d43f475b7f5c0a3730f9
   languageName: node
   linkType: hard
 

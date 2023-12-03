@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { ItemProps, MenuProps, SectionProps } from "~/plugins/MenuPlugin";
+export type { Tenant } from "~/base/providers/TenancyProvider";
 
 export type AdminGlobalSearchPlugin = Plugin & {
     type: "admin-global-search";
