@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import isEqual from "lodash/isEqual";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
@@ -47,11 +47,6 @@ export const IconPickerComponent = observer(
         }, [selectedIcon]);
 
         const setActiveTab = (index: number) => presenter.setActiveTab(index);
-        const getActiveTab = (type: string) => presenter.getActiveTab(type);
-
-        const resetActiveTab = useCallback(() => {
-            setActiveTab(selectedIcon ? getActiveTab(selectedIcon.type) : 0);
-        }, [selectedIcon?.type]);
 
         const openMenu = () => presenter.openMenu();
         const closeMenu = () => presenter.closeMenu();
@@ -83,10 +78,7 @@ export const IconPickerComponent = observer(
                             </IconPickerInput>
                         }
                         onClose={closeMenu}
-                        onOpen={() => {
-                            openMenu();
-                            resetActiveTab();
-                        }}
+                        onOpen={openMenu}
                     >
                         {() => (
                             <>

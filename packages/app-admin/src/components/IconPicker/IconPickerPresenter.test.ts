@@ -47,7 +47,7 @@ describe("IconPickerPresenter", () => {
     });
 
     it("should create an IconPickerPresenter with the `vm` definition", async () => {
-        // let's load an icon
+        // let's load icons and set a predefined `selectedIcon`
         await presenter.load(icon);
 
         // `vm` should have the expected `selectedIcon` definition
@@ -58,8 +58,8 @@ describe("IconPickerPresenter", () => {
     });
 
     it("should be able to select an icon", async () => {
-        // let's load an icon
-        await presenter.load(icon);
+        // let's load icons
+        await presenter.load();
 
         // should be able to set the icon
         presenter.setIcon(presenter.vm.icons[0]);
@@ -96,18 +96,22 @@ describe("IconPickerPresenter", () => {
         expect(presenter.vm.icons[0]).toEqual(mockIcons[1]);
     });
 
-    it("should be able to set the active tab based on icon type", async () => {
-        // let's load icons
-        await presenter.load();
+    it("should be able to set active tab on menu open", async () => {
+        // let's load icons and set a predefined `selectedIcon`
+        await presenter.load(mockIcons[0]);
 
-        // default activeTab should be 0
+        // default `isMenuOpened` should be false
+        expect(presenter.vm.isMenuOpened).toBe(false);
+
+        // default `activeTab` should be 0
         expect(presenter.vm.activeTab).toBe(0);
 
-        // should be able to get active tab based on icon type
-        const newActiveTab = presenter.getActiveTab(mockIcons[0].type);
+        // should be able to set `isMenuOpened`
+        // should be able to set `activeTab` based on `selectedIcon` type
+        presenter.openMenu();
 
-        // should be able to set active tab
-        presenter.setActiveTab(newActiveTab);
+        // `vm` should have the expected `isMenuOpened` value
+        expect(presenter.vm.isMenuOpened).toBe(true);
 
         // `vm` should have the expected `activeTab` value
         expect(presenter.vm.activeTab).toBe(1);

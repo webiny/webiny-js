@@ -11,7 +11,6 @@ export interface IconPickerPresenterInterface {
     addIcon(icon: Icon): void;
     setFilter(value: string): void;
     setActiveTab(index: number): void;
-    getActiveTab(type: string): number;
     openMenu(): void;
     closeMenu(): void;
     get vm(): {
@@ -66,6 +65,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
 
     openMenu(): void {
         this.isMenuOpened = true;
+        this.resetActiveTab();
     }
 
     private getFilteredIcons() {
@@ -84,8 +84,12 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         this.activeTab = index;
     }
 
-    getActiveTab(type: string) {
+    private getActiveTabByType(type: string) {
         return this.vm.iconTypes.findIndex(iconsByType => iconsByType.name === type);
+    }
+
+    private resetActiveTab() {
+        this.setActiveTab(this.selectedIcon ? this.getActiveTabByType(this.selectedIcon.type) : 0);
     }
 
     setIcon(icon: Icon) {

@@ -10,7 +10,7 @@ import { IconPickerTab } from "../IconPickerTab";
 import { useIcon } from "..";
 import { useIconPicker } from "../IconPickerPresenterProvider";
 import { IconPickerConfig } from "../config";
-import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "../config/graphql";
+import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "./graphql";
 import { Icon } from "../types";
 
 const addButtonStyle = css`
