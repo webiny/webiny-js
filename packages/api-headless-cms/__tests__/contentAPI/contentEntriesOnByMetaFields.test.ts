@@ -127,7 +127,7 @@ describe("Content entries - xOn Meta Fields", () => {
         });
 
         // Refresh.
-        revision1 = await managerIdentityA.getCategory({ revision: revision1.id });
+        ({ data: revision1 } = await managerIdentityA.getCategory({ revision: revision1.id }));
 
         // Revision-level meta fields should be updated.
         expect(revision2.data.revisionCreatedOn > revision1.data.revisionCreatedOn).toBe(true);
@@ -208,7 +208,7 @@ describe("Content entries - xOn Meta Fields", () => {
 
         // Delete revision 3 and ensure that revision 2's entry-level meta fields are propagated.
         await managerIdentityB.deleteCategory({
-            revision: revision3.id,
+            revision: revision3.id
         });
 
         // Refresh.
@@ -223,7 +223,7 @@ describe("Content entries - xOn Meta Fields", () => {
 
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
         await managerIdentityB.deleteCategory({
-            revision: revision2.id,
+            revision: revision2.id
         });
 
         // Refresh.

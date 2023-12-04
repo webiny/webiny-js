@@ -4,7 +4,7 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { ENTRY_META_FIELDS } from "~/constants";
+import {ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField} from "~/constants";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
@@ -65,10 +65,10 @@ export const createReadSDL: CreateReadSDL = ({
     ].join("\n");
 
     const onByMetaFields = ENTRY_META_FIELDS.map(field => {
-        const nullable = field.includes("Modified") ? "" : "!";
-        const fieldType = field.endsWith("On") ? "DateTime" : "CmsIdentity";
+        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
-        return `${field}: ${fieldType}${nullable}`;
+        return `${field}: ${fieldType}${isNullable}`;
     }).join("\n");
 
     return `

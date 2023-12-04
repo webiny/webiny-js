@@ -18,6 +18,7 @@ import {
     CmsEntryMeta,
     CmsEntryStatus,
     CmsEntryValues,
+    CmsIdentity,
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
@@ -76,7 +77,7 @@ import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { ROOT_FOLDER} from "~/constants";
+import { ENTRY_META_FIELDS, pickEntryMetaFields, ROOT_FOLDER } from "~/constants";
 import { getDate } from "~/utils/date";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
@@ -718,9 +719,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
             revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
             revisionModifiedOn: null,
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedOn: null,
             revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
             revisionModifiedBy: null,
+            revisionFirstPublishedBy: null,
+            revisionLastPublishedBy: null,
 
             /**
              * Entry-level meta fields. 👇
@@ -728,9 +733,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDateTime),
             entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
             entryModifiedOn: null,
+            entryFirstPublishedOn: null,
+            entryLastPublishedOn: null,
             entryCreatedBy: getIdentity(rawInput.entryCreatedBy, currentIdentity),
             entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
             entryModifiedBy: null,
+            entryFirstPublishedBy: null,
+            entryLastPublishedBy: null,
 
             version,
             locked: false,
@@ -886,9 +895,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
             revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
             revisionModifiedOn: null,
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedOn: null,
             revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
             revisionModifiedBy: null,
+            revisionFirstPublishedBy: null,
+            revisionLastPublishedBy: null,
 
             /**
              * Entry-level meta fields. 👇
@@ -896,9 +909,25 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entryCreatedOn: getDate(rawInput.entryCreatedOn, latestStorageEntry.entryCreatedOn),
             entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
             entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
+            entryFirstPublishedOn: getDate(
+                rawInput.entryFirstPublishedOn,
+                latestStorageEntry.entryFirstPublishedOn
+            ),
+            entryLastPublishedOn: getDate(
+                rawInput.entryLastPublishedOn,
+                latestStorageEntry.entryLastPublishedOn
+            ),
             entryCreatedBy: getIdentity(rawInput.entryCreatedBy, latestStorageEntry.entryCreatedBy),
             entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
             entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
+            entryFirstPublishedBy: getIdentity(
+                rawInput.entryFirstPublishedBy,
+                latestStorageEntry.entryFirstPublishedBy
+            ),
+            entryLastPublishedBy: getIdentity(
+                rawInput.entryLastPublishedBy,
+                latestStorageEntry.entryLastPublishedBy
+            ),
 
             locked: false,
             status: STATUS_DRAFT,
@@ -1051,16 +1080,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              */
             revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
             revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
+            revisionFirstPublishedOn: getDate(
+                rawInput.revisionFirstPublishedOn,
+                originalEntry.revisionFirstPublishedOn
+            ),
+            revisionLastPublishedOn: getDate(
+                rawInput.revisionLastPublishedOn,
+                originalEntry.revisionLastPublishedOn
+            ),
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
             revisionModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+            revisionFirstPublishedBy: getIdentity(
+                rawInput.revisionFirstPublishedOn,
+                originalEntry.revisionFirstPublishedBy
+            ),
+            revisionLastPublishedBy: getIdentity(
+                rawInput.revisionLastPublishedOn,
+                originalEntry.revisionLastPublishedBy
+            ),
 
             /**
              * Entry-level meta fields. 👇
              */
-            entrySavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
+            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
+            entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
+            entryFirstPublishedOn: getDate(
+                rawInput.entryFirstPublishedOn,
+                originalEntry.entryFirstPublishedOn
+            ),
+            entryLastPublishedOn: getDate(
+                rawInput.entryLastPublishedOn,
+                originalEntry.entryLastPublishedOn
+            ),
             entrySavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
             entryModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+            entryFirstPublishedBy: getIdentity(
+                rawInput.entryFirstPublishedOn,
+                originalEntry.entryFirstPublishedBy
+            ),
+            entryLastPublishedBy: getIdentity(
+                rawInput.entryLastPublishedOn,
+                originalEntry.entryLastPublishedBy
+            ),
 
             values,
             meta,
@@ -1090,43 +1151,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry,
                 storageEntry
             });
-
-            // Updating latest entry if needed.
-            const maybeLatestStorageEntry =
-                await storageOperations.entries.getLatestRevisionByEntryId(model, {
-                    id: originalEntry.entryId
-                });
-
-            // If the latest entry is not the same as the one we are updating, update the latest entry.
-            const mustUpdateLatestEntry =
-                maybeLatestStorageEntry && maybeLatestStorageEntry.id !== originalStorageEntry.id;
-
-            if (mustUpdateLatestEntry) {
-                const originalLatestEntry = await entryFromStorageTransform(
-                    context,
-                    model,
-                    maybeLatestStorageEntry
-                );
-
-                const latestEntry: CmsEntry = {
-                    ...originalLatestEntry,
-                    entryModifiedOn: entry.entryModifiedOn,
-                    entryModifiedBy: entry.entryModifiedBy,
-                    entrySavedOn: entry.entrySavedOn,
-                    entrySavedBy: entry.entrySavedBy
-                };
-
-                const latestStorageEntry = await entryToStorageTransform(
-                    context,
-                    model,
-                    latestEntry
-                );
-
-                await storageOperations.entries.update(model, {
-                    entry: latestEntry,
-                    storageEntry: latestStorageEntry
-                });
-            }
 
             await onEntryAfterUpdate.publish({
                 entry,
@@ -1425,12 +1449,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * The values are taken from the latest revision we're about to delete. The update of the
              * new latest revision is performed within the storageOperations.entries.deleteRevision method.
              */
-            const pickedEntryLevelMetaFields = {
-                entrySavedOn: entryToDelete.entrySavedOn,
-                entrySavedBy: entryToDelete.entrySavedBy,
-                entryModifiedOn: entryToDelete.entryModifiedOn,
-                entryModifiedBy: entryToDelete.entryModifiedBy
-            }
+            const pickedEntryLevelMetaFields = pickEntryMetaFields(entryToDelete, field => {
+                return field.startsWith("entry");
+            });
 
             updatedEntryToSetAsLatest = {
                 ...entryToSetAsLatest,
@@ -1622,7 +1643,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entry: originalEntry
         });
 
+        // We need the latest entry to get the latest entry-level meta fields.
+        const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
+            model,
+            {
+                id: originalEntry.entryId
+            }
+        );
+
+        if (!latestStorageEntry) {
+            throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
+        }
+
+        const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
+
         const currentDateTime = new Date().toISOString();
+        const currentIdentity = getSecurityIdentity();
+
         /**
          * The existing functionality is to set the publishedOn date to the current date.
          * Users can now choose to skip updating the publishedOn date - unless it is not set.
@@ -1644,8 +1681,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ...originalEntry,
             status: STATUS_PUBLISHED,
             locked: true,
+
+            /**
+             * 🚫 Deprecated meta fields below.
+             * Will be fully removed in one of the next releases.
+             */
             savedOn,
-            publishedOn
+            publishedOn,
+
+            /**
+             * 🆕 New meta fields below.
+             * Users are encouraged to use these instead of the deprecated ones above.
+             */
+
+            /**
+             * Revision-level meta fields. 👇
+             */
+            revisionSavedOn: savedOn,
+            revisionModifiedOn: savedOn,
+            revisionFirstPublishedOn: getDate(
+                originalEntry.revisionFirstPublishedOn,
+                currentDateTime
+            ),
+            revisionLastPublishedOn: currentDateTime,
+            revisionSavedBy: getIdentity(originalEntry.revisionSavedBy, currentIdentity),
+            revisionModifiedBy: getIdentity(originalEntry.revisionModifiedBy, currentIdentity),
+            revisionFirstPublishedBy: getIdentity(
+                originalEntry.revisionFirstPublishedBy,
+                currentIdentity
+            ),
+            revisionLastPublishedBy: currentIdentity,
+
+            /**
+             * Entry-level meta fields. 👇
+             */
+            entrySavedOn: currentDateTime,
+            entryModifiedOn: currentDateTime,
+            entryFirstPublishedOn: getDate(latestEntry.entryFirstPublishedOn, currentDateTime),
+            entryLastPublishedOn: currentDateTime,
+            entrySavedBy: currentIdentity,
+            entryModifiedBy: currentIdentity,
+            entryFirstPublishedBy: getIdentity(latestEntry.entryFirstPublishedBy, currentIdentity),
+            entryLastPublishedBy: currentIdentity
         };
 
         let storageEntry: CmsStorageEntry | null = null;

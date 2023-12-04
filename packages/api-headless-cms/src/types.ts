@@ -1522,6 +1522,15 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     revisionModifiedOn: string | null;
     /**
+     * An ISO 8601 date/time string.
+     */
+    revisionFirstPublishedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionLastPublishedOn: string | null;
+
+    /**
      * Identity that last ionCreated the entry.
      */
     revisionCreatedBy: CmsIdentity;
@@ -1533,6 +1542,14 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last ionModified the entry.
      */
     revisionModifiedBy: CmsIdentity | null;
+    /**
+     * Identity that first published the entry.
+     */
+    revisionFirstPublishedBy: CmsIdentity | null;
+    /**
+     * Identity that last published the entry.
+     */
+    revisionLastPublishedBy: CmsIdentity | null;
 
     /**
      * Entry-level meta fields. 👇
@@ -1551,6 +1568,15 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     entryModifiedOn: string | null;
     /**
+     * An ISO 8601 date/time string.
+     */
+    entryFirstPublishedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    entryLastPublishedOn: string | null;
+
+    /**
      * Identity that last created the entry.
      */
     entryCreatedBy: CmsIdentity;
@@ -1562,6 +1588,14 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last modified the entry.
      */
     entryModifiedBy: CmsIdentity | null;
+    /**
+     * Identity that first published the entry.
+     */
+    entryFirstPublishedBy: CmsIdentity | null;
+    /**
+     * Identity that last published the entry.
+     */
+    entryLastPublishedBy: CmsIdentity | null;
 
     /**
      * Model ID of the definition for the entry.

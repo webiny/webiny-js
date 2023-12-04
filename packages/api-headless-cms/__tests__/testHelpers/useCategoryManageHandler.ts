@@ -2,63 +2,43 @@ import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
 import { CmsEntryListParams, CmsModel } from "~/types";
 import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
+const identityFields = /* GraphQL */ `
+    {
+        id
+        displayName
+        type
+    }
+`;
+
 const categoryFields = `
     id
     entryId
     createdOn
-    createdBy {
-        id
-        displayName
-        type
-    }
-    modifiedBy {
-        id
-        displayName
-        type
-    }
-    ownedBy {
-        id
-        displayName
-        type
-    }
+    createdBy ${identityFields}
+    modifiedBy ${identityFields}
+    ownedBy ${identityFields}
     savedOn
     
     revisionCreatedOn
     revisionSavedOn
     revisionModifiedOn
-    revisionCreatedBy {
-        id
-        displayName
-        type
-    }
-    revisionSavedBy {
-        id
-        displayName
-        type
-    }
-    revisionModifiedBy {
-        id
-        displayName
-        type
-    }
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy ${identityFields}
+    revisionSavedBy ${identityFields}
+    revisionModifiedBy ${identityFields}
+    revisionFirstPublishedBy ${identityFields}
+    revisionLastPublishedBy ${identityFields}
     entryCreatedOn
     entrySavedOn
     entryModifiedOn
-    entryCreatedBy {
-        id
-        displayName
-        type
-    }
-    entrySavedBy {
-        id
-        displayName
-        type
-    }
-    entryModifiedBy {
-        id
-        displayName
-        type
-    }
+    entryCreatedBy ${identityFields}
+    entrySavedBy ${identityFields}
+    entryModifiedBy ${identityFields}
+    entryFirstPublishedBy ${identityFields}
+    entryLastPublishedBy ${identityFields}
+    entryFirstPublishedOn
+    entryLastPublishedOn
     
     meta {
         title

@@ -5,7 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { ENTRY_META_FIELDS } from "~/constants";
+import {ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField} from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
@@ -75,10 +75,10 @@ export const createManageSDL: CreateManageSDL = ({
     ].join("\n");
 
     const onByMetaFields = ENTRY_META_FIELDS.map(field => {
-        const nullable = field.includes("Modified") ? "" : "!";
-        const fieldType = field.endsWith("On") ? "DateTime" : "CmsIdentity";
+        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
-        return `${field}: ${fieldType}${nullable}`;
+        return `${field}: ${fieldType}${isNullable}`;
     }).join("\n");
 
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.

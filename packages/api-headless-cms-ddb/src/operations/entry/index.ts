@@ -36,6 +36,7 @@ import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
+import { pickEntryMetaFields } from "@webiny/api-headless-cms/constants";
 
 const createType = (): string => {
     return "cms.entry";
@@ -340,18 +341,39 @@ export const createEntriesStorageOperations = (
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    locked,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
+        if (latestStorageEntry) {
+            const updatingLatestRevision = latestStorageEntry.id === entry.id;
+            if (updatingLatestRevision) {
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        locked,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(entry)
+                    })
+                );
+            } else {
+                // If not updating latest revision, we still want to update the latest revision's
+                // entry-level meta fields to match the current revision's entry-level meta fields.
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
+                    return field.startsWith("entry");
+                });
+
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(storageEntry),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(storageEntry)
+                    })
+                );
+            }
         }
 
         try {
@@ -540,14 +562,16 @@ export const createEntriesStorageOperations = (
 
             // Do an update on the latest revision. We need to update the latest revision's
             // entry-level meta fields to match the previous revision's entry-level meta fields.
-            items.push(entity.putBatch({
-                ...initialLatestStorageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(initialLatestStorageEntry),
-                TYPE: createType(),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(initialLatestStorageEntry)
-            }));
+            items.push(
+                entity.putBatch({
+                    ...initialLatestStorageEntry,
+                    PK: partitionKey,
+                    SK: createRevisionSortKey(initialLatestStorageEntry),
+                    TYPE: createType(),
+                    GSI1_PK: createGSIPartitionKey(model, "A"),
+                    GSI1_SK: createGSISortKey(initialLatestStorageEntry)
+                })
+            );
         }
         try {
             await batchWriteAll({
@@ -1002,18 +1026,62 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(entry)
             })
         ];
-        if (initialLatestStorageEntry && entry.id === initialLatestStorageEntry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
+
+        if (initialLatestStorageEntry) {
+            const publishingLatestRevision = entry.id === initialLatestStorageEntry.id;
+
+            if (publishingLatestRevision) {
+                // We want to update current latest record because of the status (`status: 'published'`) update.
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(entry)
+                    })
+                );
+            } else {
+                const latestStorageEntry = convertToStorageEntry({
+                    storageEntry: initialLatestStorageEntry,
+                    model
+                });
+
+                // If the published revision is not the latest one, we still need to
+                // update the latest record with the new values of entry-level meta fields.
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
+                    return field.startsWith("entry");
+                });
+
+                // 1. Update actual revision record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createType(),
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+
+                // 2. Update latest record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+            }
         }
+
         if (initialPublishedStorageEntry && initialPublishedStorageEntry.id !== entry.id) {
             const publishedStorageEntry = convertToStorageEntry({
                 storageEntry: initialPublishedStorageEntry,

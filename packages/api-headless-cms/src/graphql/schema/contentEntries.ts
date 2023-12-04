@@ -8,7 +8,7 @@ import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import { ENTRY_META_FIELDS } from "~/constants";
+import { ENTRY_META_FIELDS, isNullableEntryMetaField, isDateTimeEntryMetaField } from "~/constants";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -347,10 +347,10 @@ export const createContentEntriesSchema = ({
     ].join("\n");
 
     const onByMetaFields = ENTRY_META_FIELDS.map(field => {
-        const nullable = field.includes("Modified") ? "" : "!";
-        const fieldType = field.endsWith("On") ? "DateTime" : "CmsIdentity";
+        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
-        return `${field}: ${fieldType}${nullable}`;
+        return `${field}: ${fieldType}${isNullable}`;
     }).join("\n");
 
     const plugin = new CmsGraphQLSchemaPlugin({
