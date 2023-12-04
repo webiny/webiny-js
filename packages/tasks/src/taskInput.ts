@@ -1,27 +1,27 @@
-export interface TaskInputParams<T> {
-    type: string;
+export interface ITaskInputParams<T> {
+    id: string;
     input: T;
 }
 class TaskInput<T> {
-    public type: string;
+    public id: string;
     public input: T;
 
-    constructor(params: TaskInputParams<T>) {
-        this.type = params.type;
+    constructor(params: ITaskInputParams<T>) {
+        this.id = params.id;
         this.input = params.input;
     }
 }
 
 export type { TaskInput };
 
-interface Params<T> {
-    type: string;
+interface ICreateTaskInputParams<T> {
+    id: string;
     input: T;
 }
 
-export const createTaskInput = <T>(params: Params<T>) => {
+export const createTaskInput = <T>(params: ICreateTaskInputParams<T>) => {
     return new TaskInput({
-        type: params.type,
+        id: params.id,
         input: params.input
     });
 };

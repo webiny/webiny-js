@@ -45,7 +45,7 @@ export interface HandlerParams<E, P extends HandlerFactoryParams> {
 }
 
 export interface SourceHandler<
-    E extends HandlerEvent = HandlerEvent,
+    E = HandlerEvent,
     P extends HandlerFactoryParams = HandlerFactoryParams,
     T = any
 > {

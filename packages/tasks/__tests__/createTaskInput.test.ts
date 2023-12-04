@@ -7,8 +7,8 @@ interface MyInput {
 
 describe("create task input", () => {
     it("should create task input", async () => {
-        const input = createTaskInput({
-            type: "aMockTaskType",
+        const input = createTaskInput<MyInput>({
+            id: "aMockTaskType",
             input: {
                 test: true,
                 file: "test.txt"
@@ -16,7 +16,7 @@ describe("create task input", () => {
         });
 
         expect(input).toEqual({
-            type: "aMockTaskType",
+            id: "aMockTaskType",
             input: {
                 test: true,
                 file: "test.txt"

@@ -15,7 +15,12 @@
     "@babel/runtime": "^7.22.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/plugins": "0.0.0"
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/ioc": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

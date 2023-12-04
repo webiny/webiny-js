@@ -1,17 +1,37 @@
-import { Context, ITask, TaskField } from "~/types";
+import { Context, ITaskDefinition, TaskField } from "~/types";
 
 interface TaskPluginSetFieldsCallback {
     (fields: TaskField[]): TaskField[] | undefined;
 }
 
-class Task<C extends Context = Context, I = any> {
-    private readonly task: ITask<C, I>;
+class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I> {
+    private readonly task: ITaskDefinition<C, I>;
 
-    private constructor(task: ITask<C, I>) {
+    public get id() {
+        return this.task.id;
+    }
+
+    public get name() {
+        return this.task.name;
+    }
+
+    public get fields() {
+        return this.task.fields;
+    }
+
+    public get run() {
+        return this.task.run;
+    }
+
+    public get onDone() {
+        return this.task.onDone;
+    }
+
+    private constructor(task: ITaskDefinition<C, I>) {
         this.task = task;
     }
 
-    public static create<C extends Context = Context, I = any>(task: ITask<C, I>) {
+    public static create<C extends Context = Context, I = any>(task: ITaskDefinition<C, I>) {
         return new Task<C, I>(task);
     }
 
@@ -31,7 +51,7 @@ class Task<C extends Context = Context, I = any> {
 
 export type { Task };
 
-export const createTask = <C extends Context = Context, I = any>(params: ITask<C, I>) => {
+export const createTask = <C extends Context = Context, I = any>(params: ITaskDefinition<C, I>) => {
     return Task.create<C, I>(params);
 };
 

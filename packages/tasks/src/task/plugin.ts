@@ -1,12 +1,12 @@
 import { Plugin } from "@webiny/plugins";
-import { Context, ITask } from "~/types";
+import { Context, ITaskDefinition } from "~/types";
 
 export class TaskPlugin<C extends Context = Context, I = any> extends Plugin {
     public static override readonly type: string = "webiny.backgroundTask";
 
-    private readonly task: ITask<C, I>;
+    private readonly task: ITaskDefinition<C, I>;
 
-    public constructor(task: ITask<C, I>) {
+    public constructor(task: ITaskDefinition<C, I>) {
         super();
         this.task = task;
     }
@@ -17,7 +17,7 @@ export class TaskPlugin<C extends Context = Context, I = any> extends Plugin {
 }
 
 export const createRegisterTaskPlugin = <C extends Context = Context, I = any>(
-    task: ITask<C, I>
+    task: ITaskDefinition<C, I>
 ) => {
     return new TaskPlugin<C, I>(task);
 };

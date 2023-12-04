@@ -1,7 +1,15 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../api" }, { "path": "../api-headless-cms" }, { "path": "../plugins" }],
+  "references": [
+    { "path": "../api" },
+    { "path": "../api-headless-cms" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../ioc" },
+    { "path": "../plugins" },
+    { "path": "../utils" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -13,8 +21,16 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/ioc/*": ["../ioc/src/*"],
+      "@webiny/ioc": ["../ioc/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

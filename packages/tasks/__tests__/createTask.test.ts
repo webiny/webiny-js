@@ -1,69 +1,87 @@
 import { Context } from "./types";
-import { ITask, ITaskParams } from "~/types";
-import { createTask } from "~/task";
+import { ITaskDefinition, ITaskRunParams } from "~/types";
+import { createTask } from "~/task/definition";
 
 interface MyInput {
     test: boolean;
     file: string;
 }
 
-class MyTask implements ITask<Context, MyInput> {
-    public name: string = "myCustomTask";
-    public async run(params: ITaskParams<Context, MyInput>) {
-        return params.manager.done();
+class MyTask implements ITaskDefinition<Context, MyInput> {
+    public readonly id = "myCustomTask";
+    public readonly name = "A custom task defined via object";
+    public async run(params: ITaskRunParams<Context, MyInput>) {
+        return params.response.done();
     }
-    public async onSuccess() {}
+    public async onDone() {
+        return;
+    }
+    public async onError() {
+        return;
+    }
 }
 
 describe("create task", () => {
     it("should properly create a task - object", async () => {
-        const task: ITask<Context, MyInput> = {
-            name: "myCustomTask",
-            run: async ({ manager, input }) => {
+        const task: ITaskDefinition<Context, MyInput> = {
+            id: "myCustomTask",
+            name: "A custom task defined via object",
+            run: async ({ response, isTimeoutClose, input }) => {
                 try {
-                    if (manager.isTimeoutClose()) {
-                        return manager.continue({
+                    if (isTimeoutClose()) {
+                        return response.continue({
                             input
                         });
                     }
-                    return manager.done();
+                    return response.done();
                 } catch (ex) {
-                    return manager.error(ex);
+                    return response.error(ex);
                 }
             },
-            onSuccess: async () => {}
+            onDone: async () => {
+                return;
+            },
+            onError: async () => {
+                return;
+            }
         };
 
         expect(task.run).toBeInstanceOf(Function);
-        expect(task.onSuccess).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
     });
 
     it("should properly create a task - via method", async () => {
         const task = createTask<Context, MyTask>({
-            name: "myCustomTask",
-            run: async ({ manager, input }) => {
+            id: "myCustomTask",
+            name: "A custom task defined via method",
+            run: async ({ response, isTimeoutClose, input }) => {
                 try {
-                    if (manager.isTimeoutClose()) {
-                        return manager.continue({
+                    if (isTimeoutClose()) {
+                        return response.continue({
                             input
                         });
                     }
-                    return manager.done();
+                    return response.done();
                 } catch (ex) {
-                    return manager.error(ex);
+                    return response.error(ex);
                 }
             },
-            onSuccess: async params => {}
+            onDone: async () => {
+                return;
+            },
+            onError: async () => {
+                return;
+            }
         });
 
         expect(task.run).toBeInstanceOf(Function);
-        expect(task.onSuccess).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
     });
 
     it("should properly create a task - class", async () => {
         const task = new MyTask();
 
         expect(task.run).toBeInstanceOf(Function);
-        expect(task.onSuccess).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
     });
 });
