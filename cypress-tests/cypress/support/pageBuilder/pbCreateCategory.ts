@@ -24,16 +24,6 @@ const MUTATION = /* GraphQL */ `
                     name
                     layout
                     url
-                    createdOn
-                    createdBy {
-                        id
-                        displayName
-                    }
-                }
-                error {
-                    code
-                    message
-                    data
                 }
             }
         }
