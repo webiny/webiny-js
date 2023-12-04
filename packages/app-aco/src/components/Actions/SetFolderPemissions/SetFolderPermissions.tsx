@@ -8,7 +8,7 @@ import { useFolder } from "~/hooks";
 export const SetFolderPermissions = () => {
     const { folder } = useFolder();
     const { showDialog } = useSetPermissionsDialog();
-    const { OptionsMenuItem } = AcoConfig.Folder.Action.useOptionsMenuItem();
+    const { OptionsMenuItem } = AcoConfig.Folder.Action;
 
     const onAction = useCallback(() => {
         showDialog({

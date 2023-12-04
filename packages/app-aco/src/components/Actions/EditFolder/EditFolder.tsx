@@ -8,7 +8,7 @@ import { useFolder } from "~/hooks";
 export const EditFolder = () => {
     const { folder } = useFolder();
     const { showDialog } = useEditDialog();
-    const { OptionsMenuItem } = AcoConfig.Folder.Action.useOptionsMenuItem();
+    const { OptionsMenuItem } = AcoConfig.Folder.Action;
 
     const onAction = useCallback(() => {
         showDialog({

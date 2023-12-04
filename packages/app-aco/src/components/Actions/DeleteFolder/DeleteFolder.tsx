@@ -8,7 +8,7 @@ import { useFolder } from "~/hooks";
 export const DeleteFolder = () => {
     const { folder } = useFolder();
     const { showDialog } = useDeleteDialog();
-    const { OptionsMenuItem } = AcoConfig.Folder.Action.useOptionsMenuItem();
+    const { OptionsMenuItem } = AcoConfig.Folder.Action;
 
     const onAction = useCallback(() => {
         showDialog({

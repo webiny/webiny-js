@@ -5,5 +5,5 @@ export interface FolderConfig {
 }
 
 export const Folder = {
-    Action: Action
+    Action
 };
