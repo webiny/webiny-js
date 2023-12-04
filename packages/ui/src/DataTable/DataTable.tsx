@@ -256,12 +256,10 @@ const defineData = <T,>(
     data: Props<T>["data"],
     loadingInitial: Props<T>["loadingInitial"]
 ): T[] => {
-    return useMemo(() => {
-        if (loadingInitial) {
-            return Array(10).fill({});
-        }
-        return data;
-    }, [data, loadingInitial]);
+    if (loadingInitial) {
+        return Array(10).fill({});
+    }
+    return data;
 };
 
 const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {

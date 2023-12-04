@@ -10,5 +10,5 @@ export const CellModified = () => {
         return <TimeAgo datetime={item.createdOn} />;
     }
 
-    return <>{item.data.createdOn}</>;
+    return <TimeAgo datetime={item.data.createdOn} />;
 };
