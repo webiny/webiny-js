@@ -5,6 +5,7 @@ import { iconRepositoryFactory } from "./IconRepositoryFactory";
 import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconPickerComponent, IconPickerProps } from "./IconPickerComponent";
 import { IconProvider, IconRenderer } from "./IconRenderer";
+import { IconPickerTab } from "./IconPickerTab";
 import { Icon } from "./types";
 
 const IconPickerInner = (props: IconPickerProps) => {
@@ -59,5 +60,6 @@ const IconRendererWithProvider = ({ icon }: IconRendererWithProviderProps) => {
 };
 
 IconPicker.Icon = IconRendererWithProvider;
+IconPicker.IconPickerTab = IconPickerTab;
 
 export { IconPicker };
