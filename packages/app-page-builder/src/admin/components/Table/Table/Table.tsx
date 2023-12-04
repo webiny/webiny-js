@@ -49,15 +49,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         return table.columns.reduce((obj, item) => {
             const { name, cell, header, size, enableSorting, enableResizing, className } = item;
 
+            const cellRenderer = (item: TableItem) => (
+                <TableCellProvider item={item}>{cell}</TableCellProvider>
+            );
+
             obj[name as keyof Columns<TableItem>] = {
                 header,
                 enableSorting,
                 enableResizing,
                 size,
                 className,
-                cell: (item: TableItem) => {
-                    return <TableCellProvider item={item}>{cell}</TableCellProvider>;
-                }
+                ...(cell && { cell: cellRenderer })
             };
 
             return obj;

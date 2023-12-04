@@ -41,6 +41,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             } = item;
 
             const name = defaultName === "name" ? columnName : defaultName;
+            const cellRenderer = (item: TableItem) => (
+                <TableCellProvider item={item}>{cell}</TableCellProvider>
+            );
 
             obj[name as keyof Columns<TableItem>] = {
                 header,
@@ -48,9 +51,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 enableResizing,
                 size,
                 className,
-                cell: (item: TableItem) => {
-                    return <TableCellProvider item={item}>{cell}</TableCellProvider>;
-                }
+                ...(cell && { cell: cellRenderer })
             };
 
             return obj;
