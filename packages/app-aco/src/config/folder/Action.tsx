@@ -1,5 +1,5 @@
 import React from "react";
-import { useOptionsMenuItem } from "@webiny/app-admin";
+import { OptionsMenuItem } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface ActionConfig {
@@ -47,5 +47,5 @@ export const BaseAction: React.FC<ActionProps> = ({
 };
 
 export const Action = Object.assign(BaseAction, {
-    useOptionsMenuItem
+    OptionsMenuItem
 });
