@@ -2,7 +2,6 @@ import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import { useTableCell } from "~/admin/hooks/useTableCell";
-import { BaseTableItem, FolderTableItem } from "@webiny/app-aco/types";
 
 const { Table } = AcoConfig;
 
@@ -18,8 +17,7 @@ const BaseColumn: React.FC<React.ComponentProps<typeof AcoConfig.Table.Column>> 
     );
 };
 
-const isFolderItem = (item: BaseTableItem): item is FolderTableItem => {
-    return item.$type === "FOLDER";
-};
-
-export const Column = Object.assign(BaseColumn, { useTableCell, isFolderItem });
+export const Column = Object.assign(BaseColumn, {
+    useTableCell,
+    isFolderItem: Table.Column.isFolderItem
+});

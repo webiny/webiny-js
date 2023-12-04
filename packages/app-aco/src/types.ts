@@ -5,6 +5,7 @@ import {
 } from "@webiny/app-headless-cms-common/types";
 
 export * from "~/graphql/records/types";
+export * from "~/table.types";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 
@@ -197,17 +198,4 @@ export interface AcoApp {
     id: string;
     model: AcoModel;
     getFields: () => AcoModelField[];
-}
-
-export interface BaseTableItem {
-    $selectable: boolean;
-    $type: string;
-}
-
-export interface FolderTableItem extends BaseTableItem, FolderItem {
-    $type: "FOLDER";
-}
-
-export interface RecordTableItem extends BaseTableItem {
-    $type: "RECORD";
 }
