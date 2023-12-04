@@ -55,6 +55,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         setLayoutRenderKey(new Date().getTime().toString());
     }, []);
 
+    // We need to add index to every step so we can properly,
+    // add or remove step from array of steps based on step rules.
+    data.steps = data.steps.map((formStep, index) => ({
+        ...formStep,
+        index
+    }));
+
     useEffect((): void => {
         if (!data.id) {
             return;
@@ -74,7 +81,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     useEffect(() => {
         setCurrentStepIndex(0);
         setModifiedSteps(data.steps);
-    }, [data.steps, data.fields.length]);
+    }, [data.steps.length, data.fields.length]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
@@ -96,12 +103,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     };
 
     const formData: FbFormModel = cloneDeep(data);
+
     const { fields, settings, steps } = formData;
 
     const resolvedSteps = useMemo(() => {
         return modifiedSteps || steps;
     }, [steps, modifiedSteps]);
-    console.log("resolvedSteps", resolvedSteps);
+
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
 
@@ -129,8 +137,6 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
             formData,
             rules: currentStep.rules
         });
-
-        console.log("nextStepIndex", nextStepIndex);
 
         if (nextStepIndex === "submit") {
             setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);

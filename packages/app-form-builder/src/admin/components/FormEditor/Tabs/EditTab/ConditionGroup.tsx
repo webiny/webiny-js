@@ -7,7 +7,7 @@ import { Accordion } from "@webiny/ui/Accordion";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { Center, Vertical, Horizontal } from "../../DropZone";
 import Field from "./Field";
-import { RowContainer, rowHandle, Row, fieldContainer } from "./Styled";
+import { RowContainer, rowHandle, Row, fieldContainer, RulesTag } from "./Styled";
 import Draggable from "../../Draggable";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
@@ -72,6 +72,11 @@ const ConditionalGroupField: React.FC<FieldProps> = props => {
                 open={true}
                 actions={
                     <AccordionItem.Actions>
+                        {conditionGroupField.settings.rules?.length ? (
+                            <RulesTag isValid={true}>{"Rules Attached"}</RulesTag>
+                        ) : (
+                            <></>
+                        )}
                         <AccordionItem.Action
                             icon={<EditIcon />}
                             onClick={() => onEdit(conditionGroupField)}

@@ -25,13 +25,23 @@ import { useFormEditor } from "~/admin/components/FormEditor/Context";
 import { RuleActionSelect } from "./RuleActionSelect";
 import { SelectDefaultBehaviour } from "./DefaultBehaviour";
 import { FbFormModelField, FbFormModel, FbFormRule, FbFormCondition } from "~/types";
+import { getAvailableFields } from "../FormStep/EditFormStepDialog/helpers";
 
-const getFields = (id: string, formData: FbFormModel) => {
-    const filedIds = formData.steps.map(step => step.layout).flat(2);
-    const currentFieldIndex = filedIds.indexOf(id);
-    const availableFiledIds = filedIds.slice(0, currentFieldIndex);
+const getCondtionFields = (id: string, formData: FbFormModel) => {
+    const availableFields: Array<FbFormModelField | null> = [];
 
-    return availableFiledIds.map(id => formData.fields.find(field => field._id === id) || null);
+    formData.steps.forEach(step => {
+        const stepLayout = step.layout.flat(2);
+
+        if (stepLayout.includes(id)) {
+            const fields = getAvailableFields({ step, formData }).filter(
+                field => field?.type !== "condition-group"
+            );
+            availableFields.push(...fields);
+        }
+    });
+
+    return availableFields;
 };
 
 interface RulesTabProps {
@@ -43,7 +53,8 @@ export const RulesTab = ({ field, form }: RulesTabProps) => {
     const { Bind } = form;
 
     const { data: formData } = useFormEditor();
-    const fields = field._id ? getFields(field._id, formData) : [];
+    const fields = field._id ? getCondtionFields(field._id, formData) : [];
+
     const areRulesInValid = field?.settings?.rules?.some(
         (rule: FbFormRule) => rule.isValid === false
     );

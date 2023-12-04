@@ -19,7 +19,7 @@ export const StyledAccordionItem = styled(AccordionItem)`
     }
 `;
 
-export const StepRulesTag = styled.div<{ isValid: boolean }>`
+export const RulesTag = styled.div<{ isValid: boolean }>`
     display: inline-block;
     padding: 5px 20px 7px 20px;
     background-color: white;

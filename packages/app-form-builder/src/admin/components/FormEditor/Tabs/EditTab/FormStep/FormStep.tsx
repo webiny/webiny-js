@@ -15,7 +15,7 @@ import {
     StyledAccordion,
     StyledAccordionItem,
     conditionGroupContainer,
-    StepRulesTag
+    RulesTag
 } from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
@@ -94,7 +94,7 @@ export const FormStep = ({
                     actions={
                         <AccordionItem.Actions>
                             {formStep.rules.length ? (
-                                <StepRulesTag isValid={true}>{"Rules Attached"}</StepRulesTag>
+                                <RulesTag isValid={true}>{"Rules Attached"}</RulesTag>
                             ) : (
                                 <></>
                             )}
