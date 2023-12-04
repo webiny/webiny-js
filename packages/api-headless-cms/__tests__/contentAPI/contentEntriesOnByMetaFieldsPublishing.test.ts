@@ -26,20 +26,20 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
     });
 
     test("revision and entry-level fields should be populated correctly on publish", async () => {
-        let { data: rev1 } = await managerIdentityA.createCategory({
+        let { data: rev } = await managerIdentityA.createCategory({
             data: {
                 title: "Fruits",
                 slug: "fruits"
             }
         });
 
-        const publish = await managerIdentityA.publishCategory({ revision: rev1.id });
+        const publish = await managerIdentityA.publishCategory({ revision: rev.id });
         expect(publish.error).toBeNull();
 
         // Refresh.
-        ({ data: rev1 } = await managerIdentityA.getCategory({ revision: rev1.id }));
+        ({ data: rev } = await managerIdentityA.getCategory({ revision: rev.id }));
 
-        expect(rev1).toMatchObject({
+        expect(rev).toMatchObject({
             revisionFirstPublishedOn: expectIsoDate,
             revisionLastPublishedOn: expectIsoDate,
             revisionFirstPublishedBy: identityA,
@@ -53,9 +53,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             }
         });
 
-        expect(rev1.revisionFirstPublishedOn).toBe(rev1.revisionLastPublishedOn);
-        expect(rev1.revisionFirstPublishedOn).toBe(rev1.meta.publishedOn);
-        expect(rev1.revisionFirstPublishedBy).toEqual(rev1.revisionLastPublishedBy);
+        expect(rev.revisionFirstPublishedOn).toBe(rev.revisionLastPublishedOn);
+        expect(rev.revisionFirstPublishedOn).toBe(rev.meta.publishedOn);
+        expect(rev.revisionFirstPublishedBy).toEqual(rev.revisionLastPublishedBy);
     });
 
     test("publishing a second revision should not affect the entry meta fields of the first revision", async () => {
@@ -321,5 +321,164 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             rev3AfterPublish3.entryLastPublishedOn > rev2AfterPublish2.entryLastPublishedOn
         ).toBe(true);
+    });
+
+    test("unpublishing and publishing a latest revision should update lastPublished meta fields", async () => {
+        const { data: rev } = await managerIdentityA.createCategory({
+            data: {
+                title: "Fruits",
+                slug: "fruits"
+            }
+        });
+
+        const publish1 = await managerIdentityA.publishCategory({ revision: rev.id });
+        expect(publish1.error).toBeNull();
+
+        // Refresh.
+        const { data: revAfterPublish1 } = await managerIdentityA.getCategory({ revision: rev.id });
+
+        const unpublish = await managerIdentityA.unpublishCategory({ revision: rev.id });
+        expect(unpublish.error).toBeNull();
+
+        // Let's publish again, this time with `identityB`.
+        const { data: revAfterPublish2 } = await managerIdentityB.publishCategory({
+            revision: rev.id
+        });
+
+        expect(revAfterPublish2).toMatchObject({
+            revisionFirstPublishedOn: revAfterPublish1.revisionFirstPublishedOn,
+            revisionLastPublishedOn: expectIsoDate,
+            revisionFirstPublishedBy: identityA,
+            revisionLastPublishedBy: identityB,
+            entryFirstPublishedOn: revAfterPublish1.entryFirstPublishedOn,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityA,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: expectIsoDate
+            }
+        });
+
+        expect(
+            revAfterPublish2.revisionLastPublishedOn > revAfterPublish1.revisionLastPublishedOn
+        ).toBe(true);
+        expect(revAfterPublish2.entryLastPublishedOn > revAfterPublish1.entryLastPublishedOn).toBe(
+            true
+        );
+    });
+
+    test("unpublishing and publishing a non-latest revision should update lastPublished meta fields on the actual revision and on the latest one", async () => {
+        const { data: rev1 } = await managerIdentityA.createCategory({
+            data: {
+                title: "Fruits",
+                slug: "fruits"
+            }
+        });
+
+        const { data: rev2 } = await managerIdentityA.createCategoryFrom({
+            revision: rev1.id
+        });
+
+        const { data: rev3 } = await managerIdentityA.createCategoryFrom({
+            revision: rev2.id
+        });
+
+        // Let's publish the first revision.
+        const publish1 = await managerIdentityA.publishCategory({ revision: rev1.id });
+        expect(publish1.error).toBeNull();
+
+        // Refresh.
+        const { data: rev1AfterPublish1 } = await managerIdentityA.getCategory({
+            revision: rev1.id
+        });
+
+        const unpublish = await managerIdentityA.unpublishCategory({ revision: rev1.id });
+        expect(unpublish.error).toBeNull();
+
+        // Let's publish again, this time with `identityB`.
+        const publish2 = await managerIdentityB.publishCategory({
+            revision: rev1.id
+        });
+        expect(publish2.error).toBeNull();
+
+        // Refresh.
+        const { data: rev1AfterPublish2 } = await managerIdentityA.getCategory({
+            revision: rev1.id
+        });
+        const { data: rev3AfterPublish2 } = await managerIdentityA.getCategory({
+            revision: rev3.id
+        });
+
+        expect(rev1AfterPublish2).toMatchObject({
+            revisionFirstPublishedOn: rev1AfterPublish1.revisionFirstPublishedOn,
+            revisionLastPublishedOn: expectIsoDate,
+            revisionFirstPublishedBy: identityA,
+            revisionLastPublishedBy: identityB,
+            entryFirstPublishedOn: rev1AfterPublish1.entryFirstPublishedOn,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityA,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: expectIsoDate
+            }
+        });
+
+        expect(rev3AfterPublish2).toMatchObject({
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedOn: null,
+            revisionFirstPublishedBy: null,
+            revisionLastPublishedBy: null,
+            entryFirstPublishedOn: rev1AfterPublish2.entryFirstPublishedOn,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityA,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: null
+            }
+        });
+    });
+
+    test("republishing a latest revision should only change lastPublished meta fields", async () => {
+        const { data: rev } = await managerIdentityA.createCategory({
+            data: {
+                title: "Fruits",
+                slug: "fruits"
+            }
+        });
+
+        const publish1 = await managerIdentityA.publishCategory({ revision: rev.id });
+        expect(publish1.error).toBeNull();
+
+        // Refresh.
+        const { data: revAfterPublish } = await managerIdentityA.getCategory({ revision: rev.id });
+
+        const republish = await managerIdentityA.unpublishCategory({ revision: rev.id });
+        expect(republish.error).toBeNull();
+
+        // Let's publish again, this time with `identityB`.
+        const { data: revAfterRepublish } = await managerIdentityB.publishCategory({
+            revision: rev.id
+        });
+
+        expect(revAfterRepublish).toMatchObject({
+            revisionFirstPublishedOn: revAfterPublish.revisionFirstPublishedOn,
+            revisionLastPublishedOn: expectIsoDate,
+            revisionFirstPublishedBy: identityA,
+            revisionLastPublishedBy: identityB,
+            entryFirstPublishedOn: revAfterPublish.entryFirstPublishedOn,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityA,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: expectIsoDate
+            }
+        });
+
+        expect(
+            revAfterRepublish.revisionLastPublishedOn > revAfterPublish.revisionLastPublishedOn
+        ).toBe(true);
+        expect(revAfterRepublish.entryLastPublishedOn > revAfterPublish.entryLastPublishedOn).toBe(
+            true
+        );
     });
 });
