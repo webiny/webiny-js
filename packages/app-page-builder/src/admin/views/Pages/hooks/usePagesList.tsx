@@ -48,7 +48,7 @@ interface PagesListProviderProps {
 }
 
 export const PagesListProvider = ({ children }: PagesListProviderProps) => {
-    const { history } = useRouter();
+    const { history, location } = useRouter();
 
     const {
         folders,
@@ -67,7 +67,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
-    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
+    const [showPreviewPage, setPreviewPage] = useState<string>();
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
 
@@ -117,16 +117,23 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
     };
 
     const openPreviewDrawer = useCallback((id: string) => {
-        query.set("id", id);
-        history.push({ search: query.toString() });
-        setPreviewDrawer(true);
+        setPreviewPage(id);
     }, []);
 
     const closePreviewDrawer = useCallback(() => {
+        setPreviewPage(undefined);
+    }, []);
+
+    useEffect(() => {
+        if (showPreviewPage) {
+            query.set("id", showPreviewPage);
+            history.push({ search: query.toString() });
+            return;
+        }
+
         query.delete("id");
         history.push({ search: query.toString() });
-        setPreviewDrawer(false);
-    }, []);
+    }, [showPreviewPage]);
 
     useEffect(() => {
         if (!sorting?.length) {
@@ -156,7 +163,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
         setSearch,
         setSelected,
         setSorting,
-        showPreviewDrawer,
+        showPreviewDrawer: Boolean(showPreviewPage),
         sorting
     };
 
