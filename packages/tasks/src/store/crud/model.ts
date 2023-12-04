@@ -16,7 +16,38 @@ export const createTaskModel = () => {
             description: "",
             name: "Webiny Task",
             titleFieldId: "name",
-            fields: [],
+            fields: [
+                {
+                    id: "name",
+                    fieldId: "name",
+                    type: "text",
+                    label: "Name"
+                },
+                {
+                    id: "input",
+                    fieldId: "input",
+                    type: "json",
+                    label: "Input"
+                },
+                {
+                    id: "running",
+                    fieldId: "running",
+                    type: "boolean",
+                    label: "Running"
+                },
+                {
+                    id: "startedOn",
+                    fieldId: "startedOn",
+                    type: "datetime",
+                    label: "Started On"
+                },
+                {
+                    id: "finishedOn",
+                    fieldId: "finishedOn",
+                    type: "datetime",
+                    label: "Finished On"
+                }
+            ],
             layout: [],
             group: {
                 id: "webinyTaskGroup",
