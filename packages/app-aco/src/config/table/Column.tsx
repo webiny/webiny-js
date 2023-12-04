@@ -25,7 +25,7 @@ export interface ColumnProps {
     after?: string;
 }
 
-export const BaseColumn: React.FC<ColumnProps> = ({
+export const Column: React.FC<ColumnProps> = ({
     name,
     after = undefined,
     before = undefined,
@@ -75,9 +75,3 @@ export const BaseColumn: React.FC<ColumnProps> = ({
         </Property>
     );
 };
-
-const isFolderItem = (item: BaseTableItem): item is FolderTableItem => {
-    return item.$type === "FOLDER";
-};
-
-export const Column = Object.assign(BaseColumn, { isFolderItem });
