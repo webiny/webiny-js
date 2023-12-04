@@ -5,12 +5,16 @@ import React, {
     useState,
     useCallback,
     FunctionComponentElement,
-    ReactElement
+    ReactElement,
+    useRef
 } from "react";
+import { createBrowserHistory } from "history";
 import { RouteProps, Route } from "@webiny/react-router";
 import { compose, CompositionProvider, Decorator } from "@webiny/react-composition";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
+import { plugins } from "@webiny/plugins";
+import { RoutePlugin } from "~/plugins/RoutePlugin";
 
 type RoutesByPath = {
     [key: string]: ReactElement<RouteProps>;
@@ -42,27 +46,14 @@ export const useApp = () => {
     return appContext;
 };
 
-export interface ContentDecorator {
-    (element: ReactElement): ReactElement;
-}
-
 export interface AppProps {
     debounceRender?: number;
     routes?: Array<RouteProps>;
     providers?: Array<Decorator>;
-    contentDecorator?: ContentDecorator;
-    contentElement?: React.ReactNode;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const App = ({
-    debounceRender = 50,
-    routes = [],
-    providers = [],
-    contentDecorator = el => el,
-    contentElement = <span>No `contentElement` was configured to render the app!</span>,
-    children
-}: AppProps) => {
+export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
     const [state, setState] = useState<State>({
         routes: routes.reduce<RoutesByPath>((acc, item) => {
             return { ...acc, [item.path as string]: <Route {...item} /> };
@@ -70,6 +61,8 @@ export const App = ({
         plugins: [],
         providers
     });
+
+    const history = useRef(createBrowserHistory());
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {
         setState(state => {
@@ -112,6 +105,9 @@ export const App = ({
         [state]
     );
 
+    const routesFromPlugins = plugins.byType<RoutePlugin>("route").map(({ route }) => route);
+    const allRoutes = [...Object.values(state.routes), ...routesFromPlugins] as JSX.Element[];
+
     const Providers = useMemo(() => {
         return compose(...(state.providers || []))(({ children }: any) => (
             <DebounceRender wait={debounceRender}>{children}</DebounceRender>
@@ -124,12 +120,14 @@ export const App = ({
         <AppContext.Provider value={appContext}>
             <CompositionProvider>
                 {children}
-                {contentDecorator(
+                <Router routes={allRoutes} history={history.current}>
                     <Providers>
                         <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender wait={debounceRender}>{contentElement}</DebounceRender>
+                        <DebounceRender wait={debounceRender}>
+                            <RouteContent />
+                        </DebounceRender>
                     </Providers>
-                )}
+                </Router>
             </CompositionProvider>
         </AppContext.Provider>
     );

@@ -12,18 +12,20 @@ const getBasename = (tenant: string | null) => {
     return tenant ? `/t_${tenant}` : "";
 };
 
-export const AdminRouter = ({
-    history,
-    children
-}: {
+interface RouterProps {
+    // TODO: change this. input should NOT be an element.
+    routes: JSX.Element[];
+    getBaseUrl: () => string;
     history: History;
     children: React.ReactElement;
-}) => {
-    const { tenant } = useTenancy();
+}
 
-    const getBaseUrl = useCallback(() => {
-        return getBasename(tenant);
-    }, [tenant]);
+export const Router = ({ getBaseUrl, routes, history, children }: RouterProps) => {
+    const presenter = useRef(new RouterPresenter(baseUrl, history));
+
+    useEffect(() => {
+        presenter.bootstrap(routes);
+    }, [routes.length]);
 
     return (
         <BrowserRouter history={history} getBasename={getBaseUrl}>
@@ -102,7 +104,6 @@ export const RouteContent = ({ history }: { history: History }) => {
     const [currentRoute, setCurrentRoute] = useState<ActiveRoute | null>(null);
 
     // For backwards compatibility, we need to support the RoutePlugin routes as well.
-
 
     const handleMatchedRoute = useCallback((route: ActiveRoute) => {
         if (!route.element) {
