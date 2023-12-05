@@ -68,6 +68,18 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         this.resetActiveTab();
     }
 
+    setActiveTab(index: number) {
+        this.activeTab = index;
+    }
+
+    setIcon(icon: Icon) {
+        this.selectedIcon = icon;
+    }
+
+    setFilter(value: string) {
+        this.filter = value;
+    }
+
     private getFilteredIcons() {
         const hyphenUnderscoreRegex = /[-_]/g;
         const icons = this.repository.getIcons();
@@ -80,23 +92,13 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         );
     }
 
-    setActiveTab(index: number) {
-        this.activeTab = index;
-    }
-
     private getActiveTabByType(type: string) {
-        return this.vm.iconTypes.findIndex(iconsByType => iconsByType.name === type);
+        const iconTypes = this.repository.getIconTypes();
+
+        return iconTypes.findIndex(iconsByType => iconsByType.name === type);
     }
 
     private resetActiveTab() {
         this.setActiveTab(this.selectedIcon ? this.getActiveTabByType(this.selectedIcon.type) : 0);
-    }
-
-    setIcon(icon: Icon) {
-        this.selectedIcon = icon;
-    }
-
-    setFilter(value: string) {
-        this.filter = value;
     }
 }
