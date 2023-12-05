@@ -10,7 +10,7 @@ export interface CreateCoreAppParams extends CreateCorePulumiAppParams {
 
 export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
     const builtInPlugins = [];
-    if (projectAppParams.elasticSearch) {
+    if (projectAppParams.elasticSearch || projectAppParams.openSearch) {
         builtInPlugins.push(generateDdbToEsHandler, checkEsServiceRole);
     }
 
