@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
 
 import { FolderTree } from "~/components";
-import { useDialogsContext } from "~/dialogs/useDialogsContext";
+import { useDialogs } from "~/dialogs/useDialogs";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
@@ -82,7 +82,7 @@ const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
 };
 
 export const useCreateDialog = (): UseCreateDialogResponse => {
-    const context = useDialogsContext();
+    const dialogs = useDialogs();
     const { createFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
@@ -101,7 +101,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
     const showDialog = (params?: ShowDialogParams) => {
         const { currentParentId = null } = params ?? {};
 
-        context.showDialog({
+        dialogs.showDialog({
             title: "Create a new folder",
             message: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",

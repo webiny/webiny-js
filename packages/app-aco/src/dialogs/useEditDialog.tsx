@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 import { FolderTree } from "~/components";
 import { ROOT_FOLDER } from "~/constants";
-import { useDialogsContext } from "~/dialogs/useDialogsContext";
+import { useDialogs } from "~/dialogs/useDialogs";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { FolderItem } from "~/types";
@@ -71,7 +71,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
 };
 
 export const useEditDialog = (): UseEditDialogResponse => {
-    const context = useDialogsContext();
+    const dialog = useDialogs();
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
@@ -93,7 +93,7 @@ export const useEditDialog = (): UseEditDialogResponse => {
     }, []);
 
     const showDialog = ({ folder }: ShowDialogParams) => {
-        context.showDialog({
+        dialog.showDialog({
             title: "Edit folder",
             message: <FormComponent folder={folder} />,
             acceptLabel: "Edit folder",

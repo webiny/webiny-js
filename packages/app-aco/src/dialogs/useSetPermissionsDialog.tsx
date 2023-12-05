@@ -8,7 +8,7 @@ import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMu
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
 import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql";
 
-import { useDialogsContext } from "~/dialogs/useDialogsContext";
+import { useDialogs } from "~/dialogs/useDialogs";
 import { useFolders } from "~/hooks";
 import { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 
@@ -98,7 +98,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
 };
 
 export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
-    const context = useDialogsContext();
+    const dialogs = useDialogs();
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
@@ -114,7 +114,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     }, []);
 
     const showDialog = ({ folder }: ShowDialogParams) => {
-        context.showDialog({
+        dialogs.showDialog({
             title: `Manage permissions - ${folder.title}`,
             message: <FormComponent folder={folder} />,
             acceptLabel: "Save",
