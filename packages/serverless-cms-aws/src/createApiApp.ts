@@ -21,7 +21,7 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
         executeDataMigrations
     ];
 
-    if (projectAppParams.elasticSearch) {
+    if (projectAppParams.elasticSearch || projectAppParams.openSearch) {
         builtInPlugins.push(generateDdbEsHandlers);
     } else {
         builtInPlugins.push(generateDdbHandlers);
