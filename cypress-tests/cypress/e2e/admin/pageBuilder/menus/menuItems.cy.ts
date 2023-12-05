@@ -166,6 +166,7 @@ context("Page Builder - Menu Items", () => {
             cy.findByText("Page").click();
         });
         cy.findByTestId("pb.menu.new.pageitem.page").type(pageNameNew);
+        cy.wait(500);
         cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNew}`).contains(pageNameNew).should("exist");
@@ -173,10 +174,12 @@ context("Page Builder - Menu Items", () => {
         // Edit folder menu item and assert the changes have been made.
         cy.findByTestId("pb-edit-icon-button").click();
         cy.findByTestId("pb.menu.new.pageitem.page").clear();
-        cy.findByTestId("pb.menu.new.pageitem.page").type(pageNameNewEdit);
-        cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
         cy.findByTestId("pb.menu.new.pageitem.title").clear();
-        cy.findByTestId("pb.menu.new.pageitem.title").type(pageNameNewEdit);
+        cy.findByTestId("pb.menu.new.pageitem.page").clear().type(pageNameNewEdit);
+        cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
+
+        cy.wait(1000);
+        //cy.findByTestId("pb.menu.new.pageitem.title").type(pageNameNewEdit);
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`)
             .contains(pageNameNewEdit)
