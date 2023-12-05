@@ -30,15 +30,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         const columnName = model.titleFieldId || "id";
 
         return table.columns.reduce((obj, item) => {
-            const {
-                name: defaultName,
-                cell,
-                header,
-                size,
-                enableSorting,
-                enableResizing,
-                className
-            } = item;
+            const { name: defaultName, cell, header, size, sortable, resizable, className } = item;
 
             const name = defaultName === "name" ? columnName : defaultName;
             const cellRenderer = (item: TableItem) => (
@@ -47,8 +39,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
             obj[name as keyof Columns<TableItem>] = {
                 header,
-                enableSorting,
-                enableResizing,
+                enableSorting: sortable,
+                enableResizing: resizable,
                 size,
                 className,
                 ...(cell && { cell: cellRenderer })

@@ -35,7 +35,7 @@ export const FileManagerRendererModule = () => {
                     name={"name"}
                     header={"Name"}
                     cell={<CellName />}
-                    enableSorting={true}
+                    sortable={true}
                     size={400}
                 />
                 <Browser.Table.Column name={"type"} header={"Type"} cell={<CellType />} />
@@ -43,14 +43,14 @@ export const FileManagerRendererModule = () => {
                     name={"size"}
                     header={"Size"}
                     cell={<CellSize />}
-                    enableSorting={true}
+                    sortable={true}
                 />
                 <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
                 <Browser.Table.Column
                     name={"savedOn"}
                     header={"Modified"}
                     cell={<CellModified />}
-                    enableSorting={true}
+                    sortable={true}
                 />
                 <Browser.Table.Column
                     name={"actions"}
@@ -58,7 +58,7 @@ export const FileManagerRendererModule = () => {
                     cell={<CellActions />}
                     size={60}
                     className={"rmwc-data-table__cell--align-end"}
-                    enableResizing={false}
+                    resizable={false}
                 />
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />

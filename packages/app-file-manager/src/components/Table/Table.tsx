@@ -60,7 +60,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
     const columns: Columns<TableItem> = useMemo(() => {
         return table.columns.reduce((obj, item) => {
-            const { name, cell, header, size, enableSorting, enableResizing, className } = item;
+            const { name, cell, header, size, sortable, resizable, className } = item;
 
             const cellRenderer = (item: TableItem) => (
                 <TableCellProvider item={item}>{cell}</TableCellProvider>
@@ -68,8 +68,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
             obj[name as keyof Columns<TableItem>] = {
                 header,
-                enableSorting,
-                enableResizing,
+                enableSorting: sortable,
+                enableResizing: resizable,
                 size,
                 className,
                 ...(cell && { cell: cellRenderer })

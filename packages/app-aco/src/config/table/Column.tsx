@@ -3,39 +3,39 @@ import { Property, useIdGenerator } from "@webiny/react-properties";
 import { FolderTableItem, BaseTableItem } from "~/types";
 
 export interface ColumnConfig {
-    name: string;
-    header: string | ReactElement;
     cell: string | ReactElement;
-    enableSorting: boolean;
-    enableResizing: boolean;
-    size: number;
     className: string;
+    header: string | ReactElement;
+    name: string;
+    resizable: boolean;
+    size: number;
+    sortable: boolean;
 }
 
 export interface ColumnProps {
-    name: string;
-    header?: string | ReactElement;
-    cell?: string | ReactElement;
-    enableSorting?: boolean;
-    enableResizing?: boolean;
-    size?: number;
-    className?: string;
-    remove?: boolean;
-    before?: string;
     after?: string;
+    before?: string;
+    cell?: string | ReactElement;
+    className?: string;
+    header?: string | ReactElement;
+    name: string;
+    remove?: boolean;
+    resizable?: boolean;
+    size?: number;
+    sortable?: boolean;
 }
 
 const BaseColumn: React.FC<ColumnProps> = ({
-    name,
     after = undefined,
     before = undefined,
-    remove = false,
     cell,
+    className = undefined,
     header = undefined,
-    enableSorting = false,
-    enableResizing = true,
+    name,
+    remove = false,
+    resizable = true,
     size = 200,
-    className = undefined
+    sortable = false
 }) => {
     const getId = useIdGenerator("tableColumn");
 
@@ -53,21 +53,13 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
+                <Property id={getId(name, "sortable")} name={"sortable"} value={sortable} />
+                <Property id={getId(name, "resizable")} name={"resizable"} value={resizable} />
+                <Property id={getId(name, "size")} name={"size"} value={size} />
                 {header ? (
                     <Property id={getId(name, "header")} name={"header"} value={header} />
                 ) : null}
                 {cell ? <Property id={getId(name, "element")} name={"cell"} value={cell} /> : null}
-                <Property
-                    id={getId(name, "enableSorting")}
-                    name={"enableSorting"}
-                    value={enableSorting}
-                />
-                <Property
-                    id={getId(name, "enableResizing")}
-                    name={"enableResizing"}
-                    value={enableResizing}
-                />
-                <Property id={getId(name, "size")} name={"size"} value={size} />
                 {className ? (
                     <Property id={getId(name, "className")} name={"className"} value={className} />
                 ) : null}

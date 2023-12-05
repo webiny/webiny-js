@@ -41,7 +41,7 @@ export const ContentEntriesModule: React.FC = () => {
                     name={"name"}
                     header={"Name"}
                     cell={<CellName />}
-                    enableSorting={true}
+                    sortable={true}
                     size={400}
                     className={"cms-aco-list-title"}
                 />
@@ -55,7 +55,7 @@ export const ContentEntriesModule: React.FC = () => {
                     name={"savedOn"}
                     header={"Modified"}
                     cell={<CellModified />}
-                    enableSorting={true}
+                    sortable={true}
                     className={"cms-aco-list-savedOn"}
                 />
                 <Browser.Table.Column
@@ -69,7 +69,7 @@ export const ContentEntriesModule: React.FC = () => {
                     header={" "}
                     cell={<CellActions />}
                     size={60}
-                    enableResizing={false}
+                    resizable={false}
                     className={"rmwc-data-table__cell--align-end cms-aco-list-actions"}
                 />
             </ContentEntryListConfig>

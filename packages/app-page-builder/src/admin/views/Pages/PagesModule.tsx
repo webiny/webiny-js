@@ -35,14 +35,14 @@ export const PagesModule: React.FC = () => {
                 header={"Name"}
                 cell={<CellName />}
                 size={400}
-                enableSorting={true}
+                sortable={true}
             />
             <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
             <Browser.Table.Column
                 name={"savedOn"}
                 header={"Modified"}
                 cell={<CellModified />}
-                enableSorting={true}
+                sortable={true}
             />
             <Browser.Table.Column name={"status"} header={"Status"} cell={<CellStatus />} />
             <Browser.Table.Column
@@ -51,7 +51,7 @@ export const PagesModule: React.FC = () => {
                 cell={<CellActions />}
                 size={60}
                 className={"rmwc-data-table__cell--align-end"}
-                enableResizing={false}
+                resizable={false}
             />
         </PageListConfig>
     );
