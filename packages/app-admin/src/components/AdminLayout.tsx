@@ -5,6 +5,9 @@ interface AdminLayoutProps {
     title?: string;
 }
 
-export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children }) => {
+export const AdminLayout: React.FC<React.PropsWithChildren<AdminLayoutProps>> = ({
+    title,
+    children
+}) => {
     return <Layout title={title}>{children}</Layout>;
 };

@@ -29,7 +29,10 @@ ViewCompositionContext.displayName = "ViewCompositionContext";
 interface ViewCompositionProviderState {
     [key: string]: Record<string, any>;
 }
-const ViewCompositionProvider: React.FC = ({ children }) => {
+interface ViewCompositionProviderProps {
+    children: React.ReactNode;
+}
+const ViewCompositionProvider: React.FC<ViewCompositionProviderProps> = ({ children }) => {
     const [state, setState] = useState<ViewCompositionProviderState>({});
 
     const context = useMemo(

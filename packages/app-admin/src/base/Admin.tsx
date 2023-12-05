@@ -13,10 +13,12 @@ import { ThemeProvider } from "@webiny/app-theme";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
-    children?: React.ReactNode;
 }
 
-export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) => {
+export const Admin: React.FC<React.PropsWithChildren<AdminProps>> = ({
+    children,
+    createApolloClient
+}) => {
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();

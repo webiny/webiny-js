@@ -10,7 +10,10 @@ interface Props {
  * can add more and more Providers which will recompose the entire hierarchy of React Context providers.
  * During this stage, we don't want to render anything.
  */
-export const DebounceRender: React.FC<Props> = ({ wait = 50, children }) => {
+export const DebounceRender: React.FC<React.PropsWithChildren<Props>> = ({
+    wait = 50,
+    children
+}) => {
     const [render, setRender] = useState(wait === 0);
 
     const debouncedRender = useMemo(() => {
