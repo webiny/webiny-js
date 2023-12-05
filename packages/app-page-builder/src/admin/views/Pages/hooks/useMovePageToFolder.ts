@@ -18,7 +18,7 @@ export function useMovePageToFolder({ record }: UseMovePageToFolderParams) {
             message: "Select a new location for this page:",
             loadingLabel: "Moving page...",
             acceptLabel: "Move page",
-            focusedFolderId: record.id, //TODO: check record type in location
+            focusedFolderId: record.location.folderId,
             async onAccept({ folder }) {
                 await moveRecord({
                     id: record.id,
