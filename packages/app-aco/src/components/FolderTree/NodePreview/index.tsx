@@ -4,10 +4,10 @@ import { DragLayerMonitorProps } from "@minoru/react-dnd-treeview";
 import { FolderNode } from "../Node";
 import { Container } from "./styled";
 
-import { DndFolderItem } from "~/types";
+import { DndFolderItemData } from "~/types";
 
 type NodePreviewProps = {
-    monitorProps: DragLayerMonitorProps<DndFolderItem>;
+    monitorProps: DragLayerMonitorProps<DndFolderItemData>;
 };
 
 export const NodePreview: React.VFC<NodePreviewProps> = props => {

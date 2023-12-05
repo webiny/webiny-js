@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { AcoWithConfig } from "@webiny/app-aco";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
 import {
@@ -48,9 +49,11 @@ const Index: React.VFC = () => {
             own={canAccessOnlyOwn()}
         >
             <PageListWithConfig>
-                <PagesListProvider>
-                    <View />
-                </PagesListProvider>
+                <AcoWithConfig>
+                    <PagesListProvider>
+                        <View />
+                    </PagesListProvider>
+                </AcoWithConfig>
             </PageListWithConfig>
         </AcoProvider>
     );
