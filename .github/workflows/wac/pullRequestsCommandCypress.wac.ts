@@ -246,7 +246,6 @@ const createJobs = (dbSetup: string) => {
     };
 };
 
-// Create "Pull requests" workflow.
 export const pullRequestsCommandCypress = createWorkflow({
     name: "Pull Requests Command - Cypress",
     on: "issue_comment",
@@ -285,6 +284,7 @@ export const pullRequestsCommandCypress = createWorkflow({
             ]
         }),
         ...createJobs("ddb"),
-        ...createJobs("ddb-es")
+        ...createJobs("ddb-es"),
+        ...createJobs("ddb-os")
     }
 });
