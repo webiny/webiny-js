@@ -26,7 +26,7 @@ interface MyInput {
 
 class MyTask implements ITaskDefinition<Context, MyInput> {
     public readonly id = "myCustomTask";
-    public readonly name = "A custom task defined via object";
+    public readonly name = "A custom task defined via class";
 
     public fields = [
         {
@@ -46,7 +46,7 @@ class MyTask implements ITaskDefinition<Context, MyInput> {
 }
 
 describe("create task", () => {
-    it("should properly create a task - object", async () => {
+    it("should properly create a task - plain object", async () => {
         const task: ITaskDefinition<Context, MyInput> = {
             id: "myCustomTask",
             name: "A custom task defined via object",
@@ -75,8 +75,13 @@ describe("create task", () => {
             ]
         };
 
+        expect(task.id).toBe("myCustomTask");
+        expect(task.name).toBe("A custom task defined via object");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
         expect(task.run).toBeInstanceOf(Function);
         expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
     });
 
     it("should properly create a task - via method", async () => {
@@ -108,14 +113,24 @@ describe("create task", () => {
             }
         });
 
+        expect(task.id).toBe("myCustomTask");
+        expect(task.name).toBe("A custom task defined via method");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
         expect(task.run).toBeInstanceOf(Function);
         expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
     });
 
-    it("should properly create a task - class", async () => {
+    it("should properly create a task - via class", async () => {
         const task = new MyTask();
 
+        expect(task.id).toBe("myCustomTask");
+        expect(task.name).toBe("A custom task defined via class");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
         expect(task.run).toBeInstanceOf(Function);
         expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
     });
 });

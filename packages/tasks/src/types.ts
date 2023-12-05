@@ -2,21 +2,33 @@ import {
     CmsContext as BaseContext,
     CmsEntryListParams,
     CmsEntryMeta,
+    CmsModel,
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { ITaskError } from "~/manager/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
 
+export interface ITaskDataLog {
+    message: string;
+    createdOn: string;
+    error?: ITaskError;
+}
+
+export enum ITaskDataStatus {
+    PENDING = "pending",
+    RUNNING = "running",
+    FAILED = "failed",
+    SUCCESS = "success"
+}
 export interface ITaskData<T = any> {
     id: string;
     name: string;
-    status: "pending" | "running" | "failed" | "success";
+    status: ITaskDataStatus;
     input: T;
     createdOn: Date;
     savedOn: Date;
     startedOn?: Date;
     finishedOn?: Date;
-    log?: Record<string, any> | null;
+    log?: ITaskDataLog[] | null;
 }
 
 export type IGetTaskResponse<T = any> = ITaskData<T> | null;
@@ -74,10 +86,12 @@ export interface IResponseManagerErrorParams<T = any> {
 }
 
 export interface IResponseManager {
-    from(response: ITaskRunResponse): ITaskRunResponse;
-    done: (params: IResponseManagerDoneParams) => IResponseManagerDone;
-    error: (params: IResponseManagerErrorParams) => IResponseManagerError;
-    continue: <T = unknown>(params: IResponseManagerContinueParams<T>) => IResponseManagerContinue;
+    from(response: ITaskRunResponse): Promise<ITaskRunResponse>;
+    done: (params: IResponseManagerDoneParams) => Promise<IResponseManagerDone>;
+    error: (params: IResponseManagerErrorParams) => Promise<IResponseManagerError>;
+    continue: <T = unknown>(
+        params: IResponseManagerContinueParams<T>
+    ) => Promise<IResponseManagerContinue<T> | IResponseManagerError>;
 }
 
 export interface ITaskRunResponseManagerDoneParams {

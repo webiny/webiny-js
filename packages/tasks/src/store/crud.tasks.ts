@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { Context, ITaskData, ITasksContextObject, IListTaskParams } from "~/types";
+import { Context, IListTaskParams, ITaskData, ITasksContextObject } from "~/types";
 import { WEBINY_TASK_MODEL_ID } from "./model";
 import { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types";
 
@@ -13,16 +13,13 @@ export class TaskCrud implements ITasksContextObject {
     public async getTask(id: string) {
         const entry = await this.context.security.withoutAuthorization(async () => {
             const model = await this.getModel();
-            return (await this.context.cms.getEntryById(
-                model,
-                id
-            )) as unknown as CmsEntry<ITaskData> | null;
+            return await this.context.cms.getEntryById(model, id);
         });
         if (!entry) {
             return null;
         }
 
-        return this.convertToTask(entry);
+        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
     }
 
     public async listTasks(params?: IListTaskParams) {
@@ -40,24 +37,20 @@ export class TaskCrud implements ITasksContextObject {
         const data = this.convertToEntry(task);
         const entry = await this.context.security.withoutAuthorization(async () => {
             const model = await this.getModel();
-            return (await this.context.cms.createEntry(
-                model,
-                data
-            )) as unknown as CmsEntry<ITaskData>;
+            return await this.context.cms.createEntry(model, data);
         });
-        return this.convertToTask(entry);
+        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
     }
     async updateTask(id: string, task: Partial<ITaskData>) {
         const data = this.convertToEntry(task as ITaskData);
         const entry = await this.context.security.withoutAuthorization(async () => {
             const model = await this.getModel();
-            return (await this.context.cms.updateEntry(
-                model,
-                id,
-                data
-            )) as unknown as CmsEntry<ITaskData>;
+            return await this.context.cms.updateEntry(model, id, {
+                ...data,
+                savedOn: data.savedOn || new Date().toISOString()
+            });
         });
-        return this.convertToTask(entry);
+        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
     }
     async deleteTask(id: string) {
         return this.context.security.withoutAuthorization(async () => {

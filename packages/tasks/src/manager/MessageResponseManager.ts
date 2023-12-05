@@ -14,20 +14,20 @@ import {
 import { ResponseManager } from "~/manager/ResponseManager";
 
 export class MessageResponseManager extends ResponseManager {
-    public done(params: IResponseManagerDoneParams): IResponseManagerDone {
+    public async done(params: IResponseManagerDoneParams): Promise<IResponseManagerDone> {
         return new TaskRunDoneResponse(params);
     }
 
-    public continue<T = unknown>(
+    public async continue<T = unknown>(
         params: IResponseManagerContinueParams<T>
-    ): IResponseManagerContinue<T> {
+    ): Promise<IResponseManagerContinue<T>> {
         return new TaskRunContinueResponse<T>({
             id: params.task.id,
             input: params.input
         });
     }
 
-    public error(params: IResponseManagerErrorParams): IResponseManagerError {
+    public async error(params: IResponseManagerErrorParams): Promise<IResponseManagerError> {
         return new TaskRunErrorResponse({
             id: params.task.id,
             error: {

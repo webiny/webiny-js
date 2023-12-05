@@ -7,24 +7,16 @@ import { Context, IResponseManager } from "~/types";
 import { MessageResponseManager } from "~/manager/MessageResponseManager";
 import { TaskControl } from "~/control";
 import { TaskEventValidation } from "./TaskEventValidation";
-// import { createResponseManager } from "~/manager/TaskManagerResponse";
-// import { createTaskControl } from "~/control";
-
-export interface ITaskRunnerParams<C extends Context = Context> {
-    request: Request;
-    reply: Reply;
-    context: C;
-    event: ITaskEvent;
-    lambdaContext: LambdaContext;
-}
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
 };
 
+const DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES = 3;
+
 export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     /**
-     * When DI is introduced, these will be injected.
+     * When DI is introduced, these will get injected.
      *
      * container.bind<Request>("Request").toConstantValue(request);
      * @inject("Request") public readonly request: Request;
@@ -40,21 +32,32 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     private readonly response: IResponseManager;
     private readonly validation: TaskEventValidation;
 
-    public constructor(params: ITaskRunnerParams<C>) {
-        this.request = params.request;
-        this.reply = params.reply;
-        this.context = params.context;
-        this.event = params.event;
-        this.lambdaContext = params.lambdaContext;
-        /**
-         * Instances will be injected at some point.
-         */
-        this.response = new MessageResponseManager();
-        this.validation = new TaskEventValidation();
+    /**
+     * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
+     */
+    public constructor(
+        event: ITaskEvent,
+        lambdaContext: LambdaContext,
+        request: Request,
+        reply: Reply,
+        context: C,
+        response: IResponseManager = new MessageResponseManager(),
+        validation: TaskEventValidation = new TaskEventValidation()
+    ) {
+        this.request = request;
+        this.reply = reply;
+        this.context = context;
+        this.event = event;
+        this.lambdaContext = lambdaContext;
+        this.response = response;
+        this.validation = validation;
     }
 
     public isTimeoutClose() {
-        return this.lambdaContext.getRemainingTimeInMillis() < transformMinutesIntoMilliseconds(5);
+        return (
+            this.lambdaContext.getRemainingTimeInMillis() <
+            transformMinutesIntoMilliseconds(this.getIsTimeoutCloseMinutes())
+        );
     }
 
     public async run() {
@@ -74,11 +77,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             });
         }
 
-        const control = new TaskControl({
-            runner: this,
-            context: this.context,
-            response: this.response
-        });
+        const control = new TaskControl(this, this.response, this.context);
 
         try {
             return await control.run(this.event);
@@ -91,5 +90,10 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
                 error: ex
             });
         }
+    }
+
+    private getIsTimeoutCloseMinutes() {
+        const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
+        return value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
     }
 }

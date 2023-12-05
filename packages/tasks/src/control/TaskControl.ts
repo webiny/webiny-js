@@ -1,7 +1,7 @@
 import { ITaskEvent } from "~/handler/types";
 import { ITaskRunner } from "~/runner/types";
 import { Context, IResponseManager, ITaskData, ITaskDefinition } from "~/types";
-import { ITaskControl, ITaskControlParams } from "./types";
+import { ITaskControl } from "./types";
 import { TaskPlugin } from "~/task/plugin";
 import { TaskRunErrorResponse, TaskRunResponse } from "~/manager/response";
 import { TaskManager } from "~/manager";
@@ -12,10 +12,10 @@ export class TaskControl implements ITaskControl {
     public readonly response: IResponseManager;
     public readonly context: Context;
 
-    public constructor(params: ITaskControlParams) {
-        this.runner = params.runner;
-        this.context = params.context;
-        this.response = params.response;
+    public constructor(runner: ITaskRunner, response: IResponseManager, context: Context) {
+        this.runner = runner;
+        this.context = context;
+        this.response = response;
     }
 
     public async run(event: ITaskEvent) {
@@ -26,20 +26,20 @@ export class TaskControl implements ITaskControl {
             return taskData;
         }
 
-        const databaseResponse = new DatabaseResponseManager(this.response, taskData);
+        const databaseResponse = new DatabaseResponseManager(this.response, taskData, this.context);
 
-        const taskDefinition = this.getTaskDefinition(taskData);
+        const taskDefinition = await this.getTaskDefinition(taskData);
         if (taskDefinition instanceof TaskRunResponse) {
             return databaseResponse.from(taskDefinition);
         }
 
-        const manager = new TaskManager({
-            runner: this.runner,
-            context: this.context,
-            response: databaseResponse,
-            task: taskData,
-            definition: taskDefinition
-        });
+        const manager = new TaskManager(
+            this.runner,
+            this.context,
+            databaseResponse,
+            taskData,
+            taskDefinition
+        );
 
         try {
             return await manager.run();
@@ -97,9 +97,9 @@ export class TaskControl implements ITaskControl {
         }
     }
 
-    private getTaskDefinition(
+    private async getTaskDefinition(
         task: Pick<ITaskData<any>, "id" | "input">
-    ): ITaskDefinition | TaskRunErrorResponse {
+    ): Promise<ITaskDefinition | TaskRunErrorResponse> {
         const plugin = this.runner.context.plugins
             .byType<TaskPlugin>(TaskPlugin.type)
             .find(plugin => {

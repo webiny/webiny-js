@@ -8,6 +8,5 @@ export interface ITaskError {
 }
 
 export interface ITaskManager {
-    isTimeoutClose: () => boolean;
     run: () => Promise<ITaskRunResponse>;
 }

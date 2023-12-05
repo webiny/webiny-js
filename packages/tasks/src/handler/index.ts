@@ -6,7 +6,7 @@ import { APIGatewayProxyResult } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Context } from "~/types";
 import { ITaskEvent } from "~/handler/types";
-import { ITaskRunnerParams, TaskRunner } from "~/runner";
+import { TaskRunner } from "~/runner";
 
 export interface HandlerCallable {
     (event: ITaskEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -34,18 +34,16 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
          */
 
         app.post(url, async (request, reply) => {
-            const params: ITaskRunnerParams = {
+            const handler = new TaskRunner(
+                event,
+                context,
                 request,
                 reply,
                 /**
                  * We can safely cast because we know that the context is of type tasks/Context
                  */
-                context: app.webiny as Context,
-                event,
-                lambdaContext: context
-            };
-
-            const handler = new TaskRunner(params);
+                app.webiny as Context
+            );
 
             app.__webiny_raw_result = await handler.run();
             return reply.send({});

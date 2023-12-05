@@ -11,17 +11,17 @@ import {
 } from "~/types";
 
 export abstract class ResponseManager implements IResponseManager {
-    public abstract done(params: IResponseManagerDoneParams): IResponseManagerDone;
+    public abstract done(params: IResponseManagerDoneParams): Promise<IResponseManagerDone>;
 
     public abstract continue<T = unknown>(
         params: IResponseManagerContinueParams<T>
-    ): IResponseManagerContinue<T>;
+    ): Promise<IResponseManagerContinue<T> | IResponseManagerError>;
 
-    public abstract error(params: IResponseManagerErrorParams): IResponseManagerError;
+    public abstract error(params: IResponseManagerErrorParams): Promise<IResponseManagerError>;
 
-    public from(
+    public async from(
         response: IResponseManagerDone | IResponseManagerContinue | IResponseManagerError
-    ): ITaskRunResponse {
+    ): Promise<ITaskRunResponse> {
         switch (response.status) {
             case TaskResponseStatus.DONE:
                 return this.done({

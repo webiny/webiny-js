@@ -32,6 +32,10 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
         return this.task.onDone;
     }
 
+    public get onError() {
+        return this.task.onError;
+    }
+
     public constructor(task: ITaskParams<C, I>) {
         this.task = {
             ...task,
