@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
 
 import { FolderTree } from "~/components";
-import { useDialogsContext } from "~/dialogs/useDialogsContext";
+import { useDialogs } from "~/dialogs/useDialogs";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
@@ -18,15 +18,15 @@ interface ShowDialogParams {
 }
 
 interface UseCreateDialogResponse {
-    showDialog: (params: ShowDialogParams) => void;
+    showDialog: (params?: ShowDialogParams) => void;
 }
 
 interface FormComponentProps {
     currentParentId?: string | null;
 }
 
-const FormComponent = ({ currentParentId }: FormComponentProps) => {
-    const [parentId, setParentId] = useState<string | null>(currentParentId || null);
+const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
+    const [parentId, setParentId] = useState<string | null>(currentParentId);
 
     const generateSlug = (form: FormAPI) => {
         return () => {
@@ -82,7 +82,7 @@ const FormComponent = ({ currentParentId }: FormComponentProps) => {
 };
 
 export const useCreateDialog = (): UseCreateDialogResponse => {
-    const context = useDialogsContext();
+    const dialogs = useDialogs();
     const { createFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
@@ -98,8 +98,10 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
         }
     }, []);
 
-    const showDialog = ({ currentParentId }: ShowDialogParams) => {
-        context.showDialog({
+    const showDialog = (params?: ShowDialogParams) => {
+        const { currentParentId = null } = params ?? {};
+
+        dialogs.showDialog({
             title: "Create a new folder",
             message: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",
