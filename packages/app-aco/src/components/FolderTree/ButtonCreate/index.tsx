@@ -16,7 +16,7 @@ export const CreateButton = (props: CreateButtonProps) => {
     const { showDialog } = useCreateDialog();
 
     return (
-        <Button onClick={() => showDialog({})} disabled={props.disabled}>
+        <Button onClick={() => showDialog()} disabled={props.disabled}>
             <IconContainer>
                 <Icon />
             </IconContainer>

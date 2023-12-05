@@ -18,15 +18,15 @@ interface ShowDialogParams {
 }
 
 interface UseCreateDialogResponse {
-    showDialog: (params: ShowDialogParams) => void;
+    showDialog: (params?: ShowDialogParams) => void;
 }
 
 interface FormComponentProps {
     currentParentId?: string | null;
 }
 
-const FormComponent = ({ currentParentId }: FormComponentProps) => {
-    const [parentId, setParentId] = useState<string | null>(currentParentId || null);
+const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
+    const [parentId, setParentId] = useState<string | null>(currentParentId);
 
     const generateSlug = (form: FormAPI) => {
         return () => {
@@ -98,7 +98,9 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
         }
     }, []);
 
-    const showDialog = ({ currentParentId }: ShowDialogParams) => {
+    const showDialog = (params?: ShowDialogParams) => {
+        const { currentParentId = null } = params ?? {};
+
         context.showDialog({
             title: "Create a new folder",
             message: <FormComponent currentParentId={currentParentId} />,
