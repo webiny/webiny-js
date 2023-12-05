@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import styled from "@emotion/styled";
 
@@ -60,12 +60,13 @@ const IconTab = observer(() => {
     const presenter = useIconPicker();
     const { selectedIcon } = presenter.vm;
 
-    const [color, setColor] = useState(() => {
-        if (isSimpleIcon(selectedIcon)) {
-            return selectedIcon.color;
+    const [color, setColor] = useState("inherit");
+
+    useEffect(() => {
+        if (color === "inherit" && isSimpleIcon(selectedIcon)) {
+            setColor(selectedIcon.color);
         }
-        return "inherit";
-    });
+    }, [selectedIcon]);
 
     const onColorChange = (color: string) => {
         setColor(color);

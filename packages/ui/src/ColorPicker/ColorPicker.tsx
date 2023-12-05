@@ -59,8 +59,27 @@ interface ColorPickerProps extends FormComponentProps {
  * Use ColorPicker component to display a list of choices, once the handler is triggered.
  */
 class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+    colorPickerRef = React.createRef<HTMLDivElement>();
+
     public override state = {
         showColorPicker: false
+    };
+
+    public override componentDidMount() {
+        document.addEventListener("click", this.handleClickOutside);
+    }
+
+    public override componentWillUnmount() {
+        document.removeEventListener("click", this.handleClickOutside);
+    }
+
+    handleClickOutside = (event: MouseEvent) => {
+        if (
+            this.colorPickerRef.current &&
+            !this.colorPickerRef.current.contains(event.target as Node)
+        ) {
+            this.setState({ showColorPicker: false });
+        }
     };
 
     handleClick = () => {
@@ -89,7 +108,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
-            <div className={classNames({ [classes.disable]: disable })}>
+            <div ref={this.colorPickerRef} className={classNames({ [classes.disable]: disable })}>
                 {label && (
                     <div
                         className={classNames(
