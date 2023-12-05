@@ -10,7 +10,7 @@ import {
 import { TaskResponseManager } from "~/manager/TaskResponseManager";
 
 export interface ITaskManagerParams<T> {
-    runner: ITaskRunner;
+    runner: Pick<ITaskRunner, "isTimeoutClose">;
     context: Context;
     response: IResponseManager;
     task: ITaskData<T>;

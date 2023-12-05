@@ -6,6 +6,7 @@
     { "path": "../api-headless-cms" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
     { "path": "../ioc" },
     { "path": "../plugins" },
     { "path": "../utils" }
@@ -25,6 +26,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/ioc/*": ["../ioc/src/*"],
       "@webiny/ioc": ["../ioc/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

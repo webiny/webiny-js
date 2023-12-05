@@ -1,6 +1,23 @@
 import { Context } from "./types";
-import { ITaskDefinition, ITaskRunParams } from "~/types";
-import { createTask } from "~/task/definition";
+import { ITaskDefinition, ITaskField, ITaskRunParams } from "~/types";
+import { createTask, createTaskField } from "~/task/definition";
+
+const taskField: ITaskField = {
+    fieldId: "url",
+    type: "text",
+    label: "Url",
+    helpText: "Enter a URL",
+    validation: [
+        {
+            name: "required",
+            message: "Url is required."
+        },
+        {
+            name: "url",
+            message: "Enter a valid URL."
+        }
+    ]
+};
 
 interface MyInput {
     test: boolean;
@@ -10,8 +27,15 @@ interface MyInput {
 class MyTask implements ITaskDefinition<Context, MyInput> {
     public readonly id = "myCustomTask";
     public readonly name = "A custom task defined via object";
-    public async run(params: ITaskRunParams<Context, MyInput>) {
-        return params.response.done();
+
+    public fields = [
+        {
+            ...taskField
+        }
+    ];
+
+    public async run({ response }: ITaskRunParams<Context, MyInput>) {
+        return response.done();
     }
     public async onDone() {
         return;
@@ -43,7 +67,12 @@ describe("create task", () => {
             },
             onError: async () => {
                 return;
-            }
+            },
+            fields: [
+                createTaskField({
+                    ...taskField
+                })
+            ]
         };
 
         expect(task.run).toBeInstanceOf(Function);
@@ -71,6 +100,11 @@ describe("create task", () => {
             },
             onError: async () => {
                 return;
+            },
+            fields: task => {
+                task.addField({
+                    ...taskField
+                });
             }
         });
 

@@ -1,7 +1,12 @@
-import { Context, ITaskDefinition, TaskField } from "~/types";
+import { Context, ITaskDefinition, ITaskField } from "~/types";
 
 interface TaskPluginSetFieldsCallback {
-    (fields: TaskField[]): TaskField[] | undefined;
+    (fields: ITaskField[]): ITaskField[] | undefined;
+}
+
+interface ITaskParams<C extends Context = Context, I = any>
+    extends Omit<ITaskDefinition<C, I>, "fields"> {
+    fields?: (task: Pick<Task<C, I>, "addField" | "setFields">) => void;
 }
 
 class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I> {
@@ -27,12 +32,14 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
         return this.task.onDone;
     }
 
-    private constructor(task: ITaskDefinition<C, I>) {
-        this.task = task;
-    }
-
-    public static create<C extends Context = Context, I = any>(task: ITaskDefinition<C, I>) {
-        return new Task<C, I>(task);
+    public constructor(task: ITaskParams<C, I>) {
+        this.task = {
+            ...task,
+            fields: []
+        };
+        if (typeof task.fields === "function") {
+            task.fields(this);
+        }
     }
 
     public getTask() {
@@ -44,17 +51,17 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
         this.task.fields = cb(fields);
     }
 
-    public addField(field: TaskField) {
+    public addField(field: ITaskField) {
         this.task.fields = (this.task.fields || []).concat([field]);
     }
 }
 
 export type { Task };
 
-export const createTask = <C extends Context = Context, I = any>(params: ITaskDefinition<C, I>) => {
-    return Task.create<C, I>(params);
+export const createTask = <C extends Context = Context, I = any>(params: ITaskParams<C, I>) => {
+    return new Task(params);
 };
 
-export const createTaskField = (params: TaskField) => {
+export const createTaskField = (params: ITaskField) => {
     return params;
 };

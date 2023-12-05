@@ -1,22 +1,51 @@
-import { Context as BaseContext } from "@webiny/handler-aws/types";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext as BaseContext,
+    CmsEntryListParams,
+    CmsEntryMeta,
+    CmsModelField
+} from "@webiny/api-headless-cms/types";
 import { ITaskError } from "~/manager/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
-export interface ITaskData<T> {
+export interface ITaskData<T = any> {
     id: string;
+    name: string;
+    status: "pending" | "running" | "failed" | "success";
     input: T;
+    createdOn: Date;
+    savedOn: Date;
+    startedOn?: Date;
+    finishedOn?: Date;
+    log?: Record<string, any> | null;
 }
 
-export interface TasksContextObject {
-    getTask: <T = any>(id: string) => Promise<ITaskData<T>>;
-    listTasks: <T = any>() => Promise<ITaskData<T>[]>;
-    createTask: <T = any>(task: ITaskData<T>) => Promise<ITaskData<T>>;
-    updateTask: <T = any>(id: string, data: Partial<ITaskData<T>>) => Promise<ITaskData<T>>;
-    deleteTask: <T = any>(id: string) => Promise<ITaskData<T>>;
+export type IGetTaskResponse<T = any> = ITaskData<T> | null;
+
+export interface IListTasksResponse<T = any> {
+    items: ITaskData<T>[];
+    meta: CmsEntryMeta;
+}
+
+export type ICreateTaskResponse<T = any> = ITaskData<T>;
+export type IUpdateTaskResponse<T = any> = ITaskData<T>;
+export type IDeleteTaskResponse = boolean;
+
+export type IListTaskParams = CmsEntryListParams;
+
+export interface ITasksContextObject {
+    getModel: () => Promise<CmsModel>;
+    getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T>>;
+    listTasks: <T = any>(params?: IListTaskParams) => Promise<IListTasksResponse<T>>;
+    createTask: <T = any>(task: ITaskData<T>) => Promise<ICreateTaskResponse<T>>;
+    updateTask: <T = any>(
+        id: string,
+        data: Partial<ITaskData<T>>
+    ) => Promise<IUpdateTaskResponse<T>>;
+    deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
 }
 
 export interface Context extends BaseContext {
-    tasks: TasksContextObject;
+    tasks: ITasksContextObject;
 }
 
 export interface ITaskRunErrorResponseError {
@@ -137,12 +166,14 @@ export interface IResponseManagerDone<T = any> extends ITaskRunResponse<T> {
     error?: never;
 }
 
-export type TaskField = Pick<
+export type ITaskField = Pick<
     CmsModelField,
     | "fieldId"
     | "type"
     | "label"
     | "renderer"
+    | "helpText"
+    | "placeholderText"
     | "predefinedValues"
     | "validation"
     | "listValidation"
@@ -183,5 +214,5 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
      * Custom input fields and layout for the task input.
      */
-    fields?: TaskField[];
+    fields?: ITaskField[];
 }

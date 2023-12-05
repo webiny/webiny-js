@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 import { createRegisterTaskPlugin, TaskPlugin } from "~/task/plugin";
 import { createTaskField } from "~/task/definition";
-import { TaskField } from "~/types";
+import { ITaskField } from "~/types";
 
 describe("create task plugin", () => {
     it("should create a task plugin", async () => {
@@ -11,16 +11,16 @@ describe("create task plugin", () => {
             id: "myCustomTask",
             name: "A custom task defined via method",
             description: "A custom task description defined via method",
-            run: async ({ manager, input }) => {
+            run: async ({ response, isTimeoutClose, input }) => {
                 try {
-                    if (manager.isTimeoutClose()) {
-                        return manager.continue({
+                    if (isTimeoutClose()) {
+                        return response.continue({
                             input
                         });
                     }
-                    return manager.done();
+                    return response.done();
                 } catch (ex) {
-                    return manager.error(ex);
+                    return response.error(ex);
                 }
             },
             onDone: async () => {
@@ -55,7 +55,7 @@ describe("create task plugin", () => {
         expect(result.getTask().onDone).toBeInstanceOf(Function);
         expect(result.getTask().onError).toBeInstanceOf(Function);
         expect(result.getTask().fields).toHaveLength(1);
-        const field = result.getTask().fields?.[0] as TaskField;
+        const field = result.getTask().fields?.[0] as ITaskField;
         expect(field).toBeDefined();
         expect(field).toBeInstanceOf(Object);
         expect(field.fieldId).toEqual("url");

@@ -6,10 +6,8 @@ import {
     IResponseManagerDoneParams,
     IResponseManagerError,
     IResponseManagerErrorParams,
-    ITaskData,
-    TaskResponseStatus
+    ITaskData
 } from "~/types";
-import { TaskRunResponse } from "~/manager/response";
 import { ResponseManager } from "~/manager/ResponseManager";
 
 export class DatabaseResponseManager extends ResponseManager {
