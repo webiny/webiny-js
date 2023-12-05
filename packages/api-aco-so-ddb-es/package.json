@@ -9,7 +9,10 @@
     "dynamodb",
     "elasticsearch",
     "ddb-es",
-    "aco:ddb-es"
+    "aco:ddb-es",
+    "opensearch",
+    "ddb-os",
+    "aco:ddb-os"
   ],
   "repository": {
     "type": "git",
