@@ -183,7 +183,7 @@ const defineColumns = <T,>(
                     if (cell && typeof cell === "function") {
                         return cell(info.row.original);
                     } else {
-                        return info.getValue();
+                        return info.getValue() || null;
                     }
                 },
                 enableSorting,
