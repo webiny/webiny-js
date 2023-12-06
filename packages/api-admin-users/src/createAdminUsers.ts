@@ -1,4 +1,3 @@
-import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -293,7 +292,7 @@ export const createAdminUsers = ({
                 throw new NotFoundError(`User "${id}" was not found!`);
             }
 
-            const updateData = cloneDeep(data);
+            const updateData = structuredClone(data);
 
             try {
                 await onUserBeforeUpdate.publish({
