@@ -54,36 +54,33 @@ describe("Content entries - Entry Meta Fields", () => {
         });
 
         // 2. After the entry is updated, "modified" meta fields should be populated.
-        const updatedRevision = await managerIdentityA.updateCategory({
+        ({ data: revision1 } = await managerIdentityA.updateCategory({
             revision: revision1.id,
             data: { title: "Fruits 2" }
-        });
+        }));
 
-        expect(updatedRevision).toMatchObject({
-            data: {
-                // Deprecated fields.
-                createdBy: identityA,
-                createdOn: revision1.createdOn,
-                modifiedBy: identityA,
-                ownedBy: identityA,
-                savedOn: expectIsoDate,
+        expect(revision1).toMatchObject({
+            // Deprecated fields.
+            createdBy: identityA,
+            createdOn: revision1.createdOn,
+            modifiedBy: identityA,
+            ownedBy: identityA,
+            savedOn: expectIsoDate,
 
-                // New fields.
-                entryCreatedBy: identityA,
-                entryCreatedOn: revision1.entryCreatedOn,
-                entryModifiedBy: identityA,
-                entryModifiedOn: expectIsoDate,
-                entrySavedBy: identityA,
-                entrySavedOn: expectIsoDate,
+            // New fields.
+            entryCreatedBy: identityA,
+            entryCreatedOn: revision1.entryCreatedOn,
+            entryModifiedBy: identityA,
+            entryModifiedOn: expectIsoDate,
+            entrySavedBy: identityA,
+            entrySavedOn: expectIsoDate,
 
-                revisionCreatedBy: identityA,
-                revisionCreatedOn: revision1.createdOn,
-                revisionModifiedBy: identityA,
-                revisionModifiedOn: expectIsoDate,
-                revisionSavedBy: identityA,
-                revisionSavedOn: expectIsoDate
-            },
-            error: null
+            revisionCreatedBy: identityA,
+            revisionCreatedOn: revision1.createdOn,
+            revisionModifiedBy: identityA,
+            revisionModifiedOn: expectIsoDate,
+            revisionSavedBy: identityA,
+            revisionSavedOn: expectIsoDate
         });
 
         // 3. A new revision should have updated revision-level meta
