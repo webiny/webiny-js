@@ -597,7 +597,10 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
+        | {
+              resolver: GraphQLFieldResolver | null;
+              typeResolvers: Resolvers<CmsContext>;
+          }
         | false;
 }
 
@@ -2454,9 +2457,13 @@ export interface UpdateCmsEntryInput {
     revisionCreatedOn?: Date | string | null;
     revisionSavedOn?: Date | string | null;
     revisionModifiedOn?: Date | string | null;
+    revisionFirstPublishedOn?: Date | string | null;
+    revisionLastPublishedOn?: Date | string | null;
     revisionCreatedBy?: CmsIdentity | null;
     revisionModifiedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity | null;
+    revisionFirstPublishedBy?: CmsIdentity | null;
+    revisionLastPublishedBy?: CmsIdentity | null;
 
     /**
      * Entry-level meta fields. 👇
@@ -2464,9 +2471,13 @@ export interface UpdateCmsEntryInput {
     entryCreatedOn?: Date | string | null;
     entrySavedOn?: Date | string | null;
     entryModifiedOn?: Date | string | null;
+    entryFirstPublishedOn?: Date | string | null;
+    entryLastPublishedOn?: Date | string | null;
     entryCreatedBy?: CmsIdentity | null;
     entryModifiedBy?: CmsIdentity | null;
     entrySavedBy?: CmsIdentity | null;
+    entryFirstPublishedBy?: CmsIdentity | null;
+    entryLastPublishedBy?: CmsIdentity | null;
 
     wbyAco_location?: {
         folderId?: string | null;
@@ -2474,6 +2485,34 @@ export interface UpdateCmsEntryInput {
 
     [key: string]: any;
 }
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export type PublishCmsEntryInput = Pick<
+    UpdateCmsEntryInput,
+    | "revisionCreatedOn"
+    | "revisionSavedOn"
+    | "revisionModifiedOn"
+    | "revisionFirstPublishedOn"
+    | "revisionLastPublishedOn"
+    | "revisionCreatedBy"
+    | "revisionModifiedBy"
+    | "revisionSavedBy"
+    | "revisionFirstPublishedBy"
+    | "revisionLastPublishedBy"
+    | "entryCreatedOn"
+    | "entrySavedOn"
+    | "entryModifiedOn"
+    | "entryFirstPublishedOn"
+    | "entryLastPublishedOn"
+    | "entryCreatedBy"
+    | "entryModifiedBy"
+    | "entrySavedBy"
+    | "entryFirstPublishedBy"
+    | "entryLastPublishedBy"
+>;
 
 export interface UpdateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -2521,7 +2560,9 @@ export interface DeleteMultipleEntriesParams {
     entries: string[];
 }
 
-export type DeleteMultipleEntriesResponse = { id: string }[];
+export type DeleteMultipleEntriesResponse = {
+    id: string;
+}[];
 
 export interface CmsEntryValidateResponse {
     [key: string]: any;
@@ -2640,6 +2681,7 @@ export interface CmsEntryContext {
     publishEntry: (
         model: CmsModel,
         id: string,
+        input: PublishCmsEntryInput,
         options?: CmsPublishEntryOptions
     ) => Promise<CmsEntry>;
     /**
