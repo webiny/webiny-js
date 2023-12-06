@@ -39,7 +39,7 @@ export interface EmptyViewProps {
     title: string;
     action: ReactElement | null;
 }
-const EmptyView: React.FC<EmptyViewProps> = ({ icon = <TouchIcon />, title, action }) => {
+const EmptyView = ({ icon = <TouchIcon />, title, action }: EmptyViewProps) => {
     return (
         <EmptyViewWrapper>
             <div className={"media"}>{icon}</div>

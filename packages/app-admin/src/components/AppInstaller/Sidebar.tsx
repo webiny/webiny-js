@@ -67,7 +67,7 @@ interface InstallationsProps {
     installer: Installer;
     showLogin: boolean;
 }
-const Installations: React.FC<InstallationsProps> = props => {
+const Installations = (props: InstallationsProps) => {
     const { title, allInstallers, installer, showLogin } = props;
     const renderList = () => {
         const loginItem = (
@@ -122,7 +122,7 @@ interface SidebarProps {
     showLogin: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ allInstallers, installer, showLogin }) => {
+const Sidebar = ({ allInstallers, installer, showLogin }: SidebarProps) => {
     const installations = allInstallers.filter(installer => installer.type === "install");
 
     return (
