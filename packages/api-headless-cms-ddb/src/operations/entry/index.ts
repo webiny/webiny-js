@@ -367,10 +367,10 @@ export const createEntriesStorageOperations = (
                         ...latestStorageEntry,
                         ...updatedEntryLevelMetaFields,
                         PK: partitionKey,
-                        SK: createRevisionSortKey(storageEntry),
-                        TYPE: createLatestType(),
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createType(),
                         GSI1_PK: createGSIPartitionKey(model, "A"),
-                        GSI1_SK: createGSISortKey(storageEntry)
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
                     })
                 );
             }

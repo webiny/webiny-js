@@ -7,7 +7,7 @@ const expectIsoDate = expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2
 const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
 
-describe("Content entries - xOn Meta Fields", () => {
+describe("Content entries - Entry Meta Fields", () => {
     const managerIdentityA = useCategoryManageHandlerV2({
         path: "manage/en-US",
         identity: identityA
@@ -88,58 +88,55 @@ describe("Content entries - xOn Meta Fields", () => {
 
         // 3. A new revision should have updated revision-level meta
         // fields, while entry-level meta fields should remain the same.
-        const revision2 = await managerIdentityA.createCategoryFrom({
+        const { data: revision2 } = await managerIdentityA.createCategoryFrom({
             revision: revision1.id
         });
 
         expect(revision2).toMatchObject({
-            data: {
-                createdOn: expectIsoDate,
-                createdBy: identityA,
-                modifiedBy: null,
-                ownedBy: identityA,
-                savedOn: expectIsoDate,
-                revisionCreatedOn: expectIsoDate,
-                revisionSavedOn: expectIsoDate,
+            createdOn: expectIsoDate,
+            createdBy: identityA,
+            modifiedBy: null,
+            ownedBy: identityA,
+            savedOn: expectIsoDate,
+            revisionCreatedOn: expectIsoDate,
+            revisionSavedOn: expectIsoDate,
 
-                // Note that these are null, since, on a revision-level, an update has not been made yet.
-                revisionModifiedOn: null,
+            // Note that these are null, since, on a revision-level, an update has not been made yet.
+            revisionModifiedOn: null,
 
-                revisionCreatedBy: identityA,
-                revisionSavedBy: identityA,
+            revisionCreatedBy: identityA,
+            revisionSavedBy: identityA,
 
-                // Note that these are null, since, on a revision-level, an update has not been made yet.
-                revisionModifiedBy: null,
+            // Note that these are null, since, on a revision-level, an update has not been made yet.
+            revisionModifiedBy: null,
 
-                entryCreatedOn: expectIsoDate,
-                entrySavedOn: expectIsoDate,
+            entryCreatedOn: expectIsoDate,
+            entrySavedOn: expectIsoDate,
 
-                // Note that these are not null, since, on an entry-level, an update has been made.
-                entryModifiedOn: expectIsoDate,
+            // Note that these are not null, since, on an entry-level, an update has been made.
+            entryModifiedOn: expectIsoDate,
 
-                entryCreatedBy: identityA,
-                entrySavedBy: identityA,
+            entryCreatedBy: identityA,
+            entrySavedBy: identityA,
 
-                // Note that these are not null, since, on an entry-level, an update has been made.
-                entryModifiedBy: identityA
-            },
-            error: null
+            // Note that these are not null, since, on an entry-level, an update has been made.
+            entryModifiedBy: identityA
         });
 
         // Refresh.
         ({ data: revision1 } = await managerIdentityA.getCategory({ revision: revision1.id }));
 
         // Revision-level meta fields should be updated.
-        expect(revision2.data.revisionCreatedOn > revision1.data.revisionCreatedOn).toBe(true);
+        expect(revision2.revisionCreatedOn > revision1.revisionCreatedOn).toBe(true);
 
         // Entry-level `createdOn` meta field should remain the same.
-        expect(revision2.data.entryCreatedOn).toBe(revision1.data.entryCreatedOn);
+        expect(revision2.entryCreatedOn).toBe(revision1.entryCreatedOn);
 
         // Entry-level `savedOn` and `modifiedOn` meta fields should change.
         // It is true that previous revision's entry-level fields are not updated, but that's
         // fine. When updating entry-level meta fields, we only care about latest revisions.
-        expect(revision2.data.entrySavedOn > revision1.data.entrySavedOn).toBe(true);
-        expect(revision2.data.entryModifiedOn > revision1.data.entryModifiedOn).toBe(true);
+        expect(revision2.entrySavedOn > revision1.entrySavedOn).toBe(true);
+        expect(revision2.entryModifiedOn > revision1.entryModifiedOn).toBe(true);
     });
 
     test("updating a previous revision should update entry-level meta fields", async () => {

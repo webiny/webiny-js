@@ -18,7 +18,6 @@ import {
     CmsEntryMeta,
     CmsEntryStatus,
     CmsEntryValues,
-    CmsIdentity,
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
@@ -77,7 +76,7 @@ import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { ENTRY_META_FIELDS, pickEntryMetaFields, ROOT_FOLDER } from "~/constants";
+import { pickEntryMetaFields, ROOT_FOLDER } from "~/constants";
 import { getDate } from "~/utils/date";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
@@ -468,7 +467,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return filterAsync(entries, async entry => {
                 return entriesPermissions.ensure(
                     {
-                        owns: entry.createdBy
+                        owns: entry.revisionCreatedBy
                     },
                     {
                         throw: false
@@ -505,7 +504,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         return filterAsync(entries, async entry => {
-            return entriesPermissions.ensure({ owns: entry.createdBy }, { throw: false });
+            return entriesPermissions.ensure({ owns: entry.revisionCreatedBy }, { throw: false });
         });
     };
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
@@ -519,7 +518,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         return filterAsync(entries, async entry => {
-            return entriesPermissions.ensure({ owns: entry.createdBy }, { throw: false });
+            return entriesPermissions.ensure({ owns: entry.revisionCreatedBy }, { throw: false });
         });
     };
     const getEntry: CmsEntryContext["getEntry"] = async (model, params) => {
@@ -579,7 +578,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.ownedBy = getSecurityIdentity().id;
+            where.entryCreatedBy = getSecurityIdentity().id;
         }
 
         /**
@@ -860,7 +859,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             validateEntries: false
         });
 
-        await entriesPermissions.ensure({ owns: originalEntry.createdBy });
+        await entriesPermissions.ensure({ owns: originalEntry.entryCreatedBy });
 
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
@@ -1025,7 +1024,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             skipValidators: options?.skipValidators
         });
 
-        await entriesPermissions.ensure({ owns: originalEntry.createdBy });
+        await entriesPermissions.ensure({ owns: originalEntry.revisionCreatedBy });
 
         const initialValues = {
             /**
@@ -1101,6 +1100,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             /**
              * Entry-level meta fields. 👇
+             * If required, within storage operations, these entry-level updates
+             * will be propagated to the latest revision too.
              */
             entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
             entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
@@ -1311,29 +1312,26 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Revision-level meta fields. 👇
              */
-            revisionSavedOn: getDate(originalEntry.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(originalEntry.revisionModifiedOn, currentDateTime),
-            revisionSavedBy: getIdentity(originalEntry.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(originalEntry.revisionModifiedBy, currentIdentity),
-            revisionFirstPublishedOn: getDate(
-                originalEntry.revisionFirstPublishedOn,
-                currentDateTime
-            ),
-            revisionLastPublishedOn: getDate(
-                originalEntry.revisionLastPublishedOn,
-                currentDateTime
-            ),
+            revisionSavedOn: currentDateTime,
+            revisionModifiedOn: currentDateTime,
+            revisionSavedBy: currentIdentity,
+            revisionModifiedBy: currentIdentity,
+            revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
+            revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
+            revisionLastPublishedOn: currentDateTime,
+            revisionLastPublishedBy: currentIdentity,
 
             /**
              * Entry-level meta fields. 👇
              */
-
-            entrySavedOn: getDate(originalEntry.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(originalEntry.entryModifiedOn, currentDateTime),
-            entrySavedBy: getIdentity(originalEntry.entrySavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(originalEntry.entryModifiedBy, currentIdentity),
-            entryFirstPublishedOn: getDate(originalEntry.entryFirstPublishedOn, currentDateTime),
-            entryLastPublishedOn: getDate(originalEntry.entryLastPublishedOn, currentDateTime),
+            entrySavedOn: currentDateTime,
+            entryModifiedOn: currentDateTime,
+            entrySavedBy: currentIdentity,
+            entryModifiedBy: currentIdentity,
+            entryFirstPublishedOn: originalEntry.entryFirstPublishedOn || currentDateTime,
+            entryFirstPublishedBy: originalEntry.entryFirstPublishedBy || currentIdentity,
+            entryLastPublishedOn: currentDateTime,
+            entryLastPublishedBy: currentIdentity,
 
             webinyVersion: context.WEBINY_VERSION,
             values
@@ -1454,9 +1452,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             storageEntryToSetAsLatest = storagePreviousEntry;
 
             /**
-             * Since we're setting a different revision as the latest, we need to update the meta fields.
-             * The values are taken from the latest revision we're about to delete. The update of the
-             * new latest revision is performed within the storageOperations.entries.deleteRevision method.
+             * Since we're setting a different revision as the latest, we need to update entry-level meta
+             * fields. The values are taken from the latest revision we're about to delete. The update of the
+             * new latest revision is performed within storage operations.
              */
             const pickedEntryLevelMetaFields = pickEntryMetaFields(entryToDelete, field => {
                 return field.startsWith("entry");
@@ -1546,7 +1544,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const items = (
             await filterAsync(entries, async entry => {
-                return entriesPermissions.ensure({ owns: entry.createdBy }, { throw: false });
+                return entriesPermissions.ensure({ owns: entry.entryCreatedBy }, { throw: false });
             })
         ).map(entry => entry.id);
 
@@ -1618,7 +1616,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await entriesPermissions.ensure({ owns: storageEntry.createdBy });
+        await entriesPermissions.ensure({ owns: storageEntry.entryCreatedBy });
 
         const entry = await entryFromStorageTransform(context, model, storageEntry);
 
@@ -1641,7 +1639,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
         }
 
-        await entriesPermissions.ensure({ owns: originalStorageEntry.createdBy });
+        await entriesPermissions.ensure({ owns: originalStorageEntry.revisionCreatedBy });
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
@@ -1706,19 +1704,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Revision-level meta fields. 👇
              */
-            revisionSavedOn: savedOn,
-            revisionModifiedOn: savedOn,
-            revisionFirstPublishedOn: getDate(
-                originalEntry.revisionFirstPublishedOn,
-                currentDateTime
-            ),
+            revisionSavedOn: currentDateTime,
+            revisionModifiedOn: currentDateTime,
+            revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
             revisionLastPublishedOn: currentDateTime,
-            revisionSavedBy: getIdentity(originalEntry.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(originalEntry.revisionModifiedBy, currentIdentity),
-            revisionFirstPublishedBy: getIdentity(
-                originalEntry.revisionFirstPublishedBy,
-                currentIdentity
-            ),
+            revisionSavedBy: currentIdentity,
+            revisionModifiedBy: currentIdentity,
+            revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
             revisionLastPublishedBy: currentIdentity,
 
             /**
@@ -1726,11 +1718,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              */
             entrySavedOn: currentDateTime,
             entryModifiedOn: currentDateTime,
-            entryFirstPublishedOn: getDate(latestEntry.entryFirstPublishedOn, currentDateTime),
+            entryFirstPublishedOn: latestEntry.entryFirstPublishedOn || currentDateTime,
             entryLastPublishedOn: currentDateTime,
             entrySavedBy: currentIdentity,
             entryModifiedBy: currentIdentity,
-            entryFirstPublishedBy: getIdentity(latestEntry.entryFirstPublishedBy, currentIdentity),
+            entryFirstPublishedBy: latestEntry.entryFirstPublishedBy || currentIdentity,
             entryLastPublishedBy: currentIdentity
         };
 
@@ -1798,7 +1790,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await entriesPermissions.ensure({ owns: originalStorageEntry.createdBy });
+        await entriesPermissions.ensure({ owns: originalStorageEntry.revisionCreatedBy });
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
@@ -1812,6 +1804,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * 🆕 New meta fields below.
              * Users are encouraged to use these instead of the deprecated ones above.
+             * We want to update savedX and modifiedX fields on both revision and entry levels.
              */
 
             /**
@@ -1819,39 +1812,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              */
             revisionSavedOn: currentDateTime,
             revisionModifiedOn: currentDateTime,
-            revisionFirstPublishedOn: getDate(
-                originalEntry.revisionFirstPublishedOn,
-                currentDateTime
-            ),
-            revisionLastPublishedOn: getDate(
-                originalEntry.revisionLastPublishedOn,
-                currentDateTime
-            ),
-            revisionSavedBy: getIdentity(originalEntry.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(originalEntry.revisionModifiedBy, currentIdentity),
-            revisionFirstPublishedBy: getIdentity(
-                originalEntry.revisionFirstPublishedBy,
-                currentIdentity
-            ),
-            revisionLastPublishedBy: getIdentity(
-                originalEntry.revisionLastPublishedBy,
-                currentIdentity
-            ),
+            revisionSavedBy: currentIdentity,
+            revisionModifiedBy: currentIdentity,
 
             /**
              * Entry-level meta fields. 👇
              */
             entrySavedOn: currentDateTime,
             entryModifiedOn: currentDateTime,
-            entryFirstPublishedOn: getDate(originalEntry.entryFirstPublishedOn, currentDateTime),
-            entryLastPublishedOn: currentDateTime,
             entrySavedBy: currentIdentity,
-            entryModifiedBy: currentIdentity,
-            entryFirstPublishedBy: getIdentity(
-                originalEntry.entryFirstPublishedBy,
-                currentIdentity
-            ),
-            entryLastPublishedBy: getIdentity(originalEntry.entryLastPublishedBy, currentIdentity)
+            entryModifiedBy: currentIdentity
         };
 
         let storageEntry: CmsStorageEntry | null = null;
@@ -1911,7 +1881,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.ownedBy = getSecurityIdentity().id;
+            where.entryCreatedBy = getSecurityIdentity().id;
         }
 
         /**
