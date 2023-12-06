@@ -20,7 +20,12 @@ export class TaskControl implements ITaskControl {
 
     public async run(event: ITaskEvent) {
         const taskId = event.webinyTaskId;
-
+        /**
+         * This is the initial getTask idea.
+         * We will need to take care of child tasks:
+         * * child tasks can be in multiple levels (child task creates a child task, etc...).
+         * * child tasks could be executed in parallel.
+         */
         const taskData = await this.getTask(taskId);
         if (taskData instanceof TaskRunResponse) {
             return taskData;

@@ -5,12 +5,14 @@ import {
     IResponseManager,
     ITaskData,
     ITaskDefinition,
-    ITaskRunResponseManager
+    ITaskRunResponse,
+    ITaskRunResponseManager,
+    TaskResponseStatus
 } from "~/types";
 import { TaskResponseManager } from "~/manager/TaskResponseManager";
 
 export class TaskManager<T = unknown> implements ITaskManager {
-    private readonly runner: Pick<ITaskRunner, "isTimeoutClose">;
+    private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
     private readonly context: Context;
     private readonly definition: ITaskDefinition;
     private readonly task: ITaskData<T>;
@@ -18,7 +20,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
     private readonly taskResponse: ITaskRunResponseManager;
 
     public constructor(
-        runner: Pick<ITaskRunner, "isTimeoutClose">,
+        runner: Pick<ITaskRunner, "isCloseToTimeout">,
         context: Context,
         response: IResponseManager,
         task: ITaskData<T>,
@@ -33,38 +35,65 @@ export class TaskManager<T = unknown> implements ITaskManager {
         this.task = task;
     }
 
-    public async run() {
+    public async run(): Promise<ITaskRunResponse> {
         /**
          * We should not even run if the Lambda timeout is close.
          */
-        if (this.runner.isTimeoutClose()) {
+        if (this.runner.isCloseToTimeout()) {
             return this.response.continue({
                 task: this.task,
                 input: this.task.input
             });
         }
 
+        let response: ITaskRunResponse;
+
         try {
             const result = await this.definition.run({
-                input: this.task.input,
+                input: structuredClone(this.task.input),
                 context: this.context,
                 response: this.taskResponse,
-                task: this.task,
-                isTimeoutClose: () => {
-                    return this.runner.isTimeoutClose();
+                task: structuredClone(this.task),
+                isCloseToTimeout: () => {
+                    return this.runner.isCloseToTimeout();
                 }
             });
-            return await this.response.from({
+            response = await this.response.from({
                 input: this.task.input,
                 id: this.task.id,
                 ...result
             });
         } catch (ex) {
-            return await this.response.error({
+            response = await this.response.error({
                 task: this.task,
                 input: this.task.input,
                 error: ex
             });
+        }
+
+        switch (response.status) {
+            case TaskResponseStatus.DONE:
+                if (this.definition.onDone) {
+                    try {
+                        await this.definition.onDone({
+                            context: this.context,
+                            input: this.task.input
+                        });
+                    } catch {}
+                }
+                return response;
+            case TaskResponseStatus.ERROR:
+                if (this.definition.onError) {
+                    try {
+                        await this.definition.onError({
+                            context: this.context,
+                            input: this.task.input
+                        });
+                    } catch {}
+                }
+                return response;
+            default:
+                return response;
         }
     }
 }

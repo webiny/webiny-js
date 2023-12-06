@@ -6,7 +6,7 @@ interface TaskPluginSetFieldsCallback {
 
 interface ITaskParams<C extends Context = Context, I = any>
     extends Omit<ITaskDefinition<C, I>, "fields"> {
-    fields?: (task: Pick<Task<C, I>, "addField" | "setFields">) => void;
+    config?: (task: Pick<Task<C, I>, "addField" | "setFields">) => void;
 }
 
 class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I> {
@@ -41,8 +41,8 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
             ...task,
             fields: []
         };
-        if (typeof task.fields === "function") {
-            task.fields(this);
+        if (typeof task.config === "function") {
+            task.config(this);
         }
     }
 

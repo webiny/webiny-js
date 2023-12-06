@@ -1,11 +1,11 @@
-import { createTaskInput } from "~/taskInput";
+import { createTaskInput } from "~/task";
 
 interface MyInput {
     test: boolean;
     file: string;
 }
 
-describe("create task input", () => {
+describe("task input", () => {
     it("should create task input", async () => {
         const input = createTaskInput<MyInput>({
             id: "aMockTaskType",

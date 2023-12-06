@@ -5,12 +5,12 @@ import { Reply, Request } from "@webiny/handler/types";
 import { createMockContext } from "~tests/mocks/context";
 
 export const createMockRunner = (params?: Partial<ITaskRunner>): ITaskRunner => {
-    const { request, reply, context, event, lambdaContext, isTimeoutClose } = params || {};
+    const { request, reply, context, event, lambdaContext, isCloseToTimeout } = params || {};
     return {
         context: context || createMockContext(),
-        isTimeoutClose: () => {
-            if (isTimeoutClose) {
-                return isTimeoutClose();
+        isCloseToTimeout: () => {
+            if (isCloseToTimeout) {
+                return isCloseToTimeout();
             }
             return false;
         },

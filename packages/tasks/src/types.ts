@@ -137,7 +137,7 @@ export interface ITaskRunResponseManager {
 export interface ITaskRunParams<C extends Context, I = any> {
     context: C;
     response: ITaskRunResponseManager;
-    isTimeoutClose: () => boolean;
+    isCloseToTimeout: () => boolean;
     input: I;
     task: ITaskData<I>;
 }

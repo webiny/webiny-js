@@ -3,7 +3,7 @@ import { createRegisterTaskPlugin, TaskPlugin } from "~/task/plugin";
 import { createTaskField } from "~/task/definition";
 import { ITaskField } from "~/types";
 
-describe("create task plugin", () => {
+describe("task plugin", () => {
     it("should create a task plugin", async () => {
         const container = new PluginsContainer();
 
@@ -11,9 +11,9 @@ describe("create task plugin", () => {
             id: "myCustomTask",
             name: "A custom task defined via method",
             description: "A custom task description defined via method",
-            run: async ({ response, isTimeoutClose, input }) => {
+            run: async ({ response, isCloseToTimeout, input }) => {
                 try {
-                    if (isTimeoutClose()) {
+                    if (isCloseToTimeout()) {
                         return response.continue({
                             input
                         });

@@ -53,11 +53,17 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.validation = validation;
     }
 
-    public isTimeoutClose() {
+    public isCloseToTimeout() {
         return (
             this.lambdaContext.getRemainingTimeInMillis() <
-            transformMinutesIntoMilliseconds(this.getIsTimeoutCloseMinutes())
+            transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes())
         );
+    }
+    /**
+     * Milliseconds.
+     */
+    public getTimeToTimeout() {
+        return this.lambdaContext.getRemainingTimeInMillis();
     }
 
     public async run() {
@@ -92,7 +98,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         }
     }
 
-    private getIsTimeoutCloseMinutes() {
+    private getIsCloseToTimeoutMinutes() {
         const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
         return value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
     }

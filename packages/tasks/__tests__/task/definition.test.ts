@@ -1,4 +1,4 @@
-import { Context } from "./types";
+import { Context } from "../types";
 import { ITaskDefinition, ITaskField, ITaskRunParams } from "~/types";
 import { createTask, createTaskField } from "~/task/definition";
 
@@ -45,18 +45,19 @@ class MyTask implements ITaskDefinition<Context, MyInput> {
     }
 }
 
-describe("create task", () => {
+describe("task definition", () => {
     it("should properly create a task - plain object", async () => {
         const task: ITaskDefinition<Context, MyInput> = {
             id: "myCustomTask",
             name: "A custom task defined via object",
-            run: async ({ response, isTimeoutClose, input }) => {
+            run: async ({ response, isCloseToTimeout, input }) => {
                 try {
-                    if (isTimeoutClose()) {
+                    if (isCloseToTimeout()) {
                         return response.continue({
                             input
                         });
                     }
+
                     return response.done();
                 } catch (ex) {
                     return response.error(ex);
@@ -88,9 +89,9 @@ describe("create task", () => {
         const task = createTask<Context, MyTask>({
             id: "myCustomTask",
             name: "A custom task defined via method",
-            run: async ({ response, isTimeoutClose, input }) => {
+            run: async ({ response, isCloseToTimeout, input }) => {
                 try {
-                    if (isTimeoutClose()) {
+                    if (isCloseToTimeout()) {
                         return response.continue({
                             input
                         });
@@ -106,7 +107,7 @@ describe("create task", () => {
             onError: async () => {
                 return;
             },
-            fields: task => {
+            config: task => {
                 task.addField({
                     ...taskField
                 });

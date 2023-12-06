@@ -1,4 +1,4 @@
-import { Context } from "~/types";
+import { Context, ITaskDataStatus } from "~/types";
 import { createTask } from "~/task/definition";
 import { TaskManager } from "~/manager";
 import { createMockContext, createMockResponseManager, createMockRunner } from "~tests/mocks";
@@ -7,9 +7,9 @@ describe("create task manager", () => {
     const taskDefinition = createTask<Context, any>({
         id: "myCustomTask",
         name: "A custom task defined via method",
-        run: async ({ response, isTimeoutClose, input }) => {
+        run: async ({ response, isCloseToTimeout, input }) => {
             try {
-                if (isTimeoutClose()) {
+                if (isCloseToTimeout()) {
                     return response.continue({
                         input
                     });
@@ -22,21 +22,21 @@ describe("create task manager", () => {
     });
 
     it("should create a task manager", async () => {
-        const manager = new TaskManager({
-            context: createMockContext(),
-            task: {
+        const manager = new TaskManager(
+            createMockRunner(),
+            createMockContext(),
+            createMockResponseManager(),
+            {
                 id: "myCustomTask",
                 input: {},
                 name: "A custom task defined via method",
-                log: {},
+                log: [],
                 createdOn: new Date(),
                 savedOn: new Date(),
-                status: "pending"
+                status: ITaskDataStatus.PENDING
             },
-            definition: taskDefinition,
-            response: createMockResponseManager(),
-            runner: createMockRunner()
-        });
+            taskDefinition
+        );
 
         expect(manager).toBeDefined();
         expect(manager.run).toBeInstanceOf(Function);
