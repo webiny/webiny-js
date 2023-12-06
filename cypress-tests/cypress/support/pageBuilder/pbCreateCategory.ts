@@ -9,8 +9,7 @@ declare global {
                 slug: string;
                 layout: string;
                 url: string;
-                // Add other fields as needed
-            }): void;
+            }): Promise<{ slug: string; name: string; layout: string; url: string }>;
         }
     }
 }
@@ -40,7 +39,9 @@ Cypress.Commands.add("pbCreateCategory", data => {
             })
             .then(response => {
                 if (response.pageBuilder.category.error) {
-                    console.error(response.pageBuilder.category.error);
+                    return response.pageBuilder.category.error;
+                } else if (response.pageBuilder.category.data) {
+                    return response.pageBuilder.category.data;
                 }
             });
     });

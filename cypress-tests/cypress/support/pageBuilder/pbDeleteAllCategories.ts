@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import { gqlClient } from "../utils"; // Replace with your actual gqlClient library
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -35,36 +35,40 @@ const DELETE_CATEGORY_MUTATION = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbDeleteAllCategories", () => {
-    cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
-            headers: {
-                authorization: `Bearer ${user.idToken.jwtToken}`
-            }
-        });
-
+    return cy.login().then(user => {
         // Step 1: Fetch categories
-        client.request(LIST_CATEGORIES_QUERY).then(response => {
-            const categories = response.pageBuilder.listCategories.data;
+        return gqlClient
+            .request({
+                query: LIST_CATEGORIES_QUERY,
+                authToken: user.idToken.jwtToken
+            })
+            .then(async listResponse => {
+                const categories = listResponse.pageBuilder.listCategories.data;
 
-            // Step 2: Filter and delete categories
-            categories.forEach(category => {
-                // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
-                if (category.slug === "static") {
-                    // Skip this category
-                    return;
-                }
-
-                // Delete the category that doesn't meet the criteria
-                client
-                    .request(DELETE_CATEGORY_MUTATION, { slug: category.slug })
-                    .then(deletionResponse => {
-                        if (deletionResponse.pageBuilder.deleteCategory.error) {
-                            // Handle any errors that occurred during deletion
-                            // You can log the error or perform other actions as needed
-                            console.error(deletionResponse.pageBuilder.deleteCategory.error);
+                return Promise.all(
+                    categories.map(category => {
+                        // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
+                        if (category.slug === "static") {
+                            // Skip this category
+                            return null;
                         }
-                    });
+
+                        // Delete the category that doesn't meet the criteria
+                        return gqlClient
+                            .request({
+                                query: DELETE_CATEGORY_MUTATION,
+                                variables: { slug: category.slug },
+                                authToken: user.idToken.jwtToken
+                            })
+                            .then(deletionResponse => {
+                                if (deletionResponse.pageBuilder.deleteCategory.error) {
+                                    console.error(
+                                        deletionResponse.pageBuilder.deleteCategory.error
+                                    );
+                                }
+                            });
+                    })
+                );
             });
-        });
     });
 });

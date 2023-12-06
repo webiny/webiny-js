@@ -1,4 +1,4 @@
-context("Page Builder - Category Search&Sort", () => {
+context("Page Builder - Category Search and Sort", () => {
     const categoryData1 = {
         name: "ABC",
         slug: "ABC",
@@ -26,7 +26,6 @@ context("Page Builder - Category Search&Sort", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllCategories();
-        cy.wait(1500);
         cy.pbCreateCategory(categoryData1);
         cy.pbCreateCategory(categoryData2);
         cy.pbCreateCategory(categoryData3);
@@ -40,65 +39,74 @@ context("Page Builder - Category Search&Sort", () => {
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
         // Assert all of the programatically created categories are being properly displayed.
-        cy.contains(categoryData1.name).should("exist");
-        cy.contains(categoryData1.url).should("exist");
-        cy.contains(categoryData2.name).should("exist");
-        cy.contains(categoryData2.url).should("exist");
-        cy.contains(categoryData3.name).should("exist");
-        cy.contains(categoryData3.url).should("exist");
-        cy.contains(categoryData4.name).should("exist");
-        cy.contains(categoryData4.url).should("exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.name).should("exist");
+            cy.contains(categoryData1.url).should("exist");
+            cy.contains(categoryData2.name).should("exist");
+            cy.contains(categoryData2.url).should("exist");
+            cy.contains(categoryData3.name).should("exist");
+            cy.contains(categoryData3.url).should("exist");
+            cy.contains(categoryData4.name).should("exist");
+            cy.contains(categoryData4.url).should("exist");
+        });
         // Assert all the categories are being displayed properly when searched for by name
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.name);
-        cy.contains(categoryData1.name).should("exist");
-        cy.contains(categoryData2.name).should("not.exist");
-        cy.contains(categoryData3.name).should("not.exist");
-        cy.contains(categoryData4.name).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.name).should("exist");
+            cy.contains(categoryData2.name).should("not.exist");
+            cy.contains(categoryData3.name).should("not.exist");
+            cy.contains(categoryData4.name).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData2.name);
-        cy.contains(categoryData1.name).should("not.exist");
-        cy.contains(categoryData2.name).should("exist");
-        cy.contains(categoryData3.name).should("not.exist");
-        cy.contains(categoryData4.name).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.name).should("not.exist");
+            cy.contains(categoryData2.name).should("exist");
+            cy.contains(categoryData3.name).should("not.exist");
+            cy.contains(categoryData4.name).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData3.name);
-        cy.contains(categoryData1.name).should("not.exist");
-        cy.contains(categoryData2.name).should("not.exist");
-        cy.contains(categoryData3.name).should("exist");
-        cy.contains(categoryData4.name).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.name).should("not.exist");
+            cy.contains(categoryData2.name).should("not.exist");
+            cy.contains(categoryData3.name).should("exist");
+            cy.contains(categoryData4.name).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData4.name);
-        cy.contains(categoryData1.name).should("not.exist");
-        cy.contains(categoryData2.name).should("not.exist");
-        cy.contains(categoryData3.name).should("not.exist");
-        cy.contains(categoryData4.name).should("exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.name).should("not.exist");
+            cy.contains(categoryData2.name).should("not.exist");
+            cy.contains(categoryData3.name).should("not.exist");
+            cy.contains(categoryData4.name).should("exist");
+        });
         // Assert all the categories are being displayed properly when searched for by URL
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.url);
-        cy.contains(categoryData1.url).should("exist");
-        cy.contains(categoryData2.url).should("not.exist");
-        cy.contains(categoryData3.url).should("not.exist");
-        cy.contains(categoryData4.url).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.url).should("exist");
+            cy.contains(categoryData2.url).should("not.exist");
+            cy.contains(categoryData3.url).should("not.exist");
+            cy.contains(categoryData4.url).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData2.url);
-        cy.contains(categoryData1.url).should("not.exist");
-        cy.contains(categoryData2.url).should("exist");
-        cy.contains(categoryData3.url).should("not.exist");
-        cy.contains(categoryData4.url).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.url).should("not.exist");
+            cy.contains(categoryData2.url).should("exist");
+            cy.contains(categoryData3.url).should("not.exist");
+            cy.contains(categoryData4.url).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData3.url);
-        cy.contains(categoryData1.url).should("not.exist");
-        cy.contains(categoryData2.url).should("not.exist");
-        cy.contains(categoryData3.url).should("exist");
-        cy.contains(categoryData4.url).should("not.exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.url).should("not.exist");
+            cy.contains(categoryData2.url).should("not.exist");
+            cy.contains(categoryData3.url).should("exist");
+            cy.contains(categoryData4.url).should("not.exist");
+        });
         cy.findByPlaceholderText("Search categories").clear().type(categoryData4.url);
-        cy.contains(categoryData1.url).should("not.exist");
-        cy.contains(categoryData2.url).should("not.exist");
-        cy.contains(categoryData3.url).should("not.exist");
-        cy.contains(categoryData4.url).should("exist");
-
+        cy.findByTestId("default-data-list").then(() => {
+            cy.contains(categoryData1.url).should("not.exist");
+            cy.contains(categoryData2.url).should("not.exist");
+            cy.contains(categoryData3.url).should("not.exist");
+            cy.contains(categoryData4.url).should("exist");
+        });
         cy.findByPlaceholderText("Search categories")
             .clear()
             .type("This string should not return any results");
@@ -106,7 +114,6 @@ context("Page Builder - Category Search&Sort", () => {
         cy.contains(categoryData2.url).should("not.exist");
         cy.contains(categoryData3.url).should("not.exist");
         cy.contains(categoryData4.url).should("not.exist");
-
         cy.findByPlaceholderText("Search categories").clear();
 
         // Assert that all of the categories are being sorted properly
