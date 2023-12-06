@@ -29,13 +29,13 @@ type FolderProps = {
     canManagePermissions?: boolean;
 };
 
-export const FolderNode: React.VFC<FolderProps> = ({
+export const FolderNode = ({
     isRoot,
     isFocused,
     hasNonInheritedPermissions,
     canManagePermissions,
     text
-}) => {
+}: FolderProps) => {
     let icon = <HomeIcon />;
 
     if (!isRoot) {
@@ -56,14 +56,7 @@ export const FolderNode: React.VFC<FolderProps> = ({
     );
 };
 
-export const Node: React.VFC<NodeProps> = ({
-    node,
-    depth,
-    isOpen,
-    enableActions,
-    onToggle,
-    onClick
-}) => {
+export const Node = ({ node, depth, isOpen, enableActions, onToggle, onClick }: NodeProps) => {
     const { folder } = useFolder();
     const isRoot = folder.id === ROOT_FOLDER;
     // Move the placeholder line to the left based on the element depth within the tree.

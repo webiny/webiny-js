@@ -65,13 +65,13 @@ interface ListItemMetaProps {
     onUpdatePermission: (params: { permission: FolderPermission }) => void;
 }
 
-export const ListItemMeta: React.FC<ListItemMetaProps> = ({
+export const ListItemMeta = ({
     permission,
     target,
     targetsList,
     onRemoveAccess,
     onUpdatePermission
-}) => {
+}: ListItemMetaProps) => {
     const { identity } = useSecurity();
 
     const currentLevel = useMemo(() => {

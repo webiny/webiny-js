@@ -23,12 +23,12 @@ const StyledListItem = styled(ListItem)`
 
 type Selection = Array<{ permission: FolderPermission; target: FolderLevelPermissionsTarget }>;
 
-export const UsersTeamsSelection: React.FC<UsersTeamsSelectionProps> = ({
+export const UsersTeamsSelection = ({
     permissions = [],
     targetsList,
     onRemoveAccess,
     onUpdatePermission
-}) => {
+}: UsersTeamsSelectionProps) => {
     const selection = permissions
         .map(permission => {
             const target = targetsList.find(u => u.target === permission.target);

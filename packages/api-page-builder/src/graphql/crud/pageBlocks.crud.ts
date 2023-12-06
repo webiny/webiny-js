@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import cloneDeep from "lodash/cloneDeep";
 import {
     OnPageBlockAfterCreateTopicParams,
     OnPageBlockAfterDeleteTopicParams,
@@ -320,7 +319,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 });
 
                 blocks.push(
-                    cloneDeep({
+                    structuredClone({
                         ...pageBlock,
                         data: {
                             ...pageBlock?.data,

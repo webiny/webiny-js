@@ -9,7 +9,7 @@ import { ListItem, ListItemGraphic, MessageContainer } from "./useDialogWithRepo
 
 type ResultDialogMessageProps = Pick<ShowResultsDialogParams, "results" | "message">;
 
-export const ResultDialogMessage: React.FC<ResultDialogMessageProps> = ({ results, message }) => {
+export const ResultDialogMessage = ({ results, message }: ResultDialogMessageProps) => {
     return (
         <>
             {message && <MessageContainer>{message}</MessageContainer>}

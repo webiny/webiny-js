@@ -21,14 +21,14 @@ export interface FolderTreeProps {
     hiddenFolderIds?: string[];
 }
 
-export const FolderTree: React.VFC<FolderTreeProps> = ({
+export const FolderTree = ({
     focusedFolderId,
     hiddenFolderIds,
     enableActions,
     enableCreate,
     onFolderClick,
     rootFolderLabel
-}) => {
+}: FolderTreeProps) => {
     const { folders, folderLevelPermissions: flp } = useFolders();
     const localFolders = useMemo(() => {
         if (!folders) {

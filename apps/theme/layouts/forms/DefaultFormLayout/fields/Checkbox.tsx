@@ -84,11 +84,11 @@ const otherOption: Option = {
     value: "other"
 };
 
-interface CheckboxProps {
+interface CheckboxFieldProps {
     field: FormRenderFbFormModelField;
 }
 
-export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
+export const CheckboxField = ({ field }: CheckboxFieldProps) => {
     const fieldId = field.fieldId;
 
     const { validation, value, onChange } = useBind({
