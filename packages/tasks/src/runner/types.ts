@@ -10,5 +10,5 @@ export interface ITaskRunner<C extends Context = Context> {
     event: ITaskEvent;
     lambdaContext: LambdaContext;
     isCloseToTimeout: () => boolean;
-    getTimeToTimeout: () => number;
+    getRemainingTime: () => number;
 }

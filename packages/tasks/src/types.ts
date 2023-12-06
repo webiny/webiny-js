@@ -86,7 +86,7 @@ export interface IResponseManagerErrorParams<T = any> {
 }
 
 export interface IResponseManager {
-    from(response: ITaskRunResponse): Promise<ITaskRunResponse>;
+    from(response: Omit<ITaskRunResponse, "token">): Promise<ITaskRunResponse>;
     done: (params: IResponseManagerDoneParams) => Promise<IResponseManagerDone>;
     error: (params: IResponseManagerErrorParams) => Promise<IResponseManagerError>;
     continue: <T = unknown>(
@@ -160,6 +160,7 @@ export enum TaskResponseStatus {
 
 export interface ITaskRunResponse<T = any> {
     id: string;
+    token: string;
     status: TaskResponseStatus;
     input: T;
 }

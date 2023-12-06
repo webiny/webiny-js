@@ -3,6 +3,7 @@ import { TaskRunResponse } from "~/manager/response/TaskRunResponse";
 
 export interface ITaskRunErrorResponseParams<T> {
     id: string;
+    token: string;
     error: ITaskRunErrorResponseError;
     input: T;
 }
@@ -17,7 +18,7 @@ export class TaskRunErrorResponse<T = any>
     public readonly input: T;
 
     public constructor(params: ITaskRunErrorResponseParams<T>) {
-        super();
+        super(params.token);
         this.id = params.id;
         this.error = params.error;
         this.input = params.input;

@@ -1,5 +1,13 @@
-import { IResponseManagerDone, IResponseManagerDoneParams, TaskResponseStatus } from "~/types";
+import { IResponseManagerDone, ITaskData, TaskResponseStatus } from "~/types";
 import { TaskRunResponse } from "~/manager/response/TaskRunResponse";
+
+export interface ITaskRunDoneResponseParams<T = any> {
+    task: Pick<ITaskData<any>, "id">;
+    input: T;
+    error?: never;
+    message?: string;
+    token: string;
+}
 
 export class TaskRunDoneResponse<T = any>
     extends TaskRunResponse
@@ -10,10 +18,10 @@ export class TaskRunDoneResponse<T = any>
     public readonly message?: string;
     public readonly input: T;
 
-    public constructor(params: IResponseManagerDoneParams) {
-        super();
-        this.id = params?.task?.id || "unknown";
-        this.message = params?.message;
-        this.input = params?.input;
+    public constructor(params: ITaskRunDoneResponseParams) {
+        super(params.token);
+        this.id = params.task?.id || "unknown";
+        this.message = params.message;
+        this.input = params.input;
     }
 }

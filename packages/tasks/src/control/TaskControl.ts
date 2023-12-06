@@ -18,7 +18,7 @@ export class TaskControl implements ITaskControl {
         this.response = response;
     }
 
-    public async run(event: ITaskEvent) {
+    public async run(event: Pick<ITaskEvent, "webinyTaskId">) {
         const taskId = event.webinyTaskId;
         /**
          * This is the initial getTask idea.

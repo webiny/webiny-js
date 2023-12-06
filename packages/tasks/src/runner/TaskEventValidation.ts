@@ -5,7 +5,8 @@ import { createZodError } from "@webiny/utils";
 
 const validation = zod
     .object({
-        webinyTaskId: zod.string()
+        webinyTaskId: zod.string(),
+        token: zod.string()
     })
     .required();
 

@@ -4,4 +4,9 @@ export abstract class TaskRunResponse<T = any> implements ITaskRunResponse<T> {
     public abstract readonly id: string;
     public abstract readonly status: TaskResponseStatus;
     public abstract readonly input: T;
+    public readonly token: string;
+
+    public constructor(token: string) {
+        this.token = token;
+    }
 }

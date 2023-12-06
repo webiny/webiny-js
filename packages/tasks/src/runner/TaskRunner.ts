@@ -41,7 +41,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         request: Request,
         reply: Reply,
         context: C,
-        response: IResponseManager = new MessageResponseManager(),
+        response?: IResponseManager,
         validation: TaskEventValidation = new TaskEventValidation()
     ) {
         this.request = request;
@@ -49,7 +49,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.context = context;
         this.event = event;
         this.lambdaContext = lambdaContext;
-        this.response = response;
+        this.response = response || new MessageResponseManager(this.event.token);
         this.validation = validation;
     }
 
@@ -59,10 +59,8 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes())
         );
     }
-    /**
-     * Milliseconds.
-     */
-    public getTimeToTimeout() {
+
+    public getRemainingTime() {
         return this.lambdaContext.getRemainingTimeInMillis();
     }
 
@@ -78,7 +76,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
                     code: "TASK_EVENT_VALIDATION_FAILED",
                     data: result.data
                 },
-
                 input: {}
             });
         }
@@ -86,7 +83,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         const control = new TaskControl(this, this.response, this.context);
 
         try {
-            return await control.run(this.event);
+            return await control.run(result);
         } catch (ex) {
             return this.response.error({
                 task: {
