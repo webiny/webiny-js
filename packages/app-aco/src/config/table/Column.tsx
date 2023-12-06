@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
+import { useTableCell } from "~/components/Table/useTableCell";
 import { FolderTableItem, BaseTableItem } from "~/types";
 
 export interface ColumnConfig {
@@ -72,4 +73,4 @@ const isFolderItem = (item: BaseTableItem): item is FolderTableItem => {
     return item.$type === "FOLDER";
 };
 
-export const Column = Object.assign(BaseColumn, { isFolderItem });
+export const Column = Object.assign(BaseColumn, { isFolderItem, useTableCell });

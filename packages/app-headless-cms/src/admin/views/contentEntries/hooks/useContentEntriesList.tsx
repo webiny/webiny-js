@@ -3,7 +3,7 @@ import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry, EntryTableItem } from "~/types";
+import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
@@ -12,7 +12,6 @@ import {
     transformCmsContentEntriesToRecordEntries,
     transformFolderItemsToFolderEntries
 } from "~/utils/acoRecordTransform";
-import { TableProps } from "~/admin/components/ContentEntries/Table";
 import { usePermission } from "~/admin/hooks";
 
 interface UpdateSearchCallableParams {
@@ -32,7 +31,7 @@ export interface ContentEntriesListProviderContext {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    onSelectRow: TableProps["onSelectRow"];
+    onSelectRow: (rows: TableItem[] | []) => void;
     onEditEntry: (item: EntryTableItem) => void;
     records: EntryTableItem[];
     search: string;
@@ -120,12 +119,13 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         updateSearch({ search, query });
     }, [search]);
 
-    const onSelectRow: TableProps["onSelectRow"] = rows => {
+    const onSelectRow: ContentEntriesListProviderContext["onSelectRow"] = rows => {
         const items = rows.filter(item => item.$type === "RECORD");
 
         const cmsContentEntries = items
             .map(item => omit(item, ["$type", "$selectable"]))
             .map(item => item as unknown as CmsContentEntry);
+
         setSelected(cmsContentEntries);
     };
 

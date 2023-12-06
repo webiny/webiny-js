@@ -1,16 +1,14 @@
 import React, { forwardRef, useMemo } from "react";
-import { useAcoConfig } from "@webiny/app-aco";
 import { FolderItem, FolderTableItem } from "@webiny/app-aco/types";
-import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+import { Table as AcoTable } from "@webiny/app-aco";
 
-import { TableCellProvider } from "~/hooks/useTableCell";
+import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 
 import { FileItem } from "@webiny/app-admin/types";
 import { Settings, TableItem, FileTableItem } from "~/types";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 export interface TableProps {
-    records: FileItem[];
-    folders: FolderItem[];
     selectedRecords: FileItem[];
     loading?: boolean;
     onRecordClick: (id: string) => void;
@@ -41,61 +39,22 @@ const createFoldersData = (items: FolderItem[]): FolderTableItem[] => {
 };
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
-    const {
-        folders,
-        records,
-        selectedRecords,
-        onSelectRow,
-        onToggleRow,
-        loading,
-        sorting,
-        onSortingChange
-    } = props;
+    const { selectedRecords, onSelectRow, onToggleRow, sorting, onSortingChange } = props;
 
-    const { folder: folderConfig, table } = useAcoConfig();
+    const view = useFileManagerView();
 
     const data = useMemo<TableItem[]>(() => {
-        return [...createFoldersData(folders), ...createRecordsData(records)];
-    }, [folders, records]);
-
-    const columns: Columns<TableItem> = useMemo(() => {
-        return table.columns.reduce((obj, item) => {
-            const { name, cell, header, size, sortable, resizable, className } = item;
-
-            const cellRenderer = (item: TableItem) => (
-                <TableCellProvider item={item}>{cell}</TableCellProvider>
-            );
-
-            obj[name as keyof Columns<TableItem>] = {
-                header,
-                enableSorting: sortable,
-                enableResizing: resizable,
-                size,
-                className,
-                ...(cell && { cell: cellRenderer })
-            };
-
-            return obj;
-        }, {} as Columns<TableItem>);
-    }, [folderConfig, table]);
+        return [...createFoldersData(view.folders), ...createRecordsData(view.files)];
+    }, [view.folders, view.files]);
 
     return (
         <div ref={ref}>
-            <DataTable<TableItem>
-                columns={columns}
+            <AcoTable<TableItem>
                 data={data}
-                loadingInitial={loading}
-                stickyRows={1}
+                loading={view.isListLoading}
                 onSelectRow={onSelectRow}
                 onToggleRow={onToggleRow}
-                isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
-                initialSorting={[
-                    {
-                        id: "createdOn",
-                        desc: true
-                    }
-                ]}
                 onSortingChange={onSortingChange}
                 selectedRows={createRecordsData(selectedRecords)}
             />
@@ -104,3 +63,26 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 });
 
 Table.displayName = "Table";
+
+// return (
+//     <div ref={ref}>
+//         <DataTable<TableItem>
+//             columns={columns} REMOVED
+//             data={data} ADDED
+//             loadingInitial={loading} ADDED
+//             stickyRows={1} REMOVED
+//             onSelectRow={onSelectRow}
+//             onToggleRow={onToggleRow}
+//             isRowSelectable={row => row.original.$selectable} REMOVED
+//             sorting={sorting}
+//             initialSorting={[
+//                 {
+//                     id: "createdOn",
+//                     desc: true
+//                 }
+//             ]}
+//             onSortingChange={onSortingChange}
+//             selectedRows={createRecordsData(selectedRecords)}
+//         />
+//     </div>
+// );
