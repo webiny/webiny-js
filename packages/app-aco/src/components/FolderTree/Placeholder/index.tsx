@@ -1,12 +1,9 @@
-import { NodeModel } from "@minoru/react-dnd-treeview";
 import React from "react";
 
 import { Element } from "./styled";
-import { DndFolderItem } from "~/types";
 
 interface PlaceholderProps {
     depth: number;
-    node: NodeModel<DndFolderItem>;
 }
 
 export const Placeholder: React.VFC<PlaceholderProps> = ({ depth }) => {

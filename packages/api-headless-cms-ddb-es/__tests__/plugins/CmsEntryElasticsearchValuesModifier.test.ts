@@ -1,4 +1,3 @@
-import structuredClone from "@ungap/structured-clone";
 import { createCmsEntryElasticsearchValuesModifier } from "~/plugins";
 import { CmsEntry, CmsIdentity, CmsModel } from "@webiny/api-headless-cms/types";
 

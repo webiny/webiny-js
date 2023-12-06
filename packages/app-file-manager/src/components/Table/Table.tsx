@@ -1,20 +1,14 @@
-import React, { forwardRef, useMemo, useState } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import {
-    FolderDialogDelete,
-    FolderDialogManagePermissions,
-    FolderDialogUpdate
-} from "@webiny/app-aco";
+import { useAcoConfig, FolderProvider } from "@webiny/app-aco";
 import { FolderItem, Location } from "@webiny/app-aco/types";
+import { OptionsMenu } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
 import bytes from "bytes";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileName, FolderName } from "./Name";
-import { FolderActionDelete } from "./FolderActionDelete";
-import { FolderActionEdit } from "./FolderActionEdit";
-import { FolderActionManagePermissions } from "./FolderActionManagePermissions";
 import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
@@ -112,10 +106,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         onSortingChange
     } = props;
 
-    const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
-    const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-    const [managePermissionsDialogOpen, setManagePermissionsDialogOpen] = useState<boolean>(false);
+    const { folder: folderConfig } = useAcoConfig();
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records)];
@@ -206,36 +197,18 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         );
                     }
 
-                    const { original } = item;
-
                     return (
-                        <Menu handle={<IconButton icon={<MoreIcon />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(original);
-                                }}
+                        <FolderProvider folder={item.original}>
+                            <OptionsMenu
+                                actions={folderConfig.actions}
+                                data-testid={"table.row.folder.menu-action"}
                             />
-                            {original.canManagePermissions && (
-                                <FolderActionManagePermissions
-                                    onClick={() => {
-                                        setManagePermissionsDialogOpen(true);
-                                        setSelectedFolder(original);
-                                    }}
-                                />
-                            )}
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(original);
-                                }}
-                            />
-                        </Menu>
+                        </FolderProvider>
                     );
                 }
             }
         };
-    }, []);
+    }, [folderConfig]);
 
     return (
         <div ref={ref}>
@@ -257,25 +230,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onSortingChange={onSortingChange}
                 selectedRows={createRecordsData(selectedRecords)}
             />
-            {selectedFolder && (
-                <>
-                    <FolderDialogUpdate
-                        folder={selectedFolder}
-                        open={updateDialogOpen}
-                        onClose={() => setUpdateDialogOpen(false)}
-                    />
-                    <FolderDialogManagePermissions
-                        folder={selectedFolder}
-                        open={managePermissionsDialogOpen}
-                        onClose={() => setManagePermissionsDialogOpen(false)}
-                    />
-                    <FolderDialogDelete
-                        folder={selectedFolder}
-                        open={deleteDialogOpen}
-                        onClose={() => setDeleteDialogOpen(false)}
-                    />
-                </>
-            )}
         </div>
     );
 });
