@@ -5,7 +5,7 @@ interface SignedInProps {
     children: React.ReactNode;
 }
 
-const SignedIn: React.FC<SignedInProps> = ({ children }) => {
+const SignedIn = ({ children }: SignedInProps) => {
     const { shouldRender } = useSignedIn();
 
     return shouldRender ? (children as unknown as React.ReactElement) : null;

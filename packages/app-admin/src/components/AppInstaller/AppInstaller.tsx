@@ -22,7 +22,7 @@ interface AppInstallerProps {
     children: React.ReactNode;
 }
 
-export const AppInstaller: React.FC<AppInstallerProps> = ({ children }) => {
+export const AppInstaller = ({ children }: AppInstallerProps) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);

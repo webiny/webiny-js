@@ -3,11 +3,9 @@ import { Layout } from "~/index";
 
 interface AdminLayoutProps {
     title?: string;
+    children?: React.ReactNode;
 }
 
-export const AdminLayout: React.FC<React.PropsWithChildren<AdminLayoutProps>> = ({
-    title,
-    children
-}) => {
+export const AdminLayout = ({ title, children }: AdminLayoutProps) => {
     return <Layout title={title}>{children}</Layout>;
 };

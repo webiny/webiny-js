@@ -11,7 +11,7 @@ function getElementKey(element: UIElement) {
     return `${element.constructor.name}:${element.id}`;
 }
 
-const ElementID: React.FC<ElementIDProps> = ({ children }) => {
+const ElementID = ({ children }: ElementIDProps) => {
     return children as unknown as React.ReactElement;
 };
 

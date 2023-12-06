@@ -32,7 +32,7 @@ interface ViewCompositionProviderState {
 interface ViewCompositionProviderProps {
     children: React.ReactNode;
 }
-const ViewCompositionProvider: React.FC<ViewCompositionProviderProps> = ({ children }) => {
+const ViewCompositionProvider = ({ children }: ViewCompositionProviderProps) => {
     const [state, setState] = useState<ViewCompositionProviderState>({});
 
     const context = useMemo(

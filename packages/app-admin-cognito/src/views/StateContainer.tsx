@@ -6,7 +6,7 @@ interface StateContainerProps {
     children: React.ReactNode;
 }
 
-const StateContainer: React.FC<StateContainerProps> = ({ children }) => (
+const StateContainer = ({ children }: StateContainerProps) => (
     <Wrapper>
         <LogoWrapper>
             <Logo />

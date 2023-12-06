@@ -30,7 +30,7 @@ interface StaticProps {
     children: React.ReactNode;
 }
 
-const Static: React.FC<StaticProps> = ({ children }) => {
+const Static = ({ children }: StaticProps) => {
     return (
         <Layout>
             <Global styles={globalStyles} />

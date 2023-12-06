@@ -24,7 +24,7 @@ export const PluginsProvider = memo(PluginsProviderComponent);
 interface PluginsComponentsProps {
     children: React.ReactNode;
 }
-export const Plugins: React.FC<PluginsComponentsProps> = ({ children }) => {
+export const Plugins = ({ children }: PluginsComponentsProps) => {
     const { addPlugin } = useApp();
     const hasParentPlugin = useContext(PluginsContext);
 
