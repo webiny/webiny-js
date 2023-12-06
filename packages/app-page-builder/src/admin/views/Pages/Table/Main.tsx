@@ -129,16 +129,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    onSelectRow={list.onSelectRow}
-                                    selectedRows={list.selected}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}

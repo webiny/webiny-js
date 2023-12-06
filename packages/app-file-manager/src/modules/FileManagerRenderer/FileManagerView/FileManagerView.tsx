@@ -222,17 +222,10 @@ const FileManagerView = () => {
 
             return (
                 <Table
-                    folders={view.folders}
-                    records={view.files}
-                    selectedRecords={view.selected}
-                    loading={view.isListLoading}
-                    onRecordClick={view.showFileDetails}
-                    onFolderClick={view.setFolderId}
                     onSelectRow={onSelectRow}
                     onToggleRow={onToggleRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
-                    settings={view.settings}
                 />
             );
         }

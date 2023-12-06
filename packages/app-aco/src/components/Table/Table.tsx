@@ -7,8 +7,9 @@ export interface TableProps<T> {
     data: T[];
     loading?: boolean;
     nameColumnId?: string;
-    onSelectRow: (rows: T[] | []) => void;
+    onSelectRow?: (rows: T[] | []) => void;
     onSortingChange: OnSortingChange;
+    onToggleRow?: (row: T) => void;
     selectedRows: T[];
     sorting: Sorting;
 }
@@ -17,10 +18,11 @@ export const Table = <T extends Record<string, any> & DefaultData>({
     data,
     loading,
     nameColumnId = "name",
-    onSortingChange,
-    sorting,
     onSelectRow,
-    selectedRows: defaultSelectedRows
+    onSortingChange,
+    onToggleRow,
+    selectedRows,
+    sorting
 }: TableProps<T>) => {
     const { folder: folderConfig, table } = useAcoConfig();
 
@@ -46,31 +48,30 @@ export const Table = <T extends Record<string, any> & DefaultData>({
         }, {} as Columns<T>);
     }, [folderConfig, table]);
 
-    const selectedRows = useMemo(() => {
-        return data.filter(record => defaultSelectedRows.find(row => row.id === record.id));
-    }, [data, defaultSelectedRows]);
-
     const isRowSelectable = useCallback(row => {
         return row.original.$selectable;
     }, []);
 
+    const initialSorting = [
+        {
+            id: "savedOn",
+            desc: true
+        }
+    ];
+
     return (
         <DataTable
             columns={columns}
-            stickyRows={1}
-            isRowSelectable={isRowSelectable}
-            selectedRows={selectedRows}
-            sorting={sorting}
             data={data}
+            initialSorting={initialSorting}
+            isRowSelectable={isRowSelectable}
             loadingInitial={loading}
             onSelectRow={onSelectRow}
             onSortingChange={onSortingChange}
-            initialSorting={[
-                {
-                    id: "savedOn",
-                    desc: true
-                }
-            ]}
+            onToggleRow={onToggleRow}
+            selectedRows={selectedRows}
+            sorting={sorting}
+            stickyRows={1}
         />
     );
 };

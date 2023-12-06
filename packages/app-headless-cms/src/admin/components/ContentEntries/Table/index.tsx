@@ -1,17 +1,7 @@
 import React, { ForwardRefRenderFunction, useMemo } from "react";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useContentEntriesList, useModel } from "~/admin/hooks";
-import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
-
-const createRecordsData = (items: CmsContentEntry[]): EntryTableItem[] => {
-    return items.map(item => {
-        return {
-            $type: "RECORD",
-            $selectable: true,
-            ...item
-        };
-    });
-};
+import { TableItem } from "~/types";
 
 const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
     const { model } = useModel();
@@ -30,7 +20,9 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
                 onSortingChange={list.setSorting}
                 sorting={list.sorting}
                 onSelectRow={list.onSelectRow}
-                selectedRows={createRecordsData(list.selected)}
+                selectedRows={data.filter(record =>
+                    list.selected.find(row => row.id === record.id)
+                )}
             />
         </div>
     );
