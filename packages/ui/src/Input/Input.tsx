@@ -81,7 +81,7 @@ export const Input: React.FC<InputProps> = props => {
                 return;
             }
 
-            // @ts-ignore
+            // @ts-expect-error
             onChange(rawOnChange ? e : e.target.value);
         },
         [props.onChange, props.rawOnChange]

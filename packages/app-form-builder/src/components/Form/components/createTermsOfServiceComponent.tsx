@@ -11,15 +11,15 @@ interface CreateTermsOfServiceComponentArgs {
 
 type ChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: String;
+    errorMessage: string;
     message: OutputBlockData[];
 }) => React.ReactNode;
 
 export interface TermsOfServiceProps {
     children: ChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any) => void;
+    onExpired?: (...args: any) => void;
 }
 
 export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
@@ -29,7 +29,7 @@ const createTermsOfServiceComponent = ({
     setTermsOfServiceAccepted
 }: CreateTermsOfServiceComponentArgs): TermsOfServiceComponent =>
     // TODO @ts-refactor figure out how to type this
-    // @ts-ignore
+    // @ts-expect-error
     function TermsOfService(props: TermsOfServiceProps) {
         if (!termsOfServiceEnabled(formData)) {
             return null;

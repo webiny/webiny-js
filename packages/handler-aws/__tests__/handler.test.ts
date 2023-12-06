@@ -3,6 +3,7 @@ import {
     EventBridgeEvent,
     S3Event,
     S3EventRecord,
+    SNSEvent,
     SQSEvent,
     SQSRecord
 } from "aws-lambda";
@@ -11,6 +12,7 @@ import {
     createEventBridgeEventHandler,
     createHandler,
     createS3EventHandler,
+    createSNSEventHandler,
     createSQSEventHandler
 } from "~/index";
 import { LambdaContext } from "~/types";
@@ -32,6 +34,11 @@ describe("main handler", () => {
         createSQSEventHandler(async () => {
             return {
                 isSQSEvent: true
+            };
+        }),
+        createSNSEventHandler(async () => {
+            return {
+                isEventBridgeEvent: true
             };
         }),
         createEventBridgeEventHandler(async () => {
@@ -109,6 +116,26 @@ describe("main handler", () => {
         const event = {
             source: "aws:something"
         } as EventBridgeEvent<string, string>;
+
+        const result = await handler(event, context);
+
+        expect(result).toEqual({
+            isEventBridgeEvent: true
+        });
+    });
+
+    it("should select SNSEvent handler for the SNSEvent stream event", async () => {
+        const handler = createHandler({
+            plugins
+        });
+
+        const event = {
+            Records: [
+                {
+                    Sns: {}
+                }
+            ]
+        } as SNSEvent;
 
         const result = await handler(event, context);
 

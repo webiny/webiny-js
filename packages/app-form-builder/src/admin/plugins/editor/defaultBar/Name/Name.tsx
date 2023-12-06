@@ -6,7 +6,7 @@ import { useFormEditor } from "~/admin/components/FormEditor";
 /**
  * Package react-hotkeyz does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import {
     FormMeta,

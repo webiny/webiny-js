@@ -19,7 +19,18 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbUpdatePage(data: PbUpdatePageInput): Promise<string>;
+            pbUpdatePage(data: PbUpdatePageInput): Promise<
+                [
+                    {
+                        id: string;
+                        content: string;
+                        title: string;
+                        path: string;
+                        status: string;
+                        savedOn: string;
+                    }
+                ]
+            >;
         }
     }
 }
@@ -42,7 +53,7 @@ const UPDATE_PAGE = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbUpdatePage", data => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request({
                 query: UPDATE_PAGE,

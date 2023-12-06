@@ -276,7 +276,6 @@ describe("MANAGE - resolvers - api key", () => {
 
         const updatedCategory = updateResponse.data.updateCategory.data;
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const [listResponse] = await listCategories({}, headers);
 
         expect(listResponse).toMatchObject({

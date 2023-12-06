@@ -23,7 +23,6 @@ context("Page Builder - Menu Items", () => {
         cy.login();
         cy.pbDeleteAllMenus();
         cy.pbCreateMenu(menuData);
-        cy.wait(500);
         cy.pbCreatePage({ category: "static" }).then(page => {
             // eslint-disable-next-line jest/valid-expect-in-promise
             cy.pbUpdatePage({
@@ -136,7 +135,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete the link menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${linkNameEdit}`).should("not.exist");
 
         // Create folder menu item.
@@ -160,7 +158,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${folderNameEdit}`).should("not.exist");
 
         // Create page menu item.
@@ -169,6 +166,7 @@ context("Page Builder - Menu Items", () => {
             cy.findByText("Page").click();
         });
         cy.findByTestId("pb.menu.new.pageitem.page").type(pageNameNew);
+        cy.wait(500);
         cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNew}`).contains(pageNameNew).should("exist");
@@ -176,10 +174,12 @@ context("Page Builder - Menu Items", () => {
         // Edit folder menu item and assert the changes have been made.
         cy.findByTestId("pb-edit-icon-button").click();
         cy.findByTestId("pb.menu.new.pageitem.page").clear();
-        cy.findByTestId("pb.menu.new.pageitem.page").type(pageNameNewEdit);
-        cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
         cy.findByTestId("pb.menu.new.pageitem.title").clear();
-        cy.findByTestId("pb.menu.new.pageitem.title").type(pageNameNewEdit);
+        cy.findByTestId("pb.menu.new.pageitem.page").clear().type(pageNameNewEdit);
+        cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
+
+        cy.wait(1000);
+        //cy.findByTestId("pb.menu.new.pageitem.title").type(pageNameNewEdit);
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`)
             .contains(pageNameNewEdit)
@@ -187,7 +187,6 @@ context("Page Builder - Menu Items", () => {
 
         // Delete folder menu item and assert it's no longer being displayed.
         cy.findByTestId("pb-delete-icon-button").click();
-        cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`).should("not.exist");
     });
 });

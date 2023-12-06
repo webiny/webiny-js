@@ -1,5 +1,4 @@
 import { ApolloClient } from "apollo-client";
-
 import {
     CREATE_PAGE_BLOCK,
     CreatePageBlockMutationResponse,
@@ -23,6 +22,7 @@ import {
     CreatePageBlockInput,
     UpdatePageBlockInput
 } from "./BlockGatewayInterface";
+import { decompress } from "~/admin/components/useDecompress";
 
 export class BlocksGateway implements BlockGatewayInterface {
     private client: ApolloClient<any>;
@@ -50,7 +50,7 @@ export class BlocksGateway implements BlockGatewayInterface {
             throw new Error(error?.message || "Could not fetch filters.");
         }
 
-        return data;
+        return data.map(block => this.decompressContent(block));
     }
 
     async create(pageBlock: CreatePageBlockInput): Promise<PbPageBlock> {
@@ -74,7 +74,7 @@ export class BlocksGateway implements BlockGatewayInterface {
             throw new Error(error?.message || "Could not create filter.");
         }
 
-        return data;
+        return this.decompressContent(data);
     }
 
     async delete(id: string): Promise<void> {
@@ -105,7 +105,8 @@ export class BlocksGateway implements BlockGatewayInterface {
             GetPageBlockQueryVariables
         >({
             query: GET_PAGE_BLOCK,
-            variables: { id }
+            variables: { id },
+            fetchPolicy: "network-only"
         });
 
         if (!response) {
@@ -118,7 +119,7 @@ export class BlocksGateway implements BlockGatewayInterface {
             throw new Error(error?.message || `Could not fetch page block with id: ${id}`);
         }
 
-        return data;
+        return this.decompressContent(data);
     }
 
     async update({ id, ...pageBlock }: UpdatePageBlockInput) {
@@ -146,5 +147,12 @@ export class BlocksGateway implements BlockGatewayInterface {
         if (!data) {
             throw new Error(error?.message || "Could not update filter.");
         }
+    }
+
+    private decompressContent(pageBlock: PbPageBlock) {
+        return {
+            ...pageBlock,
+            content: decompress(pageBlock.content)
+        };
     }
 }

@@ -4,7 +4,9 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbListPages(data: any): Chainable<Promise<any[]>>;
+            pbListPages(
+                data: any
+            ): Promise<[{ id: string; title: string; path: string; status: string }]>;
         }
     }
 }
@@ -25,18 +27,13 @@ const LIST_PAGES = /* GraphQL */ `
                     path
                     status
                 }
-                error {
-                    code
-                    data
-                    message
-                }
             }
         }
     }
 `;
 
 Cypress.Commands.add("pbListPages", data => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request<any>({
                 query: LIST_PAGES,

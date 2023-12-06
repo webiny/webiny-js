@@ -4,7 +4,7 @@ import { IconButton } from "@webiny/ui/Button";
 
 import { OptionsMenuItemProvider } from "./useOptionsMenuItem";
 
-import { Menu } from "./OptionsMenu.styles";
+import { Menu } from "./OptionsMenu.styled";
 
 export interface OptionsMenuProps {
     actions: {

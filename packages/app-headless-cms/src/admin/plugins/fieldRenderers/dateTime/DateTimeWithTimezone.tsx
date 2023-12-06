@@ -55,8 +55,6 @@ const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
 
 export interface DateTimeWithTimezoneProps {
     bind: BindComponentRenderProp;
-    // TODO @ts-refactor figure out correct trailing icon type
-    // @ts-ignore
     trailingIcon?: any;
     field: CmsModelField;
 }

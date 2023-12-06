@@ -4,7 +4,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 /**
  * Package react-hotkeyz does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";

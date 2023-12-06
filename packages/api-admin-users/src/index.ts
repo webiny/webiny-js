@@ -22,7 +22,7 @@ export default ({ storageOperations }: Config) => {
                  * TODO @ts-refactor @pavel
                  * When creating users, is it possible there is no tenant defined?
                  */
-                // @ts-ignore
+                // @ts-expect-error
                 return tenant ? tenant.id : undefined;
             };
 

@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbPublishPage(id: string): Chainable<Promise<any[]>>;
+            pbPublishPage(id: string): Promise<{ id: string }>;
         }
     }
 }
@@ -15,20 +15,6 @@ const PUBLISH_PAGE = /* GraphQL */ `
             publishPage(id: $id) {
                 data {
                     id
-                    pid
-                    title
-                    path
-                    version
-                    locked
-                    status
-                    revisions {
-                        id
-                        savedOn
-                        locked
-                        title
-                        status
-                        version
-                    }
                 }
             }
         }
@@ -36,7 +22,7 @@ const PUBLISH_PAGE = /* GraphQL */ `
 `;
 
 Cypress.Commands.add("pbPublishPage", id => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request({
                 query: PUBLISH_PAGE,

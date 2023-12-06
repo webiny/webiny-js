@@ -83,16 +83,16 @@ export const createElement: CreateElementCallable = (
      * Used ts-ignore because TS is complaining about always overriding some properties
      */
     return {
-        // @ts-ignore
+        // @ts-expect-error
         id: getNanoid(),
-        // @ts-ignore
+        // @ts-expect-error
         data: {
             settings: {}
         },
-        // @ts-ignore
+        // @ts-expect-error
         elements: [],
         parent: parent ? parent.id : undefined,
-        // @ts-ignore
+        // @ts-expect-error
         type,
         ...addElementId(plugin.create(options, parent))
     };
@@ -178,11 +178,11 @@ export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorEleme
  * Remove id from elements recursively
  */
 export const removeElementId = (el: PbElement): PbElement => {
-    // @ts-ignore
+    // @ts-expect-error
     delete el.id;
 
     el.elements = el.elements.map(el => {
-        // @ts-ignore
+        // @ts-expect-error
         delete el.id;
         if (el.elements && el.elements.length) {
             el = removeElementId(el);
@@ -202,11 +202,11 @@ export const createBlockElements = (name: string): PbEditorElement => {
      * Used ts-ignore because TS is complaining about always overriding some properties
      */
     return {
-        // @ts-ignore
+        // @ts-expect-error
         id: getNanoid(),
-        // @ts-ignore
+        // @ts-expect-error
         data: {},
-        // @ts-ignore
+        // @ts-expect-error
         elements: [],
         ...addElementId(plugin.create())
     };

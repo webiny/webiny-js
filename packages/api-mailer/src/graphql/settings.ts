@@ -61,7 +61,7 @@ export const createSettingsGraphQL = () => {
                          * We want to remove the password from the response, if it exists.
                          */
                         if (settings?.password) {
-                            // @ts-ignore
+                            // @ts-expect-error
                             delete settings.password;
                         }
                         return new Response(settings);
@@ -83,7 +83,7 @@ export const createSettingsGraphQL = () => {
                          * We want to remove the password from the response, if it exists.
                          */
                         if (settings?.password) {
-                            // @ts-ignore
+                            // @ts-expect-error
                             delete settings.password;
                         }
                         return new Response(settings);

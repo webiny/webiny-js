@@ -3,6 +3,7 @@ import "./s3/register";
 import "./dynamodb/register";
 import "./sqs/register";
 import "./eventBridge/register";
+import "./sns/register";
 
 /**
  * API Gateway
@@ -53,6 +54,19 @@ export {
     SQSEventHandlerCallableParams,
     createEventHandler as createSQSEventHandler
 } from "~/sqs";
+
+/**
+ * SNS
+ */
+//
+export {
+    createHandler as createSNSHandler,
+    HandlerParams as CreateSNSHandlerParams,
+    SNSEventHandler,
+    SNSEventHandlerCallable,
+    SNSEventHandlerCallableParams,
+    createEventHandler as createSNSEventHandler
+} from "~/sns";
 
 /**
  * EventBridge

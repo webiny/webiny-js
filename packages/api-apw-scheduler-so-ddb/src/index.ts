@@ -214,7 +214,7 @@ export const createStorageOperations = (
             }
         },
 
-        async delete(params: StorageOperationsDeleteScheduleActionParams): Promise<Boolean> {
+        async delete(params: StorageOperationsDeleteScheduleActionParams): Promise<boolean> {
             const { tenant, locale, id } = params;
             const keys = {
                 PK: createPartitionKey({

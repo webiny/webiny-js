@@ -135,7 +135,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
              * TS is complaining about mixed types for createResolver.
              * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
              */
-            // @ts-ignore
+            // @ts-expect-error
             createResolver({ field, models }) {
                 // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
                 const fieldModels = field.settings?.models || [];

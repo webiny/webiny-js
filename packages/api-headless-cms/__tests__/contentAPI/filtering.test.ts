@@ -88,7 +88,7 @@ describe("filtering", () => {
         const fruit: Fruit = publish.data.publishFruit.data;
 
         for (const field of filterOutFields) {
-            // @ts-ignore
+            // @ts-expect-error
             delete fruit[field];
         }
         return fruit;

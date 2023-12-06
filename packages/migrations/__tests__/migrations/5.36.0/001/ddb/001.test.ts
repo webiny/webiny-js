@@ -332,7 +332,7 @@ describe("5.36.0-001", () => {
 
         // Should force-run the migration
         {
-            // @ts-ignore
+            // @ts-expect-error
             process.env["WEBINY_MIGRATION_FORCE_EXECUTE_5_36_0_001"] = "true";
             process.stdout.write("[Second run]\n");
             const { data, error } = await handler();

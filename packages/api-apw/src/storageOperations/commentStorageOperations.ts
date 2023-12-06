@@ -104,7 +104,8 @@ export const createCommentStorageOperations = ({
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
                     ...existingEntry,
-                    ...params.data
+                    ...params.data,
+                    savedOn: new Date()
                 });
             });
 

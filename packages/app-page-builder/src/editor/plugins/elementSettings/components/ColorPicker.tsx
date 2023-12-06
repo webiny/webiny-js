@@ -27,8 +27,8 @@ interface ColorPickerProps {
     value?: string;
     valueKey?: string;
     defaultValue?: string;
-    updatePreview: Function;
-    updateValue: Function;
+    updatePreview: (value: string) => void;
+    updateValue: (value: string) => void;
     className?: string;
     handlerClassName?: string;
 }

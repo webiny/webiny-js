@@ -5,7 +5,7 @@ export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 interface RenderFormParams {
     canvas: React.RefObject<HTMLCanvasElement>;
     image: HTMLImageElement;
-    renderApplyCancel?: Function;
+    renderApplyCancel?: () => void;
     options?: { [key: string]: any };
 }
 

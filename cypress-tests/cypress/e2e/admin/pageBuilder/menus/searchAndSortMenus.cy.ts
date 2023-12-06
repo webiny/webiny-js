@@ -38,7 +38,6 @@ context("Page Builder -  Menu Search&Sort", () => {
         cy.pbCreateMenu(menuData2);
         cy.pbCreateMenu(menuData3);
         cy.pbCreateMenu(menuData1);
-        cy.wait(500);
     });
 
     it("Should be able to search and sort through the menus.", () => {

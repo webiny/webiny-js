@@ -307,7 +307,7 @@ const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
 
 const MemoTableRow = typedMemo(TableRow);
 
-export const DataTable = <T extends Object & DefaultData>({
+export const DataTable = <T extends Record<string, any> & DefaultData>({
     data,
     columns,
     onSelectRow,

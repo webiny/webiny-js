@@ -1492,7 +1492,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      * A string of Date.toISOString() type - if published.
      * Populated when entry is published.
      */
-    publishedOn?: string;
+    publishedOn?: string | null;
     /**
      * A revision version of the entry.
      */
@@ -2025,11 +2025,13 @@ export interface OnEntryMoveErrorTopicParams {
  */
 
 export interface OnEntryBeforePublishTopicParams {
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
 
 export interface OnEntryAfterPublishTopicParams {
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
@@ -2037,6 +2039,7 @@ export interface OnEntryAfterPublishTopicParams {
 
 export interface OnEntryPublishErrorTopicParams {
     error: Error;
+    original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -2149,6 +2152,12 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    createdOn?: Date | string;
+    savedOn?: Date | string;
+    publishedOn?: Date | string;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
+    ownedBy?: CmsIdentity | null;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2164,6 +2173,12 @@ export interface CreateCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
+    createdOn?: Date;
+    savedOn?: Date;
+    publishedOn?: Date;
+    createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
+    ownedBy?: CmsIdentity;
     [key: string]: any;
 }
 
@@ -2176,6 +2191,12 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    createdOn?: Date | string | null;
+    savedOn?: Date | string | null;
+    publishedOn?: Date | string | null;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
+    ownedBy?: CmsIdentity;
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -2204,6 +2225,20 @@ export interface CmsDeleteEntryOptions {
      * This is to force clean the entry records that might have been left behind a failed delete.
      */
     force?: boolean;
+}
+
+/**
+ * @category CmsEntry
+ */
+export interface CmsPublishEntryOptions {
+    /**
+     * By default, updatePublishedOn is "true". User can set it to "false" to skip the publishedOn field update.
+     */
+    updatePublishedOn?: boolean;
+    /**
+     * By default, updateSavedOn is "true". User can set it to "false" to skip the publishedOn field update.
+     */
+    updateSavedOn?: boolean;
 }
 
 /**
@@ -2329,7 +2364,11 @@ export interface CmsEntryContext {
     /**
      * Publish entry.
      */
-    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    publishEntry: (
+        model: CmsModel,
+        id: string,
+        options?: CmsPublishEntryOptions
+    ) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */

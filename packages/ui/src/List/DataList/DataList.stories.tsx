@@ -129,7 +129,7 @@ story.add(
                             {...generalOptionsAndCallbacks}
                             data={dataProp}
                             meta={metaProp}
-                            // @ts-ignore
+                            // @ts-expect-error
                             sorters={sortersProp.list}
                         >
                             {({ data }: { data: any[] }) => (

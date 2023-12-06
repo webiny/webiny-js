@@ -47,7 +47,7 @@ export const Extensions = ({ model }: ExtensionsProps) => {
                                 /**
                                  * TODO: Figure out correct Bind type
                                  */
-                                // @ts-ignore
+                                // @ts-expect-error
                                 Bind={Bind}
                                 fields={fields}
                                 layout={layout}
