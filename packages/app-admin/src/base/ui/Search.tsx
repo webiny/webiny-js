@@ -57,7 +57,7 @@ export const SearchRenderer = makeComposable("SearchRenderer");
 
 export type SearchOptionProps = SearchOptionData;
 
-export const SearchOption: React.FC<SearchOptionProps> = props => {
+export const SearchOption = (props: SearchOptionProps) => {
     const { addOption } = useSearch();
 
     useEffect(() => {

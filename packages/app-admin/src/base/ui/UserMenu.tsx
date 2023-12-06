@@ -87,7 +87,7 @@ export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({
 
 export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer");
 
-export const AddUserMenuItem: React.FC<UserMenuItemProps["menuItem"]> = props => {
+export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
     const { addMenuItem } = useUserMenu();
 
     useEffect(() => {
