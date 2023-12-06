@@ -518,6 +518,7 @@ describe("Forms Security Test", () => {
                                     prefix: "create-revision-form-",
                                     id
                                 }),
+                                publishedOn: /^20/,
                                 status: "draft",
                                 version: i + 2
                             },
