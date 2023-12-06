@@ -29,32 +29,63 @@ export const ENTRY_META_FIELDS = [
     "entryLastPublishedBy"
 ] as const;
 
-export type EntryMetaField = (typeof ENTRY_META_FIELDS)[number];
+export type EntryMetaFieldName = (typeof ENTRY_META_FIELDS)[number];
+
+export interface RecordWithEntryMetaFields {
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string | null;
+    revisionFirstPublishedOn: string | null;
+    revisionLastPublishedOn: string | null;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity | null;
+    revisionFirstPublishedBy: CmsIdentity | null;
+    revisionLastPublishedBy: CmsIdentity | null;
+
+    // Entry-level meta fields.
+    entryCreatedOn: string;
+    entrySavedOn: string;
+    entryModifiedOn: string | null;
+    entryFirstPublishedOn: string | null;
+    entryLastPublishedOn: string | null;
+    entryCreatedBy: CmsIdentity;
+    entrySavedBy: CmsIdentity;
+    entryModifiedBy: CmsIdentity | null;
+    entryFirstPublishedBy: CmsIdentity | null;
+    entryLastPublishedBy: CmsIdentity | null;
+}
 
 /**
  * Since we're setting a different revision as the latest, we need to update the meta fields.
  * The values are taken from the latest revision we're about to delete. The update of the
- * new latest revision is performed within the storageOperations.entries.deleteRevision method.
+ * new latest revision is performed within the `storageOperations.entries.deleteRevision` method.
  */
-export const pickEntryMetaFields = <T>(object: T, filter?: (fieldName: string) => boolean) => {
-    return ENTRY_META_FIELDS.reduce((acc, key) => {
-        if (key in object) {
-            const mustPick = !filter || filter(key);
+export const pickEntryMetaFields = (
+    object: Partial<RecordWithEntryMetaFields>,
+    filter?: (fieldName: string) => boolean
+) => {
+    const pickedEntryMetaFields: Partial<RecordWithEntryMetaFields> = {};
+    for (const entryMetaFieldName of ENTRY_META_FIELDS) {
+        if (entryMetaFieldName in object) {
+            const mustPick = !filter || filter(entryMetaFieldName);
             if (mustPick) {
-                acc[key] = object[key];
+                Object.assign(pickedEntryMetaFields, {
+                    [entryMetaFieldName]: object[entryMetaFieldName]
+                });
             }
         }
-        return acc;
-    }, {} as Record<string, string | CmsIdentity | null>);
+    }
+
+    return pickedEntryMetaFields;
 };
 
-
-export const isNullableEntryMetaField = (field: EntryMetaField) => {
+export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only modifiedX and publishedX fields are nullable.
-    return field.includes("Modified") || field.includes("Published");
+    return fieldName.includes("Modified") || fieldName.includes("Published");
 };
 
-export const isDateTimeEntryMetaField = (field: EntryMetaField) => {
+export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only field ending with "On" are date/time fields.
-    return field.endsWith('On');
+    return fieldName.endsWith("On");
 };
