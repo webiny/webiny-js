@@ -35,17 +35,12 @@ export function useNavigation() {
     return useContext(NavigationContext);
 }
 
-type LegacyMenuProps =
-    | MenuProps
-    | SectionProps
-    | (ItemProps & {
-          children: React.ReactNode;
-      });
+type LegacyMenuProps = MenuProps | SectionProps | ItemProps;
 
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu = (props: LegacyMenuProps) => {
+const LegacyMenu = (props: LegacyMenuProps & { children: React.ReactNode }) => {
     return (
         <Menu
             {...props}
