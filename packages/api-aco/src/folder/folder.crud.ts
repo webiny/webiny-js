@@ -15,7 +15,6 @@ import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
 import { AdminUser } from "@webiny/api-admin-users/types";
 import { Team } from "@webiny/api-security/types";
-import structuredClone from "@ungap/structured-clone";
 import WError from "@webiny/error";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
