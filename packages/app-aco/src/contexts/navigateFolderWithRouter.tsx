@@ -10,12 +10,12 @@ export interface NavigateFolderProviderProps {
     createListLink?: () => string;
 }
 
-export const NavigateFolderWithRouterProvider: React.VFC<NavigateFolderProviderProps> = ({
+export const NavigateFolderWithRouterProvider = ({
     children,
     folderIdQueryString = "folderId",
     createStorageKey,
     createListLink: initialCreateListLink
-}) => {
+}: NavigateFolderProviderProps) => {
     const { history, search, location } = useRouter();
     const [query] = search;
     const folderId = query.get(folderIdQueryString) || undefined;
