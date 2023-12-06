@@ -5,7 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import {ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField} from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];

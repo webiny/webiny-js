@@ -4,7 +4,7 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import {ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField} from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
