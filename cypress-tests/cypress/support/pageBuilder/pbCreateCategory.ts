@@ -24,6 +24,11 @@ const MUTATION = /* GraphQL */ `
                     layout
                     url
                 }
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -38,11 +43,7 @@ Cypress.Commands.add("pbCreateCategory", data => {
                 authToken: user.idToken.jwtToken
             })
             .then(response => {
-                if (response.pageBuilder.category.error) {
-                    return response.pageBuilder.category.error;
-                } else if (response.pageBuilder.category.data) {
-                    return response.pageBuilder.category.data;
-                }
+                return response.pageBuilder.category.data;
             });
     });
 });

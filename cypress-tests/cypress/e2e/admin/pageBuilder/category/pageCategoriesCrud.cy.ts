@@ -2,12 +2,14 @@ import { customAlphabet } from "nanoid";
 
 context("Page Builder - Category CRUD", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const category_name = nanoid(6);
-    const category_name_edited = nanoid(6);
-    const category_slug = nanoid(6);
-    const category_url = "/" + nanoid(6) + "/";
-    const category_url_edited = "/" + nanoid(6) + "/";
-
+    const categoryName = nanoid(6);
+    const categoryNameEdited = nanoid(6);
+    const categorySlug = nanoid(6);
+    const categoryUrl = "/" + nanoid(6) + "/";
+    const categoryUrlEdited = "/" + nanoid(6) + "/";
+    const categoryNameValidate = nanoid(6);
+    const categorySlugValidate = nanoid(6);
+    const categoryUrlValidate = "/" + nanoid(6) + "/";
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllCategories();
@@ -15,49 +17,61 @@ context("Page Builder - Category CRUD", () => {
 
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
-
-        // Creates new category.
         cy.findByTestId("data-list-new-record-button").click();
-        cy.findByTestId("pb.category.new.form.name").type(category_name);
-        cy.findByTestId("pb.category.new.form.slug").type(category_slug);
-        cy.findByTestId("pb.category.new.form.url").type(category_url);
+        // Creates new category.
+        cy.findByTestId("pb.category.new.form.name").type(categoryNameValidate);
+        cy.findByTestId("pb.category.new.form.button.save").click();
+        cy.findAllByText("Value is required.").should("exist").should("have.length", 2);
+        cy.findByTestId("pb.category.new.form.url").type(`Some URL`);
+        cy.findByTestId("pb.category.new.form.button.save").click();
+        cy.findByText("Value is required.").should("exist");
+        cy.findByTestId("pb.category.new.form.slug").type(categorySlugValidate);
+        cy.findByTestId("pb.category.new.form.button.save").click();
+        cy.findByText("Value is required.").should("not.exist");
+        cy.findByText("Category URL must begin and end with a forward slash (`/`)").should("exist");
+        cy.findByTestId("pb.category.new.form.url").clear().type(categoryUrlValidate);
+        cy.findByTestId("pb.category.new.form.button.save").click();
+        cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
+            "not.exist"
+        );
+        cy.wait(10000);
+        cy.findByTestId("data-list-new-record-button").click();
+        cy.findByTestId("pb.category.new.form.name").type(categoryName);
+        cy.findByTestId("pb.category.new.form.slug").type(categorySlug);
+        cy.findByTestId("pb.category.new.form.url").type(categoryUrl);
         cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category saved successfully.").should("exist");
 
         // Asserts the previously created category is being correctly displayed.
-        cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
-            cy.findByText(category_name).should("exist");
-            cy.findByText(category_url).should("exist");
-            cy.findByText(category_url).click();
+            cy.findByText(categoryName).should("exist");
+            cy.findByText(categoryUrl).should("exist");
+            cy.findByText(categoryUrl).click();
         });
 
         // Assert that the title on top and the other form fields below display correct values on the right side of the screen.
-        cy.get(".mdc-typography--headline5").should("contain", category_name);
-        cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", category_name);
-        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
-        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url);
+        cy.get(".mdc-typography--headline5").should("contain", categoryName);
+        cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", categoryName);
+        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", categorySlug);
+        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", categoryUrl);
 
         // Tests editing category fields.
-        cy.findByTestId("pb.category.new.form.name").clear().type(category_name_edited);
-        cy.findByTestId("pb.category.new.form.url").clear().type(category_url_edited);
+        cy.findByTestId("pb.category.new.form.name").clear().type(categoryNameEdited);
+        cy.findByTestId("pb.category.new.form.url").clear().type(categoryUrlEdited);
 
         cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category saved successfully.").should("exist");
 
         // Asserts the previously edited category is being correctly displayed.
-        cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
-            cy.findByText(category_name_edited).should("exist");
-            cy.findByText(category_url_edited).should("exist");
-            cy.findByText(category_url_edited).click();
+            cy.findByText(categoryNameEdited).should("exist");
+            cy.findByText(categoryUrlEdited).should("exist");
+            cy.findByText(categoryUrlEdited).click();
         });
-        cy.get(".mdc-typography--headline5").should("contain", category_name_edited);
-        cy.findByTestId("pb.category.new.form.name")
-            .invoke("val")
-            .should("eq", category_name_edited);
-        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", category_slug);
-        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", category_url_edited);
+        cy.get(".mdc-typography--headline5").should("contain", categoryNameEdited);
+        cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", categoryNameEdited);
+        cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", categorySlug);
+        cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", categoryUrlEdited);
 
         // Asserts that the created category is being correctly displayed in menu item creation.
         cy.visit("/page-builder/menus?slug=main-menu");
@@ -66,16 +80,16 @@ context("Page Builder - Category CRUD", () => {
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Page list").click();
         });
-        cy.findByTestId("pb.menu.new.listitem.category").type(category_name_edited);
-        cy.findByText(category_name_edited).click();
+        cy.findByTestId("pb.menu.new.listitem.category").type(categoryNameEdited);
+        cy.findByText(categoryNameEdited).click();
         cy.findByTestId("pb.menu.new.listitem.category")
             .invoke("val")
-            .should("eq", category_name_edited);
+            .should("eq", categoryNameEdited);
 
         // Deletes the previously created category and asserts it is no longer being displayed.
         cy.visit("/page-builder/categories");
         cy.findByTestId("default-data-list").within(() => {
-            cy.findByText(category_name_edited)
+            cy.findByText(categoryNameEdited)
                 .parent("li")
                 .within(() => {
                     cy.get("button").click({ force: true });
@@ -84,9 +98,9 @@ context("Page Builder - Category CRUD", () => {
         cy.contains("Are you sure you want to continue?").should("exist");
         cy.findAllByTestId("confirmationdialog-confirm-action").click();
 
-        cy.findByText(`Category "${category_slug}" deleted.`).should("exist");
+        cy.findByText(`Category "${categorySlug}" deleted.`).should("exist");
         cy.findByTestId("default-data-list").within(() => {
-            cy.findByText(category_name_edited).should("not.exist");
+            cy.findByText(categoryNameEdited).should("not.exist");
         });
     });
 });

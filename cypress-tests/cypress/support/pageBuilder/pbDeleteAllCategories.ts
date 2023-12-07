@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeleteAllCategories(): void;
+            pbDeleteAllCategories(): Promise<void | any[]>;
         }
     }
 }
@@ -36,7 +36,6 @@ const DELETE_CATEGORY_MUTATION = /* GraphQL */ `
 
 Cypress.Commands.add("pbDeleteAllCategories", () => {
     return cy.login().then(user => {
-        // Step 1: Fetch categories
         return gqlClient
             .request({
                 query: LIST_CATEGORIES_QUERY,
@@ -47,13 +46,10 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
 
                 return Promise.all(
                     categories.map(category => {
-                        // Check criteria for deletion (exclude categories with "Static" in name or "/static/" in URL)
+                        // Exclude the default Static category.
                         if (category.slug === "static") {
-                            // Skip this category
                             return null;
                         }
-
-                        // Delete the category that doesn't meet the criteria
                         return gqlClient
                             .request({
                                 query: DELETE_CATEGORY_MUTATION,
