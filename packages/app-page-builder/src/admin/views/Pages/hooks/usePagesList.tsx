@@ -4,10 +4,9 @@ import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
 import { createSort, useAcoList } from "@webiny/app-aco";
-import { PbPageDataItem } from "~/types";
+import { PbPageDataItem, TableItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { TableProps } from "~/admin/components/Table/Table";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -26,7 +25,7 @@ interface PagesListProviderContext {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    onSelectRow: TableProps["onSelectRow"];
+    onSelectRow: (rows: TableItem[] | []) => void;
     records: SearchRecordItem<PbPageDataItem>[];
     search: string;
     selected: SearchRecordItem<PbPageDataItem>[];
@@ -107,7 +106,7 @@ export const PagesListProvider = ({ children }: PagesListProviderProps) => {
     }, [search]);
 
     // Handle rows selection.
-    const onSelectRow: TableProps["onSelectRow"] = rows => {
+    const onSelectRow: PagesListProviderContext["onSelectRow"] = rows => {
         const recordEntries = rows.filter(item => item.$type === "RECORD");
         const pageEntries = recordEntries.map(
             item =>

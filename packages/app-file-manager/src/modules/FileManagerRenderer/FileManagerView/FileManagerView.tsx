@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { positionValues } from "react-custom-scrollbars";
 // @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
@@ -34,7 +35,7 @@ import { SearchWidget } from "./components/SearchWidget";
 import { Filters } from "./components/Filters";
 import { TagsList } from "~/modules/FileManagerRenderer/FileManagerView/components/TagsList";
 import { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql";
-import { FileTableItem, TableItem } from "~/types";
+import { TableItem } from "~/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -188,7 +189,9 @@ const FileManagerView = () => {
 
         if (view.listTable) {
             const getSelectableRow = (rows: TableItem[]) =>
-                rows.filter(row => row.$type === "RECORD").map(row => row as FileTableItem);
+                rows
+                    .filter(row => row.$type === "RECORD")
+                    .map(row => omit(row, ["$type", "$selectable"]) as FileItem);
 
             const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback
                 ? rows => {

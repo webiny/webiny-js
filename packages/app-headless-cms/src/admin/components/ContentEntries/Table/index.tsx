@@ -20,9 +20,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
                 onSortingChange={list.setSorting}
                 sorting={list.sorting}
                 onSelectRow={list.onSelectRow}
-                selectedRows={data.filter(record =>
-                    list.selected.find(row => row.id === record.id)
-                )}
+                selected={list.selected}
             />
         </div>
     );

@@ -10,7 +10,7 @@ export interface TableProps<T> {
     onSelectRow?: (rows: T[] | []) => void;
     onSortingChange: OnSortingChange;
     onToggleRow?: (row: T) => void;
-    selectedRows: T[];
+    selected: DefaultData[];
     sorting: Sorting;
 }
 
@@ -21,7 +21,7 @@ export const Table = <T extends Record<string, any> & DefaultData>({
     onSelectRow,
     onSortingChange,
     onToggleRow,
-    selectedRows,
+    selected,
     sorting
 }: TableProps<T>) => {
     const { folder: folderConfig, table } = useAcoConfig();
@@ -51,6 +51,10 @@ export const Table = <T extends Record<string, any> & DefaultData>({
     const isRowSelectable = useCallback(row => {
         return row.original.$selectable;
     }, []);
+
+    const selectedRows = useMemo(() => {
+        return data.filter(row => selected.find(item => row.id === item.id));
+    }, [data, selected]);
 
     const initialSorting = [
         {

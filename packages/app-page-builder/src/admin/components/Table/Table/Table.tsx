@@ -41,9 +41,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
                 onSelectRow={list.onSelectRow}
                 sorting={list.sorting}
                 onSortingChange={list.setSorting}
-                selectedRows={data.filter(record =>
-                    list.selected.find(row => row.data.pid === record.id)
-                )}
+                selected={list.selected}
             />
         </div>
     );

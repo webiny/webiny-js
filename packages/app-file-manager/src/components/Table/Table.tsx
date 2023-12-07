@@ -49,9 +49,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 onToggleRow={props.onToggleRow}
                 sorting={props.sorting}
                 onSortingChange={props.onSortingChange}
-                selectedRows={data.filter(record =>
-                    view.selected.find(row => row.id === record.id)
-                )}
+                selected={view.selected}
             />
         </div>
     );
