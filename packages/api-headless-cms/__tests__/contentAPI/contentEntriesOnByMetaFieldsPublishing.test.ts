@@ -70,6 +70,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revision: rev1.id
         });
 
+        ({ data: rev1 } = await managerIdentityA.getCategory({ revision: rev1.id }));
+        ({ data: rev2 } = await managerIdentityA.getCategory({ revision: rev2.id }));
+
         const publish = await managerIdentityB.publishCategory({ revision: rev2.id });
         expect(publish.error).toBeNull();
 

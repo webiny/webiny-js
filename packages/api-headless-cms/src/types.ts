@@ -2334,6 +2334,7 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    status?: CmsEntryStatus;
 
     /**
      * 🚫 Deprecated meta fields below.
@@ -2485,34 +2486,6 @@ export interface UpdateCmsEntryInput {
 
     [key: string]: any;
 }
-
-/**
- * @category Context
- * @category CmsEntry
- */
-export type PublishCmsEntryInput = Pick<
-    UpdateCmsEntryInput,
-    | "revisionCreatedOn"
-    | "revisionSavedOn"
-    | "revisionModifiedOn"
-    | "revisionFirstPublishedOn"
-    | "revisionLastPublishedOn"
-    | "revisionCreatedBy"
-    | "revisionModifiedBy"
-    | "revisionSavedBy"
-    | "revisionFirstPublishedBy"
-    | "revisionLastPublishedBy"
-    | "entryCreatedOn"
-    | "entrySavedOn"
-    | "entryModifiedOn"
-    | "entryFirstPublishedOn"
-    | "entryLastPublishedOn"
-    | "entryCreatedBy"
-    | "entryModifiedBy"
-    | "entrySavedBy"
-    | "entryFirstPublishedBy"
-    | "entryLastPublishedBy"
->;
 
 export interface UpdateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -2681,7 +2654,6 @@ export interface CmsEntryContext {
     publishEntry: (
         model: CmsModel,
         id: string,
-        input: PublishCmsEntryInput,
         options?: CmsPublishEntryOptions
     ) => Promise<CmsEntry>;
     /**

@@ -1032,6 +1032,7 @@ export const createEntriesStorageOperations = (
 
             if (publishingLatestRevision) {
                 // We want to update current latest record because of the status (`status: 'published'`) update.
+                const kobajica = storageEntry;
                 items.push(
                     entity.putBatch({
                         ...storageEntry,
