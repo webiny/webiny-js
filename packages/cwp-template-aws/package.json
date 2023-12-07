@@ -16,6 +16,7 @@
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
+    "open": "^8.4.0",
     "fast-glob": "^3.2.7",
     "fs-extra": "^9.0.1",
     "get-yarn-workspaces": "1.0.2",

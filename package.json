@@ -115,6 +115,7 @@
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
     "deploy": "yarn webiny deploy",
+    "open": "yarn webiny open",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "node scripts/buildPackages",

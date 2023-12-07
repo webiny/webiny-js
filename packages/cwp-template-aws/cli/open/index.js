@@ -4,9 +4,9 @@ const open = require("open");
 module.exports = {
     type: "cli-command",
     name: "cli-command-open",
-    create({ yargs }) {
+    create({ yargs, context }) {
         yargs.command(
-            "open <folder>",
+            "open <app>",
             `Quickly open Admin or Website application in your default browser`,
             yargs => {
                 yargs.option("env", {
@@ -16,8 +16,11 @@ module.exports = {
                 });
             },
             async args => {
+                const appName = args.app === "website" ? "public website" : "Admin app";
+                context.info(`Opening ${appName}...`);
+
                 let appOutput;
-                if (args.folder === "website") {
+                if (args.app === "website") {
                     appOutput = getStackOutput({
                         folder: "website",
                         env: args.env
@@ -26,12 +29,17 @@ module.exports = {
                     appOutput = getStackOutput({ folder: "admin", env: args.env });
                 }
 
+                if (!appOutput) {
+                    throw new Error(
+                        `Could not retrieve URL for ${appName}. Please make sure you've deployed the project first.`
+                    );
+                }
 
                 const { appUrl } = appOutput;
-                console.log(`Opening ${appUrl}...`);
 
                 return new Promise(resolve => {
                     setTimeout(() => {
+                        context.success(`Successfully opened ${appName}.`);
                         open(appUrl);
                         resolve();
                     }, 1000);
