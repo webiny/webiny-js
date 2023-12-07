@@ -34,7 +34,7 @@ interface LoginParams {
     password: string;
 }
 
-interface User {
+export interface User {
     idToken: {
         jwtToken: string;
     };

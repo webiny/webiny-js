@@ -1,7 +1,7 @@
 import { until } from "@webiny/project-utils/testing/helpers/until";
+import { login } from "../login";
 import { pbListPages } from "./pbListPages";
 import { pbDeletePage } from "./pbDeletePage";
-import { login } from "../login";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -12,9 +12,6 @@ declare global {
     }
 }
 
-/**
- * Deletes all pages (except for the default "Static" one).
- */
 Cypress.Commands.add("pbDeleteAllPages", async () => {
     // Loads admin user with full access permissions.
     const user = await login();

@@ -1,14 +1,5 @@
 import { gqlClient } from "../utils";
-import { login } from "../login";
-
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace Cypress {
-        interface Chainable {
-            pbDeletePage(params: { id: string }): Promise<any>;
-        }
-    }
-}
+import { login, User } from "../login";
 
 const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
@@ -24,17 +15,31 @@ const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
-export const pbDeletePage = ({ user, variables = {} }) => {
-    return gqlClient
-        .request({
-            query: DELETE_PAGE,
-            variables,
-            authToken: user.idToken.jwtToken
-        })
-        .then(response => response.pageBuilder.deletePage.data);
+interface PbDeletePageParams {
+    user: User;
+    variables: { id: string };
+}
+
+export const pbDeletePage = ({ user, variables }: PbDeletePageParams) => {
+    return gqlClient.request({
+        query: DELETE_PAGE,
+        variables,
+        authToken: user.idToken.jwtToken
+    });
 };
 
-Cypress.Commands.add("pbDeletePage", (variables = {}) => {
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbDeletePage(
+                variables: PbDeletePageParams["variables"]
+            ): ReturnType<typeof pbDeletePage>;
+        }
+    }
+}
+
+Cypress.Commands.add("pbDeletePage", variables => {
     return login().then(user => {
         return pbDeletePage({ user, variables });
     });

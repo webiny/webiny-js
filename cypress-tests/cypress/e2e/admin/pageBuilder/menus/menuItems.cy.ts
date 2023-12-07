@@ -87,7 +87,10 @@ context("Page Builder - Menu Items", () => {
         cy.findByText("a").click();
         cy.findByTestId("pb.menu.new.listitem.tags").type("b");
         cy.findByText("b").click();
+
+        // Quick patch: had to add wait because clicking to fast would cause a JS error for some reason.
         cy.wait(500);
+
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Edit previously created page list items.
@@ -97,7 +100,10 @@ context("Page Builder - Menu Items", () => {
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
         cy.findByTestId("pb.menu.new.listitem.tags").type("c");
         cy.findByText("c").click();
+
+        // Quick patch: had to add wait because clicking to fast would cause a JS error for some reason.
         cy.wait(500);
+
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Assert all edits are being properly displayed.

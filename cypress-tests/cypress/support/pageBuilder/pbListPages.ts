@@ -1,16 +1,5 @@
 import { gqlClient } from "../utils";
-import { login } from "../login";
-
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace Cypress {
-        interface Chainable {
-            pbListPages(
-                data: any
-            ): Promise<[{ id: string; title: string; path: string; status: string }]>;
-        }
-    }
-}
+import { login, User } from "../login";
 
 const LIST_PAGES = /* GraphQL */ `
     query PbListPages(
@@ -33,7 +22,12 @@ const LIST_PAGES = /* GraphQL */ `
     }
 `;
 
-export const pbListPages = ({ user, variables = {} }) => {
+interface PbListPagesParams {
+    user: User;
+    variables?: Record<string, any>;
+}
+
+export const pbListPages = ({ user, variables = {} }: PbListPagesParams) => {
     return gqlClient
         .request({
             query: LIST_PAGES,
@@ -42,6 +36,15 @@ export const pbListPages = ({ user, variables = {} }) => {
         })
         .then(response => response.pageBuilder.listPages.data);
 };
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbListPages(variables: Record<string, any>): ReturnType<typeof pbListPages>;
+        }
+    }
+}
 
 Cypress.Commands.add("pbListPages", (variables = {}) => {
     return login().then(user => {
