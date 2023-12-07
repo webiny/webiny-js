@@ -10,7 +10,7 @@ const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 interface Props {
     onClick: () => void;
 }
-export const FolderActionManagePermissions: React.VFC<Props> = ({ onClick }) => {
+export const FolderActionManagePermissions = ({ onClick }: Props) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

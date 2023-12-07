@@ -12,7 +12,7 @@ const t = i18n.ns("app-admin/file-manager/components/table/folder-action-delete"
 interface FolderActionDeleteProps {
     onClick: () => void;
 }
-export const FolderActionDelete: React.FC<FolderActionDeleteProps> = ({ onClick }) => {
+export const FolderActionDelete = ({ onClick }: FolderActionDeleteProps) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>
