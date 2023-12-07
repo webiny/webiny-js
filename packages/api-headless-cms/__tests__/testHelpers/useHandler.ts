@@ -6,6 +6,7 @@ import { LambdaContext } from "@webiny/handler-aws/types";
 
 interface CmsHandlerEvent {
     path: string;
+    method?: "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS";
     headers: {
         ["x-tenant"]: string;
         [key: string]: string;

@@ -8,9 +8,14 @@ export interface GraphQLHandlerFactoryParams {
     debug?: boolean;
 }
 
-const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) => {
+const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onGet, onOptions, context }) => {
     onPost("/cms/:type(^manage|preview|read$)/:locale", async (request, reply) => {
         return handleRequest({ context, request, reply });
+    });
+
+    onGet("/cms/ts/:type(^manage|preview|read$)/:locale", async (request, reply) => {
+        const { handleSchemaGeneratorRequest } = await import("./generator");
+        return handleSchemaGeneratorRequest({ context, request, reply });
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
