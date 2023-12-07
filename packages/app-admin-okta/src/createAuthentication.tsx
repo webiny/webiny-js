@@ -49,8 +49,8 @@ interface AuthState {
 }
 
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
-    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
-        return function WithGetIdentityData({ children }) {
+    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>) => {
+        return function WithGetIdentityData({ children }: { children?: React.ReactNode }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
@@ -59,7 +59,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         };
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
