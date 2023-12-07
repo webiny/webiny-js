@@ -22,7 +22,7 @@ interface ErrorOverlayProps {
         };
     };
 }
-const ErrorOverlay: React.FC<ErrorOverlayProps> = props => {
+const ErrorOverlay = (props: ErrorOverlayProps) => {
     const { query, networkError } = props;
     const [open, setOpen] = useState(true);
     // Log error in browser's developer console for further inspection.

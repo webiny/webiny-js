@@ -14,7 +14,7 @@ export interface OptionsMenuProps {
     ["data-testid"]?: string;
 }
 
-export const OptionsMenu: React.VFC<OptionsMenuProps> = props => {
+export const OptionsMenu = (props: OptionsMenuProps) => {
     if (!props.actions.length) {
         return null;
     }

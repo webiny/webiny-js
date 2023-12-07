@@ -13,7 +13,7 @@ export interface FolderProps {
     onClick: (id: string) => void;
 }
 
-export const Folder: React.VFC<FolderProps> = ({ onClick }) => {
+export const Folder = ({ onClick }: FolderProps) => {
     const { folder } = useFolder();
     const { folder: folderConfig } = useAcoConfig();
     const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } =

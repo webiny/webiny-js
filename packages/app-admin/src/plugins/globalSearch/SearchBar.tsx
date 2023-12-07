@@ -247,7 +247,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-const SearchBarContainer: React.FC = () => {
+const SearchBarContainer = () => {
     const routerProps = useRouter();
 
     return <SearchBar {...routerProps} />;

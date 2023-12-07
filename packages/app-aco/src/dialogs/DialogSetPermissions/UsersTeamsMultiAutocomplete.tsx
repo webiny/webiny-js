@@ -7,7 +7,7 @@ interface UsersTeamsMultiAutocompleteProps {
     onChange: (value: any) => void;
 }
 
-export const UsersTeamsMultiAutocomplete: React.FC<UsersTeamsMultiAutocompleteProps> = props => {
+export const UsersTeamsMultiAutocomplete = (props: UsersTeamsMultiAutocompleteProps) => {
     return (
         <>
             {/* A hack that ensures the autocomplete is not being auto-focused. */}
