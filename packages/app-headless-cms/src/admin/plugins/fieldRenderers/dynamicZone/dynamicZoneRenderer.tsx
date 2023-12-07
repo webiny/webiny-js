@@ -12,11 +12,7 @@ const noBottomPadding = css`
     }
 `;
 
-const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
-    field,
-    getBind,
-    contentModel
-}) => {
+const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRendererProps) => {
     const templates = field.settings?.templates || [];
     if (!templates.length) {
         console.info(

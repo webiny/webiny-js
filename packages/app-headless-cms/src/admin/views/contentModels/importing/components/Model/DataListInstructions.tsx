@@ -6,7 +6,7 @@ const Instructions = styled("div")({
     margin: "10px 0"
 });
 
-export const DataListInstructions: React.VFC = () => {
+export const DataListInstructions = () => {
     return (
         <Instructions>
             <h4>Instructions</h4>

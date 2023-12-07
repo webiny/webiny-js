@@ -11,11 +11,11 @@ const Content = styled("p")({
     paddingRight: 20,
     paddingBottom: 10
 });
-interface Props {
+interface DescriptionProps {
     description?: string | null;
 }
 
-export const Description: React.VFC<Props> = ({ description }) => {
+export const Description = ({ description }: DescriptionProps) => {
     const MAX_LENGTH = 320;
     if (!description) {
         return <Content />;

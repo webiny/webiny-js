@@ -79,11 +79,11 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
     };
 };
 
-export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = ({
+export const ContentEntryProvider = ({
     children,
     isNewEntry,
     getContentId
-}) => {
+}: ContentEntryContextProviderProps) => {
     const { contentModel, canCreate } = useContentEntries();
 
     const { search } = useRouter();

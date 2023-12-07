@@ -14,12 +14,12 @@ const Text = styled("span")({
     textTransform: "uppercase"
 });
 
-interface Props {
+interface RemoveProps {
     entry: CmsReferenceContentEntry;
     onRemove: (entryId: string) => void;
 }
 
-export const Remove: React.VFC<Props> = ({ entry, onRemove }) => {
+export const Remove = ({ entry, onRemove }: RemoveProps) => {
     const { showConfirmation } = useConfirmationDialog({
         title: "Remove referenced entry",
         message: `Are you sure you want to remove the referenced entry "${entry.title}"?`,

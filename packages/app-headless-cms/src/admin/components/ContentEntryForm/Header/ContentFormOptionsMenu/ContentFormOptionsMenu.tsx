@@ -4,7 +4,7 @@ import { OptionsMenu } from "@webiny/app-admin";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { OptionMenuContainer } from "./ContentFormOptionsMenu.styles";
 
-export const ContentFormOptionsMenu: React.VFC = () => {
+export const ContentFormOptionsMenu = () => {
     const { menuItemActions } = useContentEntryEditorConfig();
 
     return (

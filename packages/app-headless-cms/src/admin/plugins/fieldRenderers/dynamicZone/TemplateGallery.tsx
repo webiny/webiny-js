@@ -20,7 +20,7 @@ interface TemplateGalleryProps {
     onClose: () => void;
 }
 
-export const TemplateGallery: React.VFC<TemplateGalleryProps> = ({ onTemplate, onClose }) => {
+export const TemplateGallery = ({ onTemplate, onClose }: TemplateGalleryProps) => {
     const { field } = useModelField();
     const templates = field.settings?.templates || [];
 

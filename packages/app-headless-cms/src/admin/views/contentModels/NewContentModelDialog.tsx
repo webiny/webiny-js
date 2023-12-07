@@ -39,7 +39,7 @@ interface CmsModelData {
     group: string;
 }
 
-const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
+const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
