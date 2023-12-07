@@ -1,4 +1,5 @@
 import { gqlClient } from "../utils";
+import { login } from "../login";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -32,14 +33,18 @@ const LIST_PAGES = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbListPages", data => {
-    return cy.login().then(user => {
-        return gqlClient
-            .request<any>({
-                query: LIST_PAGES,
-                variables: data,
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => response.pageBuilder.listPages.data);
+export const pbListPages = ({ user, variables = {} }) => {
+    return gqlClient
+        .request({
+            query: LIST_PAGES,
+            variables,
+            authToken: user.idToken.jwtToken
+        })
+        .then(response => response.pageBuilder.listPages.data);
+};
+
+Cypress.Commands.add("pbListPages", (variables = {}) => {
+    return login().then(user => {
+        return pbListPages({ user, variables });
     });
 });

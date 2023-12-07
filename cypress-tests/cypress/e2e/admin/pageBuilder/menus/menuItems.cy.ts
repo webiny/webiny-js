@@ -22,6 +22,7 @@ context("Page Builder - Menu Items", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllMenus();
+        cy.pbDeleteAllPages();
         cy.pbCreateMenu(menuData);
         cy.pbCreatePage({ category: "static" }).then(page => {
             // eslint-disable-next-line jest/valid-expect-in-promise
@@ -86,6 +87,7 @@ context("Page Builder - Menu Items", () => {
         cy.findByText("a").click();
         cy.findByTestId("pb.menu.new.listitem.tags").type("b");
         cy.findByText("b").click();
+        cy.wait(500);
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Edit previously created page list items.
@@ -95,6 +97,7 @@ context("Page Builder - Menu Items", () => {
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
         cy.findByTestId("pb.menu.new.listitem.tags").type("c");
         cy.findByText("c").click();
+        cy.wait(500);
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Assert all edits are being properly displayed.

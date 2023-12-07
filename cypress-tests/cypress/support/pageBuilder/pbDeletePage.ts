@@ -1,4 +1,5 @@
 import { gqlClient } from "../utils";
+import { login } from "../login";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -23,14 +24,18 @@ const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbDeletePage", data => {
-    return cy.login().then(user => {
-        return gqlClient
-            .request<any>({
-                query: DELETE_PAGE,
-                variables: data,
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => response.pageBuilder.deletePage);
+export const pbDeletePage = ({ user, variables = {} }) => {
+    return gqlClient
+        .request({
+            query: DELETE_PAGE,
+            variables,
+            authToken: user.idToken.jwtToken
+        })
+        .then(response => response.pageBuilder.deletePage.data);
+};
+
+Cypress.Commands.add("pbDeletePage", (variables = {}) => {
+    return login().then(user => {
+        return pbDeletePage({ user, variables });
     });
 });
