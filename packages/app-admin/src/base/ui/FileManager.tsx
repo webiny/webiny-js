@@ -94,12 +94,7 @@ export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "rende
 
 export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
 
-export const FileManager: React.FC<FileManagerProps> = ({
-    children,
-    render,
-    onChange,
-    ...rest
-}) => {
+export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);

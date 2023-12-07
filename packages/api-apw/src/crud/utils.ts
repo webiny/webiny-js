@@ -1,7 +1,6 @@
 import Error from "@webiny/error";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import cloneDeep from "lodash/cloneDeep";
 import set from "lodash/set";
 import {
     ApwContentReview,
@@ -89,7 +88,7 @@ export const filterContentReviewsByRequiresMyAttention = async (
      * Get all "content reviews" with status "underReview"
      */
     const newListParams = set(
-        cloneDeep(listParams),
+        structuredClone(listParams),
         "where.reviewStatus",
         ApwContentReviewStatus.UNDER_REVIEW
     );

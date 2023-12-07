@@ -80,7 +80,7 @@ const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
 /**
  * Register a new menu item into the Admin app.
  */
-export const AddMenu: React.FC<MenuProps> = ({ children, ...props }) => {
+export const AddMenu = ({ children, ...props }: MenuProps) => {
     const menu = useMenu();
     const navigation = useNavigation();
 

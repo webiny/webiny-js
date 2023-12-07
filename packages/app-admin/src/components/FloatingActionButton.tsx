@@ -2,8 +2,12 @@ import * as React from "react";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/outlined/add.svg";
 
+interface FloatingActionButtonProps {
+    children: React.ReactNode;
+}
+
 // Set "styles" inline, since no customizations are possible / needed here.
-const FloatingActionButton: React.FC = props => {
+const FloatingActionButton = (props: FloatingActionButtonProps) => {
     return (
         <div
             style={{

@@ -85,7 +85,7 @@ export interface Auth0Props {
     children?: React.ReactNode;
 }
 
-export const Auth0: React.FC<Auth0Props> = props => {
+export const Auth0 = (props: Auth0Props) => {
     const LoginScreenPlugin = createLoginScreenPlugin(props);
     return (
         <Fragment>
