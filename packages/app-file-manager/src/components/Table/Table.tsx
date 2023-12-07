@@ -1,12 +1,8 @@
 import React, { forwardRef, useMemo } from "react";
-import { FolderItem, FolderTableItem } from "@webiny/app-aco/types";
-import { Table as AcoTable } from "@webiny/app-aco";
-
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
-
+import { createFoldersData, createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { FileItem } from "@webiny/app-admin/types";
-import { TableItem, FileTableItem } from "~/types";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { TableItem } from "~/types";
 
 export interface TableProps {
     onSelectRow: ((rows: TableItem[] | []) => void) | undefined;
@@ -14,24 +10,6 @@ export interface TableProps {
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
-
-const createRecordsData = (items: FileItem[]): FileTableItem[] => {
-    return items.map(item => {
-        return {
-            $type: "RECORD",
-            $selectable: true, // Files a.k.a. records are always selectable to perform bulk actions
-            ...item
-        };
-    });
-};
-
-const createFoldersData = (items: FolderItem[]): FolderTableItem[] => {
-    return items.map(item => ({
-        $type: "FOLDER",
-        $selectable: false,
-        ...item
-    }));
-};
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const view = useFileManagerView();

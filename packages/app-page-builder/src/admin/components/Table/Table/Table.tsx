@@ -1,30 +1,9 @@
 import React, { ForwardRefRenderFunction, useMemo } from "react";
 
-import { Table as AcoTable } from "@webiny/app-aco";
+import { createFoldersData, createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 
-import { FolderItem, FolderTableItem, SearchRecordItem } from "@webiny/app-aco/types";
-import { PbPageDataItem, PbPageTableItem, TableItem } from "~/types";
-
-const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PbPageTableItem[] => {
-    return items.map(item => {
-        return {
-            $type: "RECORD",
-            $selectable: true,
-            ...item
-        };
-    });
-};
-
-const createFoldersData = (items: FolderItem[]): FolderTableItem[] => {
-    return items.map(item => {
-        return {
-            $type: "FOLDER",
-            $selectable: false,
-            ...item
-        };
-    });
-};
+import { TableItem } from "~/types";
 
 const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
     const list = usePagesList();

@@ -5,13 +5,15 @@ import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
+import {
+    useAcoList,
+    createSort,
+    useNavigateFolder,
+    createRecordsData,
+    createFoldersData
+} from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
 import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
-import {
-    transformCmsContentEntriesToRecordEntries,
-    transformFolderItemsToFolderEntries
-} from "~/utils/acoRecordTransform";
 import { usePermission } from "~/admin/hooks";
 
 interface UpdateSearchCallableParams {
@@ -147,11 +149,11 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     );
 
     const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(initialRecords);
+        return createRecordsData(initialRecords);
     }, [initialRecords]);
 
     const folders = useMemo(() => {
-        return transformFolderItemsToFolderEntries(initialFolders);
+        return createFoldersData(initialFolders);
     }, [initialFolders]);
 
     useEffect(() => {
