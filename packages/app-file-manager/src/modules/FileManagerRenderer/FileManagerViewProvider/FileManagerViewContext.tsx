@@ -453,10 +453,10 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 searchQuery: search
             }));
         },
-        setSelected(items: FileItem[]) {
+        setSelected(files: FileItem[]) {
             setState(state => ({
                 ...state,
-                selected: items
+                selected: files
             }));
         },
         showFileDetails: useCallback((id: string) => {
