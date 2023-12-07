@@ -34,11 +34,12 @@ context("Page Builder - Category CRUD", () => {
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
             "not.exist"
         );
-        cy.wait(10000);
+        // Without this wait, there is not enough of a delay for the test to properly click the new Category button
+        cy.wait(1000);
         cy.findByTestId("data-list-new-record-button").click();
-        cy.findByTestId("pb.category.new.form.name").type(categoryName);
-        cy.findByTestId("pb.category.new.form.slug").type(categorySlug);
-        cy.findByTestId("pb.category.new.form.url").type(categoryUrl);
+        cy.findByTestId("pb.category.new.form.name").clear().type(categoryName);
+        cy.findByTestId("pb.category.new.form.slug").clear().type(categorySlug);
+        cy.findByTestId("pb.category.new.form.url").clear().type(categoryUrl);
         cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category saved successfully.").should("exist");
 
@@ -50,7 +51,7 @@ context("Page Builder - Category CRUD", () => {
         });
 
         // Assert that the title on top and the other form fields below display correct values on the right side of the screen.
-        cy.get(".mdc-typography--headline5").should("contain", categoryName);
+        cy.findByTestId("pb-categories-form-title").should("contain", categoryName);
         cy.findByTestId("pb.category.new.form.name").invoke("val").should("eq", categoryName);
         cy.findByTestId("pb.category.new.form.slug").invoke("val").should("eq", categorySlug);
         cy.findByTestId("pb.category.new.form.url").invoke("val").should("eq", categoryUrl);
