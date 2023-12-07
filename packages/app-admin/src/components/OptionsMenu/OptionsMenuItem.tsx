@@ -11,7 +11,7 @@ export interface OptionsMenuItemProps {
     ["data-testid"]?: string;
 }
 
-export const OptionsMenuItem: React.VFC<OptionsMenuItemProps> = props => {
+export const OptionsMenuItem = (props: OptionsMenuItemProps) => {
     return (
         <MenuItem
             onClick={props.onAction}

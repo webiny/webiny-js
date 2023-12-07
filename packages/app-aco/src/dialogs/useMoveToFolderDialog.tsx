@@ -29,7 +29,7 @@ interface MessageProps {
     focusedFolderId: string;
 }
 
-export const Message: React.VFC<MessageProps> = ({ helpText, focusedFolderId }) => {
+export const Message = ({ helpText, focusedFolderId }: MessageProps) => {
     return (
         <>
             <Typography use="body1">{helpText}</Typography>

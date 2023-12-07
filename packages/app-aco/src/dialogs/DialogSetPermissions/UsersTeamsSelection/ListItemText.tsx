@@ -11,7 +11,7 @@ interface ListItemTextProps {
     target: FolderLevelPermissionsTarget;
 }
 
-export const ListItemText: React.FC<ListItemTextProps> = ({ target }) => {
+export const ListItemText = ({ target }: ListItemTextProps) => {
     const { identity } = useSecurity();
 
     if (target.type === "admin") {

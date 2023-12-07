@@ -52,7 +52,7 @@ export const initializeState = (): State => ({
 
 export const Dialogs = React.createContext<DialogsContext | undefined>(undefined);
 
-export const DialogsProvider: React.VFC<DialogsProviderProps> = ({ children }) => {
+export const DialogsProvider = ({ children }: DialogsProviderProps) => {
     const { showSnackbar } = useSnackbar();
 
     const [state, setState] = useState(initializeState());
