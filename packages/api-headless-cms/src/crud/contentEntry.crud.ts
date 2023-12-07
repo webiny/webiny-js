@@ -1800,7 +1800,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entrySavedBy: currentIdentity,
             entryModifiedBy: currentIdentity,
             entryFirstPublishedBy: latestEntry.entryFirstPublishedBy || currentIdentity,
-            entryLastPublishedBy: currentIdentity,
+            entryLastPublishedBy: currentIdentity
         };
 
         let storageEntry: CmsStorageEntry | null = null;
