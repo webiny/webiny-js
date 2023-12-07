@@ -26,7 +26,7 @@ declare global {
     }
 }
 Cypress.Commands.add("pbCreatePage", variables => {
-    cy.login().then(user => {
+    return cy.login().then(user => {
         return gqlClient
             .request({
                 query: CREATE_PAGE,

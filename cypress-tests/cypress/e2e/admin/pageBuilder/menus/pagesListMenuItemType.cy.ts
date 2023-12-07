@@ -33,6 +33,7 @@ describe("Page Builder - List Menu Item Types", () => {
 
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
         cy.pbClearMainMenu();
+
         cy.visit("/page-builder/menus");
 
         cy.findByTestId("default-data-list").within(() => {
@@ -57,10 +58,10 @@ describe("Page Builder - List Menu Item Types", () => {
         cy.findByTestId("pb.menu.new.listitem.sortby").select("Title");
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Descending");
 
-        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-0`);
         cy.findByText(`page-${id}-0`).click();
 
-        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-1`);
         cy.findByText(`page-${id}-1`).click();
 
         cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
@@ -166,15 +167,6 @@ describe("Page Builder - List Menu Item Types", () => {
         });
     });
     it(`Step 7: delete all ${totalPages} pages (pseudo "afterAll" hook)`, () => {
-        // List pages
-        cy.pbListPages({
-            sort: ["publishedOn_DESC"]
-        }).then(pages => {
-            // Delete first X pages
-            for (let i = 0; i < totalPages; i++) {
-                // Use then to handle the promise
-                cy.pbDeletePage({ id: pages[i].id });
-            }
-        });
+        cy.pbDeleteAllPages();
     });
 });
