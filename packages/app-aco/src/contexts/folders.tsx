@@ -52,7 +52,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
+export const FoldersProvider = ({ children, ...props }: Props) => {
     const appContext = useContext(AcoAppContext);
     const [folders, setFolders] = useState<FolderItem[] | null>(null);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);

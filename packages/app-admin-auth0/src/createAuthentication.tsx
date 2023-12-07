@@ -49,7 +49,7 @@ export const createAuthentication = ({
         };
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const { isAuthenticated, isLoading, getIdTokenClaims, getAccessTokenSilently, logout } =
             useAuth0();
 
