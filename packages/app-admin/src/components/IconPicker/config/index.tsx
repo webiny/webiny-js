@@ -8,9 +8,8 @@ import {
     categories as fa6SolidCategoriesJson
 } from "@iconify/json/json/fa6-solid.json";
 import emojisJson from "unicode-emoji-json/data-by-emoji.json";
-
+import { Decorator } from "@webiny/react-composition";
 import { createConfigurableComponent } from "@webiny/react-properties";
-
 import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
 import { IconType } from "./IconType";
 import { SimpleIconPlugin } from "../plugins/iconsPlugin";
@@ -49,6 +48,16 @@ const base = createConfigurableComponent<IconPickerConfig>("IconPicker");
 
 export const IconPickerConfig = Object.assign(base.Config, { IconPack, IconType });
 export const IconPickerWithConfig = base.WithConfig;
+
+export const IconPickerConfigProvider: Decorator = Original => {
+    return function IconPickerConfigProvider({ children }) {
+        return (
+            <IconPickerWithConfig>
+                <Original>{children}</Original>
+            </IconPickerWithConfig>
+        );
+    };
+};
 
 export interface IconPackLoader {
     (): Promise<ProviderIcon[]>;
