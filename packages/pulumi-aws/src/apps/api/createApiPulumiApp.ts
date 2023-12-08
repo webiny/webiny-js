@@ -3,6 +3,7 @@ import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny
 import {
     ApiGateway,
     ApiApwScheduler,
+    ApiBackgroundTask,
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
@@ -232,6 +233,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const cloudfront = app.addModule(ApiCloudfront);
             const migration = app.addModule(ApiMigration);
+            const backgroundTask = app.addModule(ApiBackgroundTask);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -250,7 +252,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
-                graphqlLambdaName: graphql.functions.graphql.output.name
+                graphqlLambdaName: graphql.functions.graphql.output.name,
+                backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn
             });
 
             app.addHandler(() => {
@@ -277,7 +281,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apiGateway,
                 cloudfront,
                 apwScheduler,
-                migration
+                migration,
+                backgroundTask
             };
         }
     });
