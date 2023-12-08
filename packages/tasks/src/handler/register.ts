@@ -1,15 +1,22 @@
 import { registry } from "@webiny/handler-aws/registry";
 import { createHandler, HandlerParams } from "./index";
 import { createSourceHandler } from "@webiny/handler-aws";
-import { ITaskEvent } from "./types";
+import { IIncomingEvent, ITaskEvent } from "./types";
 
-const handler = createSourceHandler<ITaskEvent, HandlerParams>({
+const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
     name: "handler-webiny-background-task",
     canUse: event => {
-        return !!event.webinyTaskId;
+        if (!event?.Payload) {
+            return false;
+        }
+        return !!event.Payload.webinyTaskId;
     },
     handle: async ({ params, event, context }) => {
-        return createHandler(params)(event, context);
+        /**
+         * We can safely cast because we know that the event is of type ITaskEvent.
+         * Check is done in the canUse() method.
+         */
+        return createHandler(params)(event.Payload as ITaskEvent, context);
     }
 });
 

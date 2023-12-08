@@ -41,7 +41,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         request: Request,
         reply: Reply,
         context: C,
-        response?: IResponseManager,
+        response: IResponseManager = new MessageResponseManager(),
         validation: TaskEventValidation = new TaskEventValidation()
     ) {
         this.request = request;
@@ -49,7 +49,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.context = context;
         this.event = event;
         this.lambdaContext = lambdaContext;
-        this.response = response || new MessageResponseManager(this.event.token);
+        this.response = response;
         this.validation = validation;
     }
 

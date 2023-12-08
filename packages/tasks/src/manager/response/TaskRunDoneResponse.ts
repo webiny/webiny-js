@@ -6,7 +6,6 @@ export interface ITaskRunDoneResponseParams<T = any> {
     input: T;
     error?: never;
     message?: string;
-    token: string;
 }
 
 export class TaskRunDoneResponse<T = any>
@@ -19,7 +18,7 @@ export class TaskRunDoneResponse<T = any>
     public readonly input: T;
 
     public constructor(params: ITaskRunDoneResponseParams) {
-        super(params.token);
+        super();
         this.id = params.task?.id || "unknown";
         this.message = params.message;
         this.input = params.input;

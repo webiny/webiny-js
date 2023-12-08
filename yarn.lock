@@ -17918,7 +17918,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/tasks@workspace:packages/tasks":
+"@webiny/tasks@0.0.0, @webiny/tasks@workspace:packages/tasks":
   version: 0.0.0-use.local
   resolution: "@webiny/tasks@workspace:packages/tasks"
   dependencies:
@@ -19045,6 +19045,7 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/handler-logs": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/tasks": 0.0.0
     graphql-request: ^3.4.0
   languageName: unknown
   linkType: soft

@@ -4,9 +4,10 @@ import { execute } from "@webiny/handler-aws/execute";
 import { HandlerFactoryParams } from "@webiny/handler-aws/types";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
-import { Context } from "~/types";
+import { Context, TaskResponseStatus } from "~/types";
 import { ITaskEvent } from "~/handler/types";
 import { TaskRunner } from "~/runner";
+import WebinyError from "@webiny/error";
 
 export interface HandlerCallable {
     (event: ITaskEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -25,13 +26,27 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 ...(params.options || {})
             }
         });
-        /**
-         * We always must add our default plugins to the app.
-         */
+
         registerDefaultPlugins(app.webiny);
-        /**
-         * There must be an event plugin for this handler to work.
-         */
+
+        app.addHook("preSerialization", async (_, __, payload: Record<string, any>) => {
+            if (!payload.body) {
+                return payload;
+            }
+            return payload.body;
+        });
+
+        app.setErrorHandler<WebinyError>(async (error, _, reply) => {
+            app.__webiny_raw_result = {
+                error: {
+                    message: error.message,
+                    code: error.code,
+                    data: error.data
+                },
+                status: TaskResponseStatus.ERROR
+            };
+            return reply.send();
+        });
 
         app.post(url, async (request, reply) => {
             const handler = new TaskRunner(
@@ -45,13 +60,25 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 app.webiny as Context
             );
 
-            app.__webiny_raw_result = await handler.run();
+            const result = await handler.run();
+            app.__webiny_raw_result = {
+                // @ts-expect-error
+                status: TaskResponseStatus.DONE,
+                ...result
+            };
             return reply.send({});
         });
         return execute({
             app,
             url,
-            payload: event
+            payload: {
+                ...event,
+                headers: {
+                    ["x-tenant"]: event.tenant,
+                    ["x-webiny-cms-endpoint"]: event.endpoint,
+                    ["x-webiny-cms-locale"]: event.locale
+                }
+            }
         });
     };
 };
