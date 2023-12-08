@@ -46,7 +46,7 @@ interface ExportBlockLoadingDialogProps {
     where?: Record<string, any>;
 }
 
-const ExportBlockLoadingDialogMessage: React.FC<ExportBlockLoadingDialogProps> = props => {
+const ExportBlockLoadingDialogMessage = (props: ExportBlockLoadingDialogProps) => {
     const { exportBlock } = useExportBlock();
 
     useEffect(() => {
@@ -66,7 +66,7 @@ interface ExportBlockDialogProps {
     exportUrl: string;
 }
 
-const ExportBlockDialogMessage: React.FC<ExportBlockDialogProps> = ({ exportUrl }) => {
+const ExportBlockDialogMessage = ({ exportUrl }: ExportBlockDialogProps) => {
     const { showSnackbar } = useSnackbar();
 
     return (

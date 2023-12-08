@@ -27,7 +27,7 @@ interface Props {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+export const Main = ({ folderId: initialFolderId }: Props) => {
     const location = useLocation();
     const history = useHistory();
 

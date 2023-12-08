@@ -9,7 +9,7 @@ import { PbEditorPageElementPlugin } from "~/types";
 interface MirrorCellActionPropsType {
     children: React.ReactElement;
 }
-const MirrorCellAction: React.FC<MirrorCellActionPropsType> = ({ children }) => {
+const MirrorCellAction = ({ children }: MirrorCellActionPropsType) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));

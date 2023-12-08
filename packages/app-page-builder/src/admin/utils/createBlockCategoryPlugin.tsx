@@ -8,7 +8,7 @@ interface IconProps {
     category: PbBlockCategory;
 }
 
-export const Icon: React.FC<IconProps> = ({ category }) => {
+export const Icon = ({ category }: IconProps) => {
     return (
         <FontAwesomeIcon
             style={{ color: "var(--mdc-theme-text-secondary-on-background)", fontSize: "24px" }}

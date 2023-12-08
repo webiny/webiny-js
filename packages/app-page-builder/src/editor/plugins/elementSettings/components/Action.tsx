@@ -27,7 +27,7 @@ interface ActionProps {
     "data-testid"?: string;
 }
 
-const Action: React.FC<ActionProps> = ({
+const Action = ({
     plugin,
     icon,
     tooltip,
@@ -35,7 +35,7 @@ const Action: React.FC<ActionProps> = ({
     shortcut = [],
     disabled = false,
     ...props
-}) => {
+}: ActionProps) => {
     const eventActionHandler = useEventActionHandler();
     const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin as string));
     const settingsActive =

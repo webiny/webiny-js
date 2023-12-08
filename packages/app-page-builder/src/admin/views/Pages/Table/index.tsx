@@ -14,7 +14,7 @@ import { usePagesPermissions } from "~/hooks/permissions";
 import { PagesListProvider } from "~/admin/views/Pages/hooks/usePagesList";
 import { PageListWithConfig } from "~/admin/config/pages";
 
-const View: React.VFC = () => {
+const View = () => {
     const { currentFolderId } = useNavigateFolder();
 
     return (
@@ -29,7 +29,7 @@ const View: React.VFC = () => {
     );
 };
 
-const Index: React.VFC = () => {
+const Index = () => {
     const client = useApolloClient();
     const { canAccessOnlyOwn } = usePagesPermissions();
 

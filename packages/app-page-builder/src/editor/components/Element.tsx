@@ -42,11 +42,7 @@ const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin |
     return pluginsByType.find(pl => pl.elementType === element.type) || null;
 };
 
-const ElementComponent: React.FC<ElementPropsType> = ({
-    id: elementId,
-    className = "",
-    isActive
-}) => {
+const ElementComponent = ({ id: elementId, className = "", isActive }: ElementPropsType) => {
     // Type casting here because we're (almost) confident that there _is_ an element with this ID.
     const [element, updateElement] = useElementById(elementId) as [
         PbEditorElement,
