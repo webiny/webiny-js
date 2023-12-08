@@ -67,10 +67,11 @@ interface SimpleFormHeaderProps {
     title: React.ReactNode;
     icon?: React.ReactElement<any>;
     children?: React.ReactNode;
+    ["data-testid"]?: string;
 }
 export const SimpleFormHeader = (props: SimpleFormHeaderProps) => {
     return (
-        <Grid className={header}>
+        <Grid className={header} data-testid={props["data-testid"]}>
             <Cell span={props.children ? 6 : 12} className={title}>
                 <React.Fragment>
                     {props.icon && <Icon className={icon} icon={props.icon} />}
