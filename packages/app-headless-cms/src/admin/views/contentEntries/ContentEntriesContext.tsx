@@ -16,11 +16,11 @@ export interface ContentEntriesContextProviderProps {
     insideDialog?: boolean;
 }
 
-export const ContentEntriesProvider: React.FC<ContentEntriesContextProviderProps> = ({
+export const ContentEntriesProvider = ({
     contentModel,
     children,
     insideDialog
-}) => {
+}: ContentEntriesContextProviderProps) => {
     const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {

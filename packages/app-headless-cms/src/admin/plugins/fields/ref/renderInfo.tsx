@@ -45,22 +45,23 @@ const Extras = styled("div")({
 interface BadgeProps {
     model: CmsModel;
 }
-const Badge: React.FC<BadgeProps> = ({ model }) => {
+
+const Badge = ({ model }: BadgeProps) => {
     return <BadgeItem>{model.name}</BadgeItem>;
 };
 
-interface Params {
+interface RenderInfoParams {
     field: CmsModelField;
     model: CmsModel;
 }
 
 const takeBadges = 1;
 
-export const renderInfo = ({ model, field }: Params) => {
+export const renderInfo = ({ model, field }: RenderInfoParams) => {
     return <RenderInfo model={model} field={field} />;
 };
 
-const RenderInfo: React.FC<Params> = ({ field }) => {
+const RenderInfo = ({ field }: RenderInfoParams) => {
     const hasAnyModels = (field.settings?.models || []).length > 0;
     const { data, loading, error } = useQuery<ListReferencedModelsQueryResult>(
         LIST_REFERENCED_MODELS,

@@ -18,7 +18,7 @@ import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco"
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
-export const ContentEntriesModule: React.FC = () => {
+export const ContentEntriesModule = () => {
     return (
         <>
             <ContentEntryListConfig>
