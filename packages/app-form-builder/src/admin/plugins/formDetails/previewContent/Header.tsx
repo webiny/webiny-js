@@ -36,7 +36,7 @@ interface HeaderProps extends FbFormDetailsPluginRenderParams {
     selectRevision: (revision: FbRevisionModel) => void;
 }
 
-const Header: React.FC<HeaderProps> = props => {
+const Header = (props: HeaderProps) => {
     const { revision } = props;
     return (
         <React.Fragment>
