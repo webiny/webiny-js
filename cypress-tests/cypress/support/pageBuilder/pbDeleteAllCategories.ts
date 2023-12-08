@@ -4,7 +4,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeleteAllCategories(): Promise<void | any[]>;
+            pbDeleteAllCategories(): Promise<any>;
         }
     }
 }
@@ -45,7 +45,7 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
                 const categories = listResponse.pageBuilder.listCategories.data;
 
                 return Promise.all(
-                    categories.map(category => {
+                    categories.map((category: { slug: string }) => {
                         // Exclude the default Static category.
                         if (category.slug === "static") {
                             return null;
@@ -58,9 +58,7 @@ Cypress.Commands.add("pbDeleteAllCategories", () => {
                             })
                             .then(deletionResponse => {
                                 if (deletionResponse.pageBuilder.deleteCategory.error) {
-                                    console.error(
-                                        deletionResponse.pageBuilder.deleteCategory.error
-                                    );
+                                    return deletionResponse.pageBuilder.deleteCategory.error;
                                 }
                             });
                     })

@@ -32,10 +32,6 @@ context("Page Builder - Category Search and Sort", () => {
         cy.pbCreateCategory(categoryData4);
     });
 
-    afterEach(() => {
-        cy.pbDeleteAllCategories();
-    });
-
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
         // Assert all of the programatically created categories are being properly displayed.

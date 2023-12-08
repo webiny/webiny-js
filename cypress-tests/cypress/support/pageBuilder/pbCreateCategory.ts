@@ -24,11 +24,6 @@ const MUTATION = /* GraphQL */ `
                     layout
                     url
                 }
-                error {
-                    code
-                    message
-                    data
-                }
             }
         }
     }
