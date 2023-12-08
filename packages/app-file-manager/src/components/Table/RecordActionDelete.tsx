@@ -13,7 +13,7 @@ interface RecordActionDeleteProps {
     record: SearchRecordItem<FileItem>["data"];
 }
 
-export const RecordActionDelete: React.VFC<RecordActionDeleteProps> = ({ record }) => {
+export const RecordActionDelete = ({ record }: RecordActionDeleteProps) => {
     const { canDelete } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({
         file: record

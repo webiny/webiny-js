@@ -26,7 +26,7 @@ function prefixValidator(value: string) {
     }
 }
 
-export const FileManagerSettings: React.FC = () => {
+export const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
 
     return (

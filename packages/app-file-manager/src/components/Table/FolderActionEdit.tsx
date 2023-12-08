@@ -12,7 +12,7 @@ const t = i18n.ns("app-admin/file-manager/components/table/folder-action-edit");
 interface FolderActionEditProps {
     onClick: () => void;
 }
-export const FolderActionEdit: React.FC<FolderActionEditProps> = ({ onClick }) => {
+export const FolderActionEdit = ({ onClick }: FolderActionEditProps) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>
