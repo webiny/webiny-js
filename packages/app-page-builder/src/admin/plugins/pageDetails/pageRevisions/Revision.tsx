@@ -39,7 +39,11 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const Div = ({ children }: { children: React.ReactNode }) => {
+interface DivProps {
+    children: React.ReactNode;
+}
+
+const Div = ({ children }: DivProps) => {
     return <div>{children}</div>;
 };
 
