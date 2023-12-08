@@ -48,9 +48,13 @@ interface AuthState {
     };
 }
 
+interface WithGetIdentityDataFunctionProps {
+    children?: React.ReactNode;
+}
+
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
     const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>) => {
-        return function WithGetIdentityData({ children }: { children?: React.ReactNode }) {
+        return function WithGetIdentityData({ children }: WithGetIdentityDataFunctionProps) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
