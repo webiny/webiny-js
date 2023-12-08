@@ -45,6 +45,6 @@ Cypress.Commands.add("pbCreatePageTemplate", data => {
                 },
                 authToken: user.idToken.jwtToken
             })
-            .then(response => response.pageBuilder.pageTemplate.data);
+            .then(response => response.pageBuilder.pageTemplate);
     });
 });

@@ -34,7 +34,7 @@ context("Page Builder - Category Search and Sort", () => {
 
     it("Should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
-        // Assert all of the programatically created categories are being properly displayed.
+        // Assert all the programmatically created categories are being properly displayed.
         cy.findByTestId("default-data-list").then(() => {
             cy.contains(categoryData1.name).should("exist");
             cy.contains(categoryData1.url).should("exist");
@@ -45,7 +45,7 @@ context("Page Builder - Category Search and Sort", () => {
             cy.contains(categoryData4.name).should("exist");
             cy.contains(categoryData4.url).should("exist");
         });
-        // Assert all the categories are being displayed properly when searched for by name
+        // Assert all the categories are being displayed properly when searched for by name.
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.name);
         cy.findByTestId("default-data-list").then(() => {
             cy.contains(categoryData1.name).should("exist");
@@ -74,7 +74,7 @@ context("Page Builder - Category Search and Sort", () => {
             cy.contains(categoryData3.name).should("not.exist");
             cy.contains(categoryData4.name).should("exist");
         });
-        // Assert all the categories are being displayed properly when searched for by URL
+        // Assert all the categories are being displayed properly when searched for by URL.
         cy.findByPlaceholderText("Search categories").clear().type(categoryData1.url);
         cy.findByTestId("default-data-list").then(() => {
             cy.contains(categoryData1.url).should("exist");
@@ -111,46 +111,37 @@ context("Page Builder - Category Search and Sort", () => {
         cy.contains(categoryData3.url).should("not.exist");
         cy.contains(categoryData4.url).should("not.exist");
         cy.findByPlaceholderText("Search categories").clear();
-
-        // Assert that all of the categories are being sorted properly
-
+        // Assert that all the categories are being sorted properly.
         cy.findByTestId("default-data-list.filter").click();
         cy.get(".webiny-ui-select select").select("Newest to oldest");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li .mdc-list-item__text")
                 .first()
-                .each($span => {
-                    cy.wrap($span).invoke("text").should("include", categoryData4.name);
-                });
+                .invoke("text")
+                .should("include", categoryData4.name);
         });
-
         cy.get(".webiny-ui-select select").select("Oldest to newest");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li .mdc-list-item__text")
-                .eq(1) // Select the second item (0-based index)
-                .each($span => {
-                    cy.wrap($span).invoke("text").should("include", categoryData1.name);
-                });
+                .eq(1) // Select the second item.
+                .invoke("text")
+                .should("include", categoryData1.name);
         });
-
         cy.get(".webiny-ui-select select").select("Name A-Z");
         cy.findByTestId("default-data-list")
             .first()
             .within(() => {
                 cy.get("li .mdc-list-item__text")
                     .first()
-                    .each($span => {
-                        cy.wrap($span).invoke("text").should("include", categoryData4.name);
-                    });
+                    .invoke("text")
+                    .should("include", categoryData4.name);
             });
-
         cy.get(".webiny-ui-select select").select("Name Z-A");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li .mdc-list-item__text")
-                .eq(1) // Select the second item (0-based index)
-                .each($span => {
-                    cy.wrap($span).invoke("text").should("include", categoryData3.name);
-                });
+                .eq(1) // Select the second item.
+                .invoke("text")
+                .should("include", categoryData3.name);
         });
     });
 });

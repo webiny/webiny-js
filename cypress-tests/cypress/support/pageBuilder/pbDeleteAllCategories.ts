@@ -1,10 +1,10 @@
-import { gqlClient } from "../utils"; // Replace with your actual gqlClient library
+import { gqlClient } from "../utils";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeleteAllCategories(): Promise<any>;
+            pbDeleteAllCategories(): Promise<Array<void | { code: string; message: string }>>;
         }
     }
 }
