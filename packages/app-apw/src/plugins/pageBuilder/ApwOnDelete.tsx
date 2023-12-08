@@ -10,7 +10,7 @@ import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 
 const t = i18n.ns("app-apw/page-builder/dialog");
 
-export const ApwOnPageDelete: React.FC = () => {
+export const ApwOnPageDelete = () => {
     const pageBuilder = useAdminPageBuilder();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

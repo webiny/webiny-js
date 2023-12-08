@@ -26,11 +26,7 @@ interface PublishContentMessageProps {
     action: ScheduleActionType;
 }
 
-const PublishContentMessage: React.FC<PublishContentMessageProps> = ({
-    publishNow,
-    setSchedule,
-    action
-}) => {
+const PublishContentMessage = ({ publishNow, setSchedule, action }: PublishContentMessageProps) => {
     const label = action === "publish" ? t`Publish` : t`Unpublish`;
 
     return (
@@ -86,7 +82,7 @@ const dialogContainerStyles = css`
     }
 `;
 
-export const ChangeContentStatusDialog: React.FC = () => {
+export const ChangeContentStatusDialog = () => {
     const { action, openPublishNowDialog, setOpenPublishNowDialog, setOpenPublishLaterDialog } =
         useScheduleActionDialog();
     const useContentReviewIdResult = useContentReviewId();
