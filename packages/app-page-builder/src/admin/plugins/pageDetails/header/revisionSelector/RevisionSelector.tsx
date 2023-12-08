@@ -71,7 +71,7 @@ const StatusIndicator = styled.div<{ status: string }>`
 interface RevisionSelectorProps {
     page: PbPageData;
 }
-const RevisionSelector: React.FC<RevisionSelectorProps> = props => {
+const RevisionSelector = (props: RevisionSelectorProps) => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

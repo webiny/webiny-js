@@ -15,9 +15,10 @@ interface CustomSectionProps {
     setValue: (permission: string, type: string) => void;
     title: string;
     disabled?: boolean;
+    children?: React.ReactNode;
 }
 
-const CustomSection: React.FC<CustomSectionProps> = ({
+const CustomSection = ({
     Bind,
     data,
     entity,
@@ -25,7 +26,7 @@ const CustomSection: React.FC<CustomSectionProps> = ({
     title,
     disabled,
     children = null
-}) => {
+}: CustomSectionProps) => {
     const rwdSelectEnabled = ["full"].includes(data[`${entity}AccessScope`]);
 
     return (

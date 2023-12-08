@@ -8,7 +8,7 @@ interface PagesListProps {
     element: PbEditorElement;
 }
 
-const PagesList: React.FC<PagesListProps> = props => {
+const PagesList = (props: PagesListProps) => {
     const { element, ...rest } = props;
     return <PePagesList element={element as Element} {...rest} />;
 };

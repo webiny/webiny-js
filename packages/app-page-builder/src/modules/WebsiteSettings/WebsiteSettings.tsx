@@ -9,7 +9,7 @@ import { FaviconAndLogo } from "./settingsGroups/FaviconAndLogo";
 import { SocialMedia } from "./settingsGroups/SocialMedia";
 import { HtmlTags } from "./settingsGroups/HtmlTags";
 
-export const WebsiteSettings: React.FC = () => {
+export const WebsiteSettings = () => {
     return (
         <Fragment>
             <HasPermission name={"pb.settings"}>

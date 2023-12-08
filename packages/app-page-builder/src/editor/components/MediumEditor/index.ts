@@ -21,14 +21,14 @@ interface ReactMediumEditorProps {
     [key: string]: any;
 }
 
-const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
+const ReactMediumEditor = ({
     tag = "div",
     value,
     onChange,
     options = {},
     onSelect,
     autoFocus
-}) => {
+}: ReactMediumEditorProps) => {
     const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 

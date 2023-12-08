@@ -10,7 +10,7 @@ interface TextElementProps {
     tag?: string | [string, Record<string, any>];
 }
 
-const Text: React.FC<TextElementProps> = props => {
+const Text = (props: TextElementProps) => {
     return <PeText {...props} />;
 };
 

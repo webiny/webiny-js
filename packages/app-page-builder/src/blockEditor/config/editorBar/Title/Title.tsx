@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-const Title: React.FC = () => {
+const Title = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
     const { showSnackbar } = useSnackbar();

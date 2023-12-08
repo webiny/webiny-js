@@ -12,7 +12,7 @@ import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco"
 
 const { Browser } = PageListConfig;
 
-export const PagesModule: React.FC = () => {
+export const PagesModule = () => {
     return (
         <>
             <PageListConfig>
