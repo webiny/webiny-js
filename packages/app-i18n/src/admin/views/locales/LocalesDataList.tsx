@@ -35,7 +35,7 @@ const SORTERS = [
     }
 ];
 
-const LocalesDataList: React.FC = () => {
+const LocalesDataList = () => {
     const {
         locales,
         loading,
