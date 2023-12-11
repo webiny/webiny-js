@@ -254,7 +254,7 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ revision: id });
 
         // Get the published form
-        const [{ data: get }] = await getPublishedForm({ revision: id });
+        const [{ data: get }] = await getPublishedForm({ formId: id });
         expect(get.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Create a new revision
@@ -262,7 +262,7 @@ describe('Form Builder "Form" Test', () => {
         const { id: id2 } = create2.data.formBuilder.createRevisionFrom.data;
 
         // Latest published form should still be #1
-        const [latestPublished] = await getPublishedForm({ parent: id.split("#")[0] });
+        const [latestPublished] = await getPublishedForm({ formId: id.split("#")[0] });
         expect(latestPublished.data.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Latest revision should be #2
@@ -284,7 +284,7 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ revision: id2 });
 
         // Latest published form should now be #2
-        const [latestPublished2] = await getPublishedForm({ parent: id.split("#")[0] });
+        const [latestPublished2] = await getPublishedForm({ formId: id.split("#")[0] });
         expect(latestPublished2.data.formBuilder.getPublishedForm.data.id).toEqual(id2);
 
         // Increment views for #2
@@ -302,7 +302,7 @@ describe('Form Builder "Form" Test', () => {
         await unpublishRevision({ revision: id2 });
 
         // Latest published form should now again be #1
-        const [latestPublished3] = await getPublishedForm({ parent: id.split("#")[0] });
+        const [latestPublished3] = await getPublishedForm({ formId: id.split("#")[0] });
         expect(latestPublished3.data.formBuilder.getPublishedForm.data.id).toEqual(id);
     });
 
@@ -470,7 +470,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 2",
-                            published: true,
                             stats: {
                                 submissions: 0,
                                 views: 0
@@ -496,7 +495,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form2.formId}#0002`,
                             version: 2,
-                            published: false,
                             status: "draft"
                         },
                         error: null
@@ -530,7 +528,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 1",
-                            published: true,
                             stats: {
                                 submissions: 0,
                                 views: 0
@@ -556,7 +553,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form1.formId}#0002`,
                             version: 2,
-                            published: false,
                             status: "draft"
                         },
                         error: null
@@ -576,7 +572,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 1",
-                            published: true,
                             stats: {
                                 submissions: 0,
                                 views: 0
@@ -599,7 +594,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form1.formId}#0003`,
                             version: 3,
-                            published: false,
                             status: "draft"
                         },
                         error: null

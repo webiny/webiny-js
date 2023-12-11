@@ -37,7 +37,6 @@ export interface FormDataRevision {
     id: string;
     name: string;
     version: number;
-    published: boolean;
     status: string;
     savedOn: string;
     createdBy: FormDataCreatedBy;
@@ -55,7 +54,6 @@ export interface FormData {
     version: number;
     fields: FormDataField[];
     steps: FormDataStep[];
-    published: boolean;
     name: string;
     settings: any;
     status: string;

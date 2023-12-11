@@ -106,8 +106,6 @@ export interface FbForm {
     name: string;
     slug: string;
     version: number;
-    locked: boolean;
-    published: boolean;
     publishedOn?: string | Date;
     status: string;
     fields: FbFormField[];

@@ -15,8 +15,6 @@ class MockResponse {
     public readonly createdOn: RegExp;
     public readonly savedOn: RegExp;
     public readonly publishedOn: RegExp | null;
-    public readonly locked: boolean;
-    public readonly published: boolean;
     public readonly status: "published" | "draft";
     public readonly version: number;
 
@@ -26,8 +24,6 @@ class MockResponse {
         this.createdOn = /^20/;
         this.savedOn = /^20/;
         this.publishedOn = null;
-        this.locked = false;
-        this.published = false;
         this.status = "draft";
         this.version = 1;
     }
@@ -438,9 +434,7 @@ describe("Forms Security Test", () => {
                                     id: formId
                                 }),
                                 publishedOn: /^20/,
-                                published: true,
-                                status: "published",
-                                locked: true
+                                status: "published"
                             },
                             error: null
                         }
@@ -470,9 +464,7 @@ describe("Forms Security Test", () => {
                                 id: formId
                             }),
                             publishedOn: /^20/,
-                            published: true,
-                            status: "published",
-                            locked: true
+                            status: "published"
                         },
                         error: null
                     }
@@ -540,9 +532,7 @@ describe("Forms Security Test", () => {
                                     id
                                 }),
                                 publishedOn: /^20/,
-                                published: true,
                                 status: "published",
-                                locked: true,
                                 version: i + 2
                             },
                             error: null

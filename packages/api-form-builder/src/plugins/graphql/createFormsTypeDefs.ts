@@ -46,11 +46,8 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
 
     const excludeFormFields = [
         "formId",
-        "published",
-        "status",
         "stats",
         "overallStats",
-        "locked",
         "fields",
         "steps",
         "settings",
@@ -64,14 +61,7 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
         fieldTypePlugins
     });
 
-    const excludeUpdateFormFields = [
-        "formId",
-        "published",
-        "status",
-        "stats",
-        "overallStats",
-        "locked"
-    ];
+    const excludeUpdateFormFields = ["formId", "stats", "overallStats"];
 
     const inputUpdateFields = renderInputFields({
         models,
@@ -84,12 +74,6 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
 
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
-
-        enum FbFormStatusEnum {
-            published
-            draft
-            locked
-        }
 
         type FbFormUser {
             id: String
@@ -104,6 +88,7 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
             createdOn: DateTime!
             savedOn: DateTime!
             publishedOn: DateTime
+            status: String!
             version: Number!
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
@@ -147,8 +132,8 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
             # Get form revisions
             getFormRevisions(id: ID!): FbFormRevisionsResponse
 
-            # Get published form by exact revision ID, or parent form ID (public access)
-            getPublishedForm(revision: ID, parent: ID): FbFormResponse
+            # Get published form form ID (public access)
+            getPublishedForm(formId: ID): FbFormResponse
         }
 
         extend type FbMutation {

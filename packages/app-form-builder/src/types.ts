@@ -142,7 +142,6 @@ export interface FbRevisionModel {
     id: string;
     name: string;
     version: number;
-    published: boolean;
     status: string;
     savedOn: string;
     createdBy: FbCreatedBy;
@@ -173,7 +172,6 @@ export interface FbFormModel {
     version: number;
     fields: FbFormModelField[];
     steps: FbFormStep[];
-    published: boolean;
     name: string;
     settings: any;
     status: string;

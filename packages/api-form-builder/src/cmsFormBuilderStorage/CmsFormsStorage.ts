@@ -1,4 +1,4 @@
-import { CmsEntry, CmsEntryValues, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { Security } from "@webiny/api-security/types";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
@@ -43,17 +43,6 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         return { ...this.model, tenant, locale };
     }
 
-    private async getSortedFormRevisions(
-        model: CmsModel,
-        formId: string
-    ): Promise<CmsEntry<CmsEntryValues>> {
-        const entries = (await this.cms.getEntryRevisions(model, formId))
-            .filter(entryItem => entryItem.values.published)
-            .sort((a, b) => b.version - a.version);
-
-        return entries[0];
-    }
-
     async getForm(params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm | null> {
         const {
             id,
@@ -75,7 +64,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
 
                 return entry;
             } else if (published && !version) {
-                const entry = await this.getSortedFormRevisions(model, formId);
+                const [entry] = await this.cms.getPublishedEntriesByIds(model, [formId]);
 
                 return entry;
             } else if (id || version) {
@@ -116,9 +105,6 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
 
         const entry = await this.security.withoutAuthorization(async () => {
             return await this.cms.createEntryRevisionFrom(model, form.id, {
-                status: "draft",
-                published: false,
-                locked: false,
                 stats: {
                     submissions: 0,
                     views: 0
@@ -198,7 +184,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.updateEntry(model, form.id, form);
+            return await this.cms.publishEntry(model, form.id);
         });
 
         return this.getFormFieldValues(entry);
@@ -209,7 +195,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.updateEntry(model, form.id, form);
+            return await this.cms.unpublishEntry(model, form.id);
         });
 
         return this.getFormFieldValues(entry);
@@ -222,6 +208,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
             publishedOn: entry.publishedOn,
+            status: entry.status,
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

@@ -6,6 +6,7 @@ import {
     CREATE_REVISION_FROM,
     CreateRevisionFromMutationResponse,
     CreateRevisionFromMutationVariables,
+    GET_FORM_REVISIONS,
     DELETE_REVISION,
     PUBLISH_REVISION,
     UNPUBLISH_REVISION
@@ -126,7 +127,10 @@ export const useRevision = ({ revision, form }: UseRevisionProps): UseRevisionRe
                         mutation: PUBLISH_REVISION,
                         variables: {
                             revision: id || revision.id
-                        }
+                        },
+                        refetchQueries: [
+                            { query: GET_FORM_REVISIONS, variables: { id: id || revision.id } }
+                        ]
                     });
 
                     const { error } = res.formBuilder.publishRevision;

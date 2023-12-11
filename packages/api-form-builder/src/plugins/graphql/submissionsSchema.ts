@@ -69,7 +69,7 @@ export const createSubmissionsSchema = (params: CreateSubmissionsTypeDefsParams)
                          * Get all revisions of the form.
                          */
                         const revisions = await formBuilder.getFormRevisions(form);
-                        const publishedRevisions = revisions.filter(r => r.published);
+                        const publishedRevisions = revisions.filter(r => r.status === "published");
 
                         const rows: Record<string, string>[] = [];
                         const fields: Record<string, string> = {};

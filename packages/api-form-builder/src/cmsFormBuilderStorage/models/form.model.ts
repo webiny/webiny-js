@@ -27,22 +27,6 @@ const nameField = () => {
     });
 };
 
-const publishedField = () => {
-    return createModelField({
-        label: "Published",
-        type: "boolean",
-        validation: [required()]
-    });
-};
-
-const statusField = () => {
-    return createModelField({
-        label: "Status",
-        type: "text",
-        validation: [required()]
-    });
-};
-
 const statsViewsField = () => {
     return createModelField({
         label: "Views",
@@ -83,15 +67,6 @@ const overallStatsField = (fields: CmsModelField[]) => {
         settings: {
             fields
         }
-    });
-};
-
-const lockedField = () => {
-    return createModelField({
-        label: "Locked",
-        fieldId: "locked",
-        type: "boolean",
-        validation: [required()]
     });
 };
 
@@ -413,16 +388,12 @@ const slugField = () => {
 const DEFAULT_FIELDS = [
     "formId",
     "name",
-    "published",
-    "status",
     "stats",
     "overallStats",
-    "locked",
     "fields",
     "steps",
     "settings",
     "triggers",
-    "publishedOn",
     "slug"
 ];
 
@@ -475,8 +446,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
         fields: [
             formIdField(),
             nameField(),
-            publishedField(),
-            statusField(),
             statsField([
                 statsViewsField(),
                 statsSubmissionsField(),
@@ -487,7 +456,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
                 statsSubmissionsField(),
                 conversionRateStatsSubmissionsField()
             ]),
-            lockedField(),
             fieldsField(FIELD_FIELDS),
             stepsField(STEP_FIELDS),
             settingsField(SETTINGS_FIELDS),

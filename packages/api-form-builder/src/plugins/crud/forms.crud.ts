@@ -27,7 +27,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { createIdentifier, mdbid, parseIdentifier } from "@webiny/utils";
 import { createTopic } from "@webiny/pubsub";
-import { getStatus, createFormSettings } from "./utils";
+import { createFormSettings } from "./utils";
 import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 export interface CreateFormsCrudParams {
@@ -225,12 +225,12 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
-        async getLatestPublishedFormRevision(this: FormBuilder, id) {
+        async getLatestPublishedFormRevision(this: FormBuilder, formId) {
             let form: FbForm | null = null;
             try {
                 form = await this.storageOperations.forms.getForm({
                     where: {
-                        id,
+                        formId,
                         published: true,
                         tenant: getTenant().id,
                         locale: getLocale().code
@@ -241,12 +241,12 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.message || "Could not load published form revision by ID.",
                     ex.code || "GET_PUBLISHED_FORM_BY_ID_ERROR",
                     {
-                        id
+                        formId
                     }
                 );
             }
             if (!form) {
-                throw new NotFoundError(`Form "${id}" was not found!`);
+                throw new NotFoundError(`Form "${formId}" was not found!`);
             }
             return form;
         },
@@ -282,12 +282,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 name: input.name,
                 slug,
                 version,
-                locked: false,
-                published: false,
-                status: getStatus({
-                    published: false,
-                    locked: false
-                }),
+                status: "draft",
                 stats: {
                     views: 0,
                     submissions: 0
@@ -341,7 +336,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (!original) {
                 throw new NotFoundError(`Form "${id}" was not found!`);
-            } else if (original.locked) {
+            } else if (original.status === "unpublished") {
                 throw new WebinyError("Not allowed to modify locked form.", "FORM_LOCKED_ERROR", {
                     form: original
                 });
@@ -481,20 +476,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             /**
              * getForm checks for existence of the form.
              */
-            const original = await this.getForm(formId, {
+            const form = await this.getForm(formId, {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
-
-            const form: FbForm = {
-                ...original,
-                published: true,
-                publishedOn: new Date().toISOString(),
-                status: getStatus({ published: true, locked: true }),
-                locked: true,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            await formsPermissions.ensure({ owns: form.ownedBy });
 
             try {
                 await onFormBeforePublish.publish({
@@ -504,7 +490,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form
                 });
                 await onFormAfterPublish.publish({
-                    form
+                    form: result
                 });
                 return result;
             } catch (ex) {
@@ -513,7 +499,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "PUBLISH_FORM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );
@@ -522,19 +507,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async unpublishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "u" });
 
-            const original = await this.getForm(id, {
+            const form = await this.getForm(id, {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
-
-            const form: FbForm = {
-                ...original,
-                published: false,
-                savedOn: new Date().toISOString(),
-                status: getStatus({ published: false, locked: true }),
-                webinyVersion: context.WEBINY_VERSION
-            };
+            await formsPermissions.ensure({ owns: form.ownedBy });
 
             try {
                 await onFormBeforeUnpublish.publish({
@@ -553,7 +530,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "UNPUBLISH_FORM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );
@@ -607,9 +583,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                locked: false,
-                published: false,
-                status: getStatus({ published: false, locked: false }),
                 tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };

@@ -37,7 +37,7 @@ const revisionsMenu = css({
 
 const getIcon = (revision: Pick<FbFormModel, "status">) => {
     switch (revision.status) {
-        case "locked":
+        case "unpublished":
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"

@@ -138,7 +138,7 @@ const FormsDataList = (props: FormsDataListProps) => {
         const handlerKey = form.id + form.status;
         if (!editHandlers.current[handlerKey]) {
             editHandlers.current[handlerKey] = async () => {
-                if (!form.published) {
+                if (form.status !== "published") {
                     history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
 

@@ -18,7 +18,6 @@ const BASE_FORM_FIELDS = `
     id
     name
     version
-    published
     status
     savedOn
     createdBy {
