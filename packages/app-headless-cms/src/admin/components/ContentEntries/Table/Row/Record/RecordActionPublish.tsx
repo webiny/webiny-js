@@ -12,11 +12,11 @@ import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/pages-table/actions/page/publish");
 
-interface Props {
+interface RecordActionPublishProps {
     record: EntryTableItem;
 }
 
-export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
+export const RecordActionPublish = ({ record }: RecordActionPublishProps) => {
     const { canPublish, canUnpublish } = usePermission();
 
     const { unpublishRevision, publishRevision } = useRevision({

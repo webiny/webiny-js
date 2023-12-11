@@ -40,7 +40,7 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
     return RevisionStatusEnum.DRAFT;
 };
 
-const Revisions: React.FC = () => {
+const Revisions = () => {
     const [revisions] = useRevisions();
     const { navigateToPageEditor } = useNavigatePage();
 

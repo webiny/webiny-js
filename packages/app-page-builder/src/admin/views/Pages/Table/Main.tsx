@@ -26,7 +26,7 @@ interface Props {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+export const Main = ({ folderId: initialFolderId }: Props) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList();

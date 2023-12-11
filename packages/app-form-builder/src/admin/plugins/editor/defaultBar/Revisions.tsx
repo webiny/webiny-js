@@ -31,7 +31,7 @@ const menuList = css({
     }
 });
 
-const Revisions: React.FC = () => {
+const Revisions = () => {
     const {
         state: { data }
     } = useFormEditor();

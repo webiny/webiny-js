@@ -33,7 +33,7 @@ interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
     field: CmsModelField;
 }
-const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
+const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteProps) => {
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, value, loading, onChange } = useReference({

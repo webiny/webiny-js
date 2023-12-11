@@ -1,4 +1,3 @@
-import React from "react";
 import omit from "lodash/omit";
 import omitBy from "lodash/omitBy";
 import isNull from "lodash/isNull";
@@ -18,7 +17,7 @@ interface MenuItemFormProps {
 }
 
 type MenuItemFormData = Partial<MenuTreeItem>;
-const MenuItemForm: React.FC<MenuItemFormProps> = props => {
+const MenuItemForm = (props: MenuItemFormProps) => {
     const { onCancel, onSubmit } = useHandlers(props, {
         onCancel:
             ({ editItem, currentMenuItem, deleteItem }) =>

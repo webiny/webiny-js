@@ -17,7 +17,7 @@ export interface ContentReviewByProps {
     submittedOn: string;
 }
 
-export const ContentReviewBy: React.FC<ContentReviewByProps> = ({ submittedBy, submittedOn }) => {
+export const ContentReviewBy = ({ submittedBy, submittedOn }: ContentReviewByProps) => {
     return (
         <Columns space={2.5}>
             <Box>

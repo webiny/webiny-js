@@ -61,7 +61,7 @@ interface CloseProps {
     onClick: () => void;
 }
 
-const Close: React.VFC<CloseProps> = ({ onClick }) => {
+const Close = ({ onClick }: CloseProps) => {
     return (
         <CloseContainer>
             <CloseButton onClick={onClick}>
@@ -71,12 +71,12 @@ const Close: React.VFC<CloseProps> = ({ onClick }) => {
     );
 };
 
-interface Props {
+interface DialogHeaderProps {
     model: CmsModel;
     onClose: () => void;
 }
 
-export const DialogHeader: React.VFC<Props> = ({ model, onClose }) => {
+export const DialogHeader = ({ model, onClose }: DialogHeaderProps) => {
     return (
         <Container>
             <Content>

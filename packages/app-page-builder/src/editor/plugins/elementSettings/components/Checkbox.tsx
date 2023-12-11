@@ -16,13 +16,13 @@ interface CheckboxProps {
     children?: Array<ReactElement<"option"> | ReactElement<"optgroup">>;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({
+const Checkbox = ({
     label,
     valueKey,
     value: defaultValue,
     updateValue,
     children
-}) => {
+}: CheckboxProps) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));
     const value = valueKey ? get(element, valueKey, defaultValue) : defaultValue;

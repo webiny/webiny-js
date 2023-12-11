@@ -12,11 +12,11 @@ import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
-interface Props {
+interface RecordActionDeleteProps {
     record: EntryTableItem;
 }
 
-export const RecordActionDelete: React.VFC<Props> = ({ record }) => {
+export const RecordActionDelete = ({ record }: RecordActionDeleteProps) => {
     const { deleteEntry } = useCms();
     const { canDelete } = usePermission();
     const { model } = useModel();

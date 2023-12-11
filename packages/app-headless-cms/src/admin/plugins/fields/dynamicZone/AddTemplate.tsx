@@ -69,7 +69,7 @@ function useAddTemplate(params: UseAddTemplateParams) {
     };
 }
 
-export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
+export const AddTemplateButton = (props: AddTemplateProps) => {
     const { addTemplate, onTemplate, showTemplateDialog, onDialogClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });
@@ -90,7 +90,7 @@ export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
     );
 };
 
-export const AddTemplateIcon: React.VFC<AddTemplateProps> = props => {
+export const AddTemplateIcon = (props: AddTemplateProps) => {
     const { addTemplate, onTemplate, showTemplateDialog, onDialogClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });

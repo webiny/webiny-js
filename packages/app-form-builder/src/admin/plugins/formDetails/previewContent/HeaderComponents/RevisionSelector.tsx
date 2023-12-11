@@ -29,11 +29,7 @@ interface RevisionSelectorProps {
     revision: FbRevisionModel;
     selectRevision: (form: FbRevisionModel) => void;
 }
-const RevisionSelector: React.FC<RevisionSelectorProps> = ({
-    revisions,
-    revision,
-    selectRevision
-}) => {
+const RevisionSelector = ({ revisions, revision, selectRevision }: RevisionSelectorProps) => {
     return (
         <Menu
             data-testid={"fb.form-preview.header.revision-selector"}

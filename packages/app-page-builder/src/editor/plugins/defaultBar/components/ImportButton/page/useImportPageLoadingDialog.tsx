@@ -34,9 +34,7 @@ const MESSAGES: Record<string, string> = {
 interface ImportPageLoadingDialogContentProps {
     taskId: string;
 }
-const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentProps> = ({
-    taskId
-}) => {
+const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogContentProps) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);

@@ -25,7 +25,7 @@ import {
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
-export const ContentEntriesModule: React.FC = () => {
+export const ContentEntriesModule = () => {
     return (
         <>
             <ContentEntryListConfig>

@@ -9,10 +9,10 @@ import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
-interface Props {
+interface RecordActionMoveProps {
     record: EntryTableItem;
 }
-export const RecordActionMove: React.VFC<Props> = ({ record }) => {
+export const RecordActionMove = ({ record }: RecordActionMoveProps) => {
     const moveContentEntry = useMoveContentEntryToFolder({ record });
 
     return (

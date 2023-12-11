@@ -103,13 +103,13 @@ export interface IconPickerProps extends FormComponentProps {
     description?: React.ReactNode;
 }
 
-export const IconPicker: React.FC<IconPickerProps> = ({
+export const IconPicker = ({
     value,
     onChange,
     label,
     description,
     validation
-}) => {
+}: IconPickerProps) => {
     const [filter, setFilter] = useState("");
     const [mustRenderGrid, setMustRenderGrid] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);

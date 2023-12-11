@@ -39,7 +39,7 @@ const CodeEditorInput = ({ name, label, description }: CodeEditorInputProps) => 
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-export const HtmlTags: React.FC = () => {
+export const HtmlTags = () => {
     return (
         <Group name={"htmlTags"} label={"HTML Tags"}>
             <Element>

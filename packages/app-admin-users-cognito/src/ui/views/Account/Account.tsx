@@ -34,7 +34,7 @@ interface UserAccountFormData {
     };
 }
 
-const UserAccountForm: React.FC = () => {
+const UserAccountForm = () => {
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { setIdentity } = useSecurity();
