@@ -102,10 +102,7 @@ type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 export type Loading<T extends string> = { [P in T]?: boolean };
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
 
-export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = ({
-    children,
-    ...props
-}) => {
+export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const shiftKeyPressed = useShiftKey();
     const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();

@@ -15,7 +15,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 const t = i18n.ns("app-apw/cms/dialog");
 
-export const ApwOnEntryDelete: React.FC = () => {
+export const ApwOnEntryDelete = () => {
     const client = useApolloClient();
     const { onEntryDelete } = useCms();
     const { showSnackbar } = useSnackbar();

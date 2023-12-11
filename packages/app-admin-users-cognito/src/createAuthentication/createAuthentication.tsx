@@ -26,7 +26,7 @@ interface AuthenticationProps {
 
 export const createAuthentication = (config: CreateAuthenticationConfig = {}) => {
     const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>) => {
-        const WithGetIdentityData: React.FC<WithGetIdentityDataProps> = ({ children }) => {
+        const WithGetIdentityData = ({ children }: WithGetIdentityDataProps) => {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
@@ -42,7 +42,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
         return WithGetIdentityData;
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const { installer } = useTags();
         const [error, setError] = useState<string | null>(null);
         const BaseAuthentication = useMemo(() => {

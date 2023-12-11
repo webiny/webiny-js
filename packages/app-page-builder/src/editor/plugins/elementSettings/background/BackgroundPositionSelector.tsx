@@ -50,7 +50,7 @@ interface BackgroundPositionSelectorProps {
     onChange: (value: string) => void;
 }
 
-const BackgroundPositionSelector: React.FC<BackgroundPositionSelectorProps> = props => {
+const BackgroundPositionSelector = (props: BackgroundPositionSelectorProps) => {
     return (
         <PositionWrapper>
             <Typography style={{ width: "60%" }} use={"body2"}>

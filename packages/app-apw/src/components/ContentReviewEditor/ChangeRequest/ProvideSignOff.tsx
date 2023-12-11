@@ -26,10 +26,7 @@ interface ProvideSignOffProps {
     changeRequestsPending: boolean;
 }
 
-export const ProvideSignOff: React.FC<ProvideSignOffProps> = ({
-    currentStep,
-    changeRequestsPending
-}) => {
+export const ProvideSignOff = ({ currentStep, changeRequestsPending }: ProvideSignOffProps) => {
     const { provideSignOff, retractSignOff, loading } = useStepSignOff();
 
     if (loading) {

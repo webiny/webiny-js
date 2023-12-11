@@ -66,9 +66,13 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
 };
 
+interface OktaLoginScreenProps {
+    children: React.ReactNode;
+}
+
 const createLoginScreen = (params: OktaProps) => {
-    return function OktaLoginScreenHOC(): React.FC {
-        return function OktaLoginScreen({ children }) {
+    return function OktaLoginScreenHOC() {
+        return function OktaLoginScreen({ children }: OktaLoginScreenProps) {
             return (
                 <AppClientIdLoader
                     oktaFactory={params.factory}
@@ -100,7 +104,7 @@ export interface OktaProps {
     children?: React.ReactNode;
 }
 
-export const Okta: React.FC<OktaProps> = props => {
+export const Okta = (props: OktaProps) => {
     /**
      * TODO @ts-refactor
      * Figure correct type for Compose.component

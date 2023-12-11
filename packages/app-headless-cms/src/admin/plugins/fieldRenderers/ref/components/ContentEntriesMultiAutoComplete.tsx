@@ -21,10 +21,7 @@ interface ContentEntriesMultiAutocompleteProps {
     bind: BindComponentRenderProp;
     field: CmsModelField;
 }
-const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteProps> = ({
-    bind,
-    field
-}) => {
+const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAutocompleteProps) => {
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });

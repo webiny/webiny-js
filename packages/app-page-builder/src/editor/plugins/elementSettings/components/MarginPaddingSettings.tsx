@@ -144,9 +144,13 @@ const options = {
 const SIDES = ["top", "right", "bottom", "left"];
 const DEFAULT_VALUE = "0px";
 
-const MarginPaddingSettings: React.FC<
-    PMSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ styleAttribute, defaultAccordionValue }) => {
+type MarginPaddingSettingsProps = PMSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps;
+
+const MarginPaddingSettings = ({
+    styleAttribute,
+    defaultAccordionValue
+}: MarginPaddingSettingsProps) => {
     const valueKey = `data.settings.${styleAttribute}`;
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);

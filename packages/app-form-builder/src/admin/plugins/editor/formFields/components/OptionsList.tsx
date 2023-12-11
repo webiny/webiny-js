@@ -135,7 +135,7 @@ interface OptionsListBindParams {
     onChange: (values: FieldOption[]) => void;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }) => {
+const OptionsList = ({ form, multiple, otherOption }: OptionsListProps) => {
     const { Bind } = form;
 
     const [editOption, setEditOption] = useState<SetEditOptionParams>({

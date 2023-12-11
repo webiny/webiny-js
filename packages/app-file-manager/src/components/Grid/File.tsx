@@ -42,13 +42,13 @@ export interface FileProps {
     showFileDetails: (id: string) => void;
 }
 
-export const FileThumbnail: React.FC<FileProps> = ({
+export const FileThumbnail = ({
     file,
     selected,
     onSelect,
     children,
     showFileDetails
-}) => {
+}: FileProps) => {
     const showDetails = useCallback(() => {
         showFileDetails(file.id);
     }, [file.id]);

@@ -8,7 +8,7 @@ import { CreatableItem, EditableItem } from "~/admin/hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
-interface Props {
+interface RecordActionEditProps {
     canEdit: (params: CreatableItem) => boolean;
     onClick?: () => void;
     record: {
@@ -16,7 +16,7 @@ interface Props {
     };
 }
 
-export const RecordActionEdit: React.VFC<Props> = ({ record, onClick, canEdit }) => {
+export const RecordActionEdit = ({ record, onClick, canEdit }: RecordActionEditProps) => {
     if (!canEdit(record.original)) {
         return null;
     }

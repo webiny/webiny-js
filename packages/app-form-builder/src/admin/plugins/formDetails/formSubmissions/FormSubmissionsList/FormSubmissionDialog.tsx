@@ -86,7 +86,7 @@ const flattenSubmissionMeta = (
     return res;
 };
 
-const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmission, onClose }) => {
+const FormSubmissionDialog = ({ formSubmission, onClose }: FormSubmissionDialogProps) => {
     const { showSnackbar } = useSnackbar();
     const exportMeta = {
         submittedOn: formSubmission?.meta.submittedOn,

@@ -29,7 +29,7 @@ interface NoActiveElementProps {
     icon?: ReactElement;
 }
 
-const NoActiveElement: React.FC<NoActiveElementProps> = ({ message, icon }) => {
+const NoActiveElement = ({ message, icon }: NoActiveElementProps) => {
     return (
         <div className={noActiveElementWrapper}>
             {icon && React.cloneElement(icon, { className: "icon" })}

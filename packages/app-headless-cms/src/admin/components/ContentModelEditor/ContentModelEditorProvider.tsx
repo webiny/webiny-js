@@ -110,11 +110,11 @@ interface ContentModelEditorProviderProps {
     children: React.ReactElement;
 }
 
-export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProps> = ({
+export const ContentModelEditorProvider = ({
     children,
     apolloClient,
     modelId
-}) => {
+}: ContentModelEditorProviderProps) => {
     const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
         modelId: modelId || null,
         isPristine: true,

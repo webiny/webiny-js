@@ -81,7 +81,7 @@ const BaseContainer = styled(LegacyBaseContainer)`
     container-name: page-editor-canvas;
 `;
 
-const Content: React.FC = () => {
+const Content = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);

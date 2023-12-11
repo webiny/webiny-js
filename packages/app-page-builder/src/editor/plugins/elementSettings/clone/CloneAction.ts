@@ -20,7 +20,7 @@ const removeVariableId = (element: PbEditorElement) => {
 interface CloneActionPropsType {
     children: React.ReactElement;
 }
-const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
+const CloneAction = ({ children }: CloneActionPropsType) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element: PbEditorElement = useRecoilValue(

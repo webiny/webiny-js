@@ -36,7 +36,7 @@ export interface PageRevisionListItemGraphicProps {
     revision: PbPageRevision;
 }
 
-const RevisionListItemGraphic: React.FC<PageRevisionListItemGraphicProps> = props => {
+const RevisionListItemGraphic = (props: PageRevisionListItemGraphicProps) => {
     const { icon, text } = getIcon(props.revision);
     return (
         <ListItemGraphic>

@@ -11,7 +11,7 @@ interface PreviewProps {
     onCreatePage: () => void;
 }
 
-export const Preview: React.VFC<PreviewProps> = ({ open, onClose, canCreate, onCreatePage }) => {
+export const Preview = ({ open, onClose, canCreate, onCreatePage }: PreviewProps) => {
     return (
         <Content modal={true} open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">

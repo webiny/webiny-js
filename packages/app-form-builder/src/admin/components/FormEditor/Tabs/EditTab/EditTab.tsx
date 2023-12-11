@@ -31,7 +31,7 @@ interface FieldErrorsProps {
 interface FieldErrorProps {
     error: FormEditorFieldError;
 }
-const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
+const FieldError = ({ error }: FieldErrorProps) => {
     return (
         <>
             <Block>
@@ -47,7 +47,7 @@ const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
         </>
     );
 };
-const FieldErrors: React.FC<FieldErrorsProps> = ({ errors }) => {
+const FieldErrors = ({ errors }: FieldErrorsProps) => {
     if (!errors) {
         return null;
     }
@@ -77,7 +77,7 @@ const RowContainerWrapper = styled.div`
     }
 `;
 
-export const EditTab: React.FC = () => {
+export const EditTab = () => {
     const {
         getLayoutFields,
         insertField,

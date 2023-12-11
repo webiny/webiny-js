@@ -31,7 +31,7 @@ const getContentUrl = (content: ApwContentReviewContent): string => {
     return ``;
 };
 
-export const Name: React.FC = () => {
+export const Name = () => {
     const { contentReview } = useCurrentContentReview();
     const url = getContentUrl(contentReview.content);
 
