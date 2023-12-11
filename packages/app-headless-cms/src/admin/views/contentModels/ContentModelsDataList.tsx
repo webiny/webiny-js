@@ -101,19 +101,19 @@ interface IconProps {
     model: Pick<CmsModel, "icon">;
 }
 
-const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
+const DisplayIcon = ({ model }: IconProps) => {
     if (!model.icon) {
         return null;
     }
     return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
 };
 
-const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
+const ContentModelsDataList = ({
     canCreate,
     onCreate,
     onClone,
     showImportModelModal
-}) => {
+}: ContentModelsDataListProps) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { history } = useRouter();

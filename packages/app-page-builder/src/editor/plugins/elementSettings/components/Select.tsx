@@ -27,7 +27,7 @@ interface SelectProps {
     className?: string;
 }
 
-const Select: React.FC<SelectProps> = ({
+const Select = ({
     label,
     value,
     valueKey,
@@ -36,7 +36,7 @@ const Select: React.FC<SelectProps> = ({
     options,
     children,
     className
-}) => {
+}: SelectProps) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;

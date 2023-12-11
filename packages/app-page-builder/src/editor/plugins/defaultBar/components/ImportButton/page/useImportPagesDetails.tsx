@@ -15,7 +15,7 @@ interface ImportPagesDetailsProps {
     result: ListPageImportExportSubTasksResponse;
 }
 
-const ImportPagesDetails: React.FC<ImportPagesDetailsProps> = ({ loading, result }) => {
+const ImportPagesDetails = ({ loading, result }: ImportPagesDetailsProps) => {
     if (loading || !result) {
         return <Typography use={"caption"}> {t`Loading details...`} </Typography>;
     }

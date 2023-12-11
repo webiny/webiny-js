@@ -9,11 +9,11 @@ import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
-interface Props {
+interface RecordActionEditProps {
     record: EntryTableItem;
 }
 
-export const RecordActionEdit: React.VFC<Props> = ({ record }) => {
+export const RecordActionEdit = ({ record }: RecordActionEditProps) => {
     const { onEditEntry } = useContentEntriesList();
     const { canEdit } = usePermission();
 

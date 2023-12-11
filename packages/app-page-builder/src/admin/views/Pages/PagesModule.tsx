@@ -19,7 +19,7 @@ import {
 
 const { Browser } = PageListConfig;
 
-export const PagesModule: React.FC = () => {
+export const PagesModule = () => {
     return (
         <PageListConfig>
             <Browser.BulkAction name={"export"} element={<ActionExport />} />

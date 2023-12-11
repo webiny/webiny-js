@@ -16,7 +16,7 @@ const SpinnerWrapper = styled.div`
     margin-left: -4px !important;
 `;
 
-const DefaultSaveTemplateButton: React.FC = () => {
+const DefaultSaveTemplateButton = () => {
     const [template] = useTemplate();
     const eventActionHandler = useEventActionHandler();
     const { history } = useRouter();

@@ -9,7 +9,7 @@ interface CellProps {
     isActive: boolean;
 }
 
-const Cell: React.FC<CellProps> = props => {
+const Cell = (props: CellProps) => {
     const { element, ...rest } = props;
     return <PeCell element={element as Element} {...rest} />;
 };

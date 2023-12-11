@@ -20,9 +20,9 @@ const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
 const BORDER_SETTINGS_COUNT = 4;
 
-const BorderSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const BorderSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
     const { displayMode, config } = useDisplayMode();
 

@@ -9,8 +9,9 @@ export const ElementContext = React.createContext<ElementContext | undefined>(un
 
 export interface ElementProviderProps {
     element: PbEditorElement;
+    children: React.ReactNode;
 }
 
-export const ElementProvider: React.FC<ElementProviderProps> = ({ element, children }) => {
+export const ElementProvider = ({ element, children }: ElementProviderProps) => {
     return <ElementContext.Provider value={{ element }}>{children}</ElementContext.Provider>;
 };

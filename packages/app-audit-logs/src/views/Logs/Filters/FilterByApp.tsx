@@ -11,7 +11,7 @@ const getValidFilterValue = (value: string): string | undefined => {
     return value;
 };
 
-export const FilterByApp: React.FC = () => {
+export const FilterByApp = () => {
     const { setValue } = useForm();
     const bind = useBind({
         name: "data.app",

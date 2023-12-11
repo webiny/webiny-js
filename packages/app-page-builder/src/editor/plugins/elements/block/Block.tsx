@@ -8,7 +8,7 @@ interface BlockProps {
     element: PbEditorElement;
 }
 
-const Block: React.FC<BlockProps> = props => {
+const Block = (props: BlockProps) => {
     const { element, ...rest } = props;
     return <PeBlock element={element as Element} {...rest} />;
 };

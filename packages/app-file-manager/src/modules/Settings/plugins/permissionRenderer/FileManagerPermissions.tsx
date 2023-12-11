@@ -41,10 +41,7 @@ interface FileManagerPermissionsProps {
     onChange: (value: FileManagerPermissionItem[]) => void;
 }
 
-export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
-    value,
-    onChange
-}) => {
+export const FileManagerPermissions = ({ value, onChange }: FileManagerPermissionsProps) => {
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.

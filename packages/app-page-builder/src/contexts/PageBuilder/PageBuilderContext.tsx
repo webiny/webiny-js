@@ -35,7 +35,7 @@ export interface PageBuilderProviderProps {
 
 export const PageBuilderContext = React.createContext<PageBuilderContext | undefined>(undefined);
 
-export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
+export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState<string>("published");
     const { theme, loadThemeFromPlugins } = useTheme();

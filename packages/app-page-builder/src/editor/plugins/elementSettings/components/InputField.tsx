@@ -80,7 +80,7 @@ interface InputBoxProps {
     [key: string]: any;
 }
 
-const InputField: React.FC<InputBoxProps> = ({
+const InputField = ({
     className,
     value,
     onChange,
@@ -91,7 +91,7 @@ const InputField: React.FC<InputBoxProps> = ({
     },
     defaultValue = "",
     ...props
-}) => {
+}: InputBoxProps) => {
     // We introduced the local value concept in order to fix the cursor positioning issue.
     // Basically, users would type into the field, and the cursor would jump to the end of the input field.
     // This is because the value was being set from the outside, and the component was re-rendering.
