@@ -8,3 +8,4 @@ export * from "~/plugins/HandlerErrorPlugin";
 export * from "~/plugins/HandlerResultPlugin";
 export * from "~/plugins/HandlerOnRequestPlugin";
 export * from "~/plugins/ModifyFastifyPlugin";
+export * from "./ResponseHeaders";

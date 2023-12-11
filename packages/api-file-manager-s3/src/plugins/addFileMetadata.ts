@@ -5,7 +5,13 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 export const addFileMetadata = () => {
     return new ContextPlugin<FileManagerContext>(context => {
         context.fileManager.onFileAfterCreate.subscribe(async ({ file }) => {
-            const metadata = { id: file.id, tenant: file.tenant, locale: file.locale };
+            const metadata = {
+                id: file.id,
+                tenant: file.tenant,
+                locale: file.locale,
+                size: file.size,
+                contentType: file.type
+            };
 
             const s3 = new S3({ region: process.env.AWS_REGION });
 

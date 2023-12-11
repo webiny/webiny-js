@@ -9,7 +9,7 @@ import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
-import * as fastifyCookie from "@fastify/cookie";
+import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
 import { middleware } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
@@ -179,7 +179,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      *
      * https://github.com/fastify/fastify-cookie
      */
-    app.register(fastifyCookie.fastifyCookie, {
+    app.register(fastifyCookie, {
         parseOptions: {} // options for parsing cookies
     });
     /**
@@ -262,37 +262,6 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
-
-    /**
-     * We have few types of triggers:
-     *  * Events - EventPlugin
-     *  * Routes - RoutePlugin
-     *
-     * Routes are registered in fastify but events must be handled in package which implements cloud specific methods.
-     */
-    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
-
-    /**
-     * Add routes to the system.
-     */
-    let routePluginName: string | undefined;
-    try {
-        for (const plugin of routePlugins) {
-            routePluginName = plugin.name;
-            plugin.cb({
-                ...app.webiny.routes,
-                context: app.webiny
-            });
-        }
-    } catch (ex) {
-        console.error(
-            `Error while running the "RoutePlugin" ${
-                routePluginName ? `(${routePluginName})` : ""
-            } plugin in the beginning of the "createHandler" callable.`
-        );
-        console.error(stringifyError(ex));
-        throw ex;
-    }
 
     /**
      * On every request we add default headers, which can be changed later.
@@ -506,6 +475,37 @@ export const createHandler = (params: CreateHandlerParams) => {
             `Error while running the "ModifyFastifyPlugin" ${
                 modifyFastifyPluginName ? `(${modifyFastifyPluginName})` : ""
             } plugin in the end of the "createHandler" callable.`
+        );
+        console.error(stringifyError(ex));
+        throw ex;
+    }
+
+    /**
+     * We have few types of triggers:
+     *  * Events - EventPlugin
+     *  * Routes - RoutePlugin
+     *
+     * Routes are registered in fastify but events must be handled in package which implements cloud specific methods.
+     */
+    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
+
+    /**
+     * Add routes to the system.
+     */
+    let routePluginName: string | undefined;
+    try {
+        for (const plugin of routePlugins) {
+            routePluginName = plugin.name;
+            plugin.cb({
+                ...app.webiny.routes,
+                context: app.webiny
+            });
+        }
+    } catch (ex) {
+        console.error(
+            `Error while running the "RoutePlugin" ${
+                routePluginName ? `(${routePluginName})` : ""
+            } plugin in the beginning of the "createHandler" callable.`
         );
         console.error(stringifyError(ex));
         throw ex;

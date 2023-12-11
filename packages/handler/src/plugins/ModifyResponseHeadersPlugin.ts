@@ -1,24 +1,24 @@
 import { ResponseHeaders, StandardHeaders } from "~/ResponseHeaders";
 import { Request } from "~/types";
 
-interface ModifyResponseHeadersCallable<T> {
-    (request: Request, headers: ResponseHeaders<T>): void;
+interface ModifyResponseHeadersCallable {
+    (request: Request, headers: ResponseHeaders): void;
 }
 
 class ModifyResponseHeadersPlugin<T extends StandardHeaders = StandardHeaders> {
-    private readonly cb: ModifyResponseHeadersCallable<T>;
+    private readonly cb: ModifyResponseHeadersCallable;
 
-    constructor(cb: ModifyResponseHeadersCallable<T>) {
+    constructor(cb: ModifyResponseHeadersCallable) {
         this.cb = cb;
     }
 
-    modify(request: Request, headers: ResponseHeaders<T>) {
+    modify(request: Request, headers: ResponseHeaders) {
         this.cb(request, headers);
     }
 }
 
 export function createModifyResponseHeaders<T extends StandardHeaders = StandardHeaders>(
-    cb: ModifyResponseHeadersCallable<T>
+    cb: ModifyResponseHeadersCallable
 ) {
-    return new ModifyResponseHeadersPlugin<T>(cb);
+    return new ModifyResponseHeadersPlugin(cb);
 }

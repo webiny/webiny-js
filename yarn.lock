@@ -40594,6 +40594,7 @@ __metadata:
     rimraf: ^3.0.2
     rxjs: ^6.5.5
     semver: ^7.5.4
+    ts-expect: ^1.3.0
     ts-jest: ^29.1.0
     typescript: 4.7.4
     typescript-transform-paths: ^2.2.3
@@ -43549,6 +43550,13 @@ __metadata:
   version: 1.2.0
   resolution: "ts-dedent@npm:1.2.0"
   checksum: 69f654beb381a32732d3652e4b705322b7b94061e19e9b26824fe796ce8ede1e9ad29fd5e9dad2d200a92804063bf1beb5e256d304e729bfcf99d12e91b8926d
+  languageName: node
+  linkType: hard
+
+"ts-expect@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "ts-expect@npm:1.3.0"
+  checksum: c007702906354ada640392c26373660a8a034506859b5c084de74376ca2c6fe092c5909235d1bad8ed67423e7ab023dae4dc3032dcdcce70852c0211c5238013
   languageName: node
   linkType: hard
 

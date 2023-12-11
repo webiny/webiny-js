@@ -1,4 +1,4 @@
-import { createHandlerOnRequest } from "@webiny/handler";
+import { createHandlerOnRequest, ResponseHeaders } from "@webiny/handler";
 
 const whitelistedHeaders = [
     "accept",
@@ -16,22 +16,20 @@ export const createPrivateFilesFastifyPlugin = () => {
         const domain = request.headers["origin"];
 
         if (request.method === "OPTIONS") {
-            reply
-                .headers({
-                    // TODO: "Cache-Control": "public, max-age=86400",
-                    "Cache-Control": "no-store",
-                    "Content-Type": "application/json; charset=utf-8",
-                    "Access-Control-Max-Age": "86400",
-                    "Access-Control-Allow-Origin": domain,
-                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
-                    "Access-Control-Allow-Headers": whitelistedHeaders.join(", "),
-                    "Access-Control-Allow-Credentials": true
-                })
-                .code(204)
-                .send("")
-                .hijack();
+            const headers = ResponseHeaders.create({
+                // TODO: "Cache-Control": "public, max-age=86400",
+                "Cache-Control": "no-store",
+                "Content-Type": "application/json; charset=utf-8",
+                "Access-Control-Max-Age": "86400",
+                "Access-Control-Allow-Origin": domain,
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
+                "Access-Control-Allow-Headers": whitelistedHeaders.join(", "),
+                "Access-Control-Allow-Credentials": true
+            });
+            reply.headers().code(204).send("").hijack();
             return false;
         } else {
+            const headers = ResponseHeaders.create();
             reply.header("Access-Control-Allow-Credentials", true);
             reply.header("Access-Control-Allow-Origin", domain);
             reply.header("X-Tenant", "root");

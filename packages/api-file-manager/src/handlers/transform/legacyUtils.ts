@@ -1,9 +1,3 @@
-/**
- * BACKWARDS-COMPATIBILITY!
- *
- * This file contains utilities for files that don't have `id/key` structure, meaning, all files created before 5.35.0 release.
- */
-
 import objectHash from "object-hash";
 
 const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif"];

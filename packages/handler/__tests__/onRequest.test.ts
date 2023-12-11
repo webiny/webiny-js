@@ -35,7 +35,7 @@ describe("fastify onRequest event", () => {
                 "content-type": "application/json; charset=utf-8",
                 "access-control-allow-origin": "*",
                 "access-control-allow-headers": "*",
-                "access-control-allow-methods": "OPTIONS",
+                "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
                 "access-control-max-age": "86400",
                 connection: "keep-alive"
             },
