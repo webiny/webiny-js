@@ -39,6 +39,14 @@ export const ApiBackgroundTask = createAppModule({
         const stepFunction = app.addResource(aws.sfn.StateMachine, {
             name: "background-task-step-function",
             config: {
+                // TODO logging to cloudwatch
+                /*
+                loggingConfiguration: {
+                    level: "ALL",
+                    includeExecutionData: true,
+                    // insert real ARN
+                    logDestination: ARN
+                */
                 roleArn: stepFunctionRole.output.arn,
                 definition: pulumi.jsonStringify(
                     createBackgroundTaskDefinition({

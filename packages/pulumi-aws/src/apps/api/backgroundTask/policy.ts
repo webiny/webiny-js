@@ -19,6 +19,22 @@ export const createBackgroundTaskStepFunctionPolicy = (app: PulumiApp, params: P
                         Effect: "Allow",
                         Action: ["lambda:InvokeFunction"],
                         Resource: lambdaFunctionArn
+                    },
+                    {
+                        Effect: "Allow",
+                        Action: [
+                            "logs:CreateLogDelivery",
+                            "logs:CreateLogStream",
+                            "logs:GetLogDelivery",
+                            "logs:UpdateLogDelivery",
+                            "logs:DeleteLogDelivery",
+                            "logs:ListLogDeliveries",
+                            "logs:PutLogEvents",
+                            "logs:PutResourcePolicy",
+                            "logs:DescribeResourcePolicies",
+                            "logs:DescribeLogGroups"
+                        ],
+                        Resource: "*"
                     }
                 ]
             }
