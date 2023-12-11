@@ -56,9 +56,10 @@ const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => 
     if (fields.length === 0) {
         return output;
     }
+
     return {
         ...output,
-        extensions: prepareFormData(output.extensions, fields)
+        extensions: prepareFormData(output.extensions || {}, fields)
     };
 };
 
