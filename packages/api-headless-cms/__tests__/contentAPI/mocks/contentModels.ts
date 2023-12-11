@@ -1700,7 +1700,14 @@ const models: CmsModel[] = [
                 label: "Title",
                 fieldId: "title",
                 type: "text",
-                storageId: "text@titleStorageId"
+                storageId: "text@titleStorageId",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field_wrap_2,
@@ -1721,6 +1728,13 @@ const models: CmsModel[] = [
                             modelId: "author"
                         }
                     ]
+                },
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
                 }
             }
         ],
@@ -1728,7 +1742,7 @@ const models: CmsModel[] = [
         tenant: "root",
         locale: "en-US",
         titleFieldId: "title",
-        description: "",
+        description: "Wrapper model for ref field with multiple models",
         webinyVersion
     }
 ];
