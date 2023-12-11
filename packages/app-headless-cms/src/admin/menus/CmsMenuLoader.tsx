@@ -9,7 +9,7 @@ interface ChildMenuProps {
     canAccess: boolean;
 }
 
-const CmsContentModelsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
+const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
     if (!canAccess) {
         return null;
     }
@@ -22,7 +22,7 @@ const CmsContentModelsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
     );
 };
 
-const CmsContentGroupsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
+const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
     if (!canAccess) {
         return null;
     }
@@ -35,7 +35,7 @@ const CmsContentGroupsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
     );
 };
 
-const CmsMenuLoaderComponent: React.FC = () => {
+const CmsMenuLoaderComponent = () => {
     const {
         canAccessManageEndpoint,
         canReadContentModels,

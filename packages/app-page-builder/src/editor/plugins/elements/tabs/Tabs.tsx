@@ -8,7 +8,7 @@ interface TabsProps {
     element: PbEditorElement;
 }
 
-const Tabs: React.FC<TabsProps> = props => {
+const Tabs = (props: TabsProps) => {
     const { element, ...rest } = props;
     return <PeTabs element={element as Element} {...rest} />;
 };

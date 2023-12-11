@@ -8,7 +8,7 @@ import { Title } from "./Title";
 
 import { Container, WrapperActions } from "./styled";
 
-interface Props {
+interface HeaderProps {
     title?: string;
     canCreateFolder: boolean;
     canCreateContent: boolean;
@@ -18,7 +18,7 @@ interface Props {
     onSearchChange: (value: string) => void;
 }
 
-export const Header: React.VFC<Props> = props => {
+export const Header = (props: HeaderProps) => {
     const {
         canCreateFolder,
         canCreateContent,

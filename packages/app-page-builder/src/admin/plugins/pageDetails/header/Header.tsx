@@ -75,7 +75,7 @@ const HeaderActions = styled.div`
 interface HeaderProps {
     page: PbPageData;
 }
-const Header: React.FC<HeaderProps> = props => {
+const Header = (props: HeaderProps) => {
     const { page } = props;
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());

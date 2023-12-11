@@ -12,7 +12,7 @@ interface WrapperPropsType {
     children: ReactElement;
 }
 
-const Wrapper: React.FC<WrapperPropsType> = ({
+const Wrapper = ({
     label,
     containerClassName,
     leftCellSpan = 4,
@@ -20,7 +20,7 @@ const Wrapper: React.FC<WrapperPropsType> = ({
     leftCellClassName,
     rightCellClassName,
     children
-}) => {
+}: WrapperPropsType) => {
     return (
         <Grid className={containerClassName}>
             <Cell span={leftCellSpan} className={leftCellClassName}>

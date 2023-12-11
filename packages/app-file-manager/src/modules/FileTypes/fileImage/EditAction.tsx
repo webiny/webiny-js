@@ -62,7 +62,7 @@ interface EditActionProps {
     file: FileItem;
 }
 
-export const EditAction: React.FC<EditActionProps> = props => {
+export const EditAction = (props: EditActionProps) => {
     const { file } = props;
     const { canEdit } = useFileManagerApi();
     const { uploadFile } = useFileManagerView();

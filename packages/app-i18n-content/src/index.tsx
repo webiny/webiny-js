@@ -4,13 +4,13 @@ import { Compose, LocaleSelector as LocaleSelectorSpec } from "@webiny/app-admin
 import { LocaleSelector } from "./admin/LocaleSelector";
 import contentPermissions from "./admin/contentPermissions";
 
-const LocaleSelectorHOC = (): React.FC => {
+const LocaleSelectorHOC = () => {
     return function LocaleSelectorHOC() {
         return <LocaleSelector />;
     };
 };
 
-const I18NContentExtension: React.FC = () => {
+const I18NContentExtension = () => {
     plugins.register(contentPermissions);
 
     return <Compose component={LocaleSelectorSpec} with={LocaleSelectorHOC} />;

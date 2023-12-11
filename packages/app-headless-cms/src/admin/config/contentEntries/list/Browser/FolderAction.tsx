@@ -11,7 +11,7 @@ export interface FolderActionProps extends React.ComponentProps<typeof AcoConfig
     modelIds?: string[];
 }
 
-export const FolderAction: React.FC<FolderActionProps> = ({ modelIds = [], ...props }) => {
+export const FolderAction = ({ modelIds = [], ...props }: FolderActionProps) => {
     const { model } = useModel();
 
     if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {

@@ -66,7 +66,7 @@ interface TextSettingsProps extends PbEditorPageElementSettingsRenderComponentPr
     options: TextSettingsPropsOptions;
 }
 
-const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, options }) => {
+const TextSettings = ({ defaultAccordionValue, options }: TextSettingsProps) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
 

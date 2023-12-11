@@ -6,9 +6,9 @@ const { Folder } = AcoConfig;
 
 export { FolderActionConfig };
 
-export const FolderAction: React.FC<
-    React.ComponentProps<typeof AcoConfig.Folder.Action>
-> = props => {
+type FolderActionProps = React.ComponentProps<typeof AcoConfig.Folder.Action>;
+
+export const FolderAction = (props: FolderActionProps) => {
     return (
         <CompositionScope name={"pb.page"}>
             <AcoConfig>

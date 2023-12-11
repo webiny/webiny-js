@@ -57,7 +57,7 @@ interface BlocksListProps extends Omit<RenderRowProps, "index" | "key" | "style"
     category: string;
 }
 
-const BlocksList: React.FC<BlocksListProps> = props => {
+const BlocksList = (props: BlocksListProps) => {
     const rightPanelElement = useRef<HTMLElement | null>(null);
     const prevProps = useRef<BlocksListProps | null>(null);
 

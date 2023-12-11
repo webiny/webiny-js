@@ -48,7 +48,7 @@ declare global {
     }
 }
 
-export const ContentEntry: React.FC = () => {
+export const ContentEntry = () => {
     const { loading, entry, showEmptyView, canCreate, createEntry, tabsRef, setFormRef } =
         useContentEntry();
 

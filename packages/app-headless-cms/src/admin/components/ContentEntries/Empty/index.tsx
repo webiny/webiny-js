@@ -8,7 +8,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/empty");
 
-interface Props {
+interface EmptyProps {
     isSearch: boolean;
     onCreateEntry: (event: React.SyntheticEvent) => void;
     onCreateFolder: (event: React.SyntheticEvent) => void;
@@ -16,13 +16,13 @@ interface Props {
     canCreateFolder: boolean;
 }
 
-export const Empty: React.VFC<Props> = ({
+export const Empty = ({
     isSearch,
     onCreateEntry,
     onCreateFolder,
     canCreateContent,
     canCreateFolder
-}) => {
+}: EmptyProps) => {
     if (isSearch) {
         return <EmptyView icon={<SearchIcon />} title={t`No results found.`} action={null} />;
     }

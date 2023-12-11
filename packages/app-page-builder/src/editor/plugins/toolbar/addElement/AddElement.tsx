@@ -39,12 +39,7 @@ type ElementsListProps = {
     refresh: () => void;
 };
 
-const ElementsList: React.FC<ElementsListProps> = ({
-    groupPlugin,
-    elements,
-    renderDraggable,
-    refresh
-}) => {
+const ElementsList = ({ groupPlugin, elements, renderDraggable, refresh }: ElementsListProps) => {
     const { theme } = usePageBuilder();
 
     if (elements.length === 0) {
@@ -81,7 +76,7 @@ const ElementsList: React.FC<ElementsListProps> = ({
     );
 };
 
-const AddElement: React.FC = () => {
+const AddElement = () => {
     const handler = useEventActionHandler();
     const params = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();

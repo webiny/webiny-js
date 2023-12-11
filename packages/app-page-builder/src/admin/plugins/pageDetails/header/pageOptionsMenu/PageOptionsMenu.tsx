@@ -45,7 +45,7 @@ interface PageOptionsMenuProps {
     page: PbPageData;
 }
 
-const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
+const PageOptionsMenu = (props: PageOptionsMenuProps) => {
     const { page } = props;
     const [isCreateTemplateDialogOpen, setIsCreateTemplateDialogOpen] = useState<boolean>(false);
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =

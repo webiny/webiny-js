@@ -65,12 +65,7 @@ interface ToolbarDrawerProps {
     children: React.ReactNode;
     drawerClassName?: string;
 }
-const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
-    name,
-    active,
-    children,
-    drawerClassName
-}) => {
+const ToolbarDrawer = ({ name, active, children, drawerClassName }: ToolbarDrawerProps) => {
     const eventActionHandler = useEventActionHandler();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
     const last = useRef<{ active: boolean | null }>({
@@ -108,7 +103,7 @@ export const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarB
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
-const Toolbar: React.FC = () => {
+const Toolbar = () => {
     const activePluginsTop = useRecoilValue(
         activePluginsByTypeNamesSelector("pb-editor-toolbar-top")
     );

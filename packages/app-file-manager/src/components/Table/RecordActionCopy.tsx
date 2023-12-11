@@ -15,7 +15,7 @@ const t = i18n.ns("app-admin/file-manager/components/table/record-action-copy");
 interface RecordActionCopyProps {
     record: SearchRecordItem<FileItem>["data"];
 }
-export const RecordActionCopy: React.FC<RecordActionCopyProps> = ({ record }) => {
+export const RecordActionCopy = ({ record }: RecordActionCopyProps) => {
     const { copyFileUrl } = useCopyFile({ file: record });
     return (
         <MenuItem onClick={copyFileUrl}>

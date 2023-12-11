@@ -14,7 +14,7 @@ type LayoutListItem = FbFormLayoutPlugin["layout"];
 interface GeneralSettingsProps {
     Bind: BindComponent;
 }
-const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
+const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
     const theme = useMemo(
         (): PbTheme =>
             Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),

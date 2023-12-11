@@ -35,7 +35,7 @@ const SidebarActionsWrapper = styled("div")({
     justifyContent: "center"
 });
 
-const ElementSettingsTabContent: React.FC = () => {
+const ElementSettingsTabContent = () => {
     const [element] = useActiveElement();
     const elementSettings = useElementSettings();
 

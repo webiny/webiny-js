@@ -84,7 +84,7 @@ interface FileProps {
     options?: Array<{ label: string; onClick: (file: any) => void }>;
 }
 
-const File: React.FC<FileProps> = props => {
+const File = (props: FileProps) => {
     const { file, onSelect, onRemove } = props;
 
     return (

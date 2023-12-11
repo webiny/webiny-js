@@ -11,7 +11,7 @@ interface SimpleTextPropsType {
     className?: string;
     focusInput?: boolean;
 }
-const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
+const SimpleEditableText = ({
     value: defaultValue = "",
     variableValue,
     onFocus,
@@ -20,7 +20,7 @@ const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
     options = {},
     element,
     className
-}) => {
+}: SimpleTextPropsType) => {
     const value = useRef<string>(defaultValue);
     const inputRef = useRef(null);
 
