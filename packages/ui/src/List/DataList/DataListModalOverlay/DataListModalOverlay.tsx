@@ -65,12 +65,11 @@ export interface DataListModalOverlayProps {
      * This function is called after closing the modal overlay.
      */
     onDismiss?: (event?: React.SyntheticEvent) => void;
+
+    children: React.ReactNode;
 }
 
-export const DataListModalOverlay: React.FC<DataListModalOverlayProps> = ({
-    onDismiss,
-    children
-}) => {
+export const DataListModalOverlay = ({ onDismiss, children }: DataListModalOverlayProps) => {
     const { isOpen, setIsOpen } = useContext(DataListModalOverlayContext);
     return (
         <React.Fragment>

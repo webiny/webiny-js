@@ -146,9 +146,11 @@ export interface AccordionItemProps {
      * Append a class name to Icon
      */
     iconClassName?: string;
+
+    children: React.ReactNode;
 }
 
-const AccordionItemComponent: React.FC<AccordionItemProps> = props => {
+const AccordionItemComponent = (props: AccordionItemProps) => {
     const [open, setState] = useState<boolean>(props.open ? props.open : false);
     const { interactive = true, actions } = props;
 
@@ -211,7 +213,7 @@ const AccordionItemComponent: React.FC<AccordionItemProps> = props => {
     );
 };
 
-type AccordionItem = React.FC<AccordionItemProps> & {
+type AccordionItem = React.ComponentType<AccordionItemProps> & {
     Divider: typeof Divider;
     Actions: typeof AccordionItemActions;
     Action: typeof AccordionItemAction;
