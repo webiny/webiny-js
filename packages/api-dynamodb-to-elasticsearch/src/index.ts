@@ -110,6 +110,9 @@ export const createEventHandler = () => {
                 // @ts-expect-error
                 const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
 
+                // Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
+                // if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
+                // need to process it.
                 if (newImage && newImage.ignore === true) {
                     continue;
                 }
