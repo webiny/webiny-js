@@ -1,34 +1,10 @@
 import React from "react";
-
 import { Property, useIdGenerator } from "@webiny/react-properties";
-
-type Icon = {
-    type: "icon";
-    name: string;
-    value: string;
-    category?: string;
-    width?: number;
-};
-
-export type Emoji = {
-    type: "emoji";
-    name: string;
-    value: string;
-    category: string;
-    skinToneSupport: boolean;
-};
-
-type Custom = {
-    type: "custom";
-    name: string;
-    value: string;
-};
-
-export type ProviderIcon = Icon | Emoji | Custom;
+import { Icon } from "~/components/IconPicker/types";
 
 export type IconPackProviderProps = {
     name: string;
-    provider: () => Promise<ProviderIcon[]> | ProviderIcon[];
+    provider: () => Promise<Icon[]> | Icon[];
 };
 
 export const IconPackProvider = ({ name, provider }: IconPackProviderProps) => {
