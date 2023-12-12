@@ -94,8 +94,9 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
 
     private getActiveTabByType(type: string) {
         const iconTypes = this.repository.getIconTypes();
+        const index = iconTypes.findIndex(iconsByType => iconsByType.name === type);
 
-        return iconTypes.findIndex(iconsByType => iconsByType.name === type);
+        return index !== -1 ? index : 0;
     }
 
     private resetActiveTab() {
