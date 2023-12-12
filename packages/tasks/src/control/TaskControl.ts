@@ -1,18 +1,19 @@
 import { ITaskEvent } from "~/handler/types";
-import { ITaskRunner } from "~/runner/types";
-import { Context, IResponseManager, ITaskData, ITaskDefinition } from "~/types";
+import { ITaskRunner } from "~/runner/abstractions";
+import { Context, ITaskData, ITaskDefinition } from "~/types";
 import { ITaskControl } from "./types";
 import { TaskPlugin } from "~/task/plugin";
-import { TaskRunErrorResponse, TaskRunResponse } from "~/manager/response";
 import { TaskManager } from "~/manager";
-import { DatabaseResponseManager } from "~/manager/DatabaseResponseManager";
+import { DatabaseResponse } from "~/manager/DatabaseResponse";
+import { IResponse, IResponseErrorResult } from "~/response/abstractions";
+import WebinyError from "@webiny/error";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
-    public readonly response: IResponseManager;
+    public readonly response: IResponse;
     public readonly context: Context;
 
-    public constructor(runner: ITaskRunner, response: IResponseManager, context: Context) {
+    public constructor(runner: ITaskRunner, response: IResponse, context: Context) {
         this.runner = runner;
         this.context = context;
         this.response = response;
@@ -26,100 +27,83 @@ export class TaskControl implements ITaskControl {
          * * child tasks can be in multiple levels (child task creates a child task, etc...).
          * * child tasks could be executed in parallel.
          */
-        const taskData = await this.getTask(taskId);
-        if (taskData instanceof TaskRunResponse) {
-            return taskData;
+        let taskData: ITaskData;
+        try {
+            taskData = await this.getTask(taskId);
+        } catch (ex: unknown) {
+            return ex as IResponseErrorResult;
         }
 
-        const databaseResponse = new DatabaseResponseManager(this.response, taskData, this.context);
+        const databaseResponse = new DatabaseResponse(this.response, taskData, this.context);
 
-        const taskDefinition = await this.getTaskDefinition(taskData);
-        if (taskDefinition instanceof TaskRunResponse) {
-            return databaseResponse.from(taskDefinition);
+        let taskDefinition: ITaskDefinition;
+        try {
+            taskDefinition = this.getTaskDefinition(taskData);
+        } catch (ex) {
+            return await databaseResponse.error({
+                error: ex
+            });
         }
 
         const manager = new TaskManager(
             this.runner,
             this.context,
-            databaseResponse,
+            this.response,
             taskData,
             taskDefinition
         );
 
         try {
-            return await manager.run();
+            const result = await manager.run();
+
+            return await databaseResponse.from(result);
         } catch (ex) {
             return this.response.error({
-                task: {
-                    id: taskId
-                },
                 error: {
                     message: ex.message,
                     code: ex.code || "TASK_ERROR",
                     stack: ex.stack,
                     data: {
                         ...ex.data,
-                        id: taskId
+                        input: taskData.input
                     }
-                },
-                input: taskData.input
+                }
             });
         }
     }
 
-    private async getTask<T = any>(id: string): Promise<ITaskData<T> | TaskRunErrorResponse> {
+    private async getTask<T = any>(id: string): Promise<ITaskData<T>> {
         try {
             const task = await this.runner.context.tasks.getTask<T>(id);
             if (task) {
                 return task;
             }
-            return this.response.error({
-                task: {
-                    id
-                },
-                error: {
-                    message: `Task "${id}" cannot be executed because it does not exist.`,
-                    code: "TASK_NOT_FOUND"
-                },
-                input: {}
-            });
         } catch (ex) {
-            return this.response.error({
-                task: {
-                    id
-                },
+            throw this.response.error({
                 error: {
                     message: ex.message,
                     code: ex.code || "TASK_ERROR",
                     stack: ex.stack,
-                    data: {
-                        ...ex.data,
-                        id
-                    }
-                },
-                input: {}
+                    data: ex.data
+                }
             });
         }
+        throw this.response.error({
+            error: {
+                message: `Task "${id}" cannot be executed because it does not exist.`,
+                code: "TASK_NOT_FOUND"
+            }
+        });
     }
 
-    private async getTaskDefinition(
-        task: Pick<ITaskData<any>, "id" | "input">
-    ): Promise<ITaskDefinition | TaskRunErrorResponse> {
-        const plugin = this.runner.context.plugins
-            .byType<TaskPlugin>(TaskPlugin.type)
-            .find(plugin => {
-                return plugin.getTask().id === task.id;
-            });
+    private getTaskDefinition(task: Pick<ITaskData, "id" | "input">): ITaskDefinition {
+        const plugin = this.context.plugins.byType<TaskPlugin>(TaskPlugin.type).find(plugin => {
+            return plugin.getTask().id === task.id;
+        });
         if (!plugin) {
-            return this.response.error({
-                task: {
-                    id: task.id
-                },
-                error: {
-                    message: `Task "${task.id}" cannot be executed because there is no plugin defining the task.`,
-                    code: "TASK_DEFINITION_ERROR"
-                },
-                input: task.input
+            throw new WebinyError({
+                message: `Task "${task.id}" cannot be executed because there is no plugin defining the task.`,
+                code: "TASK_DEFINITION_ERROR"
             });
         }
         return plugin.getTask();

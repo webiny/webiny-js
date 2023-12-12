@@ -1,50 +1,42 @@
-import { ResponseManager } from "~/manager/ResponseManager";
 import {
-    IResponseManager,
-    IResponseManagerContinue,
-    IResponseManagerContinueParams,
-    IResponseManagerDone,
-    IResponseManagerDoneParams,
-    IResponseManagerError,
-    IResponseManagerErrorParams,
-    TaskResponseStatus
-} from "~/types";
+    IResponse,
+    IResponseContinueParams,
+    IResponseContinueResult,
+    IResponseDoneParams,
+    IResponseDoneResult,
+    IResponseErrorParams,
+    IResponseErrorResult
+} from "~/response/abstractions";
+import { ITaskEvent } from "~/handler/types";
+import { Response } from "~/response";
 
-export const createMockResponseManager = (params?: Partial<IResponseManager>): IResponseManager => {
+export const createMockResponseFactory = (
+    params?: Partial<IResponse>
+): ((event: ITaskEvent) => IResponse) => {
     const { done, error, continue: cont } = params || {};
 
-    class MockResponseManager extends ResponseManager {
-        public continue(params: IResponseManagerContinueParams): IResponseManagerContinue {
+    class MockResponse extends Response {
+        public override continue(params: IResponseContinueParams): IResponseContinueResult {
             if (cont) {
                 return cont(params);
             }
-            return {
-                ...params,
-                id: params.task.id,
-                status: TaskResponseStatus.CONTINUE
-            };
+            return super.continue(params);
         }
-        public done(params: IResponseManagerDoneParams): IResponseManagerDone {
+        public override done(params?: IResponseDoneParams): IResponseDoneResult {
             if (done) {
                 return done(params);
             }
-            return {
-                ...params,
-                id: params.task.id,
-                status: TaskResponseStatus.DONE
-            };
+            return super.done(params);
         }
-        public error(params: IResponseManagerErrorParams): IResponseManagerError {
+        public override error(params: IResponseErrorParams): IResponseErrorResult {
             if (error) {
                 return error(params);
             }
-            return {
-                ...params,
-                id: params.task.id,
-                status: TaskResponseStatus.ERROR
-            };
+            return super.error(params);
         }
     }
 
-    return new MockResponseManager();
+    return (event: ITaskEvent) => {
+        return new MockResponse(event);
+    };
 };

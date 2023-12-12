@@ -22,6 +22,7 @@ const taskField: ITaskField = {
 interface MyInput {
     test: boolean;
     file: string;
+    page: number;
 }
 
 class MyTask implements ITaskDefinition<Context, MyInput> {
@@ -54,7 +55,10 @@ describe("task definition", () => {
                 try {
                     if (isCloseToTimeout()) {
                         return response.continue({
-                            input
+                            input: {
+                                ...input,
+                                page: input.page + 1
+                            }
                         });
                     }
 

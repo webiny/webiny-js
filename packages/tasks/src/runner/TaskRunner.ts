@@ -1,10 +1,9 @@
-import WebinyError from "@webiny/error";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Reply, Request } from "@webiny/handler/types";
 import { ITaskEvent } from "~/handler/types";
-import { ITaskRunner } from "./types";
-import { Context, IResponseManager } from "~/types";
-import { MessageResponseManager } from "~/manager/MessageResponseManager";
+import { ITaskRunner } from "./abstractions";
+import { Context } from "~/types";
+import { Response } from "~/response";
 import { TaskControl } from "~/control";
 import { TaskEventValidation } from "./TaskEventValidation";
 
@@ -28,8 +27,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     public readonly context: C;
     public readonly event: ITaskEvent;
     public readonly lambdaContext: LambdaContext;
-
-    private readonly response: IResponseManager;
     private readonly validation: TaskEventValidation;
 
     /**
@@ -41,7 +38,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         request: Request,
         reply: Reply,
         context: C,
-        response: IResponseManager = new MessageResponseManager(),
         validation: TaskEventValidation = new TaskEventValidation()
     ) {
         this.request = request;
@@ -49,7 +45,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.context = context;
         this.event = event;
         this.lambdaContext = lambdaContext;
-        this.response = response;
         this.validation = validation;
     }
 
@@ -65,31 +60,23 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     }
 
     public async run() {
-        const result = this.validation.validate(this.event);
-        if (result instanceof WebinyError) {
-            return this.response.error({
-                task: {
-                    id: this.event.webinyTaskId || "unknown"
-                },
-                error: {
-                    message: result.message,
-                    code: "TASK_EVENT_VALIDATION_FAILED",
-                    data: result.data
-                },
-                input: {}
+        const response = new Response(this.event);
+
+        let result: ITaskEvent;
+        try {
+            result = this.validation.validate(this.event);
+        } catch (ex) {
+            return response.error({
+                error: ex
             });
         }
 
-        const control = new TaskControl(this, this.response, this.context);
+        const control = new TaskControl(this, response, this.context);
 
         try {
             return await control.run(result);
         } catch (ex) {
-            return this.response.error({
-                task: {
-                    id: this.event.webinyTaskId || "unknown"
-                },
-                input: {},
+            return response.error({
                 error: ex
             });
         }

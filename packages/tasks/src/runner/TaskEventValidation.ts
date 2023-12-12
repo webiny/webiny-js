@@ -1,7 +1,10 @@
 import zod from "zod";
-import WebinyError from "@webiny/error";
-import { ITaskEvent } from "~/handler/types";
 import { createZodError } from "@webiny/utils";
+import {
+    ITaskEventValidation,
+    ITaskEventValidationResult,
+    PollutedITaskEvent
+} from "./abstractions";
 
 const validation = zod
     .object({
@@ -13,12 +16,12 @@ const validation = zod
     })
     .required();
 
-export class TaskEventValidation {
-    public validate(event: ITaskEvent & Record<string, any>): WebinyError | ITaskEvent {
+export class TaskEventValidation implements ITaskEventValidation {
+    public validate(event: PollutedITaskEvent): ITaskEventValidationResult {
         const result = validation.safeParse(event);
         if (result.success) {
             return result.data;
         }
-        return createZodError(result.error);
+        throw createZodError(result.error);
     }
 }

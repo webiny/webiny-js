@@ -1,14 +1,9 @@
-import { ITaskRunner } from "~/runner/types";
-import { Context, IResponseManager } from "~/types";
+import { ITaskRunner } from "~/runner/abstractions";
+import { Context } from "~/types";
+import { IResponse } from "~/response/abstractions";
 
 export interface ITaskControl {
     runner: ITaskRunner;
-    response: IResponseManager;
+    response: IResponse;
     context: Context;
-}
-
-export interface ITaskControlParams {
-    runner: ITaskRunner;
-    context: Context;
-    response: IResponseManager;
 }

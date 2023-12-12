@@ -62,8 +62,6 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
             const result = await handler.run();
             app.__webiny_raw_result = {
-                // @ts-expect-error
-                status: TaskResponseStatus.DONE,
                 ...result
             };
             return reply.send({});

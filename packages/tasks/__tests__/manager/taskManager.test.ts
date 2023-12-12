@@ -1,7 +1,12 @@
 import { Context, ITaskDataStatus } from "~/types";
 import { createTask } from "~/task/definition";
 import { TaskManager } from "~/manager";
-import { createMockContext, createMockResponseManager, createMockRunner } from "~tests/mocks";
+import {
+    createMockContext,
+    createMockEvent,
+    createMockResponseFactory,
+    createMockRunner
+} from "~tests/mocks";
 
 describe("create task manager", () => {
     const taskDefinition = createTask<Context, any>({
@@ -22,10 +27,11 @@ describe("create task manager", () => {
     });
 
     it("should create a task manager", async () => {
+        const factory = createMockResponseFactory();
         const manager = new TaskManager(
             createMockRunner(),
             createMockContext(),
-            createMockResponseManager(),
+            factory(createMockEvent()),
             {
                 id: "myCustomTask",
                 input: {},

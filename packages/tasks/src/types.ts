@@ -5,12 +5,13 @@ import {
     CmsModel,
     CmsModelField
 } from "@webiny/api-headless-cms/types";
-import { ITaskError } from "~/manager/types";
+import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
 
 export interface ITaskDataLog {
     message: string;
     createdOn: string;
-    error?: ITaskError;
+    input?: any;
+    error?: IResponseError;
 }
 
 export enum ITaskDataStatus {
@@ -60,83 +61,9 @@ export interface Context extends BaseContext {
     tasks: ITasksContextObject;
 }
 
-export interface ITaskRunErrorResponseError {
-    message: string;
-    code?: string;
-    data?: Record<string, any> | null;
-}
-
-export interface IResponseManagerDoneParams<T = any> {
-    task: Pick<ITaskData<any>, "id">;
-    input: T;
-    error?: never;
-    message?: string;
-}
-
-export interface IResponseManagerContinueParams<T = any> {
-    task: Pick<ITaskData<any>, "id">;
-    input: T;
-    error?: never;
-}
-
-export interface IResponseManagerErrorParams<T = any> {
-    input: T;
-    error: ITaskError;
-    task: Pick<ITaskData<any>, "id">;
-}
-
-export interface IResponseManager {
-    from(response: ITaskRunResponse): Promise<ITaskRunResponse>;
-    done: (params: IResponseManagerDoneParams) => Promise<IResponseManagerDone>;
-    error: (params: IResponseManagerErrorParams) => Promise<IResponseManagerError>;
-    continue: <T = unknown>(
-        params: IResponseManagerContinueParams<T>
-    ) => Promise<IResponseManagerContinue<T> | IResponseManagerError>;
-}
-
-export interface ITaskRunResponseManagerDoneParams {
-    message?: string;
-}
-
-export interface ITaskRunResponseManagerErrorParams {
-    error: ITaskError;
-}
-
-export interface ITaskRunResponseManagerContinueParams<T> {
-    input: T;
-}
-
-export interface ITaskRunResponseManagerDoneResponse {
-    status: TaskResponseStatus.DONE;
-    message?: string;
-}
-
-export interface ITaskRunResponseManagerErrorResponse {
-    status: TaskResponseStatus.ERROR;
-    error: ITaskRunErrorResponseError;
-}
-
-export interface ITaskRunResponseManagerContinueResponse<T = unknown> {
-    status: TaskResponseStatus.CONTINUE;
-    input: T;
-}
-
-export type ITaskRunResponseManagerResponse =
-    | ITaskRunResponseManagerDoneResponse
-    | ITaskRunResponseManagerErrorResponse
-    | ITaskRunResponseManagerContinueResponse<any>;
-
-export interface ITaskRunResponseManager {
-    done: (params?: ITaskRunResponseManagerDoneParams) => ITaskRunResponseManagerDoneResponse;
-    error: (params: ITaskRunResponseManagerErrorParams) => ITaskRunResponseManagerErrorResponse;
-    continue: <T = unknown>(
-        params: ITaskRunResponseManagerContinueParams<T>
-    ) => ITaskRunResponseManagerContinueResponse<T>;
-}
-
 export interface ITaskRunParams<C extends Context, I = any> {
     context: C;
-    response: ITaskRunResponseManager;
+    response: ITaskResponse;
     isCloseToTimeout: () => boolean;
     input: I;
     task: ITaskData<I>;
@@ -158,28 +85,6 @@ export enum TaskResponseStatus {
     CONTINUE = "continue"
 }
 
-export interface ITaskRunResponse<T = any> {
-    id: string;
-    status: TaskResponseStatus;
-    input: T;
-}
-
-export interface IResponseManagerContinue<T = any> extends ITaskRunResponse<T> {
-    status: TaskResponseStatus.CONTINUE;
-    error?: never;
-}
-
-export interface IResponseManagerError<T = any> extends ITaskRunResponse<T> {
-    status: TaskResponseStatus.ERROR;
-    error: ITaskRunErrorResponseError;
-}
-
-export interface IResponseManagerDone<T = any> extends ITaskRunResponse<T> {
-    status: TaskResponseStatus.DONE;
-    message?: string;
-    error?: never;
-}
-
 export type ITaskField = Pick<
     CmsModelField,
     | "fieldId"
@@ -194,11 +99,6 @@ export type ITaskField = Pick<
     | "multipleValues"
     | "settings"
 >;
-
-export type TaskRunResponse =
-    | IResponseManagerContinue
-    | IResponseManagerDone
-    | IResponseManagerError;
 
 export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
@@ -216,7 +116,7 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
      * Task run method.
      */
-    run: (params: ITaskRunParams<C, I>) => Promise<ITaskRunResponseManagerResponse>;
+    run: (params: ITaskRunParams<C, I>) => Promise<ITaskResponseResult>;
     /**
      * When task successfully finishes, this method will be called.
      */

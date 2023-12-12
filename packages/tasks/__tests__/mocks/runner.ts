@@ -1,11 +1,12 @@
-import { ITaskRunner } from "~/runner/types";
+import { ITaskRunner } from "~/runner/abstractions";
 import { ITaskEvent } from "~/handler/types";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Reply, Request } from "@webiny/handler/types";
 import { createMockContext } from "~tests/mocks/context";
 
 export const createMockRunner = (params?: Partial<ITaskRunner>): ITaskRunner => {
-    const { request, reply, context, event, lambdaContext, isCloseToTimeout } = params || {};
+    const { request, reply, context, event, lambdaContext, getRemainingTime, isCloseToTimeout } =
+        params || {};
     return {
         context: context || createMockContext(),
         isCloseToTimeout: () => {
@@ -13,6 +14,12 @@ export const createMockRunner = (params?: Partial<ITaskRunner>): ITaskRunner => 
                 return isCloseToTimeout();
             }
             return false;
+        },
+        getRemainingTime: () => {
+            if (getRemainingTime) {
+                return getRemainingTime();
+            }
+            return 1000;
         },
         event: event || ({} as ITaskEvent),
         lambdaContext: lambdaContext || ({} as LambdaContext),

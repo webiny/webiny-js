@@ -1,12 +1,5 @@
-import { ITaskRunResponse } from "~/types";
-
-export interface ITaskError {
-    message: string;
-    code?: string;
-    data?: Record<string, any> | null;
-    stack?: any;
-}
+import { IResponseResult } from "~/response/abstractions";
 
 export interface ITaskManager {
-    run: () => Promise<ITaskRunResponse>;
+    run: () => Promise<IResponseResult>;
 }

@@ -1,31 +1,41 @@
-import {
-    Context,
-    IResponseManager,
-    IResponseManagerContinue,
-    IResponseManagerContinueParams,
-    IResponseManagerDone,
-    IResponseManagerDoneParams,
-    IResponseManagerError,
-    IResponseManagerErrorParams,
-    ITaskData,
-    ITaskDataStatus
-} from "~/types";
-import { ResponseManager } from "~/manager/ResponseManager";
+import { Context, ITaskData, ITaskDataStatus, TaskResponseStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
+import {
+    IResponse,
+    IResponseAsync,
+    IResponseContinueParams,
+    IResponseContinueResult,
+    IResponseDoneParams,
+    IResponseDoneResult,
+    IResponseErrorParams,
+    IResponseErrorResult,
+    IResponseResult
+} from "~/response/abstractions";
 
-export class DatabaseResponseManager extends ResponseManager {
-    private readonly response: IResponseManager;
+export class DatabaseResponse implements IResponseAsync {
+    public readonly response: IResponse;
+
     private readonly task: ITaskData;
     private readonly context: Context;
 
-    public constructor(response: IResponseManager, task: ITaskData, context: Context) {
-        super();
+    public constructor(response: IResponse, task: ITaskData, context: Context) {
         this.response = response;
         this.task = task;
         this.context = context;
     }
 
-    public async done(params: IResponseManagerDoneParams): Promise<IResponseManagerDone> {
+    public from(result: IResponseResult): Promise<IResponseResult> {
+        switch (result.status) {
+            case TaskResponseStatus.DONE:
+                return this.done(result);
+            case TaskResponseStatus.CONTINUE:
+                return this.continue(result);
+            case TaskResponseStatus.ERROR:
+                return this.error(result);
+        }
+    }
+
+    public async done(params: IResponseDoneParams): Promise<IResponseDoneResult> {
         let message = params.message;
         try {
             await this.context.tasks.updateTask(this.task.id, {
@@ -49,9 +59,9 @@ export class DatabaseResponseManager extends ResponseManager {
         });
     }
 
-    public async continue<T = unknown>(
-        params: IResponseManagerContinueParams<T>
-    ): Promise<IResponseManagerContinue<T> | IResponseManagerError> {
+    public async continue(
+        params: IResponseContinueParams
+    ): Promise<IResponseContinueResult | IResponseErrorResult> {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 input: params.input,
@@ -59,7 +69,8 @@ export class DatabaseResponseManager extends ResponseManager {
                 log: (this.task.log || []).concat([
                     {
                         message: "Task continuing.",
-                        createdOn: new Date().toISOString()
+                        createdOn: new Date().toISOString(),
+                        input: params.input
                     }
                 ])
             });
@@ -69,44 +80,33 @@ export class DatabaseResponseManager extends ResponseManager {
              */
             if (ex instanceof NotFoundError) {
                 return this.response.error({
-                    task: {
-                        id: this.task.id
-                    },
                     error: {
                         message: ex.message || `Task not found.`,
                         code: ex.code || "TASK_NOT_FOUND",
                         data: {
                             ...ex.data,
-                            id: this.task.id
+                            input: this.task.input
                         }
-                    },
-                    input: params.input
+                    }
                 });
             }
             /**
              * Otherwise, we store the error and return it...
              */
             return this.error({
-                task: {
-                    id: this.task.id
-                },
                 error: {
-                    message: `Failed to update task input. (${ex.message || "unknown"})`,
-                    code: ex.code || "TASK_UPDATE_ERROR",
-                    data: {
-                        id: this.task.id
-                    }
-                },
-                input: params.input
+                    message: `Failed to update task input: ${ex.message || "unknown error"}`,
+                    code: ex.code || "TASK_UPDATE_ERROR"
+                }
             });
         }
         /**
          * Default behavior is to return the continue response.
          */
-        return this.response.continue<T>(params);
+        return this.response.continue(params);
     }
 
-    public async error(params: IResponseManagerErrorParams): Promise<IResponseManagerError> {
+    public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 savedOn: new Date(),
@@ -127,7 +127,8 @@ export class DatabaseResponseManager extends ResponseManager {
                     code: ex.code || params.error.code,
                     data: {
                         ...params.error.data,
-                        ...ex.data
+                        ...ex.data,
+                        input: this.task.input
                     }
                 }
             });
@@ -135,6 +136,15 @@ export class DatabaseResponseManager extends ResponseManager {
         /**
          * Default behavior is to return the error response.
          */
-        return this.response.error(params);
+        return this.response.error({
+            ...params,
+            error: {
+                ...params.error,
+                data: {
+                    ...params.error.data,
+                    input: this.task.input
+                }
+            }
+        });
     }
 }
