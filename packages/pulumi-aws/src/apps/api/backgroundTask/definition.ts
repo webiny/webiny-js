@@ -41,7 +41,7 @@ export const createBackgroundTaskDefinition = (
                 Catch: [
                     {
                         ErrorEquals: ["States.ALL"],
-                        Next: "Error"
+                        Next: "UnknownTaskError"
                     }
                 ]
             },
@@ -70,7 +70,18 @@ export const createBackgroundTaskDefinition = (
                         Next: "Done"
                     }
                 ],
-                Default: "Error"
+                Default: "UnknownStatus"
+            },
+            UnknownTaskError: {
+                Type: StepFunctionDefinitionStatesType.Fail,
+                Cause: "Fatal error - unknown task error."
+            },
+            /**
+             * Unknown task status on Choice step.
+             */
+            UnknownStatus: {
+                Type: StepFunctionDefinitionStatesType.Fail,
+                Cause: "Fatal error - unknown status."
             },
             /**
              * Fail the task and output the error.
@@ -84,8 +95,7 @@ export const createBackgroundTaskDefinition = (
              * Complete the task.
              */
             Done: {
-                Type: StepFunctionDefinitionStatesType.Pass,
-                End: true
+                Type: StepFunctionDefinitionStatesType.Succeed
             }
         }
     };

@@ -6,7 +6,7 @@ export enum StepFunctionDefinitionStatesType {
     Task = "Task",
     Choice = "Choice",
     Fail = "Fail",
-    Pass = "Pass"
+    Succeed = "Succeed"
 }
 
 export interface StepFunctionDefinitionStatesParameters<P extends Record<string, any>> {
@@ -17,6 +17,7 @@ export interface StepFunctionDefinitionStatesParameters<P extends Record<string,
 export interface StepFunctionDefinitionStatesCatch {
     ErrorEquals: string[];
     Next: string;
+    ResultPath?: string;
 }
 
 export interface StepFunctionDefinitionStatesChoice {
@@ -27,6 +28,9 @@ export interface StepFunctionDefinitionStatesChoice {
 
 export interface StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType;
+    Comment?: string;
+    InputPath?: string;
+    OutputPath?: string;
 }
 
 export interface StepFunctionDefinitionStatesTypeTask<P extends Record<string, any>>
@@ -44,26 +48,27 @@ export interface StepFunctionDefinitionStatesTypeChoice
     extends StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType.Choice;
     Choices: StepFunctionDefinitionStatesChoice[];
-    InputPath?: string;
     Default?: string;
 }
 
 export interface StepFunctionDefinitionStatesTypeFail extends StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType.Fail;
-    CausePath: string;
-    ErrorPath: string;
+    Error?: string;
+    Cause?: string;
+    CausePath?: string;
+    ErrorPath?: string;
 }
 
-export interface StepFunctionDefinitionStatesTypePass extends StepFunctionDefinitionStatesTypeBase {
-    Type: StepFunctionDefinitionStatesType.Pass;
-    End: boolean;
+export interface StepFunctionDefinitionStatesTypeSucceed
+    extends StepFunctionDefinitionStatesTypeBase {
+    Type: StepFunctionDefinitionStatesType.Succeed;
 }
 
 export type StepFunctionDefinitionStatesTypes =
     | StepFunctionDefinitionStatesTypeTask<Record<string, any>>
     | StepFunctionDefinitionStatesTypeChoice
     | StepFunctionDefinitionStatesTypeFail
-    | StepFunctionDefinitionStatesTypePass;
+    | StepFunctionDefinitionStatesTypeSucceed;
 
 export interface StepFunctionDefinition {
     Comment: string;
