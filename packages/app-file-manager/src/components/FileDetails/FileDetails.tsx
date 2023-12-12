@@ -34,6 +34,9 @@ const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
     &.mdc-drawer {
         width: ${props => props.width};
     }
+    & + .mdc-drawer-scrim {
+        z-index: 65;
+    }
 `;
 
 const FormContainer = styled(SimpleForm)`
