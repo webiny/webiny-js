@@ -1,6 +1,6 @@
 import { ITaskRunner } from "~/runner/abstractions";
-import { Context } from "~/types";
 import { IResponse } from "~/response/abstractions";
+import { Context } from "~/types";
 
 export interface ITaskControl {
     runner: ITaskRunner;

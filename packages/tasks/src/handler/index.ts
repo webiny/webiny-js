@@ -60,10 +60,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 app.webiny as Context
             );
 
-            const result = await handler.run();
-            app.__webiny_raw_result = {
-                ...result
-            };
+            app.__webiny_raw_result = await handler.run();
             return reply.send({});
         });
         return execute({

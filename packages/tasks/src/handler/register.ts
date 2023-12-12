@@ -6,10 +6,7 @@ import { IIncomingEvent, ITaskEvent } from "./types";
 const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
     name: "handler-webiny-background-task",
     canUse: event => {
-        if (!event?.Payload) {
-            return false;
-        }
-        return !!event.Payload.webinyTaskId;
+        return !!event.Payload?.webinyTaskId;
     },
     handle: async ({ params, event, context }) => {
         /**

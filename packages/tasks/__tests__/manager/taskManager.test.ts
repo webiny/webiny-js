@@ -1,6 +1,6 @@
-import { Context, ITaskDataStatus } from "~/types";
+import { Context, TaskDataStatus } from "~/types";
 import { createTask } from "~/task/definition";
-import { TaskManager } from "~/manager";
+import { TaskManager } from "~/runner/TaskManager";
 import {
     createMockContext,
     createMockEvent,
@@ -39,7 +39,7 @@ describe("create task manager", () => {
                 log: [],
                 createdOn: new Date(),
                 savedOn: new Date(),
-                status: ITaskDataStatus.PENDING
+                status: TaskDataStatus.PENDING
             },
             taskDefinition
         );

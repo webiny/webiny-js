@@ -1,12 +1,11 @@
 import { ITaskEvent } from "~/handler/types";
-import { ITaskRunner } from "~/runner/abstractions";
 import { Context, ITaskData, ITaskDefinition } from "~/types";
-import { ITaskControl } from "./types";
+import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskPlugin } from "~/task/plugin";
-import { TaskManager } from "~/manager";
-import { DatabaseResponse } from "~/manager/DatabaseResponse";
+import { TaskManager } from "./TaskManager";
 import { IResponse, IResponseErrorResult } from "~/response/abstractions";
 import WebinyError from "@webiny/error";
+import { DatabaseResponse } from "~/response";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;

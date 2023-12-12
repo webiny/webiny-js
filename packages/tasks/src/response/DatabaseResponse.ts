@@ -1,4 +1,4 @@
-import { Context, ITaskData, ITaskDataStatus, TaskResponseStatus } from "~/types";
+import { Context, ITaskData, TaskDataStatus, TaskResponseStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     IResponse,
@@ -10,7 +10,7 @@ import {
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseResult
-} from "~/response/abstractions";
+} from "./abstractions";
 
 export class DatabaseResponse implements IResponseAsync {
     public readonly response: IResponse;
@@ -39,7 +39,7 @@ export class DatabaseResponse implements IResponseAsync {
         let message = params.message;
         try {
             await this.context.tasks.updateTask(this.task.id, {
-                status: ITaskDataStatus.SUCCESS,
+                status: TaskDataStatus.SUCCESS,
                 log: (this.task.log || []).concat([
                     {
                         message: message || "Task done.",
@@ -65,7 +65,7 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 input: params.input,
-                status: ITaskDataStatus.RUNNING,
+                status: TaskDataStatus.RUNNING,
                 log: (this.task.log || []).concat([
                     {
                         message: "Task continuing.",
@@ -110,11 +110,12 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 savedOn: new Date(),
-                status: ITaskDataStatus.FAILED,
+                status: TaskDataStatus.FAILED,
                 log: (this.task.log || []).concat([
                     {
                         message: params.error.message,
-                        createdOn: new Date().toISOString()
+                        createdOn: new Date().toISOString(),
+                        input: this.task.input
                     }
                 ])
             });

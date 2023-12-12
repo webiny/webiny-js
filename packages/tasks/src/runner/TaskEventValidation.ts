@@ -3,7 +3,7 @@ import { createZodError } from "@webiny/utils";
 import {
     ITaskEventValidation,
     ITaskEventValidationResult,
-    PollutedITaskEvent
+    IPollutedTaskEvent
 } from "./abstractions";
 
 const validation = zod
@@ -17,7 +17,7 @@ const validation = zod
     .required();
 
 export class TaskEventValidation implements ITaskEventValidation {
-    public validate(event: PollutedITaskEvent): ITaskEventValidationResult {
+    public validate(event: IPollutedTaskEvent): ITaskEventValidationResult {
         const result = validation.safeParse(event);
         if (result.success) {
             return result.data;

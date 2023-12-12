@@ -1,6 +1,5 @@
-import { ITaskManager } from "./types";
-import { ITaskRunner } from "~/runner/abstractions";
-import { Context, ITaskData, ITaskDefinition, TaskResponseStatus } from "~/types";
+import { ITaskManager, ITaskRunner } from "./abstractions";
+import { Context, ITaskData, ITaskDefinition, TaskDataStatus, TaskResponseStatus } from "~/types";
 import {
     IResponse,
     IResponseResult,
@@ -43,6 +42,22 @@ export class TaskManager<T = unknown> implements ITaskManager {
             return this.response.continue({
                 input: this.task.input
             });
+        } else if (this.task.status === TaskDataStatus.PENDING) {
+            try {
+                await this.context.tasks.updateTask(this.task.id, {
+                    status: TaskDataStatus.RUNNING,
+                    log: (this.task.log || []).concat([
+                        {
+                            message: "Task started.",
+                            createdOn: new Date().toISOString()
+                        }
+                    ])
+                });
+            } catch (ex) {
+                return this.response.error({
+                    error: ex
+                });
+            }
         }
 
         let result: ITaskResponseResult;

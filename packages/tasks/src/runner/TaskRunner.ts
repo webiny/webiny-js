@@ -4,7 +4,7 @@ import { ITaskEvent } from "~/handler/types";
 import { ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
 import { Response } from "~/response";
-import { TaskControl } from "~/control";
+import { TaskControl } from "./TaskControl";
 import { TaskEventValidation } from "./TaskEventValidation";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {

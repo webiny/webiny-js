@@ -14,7 +14,7 @@ export interface ITaskDataLog {
     error?: IResponseError;
 }
 
-export enum ITaskDataStatus {
+export enum TaskDataStatus {
     PENDING = "pending",
     RUNNING = "running",
     FAILED = "failed",
@@ -23,7 +23,7 @@ export enum ITaskDataStatus {
 export interface ITaskData<T = any> {
     id: string;
     name: string;
-    status: ITaskDataStatus;
+    status: TaskDataStatus;
     input: T;
     createdOn: Date;
     savedOn: Date;
