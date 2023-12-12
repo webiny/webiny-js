@@ -40,7 +40,7 @@ interface DomainsProps {
 
 const FQDN_REGEX = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/;
 
-export const DomainsFieldset: React.FC<DomainsProps> = props => {
+export const DomainsFieldset = (props: DomainsProps) => {
     const { onChange, value } = props;
 
     const addDomain = () => {
@@ -114,7 +114,7 @@ export const DomainsFieldset: React.FC<DomainsProps> = props => {
     );
 };
 
-export const Domains: React.FC = () => {
+export const Domains = () => {
     return (
         <Grid>
             <Cell span={12}>
