@@ -1,11 +1,10 @@
 import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconRepository } from "./IconRepository";
-import { ProviderIcon } from "./config/IconPackProvider";
 import { Icon } from "./types";
 
 const mockIconTypes = [{ name: "icon" }, { name: "emoji" }, { name: "custom" }];
 
-const mockIcons: ProviderIcon[] = [
+const mockIcons: Icon[] = [
     {
         type: "emoji",
         name: "thumbs_up",

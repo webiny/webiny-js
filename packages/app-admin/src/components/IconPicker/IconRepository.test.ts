@@ -1,10 +1,9 @@
 import { IconRepository } from "./IconRepository";
-import { ProviderIcon } from "./config/IconPackProvider";
 import { Icon } from "./types";
 
 const mockIconTypes = [{ name: "icon" }, { name: "emoji" }, { name: "custom" }];
 
-const mockIcons: ProviderIcon[] = [
+const mockIcons: Icon[] = [
     {
         type: "emoji",
         name: "thumbs_up",
@@ -63,7 +62,7 @@ describe("IconRepository", () => {
         expect(repository.getIcons()).toEqual([]);
 
         // add icon
-        repository.addIcon(icon as ProviderIcon);
+        repository.addIcon(icon);
 
         // getIcons should return the expected icons array
         expect(repository.getIcons()).toEqual([icon]);

@@ -10,11 +10,12 @@ import {
 import emojisJson from "unicode-emoji-json/data-by-emoji.json";
 import { Decorator } from "@webiny/react-composition";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { IconPackProvider as IconPack, ProviderIcon } from "./IconPackProvider";
+import { IconPackProvider as IconPack } from "./IconPackProvider";
 import { IconType } from "./IconType";
 import { SimpleIconPlugin } from "../plugins/iconsPlugin";
 import { EmojiPlugin } from "../plugins/emojisPlugin";
 import { CustomIconPlugin } from "../plugins/customPlugin";
+import { Icon } from "../types";
 
 type FaIconSet = {
     [key: string]: {
@@ -60,7 +61,7 @@ export const IconPickerConfigProvider: Decorator = Original => {
 };
 
 export interface IconPackLoader {
-    (): Promise<ProviderIcon[]>;
+    (): Promise<Icon[]>;
 }
 
 interface IconTypeInterface {
@@ -79,7 +80,7 @@ interface IconPickerConfig {
 
 export interface IconPackProviderInterface {
     name: string;
-    getIcons(): Promise<ProviderIcon[]>;
+    getIcons(): Promise<Icon[]>;
 }
 
 class IconPackProvider implements IconPackProviderInterface {
@@ -91,7 +92,7 @@ class IconPackProvider implements IconPackProviderInterface {
         this.loader = loader;
     }
 
-    getIcons(): Promise<ProviderIcon[]> {
+    getIcons(): Promise<Icon[]> {
         return this.loader();
     }
 }

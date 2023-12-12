@@ -3,13 +3,13 @@ import { makeAutoObservable, runInAction } from "mobx";
 
 import { Loading } from "./Loading";
 import { IconPackProviderInterface as IconPackProvider, IconType } from "./config";
-import { ProviderIcon } from "./config/IconPackProvider";
+import { Icon } from "./types";
 
 export class IconRepository {
     private readonly iconPackProviders: IconPackProvider[];
     private readonly iconTypes: IconType[];
     private loading: Loading;
-    private icons: ProviderIcon[] = [];
+    private icons: Icon[] = [];
 
     constructor(iconTypes: IconType[], iconPackProviders: IconPackProvider[]) {
         this.iconTypes = iconTypes;
@@ -42,7 +42,7 @@ export class IconRepository {
         return cloneDeep(this.icons);
     }
 
-    addIcon(icon: ProviderIcon) {
+    addIcon(icon: Icon) {
         this.icons = [...this.icons, icon];
     }
 
