@@ -8,7 +8,7 @@ import {
     RouterGateway,
     RouteParams,
     RouteDefinition
-} from "~/Router/RouterGateway.interface";
+} from "~/Router/abstractions/RouterGateway";
 
 interface RouteDefinitionWithAction extends RouteDefinition {
     action(context: RouterContext, params: UniversalRouteParams): MatchedRoute;

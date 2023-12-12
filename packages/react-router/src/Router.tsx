@@ -3,6 +3,8 @@ import type { History } from "history";
 import UniversalRouter, { RouterContext, RouteParams } from "universal-router";
 import { useTenancy } from "@webiny/app-tenancy";
 import { BrowserRouter } from "@webiny/react-router";
+import { UniversalRouterGateway } from "~/Router/UniversalRouterGateway";
+import { RouterRepository } from "~/Router/RouterRepository";
 
 const getBasename = (tenant: string | null) => {
     if (tenant === "root") {
@@ -20,18 +22,36 @@ interface RouterProps {
     children: React.ReactElement;
 }
 
+interface RouterInnerProps {
+    presenter: RouterPresenter;
+}
+
+const RouterInner = ({ presenter }: RouterInnerProps) => {
+    useEffect(() => {
+        return history.listen(({ location }) => {
+            presenter.current.current?.resolve(location.pathname).then(handleMatchedRoute);
+        });
+    }, []);
+
+    return presenter.currentRoute ? <RouteRenderer route={presenter.currentRoute}></RouteRenderer>
+};
+
 export const Router = ({ getBaseUrl, routes, history, children }: RouterProps) => {
-    const presenter = useRef(new RouterPresenter(baseUrl, history));
+    const gateway = new UniversalRouterGateway(getBaseUrl());
+    const repository = new RouterRepository(gateway);
+    const presenter = useRef(new RouterPresenter(repository));
 
     useEffect(() => {
         presenter.bootstrap(routes);
     }, [routes.length]);
 
-    return (
-        <BrowserRouter history={history} getBasename={getBaseUrl}>
-            {children}
-        </BrowserRouter>
-    );
+    useEffect(() => {
+        return history.listen(({ location }) => {
+            presenter.matchRoute(location.pathname);
+        });
+    }, []);
+
+    return <RouterInner presenter={presenter.current} />;
 };
 
 const INDEX_PATH = "/";
