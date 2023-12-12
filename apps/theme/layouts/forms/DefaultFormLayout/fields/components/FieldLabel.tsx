@@ -21,7 +21,7 @@ interface FieldLabelProps {
     field: FormRenderFbFormModelField;
 }
 
-export const FieldLabel: React.FC<FieldLabelProps> = ({ field }) => {
+export const FieldLabel = ({ field }: FieldLabelProps) => {
     return (
         <FieldLabelStyled>
             {field.label}

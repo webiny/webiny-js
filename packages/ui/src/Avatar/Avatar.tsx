@@ -80,7 +80,7 @@ export interface AvatarProps {
 /**
  * Use Avatar component to display user's avatar.
  */
-export const Avatar: React.FC<AvatarProps> = props => {
+export const Avatar = (props: AvatarProps) => {
     const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
 
     let renderedImage;

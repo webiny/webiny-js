@@ -36,7 +36,7 @@ export interface TeamsFormProps {
     [key: string]: any;
 }
 
-export const TeamsForm: React.FC<TeamsFormProps> = () => {
+export const TeamsForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newTeam = new URLSearchParams(location.search).get("new") === "true";
