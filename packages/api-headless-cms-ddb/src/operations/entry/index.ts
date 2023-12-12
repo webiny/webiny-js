@@ -356,12 +356,19 @@ export const createEntriesStorageOperations = (
                     })
                 );
             } else {
-                // If not updating latest revision, we still want to update the latest revision's
-                // entry-level meta fields to match the current revision's entry-level meta fields.
+                /**
+                 * If not updating latest revision, we still want to update the latest revision's
+                 * entry-level meta fields to match the current revision's entry-level meta fields.
+                 */
                 const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
                     return field.startsWith("entry");
                 });
 
+                /**
+                 * First we update the regular DynamoDB table. Two updates are needed:
+                 * - one for the actual revision record
+                 * - one for the latest record
+                 */
                 items.push(
                     entity.putBatch({
                         ...latestStorageEntry,
@@ -370,6 +377,18 @@ export const createEntriesStorageOperations = (
                         SK: createRevisionSortKey(latestStorageEntry),
                         TYPE: createType(),
                         GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
                         GSI1_SK: createGSISortKey(latestStorageEntry)
                     })
                 );
@@ -1032,7 +1051,6 @@ export const createEntriesStorageOperations = (
 
             if (publishingLatestRevision) {
                 // We want to update current latest record because of the status (`status: 'published'`) update.
-                const kobajica = storageEntry;
                 items.push(
                     entity.putBatch({
                         ...storageEntry,

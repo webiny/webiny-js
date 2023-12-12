@@ -7,7 +7,7 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command(
             "open <app>",
-            `Quickly open Admin or Website application in your default browser`,
+            `Quickly open Admin application or public website in your default browser`,
             yargs => {
                 yargs.option("env", {
                     describe: `Environment`,

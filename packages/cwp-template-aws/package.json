@@ -16,13 +16,13 @@
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
-    "open": "^8.4.0",
     "fast-glob": "^3.2.7",
     "fs-extra": "^9.0.1",
     "get-yarn-workspaces": "1.0.2",
     "inquirer": "7.3.3",
     "load-json-file": "6.2.0",
     "lodash": "^4.17.20",
+    "open": "^8.4.0",
     "write-json-file": "4.3.0"
   },
   "devDependencies": {

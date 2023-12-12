@@ -61,12 +61,18 @@ export const createManageSDL: CreateManageSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
-    const inputGraphQLFields = inputFields.map(f => f.fields).join("\n");
+    const inputGqlFields = inputFields.map(f => f.fields).join("\n");
+
+    const onByMetaInputGqlFields = ENTRY_META_FIELDS.map(field => {
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentityInput";
+
+        return `${field}: ${fieldType}`;
+    }).join("\n");
 
     /**
      * TODO check for 5.38.0
      */
-    const deprecatedOnByMetaFields = [
+    const deprecatedOnByMetaGqlFields = [
         `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")`,
         `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
         `createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")`,
@@ -74,7 +80,7 @@ export const createManageSDL: CreateManageSDL = ({
         `modifiedBy: CmsIdentity @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")`
     ].join("\n");
 
-    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
+    const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
         const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
@@ -88,8 +94,8 @@ export const createManageSDL: CreateManageSDL = ({
             id: ID!
             entryId: String!
             
-            ${deprecatedOnByMetaFields}
-            ${onByMetaFields}
+            ${deprecatedOnByMetaGqlFields}
+            ${onByMetaGqlFields}
     
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
@@ -124,6 +130,9 @@ export const createManageSDL: CreateManageSDL = ({
         input ${singularName}Input {
             id: ID
             
+            # Set status of the entry.
+            status: String
+            
             # Set a different date/time as the creation date/time of the entry. 
             createdOn: DateTime @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
             
@@ -142,8 +151,10 @@ export const createManageSDL: CreateManageSDL = ({
             # Set a different identity as the owner of the entry.
             ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
             
+            ${onByMetaInputGqlFields}
+            
             wbyAco_location: WbyAcoLocationInput
-            ${inputGraphQLFields}
+            ${inputGqlFields}
         }
 
         input ${singularName}GetWhereInput {

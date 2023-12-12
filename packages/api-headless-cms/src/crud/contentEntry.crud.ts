@@ -742,11 +742,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     currentDateTime
                 ),
                 revisionFirstPublishedBy: getIdentity(
-                    rawInput.revisionFirstPublishedOn,
+                    rawInput.revisionFirstPublishedBy,
                     currentIdentity
                 ),
                 revisionLastPublishedBy: getIdentity(
-                    rawInput.revisionFirstPublishedOn,
+                    rawInput.revisionLastPublishedBy,
                     currentIdentity
                 )
             };
@@ -1187,7 +1187,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             ),
             entryCreatedBy: getIdentity(rawInput.entryCreatedBy, originalEntry.entryCreatedBy),
             entrySavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
             entryFirstPublishedBy: getIdentity(
                 rawInput.entryFirstPublishedBy,
                 originalEntry.entryFirstPublishedBy
