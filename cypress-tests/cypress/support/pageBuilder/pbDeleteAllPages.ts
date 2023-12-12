@@ -25,7 +25,11 @@ Cypress.Commands.add("pbDeleteAllPages", async () => {
         if (pages[i].path === "/not-found") {
             continue;
         }
-        await pbDeletePage({ user, variables: pages[i] });
+
+        await pbDeletePage({
+            user,
+            variables: { id: pages[i].pid }
+        });
     }
 
     return until(

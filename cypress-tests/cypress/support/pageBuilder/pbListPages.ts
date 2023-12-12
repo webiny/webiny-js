@@ -13,6 +13,7 @@ const LIST_PAGES = /* GraphQL */ `
             listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
                 data {
                     id
+                    pid
                     title
                     path
                     status

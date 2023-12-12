@@ -1,14 +1,20 @@
+import { customAlphabet } from "nanoid";
+
 context("Page Builder - Menu Items", () => {
-    const pageListName = "Testing page list";
-    const pageListNameEdit = "Testing editing page list name";
-    const linkName = "Link menu item name";
-    const linkURL = "/test/";
-    const linkNameEdit = "Link menu item name edit";
-    const linkURLEdit = "/testedit/";
-    const folderName = "Folder name";
-    const folderNameEdit = "Folder name edited";
-    const pageNameNew = "page-testing";
-    const pageNameNewEdit = "page-editing";
+    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+
+    const pageListName = nanoid(10);
+    const pageListNameEdit = pageListName + "-edit";
+
+    const linkName = nanoid(10);
+    const linkURL = `/${linkName}/`;
+    const linkNameEdit = linkName + "-edit";
+    const linkURLEdit = `/${linkNameEdit}/`;
+
+    const folderName = nanoid(10);
+    const folderNameEdit = folderName + "-edit";
+    const pageNameNew = nanoid(10);
+    const pageNameNewEdit = pageNameNew + "-edit";
 
     const menuData = {
         data: {
@@ -25,7 +31,6 @@ context("Page Builder - Menu Items", () => {
         cy.pbDeleteAllPages();
         cy.pbCreateMenu(menuData);
         cy.pbCreatePage({ category: "static" }).then(page => {
-            // eslint-disable-next-line jest/valid-expect-in-promise
             cy.pbUpdatePage({
                 id: page.id,
                 data: {
@@ -45,7 +50,6 @@ context("Page Builder - Menu Items", () => {
         });
 
         cy.pbCreatePage({ category: "static" }).then(page => {
-            // eslint-disable-next-line jest/valid-expect-in-promise
             cy.pbUpdatePage({
                 id: page.id,
                 data: {
@@ -175,20 +179,23 @@ context("Page Builder - Menu Items", () => {
             cy.findByText("Page").click();
         });
         cy.findByTestId("pb.menu.new.pageitem.page").type(pageNameNew);
+
+        // Quick patch: had to add wait because clicking to fast would cause a JS error for some reason.
         cy.wait(500);
+
         cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
-        cy.findByTestId(`pb-menu-item-render-${pageNameNew}`).contains(pageNameNew).should("exist");
+        cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`)
+            .contains(pageNameNew)
+            .should("exist");
 
         // Edit folder menu item and assert the changes have been made.
         cy.findByTestId("pb-edit-icon-button").click();
         cy.findByTestId("pb.menu.new.pageitem.page").clear();
-        cy.findByTestId("pb.menu.new.pageitem.title").clear();
+        cy.findByTestId("pb.menu.new.pageitem.title").clear({ force: true });
         cy.findByTestId("pb.menu.new.pageitem.page").clear().type(pageNameNewEdit);
         cy.get('div[role="combobox"] [role="listbox"] [role="option"]').first().click();
 
-        cy.wait(1000);
-        //cy.findByTestId("pb.menu.new.pageitem.title").type(pageNameNewEdit);
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`)
             .contains(pageNameNewEdit)
