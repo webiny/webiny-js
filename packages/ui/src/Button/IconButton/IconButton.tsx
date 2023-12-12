@@ -38,12 +38,14 @@ export interface IconButtonProps extends Omit<FormComponentProps, "onChange">, R
      * Should icon be disabled?
      */
     disabled?: boolean;
+
+    children?: React.ReactNode;
 }
 
 /**
  * Shows the icon button.
  */
-const IconButton: React.FC<IconButtonProps> = props => {
+const IconButton = (props: IconButtonProps) => {
     const { id, icon, label, onClick, className, disabled, ripple } = props;
 
     return (
