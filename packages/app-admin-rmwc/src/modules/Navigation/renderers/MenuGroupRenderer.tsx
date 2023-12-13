@@ -68,7 +68,7 @@ function getState(id: string | null): boolean {
     return state.includes(id);
 }
 
-export const MenuGroupRenderer = (PrevMenuItem: React.FC) => {
+export const MenuGroupRenderer = (PrevMenuItem: React.ComponentType) => {
     return function MenuGroup() {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();

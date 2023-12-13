@@ -1,6 +1,6 @@
 import React from "react";
 import { Website } from "@webiny/app-website";
 
-export const App: React.FC = () => {
+export const App = () => {
     return <Website />;
 };

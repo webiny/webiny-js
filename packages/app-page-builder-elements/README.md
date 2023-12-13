@@ -55,7 +55,7 @@ cell, grid, ...), but also the necessary utilities to create new ones.
 <p>
 
 ```ts
-export declare const PageElementsProvider: React.FC<PageElementsProviderProps>;
+export declare const PageElementsProvider: React.ComponentType<PageElementsProviderProps>;
 ```
 
 </p>

@@ -12,7 +12,7 @@ interface I18NProviderProps {
     children: React.ReactNode;
 }
 
-const I18NProviderHOC = (Component: React.FC) => {
+const I18NProviderHOC = (Component: React.ComponentType) => {
     return function I18NProvider({ children }: I18NProviderProps) {
         return (
             <ContextProvider>

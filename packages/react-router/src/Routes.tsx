@@ -35,7 +35,7 @@ const createNativeRoute = (props: RouteProps, index: number, location: Location)
 
 export type RoutesProps = BaseRoutesProps;
 
-export const Routes: React.FC<RoutesProps> = props => {
+export const Routes = (props: RoutesProps) => {
     const location = useLocation();
 
     const children = React.Children.map(props.children, (route: any, index) => {
