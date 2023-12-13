@@ -109,7 +109,6 @@ export class DatabaseResponse implements IResponseAsync {
     public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
         try {
             await this.context.tasks.updateTask(this.task.id, {
-                savedOn: new Date(),
                 status: TaskDataStatus.FAILED,
                 log: (this.task.log || []).concat([
                     {

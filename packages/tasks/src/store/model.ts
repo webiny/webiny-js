@@ -1,4 +1,5 @@
 import { CmsGroup, createCmsGroup, createCmsModel } from "@webiny/api-headless-cms";
+import { TaskDataStatus } from "~/types";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
 
@@ -23,7 +24,26 @@ const modelPlugin = createCmsModel({
             fieldId: "name",
             storageId: "text@name",
             type: "text",
-            label: "Name"
+            label: "Name",
+            validation: [
+                {
+                    name: "required",
+                    message: "Name is required."
+                }
+            ]
+        },
+        {
+            id: "definitionId",
+            fieldId: "definitionId",
+            storageId: "text@definitionId",
+            type: "text",
+            label: "Definition ID",
+            validation: [
+                {
+                    name: "required",
+                    message: "Definition ID is required."
+                }
+            ]
         },
         {
             id: "input",
@@ -42,22 +62,25 @@ const modelPlugin = createCmsModel({
                 enabled: true,
                 values: [
                     {
-                        value: "pending",
+                        value: TaskDataStatus.PENDING,
                         label: "Pending"
                     },
                     {
-                        value: "running",
+                        value: TaskDataStatus.RUNNING,
                         label: "Running"
                     },
                     {
-                        value: "failed",
+                        value: TaskDataStatus.FAILED,
                         label: "Failed"
                     },
                     {
-                        value: "success",
+                        value: TaskDataStatus.SUCCESS,
                         label: "Success"
                     }
                 ]
+            },
+            settings: {
+                defaultValue: TaskDataStatus.PENDING
             }
         },
         {

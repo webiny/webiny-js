@@ -9,7 +9,12 @@
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
-    { "path": "../utils" }
+    { "path": "../pubsub" },
+    { "path": "../utils" },
+    { "path": "../api-i18n" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,8 +37,18 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

@@ -5,6 +5,7 @@ import {
     CmsModel,
     CmsModelField
 } from "@webiny/api-headless-cms/types";
+import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
 
 export interface ITaskDataLog {
@@ -24,12 +25,13 @@ export interface ITaskData<T = any> {
     id: string;
     name: string;
     status: TaskDataStatus;
+    definitionId: string;
     input: T;
     createdOn: Date;
     savedOn: Date;
     startedOn?: Date;
     finishedOn?: Date;
-    log?: ITaskDataLog[] | null;
+    log?: ITaskDataLog[];
 }
 
 export type IGetTaskResponse<T = any> = ITaskData<T> | null;
@@ -45,17 +47,75 @@ export type IDeleteTaskResponse = boolean;
 
 export type IListTaskParams = CmsEntryListParams;
 
-export interface ITasksContextObject {
+export interface ITaskCreateData<T = any> {
+    definitionId: string;
+    name: string;
+    input: T;
+}
+
+export interface ITaskUpdateData<T = any> {
+    name?: string;
+    input?: T;
+    status?: TaskDataStatus;
+    log?: ITaskDataLog[];
+}
+
+export interface OnTaskBeforeCreateTopicParams {
+    input: ITaskCreateData;
+}
+
+export interface OnTaskAfterCreateTopicParams {
+    input: ITaskCreateData;
+    task: ITaskData;
+}
+
+export interface OnTaskBeforeUpdateTopicParams {
+    input: ITaskUpdateData;
+    original: ITaskData;
+}
+
+export interface OnTaskAfterUpdateTopicParams {
+    input: ITaskUpdateData;
+    task: ITaskData;
+}
+
+export interface OnTaskBeforeDeleteTopicParams {
+    task: ITaskData;
+}
+
+export interface OnTaskAfterDeleteTopicParams {
+    task: ITaskData;
+}
+
+export interface ITasksContextCrudObject {
     getModel: () => Promise<CmsModel>;
-    getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T>>;
+    getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T> | null>;
     listTasks: <T = any>(params?: IListTaskParams) => Promise<IListTasksResponse<T>>;
-    createTask: <T = any>(task: ITaskData<T>) => Promise<ICreateTaskResponse<T>>;
+    createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
     updateTask: <T = any>(
         id: string,
-        data: Partial<ITaskData<T>>
+        data: Partial<ITaskUpdateData<T>>
     ) => Promise<IUpdateTaskResponse<T>>;
     deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
+    /**
+     * Lifecycle events.
+     */
+    onTaskBeforeCreate: Topic<OnTaskBeforeCreateTopicParams>;
+    onTaskAfterCreate: Topic<OnTaskAfterCreateTopicParams>;
+    onTaskBeforeUpdate: Topic<OnTaskBeforeUpdateTopicParams>;
+    onTaskAfterUpdate: Topic<OnTaskAfterUpdateTopicParams>;
+    onTaskBeforeDelete: Topic<OnTaskBeforeDeleteTopicParams>;
+    onTaskAfterDelete: Topic<OnTaskAfterDeleteTopicParams>;
 }
+
+export interface ITasksContextDefinitionObject {
+    getDefinition: (id: string) => ITaskDefinition | null;
+    listDefinitions: () => ITaskDefinition[];
+}
+
+export interface ITasksContextObject
+    extends ITasksContextCrudObject,
+        ITasksContextDefinitionObject {}
 
 export interface Context extends BaseContext {
     tasks: ITasksContextObject;

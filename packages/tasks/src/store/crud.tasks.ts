@@ -1,118 +1,150 @@
 import WebinyError from "@webiny/error";
-import { Context, IListTaskParams, ITaskData, ITasksContextObject } from "~/types";
+import {
+    Context,
+    IListTaskParams,
+    ITaskCreateData,
+    ITaskData,
+    ITasksContextCrudObject,
+    ITaskUpdateData,
+    OnTaskAfterCreateTopicParams,
+    OnTaskAfterDeleteTopicParams,
+    OnTaskAfterUpdateTopicParams,
+    OnTaskBeforeCreateTopicParams,
+    OnTaskBeforeDeleteTopicParams,
+    OnTaskBeforeUpdateTopicParams,
+    TaskDataStatus
+} from "~/types";
 import { WEBINY_TASK_MODEL_ID } from "./model";
-import { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { createTopic } from "@webiny/pubsub";
 
-export class TaskCrud implements ITasksContextObject {
-    private readonly context: Context;
-
-    public constructor(context: Context) {
-        this.context = context;
+const getDate = <T extends Date | string | null | undefined>(date?: Date | string | null): T => {
+    if (!date) {
+        return undefined as T;
+    } else if (date instanceof Date) {
+        return date as T;
     }
+    try {
+        return new Date(date) as T;
+    } catch {
+        return undefined as T;
+    }
+};
 
-    public async getTask(id: string) {
-        const entry = await this.context.security.withoutAuthorization(async () => {
-            const model = await this.getModel();
-            return await this.context.cms.getEntryById(model, id);
-        });
+const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
+    return {
+        id: entry.id,
+        createdOn: getDate<Date>(entry.createdOn),
+        savedOn: getDate<Date>(entry.savedOn),
+        name: entry.values.name,
+        definitionId: entry.values.definitionId,
+        input: entry.values.input,
+        status: entry.values.status,
+        startedOn: getDate(entry.values.startedOn),
+        finishedOn: getDate(entry.values.finishedOn),
+        log: entry.values.log
+    };
+};
+
+export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
+    const onTaskBeforeCreate = createTopic<OnTaskBeforeCreateTopicParams>("tasks.onBeforeCreate");
+    const onTaskAfterCreate = createTopic<OnTaskAfterCreateTopicParams>("tasks.onAfterCreate");
+    const onTaskBeforeUpdate = createTopic<OnTaskBeforeUpdateTopicParams>("tasks.onBeforeUpdate");
+    const onTaskAfterUpdate = createTopic<OnTaskAfterUpdateTopicParams>("tasks.onAfterUpdate");
+    const onTaskBeforeDelete = createTopic<OnTaskBeforeDeleteTopicParams>("tasks.onBeforeDelete");
+    const onTaskAfterDelete = createTopic<OnTaskAfterDeleteTopicParams>("tasks.onAfterDelete");
+
+    const getTask = async (id: string) => {
+        let entry: CmsEntry;
+        try {
+            entry = await context.security.withoutAuthorization(async () => {
+                const model = await getModel();
+                return await context.cms.getEntryById(model, id);
+            });
+        } catch (ex) {
+            if (ex instanceof NotFoundError) {
+                return null;
+            }
+            throw ex;
+        }
         if (!entry) {
             return null;
         }
 
-        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
-    }
+        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+    };
 
-    public async listTasks(params?: IListTaskParams) {
-        const [items, meta] = await this.context.security.withoutAuthorization(async () => {
-            const model = await this.getModel();
-            return await this.context.cms.listEntries<ITaskData>(model, params || {});
+    const listTasks = async (params?: IListTaskParams) => {
+        const [items, meta] = await context.security.withoutAuthorization(async () => {
+            const model = await getModel();
+            return await context.cms.listLatestEntries<ITaskData>(model, params || {});
         });
 
         return {
-            items: items.map(this.convertToTask),
+            items: items.map(item => convertToTask(item)),
             meta
         };
-    }
-    public async createTask(task: ITaskData) {
-        const data = this.convertToEntry(task);
-        const entry = await this.context.security.withoutAuthorization(async () => {
-            const model = await this.getModel();
-            return await this.context.cms.createEntry(model, data);
-        });
-        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
-    }
-    async updateTask(id: string, task: Partial<ITaskData>) {
-        const data = this.convertToEntry(task as ITaskData);
-        const entry = await this.context.security.withoutAuthorization(async () => {
-            const model = await this.getModel();
-            return await this.context.cms.updateEntry(model, id, {
-                ...data,
-                savedOn: data.savedOn || new Date().toISOString()
+    };
+
+    const createTask = async (input: ITaskCreateData<any>) => {
+        const definition = context.tasks.getDefinition(input.definitionId);
+        if (!definition) {
+            throw new WebinyError(`There is no task definition.`, "TASK_DEFINITION_ERROR", {
+                id: input.definitionId
+            });
+        }
+
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getModel();
+            return await context.cms.createEntry(model, {
+                ...input,
+                log: [],
+                status: TaskDataStatus.PENDING
             });
         });
-        return this.convertToTask(entry as unknown as CmsEntry<ITaskData>);
-    }
-    async deleteTask(id: string) {
-        return this.context.security.withoutAuthorization(async () => {
-            const model = await this.getModel();
-            await this.context.cms.deleteEntry(model, id);
+        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+    };
+
+    const updateTask = async (id: string, input: ITaskUpdateData) => {
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getModel();
+            return await context.cms.updateEntry(model, id, {
+                ...input,
+                savedOn: new Date().toISOString()
+            });
+        });
+        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+    };
+
+    const deleteTask = (id: string) => {
+        return context.security.withoutAuthorization(async () => {
+            const model = await getModel();
+            await context.cms.deleteEntry(model, id);
             return true;
         });
-    }
+    };
 
-    public async getModel(): Promise<CmsModel> {
-        const model = await this.context.cms.getModel(WEBINY_TASK_MODEL_ID);
+    const getModel = async (): Promise<CmsModel> => {
+        const model = await context.cms.getModel(WEBINY_TASK_MODEL_ID);
         if (model) {
             return model;
         }
         throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
-    }
+    };
 
-    private convertToTask(entry: CmsEntry<ITaskData>): ITaskData {
-        return {
-            id: entry.entryId,
-            createdOn: this.getDate<Date>(entry.createdOn),
-            savedOn: this.getDate<Date>(entry.savedOn),
-            name: entry.values.name,
-            input: entry.values.input,
-            status: entry.values.status,
-            startedOn: this.getDate(entry.values.startedOn),
-            finishedOn: this.getDate(entry.values.finishedOn),
-            log: entry.values.log
-        };
-    }
-
-    private convertToEntry(task: ITaskData): CmsEntryValues {
-        return {
-            name: task.name,
-            input: task.input,
-            status: task.status,
-            startedOn: this.getDateString(task.startedOn),
-            finishedOn: this.getDateString(task.finishedOn),
-            log: task.log
-        };
-    }
-
-    private getDate<T extends Date | string | null | undefined>(date?: Date | string | null): T {
-        if (!date) {
-            return undefined as T;
-        } else if (date instanceof Date) {
-            return date as T;
-        }
-        try {
-            return new Date(date) as T;
-        } catch {
-            return undefined as T;
-        }
-    }
-
-    private getDateString(date?: Date | string | null): string | null {
-        if (!date) {
-            return null;
-        }
-        if (date instanceof Date) {
-            return date.toISOString();
-        }
-        return date;
-    }
-}
+    return {
+        onTaskBeforeCreate,
+        onTaskAfterCreate,
+        onTaskBeforeUpdate,
+        onTaskAfterUpdate,
+        onTaskBeforeDelete,
+        onTaskAfterDelete,
+        getTask,
+        listTasks,
+        createTask,
+        updateTask,
+        deleteTask,
+        getModel
+    };
+};
