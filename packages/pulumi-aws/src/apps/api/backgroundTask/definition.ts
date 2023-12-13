@@ -54,6 +54,31 @@ export const createBackgroundTaskDefinition = (
                 Type: StepFunctionDefinitionStatesType.Choice,
                 InputPath: "$",
                 Choices: [
+                    /**
+                     * There is a possibility that the task will return a CONTINUE status and a waitUntil value.
+                     * This means that task will wait for the specified time and then continue.
+                     * It can be used to handle waiting for child tasks or some resource to be created.
+                     */
+                    {
+                        And: [
+                            {
+                                Variable: "$.status",
+                                StringEquals: "continue"
+                            },
+                            {
+                                Variable: "$.waitUntil",
+                                IsPresent: true
+                            },
+                            {
+                                Variable: "$.waitUntil",
+                                IsTimestamp: true
+                            }
+                        ],
+                        Next: "Waiter"
+                    },
+                    /**
+                     * When no waitUntil value is present, go to Run.
+                     */
                     {
                         Variable: "$.status",
                         StringEquals: "continue",
@@ -71,6 +96,11 @@ export const createBackgroundTaskDefinition = (
                     }
                 ],
                 Default: "UnknownStatus"
+            },
+            Waiter: {
+                Type: StepFunctionDefinitionStatesType.Wait,
+                TimestampPath: "$.waitUntil",
+                Next: "Run"
             },
             UnknownTaskError: {
                 Type: StepFunctionDefinitionStatesType.Fail,

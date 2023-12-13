@@ -1,10 +1,12 @@
 import * as pulumi from "@pulumi/pulumi";
+
 /**
  * Update types if required. Try to avoid generic objects
  */
 export enum StepFunctionDefinitionStatesType {
     Task = "Task",
     Choice = "Choice",
+    Wait = "Wait",
     Fail = "Fail",
     Succeed = "Succeed"
 }
@@ -20,11 +22,38 @@ export interface StepFunctionDefinitionStatesCatch {
     ResultPath?: string;
 }
 
-export interface StepFunctionDefinitionStatesChoice {
+// export interface StepFunctionDefinitionStatesChoice {
+//     Variable: string;
+//     Next?: string;
+//     StringEquals?: string;
+//     StringMatches?: string;
+//     IsPresent?: boolean;
+//     And?: StepFunctionDefinitionStatesChoice[];
+// }
+
+export interface StepFunctionDefinitionStatesChoiceBase {
     Variable: string;
-    StringEquals: string;
+    Next: string;
+    StringEquals?: string;
+    StringMatches?: string;
+    IsPresent?: boolean;
+}
+
+export interface StepFunctionDefinitionStatesChoiceAndItem {
+    Variable: string;
+    StringEquals?: string;
+    StringMatches?: string;
+    IsPresent?: boolean;
+    IsTimestamp?: boolean;
+}
+export interface StepFunctionDefinitionStatesChoiceAnd {
+    And: StepFunctionDefinitionStatesChoiceAndItem[];
     Next: string;
 }
+
+export type StepFunctionDefinitionStatesChoice =
+    | StepFunctionDefinitionStatesChoiceBase
+    | StepFunctionDefinitionStatesChoiceAnd;
 
 export interface StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType;
@@ -64,11 +93,20 @@ export interface StepFunctionDefinitionStatesTypeSucceed
     Type: StepFunctionDefinitionStatesType.Succeed;
 }
 
+export interface StepFunctionDefinitionStatesTypeWait extends StepFunctionDefinitionStatesTypeBase {
+    Next: string;
+    Seconds?: number;
+    Timestamp?: string;
+    SecondsPath?: string;
+    TimestampPath?: string;
+}
+
 export type StepFunctionDefinitionStatesTypes =
     | StepFunctionDefinitionStatesTypeTask<Record<string, any>>
     | StepFunctionDefinitionStatesTypeChoice
     | StepFunctionDefinitionStatesTypeFail
-    | StepFunctionDefinitionStatesTypeSucceed;
+    | StepFunctionDefinitionStatesTypeSucceed
+    | StepFunctionDefinitionStatesTypeWait;
 
 export interface StepFunctionDefinition {
     Comment: string;
