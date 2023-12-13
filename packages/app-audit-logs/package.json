@@ -29,7 +29,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "react": "^17.0.2"
+    "react": "18.20"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@material-design-icons/svg": "^0.14.3",
     "@material-symbols/svg-400": "^0.4.1",
-    "@types/react": "17.0.39",
+    "@types/react": "18.2.45",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "execa": "^5.0.0",
