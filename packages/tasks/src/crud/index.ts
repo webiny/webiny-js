@@ -13,18 +13,6 @@ export const createCrud = (): Plugin[] => {
                 ...createDefinitionCrud(context),
                 ...createTaskCrud(context)
             };
-
-            context.cms.onModelAfterCreate.subscribe(async params => {
-                await context.tasks.createTask({
-                    definitionId: "testDefinition",
-                    input: {
-                        modelId: params.model.modelId,
-                        someValue: true,
-                        someOtherValue: 123
-                    },
-                    name: "Test task"
-                });
-            });
         })
     ];
 };
