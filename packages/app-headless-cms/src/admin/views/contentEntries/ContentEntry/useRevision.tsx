@@ -6,10 +6,7 @@ import { CmsContentEntry } from "~/types";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
-    CmsEntryUnpublishMutationResponse,
-    CmsEntryUnpublishMutationVariables,
-    createCreateFromMutation,
-    createUnpublishMutation
+    createCreateFromMutation
 } from "@webiny/app-headless-cms-common";
 import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
@@ -48,7 +45,7 @@ export interface UseRevisionProps {
 }
 
 export const useRevision = ({ revision }: UseRevisionProps) => {
-    const { publishEntryRevision, deleteEntry } = useCms();
+    const { publishEntryRevision, unpublishEntryRevision, deleteEntry } = useCms();
     const { contentModel, entry, setLoading } = useContentEntry();
 
     const { history } = useRouter();
@@ -58,10 +55,9 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
     const { updateRecordInCache } = useRecords();
 
-    const { CREATE_REVISION, UNPUBLISH_REVISION } = useMemo(() => {
+    const { CREATE_REVISION } = useMemo(() => {
         return {
-            CREATE_REVISION: createCreateFromMutation(contentModel),
-            UNPUBLISH_REVISION: createUnpublishMutation(contentModel)
+            CREATE_REVISION: createCreateFromMutation(contentModel)
         };
     }, [modelId]);
 
@@ -169,31 +165,26 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         );
                     },
                 unpublishRevision:
-                    (): UnpublishRevisionHandler =>
-                    async (id): Promise<void> => {
+                    ({ entry }): UnpublishRevisionHandler =>
+                    async id => {
                         setLoading(true);
-                        const result = await client.mutate<
-                            CmsEntryUnpublishMutationResponse,
-                            CmsEntryUnpublishMutationVariables
-                        >({
-                            mutation: UNPUBLISH_REVISION,
-                            variables: {
-                                revision: id || revision.id
-                            }
-                        });
-                        setLoading(false);
-                        if (!result || !result.data) {
-                            showSnackbar(
-                                `Missing result in update callback on Unpublish Mutation.`
-                            );
-                            return;
-                        }
 
-                        const { error } = result.data.content;
+                        const response = await unpublishEntryRevision({
+                            model: contentModel,
+                            entry,
+                            id: id || entry.id
+                        });
+
+                        setLoading(false);
+
+                        const { error, entry: entryResult } = response;
+
                         if (error) {
                             showSnackbar(error.message);
                             return;
                         }
+
+                        updateRecordInCache(entryResult);
 
                         showSnackbar(
                             <span>
