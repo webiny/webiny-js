@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
-    "@types/react": "17.0.39",
+    "@types/react": "18.2.45",
     "@webiny/react-composition": "0.0.0",
     "nanoid": "^3.3.4",
-    "react": "17.0.2"
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",

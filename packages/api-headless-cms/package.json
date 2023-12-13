@@ -42,7 +42,7 @@
     "pluralize": "^8.0.0",
     "semver": "^6.3.0",
     "slugify": "^1.4.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
