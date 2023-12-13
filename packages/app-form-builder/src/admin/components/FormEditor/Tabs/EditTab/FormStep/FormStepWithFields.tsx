@@ -7,9 +7,9 @@ export interface FormStepWithFieldsProps {
     formStep: FbFormStep;
 }
 
-export const FormStepWithFields: React.FC<FormStepWithFieldsProps> = ({ fields, formStep }) => {
+export const FormStepWithFields = ({ fields, formStep }: FormStepWithFieldsProps) => {
     return (
-        <>
+        <React.Fragment>
             {fields.map((row, rowIndex) => (
                 <FormStepRow
                     key={`row-${rowIndex}`}
@@ -19,6 +19,6 @@ export const FormStepWithFields: React.FC<FormStepWithFieldsProps> = ({ fields, 
                     isLastRow={rowIndex === fields.length - 1}
                 />
             ))}
-        </>
+        </React.Fragment>
     );
 };

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { FbFormModelField, FbFormStep } from "~/types";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
 import Field from "../../Field";
@@ -17,57 +17,55 @@ export interface FormStepFieldRowFieldProps {
     fieldIndex: number;
 }
 
-export const FormStepRowField: React.FC<FormStepFieldRowFieldProps> = props => {
+export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
     const { formStep, row, rowIndex, field, fieldIndex } = props;
     const { onFormStepDrop, editField } = useFormStep();
     const { deleteField } = useFormEditor();
 
-    const fieldBeginDragParams = useMemo<BeginDragProps>(() => {
-        return {
-            ui: "field",
-            name: field.name,
-            id: field._id,
-            pos: {
+    const fieldBeginDragParams: BeginDragProps = {
+        ui: "field",
+        name: field.name,
+        id: field._id,
+        pos: {
+            row: rowIndex,
+            index: fieldIndex
+        },
+        container: {
+            type: "step",
+            id: formStep.id
+        }
+    };
+
+    const onFieldVerticalZoneDrop = (item: DragObjectWithFieldInfo) => {
+        onFormStepDrop({
+            item,
+            formStep,
+            destinationPosition: {
                 row: rowIndex,
                 index: fieldIndex
-            },
-            container: {
-                type: "step",
-                id: formStep.id
             }
-        };
-    }, [field, rowIndex, fieldIndex, formStep]);
+        });
 
-    const onFieldVerticalZoneDrop = useCallback(
-        (item: DragObjectWithFieldInfo) =>
-            onFormStepDrop({
-                item,
-                destinationPosition: {
-                    row: rowIndex,
-                    index: fieldIndex
-                },
-                formStep
-            }),
-        [rowIndex, fieldIndex, formStep]
-    );
+        return undefined;
+    };
 
-    const onLastFieldVerticalZoneDrop = useCallback(
-        (item: DragObjectWithFieldInfo) =>
-            onFormStepDrop({
-                item,
-                destinationPosition: {
-                    row: rowIndex,
-                    index: fieldIndex + 1
-                },
-                formStep
-            }),
-        []
-    );
+    const onLastFieldVerticalZoneDrop = (item: DragObjectWithFieldInfo) => {
+        onFormStepDrop({
+            item,
+            formStep,
+            destinationPosition: {
+                row: rowIndex,
+                index: fieldIndex + 1
+            }
+        });
+
+        return undefined;
+    };
 
     const isLastField = fieldIndex === row.length - 1;
 
     return (
-        <Draggable key={`field-${fieldIndex}`} beginDrag={fieldBeginDragParams}>
+        <Draggable key={`step-field-${fieldIndex}`} beginDrag={fieldBeginDragParams}>
             {({ drag }) => (
                 <FieldContainer ref={drag}>
                     <Vertical

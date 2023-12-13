@@ -1,16 +1,18 @@
 import React from "react";
+
 import { FbFormModelField, FbFormStep } from "~/types";
-import EditFieldDialog from "./EditFieldDialog";
-import { Wrapper, StyledAccordion, StyledAccordionItem, RowHandle } from "./Styled";
+import { RowHandle, StyledAccordion, StyledAccordionItem, Wrapper } from "../Styled";
+
 import { Icon } from "@webiny/ui/Icon";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as HandleIcon } from "~/admin/components/FormEditor/icons/round-drag_indicator-24px.svg";
+import { EmptyFormStep } from "./EmptyFormStep";
+import { FormStepWithFields } from "./FormStepWithFields";
 
-import { EmptyFormStep } from "./FormStep/EmptyFormStep";
-import { FormStepWithFields } from "./FormStep/FormStepWithFields";
-import { useFormStep } from "./FormStep/useFormStep";
+import EditFieldDialog from "../EditFieldDialog";
+import { useFormStep } from "./useFormStep";
 
 export interface FormStepProps {
     title: string;
@@ -23,7 +25,7 @@ export interface FormStepProps {
     deleteField: (field: FbFormModelField, stepId: string) => void;
 }
 
-export const FormStep: React.FC<FormStepProps> = props => {
+export const FormStep = (props: FormStepProps) => {
     const { title, deleteStepDisabled, formStep, onDelete, onEdit, getStepFields, updateField } =
         props;
 
@@ -54,9 +56,8 @@ export const FormStep: React.FC<FormStepProps> = props => {
                     {fields.length === 0 ? (
                         <EmptyFormStep formStep={formStep} />
                     ) : (
-                        <FormStepWithFields fields={fields} formStep={formStep} />
+                        <FormStepWithFields formStep={formStep} fields={fields} />
                     )}
-
                     <EditFieldDialog
                         field={editingField}
                         onClose={() => {

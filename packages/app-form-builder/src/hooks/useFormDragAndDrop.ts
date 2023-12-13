@@ -1,11 +1,14 @@
-import { useCallback, useContext } from "react";
-import { DropDestination, DropSource, DropTarget, FbFormModelField, FbFormStep } from "~/types";
+import { useCallback } from "react";
 import { useFormEditor } from "~/admin/components/FormEditor";
 import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
-import cloneDeep from "lodash/cloneDeep";
-import { FormStepContext } from "./FormStepContext/FormStepContext";
+import { DropTarget, DropSource, DropDestination, FbFormModelField, FbFormStep } from "~/types";
 
-interface HandleDropParams {
+interface UseFormDragParams {
+    editField: (field: FbFormModelField | null) => void;
+    setDropDestination: (desitnation: DropDestination | null) => void;
+}
+
+interface HadleDropParams {
     target: DropTarget;
     source: DropSource;
     destination: DropDestination;
@@ -16,29 +19,21 @@ interface CreateCustomFieldParams {
     dropDestination: DropDestination;
 }
 
-interface ComposeHandleDropParams {
+interface ComposeHadleDropParams {
     item: DragObjectWithFieldInfo;
     destinationPosition: DropDestination["position"];
     formStep: FbFormStep;
 }
 
-export const useFormStep = () => {
+export const useFormDragAndDrop = (params: UseFormDragParams) => {
     const { data, moveRow, moveField, getFieldPlugin, insertField } = useFormEditor();
 
-    const { editingField, dropDestination, setEditingField, setDropDestination } =
-        useContext(FormStepContext);
-
-    const editField = (field: FbFormModelField | null) => {
-        if (!field) {
-            setEditingField(null);
-            return;
-        }
-        setEditingField(cloneDeep(field));
-    };
+    const { editField, setDropDestination } = params;
 
     const handleDrop = useCallback(
-        (params: HandleDropParams) => {
+        (params: HadleDropParams) => {
             const { target, source, destination } = params;
+
             if (target.name === "custom") {
                 // We can cast because field is empty in the start.
                 editField({} as FbFormModelField);
@@ -85,7 +80,7 @@ export const useFormStep = () => {
         [data]
     );
 
-    const onFormStepDrop = (params: ComposeHandleDropParams) => {
+    const composeHandleDropParams = (params: ComposeHadleDropParams) => {
         const { item, formStep, destinationPosition } = params;
 
         // We don't want to drop steps inside of steps.
@@ -116,6 +111,7 @@ export const useFormStep = () => {
 
     const createCustomField = (params: CreateCustomFieldParams) => {
         const { data, dropDestination } = params;
+
         insertField({
             data,
             target: {
@@ -132,11 +128,8 @@ export const useFormStep = () => {
     };
 
     return {
-        editingField,
-        dropDestination,
-        editField,
         handleDrop,
-        createCustomField,
-        onFormStepDrop
+        composeHandleDropParams,
+        createCustomField
     };
 };

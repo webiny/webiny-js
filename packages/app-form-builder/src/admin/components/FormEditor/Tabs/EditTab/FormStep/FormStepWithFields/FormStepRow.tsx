@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { FbFormModelField, FbFormStep } from "~/types";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
 import { RowHandle, Row, RowContainer } from "../../Styled";
@@ -17,49 +17,48 @@ export interface FormStepRowProps {
     isLastRow: boolean;
 }
 
-export const FormStepRow: React.FC<FormStepRowProps> = ({ formStep, isLastRow, row, rowIndex }) => {
+export const FormStepRow = (props: FormStepRowProps) => {
+    const { formStep, rowIndex, row, isLastRow } = props;
+
     const { onFormStepDrop } = useFormStep();
 
-    const rowBeginDragParams = useMemo<BeginDragProps>(() => {
-        return {
-            ui: "row",
-            pos: { row: rowIndex },
-            container: {
-                type: "step",
-                id: formStep.id
-            }
-        };
-    }, [rowIndex, formStep]);
+    const rowBeginDragParams: BeginDragProps = {
+        ui: "row",
+        pos: { row: rowIndex },
+        container: {
+            type: "step",
+            id: formStep.id
+        }
+    };
 
-    const onRowHorizontalZoneDrop = useCallback(
-        (item: DragObjectWithFieldInfo) =>
-            onFormStepDrop({
-                item,
-                destinationPosition: {
-                    row: rowIndex,
-                    index: null
-                },
-                formStep
-            }),
-        [rowIndex, formStep]
-    );
-    const onLastRowHorizontalZoneDrop = useCallback(
-        (item: DragObjectWithFieldInfo) => {
-            onFormStepDrop({
-                item,
-                destinationPosition: {
-                    row: rowIndex + 1,
-                    index: null
-                },
-                formStep
-            });
-            return undefined;
-        },
-        [rowIndex, formStep]
-    );
+    const onRowHorizontalZoneDrop = (item: DragObjectWithFieldInfo) => {
+        onFormStepDrop({
+            item,
+            formStep,
+            destinationPosition: {
+                row: rowIndex,
+                index: null
+            }
+        });
+
+        return undefined;
+    };
+
+    const onLastRowHorizontalZoneDrop = (item: DragObjectWithFieldInfo) => {
+        onFormStepDrop({
+            item,
+            formStep,
+            destinationPosition: {
+                row: rowIndex + 1,
+                index: null
+            }
+        });
+
+        return undefined;
+    };
 
     return (
-        <Draggable beginDrag={rowBeginDragParams} key={`row-${rowIndex}`}>
+        <Draggable beginDrag={rowBeginDragParams} key={`step-row-${rowIndex}`}>
             {({ drag, isDragging }) => (
                 /* RowContainer start - includes drag handle, drop zones and the Row itself. */
                 <RowContainer isDragging={isDragging}>

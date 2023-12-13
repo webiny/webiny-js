@@ -44,6 +44,7 @@ interface SetDataCallable {
 }
 
 type State = FormEditorProviderContextState;
+
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;
@@ -289,8 +290,7 @@ export const useFormEditorFactory = (
                     .find(v => v.id === targetStepId)
                     ?.layout.filter(row => Boolean(row));
                 // Replace every field ID with actual field object.
-                // @ts-ignore
-                return stepLayout.map(row => {
+                return (stepLayout || []).map(row => {
                     return row
                         .map(id => {
                             return self.getField({
@@ -354,7 +354,7 @@ export const useFormEditorFactory = (
                 self.setData(data => {
                     data.steps.push({
                         id: mdbid(),
-                        title: `Step`,
+                        title: `New Step`,
                         layout: []
                     });
 
