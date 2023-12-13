@@ -2,8 +2,6 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandlerV2 } from "~tests/testHelpers/useCategoryManageHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-const expectIsoDate = expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-
 const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
 
@@ -41,11 +39,11 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         });
 
         expect(rev).toMatchObject({
-            createdOn: expectIsoDate,
+            createdOn: expect.toBeDateString(),
             createdBy: identityA,
             modifiedBy: null,
             ownedBy: identityA,
-            savedOn: expectIsoDate,
+            savedOn: expect.toBeDateString(),
             revisionFirstPublishedOn: testDate,
             revisionLastPublishedOn: testDate,
             revisionFirstPublishedBy: identityB,

@@ -2,8 +2,6 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandlerV2 } from "~tests/testHelpers/useCategoryManageHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-const expectIsoDate = expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-
 const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
 
@@ -37,19 +35,19 @@ describe("Content entries - Entry Meta Fields", () => {
         let { data: entriesList } = await managerIdentityA.listCategories();
 
         const matchObject1 = {
-            createdOn: expectIsoDate,
+            createdOn: expect.toBeDateString(),
             createdBy: identityA,
             modifiedBy: null,
             ownedBy: identityA,
-            savedOn: expectIsoDate,
-            revisionCreatedOn: expectIsoDate,
-            revisionSavedOn: expectIsoDate,
+            savedOn: expect.toBeDateString(),
+            revisionCreatedOn: expect.toBeDateString(),
+            revisionSavedOn: expect.toBeDateString(),
             revisionModifiedOn: null,
             revisionCreatedBy: identityA,
             revisionSavedBy: identityA,
             revisionModifiedBy: null,
-            entryCreatedOn: expectIsoDate,
-            entrySavedOn: expectIsoDate,
+            entryCreatedOn: expect.toBeDateString(),
+            entrySavedOn: expect.toBeDateString(),
             entryModifiedOn: null,
             entryCreatedBy: identityA,
             entrySavedBy: identityA,
@@ -74,22 +72,22 @@ describe("Content entries - Entry Meta Fields", () => {
             createdOn: revision1.createdOn,
             modifiedBy: identityA,
             ownedBy: identityA,
-            savedOn: expectIsoDate,
+            savedOn: expect.toBeDateString(),
 
             // New fields.
             entryCreatedBy: identityA,
             entryCreatedOn: revision1.entryCreatedOn,
             entryModifiedBy: identityA,
-            entryModifiedOn: expectIsoDate,
+            entryModifiedOn: expect.toBeDateString(),
             entrySavedBy: identityA,
-            entrySavedOn: expectIsoDate,
+            entrySavedOn: expect.toBeDateString(),
 
             revisionCreatedBy: identityA,
             revisionCreatedOn: revision1.createdOn,
             revisionModifiedBy: identityA,
-            revisionModifiedOn: expectIsoDate,
+            revisionModifiedOn: expect.toBeDateString(),
             revisionSavedBy: identityA,
-            revisionSavedOn: expectIsoDate
+            revisionSavedOn: expect.toBeDateString()
         };
 
         expect(revision1).toMatchObject(matchObject2);
@@ -104,13 +102,13 @@ describe("Content entries - Entry Meta Fields", () => {
         ({ data: entriesList } = await managerIdentityA.listCategories());
 
         const matchObject3 = {
-            createdOn: expectIsoDate,
+            createdOn: expect.toBeDateString(),
             createdBy: identityA,
             modifiedBy: null,
             ownedBy: identityA,
-            savedOn: expectIsoDate,
-            revisionCreatedOn: expectIsoDate,
-            revisionSavedOn: expectIsoDate,
+            savedOn: expect.toBeDateString(),
+            revisionCreatedOn: expect.toBeDateString(),
+            revisionSavedOn: expect.toBeDateString(),
 
             // Note that these are null, since, on a revision-level, an update has not been made yet.
             revisionModifiedOn: null,
@@ -121,11 +119,11 @@ describe("Content entries - Entry Meta Fields", () => {
             // Note that these are null, since, on a revision-level, an update has not been made yet.
             revisionModifiedBy: null,
 
-            entryCreatedOn: expectIsoDate,
-            entrySavedOn: expectIsoDate,
+            entryCreatedOn: expect.toBeDateString(),
+            entrySavedOn: expect.toBeDateString(),
 
             // Note that these are not null, since, on an entry-level, an update has been made.
-            entryModifiedOn: expectIsoDate,
+            entryModifiedOn: expect.toBeDateString(),
 
             entryCreatedBy: identityA,
             entrySavedBy: identityA,
