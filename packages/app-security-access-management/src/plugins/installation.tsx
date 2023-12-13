@@ -37,7 +37,7 @@ const INSTALL = gql`
 interface SecurityInstallerProps {
     onInstalled: () => void;
 }
-const SecurityInstaller: React.FC<SecurityInstallerProps> = ({ onInstalled }) => {
+const SecurityInstaller = ({ onInstalled }: SecurityInstallerProps) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
 

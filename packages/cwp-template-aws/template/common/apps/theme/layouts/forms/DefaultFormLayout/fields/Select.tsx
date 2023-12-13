@@ -34,7 +34,7 @@ export const StyledSelect = styled.select`
     }
 `;
 
-export const SelectField: React.FC<SelectProps> = ({ field }) => {
+export const SelectField = ({ field }: SelectProps) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators

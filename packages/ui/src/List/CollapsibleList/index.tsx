@@ -9,7 +9,7 @@ export type CollapsibleListProps = RmwcCollapsibleListProps & {
     children: React.ReactNode;
 };
 
-export const CollapsibleList: React.FC<CollapsibleListProps> = props => {
+export const CollapsibleList = (props: CollapsibleListProps) => {
     return <RmwcCollapsibleList {...props} />;
 };
 
