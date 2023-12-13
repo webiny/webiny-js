@@ -25,8 +25,8 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.10.1",
     "prop-types": "^15.7.2",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
-    "@types/react": "17.0.39",
+    "@types/react": "18.2.45",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "babel-plugin-emotion": "^9.2.8",
