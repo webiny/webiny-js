@@ -84,4 +84,4 @@ const MosaicComponent = (props: MosaicProps) => {
     return <span>No images to display.</span>;
 };
 
-export const Mosaic: React.FC<MosaicProps> = React.memo(MosaicComponent);
+export const Mosaic: React.ComponentType<MosaicProps> = React.memo(MosaicComponent);

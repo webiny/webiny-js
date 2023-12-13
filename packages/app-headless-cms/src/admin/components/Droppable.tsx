@@ -65,4 +65,4 @@ const DroppableComponent = (props: DroppableProps) => {
     return children({ isDragging: Boolean(item), isOver, isDroppable, item, drop });
 };
 
-export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);
+export const Droppable: React.ComponentType<DroppableProps> = React.memo(DroppableComponent);

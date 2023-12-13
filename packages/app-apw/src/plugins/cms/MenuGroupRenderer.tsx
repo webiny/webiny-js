@@ -1,7 +1,7 @@
 import { useMenuItem } from "@webiny/app-admin";
 import React from "react";
 
-export const MenuGroupRenderer = (PrevMenuItem: React.FC) => {
+export const MenuGroupRenderer = (PrevMenuItem: React.ComponentType) => {
     return function MenuGroup() {
         const { menuItem } = useMenuItem();
 

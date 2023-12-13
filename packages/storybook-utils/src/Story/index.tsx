@@ -14,9 +14,10 @@ export class Story extends React.Component<{ children: React.ReactNode }> {
 
 interface StorySandboxProps {
     title?: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const StorySandbox: React.FC<StorySandboxProps> = props => {
+export const StorySandbox = (props: StorySandboxProps) => {
     const children = React.Children.toArray(props.children);
     if (children.length === 2) {
         return <div style={{ display: "flex" }}>{props.children}</div>;
@@ -30,13 +31,18 @@ export const StorySandbox: React.FC<StorySandboxProps> = props => {
     );
 };
 
-export const StoryReadme: React.FC = ({ children }) => <Markdown source={children} />;
+interface StoryReadmeProps {
+    children: React.ReactNode;
+}
+
+export const StoryReadme = ({ children }: StoryReadmeProps) => <Markdown source={children} />;
 
 interface StoryPropsProps {
     title?: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const StoryProps: React.FC<StoryPropsProps> = ({ title, children }) => (
+export const StoryProps = ({ title, children }: StoryPropsProps) => (
     <React.Fragment>
         <h3>{title || "Props"}</h3>
         <CodeBlock lang={"js"}>{children}</CodeBlock>
@@ -45,16 +51,21 @@ export const StoryProps: React.FC<StoryPropsProps> = ({ title, children }) => (
 
 interface StorySandboxExampleProps {
     title?: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const StorySandboxExample: React.FC<StorySandboxExampleProps> = ({ children, title }) => (
+export const StorySandboxExample = ({ children, title }: StorySandboxExampleProps) => (
     <div style={{ width: "50%", marginRight: 15 }}>
         <h2>{title || "Example"}</h2>
         {children}
     </div>
 );
 
-export const StorySandboxCode: React.FC = ({ children }) => (
+interface StorySandboxCodeProps {
+    children: React.ReactNode;
+}
+
+export const StorySandboxCode = ({ children }: StorySandboxCodeProps) => (
     <div style={{ width: "50%" }}>
         <h2>Code</h2>
         <CodeBlock copy={true}>{children}</CodeBlock>
