@@ -16,6 +16,10 @@ const createHOC =
         };
     };
 
+export interface ConfigPropss {
+    children: React.ReactNode;
+}
+
 export interface ViewProps {
     onProperties?(properties: Property[]): void;
 }
@@ -31,7 +35,7 @@ export function createConfigurableView(name: string) {
     /**
      * This component is used to configure the view (it can be mounted many times).
      */
-    const Config: React.FC = ({ children }) => {
+    const Config = ({ children }: ConfigPropss) => {
         return <Compose component={ConfigApply} with={createHOC(children)} />;
     };
 
@@ -47,7 +51,7 @@ export function createConfigurableView(name: string) {
 
     const ViewContext = React.createContext<ViewContext>(defaultContext);
 
-    const View: React.FC<ViewProps> = ({ onProperties }) => {
+    const View = ({ onProperties }: ViewProps) => {
         const [properties, setProperties] = useState<Property[]>([]);
         const context = { properties };
 

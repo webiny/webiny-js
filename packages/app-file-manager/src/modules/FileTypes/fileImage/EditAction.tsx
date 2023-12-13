@@ -1,7 +1,7 @@
 import React from "react";
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
-// @ts-ignore
+// @ts-expect-error
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -62,7 +62,7 @@ interface EditActionProps {
     file: FileItem;
 }
 
-export const EditAction: React.FC<EditActionProps> = props => {
+export const EditAction = (props: EditActionProps) => {
     const { file } = props;
     const { canEdit } = useFileManagerApi();
     const { uploadFile } = useFileManagerView();

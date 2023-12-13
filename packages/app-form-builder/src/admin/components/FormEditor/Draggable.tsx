@@ -37,17 +37,12 @@ export interface DraggableProps extends BeginDragProps {
     target?: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable = (props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
         item: {
             type: "element",
-            /**
-             * TODO @ts-refactor
-             * There is no target on item in types.
-             */
-            // @ts-ignore
             target
         },
         collect: monitor => ({

@@ -174,7 +174,7 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                     </SearchInputWrapper>
                     <ScrollList
                         className={listStyle}
-                        data-list={"pb-new-page-dialog-templates-list"}
+                        data-testid={"pb-new-page-dialog-templates-list"}
                     >
                         {filteredPageTemplates.map(template => (
                             <ListItem

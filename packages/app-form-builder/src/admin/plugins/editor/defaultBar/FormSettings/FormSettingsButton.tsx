@@ -4,7 +4,7 @@ import FormSettings from "./FormSettings";
 
 import { ReactComponent as SettingsIcon } from "./../icons/settings.svg";
 
-const FormSettingsButton: React.FC = () => {
+const FormSettingsButton = () => {
     const [opened, setOpened] = useState<boolean>(false);
     const open = useCallback((): void => setOpened(true), []);
     const close = useCallback((): void => setOpened(false), []);

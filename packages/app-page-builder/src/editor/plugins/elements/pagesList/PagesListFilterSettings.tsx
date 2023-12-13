@@ -40,7 +40,7 @@ interface PagesListFilterSettingsProps {
     Bind: BindComponent;
     submit: (event: React.MouseEvent) => void;
 }
-const PagesListFilterSettings: React.FC<PagesListFilterSettingsProps> = ({ Bind, submit }) => {
+const PagesListFilterSettings = ({ Bind, submit }: PagesListFilterSettingsProps) => {
     return (
         <Accordion title={"Filter"} defaultValue={true}>
             <React.Fragment>

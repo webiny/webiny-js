@@ -33,12 +33,12 @@ const onOffsetChange = (monitor: DragLayerMonitor) => () => {
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-const DragPreview: React.FC = () => {
+const DragPreview = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
-            // @ts-ignore
+            // @ts-expect-error
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }

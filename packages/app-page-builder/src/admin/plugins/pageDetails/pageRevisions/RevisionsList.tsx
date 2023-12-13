@@ -32,7 +32,7 @@ interface RevisionsListProps {
     page: PbPageData;
     getPageQuery: QueryResult;
 }
-const RevisionsList: React.FC<RevisionsListProps> = props => {
+const RevisionsList = (props: RevisionsListProps) => {
     const { page, getPageQuery } = props;
     const { revisions = [] } = page;
 

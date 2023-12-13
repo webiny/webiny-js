@@ -34,6 +34,7 @@ export interface I18NContextValue {
 
 export interface I18NProviderProps {
     loader?: React.ReactElement;
+    children: React.ReactNode;
 }
 
 export const I18NContext = React.createContext<I18NContextValue>({
@@ -64,7 +65,7 @@ const updateLocaleStorage = (currentLocales: I18NCurrentLocaleItem[]) => {
     );
 };
 
-const I18NProviderComponent: React.FC<I18NProviderProps> = props => {
+const I18NProviderComponent = (props: I18NProviderProps) => {
     const { children, loader } = props;
     const [state, setState] = useState<I18NContextState>(defaultState);
     const { loading, refetch } = useQuery<GetI18NInformationResponse>(GET_I18N_INFORMATION, {
@@ -121,4 +122,4 @@ const I18NProviderComponent: React.FC<I18NProviderProps> = props => {
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 };
 
-export const I18NProvider: React.FC<I18NProviderProps> = memo(I18NProviderComponent);
+export const I18NProvider: React.ComponentType<I18NProviderProps> = memo(I18NProviderComponent);

@@ -25,6 +25,7 @@ export interface CardWidget extends Record<string, unknown> {
 
 interface DashboardViewProps {
     onProperties(properties: Property[]): void;
+    children: React.ReactNode;
 }
 
 interface DashboardConfigData {
@@ -38,7 +39,7 @@ export const DashboardConfig = Object.assign(Config, { AddWidget });
 
 export const useDashboardConfig = useConfig;
 
-export const App: React.FC<DashboardViewProps> = ({ onProperties, children }) => {
+export const App = ({ onProperties, children }: DashboardViewProps) => {
     return (
         <CompositionProvider>
             <DashboardConfig>

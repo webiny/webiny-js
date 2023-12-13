@@ -69,11 +69,14 @@ const onSelectedChange = (params: OnSelectedParams) => {
     );
 };
 
-export interface Props {
+export interface PredefinedValuesDynamicFieldsetProps {
     getBind: (value?: any) => BindComponent;
-    renderValueInput?: (Bind: BindComponent) => React.ReactNode;
+    renderValueInput?: ((Bind: BindComponent) => React.ReactNode) | null;
 }
-const PredefinedValuesDynamicFieldset: React.FC<Props> = ({ getBind, renderValueInput = null }) => {
+const PredefinedValuesDynamicFieldset = ({
+    getBind,
+    renderValueInput = null
+}: PredefinedValuesDynamicFieldsetProps) => {
     const Bind = getBind();
     const { field } = useModelField();
 

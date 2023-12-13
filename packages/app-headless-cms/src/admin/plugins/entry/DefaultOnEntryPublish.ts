@@ -23,7 +23,7 @@ const createMutationKey = (params: CreateMutationKeyParams): string => {
     return `${model.modelId}_${locale}_${model.savedOn}`;
 };
 
-const OnEntryPublish: React.FC = () => {
+const OnEntryPublish = () => {
     const { onEntryRevisionPublish } = useCms();
 
     const mutations = useRef<Mutations>({});

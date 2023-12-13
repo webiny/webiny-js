@@ -1,5 +1,3 @@
-// TODO remove
-// @ts-nocheck
 import styled from "@emotion/styled";
 
 export const AddImageIconWrapper = styled("div")({
@@ -82,6 +80,7 @@ export const ImagePreviewWrapper = styled("div")({
     flexDirection: "column",
     boxSizing: "border-box",
     position: "relative",
+    // @ts-expect-error
     [AddImageWrapper]: {
         position: "absolute",
         display: "none",
@@ -89,6 +88,7 @@ export const ImagePreviewWrapper = styled("div")({
         height: "100%",
         zIndex: 1,
         backgroundColor: "rgba(0,0,0, 0.75)",
+        // @ts-expect-error
         [AddImageIconWrapper]: {
             top: "50%",
             left: "50%",
@@ -98,13 +98,16 @@ export const ImagePreviewWrapper = styled("div")({
         }
     },
     "&:hover": {
+        // @ts-expect-error
         [AddImageWrapper]: {
             display: "block"
         },
+        // @ts-expect-error
         [RemoveImage]: {
             display: "block",
             zIndex: 2
         },
+        // @ts-expect-error
         [EditImage]: {
             display: "block",
             zIndex: 2

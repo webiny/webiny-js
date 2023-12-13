@@ -36,7 +36,7 @@ const isDifferent = (value: any, compare: any): boolean => {
     return stringify(value) !== stringify(compare);
 };
 
-export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
+export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
     const formElementRef = useRef<HTMLDivElement>(null);
     const { model } = useModel();
     const {

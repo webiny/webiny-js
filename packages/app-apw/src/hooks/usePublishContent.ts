@@ -2,23 +2,23 @@ import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import dotPropImmutable from "dot-prop-immutable";
 import {
-    PUBLISH_CONTENT_MUTATION,
-    UNPUBLISH_CONTENT_MUTATION,
     DELETE_SCHEDULED_ACTION_MUTATION,
+    DeleteApwContentReviewMutationResponse,
+    DeleteApwContentReviewMutationVariables,
+    GET_CONTENT_REVIEW_QUERY,
+    PUBLISH_CONTENT_MUTATION,
     PublishContentMutationResponse,
     PublishContentMutationVariables,
+    UNPUBLISH_CONTENT_MUTATION,
     UnPublishContentMutationResponse,
-    UnPublishContentMutationVariables,
-    DeleteApwContentReviewMutationResponse,
-    DeleteApwContentReviewMutationVariables
+    UnPublishContentMutationVariables
 } from "~/graphql/contentReview.gql";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
-import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
 
 interface UsePublishContentResult {
-    publishContent: Function;
-    unpublishContent: Function;
+    publishContent: (datetime?: string) => Promise<void>;
+    unpublishContent: (datetime?: string) => Promise<void>;
     deleteScheduledAction: () => void;
     loading: boolean;
 }

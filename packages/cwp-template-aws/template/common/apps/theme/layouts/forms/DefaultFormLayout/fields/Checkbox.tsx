@@ -88,7 +88,7 @@ interface CheckboxProps {
     field: FormRenderFbFormModelField;
 }
 
-export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
+export const CheckboxField = ({ field }: CheckboxProps) => {
     const fieldId = field.fieldId;
 
     const { validation, value, onChange } = useBind({

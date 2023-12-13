@@ -106,7 +106,7 @@ const defaultMeta: ListMeta = {
     cursor: null
 };
 
-export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
+export const SearchRecordsProvider = ({ children }: Props) => {
     const { app, client, mode } = useAcoApp();
     const { model } = app;
 

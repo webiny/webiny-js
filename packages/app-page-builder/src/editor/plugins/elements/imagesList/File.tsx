@@ -77,14 +77,14 @@ const imageStyles = css({
 interface FileProps {
     file: ImagesListFile;
     selected?: boolean;
-    uploadFile?: Function;
+    uploadFile?: () => void;
     onSelect?: (e: SyntheticEvent) => void;
     onClick?: (e: SyntheticEvent) => void;
     onRemove?: (e: SyntheticEvent) => void;
     options?: Array<{ label: string; onClick: (file: any) => void }>;
 }
 
-const File: React.FC<FileProps> = props => {
+const File = (props: FileProps) => {
     const { file, onSelect, onRemove } = props;
 
     return (

@@ -12,7 +12,7 @@ import { WorkflowScopeProps } from "../WorkflowScope";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form/page-builder");
 
-const PageBuilderWorkflowScope: React.FC<WorkflowScopeProps> = props => {
+const PageBuilderWorkflowScope = (props: WorkflowScopeProps) => {
     const { Bind, workflow } = props;
     const { scope } = workflow;
     const type = dotPropImmutable.get(scope, "type");

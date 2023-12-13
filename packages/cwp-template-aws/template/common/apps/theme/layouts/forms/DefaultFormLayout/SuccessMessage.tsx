@@ -43,7 +43,7 @@ interface Props {
     formData: FbFormModel;
 }
 
-export const SuccessMessage: React.FC<Props> = ({ formData }) => {
+export const SuccessMessage = ({ formData }: Props) => {
     const heading = "Success!";
 
     let message;

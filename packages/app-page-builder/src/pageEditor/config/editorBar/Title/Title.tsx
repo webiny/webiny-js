@@ -43,7 +43,7 @@ const extractPageInfo = (page: PageAtomType): PageInfo => {
     };
 };
 
-const Title: React.FC = () => {
+const Title = () => {
     const handler = useEventActionHandler();
     const [page] = usePage();
     const { showSnackbar } = useSnackbar();
@@ -77,7 +77,7 @@ const Title: React.FC = () => {
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent<HTMLInputElement>) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();

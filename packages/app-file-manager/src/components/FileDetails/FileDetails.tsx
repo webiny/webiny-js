@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import omit from "lodash/omit";
 import styled from "@emotion/styled";
@@ -62,7 +62,7 @@ const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => 
     };
 };
 
-const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
+const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const fileModel = useFileModel();
@@ -136,7 +136,7 @@ export interface FileDetailsProps {
     onClose: () => void;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({ open, onClose, loading, file }) => {
+export const FileDetails = ({ open, onClose, loading, file }: FileDetailsProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,

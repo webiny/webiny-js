@@ -1,11 +1,15 @@
 import React from "react";
 import { RouterProvider } from "./context/RouterContext";
 
+interface EnhancedComponentProps {
+    children?: React.ReactNode;
+}
+
 /**
  * @internal
  */
 const routerEnhancer = (BaseComponent: any) => {
-    const EnhancedComponent: React.FC = props => {
+    const EnhancedComponent = (props: EnhancedComponentProps) => {
         return (
             <RouterProvider>
                 <BaseComponent {...props} />

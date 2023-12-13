@@ -22,7 +22,7 @@ interface Resolve {
 
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
-export const ApwOnEntryPublish: React.FC = () => {
+export const ApwOnEntryPublish = () => {
     const { onEntryRevisionPublish } = useCms();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

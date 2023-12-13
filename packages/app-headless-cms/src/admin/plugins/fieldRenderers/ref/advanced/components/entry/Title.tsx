@@ -9,9 +9,9 @@ const Content = styled("h3")({
     marginBottom: "5px"
 });
 
-interface Props {
+interface TitleProps {
     title: string;
 }
-export const Title: React.VFC<Props> = ({ title }) => {
+export const Title = ({ title }: TitleProps) => {
     return <Content>{title}</Content>;
 };

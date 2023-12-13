@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Admin, createComponentPlugin } from "@webiny/app-serverless-cms";
-import { FileManagerRenderer, FileManagerFileItem, OverlayLayout } from "@webiny/app-admin";
+import { FileManagerFileItem, FileManagerRenderer, OverlayLayout } from "@webiny/app-admin";
 import { Cognito } from "@webiny/app-admin-users-cognito";
 import "./App.scss";
 
@@ -24,14 +24,14 @@ const CustomFileManager = createComponentPlugin(FileManagerRenderer, () => {
         return (
             <OverlayLayout onExited={() => props.onClose && props.onClose()}>
                 <button onClick={setRandomImage}>Set a random image</button>
-                {/* @ts-ignore */}
+                {/* @ts-expect-error */}
                 <input type={"file"} accept={["image/jpeg"]} />
             </OverlayLayout>
         );
     };
 });
 
-export const App: React.FC = () => {
+export const App = () => {
     return (
         <Admin>
             <Cognito />

@@ -11,7 +11,7 @@ export type IconProps = {
     /**
      * Optional onclick handler
      */
-    onClick?: Function;
+    onClick?: (value: any) => void;
 
     /**
      * CSS class to be added to the icon
@@ -36,7 +36,7 @@ const webinyIcon = css(
 /**
  * Use Icon component to display an icon.
  */
-const Icon: React.FC<IconProps> = props => {
+const Icon = (props: IconProps) => {
     return React.cloneElement(props.icon, {
         "data-testid": props["data-testid"],
         className: classNames("mdc-button__icon webiny-ui-icon", webinyIcon, props.className),

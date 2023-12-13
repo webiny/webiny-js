@@ -39,12 +39,12 @@ const OuterDivVertical = styled("div")(
     (props: OuterDivVerticalProps) => ({
         [props.last ? "right" : "left"]: -9,
         textAlign: props.last ? "right" : "left",
-        // @ts-ignore
+        // @ts-expect-error
         [InnerDivVertical]: {
             borderColor: props.isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
             [props.last ? "right" : "left"]: -2,
             display: props.isDragging ? "block" : "none",
-            // @ts-ignore
+            // @ts-expect-error
             [BackgroundColorDiv]: {
                 opacity: 0.5,
                 backgroundColor: props.isOver
@@ -62,7 +62,7 @@ interface VerticalProps {
     isVisible?: any;
 }
 
-const Vertical: React.FC<VerticalProps> = ({ depth, last, onDrop, isVisible }) => {
+const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

@@ -16,7 +16,7 @@ const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 interface EditRevisionProps {
     page: PbPageData;
 }
-const EditRevision: React.FC<EditRevisionProps> = props => {
+const EditRevision = (props: EditRevisionProps) => {
     const { page } = props;
     const { canUpdate } = usePagesPermissions();
     const [inProgress, setInProgress] = useState<boolean>();

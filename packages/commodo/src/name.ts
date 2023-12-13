@@ -1,5 +1,5 @@
 /**
  * We need to ignore here because ramda TS produces errors.
  */
-// @ts-ignore
+// @ts-expect-error
 export * from "@commodo/name";

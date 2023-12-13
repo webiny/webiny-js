@@ -18,11 +18,7 @@ const CheckboxWrapper = styled.div`
     justify-content: flex-end;
 `;
 
-export const ListItemWithCheckbox: React.FC<ListItemWithCheckboxProps> = ({
-    label,
-    value,
-    onChange
-}) => {
+export const ListItemWithCheckbox = ({ label, value, onChange }: ListItemWithCheckboxProps) => {
     return (
         <Grid className={restGridStyles}>
             <Cell span={6} align={"middle"}>

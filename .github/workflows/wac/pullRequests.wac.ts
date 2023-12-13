@@ -78,12 +78,28 @@ const createJestTestsJob = (storage: string | null) => {
 
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
-    on: { pull_request: { branches: ["next"] } },
+    on: "pull_request",
     jobs: {
         validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.1.0" }]
+            if: "github.base_ref != 'dev'",
+            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
+        }),
+        // Don't allow "feat" commits to be merged into "dev" branch.
+        validateCommitsDev: createJob({
+            name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
+            if: "github.base_ref == 'dev'",
+            steps: [
+                {
+                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    with: {
+                        // If dev, use "dev" commit types, otherwise use "next" commit types.
+                        "allowed-commit-types":
+                            "fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip"
+                    }
+                }
+            ]
         }),
         init: createJob({
             name: "Init",
@@ -201,6 +217,7 @@ export const pullRequests = createWorkflow({
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
         jestTestsDdbEs: createJestTestsJob("ddb-es"),
+        jestTestsDdbOs: createJestTestsJob("ddb-os"),
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",

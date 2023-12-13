@@ -41,15 +41,13 @@ interface TypographyActionDropdownProps {
     element: JSX.Element;
 }
 
-const TypographyActionDropDown: React.FC<TypographyActionDropdownProps> = ({
-    element
-}): JSX.Element => {
+const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 
-export interface TypographyAction extends React.FC<unknown> {
+export type TypographyAction = React.ComponentType<unknown> & {
     TypographyDropDown: typeof TypographyActionDropDown;
-}
+};
 
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();

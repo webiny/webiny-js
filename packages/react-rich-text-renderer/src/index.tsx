@@ -253,7 +253,7 @@ interface RichTextRendererProps {
     sanitizationConfig?: sanitize.IOptions;
 }
 
-export const RichTextRenderer: React.FC<RichTextRendererProps> = props => {
+export const RichTextRenderer = (props: RichTextRendererProps) => {
     // Combine default renderers with custom renderers
     const renderers = Object.assign({}, defaultRenderers, props.renderers);
 

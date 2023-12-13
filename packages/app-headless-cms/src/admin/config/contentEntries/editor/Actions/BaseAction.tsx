@@ -18,7 +18,7 @@ export interface BaseActionProps {
     $type: string;
 }
 
-export const BaseAction: React.FC<BaseActionProps> = ({
+export const BaseAction = ({
     name,
     after = undefined,
     before = undefined,
@@ -26,7 +26,7 @@ export const BaseAction: React.FC<BaseActionProps> = ({
     modelIds = [],
     element,
     $type
-}) => {
+}: BaseActionProps) => {
     const { model } = useModel();
     const getId = useIdGenerator("action");
 

@@ -7,6 +7,7 @@ export interface FormEditorProviderProps {
     id: string;
     defaultLayoutRenderer: string;
     apollo: ApolloClient<any>;
+    children: React.ReactNode;
 }
 export interface FormEditorFieldError {
     label: string;
@@ -69,7 +70,7 @@ export interface FormEditorProviderContext {
     dispatch: (action: FormEditorReducerAction) => void;
 }
 
-export const FormEditorProvider: React.FC<FormEditorProviderProps> = props => {
+export const FormEditorProvider = (props: FormEditorProviderProps) => {
     const [state, dispatch] = React.useReducer<FormEditorReducer, any>(
         formEditorReducer,
         {

@@ -29,12 +29,6 @@ import { IconPicker } from "~/admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
-interface Props {
-    onClose: UID.DialogOnClose;
-    contentModel: CmsModel;
-    closeModal: () => void;
-}
-
 const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): string | null => {
     if (!groups || groups.length === 0 || !model) {
         return "";
@@ -48,7 +42,17 @@ const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): str
     return defaultSelected ? defaultSelected.value : null;
 };
 
-export const CloneContentModelDialog: React.FC<Props> = ({ onClose, contentModel, closeModal }) => {
+interface CloneContentModelDialogProps {
+    onClose: UID.DialogOnClose;
+    contentModel: CmsModel;
+    closeModal: () => void;
+}
+
+export const CloneContentModelDialog = ({
+    onClose,
+    contentModel,
+    closeModal
+}: CloneContentModelDialogProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();

@@ -10,7 +10,7 @@ interface DeletePageProps {
     page: PbPageData;
     onDelete?: () => void;
 }
-const DeletePage: React.FC<DeletePageProps> = props => {
+const DeletePage = (props: DeletePageProps) => {
     const { page, onDelete } = props;
     const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page, onDelete });

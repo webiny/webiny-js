@@ -45,6 +45,8 @@ export type InputProps<TValue = any> = FormComponentProps<TValue> &
 
         // Size - small, medium or large
         size?: "small" | "medium" | "large";
+
+        children?: React.ReactNode;
     };
 
 /**
@@ -73,7 +75,7 @@ const rmwcProps = [
     "characterCount"
 ];
 
-export const Input: React.FC<InputProps> = props => {
+export const Input = (props: InputProps) => {
     const onChange = useCallback(
         (e: React.SyntheticEvent<HTMLInputElement>) => {
             const { onChange, rawOnChange } = props;
@@ -81,7 +83,7 @@ export const Input: React.FC<InputProps> = props => {
                 return;
             }
 
-            // @ts-ignore
+            // @ts-expect-error
             onChange(rawOnChange ? e : e.target.value);
         },
         [props.onChange, props.rawOnChange]

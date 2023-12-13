@@ -3,7 +3,7 @@ import { css } from "emotion";
 /**
  * Package react-sortable does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { sortable } from "react-sortable";
 import cloneDeep from "lodash/cloneDeep";
 import { FileManager } from "@webiny/app-admin/components";
@@ -37,7 +37,7 @@ interface MultipleImageVariableInputProps {
     variableId: string;
 }
 
-const MultipleImageVariableInput: React.FC<MultipleImageVariableInputProps> = ({ variableId }) => {
+const MultipleImageVariableInput = ({ variableId }: MultipleImageVariableInputProps) => {
     const { value, onChange } = useVariable(variableId);
 
     // TODO: Update to use the new `render` prop, implemented in 5.33.0.

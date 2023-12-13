@@ -15,7 +15,11 @@ export const useChangeRequestDialog = (): ChangeRequestDialogContextValue => {
     return useContext(ChangeRequestDialogContext);
 };
 
-export const ChangeRequestDialogProvider: React.FC = ({ children }) => {
+interface ChangeRequestDialogProviderProps {
+    children: React.ReactNode;
+}
+
+export const ChangeRequestDialogProvider = ({ children }: ChangeRequestDialogProviderProps) => {
     const [open, setOpen] = useState<boolean>(false);
     const [changeRequestId, setChangeRequestId] = useState<string | null>(null);
 

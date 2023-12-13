@@ -16,11 +16,11 @@ const ContentReviewEditor = lazy(
 interface LoaderProps {
     children: React.ReactElement;
 }
-const Loader: React.FC<LoaderProps> = ({ children, ...props }) => (
+const Loader = ({ children, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-export const Module: React.FC = () => {
+export const Module = () => {
     const { canManageWorkflows } = usePermission();
 
     const manageWorkflows = canManageWorkflows();

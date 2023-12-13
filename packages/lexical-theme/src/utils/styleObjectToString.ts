@@ -1,4 +1,4 @@
-// @ts-ignore - There are no types "@types/react-style-object-to-css" for this lib.
+// @ts-expect-error - There are no types "@types/react-style-object-to-css" for this lib.
 import reactToCSS from "react-style-object-to-css";
 import type { CSSObject } from "@emotion/react";
 

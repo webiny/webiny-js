@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig",
+  "include": ["src"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  }
+}

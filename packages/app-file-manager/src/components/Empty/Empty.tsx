@@ -11,7 +11,7 @@ interface EmptyViewProps {
     isSearchResult?: boolean;
 }
 
-export const Empty: React.VFC<EmptyViewProps> = ({ browseFiles, isSearchResult }) => {
+export const Empty = ({ browseFiles, isSearchResult }: EmptyViewProps) => {
     const { canRead } = useFileManagerApi();
 
     if (!canRead) {

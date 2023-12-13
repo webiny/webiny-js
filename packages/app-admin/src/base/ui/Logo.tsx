@@ -11,7 +11,7 @@ interface AddLogoProps {
     logo: JSX.Element;
 }
 
-export const AddLogo: React.FC<AddLogoProps> = ({ logo }) => {
+export const AddLogo = ({ logo }: AddLogoProps) => {
     const LogoHOC = useMemo(() => {
         return () => {
             return function Logo() {

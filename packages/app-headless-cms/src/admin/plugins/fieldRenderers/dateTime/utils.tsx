@@ -65,11 +65,9 @@ const deleteIconStyles = css({
 });
 
 interface RemoveFieldButtonProps {
-    // TODO @ts-refactor figure out correct trailing icon type
-    // @ts-ignore
     trailingIcon: any;
 }
-export const RemoveFieldButton: React.FC<RemoveFieldButtonProps> = ({ trailingIcon }) => {
+export const RemoveFieldButton = ({ trailingIcon }: RemoveFieldButtonProps) => {
     if (!trailingIcon) {
         return null;
     }
