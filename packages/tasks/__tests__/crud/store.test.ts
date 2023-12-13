@@ -4,7 +4,7 @@ import { TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 
-describe("crud", () => {
+describe("store crud", () => {
     const handler = useHandler({
         plugins: [
             createRegisterTaskPlugin({
