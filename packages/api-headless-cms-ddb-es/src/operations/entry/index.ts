@@ -1254,7 +1254,11 @@ export const createEntriesStorageOperations = (
                 latestEsEntry.data
             )) as CmsIndexEntry;
 
+
+
             if (publishingLatestRevision) {
+                const updatedMetaFields = pickEntryMetaFields(entry);
+
                 const latestTransformer = createTransformer({
                     plugins,
                     model,
@@ -1262,8 +1266,18 @@ export const createEntriesStorageOperations = (
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
+                        /**
+                         * 🚫 Deprecated meta fields below.
+                         * Will be fully removed in one of the next releases.
+                         */
                         savedOn: entry.savedOn,
-                        publishedOn: entry.publishedOn
+                        publishedOn: entry.publishedOn,
+
+                        /**
+                         * 🆕 New meta fields below.
+                         * Users are encouraged to use these instead of the deprecated ones above.
+                         */
+                        ...updatedMetaFields,
                     }
                 });
 
@@ -1338,43 +1352,6 @@ export const createEntriesStorageOperations = (
                         })
                     );
                 }
-
-                // const latestStorageEntry = convertToStorageEntry({
-                //     storageEntry: initialLatestStorageEntry,
-                //     model
-                // });
-                //
-                // // If the published revision is not the latest one, we still need to
-                // // update the latest record with the new values of entry-level meta fields.
-                // const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
-                //     return field.startsWith("entry");
-                // });
-                //
-                // // 1. Update actual revision record.
-                // items.push(
-                //     entity.putBatch({
-                //         ...latestStorageEntry,
-                //         ...updatedEntryLevelMetaFields,
-                //         PK: partitionKey,
-                //         SK: createRevisionSortKey(latestStorageEntry),
-                //         TYPE: createType(),
-                //         GSI1_PK: createGSIPartitionKey(model, "A"),
-                //         GSI1_SK: createGSISortKey(latestStorageEntry)
-                //     })
-                // );
-                //
-                // // 2. Update latest record.
-                // items.push(
-                //     entity.putBatch({
-                //         ...latestStorageEntry,
-                //         ...updatedEntryLevelMetaFields,
-                //         PK: partitionKey,
-                //         SK: createLatestSortKey(),
-                //         TYPE: createLatestType(),
-                //         GSI1_PK: createGSIPartitionKey(model, "L"),
-                //         GSI1_SK: createGSISortKey(latestStorageEntry)
-                //     })
-                // );
             }
         }
 

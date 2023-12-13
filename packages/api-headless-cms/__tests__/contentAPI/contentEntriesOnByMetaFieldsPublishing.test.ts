@@ -39,7 +39,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         // Refresh.
         ({ data: rev } = await managerIdentityA.getCategory({ revision: rev.id }));
 
-        expect(rev).toMatchObject({
+        const { data: entriesList } = await managerIdentityA.listCategories();
+
+        const matchObject = {
             revisionFirstPublishedOn: expectIsoDate,
             revisionLastPublishedOn: expectIsoDate,
             revisionFirstPublishedBy: identityA,
@@ -51,11 +53,18 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             meta: {
                 publishedOn: expectIsoDate
             }
-        });
+        };
+
+        expect(rev).toMatchObject(matchObject);
+        expect(entriesList[0]).toMatchObject(matchObject);
 
         expect(rev.revisionFirstPublishedOn).toBe(rev.revisionLastPublishedOn);
         expect(rev.revisionFirstPublishedOn).toBe(rev.meta.publishedOn);
         expect(rev.revisionFirstPublishedBy).toEqual(rev.revisionLastPublishedBy);
+
+        expect(entriesList[0].revisionLastPublishedOn).toBe(rev.revisionLastPublishedOn);
+        expect(entriesList[0].meta.publishedOn).toBe(rev.meta.publishedOn);
+        expect(entriesList[0].revisionLastPublishedBy).toEqual(rev.revisionLastPublishedBy);
     });
 
     test("publishing a second revision should not affect the entry meta fields of the first revision", async () => {
@@ -79,6 +88,7 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         // Refresh.
         ({ data: rev1 } = await managerIdentityA.getCategory({ revision: rev1.id }));
         ({ data: rev2 } = await managerIdentityA.getCategory({ revision: rev2.id }));
+        const { data: entriesList } = await managerIdentityA.listCategories();
 
         expect(rev1).toMatchObject({
             revisionFirstPublishedOn: null,
@@ -94,7 +104,7 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             }
         });
 
-        expect(rev2).toMatchObject({
+        const matchObject = {
             revisionFirstPublishedOn: expectIsoDate,
             revisionLastPublishedOn: expectIsoDate,
             revisionFirstPublishedBy: identityB,
@@ -106,11 +116,17 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             meta: {
                 publishedOn: expectIsoDate
             }
-        });
+        };
+        expect(rev2).toMatchObject(matchObject);
+        expect(entriesList[0]).toMatchObject(matchObject);
 
         expect(rev2.revisionFirstPublishedOn).toBe(rev2.revisionLastPublishedOn);
         expect(rev2.revisionFirstPublishedOn).toBe(rev2.meta.publishedOn);
         expect(rev2.revisionFirstPublishedBy).toEqual(rev2.revisionLastPublishedBy);
+
+        expect(entriesList[0].revisionFirstPublishedOn).toBe(rev2.revisionLastPublishedOn);
+        expect(entriesList[0].revisionFirstPublishedOn).toBe(rev2.meta.publishedOn);
+        expect(entriesList[0].revisionFirstPublishedBy).toEqual(rev2.revisionLastPublishedBy);
     });
 
     test("when publishing a non-latest revision, the latest revision's entry meta fields should be updated", async () => {
@@ -144,6 +160,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         const { data: rev3AfterPublish1 } = await managerIdentityA.getCategory({
             revision: rev3.id
         });
+
+        const { data: entriesListAfterPublish1 } = await managerIdentityA.listCategories();
 
         // Revision 1: all meta fields should be populated.
         expect(rev1AfterPublish1).toMatchObject({
@@ -190,6 +208,20 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             }
         });
 
+        expect(entriesListAfterPublish1[0]).toMatchObject({
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedOn: null,
+            revisionFirstPublishedBy: null,
+            revisionLastPublishedBy: null,
+            entryFirstPublishedOn: expectIsoDate,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityB,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: null
+            }
+        });
+
         // Publish 2️⃣
         // Let's publish the second revision, this time with `identityA`.
         const publish2 = await managerIdentityA.publishCategory({ revision: rev2.id });
@@ -205,6 +237,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         const { data: rev3AfterPublish2 } = await managerIdentityA.getCategory({
             revision: rev3.id
         });
+
+        const { data: entriesListAfterPublish2 } = await managerIdentityA.listCategories();
 
         // Revision 1: entry meta fields should be populated with old values.
         expect(rev1AfterPublish2).toMatchObject({
@@ -255,8 +289,22 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             rev2AfterPublish2.entryLastPublishedOn > rev1AfterPublish1.entryLastPublishedOn
         ).toBe(true);
 
-        // In the latest revision, only the revision-level fields should be updated.
+        // In the latest revision, only the entry-level fields should be updated.
         expect(rev3AfterPublish2).toMatchObject({
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedOn: null,
+            revisionFirstPublishedBy: null,
+            revisionLastPublishedBy: null,
+            entryFirstPublishedOn: expectIsoDate,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityB,
+            entryLastPublishedBy: identityA,
+            meta: {
+                publishedOn: null
+            }
+        });
+
+        expect(entriesListAfterPublish2[0]).toMatchObject({
             revisionFirstPublishedOn: null,
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
@@ -285,6 +333,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         const { data: rev3AfterPublish3 } = await managerIdentityA.getCategory({
             revision: rev3.id
         });
+
+        const { data: entriesListAfterPublish3 } = await managerIdentityA.listCategories();
 
         // Revision 1: nothing should happen to revision 1 and its entry-level meta fields.
         expect(pickEntryMetaFields(rev1AfterPublish1)).toEqual(
@@ -324,6 +374,20 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             rev3AfterPublish3.entryLastPublishedOn > rev2AfterPublish2.entryLastPublishedOn
         ).toBe(true);
+
+        expect(entriesListAfterPublish3[0]).toMatchObject({
+            revisionFirstPublishedOn: expectIsoDate,
+            revisionLastPublishedOn: expectIsoDate,
+            revisionFirstPublishedBy: identityB,
+            revisionLastPublishedBy: identityB,
+            entryFirstPublishedOn: expectIsoDate,
+            entryLastPublishedOn: expectIsoDate,
+            entryFirstPublishedBy: identityB,
+            entryLastPublishedBy: identityB,
+            meta: {
+                publishedOn: expectIsoDate
+            }
+        });
     });
 
     test("unpublishing and publishing a latest revision should update lastPublished meta fields", async () => {
@@ -348,7 +412,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revision: rev.id
         });
 
-        expect(revAfterPublish2).toMatchObject({
+        const { data: entriesListAfterPublish2 } = await managerIdentityA.listCategories();
+
+        const matchObject = {
             revisionFirstPublishedOn: revAfterPublish1.revisionFirstPublishedOn,
             revisionLastPublishedOn: expectIsoDate,
             revisionFirstPublishedBy: identityA,
@@ -360,7 +426,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             meta: {
                 publishedOn: expectIsoDate
             }
-        });
+        };
+
+        expect(revAfterPublish2).toMatchObject(matchObject);
 
         expect(
             revAfterPublish2.revisionLastPublishedOn > revAfterPublish1.revisionLastPublishedOn
@@ -368,6 +436,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(revAfterPublish2.entryLastPublishedOn > revAfterPublish1.entryLastPublishedOn).toBe(
             true
         );
+
+        expect(entriesListAfterPublish2[0]).toMatchObject(matchObject);
     });
 
     test("unpublishing and publishing a non-latest revision should update lastPublished meta fields on the actual revision and on the latest one", async () => {
@@ -412,6 +482,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revision: rev3.id
         });
 
+        const { data: entriesListAfterPublish2 } = await managerIdentityA.listCategories();
+
         expect(rev1AfterPublish2).toMatchObject({
             revisionFirstPublishedOn: rev1AfterPublish1.revisionFirstPublishedOn,
             revisionLastPublishedOn: expectIsoDate,
@@ -426,7 +498,7 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             }
         });
 
-        expect(rev3AfterPublish2).toMatchObject({
+        const matchObject = {
             revisionFirstPublishedOn: null,
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
@@ -438,7 +510,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             meta: {
                 publishedOn: null
             }
-        });
+        };
+
+        expect(rev3AfterPublish2).toMatchObject(matchObject);
+        expect(entriesListAfterPublish2[0]).toMatchObject(matchObject);
     });
 
     test("republishing a latest revision should only change lastPublished meta fields", async () => {
@@ -459,11 +534,13 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(republish.error).toBeNull();
 
         // Let's publish again, this time with `identityB`.
-        const { data: revAfterRepublish } = await managerIdentityB.publishCategory({
+        const { data: revAfterRepublish } = await managerIdentityB.republishCategory({
             revision: rev.id
         });
 
-        expect(revAfterRepublish).toMatchObject({
+        const { data: entriesListAfterRepublish } = await managerIdentityA.listCategories();
+
+        const matchObject = {
             revisionFirstPublishedOn: revAfterPublish.revisionFirstPublishedOn,
             revisionLastPublishedOn: expectIsoDate,
             revisionFirstPublishedBy: identityA,
@@ -475,12 +552,22 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             meta: {
                 publishedOn: expectIsoDate
             }
-        });
+        };
+
+        expect(revAfterRepublish).toMatchObject(matchObject);
+        expect(entriesListAfterRepublish[0]).toMatchObject(matchObject);
 
         expect(
             revAfterRepublish.revisionLastPublishedOn > revAfterPublish.revisionLastPublishedOn
         ).toBe(true);
         expect(revAfterRepublish.entryLastPublishedOn > revAfterPublish.entryLastPublishedOn).toBe(
+            true
+        );
+
+        expect(
+            entriesListAfterRepublish[0].revisionLastPublishedOn > revAfterPublish.revisionLastPublishedOn
+        ).toBe(true);
+        expect(entriesListAfterRepublish[0].entryLastPublishedOn > revAfterPublish.entryLastPublishedOn).toBe(
             true
         );
     });

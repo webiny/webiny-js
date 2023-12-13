@@ -418,7 +418,7 @@ export const useCategoryManageHandlerV2 = (params: GraphQLHandlerParams) => {
         },
         async republishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return manageCategoryHandler.republishCategory(variables, headers).then(([body]) => {
-                return body.data;
+                return body.data.republishCategory;
             });
         },
         async unpublishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
