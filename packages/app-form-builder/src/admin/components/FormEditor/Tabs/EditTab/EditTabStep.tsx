@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
@@ -65,15 +65,17 @@ export const EditTabStep = ({ setIsEditStep, formStep, index }: EditTabStepProps
     const { handleStepMove, renderTopDropZone, renderBottomDropZone, isAddStepVisible, addStep } =
         useEditTab();
 
-    const beginDragStepProps: BeginDragProps = {
-        ui: "step",
-        name: "step",
-        pos: { row: index, index },
-        container: {
-            type: "step",
-            id: formStep.id
-        }
-    };
+    const beginDragStepProps: BeginDragProps = useMemo(() => {
+        return {
+            ui: "step",
+            name: "step",
+            pos: { row: index, index },
+            container: {
+                type: "step",
+                id: formStep.id
+            }
+        };
+    }, [index, formStep]);
 
     const addStepButtonVisible = isAddStepVisible(formStep);
 
