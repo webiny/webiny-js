@@ -42,6 +42,7 @@ export const ContentEntriesModule = () => {
                     header={"Name"}
                     cell={<CellName />}
                     sortable={true}
+                    hidable={false}
                     size={400}
                     className={"cms-aco-list-title"}
                 />
@@ -70,6 +71,7 @@ export const ContentEntriesModule = () => {
                     cell={<CellActions />}
                     size={60}
                     resizable={false}
+                    hidable={false}
                     className={"rmwc-data-table__cell--align-end cms-aco-list-actions"}
                 />
             </ContentEntryListConfig>

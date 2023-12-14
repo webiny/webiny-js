@@ -7,6 +7,7 @@ export interface ColumnConfig {
     cell: string | ReactElement;
     className: string;
     header: string | ReactElement;
+    hidable: boolean;
     name: string;
     resizable: boolean;
     size: number;
@@ -19,6 +20,7 @@ export interface ColumnProps {
     cell?: string | ReactElement;
     className?: string;
     header?: string | ReactElement;
+    hidable?: boolean;
     name: string;
     remove?: boolean;
     resizable?: boolean;
@@ -32,6 +34,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
     cell,
     className = undefined,
     header = undefined,
+    hidable = true,
     name,
     remove = false,
     resizable = true,
@@ -56,6 +59,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 <Property id={getId(name, "name")} name={"name"} value={name} />
                 <Property id={getId(name, "sortable")} name={"sortable"} value={sortable} />
                 <Property id={getId(name, "resizable")} name={"resizable"} value={resizable} />
+                <Property id={getId(name, "hidable")} name={"hidable"} value={hidable} />
                 <Property id={getId(name, "size")} name={"size"} value={size} />
                 {header ? (
                     <Property id={getId(name, "header")} name={"header"} value={header} />

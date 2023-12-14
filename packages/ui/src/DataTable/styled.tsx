@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as ArrowDown } from "@material-design-icons/svg/outlined/arrow_downward.svg";
@@ -7,8 +8,9 @@ import {
     DataTableProps,
     DataTableHeadCellProps
 } from "@rmwc/data-table";
-import { ColumnDirectionProps } from "~/DataTable/DataTable";
-import { CSSProperties } from "react";
+import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
+import { Menu } from "~/Menu";
+import { Typography } from "~/Typography";
 
 interface TableProps extends DataTableProps {
     bordered?: boolean;
@@ -62,13 +64,14 @@ export const TableHeadCell = styled(RmwcDataTableHeadCell)<TableHeadCell>`
 
 interface ColumnHeaderWrapperProps {
     sortable: boolean;
+    hasColumnVisibilityMenu: boolean;
 }
 
 export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
     cursor: ${props => (props.sortable ? "pointer" : "cursor")};
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: ${props => (props.hasColumnVisibilityMenu ? "flex-end" : "start")};
 `;
 
 export const ColumnDirectionWrapper = styled("span")`
@@ -82,4 +85,21 @@ export const ColumnDirectionWrapper = styled("span")`
 
 export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
     transform: ${props => (props.direction === "asc" ? "rotate(180deg)" : "rotate(0deg)")};
+`;
+
+export const ColumnVisibilityMenu = styled(Menu)`
+    min-width: 250px;
+`;
+
+export const ColumnVisibilityMenuHeader = styled(Typography)`
+    padding: 4px 16px;
+    font-weight: 600;
+`;
+
+export const ColumnVisibilityMenuItem = styled("div")`
+    padding: 4px 16px 8px;
+
+    &:last-child {
+        padding-bottom: 4px;
+    }
 `;

@@ -1,11 +1,10 @@
-import React, { memo, ReactElement, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import {
     DataTableContent,
     DataTableHead,
     DataTableRow,
     DataTableBody,
-    DataTableCell,
     DataTableCellProps
 } from "@rmwc/data-table";
 
@@ -19,21 +18,17 @@ import {
     SortingState,
     RowSelectionState,
     Row,
-    Cell
+    VisibilityState
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
-import {
-    ColumnDirectionIcon,
-    ColumnDirectionWrapper,
-    ColumnHeaderWrapper,
-    Resizer,
-    Table,
-    TableHeadCell
-} from "./styled";
+import { TableRow } from "~/DataTable/TableRow";
+import { ColumnDirection } from "~/DataTable/ColumnDirection";
+import { ColumnHeaderWrapper, Resizer, Table, TableHeadCell } from "./styled";
+import { ColumnSelector } from "~/DataTable/ColumnSelector";
 
 interface Column<T> {
     /*
@@ -64,6 +59,10 @@ interface Column<T> {
      * Enable column resizing.
      */
     enableResizing?: boolean;
+    /*
+     * Enable column visibility toggling.
+     */
+    enableHiding?: boolean;
 }
 
 export type Columns<T> = {
@@ -82,6 +81,8 @@ export type Sorting = SortingState;
 
 export type OnSortingChange = OnChangeFn<Sorting>;
 
+export type OnColumnVisibilityChange = OnChangeFn<VisibilityState>;
+
 interface Props<T> {
     /**
      * Show or hide borders.
@@ -95,6 +96,14 @@ interface Props<T> {
      * Columns definition.
      */
     columns: Columns<T>;
+    /**
+     * The column visibility state.
+     */
+    columnVisibility?: VisibilityState;
+    /**
+     * Callback that receives current column visibility state.
+     */
+    onColumnVisibilityChange?: OnColumnVisibilityChange;
     /**
      * Data to display into DataTable body.
      */
@@ -141,10 +150,6 @@ interface Props<T> {
     stickyRows?: number;
 }
 
-export interface ColumnDirectionProps {
-    direction?: "asc" | "desc";
-}
-
 interface DefineColumnsOptions<T> {
     canSelectAllRows: boolean;
     onSelectRow?: Props<T>["onSelectRow"];
@@ -168,6 +173,7 @@ const defineColumns = <T,>(
             const {
                 cell,
                 className,
+                enableHiding = true,
                 enableResizing = true,
                 enableSorting = false,
                 header,
@@ -192,7 +198,8 @@ const defineColumns = <T,>(
                     className
                 },
                 enableResizing,
-                size
+                size,
+                enableHiding
             };
         });
 
@@ -234,6 +241,7 @@ const defineColumns = <T,>(
                       },
                       enableSorting: false,
                       enableResizing: false,
+                      enableHiding: false,
                       size: 56
                   }
               ]
@@ -261,49 +269,6 @@ const defineData = <T,>(
     }
     return data;
 };
-
-const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
-    if (direction) {
-        return (
-            <ColumnDirectionWrapper>
-                <ColumnDirectionIcon direction={direction} />
-            </ColumnDirectionWrapper>
-        );
-    }
-
-    return null;
-};
-
-const typedMemo: <T>(component: T) => T = memo;
-
-interface TableCellProps<T> {
-    cell: Cell<T, unknown>;
-}
-
-const TableCell = <T,>({ cell }: TableCellProps<T>) => (
-    <DataTableCell {...cell.column.columnDef.meta} style={{ width: cell.column.getSize() }}>
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-    </DataTableCell>
-);
-
-const MemoTableCell = typedMemo(TableCell);
-
-interface TableRowProps<T> {
-    row: Row<T>;
-    selected: boolean;
-}
-
-const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
-    return (
-        <DataTableRow selected={selected}>
-            {row.getVisibleCells().map(cell => (
-                <MemoTableCell<T> key={cell.id} cell={cell} />
-            ))}
-        </DataTableRow>
-    );
-};
-
-const MemoTableRow = typedMemo(TableRow);
 
 export const DataTable = <T extends Record<string, any> & DefaultData>({
     data,
@@ -362,6 +327,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
+    const [columnVisibility, setColumnVisibility] = React.useState({});
+
     const table = useReactTable({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, {
@@ -376,71 +343,84 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         getSortedRowModel: getSortedRowModel(),
         state: {
             rowSelection,
-            sorting: tableSorting
+            sorting: tableSorting,
+            columnVisibility
         },
         enableRowSelection: isRowSelectable,
         onRowSelectionChange,
         enableSorting: !!onSortingChange,
         manualSorting: true,
-        onSortingChange
+        onSortingChange,
+        onColumnVisibilityChange: setColumnVisibility
     });
 
     return (
-        <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
-            <DataTableContent>
-                <DataTableHead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <DataTableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(
-                                ({
-                                    id,
-                                    isPlaceholder,
-                                    column,
-                                    getContext,
-                                    colSpan,
-                                    getSize,
-                                    getResizeHandler
-                                }) => (
-                                    <TableHeadCell
-                                        key={id}
-                                        {...column.columnDef.meta}
-                                        colSpan={colSpan}
-                                        style={{ width: getSize() }}
-                                    >
-                                        {isPlaceholder ? null : (
-                                            <ColumnHeaderWrapper
-                                                onClick={column.getToggleSortingHandler()}
-                                                sortable={column.getCanSort()}
-                                            >
-                                                {flexRender(column.columnDef.header, getContext())}
-                                                <ColumnDirection
-                                                    direction={column.getIsSorted() || undefined}
+        <>
+            <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
+                <DataTableContent>
+                    <DataTableHead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <DataTableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header, index) => {
+                                    const hasColumnVisibilityMenu =
+                                        index === headerGroup.headers.length - 1;
+
+                                    return (
+                                        <TableHeadCell
+                                            key={header.id}
+                                            {...header.column.columnDef.meta}
+                                            colSpan={header.colSpan}
+                                            style={{ width: header.getSize() }}
+                                        >
+                                            {header.isPlaceholder ? null : (
+                                                <ColumnHeaderWrapper
+                                                    onClick={header.column.getToggleSortingHandler()}
+                                                    sortable={header.column.getCanSort()}
+                                                    hasColumnVisibilityMenu={
+                                                        hasColumnVisibilityMenu
+                                                    }
+                                                >
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                                    <ColumnDirection
+                                                        direction={
+                                                            header.column.getIsSorted() || undefined
+                                                        }
+                                                    />
+                                                    {hasColumnVisibilityMenu && (
+                                                        <ColumnSelector
+                                                            columns={table.getAllColumns()}
+                                                            headers={table.getFlatHeaders()}
+                                                        />
+                                                    )}
+                                                </ColumnHeaderWrapper>
+                                            )}
+                                            {header.column.getCanResize() && (
+                                                <Resizer
+                                                    onMouseDown={header.getResizeHandler()}
+                                                    onTouchStart={header.getResizeHandler()}
+                                                    isResizing={header.column.getIsResizing()}
                                                 />
-                                            </ColumnHeaderWrapper>
-                                        )}
-                                        {column.getCanResize() && (
-                                            <Resizer
-                                                onMouseDown={getResizeHandler()}
-                                                onTouchStart={getResizeHandler()}
-                                                isResizing={column.getIsResizing()}
-                                            />
-                                        )}
-                                    </TableHeadCell>
-                                )
-                            )}
-                        </DataTableRow>
-                    ))}
-                </DataTableHead>
-                <DataTableBody>
-                    {table.getRowModel().rows.map(row => (
-                        <MemoTableRow<T>
-                            key={row.original.id || row.id}
-                            row={row}
-                            selected={row.getIsSelected()}
-                        />
-                    ))}
-                </DataTableBody>
-            </DataTableContent>
-        </Table>
+                                            )}
+                                        </TableHeadCell>
+                                    );
+                                })}
+                            </DataTableRow>
+                        ))}
+                    </DataTableHead>
+                    <DataTableBody>
+                        {table.getRowModel().rows.map(row => (
+                            <TableRow<T>
+                                key={row.original.id || row.id}
+                                selected={row.getIsSelected()}
+                                visibleCells={row.getVisibleCells()}
+                            />
+                        ))}
+                    </DataTableBody>
+                </DataTableContent>
+            </Table>
+        </>
     );
 };

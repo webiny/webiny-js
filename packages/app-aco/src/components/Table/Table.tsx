@@ -28,7 +28,16 @@ export const Table = <T extends Record<string, any> & DefaultData>({
 
     const columns: Columns<T> = useMemo(() => {
         return table.columns.reduce((obj, item) => {
-            const { name: defaultName, cell, header, size, sortable, resizable, className } = item;
+            const {
+                name: defaultName,
+                cell,
+                header,
+                size,
+                sortable,
+                resizable,
+                className,
+                hidable
+            } = item;
 
             const name = defaultName === "name" ? nameColumnId : defaultName;
             const cellRenderer = (item: T) => (
@@ -37,6 +46,7 @@ export const Table = <T extends Record<string, any> & DefaultData>({
 
             obj[name as keyof Columns<T>] = {
                 header,
+                enableHiding: hidable,
                 enableSorting: sortable,
                 enableResizing: resizable,
                 size,
