@@ -112,7 +112,7 @@ describe("Dashboard", () => {
             title: string;
         }
 
-        const Link: React.FC<LinkProps> = ({ url, title }) => {
+        const Link = ({ url, title }: LinkProps) => {
             return (
                 <Property id={title} name={"link"} array>
                     <Property name={"url"} value={url} />

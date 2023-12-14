@@ -1,5 +1,4 @@
 import React, {
-    FC,
     ComponentType,
     useState,
     useCallback,
@@ -10,7 +9,7 @@ import React, {
 import { useCompositionScope } from "~/CompositionScope";
 
 export function compose(...fns: Decorator[]) {
-    return function ComposedComponent(Base: FC<unknown>): FC<unknown> {
+    return function ComposedComponent(Base: ComponentType<unknown>): ComponentType<unknown> {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
 }
@@ -36,14 +35,14 @@ interface ComposedComponent {
  * to let it be `any` in this interface.
  */
 export interface Decorator<TProps = any> {
-    (Component: FC<TProps>): FC<TProps>;
+    (Component: ComponentType<TProps>): ComponentType<TProps>;
 }
 
 /**
  * @deprecated Use `Decorator` instead.
  */
 export interface HigherOrderComponent<TProps = any, TOutput = TProps> {
-    (Component: FC<TProps>): FC<TOutput>;
+    (Component: ComponentType<TProps>): ComponentType<TOutput>;
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
@@ -64,7 +63,11 @@ interface CompositionContext {
 
 const CompositionContext = createContext<CompositionContext | undefined>(undefined);
 
-export const CompositionProvider: React.FC = ({ children }) => {
+interface CompositionProviderProps {
+    children: React.ReactNode;
+}
+
+export const CompositionProvider = ({ children }: CompositionProviderProps) => {
     const [components, setComponents] = useState<ComponentScopes>(new Map());
 
     const composeComponent = useCallback(

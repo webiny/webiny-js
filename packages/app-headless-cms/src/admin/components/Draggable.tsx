@@ -48,5 +48,5 @@ const Draggable = (props: DraggableProps) => {
     );
 };
 
-const MemoizedDraggable: React.FC<DraggableProps> = React.memo(Draggable);
+const MemoizedDraggable: React.ComponentType<DraggableProps> = React.memo(Draggable);
 export default MemoizedDraggable;

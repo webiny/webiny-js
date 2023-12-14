@@ -122,4 +122,4 @@ const I18NProviderComponent = (props: I18NProviderProps) => {
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 };
 
-export const I18NProvider: React.FC<I18NProviderProps> = memo(I18NProviderComponent);
+export const I18NProvider: React.ComponentType<I18NProviderProps> = memo(I18NProviderComponent);

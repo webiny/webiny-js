@@ -27,8 +27,13 @@ export function useSearch() {
     return React.useContext(SearchContext);
 }
 
-export const SearchProvider = (Component: React.FC): React.FC => {
-    return function SearchProvider({ children, ...props }) {
+interface SearchProviderProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
+export const SearchProvider = (Component: React.ComponentType) => {
+    return function SearchProvider({ children, ...props }: SearchProviderProps) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 
         const addOption = useCallback<SearchContext["addOption"]>(

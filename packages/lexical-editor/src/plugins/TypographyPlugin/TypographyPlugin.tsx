@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 import {
@@ -9,7 +9,7 @@ import {
 } from "@webiny/lexical-nodes";
 import { HeadingTagType } from "@lexical/rich-text";
 
-export const TypographyPlugin: React.FC = () => {
+export const TypographyPlugin = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
