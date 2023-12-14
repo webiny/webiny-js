@@ -6,6 +6,7 @@ import {
     ITaskResponseDoneResult,
     ITaskResponseErrorResult
 } from "./abstractions";
+import { ITaskDataValues } from "~/types";
 
 export class TaskResponse implements ITaskResponse {
     private readonly response: IResponse;
@@ -20,9 +21,9 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public continue<T = Record<string, any>>(input: T): ITaskResponseContinueResult {
+    public continue<T = ITaskDataValues>(values: T): ITaskResponseContinueResult {
         return this.response.continue({
-            input
+            values
         });
     }
 

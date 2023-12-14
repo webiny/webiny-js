@@ -1,4 +1,4 @@
-import { TaskResponseStatus } from "~/types";
+import { ITaskDataValues, TaskResponseStatus } from "~/types";
 import { IResponseError } from "./ResponseErrorResult";
 
 export type ITaskResponseResult =
@@ -11,8 +11,8 @@ export interface ITaskResponseDoneResult {
     status: TaskResponseStatus.DONE;
 }
 
-export interface ITaskResponseContinueResult {
-    input: any;
+export interface ITaskResponseContinueResult<T = ITaskDataValues> {
+    values: T;
     status: TaskResponseStatus.CONTINUE;
 }
 
@@ -21,8 +21,8 @@ export interface ITaskResponseErrorResult {
     status: TaskResponseStatus.ERROR;
 }
 
-export interface ITaskResponse<T = Record<string, any>> {
+export interface ITaskResponse<T = ITaskDataValues> {
     done: (message?: string) => ITaskResponseDoneResult;
-    continue: (input: T) => ITaskResponseContinueResult;
+    continue: (values: T) => ITaskResponseContinueResult<T>;
     error: (error: IResponseError) => ITaskResponseErrorResult;
 }

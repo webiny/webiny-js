@@ -1,5 +1,5 @@
 import { useHandler } from "~tests/helpers/useHandler";
-import { createRegisterTaskPlugin } from "~/task";
+import { createTaskDefinition } from "~/task";
 import { TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -7,9 +7,9 @@ import WebinyError from "@webiny/error";
 describe("store crud", () => {
     const handler = useHandler({
         plugins: [
-            createRegisterTaskPlugin({
+            createTaskDefinition({
                 id: "testDefinition",
-                name: "Test definition",
+                title: "Test definition",
                 async run({ response }) {
                     return response.done("successfully ran the task");
                 }
@@ -48,7 +48,7 @@ describe("store crud", () => {
             await context.tasks.createTask({
                 name: "My Custom Task",
                 definitionId: "non-existing-definition",
-                input: {
+                values: {
                     someValue: true,
                     someOtherValue: 123
                 }
@@ -85,7 +85,7 @@ describe("store crud", () => {
         const task = await context.tasks.createTask({
             name: "My Custom Task",
             definitionId: "testDefinition",
-            input: {
+            values: {
                 someValue: true,
                 someOtherValue: 123
             }
@@ -96,7 +96,7 @@ describe("store crud", () => {
             savedOn: expect.any(Date),
             name: "My Custom Task",
             definitionId: "testDefinition",
-            input: {
+            values: {
                 someValue: true,
                 someOtherValue: 123
             },
@@ -121,8 +121,8 @@ describe("store crud", () => {
         });
 
         const updatedTask = await context.tasks.updateTask(task.id, {
-            input: {
-                ...task.input,
+            values: {
+                ...task.values,
                 someValue: false,
                 addedNewValue: "yes!"
             }
@@ -133,7 +133,7 @@ describe("store crud", () => {
             savedOn: expect.any(Date),
             name: "My Custom Task",
             definitionId: "testDefinition",
-            input: {
+            values: {
                 someValue: false,
                 someOtherValue: 123,
                 addedNewValue: "yes!"

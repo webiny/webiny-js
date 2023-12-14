@@ -1,23 +1,23 @@
-import { createTaskInput } from "~/task";
+import { createTaskValues } from "~/task";
 
 interface MyInput {
     test: boolean;
     file: string;
 }
 
-describe("task input", () => {
-    it("should create task input", async () => {
-        const input = createTaskInput<MyInput>({
+describe("task values", () => {
+    it("should create task values", async () => {
+        const values = createTaskValues<MyInput>({
             id: "aMockTaskType",
-            input: {
+            values: {
                 test: true,
                 file: "test.txt"
             }
         });
 
-        expect(input).toEqual({
+        expect(values).toEqual({
             id: "aMockTaskType",
-            input: {
+            values: {
                 test: true,
                 file: "test.txt"
             }

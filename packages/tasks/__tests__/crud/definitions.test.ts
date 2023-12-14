@@ -1,26 +1,26 @@
 import { useHandler } from "~tests/helpers/useHandler";
-import { createRegisterTaskPlugin } from "~/task";
+import { createTaskDefinition } from "~/task";
 
 describe("definitions crud", () => {
     const handler = useHandler({
         plugins: [
-            createRegisterTaskPlugin({
+            createTaskDefinition({
                 id: "testDefinition-1",
-                name: "Test definition #1",
+                title: "Test definition #1",
                 async run({ response }) {
                     return response.done("successfully ran the task #1");
                 }
             }),
-            createRegisterTaskPlugin({
+            createTaskDefinition({
                 id: "testDefinition-2",
-                name: "Test definition #2",
+                title: "Test definition #2",
                 async run({ response }) {
                     return response.done("successfully ran the task #2");
                 }
             }),
-            createRegisterTaskPlugin({
+            createTaskDefinition({
                 id: "testDefinition-3",
-                name: "Test definition #3",
+                title: "Test definition #3",
                 async run({ response }) {
                     return response.done("successfully ran the task #3");
                 }
@@ -34,7 +34,7 @@ describe("definitions crud", () => {
         const definition = context.tasks.getDefinition("testDefinition-1");
         expect(definition).toMatchObject({
             id: "testDefinition-1",
-            name: "Test definition #1"
+            title: "Test definition #1"
         });
     });
 
@@ -54,15 +54,15 @@ describe("definitions crud", () => {
         expect(definitions).toMatchObject([
             {
                 id: "testDefinition-1",
-                name: "Test definition #1"
+                title: "Test definition #1"
             },
             {
                 id: "testDefinition-2",
-                name: "Test definition #2"
+                title: "Test definition #2"
             },
             {
                 id: "testDefinition-3",
-                name: "Test definition #3"
+                title: "Test definition #3"
             }
         ]);
     });

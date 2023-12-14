@@ -66,7 +66,7 @@ export class TaskControl implements ITaskControl {
                     stack: ex.stack,
                     data: {
                         ...ex.data,
-                        input: task.input
+                        values: task.values
                     }
                 }
             });

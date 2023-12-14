@@ -45,7 +45,7 @@ export class Response implements IResponse {
 
     public continue(params: IResponseContinueParams): IResponseContinueResult {
         return new ResponseContinueResult({
-            input: params.input,
+            values: params.values,
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale

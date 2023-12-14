@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { Context } from "../types";
+import { Context } from "~tests/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 

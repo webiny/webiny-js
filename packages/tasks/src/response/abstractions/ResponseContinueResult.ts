@@ -1,18 +1,18 @@
-import { TaskResponseStatus } from "~/types";
+import { ITaskDataValues, TaskResponseStatus } from "~/types";
 import { IResponseBaseResult } from "./ResponseBaseResult";
 
-export interface IResponseContinueParams<T = Record<string, any>> {
+export interface IResponseContinueParams<T = ITaskDataValues> {
     tenant?: string;
     locale?: string;
     webinyTaskId?: string;
-    input: T;
+    values: T;
 }
 
-export interface IResponseContinueResult<T = Record<string, any>> extends IResponseBaseResult {
+export interface IResponseContinueResult<T = ITaskDataValues> extends IResponseBaseResult {
     message?: string;
     webinyTaskId: string;
     tenant: string;
     locale: string;
-    input: T;
+    values: T;
     status: TaskResponseStatus.CONTINUE;
 }

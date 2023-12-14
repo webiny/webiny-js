@@ -15,6 +15,7 @@
     "@babel/runtime": "^7.22.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",

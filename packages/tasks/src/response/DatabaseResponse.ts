@@ -64,13 +64,13 @@ export class DatabaseResponse implements IResponseAsync {
     ): Promise<IResponseContinueResult | IResponseErrorResult> {
         try {
             await this.context.tasks.updateTask(this.task.id, {
-                input: params.input,
+                values: params.values,
                 status: TaskDataStatus.RUNNING,
                 log: (this.task.log || []).concat([
                     {
                         message: "Task continuing.",
                         createdOn: new Date().toISOString(),
-                        input: params.input
+                        values: params.values
                     }
                 ])
             });
@@ -85,7 +85,7 @@ export class DatabaseResponse implements IResponseAsync {
                         code: ex.code || "TASK_NOT_FOUND",
                         data: {
                             ...ex.data,
-                            input: this.task.input
+                            values: this.task.values
                         }
                     }
                 });
@@ -95,7 +95,7 @@ export class DatabaseResponse implements IResponseAsync {
              */
             return this.error({
                 error: {
-                    message: `Failed to update task input: ${ex.message || "unknown error"}`,
+                    message: `Failed to update task values: ${ex.message || "unknown error"}`,
                     code: ex.code || "TASK_UPDATE_ERROR"
                 }
             });
@@ -114,7 +114,7 @@ export class DatabaseResponse implements IResponseAsync {
                     {
                         message: params.error.message,
                         createdOn: new Date().toISOString(),
-                        input: this.task.input
+                        values: this.task.values
                     }
                 ])
             });
@@ -128,7 +128,7 @@ export class DatabaseResponse implements IResponseAsync {
                     data: {
                         ...params.error.data,
                         ...ex.data,
-                        input: this.task.input
+                        values: this.task.values
                     }
                 }
             });
@@ -142,7 +142,7 @@ export class DatabaseResponse implements IResponseAsync {
                 ...params.error,
                 data: {
                     ...params.error.data,
-                    input: this.task.input
+                    values: this.task.values
                 }
             }
         });

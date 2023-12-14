@@ -1,10 +1,14 @@
 import { Context, ITasksContextDefinitionObject } from "~/types";
-import { TaskPlugin } from "~/task";
+import { TaskDefinitionPlugin } from "~/task";
+
+const getTaskDefinitionPlugins = (context: Context) => {
+    return context.plugins.byType<TaskDefinitionPlugin>(TaskDefinitionPlugin.type);
+};
 
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
         getDefinition: (id: string) => {
-            const plugins = context.plugins.byType<TaskPlugin>(TaskPlugin.type);
+            const plugins = getTaskDefinitionPlugins(context);
 
             for (const plugin of plugins) {
                 if (plugin.getTask().id === id) {
@@ -14,9 +18,7 @@ export const createDefinitionCrud = (context: Context): ITasksContextDefinitionO
             return null;
         },
         listDefinitions: () => {
-            return context.plugins
-                .byType<TaskPlugin>(TaskPlugin.type)
-                .map(plugin => plugin.getTask());
+            return getTaskDefinitionPlugins(context).map(plugin => plugin.getTask());
         }
     };
 };

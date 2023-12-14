@@ -8,10 +8,18 @@ import {
 import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
 
-export interface ITaskDataLog {
+export interface ITaskConfig {
+    readonly eventBusName: string;
+}
+
+export interface ITaskDataValues {
+    [key: string]: any;
+}
+
+export interface ITaskDataLog<T = ITaskDataValues> {
     message: string;
     createdOn: string;
-    input?: any;
+    values?: T;
     error?: IResponseError;
 }
 
@@ -26,7 +34,7 @@ export interface ITaskData<T = any> {
     name: string;
     status: TaskDataStatus;
     definitionId: string;
-    input: T;
+    values: T;
     createdOn: Date;
     savedOn: Date;
     startedOn?: Date;
@@ -47,35 +55,35 @@ export type IDeleteTaskResponse = boolean;
 
 export type IListTaskParams = CmsEntryListParams;
 
-export interface ITaskCreateData<T = any> {
+export interface ITaskCreateData<T = ITaskDataValues> {
     definitionId: string;
     name: string;
-    input: T;
+    values: T;
 }
 
-export interface ITaskUpdateData<T = any> {
+export interface ITaskUpdateData<T = ITaskDataValues> {
     name?: string;
-    input?: T;
+    values?: T;
     status?: TaskDataStatus;
     log?: ITaskDataLog[];
 }
 
 export interface OnTaskBeforeCreateTopicParams {
-    input: ITaskCreateData;
+    values: ITaskCreateData;
 }
 
 export interface OnTaskAfterCreateTopicParams {
-    input: ITaskCreateData;
+    values: ITaskCreateData;
     task: ITaskData;
 }
 
 export interface OnTaskBeforeUpdateTopicParams {
-    input: ITaskUpdateData;
+    values: ITaskUpdateData;
     original: ITaskData;
 }
 
 export interface OnTaskAfterUpdateTopicParams {
-    input: ITaskUpdateData;
+    values: ITaskUpdateData;
     task: ITaskData;
 }
 
@@ -108,14 +116,30 @@ export interface ITasksContextCrudObject {
     onTaskAfterDelete: Topic<OnTaskAfterDeleteTopicParams>;
 }
 
+export interface ITasksContextConfigObject {
+    config: ITaskConfig;
+}
+
 export interface ITasksContextDefinitionObject {
     getDefinition: (id: string) => ITaskDefinition | null;
     listDefinitions: () => ITaskDefinition[];
 }
 
+export interface ITaskTriggerParams<T = any> {
+    definition: string;
+    name?: string;
+    values?: T;
+}
+
+export interface ITasksContextTriggerObject {
+    trigger: <T = any>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
+}
+
 export interface ITasksContextObject
     extends ITasksContextCrudObject,
-        ITasksContextDefinitionObject {}
+        ITasksContextDefinitionObject,
+        ITasksContextTriggerObject,
+        ITasksContextConfigObject {}
 
 export interface Context extends BaseContext {
     tasks: ITasksContextObject;
@@ -125,18 +149,18 @@ export interface ITaskRunParams<C extends Context, I = any> {
     context: C;
     response: ITaskResponse;
     isCloseToTimeout: () => boolean;
-    input: I;
+    values: I;
     task: ITaskData<I>;
 }
 
 export interface ITaskSuccessParams<C extends Context, I = any> {
     context: C;
-    input: I;
+    values: I;
 }
 
 export interface ITaskErrorParams<C extends Context, I = any> {
     context: C;
-    input: I;
+    values: I;
 }
 
 export enum TaskResponseStatus {
@@ -168,7 +192,7 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
      * Name should be unique, as it will get used to identify the task in the UI.
      */
-    name: string;
+    title: string;
     /**
      * A description of the task, for the UI.
      */

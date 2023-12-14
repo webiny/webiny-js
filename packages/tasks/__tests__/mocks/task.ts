@@ -4,7 +4,7 @@ export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
     return {
         id: "myCustomTaskDataId",
         definitionId: "myCustomTaskDefinition",
-        input: {},
+        values: {},
         name: "A custom task defined via method",
         log: [],
         createdOn: new Date(),

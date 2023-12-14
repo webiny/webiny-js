@@ -12,7 +12,6 @@ export type IResponseResult = IResponseDoneResult | IResponseContinueResult | IR
 
 export interface IResponse {
     readonly event: ITaskEvent;
-
     from: (params: IResponseFromParams) => IResponseResult;
     done: (params?: IResponseDoneParams) => IResponseDoneResult;
     continue: (params: IResponseContinueParams) => IResponseContinueResult;

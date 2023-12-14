@@ -1,23 +1,67 @@
-import { PluginsContainer } from "@webiny/plugins";
-import { createRegisterTaskPlugin, TaskPlugin } from "~/task/plugin";
-import { createTaskDefinitionField } from "~/task/definition";
-import { ITaskDefinitionField } from "~/types";
+import { Context } from "../types";
+import { ITaskDefinition, ITaskDefinitionField, ITaskRunParams } from "~/types";
+import { createTaskDefinition, createTaskDefinitionField } from "~/task/plugin";
 
-describe("task plugin", () => {
-    it("should create a task plugin", async () => {
-        const container = new PluginsContainer();
+const taskField: ITaskDefinitionField = {
+    fieldId: "url",
+    type: "text",
+    label: "Url",
+    helpText: "Enter a URL",
+    validation: [
+        {
+            name: "required",
+            message: "Url is required."
+        },
+        {
+            name: "url",
+            message: "Enter a valid URL."
+        }
+    ]
+};
 
-        const plugin = createRegisterTaskPlugin({
+interface MyInput {
+    test: boolean;
+    file: string;
+    page: number;
+}
+
+class MyTask implements ITaskDefinition<Context, MyInput> {
+    public readonly id = "myCustomTask";
+    public readonly title = "A custom task defined via class";
+
+    public fields = [
+        {
+            ...taskField
+        }
+    ];
+
+    public async run({ response }: ITaskRunParams<Context, MyInput>) {
+        return response.done();
+    }
+    public async onDone() {
+        return;
+    }
+    public async onError() {
+        return;
+    }
+}
+
+describe("task definition", () => {
+    it("should properly create a task - plain object", async () => {
+        const task: ITaskDefinition<Context, MyInput> = {
             id: "myCustomTask",
-            name: "A custom task defined via method",
-            description: "A custom task description defined via method",
-            run: async ({ response, isCloseToTimeout, input }) => {
+            title: "A custom task defined via object",
+            run: async ({ response, isCloseToTimeout, values }) => {
                 try {
                     if (isCloseToTimeout()) {
                         return response.continue({
-                            input
+                            values: {
+                                ...values,
+                                page: values.page + 1
+                            }
                         });
                     }
+
                     return response.done();
                 } catch (ex) {
                     return response.error(ex);
@@ -31,35 +75,67 @@ describe("task plugin", () => {
             },
             fields: [
                 createTaskDefinitionField({
-                    type: "text",
-                    fieldId: "url",
-                    label: "URL"
+                    ...taskField
                 })
             ]
+        };
+
+        expect(task.id).toBe("myCustomTask");
+        expect(task.title).toBe("A custom task defined via object");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
+        expect(task.run).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
+    });
+
+    it("should properly create a task - via method", async () => {
+        const task = createTaskDefinition<Context, MyTask>({
+            id: "myCustomTask",
+            title: "A custom task defined via method",
+            run: async ({ response, isCloseToTimeout, values }) => {
+                try {
+                    if (isCloseToTimeout()) {
+                        return response.continue({
+                            values
+                        });
+                    }
+                    return response.done();
+                } catch (ex) {
+                    return response.error(ex);
+                }
+            },
+            onDone: async () => {
+                return;
+            },
+            onError: async () => {
+                return;
+            },
+            config: task => {
+                task.addField({
+                    ...taskField
+                });
+            }
         });
 
-        container.register(plugin);
+        expect(task.id).toBe("myCustomTask");
+        expect(task.title).toBe("A custom task defined via method");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
+        expect(task.run).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
+    });
 
-        const results = container.byType<TaskPlugin>(TaskPlugin.type);
-        expect(results).toHaveLength(1);
-        const [result] = results;
+    it("should properly create a task - via class", async () => {
+        const task = new MyTask();
 
-        expect(result).toBeDefined();
-        expect(result.getTask()).toBeDefined();
-        expect(result.getTask().id).toEqual("myCustomTask");
-        expect(result.getTask().name).toEqual("A custom task defined via method");
-        expect(result.getTask().description).toEqual(
-            "A custom task description defined via method"
-        );
-        expect(result.getTask().run).toBeInstanceOf(Function);
-        expect(result.getTask().onDone).toBeInstanceOf(Function);
-        expect(result.getTask().onError).toBeInstanceOf(Function);
-        expect(result.getTask().fields).toHaveLength(1);
-        const field = result.getTask().fields?.[0] as ITaskDefinitionField;
-        expect(field).toBeDefined();
-        expect(field).toBeInstanceOf(Object);
-        expect(field.fieldId).toEqual("url");
-        expect(field.type).toEqual("text");
-        expect(field.label).toEqual("URL");
+        expect(task.id).toBe("myCustomTask");
+        expect(task.title).toBe("A custom task defined via class");
+        expect(task.fields).toHaveLength(1);
+        expect(task.fields).toEqual([taskField]);
+        expect(task.run).toBeInstanceOf(Function);
+        expect(task.onDone).toBeInstanceOf(Function);
+        expect(task.onError).toBeInstanceOf(Function);
     });
 });

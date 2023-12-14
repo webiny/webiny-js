@@ -40,7 +40,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
              * We use the same input as the one on the task - we did not run anything, so no need to change the input.
              */
             return this.response.continue({
-                input: this.task.input
+                values: this.task.values
             });
         } else if (this.task.status === TaskDataStatus.PENDING) {
             try {
@@ -64,7 +64,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
 
         try {
             result = await this.definition.run({
-                input: structuredClone(this.task.input),
+                values: structuredClone(this.task.values),
                 context: this.context,
                 response: this.taskResponse,
                 task: structuredClone(this.task),
@@ -80,7 +80,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
 
         if (result.status === TaskResponseStatus.CONTINUE) {
             return this.response.continue({
-                input: result.input
+                values: result.values
             });
         } else if (result.status === TaskResponseStatus.ERROR) {
             return this.response.error({

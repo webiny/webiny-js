@@ -46,11 +46,11 @@ const modelPlugin = createCmsModel({
             ]
         },
         {
-            id: "input",
-            fieldId: "input",
-            storageId: "object@input",
+            id: "values",
+            fieldId: "values",
+            storageId: "object@values",
             type: "json",
-            label: "Input"
+            label: "Values"
         },
         {
             id: "status",

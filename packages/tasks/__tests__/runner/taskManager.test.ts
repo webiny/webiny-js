@@ -52,7 +52,7 @@ describe("task manager", () => {
         expect(result).toBeInstanceOf(ResponseContinueResult);
         expect(result).toEqual({
             status: TaskResponseStatus.CONTINUE,
-            input: {},
+            values: {},
             locale: "en-US",
             tenant: "root",
             message: undefined,
