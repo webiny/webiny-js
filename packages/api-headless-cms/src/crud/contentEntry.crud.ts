@@ -788,7 +788,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Revision-level meta fields. 👇
              */
-
             revisionCreatedOn: getDate(rawInputMeta.revisionCreatedOn, currentDateTime),
             revisionSavedOn: getDate(rawInputMeta.revisionSavedOn, currentDateTime),
             revisionModifiedOn: getDate(rawInputMeta.revisionModifiedOn, null),

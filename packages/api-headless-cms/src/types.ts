@@ -1497,7 +1497,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     savedOn: string;
     /**
-     * @deprecated Use `entryFirstPublishedOn` instead. TODO: check this.
+     * @deprecated Use `entryLastPublishedOn` instead.
      * A string of Date.toISOString() type - if published.
      * Populated when entry is published.
      */
