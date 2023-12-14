@@ -71,7 +71,11 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
     const [components, setComponents] = useState<ComponentScopes>(new Map());
 
     const composeComponent = useCallback(
-        (component, hocs, scope = "*") => {
+        (
+            component: ComponentType<unknown>,
+            hocs: HigherOrderComponent<any, any>[],
+            scope: string | undefined = "*"
+        ) => {
             setComponents(prevComponents => {
                 const components = new Map(prevComponents);
                 const scopeMap: ComposedComponents = components.get(scope) || new Map();
