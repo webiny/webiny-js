@@ -26,15 +26,17 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             data: {
                 title: "Fruits",
                 slug: "fruits",
-                status: 'published',
-                revisionFirstPublishedOn: testDate,
-                revisionLastPublishedOn: testDate,
-                revisionFirstPublishedBy: identityB,
-                revisionLastPublishedBy: identityB,
-                entryFirstPublishedOn: testDate,
-                entryLastPublishedOn: testDate,
-                entryFirstPublishedBy: identityB,
-                entryLastPublishedBy: identityB
+                meta: {
+                    status: "published",
+                    revisionFirstPublishedOn: testDate,
+                    revisionLastPublishedOn: testDate,
+                    revisionFirstPublishedBy: identityB,
+                    revisionLastPublishedBy: identityB,
+                    entryFirstPublishedOn: testDate,
+                    entryLastPublishedOn: testDate,
+                    entryFirstPublishedBy: identityB,
+                    entryLastPublishedBy: identityB
+                }
             }
         });
 
@@ -44,14 +46,17 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             modifiedBy: null,
             ownedBy: identityA,
             savedOn: expect.toBeDateString(),
-            revisionFirstPublishedOn: testDate,
-            revisionLastPublishedOn: testDate,
-            revisionFirstPublishedBy: identityB,
-            revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: testDate,
-            entryLastPublishedOn: testDate,
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB
+            meta: {
+                revisionFirstPublishedOn: testDate,
+                revisionLastPublishedOn: testDate,
+                revisionFirstPublishedBy: identityB,
+                revisionLastPublishedBy: identityB,
+                entryFirstPublishedOn: testDate,
+                entryLastPublishedOn: testDate,
+                entryFirstPublishedBy: identityB,
+                entryLastPublishedBy: identityB
+            }
+
         });
     });
 });

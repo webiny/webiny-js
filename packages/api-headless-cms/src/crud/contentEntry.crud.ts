@@ -688,12 +688,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const currentIdentity = getSecurityIdentity();
         const currentDateTime = new Date();
 
+        const rawInputMeta = rawInput.meta || {};
+
         /**
          * Users can set the initial status of the entry. If so, we need to make
          * sure they have the required permissions and also that all the fields
          * are filled in correctly.
          */
-        const status = rawInput.status || STATUS_DRAFT;
+        const status = rawInputMeta.status || STATUS_DRAFT;
         if (status !== STATUS_DRAFT) {
             if (status === STATUS_PUBLISHED) {
                 await entriesPermissions.ensure({ pw: "p" });
@@ -734,28 +736,28 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         if (status === STATUS_PUBLISHED) {
             revisionLevelPublishingMetaFields = {
                 revisionFirstPublishedOn: getDate(
-                    rawInput.revisionFirstPublishedOn,
+                    rawInputMeta.revisionFirstPublishedOn,
                     currentDateTime
                 ),
                 revisionLastPublishedOn: getDate(
-                    rawInput.revisionFirstPublishedOn,
+                    rawInputMeta.revisionFirstPublishedOn,
                     currentDateTime
                 ),
                 revisionFirstPublishedBy: getIdentity(
-                    rawInput.revisionFirstPublishedBy,
+                    rawInputMeta.revisionFirstPublishedBy,
                     currentIdentity
                 ),
                 revisionLastPublishedBy: getIdentity(
-                    rawInput.revisionLastPublishedBy,
+                    rawInputMeta.revisionLastPublishedBy,
                     currentIdentity
                 )
             };
 
             entryLevelPublishingMetaFields = {
-                entryFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
-                entryLastPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
-                entryFirstPublishedBy: getIdentity(rawInput.entryFirstPublishedBy, currentIdentity),
-                entryLastPublishedBy: getIdentity(rawInput.entryLastPublishedBy, currentIdentity)
+                entryFirstPublishedOn: getDate(rawInputMeta.revisionFirstPublishedOn, currentDateTime),
+                entryLastPublishedOn: getDate(rawInputMeta.revisionFirstPublishedOn, currentDateTime),
+                entryFirstPublishedBy: getIdentity(rawInputMeta.entryFirstPublishedBy, currentIdentity),
+                entryLastPublishedBy: getIdentity(rawInputMeta.entryLastPublishedBy, currentIdentity)
             };
         }
 
@@ -787,23 +789,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * Revision-level meta fields. 👇
              */
 
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+            revisionCreatedOn: getDate(rawInputMeta.revisionCreatedOn, currentDateTime),
+            revisionSavedOn: getDate(rawInputMeta.revisionSavedOn, currentDateTime),
+            revisionModifiedOn: getDate(rawInputMeta.revisionModifiedOn, null),
+            revisionCreatedBy: getIdentity(rawInputMeta.revisionCreatedBy, currentIdentity),
+            revisionSavedBy: getIdentity(rawInputMeta.revisionSavedBy, currentIdentity),
+            revisionModifiedBy: getIdentity(rawInputMeta.revisionModifiedBy, null),
             ...revisionLevelPublishingMetaFields,
 
             /**
              * Entry-level meta fields. 👇
              */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDateTime),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, null),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, currentIdentity),
-            entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, null),
+            entryCreatedOn: getDate(rawInputMeta.entryCreatedOn, currentDateTime),
+            entrySavedOn: getDate(rawInputMeta.entrySavedOn, currentDateTime),
+            entryModifiedOn: getDate(rawInputMeta.entryModifiedOn, null),
+            entryCreatedBy: getIdentity(rawInputMeta.entryCreatedBy, currentIdentity),
+            entrySavedBy: getIdentity(rawInputMeta.entrySavedBy, currentIdentity),
+            entryModifiedBy: getIdentity(rawInputMeta.entryModifiedBy, null),
             ...entryLevelPublishingMetaFields,
 
             version,
@@ -933,6 +935,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const currentIdentity = getSecurityIdentity();
         const currentDateTime = new Date();
 
+        const rawInputMeta = rawInput.meta || {};
+
         const entry: CmsEntry = {
             ...originalEntry,
             id,
@@ -957,40 +961,40 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Revision-level meta fields. 👇
              */
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-            revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
-            revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
-            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-            revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
-            revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null),
+            revisionCreatedOn: getDate(rawInputMeta.revisionCreatedOn, currentDateTime),
+            revisionSavedOn: getDate(rawInputMeta.revisionSavedOn, currentDateTime),
+            revisionModifiedOn: getDate(rawInputMeta.revisionModifiedOn, null),
+            revisionFirstPublishedOn: getDate(rawInputMeta.revisionFirstPublishedOn, null),
+            revisionLastPublishedOn: getDate(rawInputMeta.revisionLastPublishedOn, null),
+            revisionCreatedBy: getIdentity(rawInputMeta.revisionCreatedBy, currentIdentity),
+            revisionSavedBy: getIdentity(rawInputMeta.revisionSavedBy, currentIdentity),
+            revisionModifiedBy: getIdentity(rawInputMeta.revisionModifiedBy, null),
+            revisionFirstPublishedBy: getIdentity(rawInputMeta.revisionFirstPublishedBy, null),
+            revisionLastPublishedBy: getIdentity(rawInputMeta.revisionLastPublishedBy, null),
 
             /**
              * Entry-level meta fields. 👇
              */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, latestStorageEntry.entryCreatedOn),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
+            entryCreatedOn: getDate(rawInputMeta.entryCreatedOn, latestStorageEntry.entryCreatedOn),
+            entrySavedOn: getDate(rawInputMeta.entrySavedOn, currentDateTime),
+            entryModifiedOn: getDate(rawInputMeta.entryModifiedOn, currentDateTime),
             entryFirstPublishedOn: getDate(
-                rawInput.entryFirstPublishedOn,
+                rawInputMeta.entryFirstPublishedOn,
                 latestStorageEntry.entryFirstPublishedOn
             ),
             entryLastPublishedOn: getDate(
-                rawInput.entryLastPublishedOn,
+                rawInputMeta.entryLastPublishedOn,
                 latestStorageEntry.entryLastPublishedOn
             ),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, latestStorageEntry.entryCreatedBy),
-            entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
+            entryCreatedBy: getIdentity(rawInputMeta.entryCreatedBy, latestStorageEntry.entryCreatedBy),
+            entrySavedBy: getIdentity(rawInputMeta.entrySavedBy, currentIdentity),
+            entryModifiedBy: getIdentity(rawInputMeta.entryModifiedBy, currentIdentity),
             entryFirstPublishedBy: getIdentity(
-                rawInput.entryFirstPublishedBy,
+                rawInputMeta.entryFirstPublishedBy,
                 latestStorageEntry.entryFirstPublishedBy
             ),
             entryLastPublishedBy: getIdentity(
-                rawInput.entryLastPublishedBy,
+                rawInputMeta.entryLastPublishedBy,
                 latestStorageEntry.entryLastPublishedBy
             ),
 
@@ -1118,6 +1122,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const currentIdentity = getSecurityIdentity();
         const currentDateTime = new Date();
 
+        const rawInputMeta = rawInput.meta || {};
+
         /**
          * We always send the full entry to the hooks and storage operations update.
          */
@@ -1143,29 +1149,29 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Revision-level meta fields. 👇
              */
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, originalEntry.revisionCreatedOn),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
+            revisionCreatedOn: getDate(rawInputMeta.revisionCreatedOn, originalEntry.revisionCreatedOn),
+            revisionSavedOn: getDate(rawInputMeta.revisionSavedOn, currentDateTime),
+            revisionModifiedOn: getDate(rawInputMeta.revisionModifiedOn, currentDateTime),
             revisionFirstPublishedOn: getDate(
-                rawInput.revisionFirstPublishedOn,
+                rawInputMeta.revisionFirstPublishedOn,
                 originalEntry.revisionFirstPublishedOn
             ),
             revisionLastPublishedOn: getDate(
-                rawInput.revisionLastPublishedOn,
+                rawInputMeta.revisionLastPublishedOn,
                 originalEntry.revisionLastPublishedOn
             ),
             revisionCreatedBy: getIdentity(
-                rawInput.revisionCreatedBy,
+                rawInputMeta.revisionCreatedBy,
                 originalEntry.revisionCreatedBy
             ),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+            revisionSavedBy: getIdentity(rawInputMeta.revisionSavedBy, currentIdentity),
+            revisionModifiedBy: getIdentity(rawInputMeta.revisionSavedBy, currentIdentity),
             revisionFirstPublishedBy: getIdentity(
-                rawInput.revisionFirstPublishedBy,
+                rawInputMeta.revisionFirstPublishedBy,
                 originalEntry.revisionFirstPublishedBy
             ),
             revisionLastPublishedBy: getIdentity(
-                rawInput.revisionLastPublishedBy,
+                rawInputMeta.revisionLastPublishedBy,
                 originalEntry.revisionLastPublishedBy
             ),
 
@@ -1174,26 +1180,26 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * If required, within storage operations, these entry-level updates
              * will be propagated to the latest revision too.
              */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, originalEntry.entryCreatedOn),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
+            entryCreatedOn: getDate(rawInputMeta.entryCreatedOn, originalEntry.entryCreatedOn),
+            entrySavedOn: getDate(rawInputMeta.entrySavedOn, currentDateTime),
+            entryModifiedOn: getDate(rawInputMeta.entryModifiedOn, currentDateTime),
             entryFirstPublishedOn: getDate(
-                rawInput.entryFirstPublishedOn,
+                rawInputMeta.entryFirstPublishedOn,
                 originalEntry.entryFirstPublishedOn
             ),
             entryLastPublishedOn: getDate(
-                rawInput.entryLastPublishedOn,
+                rawInputMeta.entryLastPublishedOn,
                 originalEntry.entryLastPublishedOn
             ),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, originalEntry.entryCreatedBy),
-            entrySavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
+            entryCreatedBy: getIdentity(rawInputMeta.entryCreatedBy, originalEntry.entryCreatedBy),
+            entrySavedBy: getIdentity(rawInputMeta.revisionSavedBy, currentIdentity),
+            entryModifiedBy: getIdentity(rawInputMeta.entryModifiedBy, currentIdentity),
             entryFirstPublishedBy: getIdentity(
-                rawInput.entryFirstPublishedBy,
+                rawInputMeta.entryFirstPublishedBy,
                 originalEntry.entryFirstPublishedBy
             ),
             entryLastPublishedBy: getIdentity(
-                rawInput.entryLastPublishedBy,
+                rawInputMeta.entryLastPublishedBy,
                 originalEntry.entryLastPublishedBy
             ),
 
