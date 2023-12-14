@@ -95,7 +95,8 @@ export const createManageSDL: CreateManageSDL = ({
             entryId: String!
             
             ${deprecatedOnByMetaGqlFields}
-    
+            ${onByMetaGqlFields}
+            
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
             # Advanced Content Organization - make required in 5.38.0
@@ -107,8 +108,6 @@ export const createManageSDL: CreateManageSDL = ({
             version: Int
             locked: Boolean
             publishedOn: DateTime
-            
-            ${onByMetaGqlFields}
             
             status: String
             """
@@ -128,12 +127,6 @@ export const createManageSDL: CreateManageSDL = ({
         ${fields.map(f => f.typeDefs).join("\n")}
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
-        
-        input ${singularName}MetaInput {
-            status: String
-            
-            ${onByMetaInputGqlFields}
-        }
         
         input ${singularName}Input {
             id: ID
@@ -159,11 +152,12 @@ export const createManageSDL: CreateManageSDL = ({
             # Set a different identity as the owner of the entry.
             ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
             
+            ${onByMetaInputGqlFields}
+            
             wbyAco_location: WbyAcoLocationInput
             
-            meta: ${singularName}MetaInput
-            
             ${inputGqlFields}
+            
         }
         
         input ${singularName}GetWhereInput {

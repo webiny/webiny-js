@@ -26,27 +26,7 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             data: {
                 title: "Fruits",
                 slug: "fruits",
-                meta: {
-                    status: "published",
-                    revisionFirstPublishedOn: testDate,
-                    revisionLastPublishedOn: testDate,
-                    revisionFirstPublishedBy: identityB,
-                    revisionLastPublishedBy: identityB,
-                    entryFirstPublishedOn: testDate,
-                    entryLastPublishedOn: testDate,
-                    entryFirstPublishedBy: identityB,
-                    entryLastPublishedBy: identityB
-                }
-            }
-        });
-
-        expect(rev).toMatchObject({
-            createdOn: expect.toBeDateString(),
-            createdBy: identityA,
-            modifiedBy: null,
-            ownedBy: identityA,
-            savedOn: expect.toBeDateString(),
-            meta: {
+                status: "published",
                 revisionFirstPublishedOn: testDate,
                 revisionLastPublishedOn: testDate,
                 revisionFirstPublishedBy: identityB,
@@ -56,7 +36,22 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
                 entryFirstPublishedBy: identityB,
                 entryLastPublishedBy: identityB
             }
+        });
 
+        expect(rev).toMatchObject({
+            createdOn: expect.toBeDateString(),
+            createdBy: identityA,
+            modifiedBy: null,
+            ownedBy: identityA,
+            savedOn: expect.toBeDateString(),
+            revisionFirstPublishedOn: testDate,
+            revisionLastPublishedOn: testDate,
+            revisionFirstPublishedBy: identityB,
+            revisionLastPublishedBy: identityB,
+            entryFirstPublishedOn: testDate,
+            entryLastPublishedOn: testDate,
+            entryFirstPublishedBy: identityB,
+            entryLastPublishedBy: identityB
         });
     });
 });
