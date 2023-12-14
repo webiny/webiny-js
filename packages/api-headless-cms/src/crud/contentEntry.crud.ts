@@ -78,6 +78,7 @@ import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { pickEntryMetaFields, ROOT_FOLDER } from "~/constants";
 import { getDate } from "~/utils/date";
+import { getIdentity } from "~/utils/identity";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
 export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
@@ -244,21 +245,6 @@ const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
     }
 
     return ["revisionCreatedOn_DESC"];
-};
-
-const getIdentity = <T extends SecurityIdentity | null>(
-    input: SecurityIdentity | null | undefined,
-    defaultValue: T
-): T => {
-    const identity = input?.id && input?.displayName && input?.type ? input : defaultValue;
-    if (!identity) {
-        return null as T;
-    }
-    return {
-        id: identity.id,
-        displayName: identity.displayName,
-        type: identity.type
-    } as T;
 };
 
 interface CreateContentEntryCrudParams {
