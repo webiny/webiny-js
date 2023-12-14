@@ -1,15 +1,15 @@
-import { Context, ITaskDefinition, ITaskField } from "~/types";
+import { Context, ITaskDefinition, ITaskDefinitionField } from "~/types";
 
-interface TaskPluginSetFieldsCallback {
-    (fields: ITaskField[]): ITaskField[] | undefined;
+export interface ITaskPluginSetFieldsCallback {
+    (fields: ITaskDefinitionField[]): ITaskDefinitionField[] | undefined;
 }
 
-interface ITaskParams<C extends Context = Context, I = any>
+export interface ITaskDefinitionParams<C extends Context = Context, I = any>
     extends Omit<ITaskDefinition<C, I>, "fields"> {
-    config?: (task: Pick<Task<C, I>, "addField" | "setFields">) => void;
+    config?: (task: Pick<TaskDefinition<C, I>, "addField" | "setFields">) => void;
 }
 
-class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I> {
+class TaskDefinition<C extends Context = Context, I = any> implements ITaskDefinition<C, I> {
     private readonly task: ITaskDefinition<C, I>;
 
     public get id() {
@@ -36,7 +36,7 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
         return this.task.onError;
     }
 
-    public constructor(task: ITaskParams<C, I>) {
+    public constructor(task: ITaskDefinitionParams<C, I>) {
         this.task = {
             ...task,
             fields: []
@@ -50,22 +50,24 @@ class Task<C extends Context = Context, I = any> implements ITaskDefinition<C, I
         return this.task;
     }
 
-    public setFields(cb: TaskPluginSetFieldsCallback) {
+    public setFields(cb: ITaskPluginSetFieldsCallback) {
         const fields = Array.from(this.task.fields || []);
         this.task.fields = cb(fields);
     }
 
-    public addField(field: ITaskField) {
+    public addField(field: ITaskDefinitionField) {
         this.task.fields = (this.task.fields || []).concat([field]);
     }
 }
 
-export type { Task };
+export type { TaskDefinition };
 
-export const createTask = <C extends Context = Context, I = any>(params: ITaskParams<C, I>) => {
-    return new Task(params);
+export const createTaskDefinition = <C extends Context = Context, I = any>(
+    params: ITaskDefinitionParams<C, I>
+) => {
+    return new TaskDefinition(params);
 };
 
-export const createTaskField = (params: ITaskField) => {
+export const createTaskDefinitionField = (params: ITaskDefinitionField) => {
     return params;
 };

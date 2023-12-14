@@ -17945,6 +17945,7 @@ __metadata:
     aws-lambda: ^1.0.7
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
+    type-fest: ^4.8.3
     typescript: 4.7.4
     zod: ^3.22.4
   languageName: unknown
@@ -44226,6 +44227,13 @@ __metadata:
   peerDependencies:
     typescript: ">=4.7.0"
   checksum: df3bd25809ea79ac7712da7c11648251118c23f65b226eba263797e42be60ba34085874ec492202b8ecf2e5a2273b27ddcbfe3be2c275dfcef3f0e2ee90ea179
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "type-fest@npm:4.8.3"
+  checksum: cd8c9a20a32b9d813f5f6d84bd81e52e22fb779a7ef0ae53974bae5baac427974bc8243269e9832b22ce2b6277d857b44769b3664f97dcac344e600bdd95f186
   languageName: node
   linkType: hard
 

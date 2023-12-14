@@ -145,7 +145,7 @@ export enum TaskResponseStatus {
     CONTINUE = "continue"
 }
 
-export type ITaskField = Pick<
+export type ITaskDefinitionField = Pick<
     CmsModelField,
     | "fieldId"
     | "type"
@@ -188,5 +188,5 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
      * Custom input fields and layout for the task input.
      */
-    fields?: ITaskField[];
+    fields?: ITaskDefinitionField[];
 }

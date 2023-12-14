@@ -1,8 +1,8 @@
 import { Context } from "../types";
-import { ITaskDefinition, ITaskField, ITaskRunParams } from "~/types";
-import { createTask, createTaskField } from "~/task/definition";
+import { ITaskDefinition, ITaskDefinitionField, ITaskRunParams } from "~/types";
+import { createTaskDefinition, createTaskDefinitionField } from "~/task/definition";
 
-const taskField: ITaskField = {
+const taskField: ITaskDefinitionField = {
     fieldId: "url",
     type: "text",
     label: "Url",
@@ -74,7 +74,7 @@ describe("task definition", () => {
                 return;
             },
             fields: [
-                createTaskField({
+                createTaskDefinitionField({
                     ...taskField
                 })
             ]
@@ -90,7 +90,7 @@ describe("task definition", () => {
     });
 
     it("should properly create a task - via method", async () => {
-        const task = createTask<Context, MyTask>({
+        const task = createTaskDefinition<Context, MyTask>({
             id: "myCustomTask",
             name: "A custom task defined via method",
             run: async ({ response, isCloseToTimeout, input }) => {

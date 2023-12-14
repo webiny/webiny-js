@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 import { createRegisterTaskPlugin, TaskPlugin } from "~/task/plugin";
-import { createTaskField } from "~/task/definition";
-import { ITaskField } from "~/types";
+import { createTaskDefinitionField } from "~/task/definition";
+import { ITaskDefinitionField } from "~/types";
 
 describe("task plugin", () => {
     it("should create a task plugin", async () => {
@@ -30,7 +30,7 @@ describe("task plugin", () => {
                 return;
             },
             fields: [
-                createTaskField({
+                createTaskDefinitionField({
                     type: "text",
                     fieldId: "url",
                     label: "URL"
@@ -55,7 +55,7 @@ describe("task plugin", () => {
         expect(result.getTask().onDone).toBeInstanceOf(Function);
         expect(result.getTask().onError).toBeInstanceOf(Function);
         expect(result.getTask().fields).toHaveLength(1);
-        const field = result.getTask().fields?.[0] as ITaskField;
+        const field = result.getTask().fields?.[0] as ITaskDefinitionField;
         expect(field).toBeDefined();
         expect(field).toBeInstanceOf(Object);
         expect(field.fieldId).toEqual("url");
