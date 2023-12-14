@@ -172,6 +172,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 cognitoUserPoolArn: cognito.userPool.output.arn,
                 cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
                 cognitoAppClientId: cognito.userPoolClient.output.id,
+                eventBusName: eventBus.output.name,
                 eventBusArn: eventBus.output.arn
             });
 

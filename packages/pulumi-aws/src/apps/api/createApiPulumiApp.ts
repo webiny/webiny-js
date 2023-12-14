@@ -1,20 +1,20 @@
 import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
-    ApiGateway,
     ApiApwScheduler,
     ApiBackgroundTask,
     ApiCloudfront,
     ApiFileManager,
+    ApiGateway,
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
     CoreOutput,
-    VpcConfig,
-    CreateCorePulumiAppParams
+    CreateCorePulumiAppParams,
+    VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
+import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -233,12 +233,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const cloudfront = app.addModule(ApiCloudfront);
             const migration = app.addModule(ApiMigration);
-            const backgroundTask = app.addModule(ApiBackgroundTask);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
                 applyCustomDomain(cloudfront, domains);
             }
+
+            const backgroundTask = app.addModule(ApiBackgroundTask);
 
             app.addOutputs({
                 region: aws.config.region,
