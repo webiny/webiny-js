@@ -15,7 +15,7 @@ import {
     createSubmissionsTypeDefs,
     CreateSubmissionsTypeDefsParams
 } from "~/plugins/graphql/createSubmissionsTypeDefs";
-import { FormBuilderContext, FbFormField } from "~/types";
+import { FormBuilderContext, FbFormField, FORM_STATUS } from "~/types";
 
 export const createSubmissionsSchema = (params: CreateSubmissionsTypeDefsParams) => {
     const submissionsGraphQL = new GraphQLSchemaPlugin<FormBuilderContext>({
@@ -69,7 +69,9 @@ export const createSubmissionsSchema = (params: CreateSubmissionsTypeDefsParams)
                          * Get all revisions of the form.
                          */
                         const revisions = await formBuilder.getFormRevisions(form);
-                        const publishedRevisions = revisions.filter(r => r.status === "published");
+                        const publishedRevisions = revisions.filter(
+                            r => r.status === FORM_STATUS.PUBLISHED
+                        );
 
                         const rows: Record<string, string>[] = [];
                         const fields: Record<string, string> = {};

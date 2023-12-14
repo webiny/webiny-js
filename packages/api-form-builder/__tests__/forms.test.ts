@@ -246,6 +246,47 @@ describe('Form Builder "Form" Test', () => {
         expect(list.data.formBuilder.listForms.data.length).toBe(0);
     });
 
+    test("should create revision from specified revision", async () => {
+        // Create revision #1
+        const [create1] = await createForm({ data: { name: "first" } });
+        const data1 = create1.data.formBuilder.createForm.data;
+
+        // Create revision #2 from revision #1
+        const [create2] = await createRevisionFrom({ revision: data1.id });
+        const data2 = create2.data.formBuilder.createRevisionFrom.data;
+
+        // Update revision #2 name
+        const [update2] = await updateRevision({
+            revision: data2.id,
+            data: { name: "second" }
+        });
+        const data2updated = update2.data.formBuilder.updateRevision.data;
+
+        // Create revision #3 from revision #1
+        const [create3] = await createRevisionFrom({ revision: data1.id });
+
+        // Revision #3 data should match revision #1
+        expect(create3.data.formBuilder.createRevisionFrom.data).toMatchObject({
+            ...data1,
+            id: expect.any(String),
+            createdOn: /^20/,
+            savedOn: /^20/,
+            version: 3
+        });
+
+        // Create revision #4 from revision #2
+        const [create4] = await createRevisionFrom({ revision: data2.id });
+
+        // Revision #4 data should match revision #2
+        expect(create4.data.formBuilder.createRevisionFrom.data).toMatchObject({
+            ...data2updated,
+            id: expect.any(String),
+            createdOn: /^20/,
+            savedOn: /^20/,
+            version: 4
+        });
+    });
+
     test("should publish, add views and unpublish", async () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
         const { id } = create.data.formBuilder.createForm.data;

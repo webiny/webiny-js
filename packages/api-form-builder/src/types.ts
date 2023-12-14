@@ -6,6 +6,8 @@ import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export { CONTENT_ENTRY_STATUS as FORM_STATUS } from "@webiny/api-headless-cms/types";
+
 interface FbFormTriggerData {
     urls?: string[];
     [key: string]: any;
@@ -174,13 +176,9 @@ export interface OnFormAfterCreateTopicParams {
 }
 export interface OnFormRevisionBeforeCreateTopicParams {
     form: FbForm;
-    original: FbForm;
-    latest: FbForm;
 }
 export interface OnFormRevisionAfterCreateTopicParams {
     form: FbForm;
-    original: FbForm;
-    latest: FbForm;
 }
 export interface OnFormBeforeUpdateTopicParams {
     form: FbForm;

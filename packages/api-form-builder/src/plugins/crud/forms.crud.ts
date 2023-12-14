@@ -20,7 +20,8 @@ import {
     OnFormRevisionBeforeCreateTopicParams,
     OnFormRevisionBeforeDeleteTopicParams,
     OnFormBeforeUnpublishTopicParams,
-    OnFormBeforeUpdateTopicParams
+    OnFormBeforeUpdateTopicParams,
+    FORM_STATUS
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -282,7 +283,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 name: input.name,
                 slug,
                 version,
-                status: "draft",
+                status: FORM_STATUS.DRAFT,
                 stats: {
                     views: 0,
                     submissions: 0
@@ -336,7 +337,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (!original) {
                 throw new NotFoundError(`Form "${id}" was not found!`);
-            } else if (original.status === "unpublished") {
+            } else if (original.status === FORM_STATUS.UNPUBLISHED) {
                 throw new WebinyError("Not allowed to modify locked form.", "FORM_LOCKED_ERROR", {
                     form: original
                 });
@@ -538,67 +539,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async createFormRevision(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "w" });
 
-            const original = await this.getForm(id, {
+            const form = await this.getForm(id, {
                 auth: false
             });
-            const { id: originalFormFormId } = parseIdentifier(original.id);
-            const latest = await this.storageOperations.forms.getForm({
-                where: {
-                    id,
-                    latest: true,
-                    tenant: original.tenant,
-                    locale: original.locale
-                }
-            });
-            if (!latest) {
-                throw new WebinyError(
-                    "Could not fetch latest form revision.",
-                    "LATEST_FORM_REVISION_ERROR",
-                    {
-                        formId: originalFormFormId,
-                        tenant: original.tenant,
-                        locale: original.locale
-                    }
-                );
-            }
-
-            const identity = context.security.getIdentity();
-            const version = (latest ? latest.version : original.version) + 1;
-
-            const form: FbForm = {
-                ...original,
-                id: createIdentifier({
-                    id: originalFormFormId,
-                    version
-                }),
-                version,
-                stats: {
-                    submissions: 0,
-                    views: 0
-                },
-                savedOn: new Date().toISOString(),
-                createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
 
             try {
                 await onFormRevisionBeforeCreate.publish({
-                    original,
-                    latest,
                     form
                 });
                 const result = await this.storageOperations.forms.createFormFrom({
-                    form: latest
+                    form
                 });
                 await onFormRevisionAfterCreate.publish({
-                    original,
-                    latest,
                     form: result
                 });
                 return result;
@@ -608,7 +560,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "CREATE_FORM_FROM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );

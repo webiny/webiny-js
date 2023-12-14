@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import get from "lodash/get";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import styled from "@emotion/styled";
@@ -39,6 +40,12 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvanced
         [publishedForms]
     );
 
+    const selectedOption = useMemo(() => {
+        const formId = get(data, "settings.formId");
+
+        return publishedFormsOptions.find(option => option.id === formId);
+    }, [data, publishedFormsOptions]);
+
     // required so ts build does not break
     const buttonProps: any = {};
 
@@ -52,9 +59,7 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvanced
                                 <AutoComplete
                                     options={publishedFormsOptions}
                                     label={"Form"}
-                                    value={publishedFormsOptions.find(
-                                        option => option.id === data.settings.formId
-                                    )}
+                                    value={selectedOption}
                                     onChange={onChange}
                                 />
                             )}

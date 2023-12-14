@@ -473,3 +473,9 @@ export interface FormBuilderImportExportSubTask {
     };
     error: Record<string, string>;
 }
+
+export enum FORM_STATUS {
+    DRAFT = "draft",
+    PUBLISHED = "published",
+    UNPUBLISHED = "unpublished"
+}
