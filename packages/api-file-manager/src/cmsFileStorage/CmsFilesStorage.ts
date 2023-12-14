@@ -180,10 +180,15 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private getFileFieldValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
-            createdBy: entry.createdBy,
-            modifiedBy: entry.modifiedBy || null,
-            createdOn: entry.createdOn,
-            savedOn: entry.savedOn,
+
+            // We're safe to use entry-level meta fields because we don't use revisions with files.
+            createdBy: entry.entryCreatedBy,
+            modifiedBy: entry.entryModifiedBy,
+            savedBy: entry.entrySavedBy,
+            createdOn: entry.entryCreatedOn,
+            modifiedOn: entry.entryModifiedOn,
+            savedOn: entry.entrySavedOn,
+
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,
