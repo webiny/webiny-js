@@ -73,7 +73,9 @@ export type Sorting = SortingState;
 
 export type OnSortingChange = OnChangeFn<Sorting>;
 
-export type OnColumnVisibilityChange = OnChangeFn<VisibilityState>;
+export type ColumnVisibility = VisibilityState;
+
+export type OnColumnVisibilityChange = OnChangeFn<ColumnVisibility>;
 
 interface Props<T> {
     /**
@@ -91,7 +93,7 @@ interface Props<T> {
     /**
      * The column visibility state.
      */
-    columnVisibility?: VisibilityState;
+    columnVisibility?: ColumnVisibility;
     /**
      * Callback that receives current column visibility state.
      */

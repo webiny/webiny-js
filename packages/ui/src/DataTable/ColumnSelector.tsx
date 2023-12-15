@@ -27,7 +27,7 @@ export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
 
                 return {
                     id: column.id,
-                    header: header ? flexRender(column.columnDef.header, header.getContext()) : "",
+                    header: column.id, // header ? flexRender(column.columnDef.header, header.getContext()) : "",
                     onChange: column.toggleVisibility,
                     getValue: column.getIsVisible
                 };
