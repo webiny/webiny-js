@@ -1,7 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum";
 import { ContextPlugin } from "@webiny/handler";
-import { Context, IListTaskParams } from "~/types";
+import { Context, IListTaskParams, ITaskDefinition } from "~/types";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
 import { emptyResolver, resolve, resolveList } from "./utils";
@@ -25,6 +25,13 @@ interface ITriggerTaskMutationParams {
 interface IDeleteTaskMutationParams {
     id: string;
 }
+
+const createWebinyTaskDefinitionEnum = (definitions: ITaskDefinition[]): string => {
+    if (definitions.length === 0) {
+        return "Empty";
+    }
+    return definitions.map(definition => definition.id).join("\n");
+};
 
 export const createGraphQL = () => {
     return new ContextPlugin<Context>(async context => {
@@ -64,6 +71,8 @@ export const createGraphQL = () => {
             fieldTypePlugins,
             sorterPlugins: []
         });
+
+        const taskDefinitions = context.tasks.listDefinitions();
 
         const plugin = new GraphQLSchemaPlugin({
             typeDefs: /* GraphQL */ `
@@ -151,7 +160,10 @@ export const createGraphQL = () => {
                 type WebinyTaskMutation {
                     _empty: String
                 }
-
+                
+                enum WebinyTaskDefinitionEnum {
+                    ${createWebinyTaskDefinitionEnum(taskDefinitions)}
+                }
 
                 extend type Query {
                     backgroundTasks: WebinyTaskQuery
@@ -174,7 +186,7 @@ export const createGraphQL = () => {
                 }
 
                 extend type WebinyTaskMutation {
-                    triggerTask(definition: ID!, values: JSON, name: String): WebinyTaskTriggerResponse!
+                    triggerTask(definition: WebinyTaskDefinitionEnum!, values: JSON, name: String): WebinyTaskTriggerResponse!
                     stopTask(id: ID!, message: String): WebinyTaskResponse!
                     deleteTask(id: ID!): WebinyTaskDeleteResponse!
                 }

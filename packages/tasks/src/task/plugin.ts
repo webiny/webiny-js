@@ -73,9 +73,12 @@ export class TaskDefinitionPlugin<C extends Context = Context, I = any>
      */
     private validate(): void {
         if (camelCase(this.task.id) !== this.task.id) {
-            throw new WebinyError(
-                `Task ID "${this.task.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`
-            );
+            /**
+             * We want to log and throw the message so it can be seen in the CloudWatch logs.
+             */
+            const message = `Task ID "${this.task.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`;
+            console.log(message);
+            throw new WebinyError(message);
         }
     }
 }

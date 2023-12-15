@@ -5,21 +5,21 @@ describe("definitions crud", () => {
     const handler = useHandler({
         plugins: [
             createTaskDefinition({
-                id: "testDefinition-1",
+                id: "testDefinitionNumber1",
                 title: "Test definition #1",
                 async run({ response }) {
                     return response.done("successfully ran the task #1");
                 }
             }),
             createTaskDefinition({
-                id: "testDefinition-2",
+                id: "testDefinitionNumber2",
                 title: "Test definition #2",
                 async run({ response }) {
                     return response.done("successfully ran the task #2");
                 }
             }),
             createTaskDefinition({
-                id: "testDefinition-3",
+                id: "testDefinitionNumber3",
                 title: "Test definition #3",
                 async run({ response }) {
                     return response.done("successfully ran the task #3");
@@ -31,9 +31,9 @@ describe("definitions crud", () => {
     it("should get task definition", async () => {
         const context = await handler.handle();
 
-        const definition = context.tasks.getDefinition("testDefinition-1");
+        const definition = context.tasks.getDefinition("testDefinitionNumber1");
         expect(definition).toMatchObject({
-            id: "testDefinition-1",
+            id: "testDefinitionNumber1",
             title: "Test definition #1"
         });
     });
@@ -53,15 +53,15 @@ describe("definitions crud", () => {
         expect(definitions).toHaveLength(3);
         expect(definitions).toMatchObject([
             {
-                id: "testDefinition-1",
+                id: "testDefinitionNumber1",
                 title: "Test definition #1"
             },
             {
-                id: "testDefinition-2",
+                id: "testDefinitionNumber2",
                 title: "Test definition #2"
             },
             {
-                id: "testDefinition-3",
+                id: "testDefinitionNumber3",
                 title: "Test definition #3"
             }
         ]);

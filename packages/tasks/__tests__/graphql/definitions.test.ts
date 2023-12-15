@@ -15,19 +15,19 @@ describe("graphql - definitions", () => {
                     listDefinitions: {
                         data: [
                             {
-                                id: "myCustomTask-1",
+                                id: "myCustomTaskNumber1",
                                 title: "A custom task defined via method #1",
                                 description: "This is a description of the task #1",
                                 fields: []
                             },
                             {
-                                id: "myCustomTask-2",
+                                id: "myCustomTaskNumber2",
                                 title: "A custom task defined via method #2",
                                 description: "This is a description of the task #2",
                                 fields: []
                             },
                             {
-                                id: "myCustomTask-3",
+                                id: "myCustomTaskNumber3",
                                 title: "A custom task defined via method #3",
                                 description: "This is a description of the task #3",
                                 fields: [

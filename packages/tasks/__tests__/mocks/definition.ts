@@ -28,7 +28,7 @@ export const createMockTaskDefinition = (
 export const createMockTaskDefinitions = () => {
     return [
         createTaskDefinition({
-            id: "myCustomTask-1",
+            id: "myCustomTaskNumber1",
             title: "A custom task defined via method #1",
             description: "This is a description of the task #1",
             async run({ response }) {
@@ -36,7 +36,7 @@ export const createMockTaskDefinitions = () => {
             }
         }),
         createTaskDefinition({
-            id: "myCustomTask-2",
+            id: "myCustomTaskNumber2",
             title: "A custom task defined via method #2",
             description: "This is a description of the task #2",
             async run({ response }) {
@@ -44,7 +44,7 @@ export const createMockTaskDefinitions = () => {
             }
         }),
         createTaskDefinition({
-            id: "myCustomTask-3",
+            id: "myCustomTaskNumber3",
             title: "A custom task defined via method #3",
             description: "This is a description of the task #3",
             async run({ response }) {

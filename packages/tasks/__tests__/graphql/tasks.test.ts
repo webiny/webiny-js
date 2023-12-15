@@ -17,7 +17,7 @@ describe("graphql - tasks", () => {
 
         await context.tasks.createTask({
             name: "My Custom Task #1",
-            definitionId: "myCustomTask-1",
+            definitionId: "myCustomTaskNumber1",
             values: {
                 someValue: true,
                 someOtherValue: 123
@@ -26,7 +26,7 @@ describe("graphql - tasks", () => {
 
         await context.tasks.createTask({
             name: "My Custom Task #2",
-            definitionId: "myCustomTask-2",
+            definitionId: "myCustomTaskNumber2",
             values: {
                 someValue: false,
                 someOtherValue: 4321
@@ -35,7 +35,7 @@ describe("graphql - tasks", () => {
 
         await context.tasks.createTask({
             name: "My Custom Task #3",
-            definitionId: "myCustomTask-3",
+            definitionId: "myCustomTaskNumber3",
             values: {
                 someValue: "yes!",
                 someOtherValue: 12345678
@@ -51,7 +51,7 @@ describe("graphql - tasks", () => {
                         data: [
                             {
                                 name: "My Custom Task #3",
-                                definitionId: "myCustomTask-3",
+                                definitionId: "myCustomTaskNumber3",
                                 values: {
                                     someValue: "yes!",
                                     someOtherValue: 12345678
@@ -67,7 +67,7 @@ describe("graphql - tasks", () => {
                             },
                             {
                                 name: "My Custom Task #2",
-                                definitionId: "myCustomTask-2",
+                                definitionId: "myCustomTaskNumber2",
                                 values: {
                                     someValue: false,
                                     someOtherValue: 4321
@@ -83,7 +83,7 @@ describe("graphql - tasks", () => {
                             },
                             {
                                 name: "My Custom Task #1",
-                                definitionId: "myCustomTask-1",
+                                definitionId: "myCustomTaskNumber1",
                                 values: {
                                     someValue: true,
                                     someOtherValue: 123

@@ -31,7 +31,7 @@ describe("trigger crud", () => {
         const context = await handler.handle();
 
         const result = await context.tasks.trigger({
-            definition: "myCustomTask-1",
+            definition: "myCustomTaskNumber1",
             name: "A test of triggering task",
             values: {
                 myAnotherCustomValue: "myAnotherCustomValue",
@@ -42,7 +42,7 @@ describe("trigger crud", () => {
         expect(result).toEqual({
             id: expect.any(String),
             name: "A test of triggering task",
-            definitionId: "myCustomTask-1",
+            definitionId: "myCustomTaskNumber1",
             values: {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
