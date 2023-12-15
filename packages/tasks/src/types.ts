@@ -30,6 +30,12 @@ export enum TaskDataStatus {
     SUCCESS = "success",
     STOPPED = "stopped"
 }
+
+export interface ITaskIdentity {
+    id: string;
+    displayName: string | null;
+    type: string;
+}
 export interface ITaskData<T = any> {
     id: string;
     name: string;
@@ -38,6 +44,7 @@ export interface ITaskData<T = any> {
     values: T;
     createdOn: Date;
     savedOn: Date;
+    createdBy: ITaskIdentity;
     startedOn?: Date;
     finishedOn?: Date;
     log?: ITaskDataLog[];
@@ -124,7 +131,7 @@ export interface ITasksContextConfigObject {
 }
 
 export interface ITasksContextDefinitionObject {
-    getDefinition: (id: string) => ITaskDefinition | null;
+    getDefinition: <T = ITaskDataValues>(id: string) => ITaskDefinition<Context, T> | null;
     listDefinitions: () => ITaskDefinition[];
 }
 
@@ -195,11 +202,12 @@ export type ITaskDefinitionField = Pick<
     | "settings"
 >;
 
-export interface ITaskBeforeCreateParams {
-    definition: ITaskDefinition;
+export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataValues> {
+    context: C;
+    values: I;
 }
 
-export interface ITaskDefinition<C extends Context = Context, I = any> {
+export interface ITaskDefinition<C extends Context = Context, I = ITaskDataValues> {
     /**
      * ID of the task must be unique in the system.
      */
@@ -217,10 +225,12 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
      */
     run: (params: ITaskRunParams<C, I>) => Promise<ITaskResponseResult>;
     /**
-     * When a new task is about to be created, we will trigger this method.
+     * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
      */
-    onBeforeCreate?: (params: ITaskBeforeCreateParams) => Promise<void>;
+    onBeforeTrigger?: <T = ITaskDataValues>(
+        params: ITaskBeforeTriggerParams<C, T>
+    ) => Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      */

@@ -5,6 +5,7 @@ import { Context, IListTaskParams } from "~/types";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
 import { emptyResolver, resolve, resolveList } from "./utils";
+import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -28,12 +29,30 @@ interface IDeleteTaskMutationParams {
 export const createGraphQL = () => {
     return new ContextPlugin<Context>(async context => {
         const model = await context.tasks.getModel();
-        const { fields } = model;
+
+        const models = await context.security.withoutAuthorization(async () => {
+            return (await context.cms.listModels()).filter(model => {
+                if (model.fields.length === 0) {
+                    return false;
+                } else if (model.isPrivate) {
+                    return false;
+                }
+                return true;
+            });
+        });
         const fieldTypePlugins = createFieldTypePluginRecords(context.plugins);
+
+        const fields = renderFields({
+            models,
+            model,
+            fields: model.fields,
+            type: "manage",
+            fieldTypePlugins
+        });
 
         const listFilterFieldsRender = renderListFilterFields({
             model,
-            fields,
+            fields: model.fields,
             type: "manage",
             fieldTypePlugins,
             excludeFields: ["entryId", "status"]
@@ -41,7 +60,7 @@ export const createGraphQL = () => {
 
         const sortEnumRender = renderSortEnum({
             model,
-            fields,
+            fields: model.fields,
             fieldTypePlugins,
             sorterPlugins: []
         });
@@ -66,12 +85,8 @@ export const createGraphQL = () => {
                     id: String!
                     createdOn: DateTime!
                     savedOn: DateTime
-                    name: String!
-                    values: JSON
-                    status: WebinyTaskStatus!
-                    startedOn: DateTime
-                    finishedOn: DateTime
-                    log: JSON
+                    createdBy: WebinyTaskIdentity!
+                    ${fields.map(f => f.fields).join("\n")}
                 }
 
                 type WebinyTaskResponse {
@@ -109,18 +124,8 @@ export const createGraphQL = () => {
                     type: String
                 }
                 
-                type WebinyTriggeredTask {
-                    id: String!
-                    name: String!
-                    values: JSON
-                    createdOn: DateTime!
-                    savedOn: DateTime
-                    createdBy: WebinyTaskIdentity!
-                    status: WebinyTaskStatus!
-                }
-                
                 type WebinyTaskTriggerResponse {
-                    data: WebinyTriggeredTask
+                    data: WebinyTask
                     error: WebinyTaskError
                 }
                 

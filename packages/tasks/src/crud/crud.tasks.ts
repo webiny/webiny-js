@@ -37,6 +37,7 @@ const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
         id: entry.id,
         createdOn: getDate<Date>(entry.createdOn),
         savedOn: getDate<Date>(entry.savedOn),
+        createdBy: entry.createdBy,
         name: entry.values.name,
         definitionId: entry.values.definitionId,
         values: entry.values.values,

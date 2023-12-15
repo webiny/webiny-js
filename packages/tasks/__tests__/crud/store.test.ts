@@ -3,6 +3,7 @@ import { createTaskDefinition } from "~/task";
 import { TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
+import { createMockIdentity } from "~tests/mocks/identity";
 
 describe("store crud", () => {
     const handler = useHandler({
@@ -100,6 +101,7 @@ describe("store crud", () => {
                 someValue: true,
                 someOtherValue: 123
             },
+            createdBy: createMockIdentity(),
             log: [],
             startedOn: undefined,
             finishedOn: undefined,
@@ -138,6 +140,7 @@ describe("store crud", () => {
                 someOtherValue: 123,
                 addedNewValue: "yes!"
             },
+            createdBy: createMockIdentity(),
             log: [],
             startedOn: undefined,
             finishedOn: undefined,

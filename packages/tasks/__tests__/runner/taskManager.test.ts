@@ -129,7 +129,8 @@ describe("task manager", () => {
                                 message: "Task started.",
                                 createdOn: expect.any(String)
                             }
-                        ]
+                        ],
+                        startedOn: expect.stringMatching(/^20/)
                     }
                 },
                 stack: expect.any(String)

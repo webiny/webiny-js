@@ -2,7 +2,9 @@ import WebinyError from "@webiny/error";
 import {
     Context,
     ITaskConfig,
+    ITaskCreateData,
     ITaskData,
+    ITaskDataValues,
     ITasksContextTriggerObject,
     ITaskStopParams,
     ITaskTriggerParams,
@@ -28,7 +30,9 @@ export const createTriggerTasksCrud = (
     });
 
     return {
-        trigger: async <T = any>(params: ITaskTriggerParams<T>): Promise<ITaskData<T>> => {
+        trigger: async <T = ITaskDataValues>(
+            params: ITaskTriggerParams<T>
+        ): Promise<ITaskData<T>> => {
             const { definition: id, values, name } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -36,11 +40,19 @@ export const createTriggerTasksCrud = (
                     id
                 });
             }
-            const task = await context.tasks.createTask<T>({
+            const input: ITaskCreateData<T> = {
                 name: name || definition.title,
                 definitionId: id,
                 values: values || ({} as T)
-            });
+            };
+            if (definition.onBeforeTrigger) {
+                await definition.onBeforeTrigger<T>({
+                    context,
+                    values: input.values
+                });
+            }
+
+            const task = await context.tasks.createTask<T>(input);
 
             try {
                 const event = await createEventBridgeEvent(task);
