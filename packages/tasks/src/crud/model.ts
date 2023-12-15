@@ -104,6 +104,13 @@ const modelPlugin = createCmsModel({
             type: "json",
             label: "Log",
             multipleValues: true
+        },
+        {
+            id: "eventResponse",
+            fieldId: "eventResponse",
+            storageId: "object@eventResponse",
+            type: "json",
+            label: "Event Response"
         }
     ],
     layout: [],

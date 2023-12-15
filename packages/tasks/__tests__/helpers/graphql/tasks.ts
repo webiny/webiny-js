@@ -15,6 +15,7 @@ export const createListTasksQuery = () => {
                         status
                         createdOn
                         savedOn
+                        eventResponse
                         createdBy {
                             id
                             displayName

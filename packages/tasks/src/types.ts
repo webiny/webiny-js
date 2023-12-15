@@ -47,6 +47,7 @@ export interface ITaskData<T = any> {
     createdBy: ITaskIdentity;
     startedOn?: Date;
     finishedOn?: Date;
+    eventResponse: Record<string, any>;
     log?: ITaskDataLog[];
 }
 
@@ -76,6 +77,7 @@ export interface ITaskUpdateData<T = ITaskDataValues> {
     log?: ITaskDataLog[];
     startedOn?: string;
     finishedOn?: string;
+    eventResponse?: Record<string, any>;
 }
 
 export interface OnTaskBeforeCreateTopicParams {

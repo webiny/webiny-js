@@ -42,6 +42,7 @@ const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
         definitionId: entry.values.definitionId,
         values: entry.values.values,
         status: entry.values.status,
+        eventResponse: entry.values.eventResponse,
         startedOn: getDate(entry.values.startedOn),
         finishedOn: getDate(entry.values.finishedOn),
         log: entry.values.log

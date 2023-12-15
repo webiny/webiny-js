@@ -54,9 +54,19 @@ export const createTriggerTasksCrud = (
 
             const task = await context.tasks.createTask<T>(input);
 
+            let event: Record<string, any> | null = null;
             try {
-                const event = await createEventBridgeEvent(task);
-                console.log("EVENT: ", JSON.stringify(event));
+                event = await createEventBridgeEvent(task);
+
+                if (!event) {
+                    throw new WebinyError(
+                        `Could not create the Event Bridge Event!`,
+                        "CREATE_EVENT_BRIDGE_EVENT_ERROR",
+                        {
+                            task
+                        }
+                    );
+                }
             } catch (ex) {
                 /**
                  * In case of failure to create the Event Bridge Event, we need to delete the task that was meant to be created.
@@ -65,7 +75,10 @@ export const createTriggerTasksCrud = (
                 await context.tasks.deleteTask(task.id);
                 throw ex;
             }
-            return task;
+
+            return await context.tasks.updateTask(task.id, {
+                eventResponse: event
+            });
         },
         stop: async (params: ITaskStopParams): Promise<ITaskData> => {
             const task = await context.tasks.getTask(params.id);
