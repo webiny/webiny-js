@@ -2,21 +2,21 @@ import React from "react";
 import { Row, SortingState } from "@tanstack/react-table";
 import {
     Columns,
-    ColumnVisibility,
+    ColumnVisibility as IColumnVisibility,
     DefaultData,
     OnColumnVisibilityChange
 } from "@webiny/ui/DataTable";
 import { makeAutoObservable } from "mobx";
-import store from "store";
 import { ColumnConfig } from "~/config/table/Column";
+import { ColumnVisibility } from "~/components/Table/ColumnVisibility";
 
 export interface TablePresenterViewModel<T> {
     columns: Columns<T>;
     selectedRows: T[];
-    columnVisibility: ColumnVisibility;
+    columnVisibility: IColumnVisibility;
 }
 
-interface LoadConfigInterface<T> {
+interface LoadParamsInterface<T> {
     columns: ColumnConfig[];
     data: T[];
     nameColumnId?: string;
@@ -25,7 +25,7 @@ interface LoadConfigInterface<T> {
 }
 
 export interface ITablePresenter<T extends DefaultData> {
-    load: (configs: LoadConfigInterface<T>) => void;
+    load: (configs: LoadParamsInterface<T>) => void;
     onColumnVisibilityChange: OnColumnVisibilityChange;
     isRowSelectable: (row: Row<T>) => boolean;
     getInitialSorting: () => SortingState;
@@ -33,7 +33,7 @@ export interface ITablePresenter<T extends DefaultData> {
 }
 
 export class TablePresenter<T extends DefaultData> implements ITablePresenter<T> {
-    private storageKey: string;
+    private columnVisibility: ColumnVisibility;
     private columnConfigs: ColumnConfig[] | undefined;
     private data: T[];
     private selected: DefaultData[];
@@ -42,7 +42,6 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         item: T,
         cell: string | React.ReactElement
     ) => string | number | JSX.Element | null;
-    private columnVisibility: ColumnVisibility;
 
     constructor(
         cellRenderer: (
@@ -55,26 +54,24 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         this.selected = [];
         this.columnConfigs = undefined;
         this.nameColumnId = undefined;
-        this.storageKey = "";
-        this.columnVisibility = {};
+        this.columnVisibility = new ColumnVisibility();
 
         makeAutoObservable(this);
     }
 
-    load(config: LoadConfigInterface<T>) {
-        this.columnConfigs = config.columns;
-        this.data = config.data;
-        this.selected = config.selected;
-        this.nameColumnId = config.nameColumnId;
-        this.storageKey = `webiny_column_visibility_${config.namespace}`;
-        this.columnVisibility = this.getDefaultColumnVisibility();
+    load(params: LoadParamsInterface<T>) {
+        this.columnConfigs = params.columns;
+        this.data = params.data;
+        this.selected = params.selected;
+        this.nameColumnId = params.nameColumnId;
+        this.columnVisibility.load(params.namespace, params.columns);
     }
 
     get vm() {
         return {
             columns: this.getColumns(),
             selectedRows: this.getSelectedRows(),
-            columnVisibility: this.getColumnVisibility()
+            columnVisibility: this.columnVisibility.getState()
         };
     }
 
@@ -89,19 +86,6 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
                 desc: true
             }
         ];
-    };
-
-    public onColumnVisibilityChange: OnColumnVisibilityChange = updaterOrValue => {
-        if (typeof updaterOrValue === "function") {
-            this.columnVisibility = updaterOrValue(this.columnVisibility);
-        }
-
-        this.columnVisibility = {
-            ...this.columnVisibility,
-            ...updaterOrValue
-        };
-
-        this.setColumnVisibilityToStorage(this.columnVisibility);
     };
 
     private getColumns(): Columns<T> {
@@ -141,38 +125,6 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         return this.data.filter(row => this.selected.find(item => row.id === item.id));
     }
 
-    private getColumnVisibility() {
-        return this.columnVisibility;
-    }
-
-    private getDefaultColumnVisibility() {
-        if (!this.columnConfigs) {
-            return {};
-        }
-
-        const columnVisibilityFormStorage = this.getColumnVisibilityFromStorage();
-
-        if (columnVisibilityFormStorage) {
-            return columnVisibilityFormStorage;
-        }
-
-        return this.columnConfigs.reduce((columnVisibility, config) => {
-            const { name, visible } = config;
-
-            columnVisibility[name] = visible;
-
-            return columnVisibility;
-        }, {} as ColumnVisibility);
-    }
-
-    private getColumnVisibilityFromStorage() {
-        const value = store.get(this.storageKey);
-        console.log("store", value);
-
-        return value;
-    }
-
-    private setColumnVisibilityToStorage(value: ColumnVisibility) {
-        store.set(this.storageKey, value);
-    }
+    public onColumnVisibilityChange: OnColumnVisibilityChange = updaterOrValue =>
+        this.columnVisibility.onChange(updaterOrValue);
 }
