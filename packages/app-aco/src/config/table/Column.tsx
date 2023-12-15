@@ -12,6 +12,7 @@ export interface ColumnConfig {
     resizable: boolean;
     size: number;
     sortable: boolean;
+    visible: boolean;
 }
 
 export interface ColumnProps {
@@ -26,6 +27,7 @@ export interface ColumnProps {
     resizable?: boolean;
     size?: number;
     sortable?: boolean;
+    visible?: boolean;
 }
 
 const BaseColumn: React.FC<ColumnProps> = ({
@@ -39,7 +41,8 @@ const BaseColumn: React.FC<ColumnProps> = ({
     remove = false,
     resizable = true,
     size = 200,
-    sortable = false
+    sortable = false,
+    visible = true
 }) => {
     const getId = useIdGenerator("tableColumn");
 
@@ -61,6 +64,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 <Property id={getId(name, "resizable")} name={"resizable"} value={resizable} />
                 <Property id={getId(name, "hidable")} name={"hidable"} value={hidable} />
                 <Property id={getId(name, "size")} name={"size"} value={size} />
+                <Property id={getId(name, "visible")} name={"visible"} value={visible} />
                 {header ? (
                     <Property id={getId(name, "header")} name={"header"} value={header} />
                 ) : null}
