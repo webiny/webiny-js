@@ -16,6 +16,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
             <AcoTable<TableItem>
                 data={data}
                 nameColumnId={model.titleFieldId || "id"}
+                namespace={model.modelId}
                 loading={list.isListLoading}
                 onSortingChange={list.setSorting}
                 sorting={list.sorting}

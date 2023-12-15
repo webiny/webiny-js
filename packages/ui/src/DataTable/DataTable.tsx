@@ -66,7 +66,7 @@ export type DefaultData = {
     /*
      * Define if a specific row can be selected.
      */
-    selectable?: boolean;
+    $selectable?: boolean;
 };
 
 export type Sorting = SortingState;
@@ -274,6 +274,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
     stickyRows,
     bordered,
     sorting,
+    columnVisibility,
+    onColumnVisibilityChange,
     onSortingChange,
     isRowSelectable,
     canSelectAllRows = true,
@@ -321,8 +323,6 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
-    const [columnVisibility, setColumnVisibility] = React.useState({});
-
     const table = useReactTable({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, {
@@ -345,7 +345,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         enableSorting: !!onSortingChange,
         manualSorting: true,
         onSortingChange,
-        onColumnVisibilityChange: setColumnVisibility
+        onColumnVisibilityChange
     });
 
     return (

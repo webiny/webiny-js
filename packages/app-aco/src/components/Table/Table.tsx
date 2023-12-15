@@ -1,12 +1,15 @@
-import React, { useCallback, useMemo } from "react";
-import { Columns, DataTable, DefaultData, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+import React, { useEffect, useMemo } from "react";
+import { DataTable, DefaultData, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { useAcoConfig } from "~/config";
 import { TableCellProvider } from "~/components";
+import { observer } from "mobx-react-lite";
+import { TablePresenter } from "~/components/Table/TablePresenter";
 
 export interface TableProps<T> {
     data: T[];
     loading?: boolean;
     nameColumnId?: string;
+    namespace: string;
     onSelectRow?: (rows: T[] | []) => void;
     onSortingChange: OnSortingChange;
     onToggleRow?: (row: T) => void;
@@ -14,78 +17,43 @@ export interface TableProps<T> {
     sorting: Sorting;
 }
 
-export const Table = <T extends Record<string, any> & DefaultData>({
-    data,
-    loading,
-    nameColumnId = "name",
-    onSelectRow,
-    onSortingChange,
-    onToggleRow,
-    selected,
-    sorting
-}: TableProps<T>) => {
-    const { folder: folderConfig, table } = useAcoConfig();
+export const Table = observer(
+    <T extends Record<string, any> & DefaultData>(props: TableProps<T>) => {
+        const { table } = useAcoConfig();
+        const cellRenderer = (row: T, cell: string | React.ReactElement) => (
+            <TableCellProvider item={row}>{cell}</TableCellProvider>
+        );
 
-    const columns: Columns<T> = useMemo(() => {
-        return table.columns.reduce((obj, item) => {
-            const {
-                name: defaultName,
-                cell,
-                header,
-                size,
-                sortable,
-                resizable,
-                className,
-                hidable
-            } = item;
+        const presenter = useMemo<TablePresenter<T>>(() => {
+            return new TablePresenter<T>(cellRenderer);
+        }, []);
 
-            const name = defaultName === "name" ? nameColumnId : defaultName;
-            const cellRenderer = (item: T) => (
-                <TableCellProvider item={item}>{cell}</TableCellProvider>
-            );
+        useEffect(() => {
+            presenter.load({
+                columns: table.columns,
+                data: props.data,
+                nameColumnId: props.nameColumnId,
+                namespace: props.namespace,
+                selected: props.selected
+            });
+        }, [table.columns, props.nameColumnId, props.data, props.selected]);
 
-            obj[name as keyof Columns<T>] = {
-                header,
-                enableHiding: hidable,
-                enableSorting: sortable,
-                enableResizing: resizable,
-                size,
-                className,
-                ...(cell && { cell: cellRenderer })
-            };
-
-            return obj;
-        }, {} as Columns<T>);
-    }, [folderConfig, table]);
-
-    const isRowSelectable = useCallback(row => {
-        return row.original.$selectable;
-    }, []);
-
-    const selectedRows = useMemo(() => {
-        return data.filter(row => selected.find(item => row.id === item.id));
-    }, [data, selected]);
-
-    const initialSorting = [
-        {
-            id: "savedOn",
-            desc: true
-        }
-    ];
-
-    return (
-        <DataTable
-            columns={columns}
-            data={data}
-            initialSorting={initialSorting}
-            isRowSelectable={isRowSelectable}
-            loadingInitial={loading}
-            onSelectRow={onSelectRow}
-            onSortingChange={onSortingChange}
-            onToggleRow={onToggleRow}
-            selectedRows={selectedRows}
-            sorting={sorting}
-            stickyRows={1}
-        />
-    );
-};
+        return (
+            <DataTable
+                columns={presenter.vm.columns}
+                columnVisibility={presenter.vm.columnVisibility}
+                data={props.data}
+                initialSorting={presenter.getInitialSorting()}
+                isRowSelectable={presenter.isRowSelectable}
+                loadingInitial={props.loading}
+                onColumnVisibilityChange={presenter.onColumnVisibilityChange}
+                onSelectRow={props.onSelectRow}
+                onSortingChange={props.onSortingChange}
+                onToggleRow={props.onToggleRow}
+                selectedRows={presenter.vm.selectedRows}
+                sorting={props.sorting}
+                stickyRows={1}
+            />
+        );
+    }
+);
