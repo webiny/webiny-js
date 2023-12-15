@@ -212,6 +212,7 @@ export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITask
 export interface ITaskDefinition<C extends Context = Context, I = ITaskDataValues> {
     /**
      * ID of the task must be unique in the system.
+     * It should be in camelCase format, for example: "myCustomTask".
      */
     id: string;
     /**

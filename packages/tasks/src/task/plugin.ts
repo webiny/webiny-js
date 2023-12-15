@@ -1,3 +1,5 @@
+import camelCase from "lodash/camelCase";
+import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
 import { Context, ITaskDefinition, ITaskDefinitionField } from "~/types";
 
@@ -51,6 +53,7 @@ export class TaskDefinitionPlugin<C extends Context = Context, I = any>
         if (typeof task.config === "function") {
             task.config(this);
         }
+        this.validate();
     }
 
     public getTask() {
@@ -64,6 +67,16 @@ export class TaskDefinitionPlugin<C extends Context = Context, I = any>
 
     public addField(field: ITaskDefinitionField) {
         this.task.fields = (this.task.fields || []).concat([field]);
+    }
+    /**
+     * TODO implement zod validation if validation becomes too complex
+     */
+    private validate(): void {
+        if (camelCase(this.task.id) !== this.task.id) {
+            throw new WebinyError(
+                `Task ID "${this.task.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`
+            );
+        }
     }
 }
 
