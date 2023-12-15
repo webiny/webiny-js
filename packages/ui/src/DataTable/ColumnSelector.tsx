@@ -1,14 +1,10 @@
 import React, { ReactNode, useMemo } from "react";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import { IconButton } from "~/Button";
-import { MenuDivider } from "~/Menu";
+import { Menu, MenuDivider } from "~/Menu";
 import { Column, flexRender, Header } from "@tanstack/react-table";
 import { Checkbox } from "~/Checkbox";
-import {
-    ColumnVisibilityMenu,
-    ColumnVisibilityMenuHeader,
-    ColumnVisibilityMenuItem
-} from "~/DataTable/styled";
+import { ColumnVisibilityMenuHeader, ColumnVisibilityMenuItem } from "~/DataTable/styled";
 
 interface ColumnSelectorProps<T> {
     columns: Column<T>[];
@@ -43,7 +39,7 @@ export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
     }
 
     return (
-        <ColumnVisibilityMenu handle={<IconButton icon={<SettingsIcon />} />}>
+        <Menu handle={<IconButton icon={<SettingsIcon />} />}>
             <ColumnVisibilityMenuHeader use={"subtitle2"} tag={"h6"}>
                 {"Toggle column visibility"}
             </ColumnVisibilityMenuHeader>
@@ -59,6 +55,6 @@ export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
                     </ColumnVisibilityMenuItem>
                 );
             })}
-        </ColumnVisibilityMenu>
+        </Menu>
     );
 };

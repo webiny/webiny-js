@@ -1,15 +1,8 @@
 import React, { useMemo } from "react";
 
-import {
-    DataTableContent,
-    DataTableHead,
-    DataTableRow,
-    DataTableBody,
-    DataTableCellProps
-} from "@rmwc/data-table";
+import { DataTableContent, DataTableCellProps } from "@rmwc/data-table";
 
 import {
-    flexRender,
     getCoreRowModel,
     useReactTable,
     ColumnDef,
@@ -23,12 +16,11 @@ import {
 
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
+import { TableHead } from "~/DataTable/TableHead";
+import { TableBody } from "~/DataTable/TableBody";
 
 import "@rmwc/data-table/data-table.css";
-import { TableRow } from "~/DataTable/TableRow";
-import { ColumnDirection } from "~/DataTable/ColumnDirection";
-import { ColumnHeaderWrapper, Resizer, Table, TableHeadCell } from "./styled";
-import { ColumnSelector } from "~/DataTable/ColumnSelector";
+import { Table } from "./styled";
 
 interface Column<T> {
     /*
@@ -358,67 +350,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         <>
             <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
                 <DataTableContent>
-                    <DataTableHead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <DataTableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header, index) => {
-                                    const hasColumnVisibilityMenu =
-                                        index === headerGroup.headers.length - 1;
-
-                                    return (
-                                        <TableHeadCell
-                                            key={header.id}
-                                            {...header.column.columnDef.meta}
-                                            colSpan={header.colSpan}
-                                            style={{ width: header.getSize() }}
-                                        >
-                                            {header.isPlaceholder ? null : (
-                                                <ColumnHeaderWrapper
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                    sortable={header.column.getCanSort()}
-                                                    hasColumnVisibilityMenu={
-                                                        hasColumnVisibilityMenu
-                                                    }
-                                                >
-                                                    {flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                                    <ColumnDirection
-                                                        direction={
-                                                            header.column.getIsSorted() || undefined
-                                                        }
-                                                    />
-                                                    {hasColumnVisibilityMenu && (
-                                                        <ColumnSelector
-                                                            columns={table.getAllColumns()}
-                                                            headers={table.getFlatHeaders()}
-                                                        />
-                                                    )}
-                                                </ColumnHeaderWrapper>
-                                            )}
-                                            {header.column.getCanResize() && (
-                                                <Resizer
-                                                    onMouseDown={header.getResizeHandler()}
-                                                    onTouchStart={header.getResizeHandler()}
-                                                    isResizing={header.column.getIsResizing()}
-                                                />
-                                            )}
-                                        </TableHeadCell>
-                                    );
-                                })}
-                            </DataTableRow>
-                        ))}
-                    </DataTableHead>
-                    <DataTableBody>
-                        {table.getRowModel().rows.map(row => (
-                            <TableRow<T>
-                                key={row.original.id || row.id}
-                                selected={row.getIsSelected()}
-                                visibleCells={row.getVisibleCells()}
-                            />
-                        ))}
-                    </DataTableBody>
+                    <TableHead table={table} />
+                    <TableBody table={table} />
                 </DataTableContent>
             </Table>
         </>

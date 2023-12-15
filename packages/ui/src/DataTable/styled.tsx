@@ -9,7 +9,6 @@ import {
     DataTableHeadCellProps
 } from "@rmwc/data-table";
 import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
-import { Menu } from "~/Menu";
 import { Typography } from "~/Typography";
 
 interface TableProps extends DataTableProps {
@@ -87,19 +86,11 @@ export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
     transform: ${props => (props.direction === "asc" ? "rotate(180deg)" : "rotate(0deg)")};
 `;
 
-export const ColumnVisibilityMenu = styled(Menu)`
-    min-width: 250px;
-`;
-
 export const ColumnVisibilityMenuHeader = styled(Typography)`
     padding: 4px 16px;
     font-weight: 600;
 `;
 
 export const ColumnVisibilityMenuItem = styled("div")`
-    padding: 4px 16px 8px;
-
-    &:last-child {
-        padding-bottom: 4px;
-    }
+    padding: 0 16px;
 `;
