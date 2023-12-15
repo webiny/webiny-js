@@ -10,11 +10,13 @@ import {
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseFromParams,
-    IResponseResult
+    IResponseResult,
+    IResponseStoppedResult
 } from "./abstractions";
 import { ResponseContinueResult } from "~/response/ResponseContinueResult";
 import { ResponseDoneResult } from "~/response/ResponseDoneResult";
 import { ResponseErrorResult } from "~/response/ResponseErrorResult";
+import { ResponseStoppedResult } from "./ResponseStoppedResult";
 
 const transformError = (error: IResponseError): IResponseError => {
     return {
@@ -58,6 +60,14 @@ export class Response implements IResponse {
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
             message: params?.message
+        });
+    }
+
+    public stopped(): IResponseStoppedResult {
+        return new ResponseStoppedResult({
+            webinyTaskId: this.event.webinyTaskId,
+            tenant: this.event.tenant,
+            locale: this.event.locale
         });
     }
 

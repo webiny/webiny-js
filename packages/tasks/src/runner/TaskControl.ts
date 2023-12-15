@@ -1,5 +1,5 @@
 import { ITaskEvent } from "~/handler/types";
-import { Context, ITaskData } from "~/types";
+import { Context, ITaskData, TaskDataStatus } from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
 import { IResponse, IResponseErrorResult } from "~/response/abstractions";
@@ -29,6 +29,13 @@ export class TaskControl implements ITaskControl {
             task = await this.getTask(taskId);
         } catch (ex: unknown) {
             return ex as IResponseErrorResult;
+        }
+        /**
+         * Make sure that task does not run if it is stopped.
+         * This will effectively end the Step Function execution with a "success" status.
+         */
+        if (task.status === TaskDataStatus.STOPPED) {
+            return this.response.stopped();
         }
 
         const databaseResponse = new DatabaseResponse(this.response, task, this.context);

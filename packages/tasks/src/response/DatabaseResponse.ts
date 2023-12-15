@@ -32,6 +32,8 @@ export class DatabaseResponse implements IResponseAsync {
                 return this.continue(result);
             case TaskResponseStatus.ERROR:
                 return this.error(result);
+            case TaskResponseStatus.STOPPED:
+                return this.stopped();
         }
     }
 
@@ -40,6 +42,7 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 status: TaskDataStatus.SUCCESS,
+                finishedOn: new Date().toISOString(),
                 log: (this.task.log || []).concat([
                     {
                         message: message || "Task done.",
@@ -57,6 +60,10 @@ export class DatabaseResponse implements IResponseAsync {
             ...params,
             message
         });
+    }
+
+    public async stopped() {
+        return this.response.stopped();
     }
 
     public async continue(
@@ -110,6 +117,7 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             await this.context.tasks.updateTask(this.task.id, {
                 status: TaskDataStatus.FAILED,
+                finishedOn: new Date().toISOString(),
                 log: (this.task.log || []).concat([
                     {
                         message: params.error.message,

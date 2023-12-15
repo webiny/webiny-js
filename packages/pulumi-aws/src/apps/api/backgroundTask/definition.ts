@@ -93,6 +93,11 @@ export const createBackgroundTaskDefinition = (
                         Variable: "$.status",
                         StringEquals: "done",
                         Next: "Done"
+                    },
+                    {
+                        Variable: "$.status",
+                        StringEquals: "stopped",
+                        Next: "Stopped"
                     }
                 ],
                 Default: "UnknownStatus"
@@ -125,6 +130,9 @@ export const createBackgroundTaskDefinition = (
              * Complete the task.
              */
             Done: {
+                Type: StepFunctionDefinitionStatesType.Succeed
+            },
+            Stopped: {
                 Type: StepFunctionDefinitionStatesType.Succeed
             }
         }

@@ -10,6 +10,11 @@ interface IGetTaskQueryParams {
     id: string;
 }
 
+interface IStopTaskMutationParams {
+    id: string;
+    message?: string;
+}
+
 interface ITriggerTaskMutationParams {
     name?: string;
     definition: string;
@@ -165,6 +170,7 @@ export const createGraphQL = () => {
 
                 extend type WebinyTaskMutation {
                     triggerTask(definition: ID!, values: JSON, name: String): WebinyTaskTriggerResponse!
+                    stopTask(id: ID!, message: String): WebinyTaskResponse!
                     deleteTask(id: ID!): WebinyTaskDeleteResponse!
                 }
             `,
@@ -197,6 +203,15 @@ export const createGraphQL = () => {
                     }
                 },
                 WebinyTaskMutation: {
+                    /**
+                     * We need to think of a way to pass the args type to the resolver without assigning it directly.
+                     */
+                    // @ts-expect-error
+                    stopTask: async (_, args: IStopTaskMutationParams, context: Context) => {
+                        return resolve(async () => {
+                            return await context.tasks.stop(args);
+                        });
+                    },
                     /**
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */

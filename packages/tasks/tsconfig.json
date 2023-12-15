@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
+    { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
@@ -27,6 +28,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],

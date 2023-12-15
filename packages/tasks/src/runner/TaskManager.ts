@@ -42,10 +42,23 @@ export class TaskManager<T = unknown> implements ITaskManager {
             return this.response.continue({
                 values: this.task.values
             });
-        } else if (this.task.status === TaskDataStatus.PENDING) {
+        }
+        /**
+         * If task was stopped, do not run it again, return as it was done.
+         */
+        //
+        else if (this.task.status === TaskDataStatus.STOPPED) {
+            return this.response.stopped();
+        }
+        /**
+         * If the task status is pending, update it to running and add a log.
+         */
+        //
+        else if (this.task.status === TaskDataStatus.PENDING) {
             try {
                 await this.context.tasks.updateTask(this.task.id, {
                     status: TaskDataStatus.RUNNING,
+                    startedOn: new Date().toISOString(),
                     log: (this.task.log || []).concat([
                         {
                             message: "Task started.",
@@ -70,6 +83,9 @@ export class TaskManager<T = unknown> implements ITaskManager {
                 task: structuredClone(this.task),
                 isCloseToTimeout: () => {
                     return this.runner.isCloseToTimeout();
+                },
+                isStopped: () => {
+                    return this.task.status === TaskDataStatus.STOPPED;
                 }
             });
         } catch (ex) {

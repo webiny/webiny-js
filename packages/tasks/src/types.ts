@@ -27,7 +27,8 @@ export enum TaskDataStatus {
     PENDING = "pending",
     RUNNING = "running",
     FAILED = "failed",
-    SUCCESS = "success"
+    SUCCESS = "success",
+    STOPPED = "stopped"
 }
 export interface ITaskData<T = any> {
     id: string;
@@ -66,6 +67,8 @@ export interface ITaskUpdateData<T = ITaskDataValues> {
     values?: T;
     status?: TaskDataStatus;
     log?: ITaskDataLog[];
+    startedOn?: string;
+    finishedOn?: string;
 }
 
 export interface OnTaskBeforeCreateTopicParams {
@@ -125,14 +128,20 @@ export interface ITasksContextDefinitionObject {
     listDefinitions: () => ITaskDefinition[];
 }
 
-export interface ITaskTriggerParams<T = any> {
+export interface ITaskTriggerParams<T = ITaskDataValues> {
     definition: string;
     name?: string;
     values?: T;
 }
 
+export interface ITaskStopParams {
+    id: string;
+    message?: string;
+}
+
 export interface ITasksContextTriggerObject {
-    trigger: <T = any>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
+    trigger: <T = ITaskDataValues>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
+    stop: <T = ITaskDataValues>(params: ITaskStopParams) => Promise<ITaskData<T>>;
 }
 
 export interface ITasksContextObject
@@ -149,6 +158,7 @@ export interface ITaskRunParams<C extends Context, I = any> {
     context: C;
     response: ITaskResponse;
     isCloseToTimeout: () => boolean;
+    isStopped: () => boolean;
     values: I;
     task: ITaskData<I>;
 }
@@ -166,7 +176,8 @@ export interface ITaskErrorParams<C extends Context, I = any> {
 export enum TaskResponseStatus {
     DONE = "done",
     ERROR = "error",
-    CONTINUE = "continue"
+    CONTINUE = "continue",
+    STOPPED = "stopped"
 }
 
 export type ITaskDefinitionField = Pick<
@@ -183,6 +194,10 @@ export type ITaskDefinitionField = Pick<
     | "multipleValues"
     | "settings"
 >;
+
+export interface ITaskBeforeCreateParams {
+    definition: ITaskDefinition;
+}
 
 export interface ITaskDefinition<C extends Context = Context, I = any> {
     /**
@@ -201,6 +216,11 @@ export interface ITaskDefinition<C extends Context = Context, I = any> {
      * Task run method.
      */
     run: (params: ITaskRunParams<C, I>) => Promise<ITaskResponseResult>;
+    /**
+     * When a new task is about to be created, we will trigger this method.
+     * For example, you can use this method to check if there is a task of the same type already running.
+     */
+    onBeforeCreate?: (params: ITaskBeforeCreateParams) => Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      */
