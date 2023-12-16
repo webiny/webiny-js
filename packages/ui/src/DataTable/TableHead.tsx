@@ -15,8 +15,9 @@ export const TableHead = <T,>(props: TableHeadProps<T>) => {
             {props.table.getHeaderGroups().map(headerGroup => (
                 <DataTableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header, index) => {
-                        const hasColumnVisibilityMenu = index === headerGroup.headers.length - 1;
+                        const isLastCell = index === headerGroup.headers.length - 1;
 
+                        console.log("colSpan", header.colSpan, header.getSize());
                         return (
                             <TableHeadCell
                                 key={header.id}
@@ -28,7 +29,7 @@ export const TableHead = <T,>(props: TableHeadProps<T>) => {
                                     <ColumnHeaderWrapper
                                         onClick={header.column.getToggleSortingHandler()}
                                         sortable={header.column.getCanSort()}
-                                        hasColumnVisibilityMenu={hasColumnVisibilityMenu}
+                                        isLastCell={isLastCell}
                                     >
                                         {flexRender(
                                             header.column.columnDef.header,
@@ -37,7 +38,7 @@ export const TableHead = <T,>(props: TableHeadProps<T>) => {
                                         <ColumnDirection
                                             direction={header.column.getIsSorted() || undefined}
                                         />
-                                        {hasColumnVisibilityMenu && (
+                                        {isLastCell && (
                                             <ColumnSelector
                                                 columns={props.table.getAllColumns()}
                                                 headers={props.table.getFlatHeaders()}
