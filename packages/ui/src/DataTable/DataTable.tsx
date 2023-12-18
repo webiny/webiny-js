@@ -94,6 +94,8 @@ export type DefaultData = {
     $selectable?: boolean;
 };
 
+export type TableRow<T> = Row<T>;
+
 export type Sorting = SortingState;
 
 export type OnSortingChange = OnChangeFn<Sorting>;

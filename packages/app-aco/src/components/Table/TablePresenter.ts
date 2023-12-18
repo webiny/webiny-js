@@ -1,10 +1,11 @@
 import React from "react";
-import { Row, SortingState } from "@tanstack/react-table";
 import {
     Columns,
     ColumnVisibility as IColumnVisibility,
     DefaultData,
-    OnColumnVisibilityChange
+    OnColumnVisibilityChange,
+    Sorting,
+    TableRow
 } from "@webiny/ui/DataTable";
 import { makeAutoObservable } from "mobx";
 import { ColumnConfig } from "~/config/table/Column";
@@ -14,7 +15,7 @@ export interface TablePresenterViewModel<T> {
     columns: Columns<T>;
     selectedRows: T[];
     columnVisibility: IColumnVisibility;
-    initialSorting: SortingState;
+    initialSorting: Sorting;
 }
 
 interface LoadParamsInterface<T> {
@@ -28,7 +29,7 @@ interface LoadParamsInterface<T> {
 export interface ITablePresenter<T extends DefaultData> {
     load: (configs: LoadParamsInterface<T>) => void;
     onColumnVisibilityChange: OnColumnVisibilityChange;
-    isRowSelectable: (row: Row<T>) => boolean;
+    isRowSelectable: (row: TableRow<T>) => boolean;
     get vm(): TablePresenterViewModel<T>;
 }
 
@@ -76,7 +77,7 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         };
     }
 
-    public isRowSelectable(row: Row<T>) {
+    public isRowSelectable(row: TableRow<T>) {
         return row.original.$selectable || false;
     }
 
