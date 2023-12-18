@@ -10,3 +10,5 @@ export const createBackgroundTaskGraphQL = (): Plugin[] => {
 export const createBackgroundTaskContext = (config?: ITaskConfig): Plugin[] => {
     return createTasksContext(config);
 };
+
+export * from "./task";

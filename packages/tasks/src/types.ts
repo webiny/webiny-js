@@ -7,6 +7,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
+import { ITaskManagerStore } from "./runner/abstractions/ITaskManagerStore";
 
 export interface ITaskConfig {
     readonly eventBusName: string;
@@ -169,7 +170,7 @@ export interface ITaskRunParams<C extends Context, I = any> {
     isCloseToTimeout: () => boolean;
     isStopped: () => boolean;
     values: I;
-    task: ITaskData<I>;
+    store: ITaskManagerStore;
 }
 
 export interface ITaskSuccessParams<C extends Context, I = any> {

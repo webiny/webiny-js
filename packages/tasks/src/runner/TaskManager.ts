@@ -7,6 +7,8 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { TaskResponse } from "~/response";
+import { ITaskManagerStore } from "~/runner/abstractions/ITaskManagerStore";
+import { TaskManagerStore } from "~/runner/TaskManagerStore";
 
 export class TaskManager<T = unknown> implements ITaskManager {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
@@ -15,6 +17,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
     private readonly task: ITaskData<T>;
     private readonly response: IResponse;
     private readonly taskResponse: ITaskResponse;
+    private readonly store: ITaskManagerStore;
 
     public constructor(
         runner: Pick<ITaskRunner, "isCloseToTimeout">,
@@ -29,6 +32,7 @@ export class TaskManager<T = unknown> implements ITaskManager {
         this.definition = definition;
         this.task = task;
         this.taskResponse = new TaskResponse(this.response);
+        this.store = new TaskManagerStore(this.context, this.task);
     }
 
     public async run(): Promise<IResponseResult> {
@@ -80,13 +84,13 @@ export class TaskManager<T = unknown> implements ITaskManager {
                 values: structuredClone(this.task.values),
                 context: this.context,
                 response: this.taskResponse,
-                task: structuredClone(this.task),
                 isCloseToTimeout: () => {
                     return this.runner.isCloseToTimeout();
                 },
                 isStopped: () => {
                     return this.task.status === TaskDataStatus.STOPPED;
-                }
+                },
+                store: this.store
             });
         } catch (ex) {
             return this.response.error({
@@ -102,6 +106,8 @@ export class TaskManager<T = unknown> implements ITaskManager {
             return this.response.error({
                 error: result.error
             });
+        } else if (result.status === TaskResponseStatus.STOPPED) {
+            return this.response.stopped();
         }
         return this.response.done({
             message: result.message

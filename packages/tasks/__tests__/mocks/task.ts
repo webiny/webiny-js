@@ -1,4 +1,5 @@
 import { ITaskData, TaskDataStatus } from "~/types";
+import { createMockIdentity } from "./identity";
 
 export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
     return {
@@ -10,6 +11,8 @@ export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
         createdOn: new Date(),
         savedOn: new Date(),
         status: TaskDataStatus.PENDING,
+        createdBy: createMockIdentity(),
+        eventResponse: {},
         ...task
     };
 };

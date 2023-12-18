@@ -4,7 +4,8 @@ import {
     ITaskResponse,
     ITaskResponseContinueResult,
     ITaskResponseDoneResult,
-    ITaskResponseErrorResult
+    ITaskResponseErrorResult,
+    ITaskResponseStoppedResult
 } from "./abstractions";
 import { ITaskDataValues } from "~/types";
 
@@ -31,5 +32,9 @@ export class TaskResponse implements ITaskResponse {
         return this.response.error({
             error
         });
+    }
+
+    public stopped(): ITaskResponseStoppedResult {
+        return this.response.stopped();
     }
 }

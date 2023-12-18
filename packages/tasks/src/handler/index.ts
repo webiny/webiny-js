@@ -50,7 +50,6 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
         app.post(url, async (request, reply) => {
             const handler = new TaskRunner(
-                event,
                 context,
                 request,
                 reply,
@@ -60,7 +59,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 app.webiny as Context
             );
 
-            app.__webiny_raw_result = await handler.run();
+            app.__webiny_raw_result = await handler.run(event);
             return reply.send({});
         });
         return execute({

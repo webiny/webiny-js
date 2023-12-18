@@ -4,7 +4,8 @@ import { IResponseError } from "./ResponseErrorResult";
 export type ITaskResponseResult =
     | ITaskResponseDoneResult
     | ITaskResponseContinueResult
-    | ITaskResponseErrorResult;
+    | ITaskResponseErrorResult
+    | ITaskResponseStoppedResult;
 
 export interface ITaskResponseDoneResult {
     message?: string;
@@ -21,8 +22,13 @@ export interface ITaskResponseErrorResult {
     status: TaskResponseStatus.ERROR;
 }
 
+export interface ITaskResponseStoppedResult {
+    status: TaskResponseStatus.STOPPED;
+}
+
 export interface ITaskResponse<T = ITaskDataValues> {
     done: (message?: string) => ITaskResponseDoneResult;
     continue: (values: T) => ITaskResponseContinueResult<T>;
     error: (error: IResponseError) => ITaskResponseErrorResult;
+    stopped: () => ITaskResponseStoppedResult;
 }

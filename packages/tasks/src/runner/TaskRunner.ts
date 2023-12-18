@@ -6,6 +6,7 @@ import { Context } from "~/types";
 import { Response } from "~/response";
 import { TaskControl } from "./TaskControl";
 import { TaskEventValidation } from "./TaskEventValidation";
+import { IResponseResult } from "~/response/abstractions";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -25,7 +26,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     public readonly request: Request;
     public readonly reply: Reply;
     public readonly context: C;
-    public readonly event: ITaskEvent;
     public readonly lambdaContext: LambdaContext;
     private readonly validation: TaskEventValidation;
 
@@ -33,7 +33,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
     public constructor(
-        event: ITaskEvent,
         lambdaContext: LambdaContext,
         request: Request,
         reply: Reply,
@@ -43,7 +42,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.request = request;
         this.reply = reply;
         this.context = context;
-        this.event = event;
         this.lambdaContext = lambdaContext;
         this.validation = validation;
     }
@@ -59,12 +57,12 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         return this.lambdaContext.getRemainingTimeInMillis();
     }
 
-    public async run() {
-        const response = new Response(this.event);
+    public async run(input: ITaskEvent): Promise<IResponseResult> {
+        const response = new Response(input);
 
-        let result: ITaskEvent;
+        let event: ITaskEvent;
         try {
-            result = this.validation.validate(this.event);
+            event = this.validation.validate(input);
         } catch (ex) {
             return response.error({
                 error: ex
@@ -74,7 +72,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         const control = new TaskControl(this, response, this.context);
 
         try {
-            return await control.run(result);
+            return await control.run(event);
         } catch (ex) {
             return response.error({
                 error: ex
