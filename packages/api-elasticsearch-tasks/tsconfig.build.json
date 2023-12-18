@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-elasticsearch/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}
