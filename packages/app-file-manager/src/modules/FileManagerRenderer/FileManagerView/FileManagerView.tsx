@@ -50,8 +50,6 @@ const FileListWrapper = styled("div")({
         display: "inline-table"
     },
     ".mdc-data-table__cell": {
-        width: "250px",
-        maxWidth: "250px",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"

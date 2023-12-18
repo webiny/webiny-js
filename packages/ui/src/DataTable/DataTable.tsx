@@ -1,26 +1,51 @@
-import React, { useMemo } from "react";
-
-import { DataTableContent, DataTableCellProps } from "@rmwc/data-table";
+import React, {
+    ReactElement,
+    memo,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
+} from "react";
 
 import {
-    getCoreRowModel,
-    useReactTable,
+    DataTableBody,
+    DataTableCellProps,
+    DataTableContent,
+    DataTableHead,
+    DataTableRow
+} from "@rmwc/data-table";
+
+import {
+    Cell,
+    Column as DefaultColumn,
     ColumnDef,
-    getSortedRowModel,
     OnChangeFn,
-    SortingState,
-    RowSelectionState,
     Row,
-    VisibilityState
+    RowSelectionState,
+    SortingState,
+    VisibilityState,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
+    useReactTable
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
-import { TableHead } from "~/DataTable/TableHead";
-import { TableBody } from "~/DataTable/TableBody";
+import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
+import { ColumnSelector } from "~/DataTable/ColumnSelector";
 
 import "@rmwc/data-table/data-table.css";
-import { Table } from "./styled";
+import {
+    ColumnDirectionIcon,
+    ColumnDirectionWrapper,
+    ColumnHeaderWrapper,
+    DataTableCell,
+    Resizer,
+    Table,
+    TableHeadCell
+} from "./styled";
 
 interface Column<T> {
     /*
@@ -264,6 +289,55 @@ const defineData = <T,>(
     return data;
 };
 
+const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
+    if (direction) {
+        return (
+            <ColumnDirectionWrapper>
+                <ColumnDirectionIcon direction={direction} />
+            </ColumnDirectionWrapper>
+        );
+    }
+
+    return null;
+};
+
+const typedMemo: <T>(component: T) => T = memo;
+
+interface TableCellProps<T> {
+    cell: Cell<T, unknown>;
+    getColumnWidth: (column: DefaultColumn<T>) => number;
+}
+
+const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
+    const width = getColumnWidth(cell.column);
+
+    return (
+        <DataTableCell {...cell.column.columnDef.meta} style={{ width }}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </DataTableCell>
+    );
+};
+
+const MemoTableCell = typedMemo(TableCell);
+
+interface TableRowProps<T> {
+    selected: boolean;
+    cells: Cell<T, unknown>[];
+    getColumnWidth: (column: DefaultColumn<T>) => number;
+}
+
+const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => {
+    return (
+        <DataTableRow selected={selected}>
+            {cells.map(cell => (
+                <MemoTableCell<T> key={cell.id} cell={cell} getColumnWidth={getColumnWidth} />
+            ))}
+        </DataTableRow>
+    );
+};
+
+const MemoTableRow = typedMemo(TableRow);
+
 export const DataTable = <T extends Record<string, any> & DefaultData>({
     data,
     columns,
@@ -282,6 +356,26 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
     selectedRows = [],
     initialSorting
 }: Props<T>) => {
+    const tableRef = useRef<HTMLDivElement>(null);
+    const [tableWidth, setTableWidth] = useState(1);
+
+    useEffect(() => {
+        const updateElementWidth = () => {
+            if (tableRef.current) {
+                const width = tableRef.current.clientWidth;
+                setTableWidth(width);
+            }
+        };
+
+        updateElementWidth();
+
+        window.addEventListener("resize", updateElementWidth);
+
+        return () => {
+            window.removeEventListener("resize", updateElementWidth);
+        };
+    }, [tableRef.current]);
+
     const rowSelection = useMemo(() => {
         return selectedRows.reduce<RowSelectionState>((acc, item) => {
             const recordIndex = data.findIndex(rec => rec.id === item.id);
@@ -345,17 +439,89 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         enableSorting: !!onSortingChange,
         manualSorting: true,
         onSortingChange,
+        enableHiding: !!onColumnVisibilityChange,
         onColumnVisibilityChange
     });
 
+    const getColumnWidth = useCallback(
+        (column: DefaultColumn<T>): number => {
+            if (!column.getCanResize()) {
+                return column.getSize();
+            }
+
+            const tableSize = table.getTotalSize();
+            const columnSize = column.getSize();
+
+            return Math.ceil((columnSize * tableWidth) / tableSize);
+        },
+        [table, tableWidth]
+    );
+
     return (
-        <>
+        <div ref={tableRef}>
             <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
                 <DataTableContent>
-                    <TableHead table={table} />
-                    <TableBody table={table} />
+                    <DataTableHead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <DataTableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header, index) => {
+                                    const isLastCell = index === headerGroup.headers.length - 1;
+                                    const width = getColumnWidth(header.column);
+
+                                    return (
+                                        <TableHeadCell
+                                            key={header.id}
+                                            {...header.column.columnDef.meta}
+                                            colSpan={header.colSpan}
+                                            style={{ width }}
+                                        >
+                                            {header.isPlaceholder ? null : (
+                                                <ColumnHeaderWrapper
+                                                    onClick={header.column.getToggleSortingHandler()}
+                                                    sortable={header.column.getCanSort()}
+                                                    isLastCell={isLastCell}
+                                                >
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                                    <ColumnDirection
+                                                        direction={
+                                                            header.column.getIsSorted() || undefined
+                                                        }
+                                                    />
+                                                    {isLastCell && (
+                                                        <ColumnSelector
+                                                            columns={table.getAllColumns()}
+                                                        />
+                                                    )}
+                                                </ColumnHeaderWrapper>
+                                            )}
+                                            {header.column.getCanResize() && (
+                                                <Resizer
+                                                    onMouseDown={header.getResizeHandler()}
+                                                    onTouchStart={header.getResizeHandler()}
+                                                    isResizing={header.column.getIsResizing()}
+                                                />
+                                            )}
+                                        </TableHeadCell>
+                                    );
+                                })}
+                            </DataTableRow>
+                        ))}
+                    </DataTableHead>
+                    <DataTableBody>
+                        {table.getRowModel().rows.map(row => (
+                            <MemoTableRow<T>
+                                key={row.original.id || row.id}
+                                cells={row.getVisibleCells()}
+                                selected={row.getIsSelected()}
+                                getColumnWidth={getColumnWidth}
+                            />
+                        ))}
+                    </DataTableBody>
                 </DataTableContent>
             </Table>
-        </>
+        </div>
     );
 };

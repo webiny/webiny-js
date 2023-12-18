@@ -21,6 +21,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
                 sorting={list.sorting}
                 onSortingChange={list.setSorting}
                 selected={list.selected}
+                namespace={"pb.page"}
             />
         </div>
     );

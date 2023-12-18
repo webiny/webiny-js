@@ -4,9 +4,11 @@ import styled from "@emotion/styled";
 import { ReactComponent as ArrowDown } from "@material-design-icons/svg/outlined/arrow_downward.svg";
 import {
     DataTable as RmwcDataTable,
+    DataTableCell as RmwcDataTableCell,
     DataTableHeadCell as RmwcDataTableHeadCell,
     DataTableProps,
-    DataTableHeadCellProps
+    DataTableHeadCellProps,
+    DataTableCellProps
 } from "@rmwc/data-table";
 import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
 import { Typography } from "~/Typography";
@@ -55,22 +57,33 @@ interface TableHeadCell extends DataTableHeadCellProps {
 
 export const TableHeadCell = styled(RmwcDataTableHeadCell)<TableHeadCell>`
     position: relative;
+    width: auto;
 
     &:hover ${Resizer} {
         opacity: 1;
     }
 `;
 
+interface DataTableCell extends DataTableCellProps {
+    style?: CSSProperties;
+}
+
+export const DataTableCell = styled(RmwcDataTableCell)<DataTableCell>`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
 interface ColumnHeaderWrapperProps {
     sortable: boolean;
-    hasColumnVisibilityMenu: boolean;
+    isLastCell: boolean;
 }
 
 export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
     cursor: ${props => (props.sortable ? "pointer" : "cursor")};
     display: flex;
     align-items: center;
-    justify-content: ${props => (props.hasColumnVisibilityMenu ? "flex-end" : "start")};
+    justify-content: ${props => (props.isLastCell ? "flex-end" : "start")};
 `;
 
 export const ColumnDirectionWrapper = styled("span")`

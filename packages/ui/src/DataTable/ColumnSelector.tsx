@@ -1,14 +1,13 @@
-import React, { ReactNode, useMemo } from "react";
+import React, { ReactNode, useCallback, useMemo } from "react";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
+import { Column } from "@tanstack/react-table";
 import { IconButton } from "~/Button";
-import { Menu, MenuDivider } from "~/Menu";
-import { Column, flexRender, Header } from "@tanstack/react-table";
 import { Checkbox } from "~/Checkbox";
+import { Menu, MenuDivider } from "~/Menu";
 import { ColumnVisibilityMenuHeader, ColumnVisibilityMenuItem } from "~/DataTable/styled";
 
 interface ColumnSelectorProps<T> {
     columns: Column<T>[];
-    headers: Header<T, unknown>[];
 }
 
 interface Option {
@@ -19,15 +18,33 @@ interface Option {
 }
 
 export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
+    /**
+     * `@tanstack/react-table` does not have a simple method to return the header component.
+     * The only possible way is to use `flexRenderer`, but this is not working with the current implementation
+     * since we don't have access to the header context.
+     */
+    const getHeaderName = useCallback((column: Column<T>) => {
+        const { header } = column.columnDef;
+
+        if (typeof header === "string") {
+            return header;
+        }
+
+        if (typeof header === "function") {
+            // @ts-expect-error
+            return header();
+        }
+
+        return column.id;
+    }, []);
+
     const options: Option[] = useMemo(() => {
         return props.columns
             .filter(column => column.getCanHide())
             .map(column => {
-                const header = props.headers.find(header => header.id === column.id);
-
                 return {
                     id: column.id,
-                    header: column.id, // header ? flexRender(column.columnDef.header, header.getContext()) : "",
+                    header: getHeaderName(column),
                     onChange: column.toggleVisibility,
                     getValue: column.getIsVisible
                 };

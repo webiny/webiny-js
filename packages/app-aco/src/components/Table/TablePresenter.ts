@@ -112,8 +112,8 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
                 enableHiding: hidable,
                 enableSorting: sortable,
                 enableResizing: resizable,
-                size,
                 className,
+                ...(size && { size }),
                 ...(cell && { cell: (row: T) => this.cellRenderer(row, cell) })
             };
 

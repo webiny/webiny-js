@@ -36,7 +36,8 @@ export const FileManagerRendererModule = () => {
                     header={"Name"}
                     cell={<CellName />}
                     sortable={true}
-                    size={400}
+                    hidable={false}
+                    size={300}
                 />
                 <Browser.Table.Column name={"type"} header={"Type"} cell={<CellType />} />
                 <Browser.Table.Column
@@ -56,8 +57,9 @@ export const FileManagerRendererModule = () => {
                     name={"actions"}
                     header={" "}
                     cell={<CellActions />}
-                    size={60}
+                    size={80}
                     className={"rmwc-data-table__cell--align-end"}
+                    hidable={false}
                     resizable={false}
                 />
                 <FileDetails.Field name={"name"} element={<Name />} />
