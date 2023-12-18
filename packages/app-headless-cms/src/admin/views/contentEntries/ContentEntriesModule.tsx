@@ -64,7 +64,6 @@ export const ContentEntriesModule = () => {
                     header={"Status"}
                     cell={<CellStatus />}
                     className={"cms-aco-list-status"}
-                    visible={false}
                 />
                 <Browser.Table.Column
                     name={"actions"}
