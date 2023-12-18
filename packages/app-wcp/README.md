@@ -55,7 +55,7 @@ The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-rela
 <p>
 
 ```ts
-export declare const Wcp: React.FC;
+export declare const Wcp: React.ComponentType;
 ```
 
 </p>

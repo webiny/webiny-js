@@ -55,7 +55,7 @@ export interface RichTextEditorProps {
     width?: number | string;
 }
 
-const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
+const BaseRichTextEditor = ({
     toolbar,
     staticToolbar,
     onChange,

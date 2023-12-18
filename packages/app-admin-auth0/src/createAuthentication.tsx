@@ -35,11 +35,14 @@ interface WithGetIdentityDataProps {
     children: React.ReactNode;
 }
 
-export const createAuthentication = ({
-    auth0,
-    ...config
-}: CreateAuthenticationConfig): React.FC => {
-    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
+interface PropsWithChildren {
+    children?: React.ReactNode;
+}
+
+export const createAuthentication = ({ auth0, ...config }: CreateAuthenticationConfig) => {
+    const withGetIdentityData = (
+        Component: React.ComponentType<WithGetIdentityDataProps>
+    ): React.ComponentType<PropsWithChildren> => {
         return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
@@ -158,7 +161,7 @@ export const createAuthentication = ({
     // Compose Login widget with GQL queries and multi-tenancy features.
     const LoginWidget = withGetIdentityData(withTenant(Authentication));
 
-    return function Authentication({ children }) {
+    return function Authentication({ children }: PropsWithChildren) {
         return (
             <Auth0Provider
                 redirectUri={window.location.origin}
