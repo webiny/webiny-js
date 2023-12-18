@@ -3,8 +3,8 @@ import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellModified = () => {
-    const { useTableCell } = FileManagerViewConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow } = FileManagerViewConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    return <TimeAgo datetime={item.createdOn} />;
+    return <TimeAgo datetime={row.createdOn} />;
 };

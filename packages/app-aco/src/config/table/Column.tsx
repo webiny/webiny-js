@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useTableCell } from "~/components/Table/useTableCell";
+import { useTableRow } from "~/components/Table/useTableRow";
 import { FolderTableItem, BaseTableItem } from "~/types";
 
 export interface ColumnConfig {
@@ -77,8 +77,8 @@ const BaseColumn: React.FC<ColumnProps> = ({
     );
 };
 
-const isFolderItem = (item: BaseTableItem): item is FolderTableItem => {
-    return item.$type === "FOLDER";
+const isFolderRow = (row: BaseTableItem): row is FolderTableItem => {
+    return row.$type === "FOLDER";
 };
 
-export const Column = Object.assign(BaseColumn, { isFolderItem, useTableCell });
+export const Column = Object.assign(BaseColumn, { isFolderRow, useTableRow });

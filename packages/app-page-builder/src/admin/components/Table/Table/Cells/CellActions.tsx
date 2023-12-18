@@ -16,18 +16,18 @@ import { RecordActionDelete } from "~/admin/components/Table/Table/Row/Record/Re
 import { menuStyles } from "./Cells.styled";
 
 export const CellActions = () => {
-    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
     const { folder: folderConfig } = useAcoConfig();
 
-    if (isFolderItem(item)) {
+    if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
-        if (!item.canManageStructure) {
+        if (!row.canManageStructure) {
             return null;
         }
 
         return (
-            <FolderProvider folder={item}>
+            <FolderProvider folder={row}>
                 <OptionsMenu
                     actions={folderConfig.actions}
                     data-testid={"table.row.folder.menu-action"}
@@ -38,11 +38,11 @@ export const CellActions = () => {
 
     return (
         <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-            <RecordActionEdit record={item} />
-            <RecordActionPreview record={item} />
-            <RecordActionPublish record={item} />
-            <RecordActionMove record={item} />
-            <RecordActionDelete record={item} />
+            <RecordActionEdit record={row} />
+            <RecordActionPreview record={row} />
+            <RecordActionPublish record={row} />
+            <RecordActionMove record={row} />
+            <RecordActionDelete record={row} />
         </Menu>
     );
 };

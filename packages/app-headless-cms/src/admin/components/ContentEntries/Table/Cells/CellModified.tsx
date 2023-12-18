@@ -3,8 +3,8 @@ import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 
 export const CellModified = () => {
-    const { useTableCell } = ContentEntryListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow } = ContentEntryListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    return <TimeAgo datetime={item.createdOn} />;
+    return <TimeAgo datetime={row.createdOn} />;
 };

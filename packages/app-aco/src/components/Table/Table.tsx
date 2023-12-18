@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo } from "react";
 import { DataTable, DefaultData, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoConfig } from "~/config";
-import { TableCellProvider } from "~/components";
 import { observer } from "mobx-react-lite";
 import { TablePresenter } from "~/components/Table/TablePresenter";
+import { TableRowProvider } from "~/components/Table/useTableRow";
+import { useAcoConfig } from "~/config";
 
 export interface TableProps<T> {
     data: T[];
@@ -21,7 +21,7 @@ export const Table = observer(
     <T extends Record<string, any> & DefaultData>(props: TableProps<T>) => {
         const { table } = useAcoConfig();
         const cellRenderer = (row: T, cell: string | React.ReactElement) => (
-            <TableCellProvider item={row}>{cell}</TableCellProvider>
+            <TableRowProvider row={row}>{cell}</TableRowProvider>
         );
 
         const presenter = useMemo<TablePresenter<T>>(() => {

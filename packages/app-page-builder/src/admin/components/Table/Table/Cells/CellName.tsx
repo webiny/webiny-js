@@ -50,12 +50,12 @@ export const PageCellName = ({ page }: PageCellNameProps) => {
 };
 
 export const CellName = () => {
-    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    if (isFolderItem(item)) {
-        return <FolderCellName folder={item} />;
+    if (isFolderRow(row)) {
+        return <FolderCellName folder={row} />;
     }
 
-    return <PageCellName page={item} />;
+    return <PageCellName page={row} />;
 };

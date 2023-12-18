@@ -51,12 +51,12 @@ export const EntryCellName = ({ entry }: EntryCellNameProps) => {
 };
 
 export const CellName = () => {
-    const { useTableCell, isFolderItem } = ContentEntryListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    if (isFolderItem(item)) {
-        return <FolderCellName folder={item} />;
+    if (isFolderRow(row)) {
+        return <FolderCellName folder={row} />;
     }
 
-    return <EntryCellName entry={item} />;
+    return <EntryCellName entry={row} />;
 };

@@ -15,19 +15,19 @@ import { FileProvider } from "~/contexts/FileProvider";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellActions = () => {
-    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
+    const { row } = useTableRow();
     const { showFileDetails } = useFileManagerView();
     const { folder: folderConfig } = useAcoConfig();
 
-    if (isFolderItem(item)) {
+    if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
-        if (!item.canManageStructure) {
+        if (!row.canManageStructure) {
             return null;
         }
 
         return (
-            <FolderProvider folder={item}>
+            <FolderProvider folder={row}>
                 <OptionsMenu
                     actions={folderConfig.actions}
                     data-testid={"table.row.folder.menu-action"}
@@ -37,12 +37,12 @@ export const CellActions = () => {
     }
 
     return (
-        <FileProvider file={item}>
+        <FileProvider file={row}>
             <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-                <RecordActionCopy record={item} />
-                <RecordActionEdit id={item.id} onClick={showFileDetails} />
+                <RecordActionCopy record={row} />
+                <RecordActionEdit id={row.id} onClick={showFileDetails} />
                 <RecordActionMove />
-                <RecordActionDelete record={item} />
+                <RecordActionDelete record={row} />
             </Menu>
         </FileProvider>
     );

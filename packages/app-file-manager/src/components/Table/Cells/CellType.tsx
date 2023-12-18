@@ -2,12 +2,12 @@ import React from "react";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellType = () => {
-    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    if (isFolderItem(item)) {
+    if (isFolderRow(row)) {
         return <>{"-"}</>;
     }
 
-    return <>{item.type}</>;
+    return <>{row.type}</>;
 };
