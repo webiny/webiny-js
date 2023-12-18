@@ -19,7 +19,7 @@ export interface FormStepFieldRowFieldProps {
 
 export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
     const { formStep, row, rowIndex, field, fieldIndex } = props;
-    const { onFormStepDrop, editField, handleDrop } = useFormStep();
+    const { onFormStepDrop, editField } = useFormStep();
     const { deleteField } = useFormEditor();
 
     const fieldBeginDragParams: BeginDragProps = useMemo(() => {
@@ -51,7 +51,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [handleDrop]
+        [onFormStepDrop, formStep, rowIndex, fieldIndex]
     );
 
     const onLastFieldVerticalZoneDrop = useCallback(
@@ -67,7 +67,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [handleDrop]
+        [onFormStepDrop, formStep, rowIndex, fieldIndex]
     );
 
     const isLastField = fieldIndex === row.length - 1;

@@ -21,7 +21,7 @@ interface FormStepContextProviderProps {
 
 export const FormStepContextProvider = ({ children }: FormStepContextProviderProps) => {
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
-    const [dropDestination, setDropDestination] = useState<FbFormModelField | null>(null);
+    const [dropDestination, setDropDestination] = useState<DropDestination | null>(null);
 
     const providerValue = {
         editingField,

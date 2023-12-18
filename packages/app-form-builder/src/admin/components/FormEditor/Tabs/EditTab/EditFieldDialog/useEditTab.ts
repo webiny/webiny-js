@@ -32,7 +32,7 @@ export const useEditTab = () => {
     );
 
     // This function will render drop zones on the top of the step,
-    // if steps are locatted above "source" ("source" step is the step that we move).
+    // if steps are located above "source" ("source" step is the step that we move).
     const renderTopDropZone = useCallback(
         (item: IsVisibleCallableParams, targetStepId: string) => {
             if (item.ui !== "step") {
@@ -54,7 +54,7 @@ export const useEditTab = () => {
     );
 
     // This function will render drop zones on the top of the step,
-    // if steps are locatted below "source" ("source" step is the step that we move).
+    // if steps are located below "source" ("source" step is the step that we move).
     const renderBottomDropZone = useCallback(
         (item: IsVisibleCallableParams, targetStepId: string) => {
             if (item.ui !== "step") {
@@ -75,9 +75,12 @@ export const useEditTab = () => {
         [data]
     );
 
-    const isAddStepVisible = useCallback((formStep: FbFormStep) => {
-        return data.steps[data.steps.length - 1].id === formStep.id;
-    }, [data]);
+    const isAddStepVisible = useCallback(
+        (formStep: FbFormStep) => {
+            return data.steps[data.steps.length - 1].id === formStep.id;
+        },
+        [data]
+    );
 
     return {
         handleStepMove,

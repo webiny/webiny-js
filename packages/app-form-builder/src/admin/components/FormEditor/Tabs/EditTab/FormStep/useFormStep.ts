@@ -1,24 +1,25 @@
 import { useCallback, useContext } from "react";
-import { DropDestination, DropSource, DropTarget, FbFormModelField, FbFormStep } from "~/types";
+import {
+    DropDestination,
+    DropSource,
+    DropTarget,
+    FbFormModelField,
+    FbFormStep,
+    DropPosition
+} from "~/types";
 import { useFormEditor } from "~/admin/components/FormEditor";
 import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
 import cloneDeep from "lodash/cloneDeep";
 import { FormStepContext } from "./FormStepContext/FormStepContext";
-
-interface HandleDropParams {
-    target: DropTarget;
-    source: DropSource;
-    destination: DropDestination;
-}
 
 interface CreateCustomFieldParams {
     data: FbFormModelField;
     dropDestination: DropDestination;
 }
 
-interface ComposeHandleDropParams {
+interface HandleDropParams {
     item: DragObjectWithFieldInfo;
-    destinationPosition: DropDestination["position"];
+    destinationPosition: DropPosition;
     formStep: FbFormStep;
 }
 
@@ -28,17 +29,41 @@ export const useFormStep = () => {
     const { editingField, dropDestination, setEditingField, setDropDestination } =
         useContext(FormStepContext);
 
-    const editField = (field: FbFormModelField | null) => {
+    const editField = useCallback((field: FbFormModelField | null) => {
         if (!field) {
             setEditingField(null);
             return;
         }
         setEditingField(cloneDeep(field));
-    };
+    }, []);
 
-    const handleDrop = useCallback(
+    const onFormStepDrop = useCallback(
         (params: HandleDropParams) => {
-            const { target, source, destination } = params;
+            const { item, formStep, destinationPosition } = params;
+
+            // We don't want to drop steps inside of steps.
+            if (item.ui === "step") {
+                return undefined;
+            }
+
+            const target: DropTarget = {
+                type: item.ui,
+                id: item.id,
+                name: item.name
+            };
+
+            const source: DropSource = {
+                containerId: item?.container?.id,
+                containerType: item?.container?.type,
+                position: item.pos
+            };
+
+            const destination: DropDestination = {
+                containerId: formStep.id,
+                containerType: "step",
+                position: destinationPosition
+            };
+
             if (target.name === "custom") {
                 // We can cast because field is empty in the start.
                 editField({} as FbFormModelField);
@@ -81,61 +106,37 @@ export const useFormStep = () => {
                 target,
                 destination
             });
+
+            return undefined;
         },
         [data]
     );
 
-    const onFormStepDrop = (params: ComposeHandleDropParams) => {
-        const { item, formStep, destinationPosition } = params;
+    const createCustomField = useCallback(
+        (params: CreateCustomFieldParams) => {
+            const { data, dropDestination } = params;
 
-        // We don't want to drop steps inside of steps.
-        if (item.ui === "step") {
-            return undefined;
-        }
-
-        handleDrop({
-            target: {
-                type: item.ui,
-                id: item.id,
-                name: item.name
-            },
-            source: {
-                containerId: item?.container?.id,
-                containerType: item?.container?.type,
-                position: item.pos
-            },
-            destination: {
-                containerId: formStep.id,
-                containerType: "step",
-                position: destinationPosition
-            }
-        });
-
-        return undefined;
-    };
-
-    const createCustomField = (params: CreateCustomFieldParams) => {
-        const { data, dropDestination } = params;
-        insertField({
-            data,
-            target: {
-                id: data._id,
-                type: "field",
-                name: data.name
-            },
-            destination: {
-                containerType: dropDestination.containerType,
-                containerId: dropDestination.containerId,
-                position: dropDestination.position
-            }
-        });
-    };
+            insertField({
+                data,
+                target: {
+                    id: data._id,
+                    type: "field",
+                    name: data.name
+                },
+                destination: {
+                    containerType: dropDestination.containerType,
+                    containerId: dropDestination.containerId,
+                    position: dropDestination.position
+                }
+            });
+        },
+        [editingField, dropDestination]
+    );
 
     return {
         editingField,
         dropDestination,
         editField,
-        handleDrop,
         createCustomField,
         onFormStepDrop
     };

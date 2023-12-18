@@ -18,9 +18,7 @@ export interface BeginDragProps {
     };
     name?: string;
     id?: string;
-    /*
-        "container" contains info about source element.
-    */
+    // "container" contains info about source element.
     container?: {
         type: "step" | "conditionGroup";
         id: string;

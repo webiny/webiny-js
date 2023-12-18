@@ -14,7 +14,7 @@ export interface EmptyFormStepProps {
 export const EmptyFormStep = (props: EmptyFormStepProps) => {
     const { formStep } = props;
 
-    const { onFormStepDrop, handleDrop } = useFormStep();
+    const { onFormStepDrop } = useFormStep();
 
     const onFirstFieldDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
@@ -29,7 +29,7 @@ export const EmptyFormStep = (props: EmptyFormStepProps) => {
 
             return undefined;
         },
-        [handleDrop]
+        [onFormStepDrop, formStep]
     );
 
     return <Center onDrop={onFirstFieldDrop}>{t`Drop your first field here`}</Center>;

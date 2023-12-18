@@ -20,10 +20,12 @@ export interface DroppableCollectedProps {
     isOver: boolean;
 }
 
+export type DroppableUIElements = "row" | "field" | "conditionGroup" | "step";
+
 export interface IsVisibleCallableParams {
     type: string;
     isDragging: boolean;
-    ui: "row" | "field" | "conditionGroup" | "step";
+    ui: DroppableUIElements;
     id?: string;
     pos: FieldLayoutPositionType;
     container?: {
@@ -34,18 +36,11 @@ export interface IsVisibleCallableParams {
 export interface IsVisibleCallable {
     (params: IsVisibleCallableParams): boolean;
 }
-/*
-    We need to extend DragObjectWithType type because it does not support fields,
-    that we set through "beginDrag".
-    * "ui" propetry gives us information about the Entity that we are moving.
-    "Entity" can be step, field, row or conditionGroup.
-    * "name" property contains the type of the field, it can be text, number or one of the available fields.
-    * "pos" propety contains info about Entity position that we are moving.
-    * "container" propety contains info about source "Entity".
-    pos can be undefined in case we are moving field from a "Custom Field" menu.
-*/
+
+// We need to extend DragObjectWithType type because it does not support fields,
+// that we set through "beginDrag".
 export interface DragObjectWithFieldInfo extends DragObjectWithType {
-    ui: "row" | "field" | "conditionGroup" | "step";
+    ui: DroppableUIElements;
     name: string;
     id?: string;
     pos: FieldLayoutPositionType;

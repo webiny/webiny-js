@@ -20,7 +20,7 @@ export interface FormStepRowProps {
 export const FormStepRow = (props: FormStepRowProps) => {
     const { formStep, rowIndex, row, isLastRow } = props;
 
-    const { onFormStepDrop, handleDrop } = useFormStep();
+    const { onFormStepDrop } = useFormStep();
 
     const rowBeginDragParams: BeginDragProps = useMemo(() => {
         return {
@@ -46,7 +46,7 @@ export const FormStepRow = (props: FormStepRowProps) => {
 
             return undefined;
         },
-        [handleDrop]
+        [onFormStepDrop, formStep, rowIndex]
     );
 
     const onLastRowHorizontalZoneDrop = useCallback(
@@ -62,7 +62,7 @@ export const FormStepRow = (props: FormStepRowProps) => {
 
             return undefined;
         },
-        [handleDrop]
+        [onFormStepDrop, formStep, rowIndex]
     );
 
     return (

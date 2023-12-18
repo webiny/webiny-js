@@ -12,48 +12,36 @@ import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
 
 export interface DropTarget {
-    /*
-        Contains info about the Element that we are dragging.
-    */
+    // Contains info about the Element that we are dragging.
     type: "field" | "row" | "conditionGroup" | "step";
-    /*
-        Property "id" is optional,
-        because when we move row it does not have an id.
-    */
+    // Property "id" is optional,
+    // because when we move row it does not have an id.
     id?: string;
     name: string;
 }
 
+export type DropPosition = {
+    row: number;
+    // Property "index" can be null in case we move row.
+    index: number | null;
+};
+
+export type ContainerType = "step" | "conditionGroup";
+
 export interface DropSource {
-    /*
-        Contains info about the Container from which we are dragging an element or elements.
-        containerId and containerType could be undefined in case we are creating a custom field.
-    */
+    // Contains info about the Container from which we are dragging an element or elements.
+    // containerId and containerType could be null in case we are creating a custom field.
     containerId?: string;
-    containerType?: "step" | "conditionGroup";
-    position: {
-        row: number;
-        /*
-            Property "index" can be null in case we move row.
-        */
-        index: number | null;
-    };
+    containerType?: ContainerType;
+    position: DropPosition;
 }
 
 export interface DropDestination {
-    /*
-        Contains info about the Container,
-        in which we are dropping an element or elements.
-    */
+    // Contains info about the Container,
+    // in which we are dropping an element or elements.
     containerId: string;
-    containerType: "step" | "conditionGroup";
-    position: {
-        row: number;
-        /*
-            Property "index" can be null in case we move row.
-        */
-        index: number | null;
-    };
+    containerType: ContainerType;
+    position: DropPosition;
 }
 
 export interface FbErrorResponse {

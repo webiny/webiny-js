@@ -45,6 +45,21 @@ interface SetDataCallable {
 
 type State = FormEditorProviderContextState;
 
+export interface InsertFieldParams {
+    data: FbFormModelField;
+    target: DropTarget;
+    destination: DropDestination;
+}
+
+export interface MoveFieldParams {
+    target: DropTarget;
+    field: FbFormModelField | string;
+    source: DropSource;
+    destination: DropDestination;
+}
+
+export type SaveFormResult = Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;
@@ -54,9 +69,7 @@ export interface FormEditor {
     deleteStep: (id: string) => void;
     updateStep: (title: string, id: string | null) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
-    saveForm: (
-        data: FbFormModel | null
-    ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+    saveForm: (data: FbFormModel | null) => SaveFormResult;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
     getStepFields: (targetStepId: string) => FbFormModelField[][];
@@ -64,26 +77,8 @@ export interface FormEditor {
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
-    insertField: ({
-        data,
-        target,
-        destination
-    }: {
-        data: FbFormModelField;
-        target: DropTarget;
-        destination: DropDestination;
-    }) => void;
-    moveField: ({
-        target,
-        field,
-        source,
-        destination
-    }: {
-        target: DropTarget;
-        field: FbFormModelField | string;
-        source: DropSource;
-        destination: DropDestination;
-    }) => void;
+    insertField: (params: InsertFieldParams) => void;
+    moveField: (params: MoveFieldParams) => void;
     moveRow: (
         sourceRow: number,
         destinationRow: number,
