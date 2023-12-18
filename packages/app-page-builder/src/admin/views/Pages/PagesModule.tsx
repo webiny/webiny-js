@@ -34,7 +34,7 @@ export const PagesModule = () => {
                 name={"title"}
                 header={"Name"}
                 cell={<CellName />}
-                hidable={false}
+                hideable={false}
                 size={300}
                 sortable={true}
             />
@@ -53,7 +53,7 @@ export const PagesModule = () => {
                 size={80}
                 className={"rmwc-data-table__cell--align-end"}
                 resizable={false}
-                hidable={false}
+                hideable={false}
             />
         </PageListConfig>
     );

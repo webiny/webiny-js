@@ -107,14 +107,14 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
                 sortable,
                 resizable,
                 className,
-                hidable
+                hideable
             } = config;
 
             const name = defaultName === "name" ? this.nameColumnId : defaultName;
 
             columns[name as keyof Columns<T>] = {
                 header,
-                enableHiding: hidable,
+                enableHiding: hideable,
                 enableSorting: sortable,
                 enableResizing: resizable,
                 className,
