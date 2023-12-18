@@ -14,13 +14,13 @@ export interface ToolbarElementProps {
     after?: string;
 }
 
-export const ToolbarElement: React.FC<ToolbarElementProps> = ({
+export const ToolbarElement = ({
     name,
     element,
     after = undefined,
     before = undefined,
     remove = false
-}) => {
+}: ToolbarElementProps) => {
     const placeBefore = before !== undefined ? `element:${before}` : undefined;
     const placeAfter = after !== undefined ? `element:${after}` : undefined;
 

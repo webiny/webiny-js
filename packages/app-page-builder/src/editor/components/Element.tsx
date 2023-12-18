@@ -155,7 +155,7 @@ const ElementComponent = ({ id: elementId, className = "", isActive }: ElementPr
     );
 };
 
-const withHighlightElement = (Component: React.FC<ElementPropsType>) => {
+const withHighlightElement = (Component: React.ComponentType<ElementPropsType>) => {
     return function withHighlightElementComponent(props: ElementPropsType) {
         const [activeElementId] = useActiveElementId();
 

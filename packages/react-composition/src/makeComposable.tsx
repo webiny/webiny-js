@@ -15,7 +15,7 @@ function useComposableParents() {
     return context;
 }
 
-const createEmptyRenderer = (name: string): React.FC => {
+const createEmptyRenderer = (name: string) => {
     return {
         [name]: function () {
             useEffect(() => {
@@ -37,14 +37,14 @@ const createEmptyRenderer = (name: string): React.FC => {
     }[name];
 };
 
-export function makeComposable<TProps>(name: string, Component?: React.FC<TProps>) {
+export function makeComposable<TProps>(name: string, Component?: React.ComponentType<TProps>) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
 
     const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component as React.FC<TProps>);
+        const ComposedComponent = useComponent(Component as React.ComponentType<TProps>);
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 
