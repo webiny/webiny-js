@@ -1,7 +1,7 @@
 import { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin";
-import { ENTRY_META_FIELDS } from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface RenderSortEnumParams {
     model: CmsModel;
@@ -37,7 +37,9 @@ export const renderSortEnum: RenderSortEnum = ({
          * 🆕 New meta fields below.
          * Users are encouraged to use these instead of the deprecated ones above.
          */
-        ...ENTRY_META_FIELDS.map(field => [`${field}_ASC`, `${field}_DESC`]).flat()
+        ...ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField)
+            .map(field => [`${field}_ASC`, `${field}_DESC`])
+            .flat()
     ];
 
     for (const field of fields) {

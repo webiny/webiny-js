@@ -8,6 +8,11 @@ import {
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { ModelFieldParent, ModelFields } from "./types";
 import { CmsElasticsearchModelFieldPlugin } from "~/plugins";
+import {
+    ENTRY_META_FIELDS,
+    isDateTimeEntryMetaField,
+    isIdentityEntryMetaField
+} from "@webiny/api-headless-cms/constants";
 
 type PartialCmsModelField = Partial<CmsModelField> &
     Pick<CmsModelField, "storageId" | "fieldId" | "type">;
@@ -20,6 +25,55 @@ const createSystemField = (field: PartialCmsModelField): CmsModelField => {
 };
 
 const createSystemFields = (): ModelFields => {
+    const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
+        (current, fieldName) => {
+            return {
+                ...current,
+                [fieldName]: {
+                    type: "date",
+                    unmappedType: "date",
+                    keyword: false,
+                    systemField: true,
+                    searchable: true,
+                    sortable: true,
+                    field: createSystemField({
+                        storageId: fieldName,
+                        fieldId: fieldName,
+                        type: "text",
+                        settings: {
+                            type: "dateTimeWithoutTimezone"
+                        }
+                    }),
+                    parents: []
+                }
+            };
+        },
+        {}
+    );
+
+    const byMetaFields = ENTRY_META_FIELDS.filter(isIdentityEntryMetaField).reduce(
+        (current, fieldName) => {
+            return {
+                ...current,
+                [fieldName]: {
+                    type: "text",
+                    unmappedType: undefined,
+                    systemField: true,
+                    searchable: true,
+                    sortable: true,
+                    path: `${fieldName}.id`,
+                    field: createSystemField({
+                        storageId: fieldName,
+                        fieldId: fieldName,
+                        type: "text"
+                    }),
+                    parents: []
+                }
+            };
+        },
+        {}
+    );
+
     return {
         id: {
             type: "text",
@@ -45,6 +99,11 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
+
+        /**
+         * 🚫 Deprecated meta fields below.
+         * Will be fully removed in one of the next releases.
+         */
         savedOn: {
             type: "date",
             unmappedType: "date",
@@ -107,6 +166,14 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
+
+        /**
+         * 🆕 New meta fields below.
+         * Users are encouraged to use these instead of the deprecated ones above.
+         */
+        ...onMetaFields,
+        ...byMetaFields,
+
         wbyAco_location: {
             type: "object",
             systemField: true,

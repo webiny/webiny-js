@@ -23,7 +23,16 @@ export function getFieldValues(entry: CmsEntry, fields: string[]): any {
     return { ...pick(entry, fields), ...entry.values };
 }
 
-export const baseFields = ["id", "entryId", "createdBy", "createdOn", "savedOn"];
+export const baseFields = [
+    "id",
+    "entryId",
+    "createdOn",
+    "modifiedOn",
+    "savedOn",
+    "createdBy",
+    "modifiedBy",
+    "savedBy"
+];
 
 export const createStorageOperations = (
     params: CreateApwStorageOperationsParams

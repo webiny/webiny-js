@@ -10,9 +10,32 @@ const fields: ApwSchedulerScheduleActionDynamoDbFieldPlugin[] = [
         type: "date"
     }),
     new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
+        field: "modifiedOn",
+        type: "date"
+    }),
+    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
         field: "savedOn",
         type: "date"
     }),
+    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
+        field: "createdBy",
+        path: "createdBy.id"
+    }),
+    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
+        field: "modifiedBy",
+        path: "modifiedBy.id"
+    }),
+    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
+        field: "savedBy",
+        path: "savedBy.id"
+    }),
+
+    // Deprecated. Will be removed in one of the next version.
+    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
+        field: "ownedBy",
+        path: "ownedBy.id"
+    }),
+
     new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
         field: "name"
     }),
@@ -36,13 +59,6 @@ const fields: ApwSchedulerScheduleActionDynamoDbFieldPlugin[] = [
         field: "version",
         type: "number"
     }),
-    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
-        field: "ownedBy",
-        path: "ownedBy.id"
-    }),
-    new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
-        field: "createdBy",
-        path: "createdBy.id"
-    })
+
 ];
 export const createFields = (): ApwSchedulerScheduleActionDynamoDbFieldPlugin[] => fields;

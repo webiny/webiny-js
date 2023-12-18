@@ -1,38 +1,27 @@
-import { setupGroupAndModels } from "~tests/testHelpers/setup";
-import { useCategoryManageHandlerV2 } from "~tests/testHelpers/useCategoryManageHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 
 const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
 
 describe("Content entries - Entry Meta Fields", () => {
-    const managerIdentityA = useCategoryManageHandlerV2({
-        path: "manage/en-US",
+    const { manage: manageApiIdentityA } = useTestModelHandler({
         identity: identityA
     });
-    const managerIdentityB = useCategoryManageHandlerV2({
-        path: "manage/en-US",
+    const { manage: manageApiIdentityB } = useTestModelHandler({
         identity: identityB
     });
 
     beforeEach(async () => {
-        await setupGroupAndModels({
-            manager: managerIdentityA,
-            models: ["category"]
-        });
+        await manageApiIdentityA.setup();
     });
 
     test("created entries should have xOn/xBy meta fields populated correctly", async () => {
         // 1. Initially, all meta fields should be populated, except the "modified" ones.
         //    We must see the same change when listing entries.
-        let { data: revision1 } = await managerIdentityA.createCategory({
-            data: {
-                title: "Fruits",
-                slug: "fruits"
-            }
-        });
+        let { data: revision1 } = await manageApiIdentityA.createTestEntry();
 
-        let { data: entriesList } = await managerIdentityA.listCategories();
+        let { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         const matchObject1 = {
             createdOn: expect.toBeDateString(),
@@ -59,12 +48,12 @@ describe("Content entries - Entry Meta Fields", () => {
 
         // 2. After the entry is updated, "modified" meta fields should be populated.
         //    We must see the same change when listing entries.
-        ({ data: revision1 } = await managerIdentityA.updateCategory({
+        ({ data: revision1 } = await manageApiIdentityA.updateTestEntry({
             revision: revision1.id,
             data: { title: "Fruits 2" }
         }));
 
-        ({ data: entriesList } = await managerIdentityA.listCategories());
+        ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         const matchObject2 = {
             // Deprecated fields.
@@ -95,11 +84,11 @@ describe("Content entries - Entry Meta Fields", () => {
 
         // 3. A new revision should have updated revision-level meta
         // fields, while entry-level meta fields should remain the same.
-        let { data: revision2 } = await managerIdentityA.createCategoryFrom({
+        let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision1.id
         });
 
-        ({ data: entriesList } = await managerIdentityA.listCategories());
+        ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         const matchObject3 = {
             createdOn: expect.toBeDateString(),
@@ -136,9 +125,9 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(entriesList[0]).toMatchObject(matchObject3);
 
         // Refresh.
-        ({ data: revision1 } = await managerIdentityA.getCategory({ revision: revision1.id }));
-        ({ data: revision2 } = await managerIdentityA.getCategory({ revision: revision2.id }));
-        ({ data: entriesList } = await managerIdentityA.listCategories());
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
+        ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         // Revision-level meta fields should be updated.
         expect(revision2.revisionCreatedOn > revision1.revisionCreatedOn).toBe(true);
@@ -158,32 +147,27 @@ describe("Content entries - Entry Meta Fields", () => {
     });
 
     test("updating a previous revision should update entry-level meta fields", async () => {
-        let { data: revision1 } = await managerIdentityA.createCategory({
-            data: {
-                title: "Fruits",
-                slug: "fruits"
-            }
-        });
+        let { data: revision1 } = await manageApiIdentityA.createTestEntry();
 
-        let { data: revision2 } = await managerIdentityA.createCategoryFrom({
+        let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision1.id
         });
 
-        let { data: revision3 } = await managerIdentityA.createCategoryFrom({
+        let { data: revision3 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision2.id
         });
 
-        await managerIdentityB.updateCategory({
+        await manageApiIdentityB.updateTestEntry({
             revision: revision1.id,
             data: { title: "Fruits Update" }
         });
 
         // Refresh.
-        ({ data: revision1 } = await managerIdentityA.getCategory({ revision: revision1.id }));
-        ({ data: revision2 } = await managerIdentityA.getCategory({ revision: revision2.id }));
-        ({ data: revision3 } = await managerIdentityA.getCategory({ revision: revision3.id }));
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
+        ({ data: revision3 } = await manageApiIdentityA.getTestEntry({ revision: revision3.id }));
 
-        const { data: entriesList } = await managerIdentityA.listCategories();
+        const { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         // Revision 1 and 3's entry-level meta fields should be in sync.
         // Since listing entries uses the "latest record", we must see the same change there.
@@ -215,29 +199,24 @@ describe("Content entries - Entry Meta Fields", () => {
     });
 
     test("deleting latest revision should cause the entry-level meta field values to be propagated to the new latest revision", async () => {
-        let { data: revision1 } = await managerIdentityA.createCategory({
-            data: {
-                title: "Fruits",
-                slug: "fruits"
-            }
-        });
+        let { data: revision1 } = await manageApiIdentityA.createTestEntry();
 
-        let { data: revision2 } = await managerIdentityA.createCategoryFrom({
+        let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision1.id
         });
 
-        const { data: revision3 } = await managerIdentityA.createCategoryFrom({
+        const { data: revision3 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision2.id
         });
 
         // Delete revision 3 and ensure that revision 2's entry-level meta fields are propagated.
-        await managerIdentityB.deleteCategory({
+        await manageApiIdentityB.deleteTestEntry({
             revision: revision3.id
         });
 
         // Refresh.
-        ({ data: revision2 } = await managerIdentityA.getCategory({ revision: revision2.id }));
-        let { data: entriesList } = await managerIdentityA.listCategories();
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
+        let { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         expect(revision2.entryCreatedOn).toBe(revision3.entryCreatedOn);
         expect(revision2.entryCreatedBy).toEqual(revision3.entryCreatedBy);
@@ -254,13 +233,13 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(revision2.entrySavedBy).toEqual(entriesList[0].entrySavedBy);
 
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
-        await managerIdentityB.deleteCategory({
+        await manageApiIdentityB.deleteTestEntry({
             revision: revision2.id
         });
 
         // Refresh.
-        ({ data: revision1 } = await managerIdentityA.getCategory({ revision: revision1.id }));
-        ({ data: entriesList } = await managerIdentityA.listCategories());
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
+        ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         expect(revision1.entryCreatedOn).toBe(revision2.entryCreatedOn);
         expect(revision1.entryCreatedBy).toEqual(revision2.entryCreatedBy);

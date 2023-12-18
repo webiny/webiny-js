@@ -89,3 +89,8 @@ export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("On");
 };
+
+export const isIdentityEntryMetaField = (fieldName: EntryMetaFieldName) => {
+    // Only field ending with "On" are date/time fields.
+    return fieldName.endsWith("By");
+};
