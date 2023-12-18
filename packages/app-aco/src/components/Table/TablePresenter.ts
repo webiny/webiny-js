@@ -14,6 +14,7 @@ export interface TablePresenterViewModel<T> {
     columns: Columns<T>;
     selectedRows: T[];
     columnVisibility: IColumnVisibility;
+    initialSorting: SortingState;
 }
 
 interface LoadParamsInterface<T> {
@@ -28,7 +29,6 @@ export interface ITablePresenter<T extends DefaultData> {
     load: (configs: LoadParamsInterface<T>) => void;
     onColumnVisibilityChange: OnColumnVisibilityChange;
     isRowSelectable: (row: Row<T>) => boolean;
-    getInitialSorting: () => SortingState;
     get vm(): TablePresenterViewModel<T>;
 }
 
@@ -71,7 +71,8 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         return {
             columns: this.getColumns(),
             selectedRows: this.getSelectedRows(),
-            columnVisibility: this.columnVisibility.getState()
+            columnVisibility: this.columnVisibility.getState(),
+            initialSorting: this.getInitialSorting()
         };
     }
 
@@ -79,7 +80,10 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         return row.original.$selectable || false;
     }
 
-    public getInitialSorting = () => {
+    public onColumnVisibilityChange: OnColumnVisibilityChange = updaterOrValue =>
+        this.columnVisibility.onChange(updaterOrValue);
+
+    private getInitialSorting = () => {
         return [
             {
                 id: "savedOn",
@@ -124,7 +128,4 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
     private getSelectedRows() {
         return this.data.filter(row => this.selected.find(item => row.id === item.id));
     }
-
-    public onColumnVisibilityChange: OnColumnVisibilityChange = updaterOrValue =>
-        this.columnVisibility.onChange(updaterOrValue);
 }
