@@ -18,7 +18,7 @@ export type AuthState =
 
 export interface AuthData {
     username?: string;
-    [key: string]: string | null | boolean | undefined;
+    [key: string]: string | null | boolean | undefined | object;
 }
 
 export interface AuthMessage {

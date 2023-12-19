@@ -22,11 +22,6 @@ interface Reducer {
     (prev: State, next: Partial<State>): State;
 }
 
-type CheckContactParams = {
-    verified: Record<any, any>;
-    unverified: Record<any, any>;
-} & AuthData;
-
 export function useSignIn(): UseSignIn {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
@@ -40,7 +35,7 @@ export function useSignIn(): UseSignIn {
                 if (data.verified) {
                     changeState("signedIn", user);
                 } else {
-                    changeState("verifyContact", { ...user, ...data } as CheckContactParams);
+                    changeState("verifyContact", { ...user, ...data });
                 }
             });
         },

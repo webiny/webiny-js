@@ -16,11 +16,6 @@ export interface RequireNewPassword {
     requiredAttributes: string[];
 }
 
-type CheckContactParams = {
-    verified: Record<any, any>;
-    unverified: Record<any, any>;
-} & AuthData;
-
 export function useRequireNewPassword(): RequireNewPassword {
     const { authState, authData, changeState } = useAuthenticator();
 
@@ -30,7 +25,7 @@ export function useRequireNewPassword(): RequireNewPassword {
                 if (data.verified) {
                     changeState("signedIn", user);
                 } else {
-                    changeState("verifyContact", { ...user, ...data } as CheckContactParams);
+                    changeState("verifyContact", { ...user, ...data });
                 }
             });
         },
