@@ -6,7 +6,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import { ENTRY_META_FIELDS } from "~/constants";
+import {ENTRY_META_FIELDS, isDateTimeEntryMetaField} from "~/constants";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -85,7 +85,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
          * Users are encouraged to use these instead of the deprecated ones above.
          */
         ...ENTRY_META_FIELDS.map(field => {
-            if (field.endsWith("On")) {
+            if (isDateTimeEntryMetaField(field)) {
                 return [
                     `${field}: DateTime`,
                     `${field}_gt: DateTime`,

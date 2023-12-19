@@ -56,6 +56,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id_DESC
             
             ${dateTimeFieldsSorters}
+            
             publishedOn_ASC
             publishedOn_DESC
             

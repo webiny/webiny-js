@@ -34,7 +34,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             })
             .join("\n");
 
-        return `
+        return [
+            `
         type ApwCommentListItem {
             # System generated fields
             id: ID
@@ -128,7 +129,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
             deleteComment(id: ID!): ApwDeleteCommentResponse
         }
-    `;
+    `
+        ];
     },
     resolvers: {
         ApwQuery: {
