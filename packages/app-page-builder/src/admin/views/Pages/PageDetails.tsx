@@ -38,7 +38,7 @@ interface EmptyPageDetailsProps {
     canCreate: boolean;
 }
 
-const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCreate }) => {
+const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display page details {message} `({
@@ -63,7 +63,7 @@ interface PageDetailsProps {
     onDelete: () => void;
 }
 
-const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate, onDelete }) => {
+const PageDetails = ({ onCreatePage, canCreate, onDelete }: PageDetailsProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 

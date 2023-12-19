@@ -16,7 +16,7 @@ const StyledAvatar = styled(Avatar)`
     left: initial;
 `;
 
-export const ListItemGraphic: React.FC<ListItemGraphicProps> = ({ target }) => {
+export const ListItemGraphic = ({ target }: ListItemGraphicProps) => {
     if (target.type === "admin") {
         return (
             <UiListItemGraphic>

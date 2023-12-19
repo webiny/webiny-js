@@ -91,7 +91,7 @@ interface FoldersByType {
     [type: string]: FolderItem[];
 }
 
-export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
+export const FoldersApiProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const folderObservers = useRef(new Map<string, Set<OnCacheUpdate>>());
     const [cache, setCache] = useState<FoldersByType>({});

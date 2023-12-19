@@ -11,7 +11,7 @@ interface FolderGridProps {
     onFolderClick: (id: string) => void;
 }
 
-export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick }) => {
+export const FolderGrid = ({ folders, onFolderClick }: FolderGridProps) => {
     if (folders.length === 0) {
         return null;
     }

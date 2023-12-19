@@ -8,7 +8,7 @@ import {
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { AcoWithConfig } from "@webiny/app-aco";
 
-export const ContentEntries: React.FC = () => {
+export const ContentEntries = () => {
     const { model } = useModel();
 
     return (

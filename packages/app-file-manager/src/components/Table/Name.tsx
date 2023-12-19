@@ -22,13 +22,13 @@ interface FolderProps extends DefaultProps {
     hasNonInheritedPermissions: boolean;
 }
 
-export const FolderName: React.FC<FolderProps> = ({
+export const FolderName = ({
     name,
     id,
     onClick,
     canManagePermissions,
     hasNonInheritedPermissions
-}) => {
+}: FolderProps) => {
     let icon = <Folder />;
     if (hasNonInheritedPermissions && canManagePermissions) {
         icon = <FolderShared />;
@@ -41,7 +41,7 @@ export const FolderName: React.FC<FolderProps> = ({
     );
 };
 
-export const FileName: React.FC<FileProps> = ({ name, id, type, onClick }) => {
+export const FileName = ({ name, id, type, onClick }: FileProps) => {
     return (
         <RowTitle onClick={() => onClick(id)}>
             <RowIcon>{type && type.includes("image") ? <Image /> : <File />}</RowIcon>

@@ -8,7 +8,7 @@ interface FormProps {
     element: PbEditorElement;
 }
 
-const FormElementComponent: React.FC<FormProps> = props => {
+const FormElementComponent = (props: FormProps) => {
     const { element, ...rest } = props;
     return <PeForm element={element as Element} {...rest} />;
 };

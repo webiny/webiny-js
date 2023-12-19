@@ -26,13 +26,13 @@ interface ListProps {
     onFolderClick: (data: FolderItem) => void;
 }
 
-export const List: React.VFC<ListProps> = ({
+export const List = ({
     folders,
     onFolderClick,
     focusedFolderId,
     hiddenFolderIds,
     enableActions
-}) => {
+}: ListProps) => {
     const { updateFolder, folderLevelPermissions: flp } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItemData>[]>([]);

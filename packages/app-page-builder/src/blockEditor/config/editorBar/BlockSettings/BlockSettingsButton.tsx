@@ -6,7 +6,7 @@ import { ReactComponent as SettingsIcon } from "./settings.svg";
 import { blockSettingsStateAtom } from "./state";
 import { EditorBar } from "~/editor";
 
-const BlockSettingsButton: React.FC = () => {
+const BlockSettingsButton = () => {
     const [, setState] = useRecoilState(blockSettingsStateAtom);
     const onClickHandler = useCallback(() => {
         setState(true);

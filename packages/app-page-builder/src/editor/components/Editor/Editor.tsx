@@ -62,7 +62,7 @@ const triggerActionButtonClick = (name: string): void => {
     element.click();
 };
 
-export const Editor: React.FC = () => {
+export const Editor = () => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing } = useRecoilValue(uiAtom);

@@ -15,13 +15,13 @@ export interface ActionProps {
     after?: string;
 }
 
-export const BaseAction: React.FC<ActionProps> = ({
+export const BaseAction = ({
     name,
     after = undefined,
     before = undefined,
     remove = false,
     element
-}) => {
+}: ActionProps) => {
     const getId = useIdGenerator("folderAction");
 
     const placeAfter = after !== undefined ? getId(after) : undefined;

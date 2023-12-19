@@ -6,7 +6,7 @@ import DefaultEditorBar from "./DefaultEditorBar";
 // import { PbEditorBarPlugin } from "~/types";
 // import { useActiveElementId } from "~/hooks/useActiveElementId";
 
-const Bar: React.FC = () => {
+const Bar = () => {
     // const activeElementId = useActiveElementId();
     // const editorPlugins = useRecoilValue(pluginsAtom);
     // const pluginsByType = plugins.byType<PbEditorBarPlugin>("pb-editor-bar");

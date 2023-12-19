@@ -9,12 +9,7 @@ export interface PageContext {
 
 export const PageContext = createContext<PageContext | undefined>(undefined);
 
-export const PageProvider: React.FC<PageProviderProps> = ({
-    children,
-    page,
-    layout,
-    layoutProps = {}
-}) => {
+export const PageProvider = ({ children, page, layout, layoutProps = {} }: PageProviderProps) => {
     const value: PageContext = {
         page,
         layout,

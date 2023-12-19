@@ -14,13 +14,13 @@ export interface PluginProps {
     after?: string;
 }
 
-export const Plugin: React.FC<PluginProps> = ({
+export const Plugin = ({
     name,
     element,
     after = undefined,
     before = undefined,
     remove = false
-}) => {
+}: PluginProps) => {
     const placeBefore = before !== undefined ? `plugin:${before}` : undefined;
     const placeAfter = after !== undefined ? `plugin:${after}` : undefined;
 

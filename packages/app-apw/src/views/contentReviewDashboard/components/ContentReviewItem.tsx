@@ -26,7 +26,7 @@ type ContentReviewItemProps = Pick<
 
 const STATUS_BOX_WIDTH = "126px";
 
-export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => {
+export const ContentReviewListItem = (props: ContentReviewItemProps) => {
     const {
         activeStep,
         title,

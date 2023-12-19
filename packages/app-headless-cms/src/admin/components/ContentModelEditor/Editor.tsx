@@ -63,7 +63,7 @@ interface OnChangeParams {
     layout: CmsEditorFieldsLayout;
 }
 
-export const Editor: React.FC = () => {
+export const Editor = () => {
     const { data, setData, isPristine } = useModelEditor();
 
     const tabsRef = useRef<TabsImperativeApi>();

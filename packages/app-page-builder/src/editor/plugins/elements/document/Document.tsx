@@ -8,7 +8,7 @@ interface DocumentProps {
     element: PbEditorElement;
 }
 
-const Document: React.FC<DocumentProps> = props => {
+const Document = (props: DocumentProps) => {
     const { element, ...rest } = props;
     return <PeDocument element={element as Element} {...rest} />;
 };

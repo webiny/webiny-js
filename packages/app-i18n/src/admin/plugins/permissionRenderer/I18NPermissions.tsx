@@ -19,7 +19,7 @@ interface I18NPermissionsProps {
     value: SecurityPermission[];
     onChange: (value: SecurityPermission[]) => void;
 }
-export const I18NPermissions: React.FC<I18NPermissionsProps> = ({ value, onChange }) => {
+export const I18NPermissions = ({ value, onChange }: I18NPermissionsProps) => {
     const onFormChange = useCallback(
         (data: I18NSecurityPermission): void => {
             let newValue: SecurityPermission[] = [];

@@ -29,9 +29,7 @@ interface ExportTemplateLoadingDialogContent {
     taskId: string;
 }
 
-const ExportTemplateLoadingDialogContent: React.FC<ExportTemplateLoadingDialogContent> = ({
-    taskId
-}) => {
+const ExportTemplateLoadingDialogContent = ({ taskId }: ExportTemplateLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const { showSnackbar } = useSnackbar();

@@ -7,7 +7,7 @@ export interface GroupsProps {
     listProps?: GroupsDataListProps;
     formProps?: GroupsFormProps;
 }
-export const Groups: React.FC<GroupsProps> = ({ formProps = {}, listProps = {} }) => {
+export const Groups = ({ formProps = {}, listProps = {} }: GroupsProps) => {
     return (
         <SplitView>
             <LeftPanel>

@@ -14,7 +14,7 @@ interface RecordActionEditProps {
     onClick: (id: string) => void;
 }
 
-export const RecordActionEdit: React.FC<RecordActionEditProps> = ({ id, onClick }) => {
+export const RecordActionEdit = ({ id, onClick }: RecordActionEditProps) => {
     return (
         <MenuItem onClick={() => onClick(id)}>
             <ListItemGraphic>
