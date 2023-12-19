@@ -29,15 +29,18 @@ export const useFormStep = () => {
     const { editingField, dropDestination, setEditingField, setDropDestination } =
         useContext(FormStepContext);
 
-    const editField = useCallback((field: FbFormModelField | null) => {
-        if (!field) {
-            setEditingField(null);
-            return;
-        }
-        setEditingField(cloneDeep(field));
-    }, []);
+    const editField = useCallback(
+        (field: FbFormModelField | null) => {
+            if (!field) {
+                setEditingField(null);
+                return;
+            }
+            setEditingField(cloneDeep(field));
+        },
+        [editingField]
+    );
 
-    const onFormStepDrop = useCallback(
+    const handleDrop = useCallback(
         (params: HandleDropParams) => {
             const { item, formStep, destinationPosition } = params;
 
@@ -138,6 +141,6 @@ export const useFormStep = () => {
         dropDestination,
         editField,
         createCustomField,
-        onFormStepDrop
+        handleDrop
     };
 };

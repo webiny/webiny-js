@@ -3,7 +3,7 @@ import { ConnectDragSource } from "react-dnd";
 import { FormStepContextProvider } from "./FormStep/FormStepContext/FormStepContext";
 import { FormStep } from "./FormStep/FormStep";
 import { FbFormStep } from "~/types";
-import { useFormEditor } from "../../Context";
+import { useFormEditor } from "~/admin/components/FormEditor/Context";
 
 interface EditTabStepRowProps {
     dragRef: ConnectDragSource;

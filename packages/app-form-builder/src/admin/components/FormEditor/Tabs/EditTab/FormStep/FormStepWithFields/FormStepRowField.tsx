@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from "react";
 import { FbFormModelField, FbFormStep } from "~/types";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
-import Field from "../../Field";
-import { FieldHandle, FieldContainer } from "../../Styled";
+import Field from "~/admin/components/FormEditor/Tabs/EditTab/Field";
+import { FieldHandle, FieldContainer } from "~/admin/components/FormEditor/Tabs/EditTab/Styled";
 
 import { Vertical } from "~/admin/components/FormEditor/DropZone";
 import { useFormStep } from "~/admin/components/FormEditor/Tabs/EditTab/FormStep/useFormStep";
@@ -19,7 +19,7 @@ export interface FormStepFieldRowFieldProps {
 
 export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
     const { formStep, row, rowIndex, field, fieldIndex } = props;
-    const { onFormStepDrop, editField } = useFormStep();
+    const { handleDrop, editField } = useFormStep();
     const { deleteField } = useFormEditor();
 
     const fieldBeginDragParams: BeginDragProps = useMemo(() => {
@@ -40,7 +40,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
     const onFieldVerticalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
-            onFormStepDrop({
+            handleDrop({
                 item,
                 formStep,
                 destinationPosition: {
@@ -51,12 +51,12 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [onFormStepDrop, formStep, rowIndex, fieldIndex]
+        [handleDrop, formStep, rowIndex, fieldIndex]
     );
 
     const onLastFieldVerticalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
-            onFormStepDrop({
+            handleDrop({
                 item,
                 formStep,
                 destinationPosition: {
@@ -67,7 +67,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [onFormStepDrop, formStep, rowIndex, fieldIndex]
+        [handleDrop, formStep, rowIndex, fieldIndex]
     );
 
     const isLastField = fieldIndex === row.length - 1;

@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import { FbFormStep, MoveStepParams } from "~/types";
-import { DragObjectWithFieldInfo, IsVisibleCallableParams } from "../../../Droppable";
-import { useFormEditor } from "../../../Context";
+import {
+    DragObjectWithFieldInfo,
+    IsVisibleCallableParams
+} from "~/admin/components/FormEditor/Droppable";
+import { useFormEditor } from "~/admin/components/FormEditor/Context";
 
 export const useEditTab = () => {
     const { data, moveStep, addStep } = useFormEditor();
@@ -15,7 +18,7 @@ export const useEditTab = () => {
             }
 
             const moveStepParams: MoveStepParams = {
-                target: {
+                source: {
                     containerId: item.container?.id || "",
                     position: item.pos
                 },
@@ -53,7 +56,7 @@ export const useEditTab = () => {
         [data]
     );
 
-    // This function will render drop zones on the top of the step,
+    // This function will render drop zones on the bottom of the step,
     // if steps are located below "source" ("source" step is the step that we move).
     const renderBottomDropZone = useCallback(
         (item: IsVisibleCallableParams, targetStepId: string) => {

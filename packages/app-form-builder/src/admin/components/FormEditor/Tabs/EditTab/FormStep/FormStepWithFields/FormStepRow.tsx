@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { FbFormModelField, FbFormStep } from "~/types";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
-import { RowHandle, Row, RowContainer } from "../../Styled";
+import { RowHandle, Row, RowContainer } from "~/admin/components/FormEditor/Tabs/EditTab/Styled";
 
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "~/admin/components/FormEditor/icons/round-drag_indicator-24px.svg";
@@ -20,7 +20,7 @@ export interface FormStepRowProps {
 export const FormStepRow = (props: FormStepRowProps) => {
     const { formStep, rowIndex, row, isLastRow } = props;
 
-    const { onFormStepDrop } = useFormStep();
+    const { handleDrop } = useFormStep();
 
     const rowBeginDragParams: BeginDragProps = useMemo(() => {
         return {
@@ -35,7 +35,7 @@ export const FormStepRow = (props: FormStepRowProps) => {
 
     const onRowHorizontalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
-            onFormStepDrop({
+            handleDrop({
                 item,
                 formStep,
                 destinationPosition: {
@@ -46,12 +46,12 @@ export const FormStepRow = (props: FormStepRowProps) => {
 
             return undefined;
         },
-        [onFormStepDrop, formStep, rowIndex]
+        [handleDrop, formStep, rowIndex]
     );
 
     const onLastRowHorizontalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
-            onFormStepDrop({
+            handleDrop({
                 item,
                 formStep,
                 destinationPosition: {
@@ -62,7 +62,7 @@ export const FormStepRow = (props: FormStepRowProps) => {
 
             return undefined;
         },
-        [onFormStepDrop, formStep, rowIndex]
+        [handleDrop, formStep, rowIndex]
     );
 
     return (

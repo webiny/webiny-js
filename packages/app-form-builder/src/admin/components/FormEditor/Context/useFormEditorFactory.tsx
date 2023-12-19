@@ -436,10 +436,10 @@ export const useFormEditorFactory = (
                     return data;
                 });
             },
-            moveStep: ({ target, destination }) => {
+            moveStep: ({ source, destination }) => {
                 self.setData(data => {
                     moveStep({
-                        target,
+                        source,
                         destination,
                         data: data.steps
                     });

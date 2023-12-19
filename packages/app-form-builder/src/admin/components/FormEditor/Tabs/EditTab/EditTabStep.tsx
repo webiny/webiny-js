@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
 import { FbFormStep } from "~/types";
 import { RowContainer } from "./Styled";
-import { Horizontal } from "../../DropZone";
+import { Horizontal } from "~/admin/components/FormEditor/DropZone";
 import { useEditTab } from "./EditFieldDialog/useEditTab";
 
 import { IconButton } from "@webiny/ui/Button";
