@@ -35,7 +35,7 @@ import { createStorageOperations as createApwSaStorageOperations } from "@webiny
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
-import { createBackgroundTaskContext } from "@webiny/tasks";
+import { createBackgroundTasks } from "@webiny/api-background-tasks";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -97,7 +97,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createBackgroundTaskContext(),
+        createBackgroundTasks(),
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
