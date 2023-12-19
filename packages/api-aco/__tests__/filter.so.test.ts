@@ -78,6 +78,7 @@ describe("`filter` CRUD", () => {
             operation: Operation.AND
         };
 
+        const updatingFilter = "asd";
         const [updateB] = await aco.updateFilter({
             id: filterB.id,
             data: update

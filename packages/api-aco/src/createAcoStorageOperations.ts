@@ -17,12 +17,14 @@ export interface CreateAcoStorageOperationsParams {
 export const baseFields = [
     "id",
     "entryId",
-    "createdOn",
-    "modifiedOn",
-    "savedOn",
-    "createdBy",
-    "modifiedBy",
-    "savedBy"
+
+    // On/by fields are mapped to entry-level fields (we use ":" to signal that).
+    "entryCreatedOn:createdOn",
+    "entryModifiedOn:modifiedOn",
+    "entrySavedOn:savedOn",
+    "entryCreatedBy:createdBy",
+    "entryModifiedBy:modifiedBy",
+    "entrySavedBy:savedBy"
 ];
 
 export const createAcoStorageOperations = (

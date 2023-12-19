@@ -21,7 +21,7 @@ export const createFilterOperations = (
     return {
         getFilter({ id }) {
             return withModel(async model => {
-                const entry = await cms.getEntry(model, { where: { entryId: id, latest: true } });
+                const entry = await cms.getEntry(model, { where: { id, latest: true } });
 
                 if (!entry) {
                     throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
@@ -57,7 +57,7 @@ export const createFilterOperations = (
         updateFilter({ id, data }) {
             return withModel(async model => {
                 const original = await cms.getEntry(model, {
-                    where: { entryId: id, latest: true }
+                    where: { id, latest: true }
                 });
 
                 const input = {
