@@ -14,7 +14,7 @@ interface IconVariableInputProps {
     variableId: string;
 }
 
-const IconVariableInput: React.FC<IconVariableInputProps> = ({ variableId }) => {
+const IconVariableInput = ({ variableId }: IconVariableInputProps) => {
     const { value, onChange } = useVariable(variableId);
 
     return (

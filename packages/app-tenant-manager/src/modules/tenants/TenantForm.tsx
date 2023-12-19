@@ -20,7 +20,7 @@ import { TenantFormFields } from "~/components/TenantFormFields";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
-const TenantForm: React.FC = () => {
+const TenantForm = () => {
     const { loading, showEmptyView, createTenant, cancelEditing, tenant, onSubmit } =
         useTenantForm();
 

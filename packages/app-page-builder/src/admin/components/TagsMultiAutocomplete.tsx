@@ -22,7 +22,7 @@ const LIST_PAGE_TAGS = gql`
 interface TagsMultiAutocompleteProps extends Partial<MultiAutoCompleteProps> {
     label?: string;
 }
-export const TagsMultiAutocomplete: React.FC<TagsMultiAutocompleteProps> = props => {
+export const TagsMultiAutocomplete = (props: TagsMultiAutocompleteProps) => {
     const autoComplete = useAutocomplete({
         search: query => query,
         query: LIST_PAGE_TAGS

@@ -144,7 +144,7 @@ export interface FieldProps {
     parent?: CmsModelField;
 }
 
-const Field: React.FC<FieldProps> = props => {
+const Field = (props: FieldProps) => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
     const { setData: setModel, data: model } = useModelEditor();

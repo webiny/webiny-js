@@ -28,7 +28,7 @@ const StyledTextarea = styled.textarea`
     }
 `;
 
-export const TextareaField: React.FC<TextareaProps> = ({ field }) => {
+export const TextareaField = ({ field }: TextareaProps) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators

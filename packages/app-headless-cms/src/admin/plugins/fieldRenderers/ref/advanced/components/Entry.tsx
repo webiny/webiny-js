@@ -78,7 +78,7 @@ const RightContainer = styled("div")({
     }
 });
 
-interface Props {
+interface EntryProps {
     model: CmsModel;
     entry: CmsReferenceContentEntry;
     onChange: (value: CmsReferenceValue) => void;
@@ -90,7 +90,7 @@ interface Props {
     placement?: string;
 }
 
-interface PropsWithRemove {
+interface EntryPropsWithRemove {
     onRemove: (entryId: string) => void;
     model: CmsModel;
     entry: CmsReferenceContentEntry;
@@ -102,7 +102,7 @@ interface PropsWithRemove {
     placement?: string;
 }
 
-export const Entry: React.VFC<PropsWithRemove | Props> = ({
+export const Entry = ({
     model,
     entry,
     onChange,
@@ -112,7 +112,7 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
     onMoveUp: onMoveUpClick,
     onMoveDown: onMoveDownClick,
     placement
-}) => {
+}: EntryPropsWithRemove | EntryProps) => {
     const onMoveUp = useCallback(
         (ev: React.MouseEvent) => {
             if (!onMoveUpClick) {

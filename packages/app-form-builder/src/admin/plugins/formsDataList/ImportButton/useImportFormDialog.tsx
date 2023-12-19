@@ -38,7 +38,7 @@ interface ImportFormDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportFormDialogContent: React.FC<ImportFormDialogContentProps> = ({ onFileLink }) => {
+export const ImportFormDialogContent = ({ onFileLink }: ImportFormDialogContentProps) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 

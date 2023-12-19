@@ -6,7 +6,7 @@ import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 
-const SaveContentModelButton: React.FC = () => {
+const SaveContentModelButton = () => {
     const { saveContentModel } = useModelEditor();
     const [loading, setLoading] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();

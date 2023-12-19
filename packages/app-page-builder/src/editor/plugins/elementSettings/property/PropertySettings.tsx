@@ -96,11 +96,11 @@ export const useVisibilitySetting = (elementId: string): UseVisibilitySettingRes
     };
 };
 
-const PropertySettings: React.FC<
-    PbEditorPageElementSettingsRenderComponentProps & {
-        options: any;
-    }
-> = ({ defaultAccordionValue }) => {
+type PropertySettingsProps = PbEditorPageElementSettingsRenderComponentProps & {
+    options: any;
+};
+
+const PropertySettings = ({ defaultAccordionValue }: PropertySettingsProps) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));

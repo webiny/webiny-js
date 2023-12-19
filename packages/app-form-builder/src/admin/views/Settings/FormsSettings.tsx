@@ -21,7 +21,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { FbSettings } from "~/types";
 
-const FormsSettings: React.FC = () => {
+const FormsSettings = () => {
     const { showSnackbar } = useSnackbar();
 
     const getSettingsQuery = useQuery<GetFormSettingsQueryResponse>(graphql.query);

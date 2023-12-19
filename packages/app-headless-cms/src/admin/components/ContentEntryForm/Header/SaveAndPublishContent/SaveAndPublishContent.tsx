@@ -6,7 +6,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import usePermission from "~/admin/hooks/usePermission";
 import { useSaveAndPublish } from "./useSaveAndPublish";
 
-const SaveAndPublishButtonComponent: React.FC = () => {
+const SaveAndPublishButtonComponent = () => {
     const { loading, entry } = useContentEntry();
     const { showConfirmationDialog } = useSaveAndPublish();
     const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();

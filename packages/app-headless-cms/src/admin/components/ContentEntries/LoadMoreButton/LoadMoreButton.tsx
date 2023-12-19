@@ -5,7 +5,7 @@ import { Container } from "./styled";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/load-more-button");
 
-interface Props {
+interface LoadMoreButtonProps {
     windowHeight: number;
     tableHeight: number;
     onClick: () => void;
@@ -13,13 +13,13 @@ interface Props {
     show: boolean;
 }
 
-export const LoadMoreButton: React.VFC<Props> = ({
+export const LoadMoreButton = ({
     disabled,
     windowHeight,
     tableHeight,
     show,
     onClick
-}) => {
+}: LoadMoreButtonProps) => {
     if (!show || windowHeight <= tableHeight) {
         return null;
     }

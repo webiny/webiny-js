@@ -10,7 +10,9 @@ mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
 mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
 
-export const BottomInfoBar: React.FC<SupportedFileTypesProps & ListStatusProps> = props => {
+type BottomInfoBarProps = SupportedFileTypesProps & ListStatusProps;
+
+export const BottomInfoBar = (props: BottomInfoBarProps) => {
     return (
         <BottomInfoBarWrapper>
             <BottomInfoBarInner>

@@ -15,11 +15,11 @@ import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
 import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
 
-interface Props {
+interface MainProps {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+export const Main = ({ folderId: initialFolderId }: MainProps) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const list = useContentEntriesList();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();

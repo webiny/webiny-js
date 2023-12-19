@@ -20,7 +20,7 @@ const SpinnerWrapper = styled.div`
     margin-left: -4px !important;
 `;
 
-const DefaultSaveBlockButton: React.FC = () => {
+const DefaultSaveBlockButton = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
     const { key } = useLocation();

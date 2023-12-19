@@ -10,7 +10,7 @@ import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
-const DefaultPublishPageButton: React.FC = () => {
+const DefaultPublishPageButton = () => {
     const [page] = usePage();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();

@@ -9,12 +9,14 @@ import { TextareaField } from "./fields/Textarea";
 import { HiddenField } from "./fields/Hidden";
 import { DateTimeField } from "./fields/DateTime";
 
+interface FieldProps {
+    field: FormRenderFbFormModelField;
+}
+
 /**
  * Renders a single form field. If needed, additional field types can be added.
  */
-export const Field: React.FC<{
-    field: FormRenderFbFormModelField;
-}> = props => {
+export const Field = (props: FieldProps) => {
     switch (props.field.type) {
         case "text":
             return <InputField {...props} />;

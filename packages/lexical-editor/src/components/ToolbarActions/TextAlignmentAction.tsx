@@ -29,15 +29,15 @@ interface TextAlignmentActionDropdownProps {
     element: JSX.Element;
 }
 
-const TextAlignmentActionDropDown: React.FC<TextAlignmentActionDropdownProps> = ({
+const TextAlignmentActionDropDown = ({
     element
-}): JSX.Element => {
+}: TextAlignmentActionDropdownProps): JSX.Element => {
     return <Compose component={BaseTextAlignmentDropDown} with={() => () => element} />;
 };
 
-export interface TextAlignmentAction extends React.FC<unknown> {
+export type TextAlignmentAction = React.ComponentType<unknown> & {
     TextAlignmentDropDown: typeof TextAlignmentActionDropDown;
-}
+};
 
 export const TextAlignmentAction: TextAlignmentAction = () => {
     const [editor] = useLexicalComposerContext();

@@ -66,7 +66,7 @@ interface FieldProps {
     onFieldDragStart: () => void;
     fieldType: Pick<FbFormModelField, "name" | "label">;
 }
-const Field: React.FC<FieldProps> = ({ onFieldDragStart, fieldType: { name, label } }) => {
+const Field = ({ onFieldDragStart, fieldType: { name, label } }: FieldProps) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
             {({ drag }) => (
@@ -91,7 +91,7 @@ const Field: React.FC<FieldProps> = ({ onFieldDragStart, fieldType: { name, labe
 interface FieldsProps {
     onFieldDragStart: () => void;
 }
-export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
+export const Fields = ({ onFieldDragStart }: FieldsProps) => {
     const { getField } = useFormEditor();
 
     function getGroups() {

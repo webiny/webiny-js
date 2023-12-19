@@ -190,7 +190,7 @@ export interface ImportContextProviderProps {
     children: (props: ImportContextProperties) => React.ReactNode;
 }
 
-export const ImportContextProvider: React.VFC<ImportContextProviderProps> = ({ children }) => {
+export const ImportContextProvider = ({ children }: ImportContextProviderProps) => {
     const client = useApolloClient();
 
     const { showSnackbar } = useSnackbar();

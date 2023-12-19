@@ -36,11 +36,11 @@ const Input = styled("input")({
     }
 });
 
-interface Props {
+interface SearchProps {
     onInput: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export const Search: React.VFC<Props> = ({ onInput }) => {
+export const Search = ({ onInput }: SearchProps) => {
     return (
         <Container>
             <Icon src={searchIcon} />
