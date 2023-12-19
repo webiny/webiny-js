@@ -106,7 +106,7 @@ export const setupContentModelGroup = async (
                 icon: "ico/ico",
                 description: "description"
             }
-        }
+        };
     }
 
     const [response] = await manager.createContentModelGroupMutation(vars);

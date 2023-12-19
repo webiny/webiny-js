@@ -1254,8 +1254,6 @@ export const createEntriesStorageOperations = (
                 latestEsEntry.data
             )) as CmsIndexEntry;
 
-
-
             if (publishingLatestRevision) {
                 const updatedMetaFields = pickEntryMetaFields(entry);
 
@@ -1277,7 +1275,7 @@ export const createEntriesStorageOperations = (
                          * 🆕 New meta fields below.
                          * Users are encouraged to use these instead of the deprecated ones above.
                          */
-                        ...updatedMetaFields,
+                        ...updatedMetaFields
                     }
                 });
 

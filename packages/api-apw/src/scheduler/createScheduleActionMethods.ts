@@ -113,7 +113,7 @@ export function createScheduleActionMethods({
                     id: currentIdentity.id,
                     type: currentIdentity.type,
                     displayName: currentIdentity.displayName
-                },
+                }
             };
 
             return await storageOperations.create({

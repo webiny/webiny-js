@@ -42,7 +42,7 @@ export interface AcoBaseFields {
     id: string;
     entryId: string;
     createdOn: string;
-    modifiedOn: string | null
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: User;
     modifiedBy: User | null;

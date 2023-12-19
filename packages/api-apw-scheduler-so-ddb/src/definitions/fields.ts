@@ -58,7 +58,6 @@ const fields: ApwSchedulerScheduleActionDynamoDbFieldPlugin[] = [
     new ApwSchedulerScheduleActionDynamoDbFieldPlugin({
         field: "version",
         type: "number"
-    }),
-
+    })
 ];
 export const createFields = (): ApwSchedulerScheduleActionDynamoDbFieldPlugin[] => fields;

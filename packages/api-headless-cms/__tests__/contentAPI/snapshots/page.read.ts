@@ -7,12 +7,9 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime!
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime!
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity!
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
         revisionCreatedOn: DateTime!
         revisionSavedOn: DateTime!
@@ -45,7 +42,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content =
-        PageModelApiName_Content_Hero
+          PageModelApiName_Content_Hero
         | PageModelApiName_Content_SimpleText
         | PageModelApiName_Content_Objecting
         | PageModelApiName_Content_Author
@@ -92,7 +89,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content_Objecting_DynamicZone =
-        PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
+          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
 
     type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         authors(populate: Boolean = true): [AuthorApiModel!]
@@ -109,7 +106,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Header =
-        PageModelApiName_Header_TextHeader
+          PageModelApiName_Header_TextHeader
         | PageModelApiName_Header_ImageHeader
 
     type PageModelApiName_Header_TextHeader {
@@ -386,9 +383,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getPageModelApiName(
-            where: PageModelApiNameGetWhereInput!
-        ): PageModelApiNameResponse
+        getPageModelApiName(where: PageModelApiNameGetWhereInput!): PageModelApiNameResponse
 
         listPagesModelApiName(
             where: PageModelApiNameListWhereInput

@@ -47,16 +47,20 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
     return {
         read: {
             async getTestEntry(variables?: Variables, headers?: Headers) {
-                return await readGqlHandler.invoke({
-                    body: { query: readGql.GET_TEST_ENTRY, variables },
-                    headers
-                }).then(extractGqlResponseData);
+                return await readGqlHandler
+                    .invoke({
+                        body: { query: readGql.GET_TEST_ENTRY, variables },
+                        headers
+                    })
+                    .then(extractGqlResponseData);
             },
             async listTestEntries(variables?: Variables, headers?: Headers) {
-                return await readGqlHandler.invoke({
-                    body: { query: readGql.LIST_TEST_ENTRIES, variables },
-                    headers
-                }).then(extractGqlResponseData);
+                return await readGqlHandler
+                    .invoke({
+                        body: { query: readGql.LIST_TEST_ENTRIES, variables },
+                        headers
+                    })
+                    .then(extractGqlResponseData);
             }
         },
         manage: {

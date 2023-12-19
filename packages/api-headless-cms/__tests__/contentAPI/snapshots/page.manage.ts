@@ -1,5 +1,3 @@
-import { metaDataComment, revisionsComment } from "./snippets";
-
 export default /* GraphQL */ `
     """
     Page
@@ -8,15 +6,12 @@ export default /* GraphQL */ `
         id: ID!
         entryId: String!
 
-        createdOn: DateTime!
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")
-        savedOn: DateTime!
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity!
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")
         modifiedBy: CmsIdentity
-        @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+            @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
         revisionCreatedOn: DateTime!
         revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
@@ -72,7 +67,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content =
-        PageModelApiName_Content_Hero
+          PageModelApiName_Content_Hero
         | PageModelApiName_Content_SimpleText
         | PageModelApiName_Content_Objecting
         | PageModelApiName_Content_Author
@@ -119,7 +114,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content_Objecting_DynamicZone =
-        PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
+          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
 
     type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         authors: [RefField!]
@@ -156,7 +151,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Header =
-        PageModelApiName_Header_TextHeader
+          PageModelApiName_Header_TextHeader
         | PageModelApiName_Header_ImageHeader
 
     type PageModelApiName_Header_TextHeader {
@@ -367,28 +362,25 @@ export default /* GraphQL */ `
         status: String
 
         # Set a different date/time as the creation date/time of the entry.
-        createdOn: DateTime
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        createdOn: DateTime @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
 
         # Set a different date/time as the last modification date/time of the entry.
-        savedOn: DateTime
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        savedOn: DateTime @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
 
         # Set a different date/time as the publication date/time of the entry.
         publishedOn: DateTime
-        @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
+            @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
 
         # Set a different identity as the creator of the entry.
         createdBy: CmsIdentityInput
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+            @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
 
         # Set a different identity as the last editor of the entry.
         modifiedBy: CmsIdentityInput
-        @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+            @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
 
         # Set a different identity as the owner of the entry.
-        ownedBy: CmsIdentityInput
-        @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
+        ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
 
         revisionCreatedOn: DateTime
         revisionSavedOn: DateTime
@@ -678,15 +670,9 @@ export default /* GraphQL */ `
             data: PageModelApiNameInput!
         ): CmsEntryValidationResponse!
 
-        movePageModelApiName(
-            revision: ID!
-            folderId: ID!
-        ): PageModelApiNameMoveResponse
+        movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
 
-        deletePageModelApiName(
-            revision: ID!
-            options: CmsDeleteEntryOptions
-        ): CmsDeleteResponse
+        deletePageModelApiName(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
         deleteMultiplePagesModelApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
 

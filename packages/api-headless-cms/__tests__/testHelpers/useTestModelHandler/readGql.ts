@@ -1,18 +1,20 @@
-const data = /* GraphQL */ `{
-    id
-    entryId
-    createdOn
-    savedOn
-    title
-    slug
-}
+const data = /* GraphQL */ `
+    {
+        id
+        entryId
+        createdOn
+        savedOn
+        title
+        slug
+    }
 `;
 
-const error = /* GraphQL */ `{
-    code
-    message
-    data
-}
+const error = /* GraphQL */ `
+    {
+        code
+        message
+        data
+    }
 `;
 
 export const GET_TEST_ENTRY = `

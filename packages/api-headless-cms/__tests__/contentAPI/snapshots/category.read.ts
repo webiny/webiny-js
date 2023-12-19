@@ -6,13 +6,10 @@ export default /* GraphQL */ `
         id: ID!
         entryId: String!
         modelId: String!
-        
-        createdOn: DateTime!
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime!
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity!
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
         revisionCreatedOn: DateTime!
         revisionSavedOn: DateTime!
@@ -34,7 +31,7 @@ export default /* GraphQL */ `
         entryModifiedBy: CmsIdentity
         entryFirstPublishedBy: CmsIdentity
         entryLastPublishedBy: CmsIdentity
-        
+
         title: String
         slug: String
     }
@@ -194,7 +191,7 @@ export default /* GraphQL */ `
         entryLastPublishedBy_not: ID
         entryLastPublishedBy_in: [ID!]
         entryLastPublishedBy_not_in: [ID!]
-        
+
         title: String
         title_not: String
         title_in: [String]

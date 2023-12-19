@@ -492,7 +492,9 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(publish1.error).toBeNull();
 
         // Refresh.
-        const { data: revAfterPublish } = await manageApiIdentityA.getTestEntry({ revision: rev.id });
+        const { data: revAfterPublish } = await manageApiIdentityA.getTestEntry({
+            revision: rev.id
+        });
 
         const republish = await manageApiIdentityA.unpublishTestEntry({ revision: rev.id });
         expect(republish.error).toBeNull();
