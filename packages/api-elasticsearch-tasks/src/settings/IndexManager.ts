@@ -3,13 +3,14 @@ import { DisableIndexing } from "./DisableIndexing";
 import { EnableIndexing } from "./EnableIndexing";
 import { IElasticsearchIndexingTaskValuesSettings } from "~/types";
 import { Client } from "@webiny/api-elasticsearch";
+import { IIndexManager } from "~/settings/types";
 
 const defaultIndexSettings = {
     numberOfReplicas: 1,
     refreshInterval: "1s"
 };
 
-export class IndexManager {
+export class IndexManager implements IIndexManager {
     private readonly disable: DisableIndexing;
     private readonly enable: EnableIndexing;
     private readonly _settings: IElasticsearchIndexingTaskValuesSettings;

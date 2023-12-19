@@ -7,6 +7,7 @@ import { ITaskResponse, ITaskResponseResult } from "@webiny/tasks/response/abstr
 import { scan } from "~/helpers/scan";
 import { BatchWriteItem, ScanResponse } from "@webiny/db-dynamodb";
 import { IndexManager } from "~/settings";
+import { IIndexManager } from "~/settings/types";
 
 const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | undefined => {
     if (results.lastEvaluatedKey?.PK && results.lastEvaluatedKey?.SK) {
@@ -22,15 +23,13 @@ export class ReindexingTaskRunner {
     private readonly manager: IManager;
     private keys?: IElasticsearchIndexingTaskValuesKeys;
 
-    private readonly indexManager: IndexManager;
+    private readonly indexManager: IIndexManager;
     private readonly response: ITaskResponse;
 
-    public constructor(manager: IManager, keys?: IElasticsearchIndexingTaskValuesKeys) {
+    public constructor(manager: IManager, indexManager: IndexManager) {
         this.manager = manager;
         this.response = manager.response;
-        this.keys = keys;
-        const values = this.manager.store.getValues();
-        this.indexManager = new IndexManager(manager.elasticsearch, values.settings || {});
+        this.indexManager = indexManager;
     }
 
     /**
@@ -38,7 +37,11 @@ export class ReindexingTaskRunner {
      * * if task is close to timeout
      * * if task was stopped
      */
-    public async exec(limit: number): Promise<ITaskResponseResult> {
+    public async exec(
+        keys: IElasticsearchIndexingTaskValuesKeys | undefined = undefined,
+        limit = 200
+    ): Promise<ITaskResponseResult> {
+        this.keys = keys;
         try {
             while (this.manager.isCloseToTimeout() === false) {
                 if (this.manager.isStopped()) {

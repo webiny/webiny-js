@@ -1,29 +1,37 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { Context, IElasticsearchIndexingTaskValues } from "~/types";
-import { Manager, ManagerParams } from "../Manager";
-import { ReindexingTaskRunner } from "./ReindexingTaskRunner";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
+import { Client } from "@webiny/api-elasticsearch";
 
-export type CreateElasticsearchIndexTaskConfig = Pick<
-    ManagerParams,
-    "documentClient" | "elasticsearchClient"
->;
+export interface CreateElasticsearchIndexTaskConfig {
+    documentClient?: DynamoDBDocument;
+    elasticsearchClient?: Client;
+}
 
 export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIndexTaskConfig) => {
     return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",
         run: async ({ context, isCloseToTimeout, response, values, isStopped, store }) => {
+            const { Manager } = await import("../Manager");
+            const { IndexManager } = await import("~/settings");
+            const { ReindexingTaskRunner } = await import("./ReindexingTaskRunner");
+
             const manager = new Manager({
-                ...params,
+                elasticsearchClient: params?.elasticsearchClient,
+                documentClient: params?.documentClient,
                 response,
                 context,
                 isStopped,
                 isCloseToTimeout,
                 store
             });
+
+            const indexManager = new IndexManager(manager.elasticsearch, values.settings || {});
+            const reindexing = new ReindexingTaskRunner(manager, indexManager);
+
             const keys = values.keys || undefined;
-            const reindexing = new ReindexingTaskRunner(manager, keys);
-            return reindexing.exec(200);
+            return reindexing.exec(keys, 200);
         }
     });
 };

@@ -6,7 +6,8 @@
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../tasks/tsconfig.build.json" }
+    { "path": "../tasks/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

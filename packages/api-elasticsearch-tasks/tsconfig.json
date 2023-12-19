@@ -6,7 +6,8 @@
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
-    { "path": "../tasks" }
+    { "path": "../tasks" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,7 +25,9 @@
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"]
+      "@webiny/tasks": ["../tasks/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }
