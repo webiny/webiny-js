@@ -1,5 +1,4 @@
-import { AssetRequestResolver } from "./abstractions/AssetRequestResolver";
-import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest";
+import { AssetRequest, AssetRequestResolver } from "~/delivery";
 
 export class NullRequestResolver implements AssetRequestResolver {
     resolve(): Promise<AssetRequest | undefined> {

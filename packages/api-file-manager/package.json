@@ -34,6 +34,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/pubsub": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "fastify": "^4.11.0",
     "lodash": "^4.17.11",
     "object-hash": "^2.1.1"
   },

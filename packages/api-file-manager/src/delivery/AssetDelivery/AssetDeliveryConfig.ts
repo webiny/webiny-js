@@ -1,29 +1,40 @@
 import { Plugin } from "@webiny/plugins";
-import { AssetRequestResolver } from "./abstractions/AssetRequestResolver";
-import { AssetResolver } from "./abstractions/AssetResolver";
-import { AssetTransformer } from "./abstractions/AssetTransformer";
+import {
+    AssetRequestResolver,
+    AssetResolver,
+    AssetProcessor,
+    AssetOutputStrategy,
+    AssetRequest,
+    Asset,
+    AssetTransformationStrategy
+} from "~/delivery";
 import { FileManagerContext } from "~/types";
-import { AssetOutput } from "./abstractions/AssetOutput";
+import { NullRequestResolver } from "~/delivery/AssetDelivery/NullRequestResolver";
+import { NullAssetResolver } from "~/delivery/AssetDelivery/NullAssetResolver";
+import { NullAssetOutputStrategy } from "./NullAssetOutputStrategy";
+import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor";
+import { PassthroughAssetTransformationStrategy } from "./transformation/PassthroughAssetTransformationStrategy";
 
 type Setter<T extends any[]> = T extends [...any, infer TLast] ? (...args: T) => TLast : never;
 
-type ImageResizeWidthsSetter = Setter<[number[]]>;
-type AssetRequestResolverDecorator = Setter<[AssetRequestResolver]>;
-type AssetResolverDecorator = Setter<[AssetResolver]>;
-type AssetTransformerDecorator = Setter<[FileManagerContext, AssetTransformer]>;
-type AssetOutputDecorator = Setter<[FileManagerContext, AssetOutput]>;
+export type ImageResizeWidthsSetter = Setter<[number[]]>;
+export type AssetRequestResolverDecorator = Setter<[AssetRequestResolver]>;
+export type AssetResolverDecorator = Setter<[AssetResolver]>;
+export type AssetProcessorDecorator = Setter<[FileManagerContext, AssetProcessor]>;
+export type AssetTransformationDecorator = Setter<
+    [FileManagerContext, AssetTransformationStrategy]
+>;
+export type AssetOutputStrategyDecorator = Setter<
+    [FileManagerContext, AssetRequest, Asset, AssetOutputStrategy]
+>;
 
 export class AssetDeliveryConfigBuilder {
-    private baseConfig: AssetDeliveryConfig;
     private imageResizeWidths: ImageResizeWidthsSetter[] = [];
     private requestResolverDecorators: AssetRequestResolverDecorator[] = [];
     private assetResolverDecorators: AssetResolverDecorator[] = [];
-    private assetTransformerDecorators: AssetTransformerDecorator[] = [];
-    private assetOutputDecorators: AssetOutputDecorator[] = [];
-
-    constructor(baseConfig: AssetDeliveryConfig) {
-        this.baseConfig = baseConfig;
-    }
+    private assetProcessorDecorators: AssetProcessorDecorator[] = [];
+    private assetTransformationStrategyDecorators: AssetTransformationDecorator[] = [];
+    private assetOutputStrategyDecorators: AssetOutputStrategyDecorator[] = [];
 
     setImageResizeWidths(setter: ImageResizeWidthsSetter) {
         this.imageResizeWidths.push(setter);
@@ -37,31 +48,28 @@ export class AssetDeliveryConfigBuilder {
         this.assetResolverDecorators.push(decorator);
     }
 
-    decorateAssetTransformer(decorator: AssetTransformerDecorator) {
-        this.assetTransformerDecorators.push(decorator);
+    decorateAssetTransformationStrategy(decorator: AssetTransformationDecorator) {
+        this.assetTransformationStrategyDecorators.push(decorator);
     }
 
-    decorateAssetOutput(decorator: AssetOutputDecorator) {
-        this.assetOutputDecorators.push(decorator);
+    decorateAssetOutputStrategy(decorator: AssetOutputStrategyDecorator) {
+        this.assetOutputStrategyDecorators.push(decorator);
     }
 
     /**
      * @internal
      */
     getImageResizeWidths() {
-        return this.imageResizeWidths.reduce(
-            (value, decorator) => decorator(value),
-            this.baseConfig.getImageResizeWidths()
-        );
+        return this.imageResizeWidths.reduce<number[]>((value, decorator) => decorator(value), []);
     }
 
     /**
      * @internal
      */
     getAssetRequestResolver() {
-        return this.requestResolverDecorators.reduce(
+        return this.requestResolverDecorators.reduce<AssetRequestResolver>(
             (value, decorator) => decorator(value),
-            this.baseConfig.getAssetRequestResolver()
+            new NullRequestResolver()
         );
     }
 
@@ -69,78 +77,46 @@ export class AssetDeliveryConfigBuilder {
      * @internal
      */
     getAssetResolver() {
-        return this.assetResolverDecorators.reduce(
+        return this.assetResolverDecorators.reduce<AssetResolver>(
             (value, decorator) => decorator(value),
-            this.baseConfig.getAssetResolver()
+            new NullAssetResolver()
         );
     }
 
     /**
      * @internal
      */
-    getAssetTransformer(context: FileManagerContext) {
-        return this.assetTransformerDecorators.reduce(
+    getAssetProcessor(context: FileManagerContext) {
+        return this.assetProcessorDecorators.reduce<AssetProcessor>(
             (value, decorator) => decorator(context, value),
-            this.baseConfig.getAssetTransformer()
+            new TransformationAssetProcessor(this.getAssetTransformationStrategy(context))
         );
     }
 
-    /**
-     * @internal
-     */
-    getAssetOutput(context: FileManagerContext) {
-        return this.assetOutputDecorators.reduce(
+    getAssetOutputStrategy(context: FileManagerContext, assetRequest: AssetRequest, asset: Asset) {
+        return this.assetOutputStrategyDecorators.reduce<AssetOutputStrategy>(
+            (value, decorator) => decorator(context, assetRequest, asset, value),
+            new NullAssetOutputStrategy()
+        );
+    }
+
+    getAssetTransformationStrategy(context: FileManagerContext) {
+        return this.assetTransformationStrategyDecorators.reduce<AssetTransformationStrategy>(
             (value, decorator) => decorator(context, value),
-            this.baseConfig.getAssetOutput()
+            new PassthroughAssetTransformationStrategy()
         );
     }
 }
 
-interface AssetDeliveryConfigProps {
-    imageResizeWidths: number[];
-    assetRequestResolver: AssetRequestResolver;
-    assetResolver: AssetResolver;
-    assetTransformer: AssetTransformer;
-    assetOutput: AssetOutput;
-}
-
-export class AssetDeliveryConfig {
-    private props: AssetDeliveryConfigProps;
-
-    constructor(props: AssetDeliveryConfigProps) {
-        this.props = props;
-    }
-
-    getImageResizeWidths() {
-        return this.props.imageResizeWidths;
-    }
-
-    getAssetRequestResolver() {
-        return this.props.assetRequestResolver;
-    }
-
-    getAssetResolver() {
-        return this.props.assetResolver;
-    }
-
-    getAssetTransformer() {
-        return this.props.assetTransformer;
-    }
-
-    getAssetOutput() {
-        return this.props.assetOutput;
-    }
-}
-
-interface AssetDeliveryConfigModifierCallable {
+export interface AssetDeliveryConfigModifier {
     (config: AssetDeliveryConfigBuilder): Promise<void> | void;
 }
 
 export class AssetDeliveryConfigModifierPlugin extends Plugin {
     public static override type = "fm.config-modifier";
-    private readonly cb: AssetDeliveryConfigModifierCallable;
+    private readonly cb: AssetDeliveryConfigModifier;
 
-    constructor(cb: AssetDeliveryConfigModifierCallable) {
+    constructor(cb: AssetDeliveryConfigModifier) {
         super();
         this.cb = cb;
     }
@@ -150,6 +126,6 @@ export class AssetDeliveryConfigModifierPlugin extends Plugin {
     }
 }
 
-export const createAssetDeliveryConfig = (cb: AssetDeliveryConfigModifierCallable) => {
+export const createAssetDeliveryConfig = (cb: AssetDeliveryConfigModifier) => {
     return new AssetDeliveryConfigModifierPlugin(cb);
 };

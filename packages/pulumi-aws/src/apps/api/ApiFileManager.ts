@@ -11,7 +11,6 @@ import { getAwsAccountId } from "~/apps/awsUtils";
 import { LAMBDA_RUNTIME } from "~/constants";
 import { ApiGraphql } from "~/apps";
 
-
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
 
 interface ApiFileManagerConfig {
@@ -29,31 +28,6 @@ export const ApiFileManager = createAppModule({
         const role = createLambdaRole(app, {
             name: "fm-lambda-role",
             policy: policy.output
-        });
-
-        const transform = app.addResource(aws.lambda.Function, {
-            name: "fm-image-transformer",
-            config: {
-                handler: "handler.handler",
-                timeout: 30,
-                runtime: LAMBDA_RUNTIME,
-                memorySize: 1600,
-                role: role.output.arn,
-                description: "Performs image optimization, resizing, etc.",
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "fileManager/transform/build")
-                    )
-                }),
-                layers: [getLayerArn("sharp")],
-                environment: {
-                    variables: getCommonLambdaEnvVariables().apply(value => ({
-                        ...value,
-                        S3_BUCKET: core.fileManagerBucketId
-                    }))
-                },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
-            }
         });
 
         const manage = app.addResource(aws.lambda.Function, {
@@ -86,13 +60,14 @@ export const ApiFileManager = createAppModule({
             name: "fm-download",
             config: {
                 ...baseConfig,
+                memorySize: 1600,
                 description: "Serves previously uploaded files.",
+                layers: [getLayerArn("sharp")],
                 environment: {
                     variables: graphql.functions.graphql.output.environment.apply(env => {
                         return {
                             WEBINY_FUNCTION_TYPE: "asset-delivery",
                             ...env?.variables,
-                            IMAGE_TRANSFORMER_FUNCTION: transform.output.arn,
                             ...config.env
                         };
                     })
@@ -131,7 +106,6 @@ export const ApiFileManager = createAppModule({
         });
 
         const functions = {
-            transform,
             manage,
             download
         };

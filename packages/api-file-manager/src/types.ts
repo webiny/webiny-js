@@ -10,6 +10,7 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 
 export * from "./types/file.lifecycle";
 export * from "./types/file";
+export * from "./types/file";
 
 export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, SystemCRUD {
     storage: FileStorage;

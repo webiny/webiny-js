@@ -1,6 +1,5 @@
-import { ResolvedAsset } from "~/delivery/AssetDelivery/ResolvedAsset";
-import { AssetRequest } from "../AssetRequest";
+import { Asset, AssetRequest } from "~/delivery";
 
 export interface AssetResolver {
-    resolve(request: AssetRequest): Promise<ResolvedAsset | undefined>;
+    resolve(request: AssetRequest): Promise<Asset | undefined>;
 }

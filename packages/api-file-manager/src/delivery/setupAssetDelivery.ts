@@ -1,12 +1,7 @@
-import { S3 } from "@webiny/aws-sdk/client-s3";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { getEnvironment } from "~/handlers/utils";
-import { S3FileMetadataReader } from "./S3FileMetadataReader";
 import { FilesAssetRequestResolver } from "./AssetDelivery/FilesAssetRequestResolver";
-import { S3AssetOutput, S3AssetResolver } from "./AssetDelivery/s3";
 import { AliasAssetRequestResolver } from "./AssetDelivery/AliasAssetRequestResolver";
 import {
-    AssetDeliveryConfig,
     AssetDeliveryConfigBuilder,
     AssetDeliveryConfigModifierPlugin,
     createAssetDeliveryConfig
@@ -17,25 +12,25 @@ import {
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import { NullRequestResolver } from "./AssetDelivery/NullRequestResolver";
-import { NullAssetResolver } from "./AssetDelivery/NullAssetResolver";
-import { PassthroughAssetTransformer } from "./AssetDelivery/PassthroughAssetTransformer";
-import { NullAssetOutput } from "./AssetDelivery/NullAssetOutput";
-import { ResolvedAsset } from "~/delivery/AssetDelivery/ResolvedAsset";
+import { Asset } from "~/delivery/AssetDelivery/Asset";
 import { FileManagerContext } from "~/types";
-import { resolve } from "~/graphql/utils";
-
-const { bucket, region } = getEnvironment();
-const s3 = new S3({ region });
+import { PrivateFilesAssetProcessor } from "~/delivery/AssetDelivery/PrivateFilesAssetProcessor";
+import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
     "cache-control": "no-cache, no-store, must-revalidate"
 });
 
-function assertAssetWasResolved(asset: ResolvedAsset | undefined): asserts asset is ResolvedAsset {
+function assertAssetRequestWasResolved(request: any): asserts request is AssetRequest {
+    if (request === undefined) {
+        throw new Error("Not an AssetRequest!");
+    }
+}
+
+function assertAssetWasResolved(asset: Asset | undefined): asserts asset is Asset {
     if (asset === undefined) {
-        throw new Error("Not a ResolvedAsset!");
+        throw new Error("Not an Asset!");
     }
 }
 
@@ -46,16 +41,8 @@ export interface AssetDeliveryParams {
 export const setupAssetDelivery = (params: AssetDeliveryParams) => {
     return [
         createModifyFastifyPlugin(app => {
-            const baseConfig = new AssetDeliveryConfig({
-                imageResizeWidths: [],
-                assetRequestResolver: new NullRequestResolver(),
-                assetResolver: new NullAssetResolver(),
-                assetTransformer: new PassthroughAssetTransformer(),
-                assetOutput: new NullAssetOutput()
-            });
-
             // Config builder allows config modification via plugins.
-            const configBuilder = new AssetDeliveryConfigBuilder(baseConfig);
+            const configBuilder = new AssetDeliveryConfigBuilder();
 
             // Apply config modifications.
             const configPlugins = app.webiny.plugins.byType<AssetDeliveryConfigModifierPlugin>(
@@ -64,14 +51,13 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
 
             configPlugins.forEach(configPlugin => configPlugin.buildConfig(configBuilder));
 
-            let resolvedAsset: ResolvedAsset | undefined;
+            let resolvedRequest: AssetRequest | undefined;
+            let resolvedAsset: Asset | undefined;
 
             // Create a `HandlerOnRequest` plugin to resolve `tenant` and `locale`, and allow the system to bootstrap.
             const handlerOnRequest = createHandlerOnRequest(async (request, reply) => {
                 const requestResolver = configBuilder.getAssetRequestResolver();
-                const resolvedRequest = await requestResolver.resolve(request);
-
-                console.log("AssetRequest", JSON.stringify(resolvedRequest, null, 2));
+                resolvedRequest = await requestResolver.resolve(request);
 
                 if (!resolvedRequest) {
                     reply
@@ -84,9 +70,8 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                 }
 
                 const assetResolver = configBuilder.getAssetResolver();
-                resolvedAsset = await assetResolver.resolve(resolvedRequest);
 
-                console.log("ResolvedAsset", JSON.stringify(resolvedAsset, null, 2));
+                resolvedAsset = await assetResolver.resolve(resolvedRequest);
 
                 if (!resolvedAsset) {
                     reply
@@ -103,6 +88,8 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                     "x-tenant": resolvedAsset.getTenant(),
                     "x-i18n-locale": resolvedAsset.getLocale()
                 };
+
+                return;
             });
 
             // Create the `Route` plugin, to handle all GET requests, and output the resolved asset.
@@ -110,28 +97,44 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                 onGet(
                     "*",
                     async (_, reply) => {
+                        assertAssetRequestWasResolved(resolvedRequest);
                         assertAssetWasResolved(resolvedAsset);
-                        const id = resolvedAsset.getId();
+
+                        let assetProcessor = configBuilder.getAssetProcessor(context);
 
                         if (context.wcp.canUsePrivateFiles()) {
-                            const file = await context.security.withoutAuthorization(() => {
-                                return context.fileManager.getFile(id);
-                            });
-
-                            // TODO: check permissions.
-                            console.log("file", JSON.stringify(file, null, 2));
+                            assetProcessor = new PrivateFilesAssetProcessor(
+                                context,
+                                assetProcessor
+                            );
                         }
 
-                        // Transform asset
-                        const assetTransformer = configBuilder.getAssetTransformer(context);
-                        const transformedAsset = new TransformedAsset(resolvedAsset, assetReader);
-                        const transformedAsset = await assetTransformer.transform(transformedAsset);
+                        const processedAsset = await assetProcessor.process(
+                            resolvedRequest,
+                            resolvedAsset
+                        );
 
-                        // Output asset
-                        const assetOutput = configBuilder.getAssetOutput(context);
-                        const assetReply = await assetOutput.output(transformedAsset);
+                        // Determine the output strategy. If strategy is already set, do not override it.
+                        processedAsset.setOutputStrategy(strategy => {
+                            if (strategy) {
+                                return strategy;
+                            }
 
-                        return assetReply.reply(reply);
+                            assertAssetRequestWasResolved(resolvedRequest);
+
+                            return configBuilder.getAssetOutputStrategy(
+                                context,
+                                resolvedRequest,
+                                processedAsset
+                            );
+                        });
+
+                        const assetReply = await processedAsset.output();
+
+                        // Set default headers.
+                        reply.headers({ "x-webiny-base64-encoded": true });
+
+                        return await assetReply.reply(reply);
                     },
                     { override: true }
                 );
@@ -141,8 +144,6 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
         }),
         // Create the default configuration
         createAssetDeliveryConfig(config => {
-            config.setImageResizeWidths(() => [100, 300, 500, 750, 1000, 1500, 2500]);
-
             config.decorateRequestResolver(() => {
                 // This resolver works with `/files/*` requests.
                 return new FilesAssetRequestResolver();
@@ -152,19 +153,6 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                 // This resolver tries to resolve the request using aliases.
                 return new AliasAssetRequestResolver(params.documentClient, resolver);
             });
-
-            config.decorateAssetResolver(() => {
-                // This resolver loads file information from the `.metadata` file.
-                return new S3AssetResolver(new S3FileMetadataReader(s3, bucket));
-            });
-
-            config.decorateAssetOutput(() => {
-                return new S3AssetOutput(s3, bucket);
-            });
-
-            config.decorateAssetTransformer(() => {
-                return new SharpTransformer();
-            })
         })
     ];
 };

@@ -8,13 +8,13 @@ import { extractFileInformation } from "./extractFileInformation";
 export function isSmallObject(object: GetObjectOutput) {
     return (object.ContentLength ?? Number.MIN_SAFE_INTEGER) < MAX_RETURN_CONTENT_LENGTH;
 }
+export const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 
 interface S3Object {
     object?: GetObjectOutput;
     params: ObjectParamsResponse;
 }
 
-export const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 
 const getS3ObjectHead = async (s3: S3, params: ObjectParamsResponse) => {
     try {

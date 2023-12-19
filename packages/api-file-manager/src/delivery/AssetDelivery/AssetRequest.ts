@@ -1,7 +1,6 @@
 export interface AssetRequestOptions {
     original?: boolean;
-    width?: string;
-    [name: string]: unknown;
+    width?: number;
 }
 
 export interface AssetRequestData<TOptions> {

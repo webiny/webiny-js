@@ -12,14 +12,14 @@ export class FilesAssetRequestResolver implements AssetRequestResolver {
         const params = (request.params as Record<string, any>) ?? {};
         const query = (request.query as Record<string, any>) ?? {};
 
-        // Example: { '*': 'files/65722cb5c7824a0008d05963/image-48.jpg' },
+        // Example: { '*': '/files/65722cb5c7824a0008d05963/image-48.jpg' },
         const path = params["*"];
 
         return new AssetRequest({
-            key: decodeURI(path).replace("files/", ""),
+            key: decodeURI(path).replace("/files/", ""),
             options: {
-                original: "original" in query,
-                width: query["width"]
+                ...query,
+                width: query.width ? parseInt(query.width) : undefined
             }
         });
     }
