@@ -1,9 +1,4 @@
-import {
-    FastifyRequest,
-    FastifyReply,
-    HTTPMethods,
-    RouteHandlerMethod
-} from "fastify";
+import { FastifyRequest, FastifyReply, HTTPMethods, RouteHandlerMethod } from "fastify";
 
 export { FastifyInstance, HTTPMethods } from "fastify";
 import { ClientContext } from "@webiny/handler-client/types";
