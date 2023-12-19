@@ -19,27 +19,6 @@ const categoryFields = `
     ownedBy ${identityFields}
     savedOn
    
-    revisionCreatedOn
-    revisionSavedOn
-    revisionModifiedOn
-    revisionFirstPublishedOn
-    revisionLastPublishedOn
-    revisionCreatedBy ${identityFields}
-    revisionSavedBy ${identityFields}
-    revisionModifiedBy ${identityFields}
-    revisionFirstPublishedBy ${identityFields}
-    revisionLastPublishedBy ${identityFields}
-    entryCreatedOn
-    entrySavedOn
-    entryModifiedOn
-    entryCreatedBy ${identityFields}
-    entrySavedBy ${identityFields}
-    entryModifiedBy ${identityFields}
-    entryFirstPublishedBy ${identityFields}
-    entryLastPublishedBy ${identityFields}
-    entryFirstPublishedOn
-    entryLastPublishedOn
-         
     meta {
         title
         modelId

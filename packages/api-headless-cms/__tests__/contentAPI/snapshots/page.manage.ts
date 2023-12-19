@@ -7,11 +7,37 @@ export default /* GraphQL */ `
     type PageModelApiName {
         id: ID!
         entryId: String!
+
         createdOn: DateTime!
+        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")
         savedOn: DateTime!
+        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
         createdBy: CmsIdentity!
-        ownedBy: CmsIdentity!
+        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")
         modifiedBy: CmsIdentity
+        @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+        revisionCreatedOn: DateTime!
+        revisionSavedOn: DateTime!
+        revisionModifiedOn: DateTime
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentity!
+        revisionSavedBy: CmsIdentity!
+        revisionModifiedBy: CmsIdentity
+        revisionFirstPublishedBy: CmsIdentity
+        revisionLastPublishedBy: CmsIdentity
+        entryCreatedOn: DateTime!
+        entrySavedOn: DateTime!
+        entryModifiedOn: DateTime
+        entryFirstPublishedOn: DateTime
+        entryLastPublishedOn: DateTime
+        entryCreatedBy: CmsIdentity!
+        entrySavedBy: CmsIdentity!
+        entryModifiedBy: CmsIdentity
+        entryFirstPublishedBy: CmsIdentity
+        entryLastPublishedBy: CmsIdentity
+
         meta: PageModelApiNameMeta
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
@@ -29,18 +55,24 @@ export default /* GraphQL */ `
         version: Int
         locked: Boolean
         publishedOn: DateTime
+
         status: String
-        ${revisionsComment}
+        """
+        CAUTION: this field is resolved by making an extra query to DB.
+        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
+        """
         revisions: [PageModelApiName!]
         title: String
         description: String
         image: String
-        ${metaDataComment}
+        """
+        Custom meta data stored in the root of the entry object.
+        """
         data: JSON
     }
 
     union PageModelApiName_Content =
-          PageModelApiName_Content_Hero
+        PageModelApiName_Content_Hero
         | PageModelApiName_Content_SimpleText
         | PageModelApiName_Content_Objecting
         | PageModelApiName_Content_Author
@@ -87,7 +119,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content_Objecting_DynamicZone =
-          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
+        PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
 
     type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         authors: [RefField!]
@@ -124,7 +156,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Header =
-          PageModelApiName_Header_TextHeader
+        PageModelApiName_Header_TextHeader
         | PageModelApiName_Header_ImageHeader
 
     type PageModelApiName_Header_TextHeader {
@@ -330,15 +362,57 @@ export default /* GraphQL */ `
 
     input PageModelApiNameInput {
         id: ID
-        # User can override the entry dates
+
+        # Set status of the entry.
+        status: String
+
+        # Set a different date/time as the creation date/time of the entry.
         createdOn: DateTime
+        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+
+        # Set a different date/time as the last modification date/time of the entry.
         savedOn: DateTime
+        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+
+        # Set a different date/time as the publication date/time of the entry.
         publishedOn: DateTime
-        # User can override the entry related user identities
+        @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
+
+        # Set a different identity as the creator of the entry.
         createdBy: CmsIdentityInput
+        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+
+        # Set a different identity as the last editor of the entry.
         modifiedBy: CmsIdentityInput
+        @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+
+        # Set a different identity as the owner of the entry.
         ownedBy: CmsIdentityInput
+        @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
+
+        revisionCreatedOn: DateTime
+        revisionSavedOn: DateTime
+        revisionModifiedOn: DateTime
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentityInput
+        revisionSavedBy: CmsIdentityInput
+        revisionModifiedBy: CmsIdentityInput
+        revisionFirstPublishedBy: CmsIdentityInput
+        revisionLastPublishedBy: CmsIdentityInput
+        entryCreatedOn: DateTime
+        entrySavedOn: DateTime
+        entryModifiedOn: DateTime
+        entryFirstPublishedOn: DateTime
+        entryLastPublishedOn: DateTime
+        entryCreatedBy: CmsIdentityInput
+        entrySavedBy: CmsIdentityInput
+        entryModifiedBy: CmsIdentityInput
+        entryFirstPublishedBy: CmsIdentityInput
+        entryLastPublishedBy: CmsIdentityInput
+
         wbyAco_location: WbyAcoLocationInput
+
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
@@ -392,6 +466,116 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        revisionCreatedOn: DateTime
+        revisionCreatedOn_gt: DateTime
+        revisionCreatedOn_gte: DateTime
+        revisionCreatedOn_lt: DateTime
+        revisionCreatedOn_lte: DateTime
+        revisionCreatedOn_between: [DateTime!]
+        revisionCreatedOn_not_between: [DateTime!]
+        revisionSavedOn: DateTime
+        revisionSavedOn_gt: DateTime
+        revisionSavedOn_gte: DateTime
+        revisionSavedOn_lt: DateTime
+        revisionSavedOn_lte: DateTime
+        revisionSavedOn_between: [DateTime!]
+        revisionSavedOn_not_between: [DateTime!]
+        revisionModifiedOn: DateTime
+        revisionModifiedOn_gt: DateTime
+        revisionModifiedOn_gte: DateTime
+        revisionModifiedOn_lt: DateTime
+        revisionModifiedOn_lte: DateTime
+        revisionModifiedOn_between: [DateTime!]
+        revisionModifiedOn_not_between: [DateTime!]
+        revisionFirstPublishedOn: DateTime
+        revisionFirstPublishedOn_gt: DateTime
+        revisionFirstPublishedOn_gte: DateTime
+        revisionFirstPublishedOn_lt: DateTime
+        revisionFirstPublishedOn_lte: DateTime
+        revisionFirstPublishedOn_between: [DateTime!]
+        revisionFirstPublishedOn_not_between: [DateTime!]
+        revisionLastPublishedOn: DateTime
+        revisionLastPublishedOn_gt: DateTime
+        revisionLastPublishedOn_gte: DateTime
+        revisionLastPublishedOn_lt: DateTime
+        revisionLastPublishedOn_lte: DateTime
+        revisionLastPublishedOn_between: [DateTime!]
+        revisionLastPublishedOn_not_between: [DateTime!]
+        revisionCreatedBy: ID
+        revisionCreatedBy_not: ID
+        revisionCreatedBy_in: [ID!]
+        revisionCreatedBy_not_in: [ID!]
+        revisionSavedBy: ID
+        revisionSavedBy_not: ID
+        revisionSavedBy_in: [ID!]
+        revisionSavedBy_not_in: [ID!]
+        revisionModifiedBy: ID
+        revisionModifiedBy_not: ID
+        revisionModifiedBy_in: [ID!]
+        revisionModifiedBy_not_in: [ID!]
+        revisionFirstPublishedBy: ID
+        revisionFirstPublishedBy_not: ID
+        revisionFirstPublishedBy_in: [ID!]
+        revisionFirstPublishedBy_not_in: [ID!]
+        revisionLastPublishedBy: ID
+        revisionLastPublishedBy_not: ID
+        revisionLastPublishedBy_in: [ID!]
+        revisionLastPublishedBy_not_in: [ID!]
+        entryCreatedOn: DateTime
+        entryCreatedOn_gt: DateTime
+        entryCreatedOn_gte: DateTime
+        entryCreatedOn_lt: DateTime
+        entryCreatedOn_lte: DateTime
+        entryCreatedOn_between: [DateTime!]
+        entryCreatedOn_not_between: [DateTime!]
+        entrySavedOn: DateTime
+        entrySavedOn_gt: DateTime
+        entrySavedOn_gte: DateTime
+        entrySavedOn_lt: DateTime
+        entrySavedOn_lte: DateTime
+        entrySavedOn_between: [DateTime!]
+        entrySavedOn_not_between: [DateTime!]
+        entryModifiedOn: DateTime
+        entryModifiedOn_gt: DateTime
+        entryModifiedOn_gte: DateTime
+        entryModifiedOn_lt: DateTime
+        entryModifiedOn_lte: DateTime
+        entryModifiedOn_between: [DateTime!]
+        entryModifiedOn_not_between: [DateTime!]
+        entryFirstPublishedOn: DateTime
+        entryFirstPublishedOn_gt: DateTime
+        entryFirstPublishedOn_gte: DateTime
+        entryFirstPublishedOn_lt: DateTime
+        entryFirstPublishedOn_lte: DateTime
+        entryFirstPublishedOn_between: [DateTime!]
+        entryFirstPublishedOn_not_between: [DateTime!]
+        entryLastPublishedOn: DateTime
+        entryLastPublishedOn_gt: DateTime
+        entryLastPublishedOn_gte: DateTime
+        entryLastPublishedOn_lt: DateTime
+        entryLastPublishedOn_lte: DateTime
+        entryLastPublishedOn_between: [DateTime!]
+        entryLastPublishedOn_not_between: [DateTime!]
+        entryCreatedBy: ID
+        entryCreatedBy_not: ID
+        entryCreatedBy_in: [ID!]
+        entryCreatedBy_not_in: [ID!]
+        entrySavedBy: ID
+        entrySavedBy_not: ID
+        entrySavedBy_in: [ID!]
+        entrySavedBy_not_in: [ID!]
+        entryModifiedBy: ID
+        entryModifiedBy_not: ID
+        entryModifiedBy_in: [ID!]
+        entryModifiedBy_not_in: [ID!]
+        entryFirstPublishedBy: ID
+        entryFirstPublishedBy_not: ID
+        entryFirstPublishedBy_in: [ID!]
+        entryFirstPublishedBy_not_in: [ID!]
+        entryLastPublishedBy: ID
+        entryLastPublishedBy_not: ID
+        entryLastPublishedBy_in: [ID!]
+        entryLastPublishedBy_not_in: [ID!]
         status: String
         status_not: String
         status_in: [String!]
@@ -429,6 +613,26 @@ export default /* GraphQL */ `
         savedOn_DESC
         createdOn_ASC
         createdOn_DESC
+        revisionCreatedOn_ASC
+        revisionCreatedOn_DESC
+        revisionSavedOn_ASC
+        revisionSavedOn_DESC
+        revisionModifiedOn_ASC
+        revisionModifiedOn_DESC
+        revisionFirstPublishedOn_ASC
+        revisionFirstPublishedOn_DESC
+        revisionLastPublishedOn_ASC
+        revisionLastPublishedOn_DESC
+        entryCreatedOn_ASC
+        entryCreatedOn_DESC
+        entrySavedOn_ASC
+        entrySavedOn_DESC
+        entryModifiedOn_ASC
+        entryModifiedOn_DESC
+        entryFirstPublishedOn_ASC
+        entryFirstPublishedOn_DESC
+        entryLastPublishedOn_ASC
+        entryLastPublishedOn_DESC
     }
 
     extend type Query {
@@ -452,7 +656,10 @@ export default /* GraphQL */ `
     }
 
     extend type Mutation {
-        createPageModelApiName(data: PageModelApiNameInput!, options: CreateCmsEntryOptionsInput): PageModelApiNameResponse
+        createPageModelApiName(
+            data: PageModelApiNameInput!
+            options: CreateCmsEntryOptionsInput
+        ): PageModelApiNameResponse
 
         createPageModelApiNameFrom(
             revision: ID!
@@ -471,13 +678,22 @@ export default /* GraphQL */ `
             data: PageModelApiNameInput!
         ): CmsEntryValidationResponse!
 
-        movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
+        movePageModelApiName(
+            revision: ID!
+            folderId: ID!
+        ): PageModelApiNameMoveResponse
 
-        deletePageModelApiName(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+        deletePageModelApiName(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         deleteMultiplePagesModelApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
 
-        publishPageModelApiName(revision: ID!, options: CmsPublishEntryOptionsInput): PageModelApiNameResponse
+        publishPageModelApiName(
+            revision: ID!
+            options: CmsPublishEntryOptionsInput
+        ): PageModelApiNameResponse
 
         republishPageModelApiName(revision: ID!): PageModelApiNameResponse
 
