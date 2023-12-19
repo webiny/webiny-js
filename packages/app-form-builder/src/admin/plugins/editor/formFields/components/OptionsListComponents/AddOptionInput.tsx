@@ -10,11 +10,7 @@ interface AddOptionInputProps {
     validation: BindComponentRenderPropValidation;
 }
 
-const AddOptionInput: React.FC<AddOptionInputProps> = ({
-    options,
-    onAdd,
-    validation: optionsValidation
-}) => {
+const AddOptionInput = ({ options, onAdd, validation: optionsValidation }: AddOptionInputProps) => {
     return (
         <Form>
             {({ Bind }) => (

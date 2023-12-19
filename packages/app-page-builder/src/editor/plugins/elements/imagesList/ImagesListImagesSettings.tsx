@@ -45,7 +45,7 @@ const getName = (file: FileManagerFileItem): string | undefined => {
     return file.meta?.find(meta => meta.key === "name")?.value;
 };
 
-const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props => {
+const ImagesListImagesSettings = (props: ImagesListImagesSettingsProps) => {
     const { Bind, submit } = props;
     return (
         <Accordion title={"Images"} defaultValue={true}>

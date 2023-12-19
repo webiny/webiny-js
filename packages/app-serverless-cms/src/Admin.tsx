@@ -32,6 +32,7 @@ import { Folders } from "@webiny/app-aco";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
+    children?: React.ReactNode;
 }
 
 const App = (props: AdminProps) => {

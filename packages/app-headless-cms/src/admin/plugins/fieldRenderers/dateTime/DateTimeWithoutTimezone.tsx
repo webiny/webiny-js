@@ -49,11 +49,11 @@ export interface DateTimeWithoutTimezoneProps {
     trailingIcon?: any;
     field: CmsModelField;
 }
-export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
+export const DateTimeWithoutTimezone = ({
     field,
     bind,
     trailingIcon
-}) => {
+}: DateTimeWithoutTimezoneProps) => {
     // "2020-05-18 09:00:00"
     const initialValue = getDefaultFieldValue(field, bind, () => {
         const date = new Date();

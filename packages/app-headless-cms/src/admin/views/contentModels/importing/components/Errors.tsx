@@ -30,7 +30,7 @@ interface ErrorsProps {
     errors?: string[] | null;
 }
 
-export const Errors: React.VFC<ErrorsProps> = ({ errors }) => {
+export const Errors = ({ errors }: ErrorsProps) => {
     if (!errors?.length) {
         return null;
     }

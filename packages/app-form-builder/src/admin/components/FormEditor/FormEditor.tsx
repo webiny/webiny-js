@@ -7,7 +7,7 @@ import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
 import { useFormEditor } from "./Context";
 
-const FormEditor: React.FC = () => {
+const FormEditor = () => {
     const {
         getForm,
         state: { data, id }

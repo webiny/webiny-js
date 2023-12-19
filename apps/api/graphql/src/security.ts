@@ -83,7 +83,7 @@ export default ({ documentClient }: { documentClient: DynamoDBClient }) => [
     apiKeyAuthorization({ identityType: "api-key" }),
 
     /**
-     * Authorization plugin to fetch permissions from a security group associated with the identity.
+     * Authorization plugin to fetch permissions from a security role or team associated with the identity.
      */
     tenantLinkAuthorization({ identityType: "admin" }),
 

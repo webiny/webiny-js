@@ -12,7 +12,7 @@ import { FileManager } from "~/base/ui/FileManager";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
 import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
 
-const BaseExtension: React.FC = () => {
+const BaseExtension = () => {
     plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     return (

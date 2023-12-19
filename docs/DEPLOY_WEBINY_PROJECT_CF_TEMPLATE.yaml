@@ -245,6 +245,7 @@ Resources:
                   - iam:GetRole
                   - iam:CreateServiceLinkedRole
                 Resource:
+                  - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
 
               # AWS Lambda

@@ -27,13 +27,13 @@ const options = [
     }
 ];
 
-export const TagsList: React.VFC<TagListProps> = ({
+export const TagsList = ({
     loading,
     tags,
     emptyDisclaimer,
     onActivatedTagsChange,
     activeTags
-}) => {
+}: TagListProps) => {
     const fmView = useFileManagerView();
 
     const toggleTag = useCallback(

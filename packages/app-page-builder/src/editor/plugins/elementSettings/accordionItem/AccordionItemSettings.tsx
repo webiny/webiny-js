@@ -28,9 +28,9 @@ const classes = {
 
 const DATA_NAMESPACE = "data.settings.accordionItem";
 
-const AccordionItemSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const AccordionItemSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
     const { getUpdateValue } = useUpdateHandlers({
         element,

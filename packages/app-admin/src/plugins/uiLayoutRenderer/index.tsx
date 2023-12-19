@@ -3,11 +3,15 @@ import { Cell, Grid, GridInner } from "@webiny/ui/Grid";
 import { UILayoutPlugin } from "~/ui/UILayout";
 import { UIElement } from "~/ui/UIElement";
 
+interface ElementIDProps {
+    children: React.ReactNode;
+}
+
 function getElementKey(element: UIElement) {
     return `${element.constructor.name}:${element.id}`;
 }
 
-const ElementID: React.FC = ({ children }) => {
+const ElementID = ({ children }: ElementIDProps) => {
     return children as unknown as React.ReactElement;
 };
 

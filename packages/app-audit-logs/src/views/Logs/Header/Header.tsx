@@ -42,14 +42,14 @@ type HeaderProps = {
     showFilters: () => void;
 };
 
-export const Header: React.FC<HeaderProps> = ({
+export const Header = ({
     title,
     searchValue,
     onSearchChange,
     showingFilters,
     hideFilters,
     showFilters
-}) => {
+}: HeaderProps) => {
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>

@@ -11,7 +11,7 @@ import {
 
 const { Browser } = AuditLogsListConfig;
 
-export const LogsModule: React.FC = () => {
+export const LogsModule = () => {
     return (
         <>
             <AuditLogsListConfig>

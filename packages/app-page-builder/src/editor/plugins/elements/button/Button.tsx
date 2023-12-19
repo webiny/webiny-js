@@ -8,7 +8,7 @@ interface ButtonProps {
     element: PbEditorElement;
 }
 
-const Button: React.FC<ButtonProps> = props => {
+const Button = (props: ButtonProps) => {
     const { element, ...rest } = props;
     return <PeButton element={element as Element} {...rest} />;
 };

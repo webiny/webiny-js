@@ -30,7 +30,7 @@ const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
-    className?: String;
+    className?: string;
     element: Element;
     elementRendererMeta: RendererMeta;
     isActive: boolean;
@@ -207,7 +207,7 @@ interface Props {
     dropRef?: React.RefCallback<any>;
 }
 
-export const ElementControlsOverlay: React.FC<Props> = props => {
+export const ElementControlsOverlay = (props: Props) => {
     const [{ isDragging }, setUi] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 
