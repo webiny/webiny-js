@@ -2,8 +2,8 @@ import { IndexSettingsManager } from "~/settings/IndexSettingsManager";
 import { DisableIndexing } from "./DisableIndexing";
 import { EnableIndexing } from "./EnableIndexing";
 import { IElasticsearchIndexingTaskValuesSettings } from "~/types";
-import { Client } from "@webiny/api-elasticsearch";
 import { IIndexManager } from "~/settings/types";
+import { Client } from "@webiny/api-elasticsearch";
 
 const defaultIndexSettings = {
     numberOfReplicas: 1,

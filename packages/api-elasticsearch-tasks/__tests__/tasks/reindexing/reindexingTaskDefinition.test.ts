@@ -1,4 +1,4 @@
-import { createElasticsearchReindexingTask } from "~/index";
+import { createElasticsearchReindexingTask } from "~/tasks";
 
 describe("reindexing task definition", () => {
     it("should return a task definition", async () => {

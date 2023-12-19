@@ -5,7 +5,7 @@ import { Context, IElasticsearchIndexingTaskValues, IManager } from "~/types";
 import { createEntry } from "~/definitions/entry";
 import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { ITaskResponse } from "@webiny/tasks/response/abstractions";
-import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions/ITaskManagerStore";
+import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions";
 import { batchReadAll, BatchReadItem, batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb";
 
 export interface ManagerParams {
@@ -13,7 +13,7 @@ export interface ManagerParams {
     documentClient?: DynamoDBDocument;
     elasticsearchClient?: Client;
     isCloseToTimeout: () => boolean;
-    isStopped: () => boolean;
+    isAborted: () => boolean;
     response: ITaskResponse;
     store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
 }
@@ -24,7 +24,7 @@ export class Manager implements IManager {
     public readonly context: Context;
     public readonly table: ReturnType<typeof createTable>;
     public readonly isCloseToTimeout: () => boolean;
-    public readonly isStopped: () => boolean;
+    public readonly isAborted: () => boolean;
     public readonly response: ITaskResponse;
     public readonly store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
 
@@ -45,7 +45,7 @@ export class Manager implements IManager {
             documentClient: this.documentClient
         });
         this.isCloseToTimeout = params.isCloseToTimeout;
-        this.isStopped = params.isStopped;
+        this.isAborted = params.isAborted;
         this.response = params.response;
         this.store = params.store;
     }

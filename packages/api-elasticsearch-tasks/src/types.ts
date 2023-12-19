@@ -5,7 +5,7 @@ import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Client } from "@webiny/api-elasticsearch";
 import { createTable } from "~/definitions";
 import { ITaskResponse } from "@webiny/tasks/response/abstractions";
-import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions/ITaskManagerStore";
+import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions";
 import { BatchWriteItem } from "@webiny/db-dynamodb";
 
 export interface Context extends ElasticsearchContext, TasksContext {}
@@ -50,7 +50,7 @@ export interface IManager {
     readonly context: Context;
     readonly table: ReturnType<typeof createTable>;
     readonly isCloseToTimeout: () => boolean;
-    readonly isStopped: () => boolean;
+    readonly isAborted: () => boolean;
     readonly response: ITaskResponse;
     readonly store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
 

@@ -35,7 +35,7 @@ export class ReindexingTaskRunner {
     /**
      * When running the task, we always must check:
      * * if task is close to timeout
-     * * if task was stopped
+     * * if task was aborted
      */
     public async exec(
         keys: IElasticsearchIndexingTaskValuesKeys | undefined = undefined,
@@ -44,8 +44,8 @@ export class ReindexingTaskRunner {
         this.keys = keys;
         try {
             while (this.manager.isCloseToTimeout() === false) {
-                if (this.manager.isStopped()) {
-                    return this.response.stopped();
+                if (this.manager.isAborted()) {
+                    return this.response.aborted();
                 }
 
                 const results = await scan<IDynamoDbElasticsearchRecord>({

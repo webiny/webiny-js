@@ -12,7 +12,7 @@ export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIn
     return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",
-        run: async ({ context, isCloseToTimeout, response, values, isStopped, store }) => {
+        run: async ({ context, isCloseToTimeout, response, values, isAborted, store }) => {
             const { Manager } = await import("../Manager");
             const { IndexManager } = await import("~/settings");
             const { ReindexingTaskRunner } = await import("./ReindexingTaskRunner");
@@ -22,7 +22,7 @@ export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIn
                 documentClient: params?.documentClient,
                 response,
                 context,
-                isStopped,
+                isAborted,
                 isCloseToTimeout,
                 store
             });
