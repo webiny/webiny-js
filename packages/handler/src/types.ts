@@ -1,5 +1,4 @@
 import {
-    FastifyInstance,
     FastifyRequest,
     FastifyReply,
     HTTPMethods,
@@ -35,12 +34,6 @@ export interface ContextRoutes {
 }
 
 export interface Context extends ClientContext {
-    /**
-     * An instance of fastify server.
-     * Use at your own risk.
-     * @instance
-     */
-    server: FastifyInstance;
     /**
      * Current request. Must be set only once!
      */
