@@ -1,88 +1,70 @@
-import React from "react";
 import {
-    Columns,
     ColumnVisibility as IColumnVisibility,
     DefaultData,
     OnColumnVisibilityChange,
     Sorting,
     TableRow
 } from "@webiny/ui/DataTable";
-import { makeAutoObservable } from "mobx";
-import { ColumnConfig } from "~/config/table/Column";
-import { ColumnVisibility } from "~/components/Table/ColumnVisibility";
+import { makeAutoObservable, runInAction } from "mobx";
+import { ColumnDTO } from "~/components/Table/domain";
+import { ColumnPresenter } from "~/components/Table/ColumnPresenter";
 
 export interface TablePresenterViewModel<T> {
-    columns: Columns<T>;
+    columns: ColumnDTO[];
     selectedRows: T[];
     columnVisibility: IColumnVisibility;
     initialSorting: Sorting;
 }
 
 interface LoadParamsInterface<T> {
-    columns: ColumnConfig[];
     data: T[];
-    nameColumnId?: string;
-    namespace: string;
     selected: DefaultData[];
 }
 
 export interface ITablePresenter<T extends DefaultData> {
     load: (configs: LoadParamsInterface<T>) => void;
-    onColumnVisibilityChange: OnColumnVisibilityChange;
+    updateColumnVisibility: OnColumnVisibilityChange;
     isRowSelectable: (row: TableRow<T>) => boolean;
     get vm(): TablePresenterViewModel<T>;
 }
 
 export class TablePresenter<T extends DefaultData> implements ITablePresenter<T> {
-    private columnVisibility: ColumnVisibility;
-    private columnConfigs: ColumnConfig[] | undefined;
+    private columnPresenter: ColumnPresenter;
     private data: T[];
     private selected: DefaultData[];
-    private nameColumnId: string | undefined;
-    private cellRenderer: (
-        item: T,
-        cell: string | React.ReactElement
-    ) => string | number | JSX.Element | null;
 
-    constructor(
-        cellRenderer: (
-            item: T,
-            cell: string | React.ReactElement
-        ) => string | number | JSX.Element | null
-    ) {
-        this.cellRenderer = cellRenderer;
+    constructor(columnPresenter: ColumnPresenter) {
+        this.columnPresenter = columnPresenter;
         this.data = [];
         this.selected = [];
-        this.columnConfigs = undefined;
-        this.nameColumnId = undefined;
-        this.columnVisibility = new ColumnVisibility();
 
         makeAutoObservable(this);
     }
 
-    load(params: LoadParamsInterface<T>) {
-        this.columnConfigs = params.columns;
-        this.data = params.data;
-        this.selected = params.selected;
-        this.nameColumnId = params.nameColumnId;
-        this.columnVisibility.load(params.namespace, params.columns);
+    async load(params: LoadParamsInterface<T>) {
+        await this.columnPresenter.load();
+
+        runInAction(() => {
+            this.data = params.data;
+            this.selected = params.selected;
+        });
     }
 
     get vm() {
         return {
-            columns: this.getColumns(),
+            columns: this.columnPresenter.vm.columns,
             selectedRows: this.getSelectedRows(),
-            columnVisibility: this.columnVisibility.getState(),
+            columnVisibility: this.columnPresenter.vm.columnVisibility,
             initialSorting: this.getInitialSorting()
         };
     }
 
+    public updateColumnVisibility: OnColumnVisibilityChange = updaterOrValue =>
+        this.columnPresenter.updateColumnVisibility(updaterOrValue);
+
     public isRowSelectable(row: TableRow<T>) {
         return row.original.$selectable || false;
     }
-
-    public onColumnVisibilityChange: OnColumnVisibilityChange = updaterOrValue =>
-        this.columnVisibility.onChange(updaterOrValue);
 
     private getInitialSorting = () => {
         return [
@@ -92,39 +74,6 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
             }
         ];
     };
-
-    private getColumns(): Columns<T> {
-        if (!this.columnConfigs || !this.cellRenderer) {
-            return {};
-        }
-
-        return this.columnConfigs.reduce((columns, config) => {
-            const {
-                name: defaultName,
-                cell,
-                header,
-                size,
-                sortable,
-                resizable,
-                className,
-                hideable
-            } = config;
-
-            const name = defaultName === "name" ? this.nameColumnId : defaultName;
-
-            columns[name as keyof Columns<T>] = {
-                header,
-                enableHiding: hideable,
-                enableSorting: sortable,
-                enableResizing: resizable,
-                className,
-                ...(size && { size }),
-                ...(cell && { cell: (row: T) => this.cellRenderer(row, cell) })
-            };
-
-            return columns;
-        }, {} as Columns<T>);
-    }
 
     private getSelectedRows() {
         return this.data.filter(row => this.selected.find(item => row.id === item.id));

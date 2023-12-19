@@ -47,7 +47,7 @@ import {
     TableHeadCell
 } from "./styled";
 
-interface Column<T> {
+export interface Column<T> {
     /*
      * Column header component.
      */
