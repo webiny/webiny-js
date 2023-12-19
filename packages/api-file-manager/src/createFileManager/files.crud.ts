@@ -75,10 +75,10 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 },
 
                 createdOn: getDate(input.createdOn, currentDateTime),
-                modifiedOn: null,
+                modifiedOn: getDate(input.modifiedOn, null),
                 savedOn: getDate(input.savedOn, currentDateTime),
                 createdBy: utilsGetIdentity(input.createdBy, currentIdentity),
-                modifiedBy: null,
+                modifiedBy: utilsGetIdentity(input.modifiedBy, null),
                 savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
                 ownedBy: utilsGetIdentity(input.createdBy, currentIdentity),
 
