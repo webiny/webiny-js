@@ -118,12 +118,7 @@ context("Page Builder - Page Categories Search and Sort", () => {
             .clear()
             .type("This string should not return any results");
 
-        cy.findByTestId("default-data-list").then(() => {
-            cy.contains(categoryData1.url).should("not.exist");
-            cy.contains(categoryData2.url).should("not.exist");
-            cy.contains(categoryData3.url).should("not.exist");
-            cy.contains(categoryData4.url).should("not.exist");
-        });
+        cy.findByTestId("default-data-list").should("not.exist");
 
         cy.findByPlaceholderText("Search categories").clear();
 
