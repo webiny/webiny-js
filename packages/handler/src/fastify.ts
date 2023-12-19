@@ -250,7 +250,6 @@ export const createHandler = (params: CreateHandlerParams) => {
              * Inserted via webpack on build time.
              */
             WEBINY_VERSION: process.env.WEBINY_VERSION as string,
-            server: app,
             routes
         });
     } catch (ex) {
