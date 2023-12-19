@@ -1,11 +1,12 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Template Page Dialog Search", () => {
+context("Page Builder - Page Templates Dialog Search", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
     const titleString3 = nanoid(6);
     const titleString4 = "!#$%&/()=?*";
+
     const pageTemplateData1 = {
         title: titleString1,
         slug: nanoid(6),

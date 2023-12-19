@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Category CRUD", () => {
+context("Page Builder - Categories CRUD", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const categoryName = nanoid(6);
     const categoryNameEdited = nanoid(6);
@@ -10,14 +10,16 @@ context("Page Builder - Category CRUD", () => {
     const categoryNameValidate = nanoid(6);
     const categorySlugValidate = nanoid(6);
     const categoryUrlValidate = "/" + nanoid(6) + "/";
+
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllCategories();
     });
 
-    it("Should be able to create, edit, and immediately delete a category", () => {
+    it("should be able to create, edit, and immediately delete a category", () => {
         cy.visit("/page-builder/categories");
         cy.findByTestId("data-list-new-record-button").click();
+
         // Creates new category.
         cy.findByTestId("pb.category.new.form.name").type(categoryNameValidate);
         cy.findByTestId("pb.category.new.form.button.save").click();
@@ -34,6 +36,7 @@ context("Page Builder - Category CRUD", () => {
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
             "not.exist"
         );
+
         // Without this wait, there is not enough of a delay for the test to properly click the new Category button
         cy.wait(1000);
         cy.findByTestId("data-list-new-record-button").click();
