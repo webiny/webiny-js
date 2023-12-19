@@ -1,4 +1,4 @@
-import { Context, ITaskData, TaskDataStatus, TaskResponseStatus } from "~/types";
+import { TaskDataStatus, TaskResponseStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     IResponse,
@@ -11,17 +11,16 @@ import {
     IResponseErrorResult,
     IResponseResult
 } from "./abstractions";
+import { ITaskManagerStore } from "~/runner/abstractions";
 
 export class DatabaseResponse implements IResponseAsync {
     public readonly response: IResponse;
 
-    private readonly task: ITaskData;
-    private readonly context: Context;
+    private readonly store: ITaskManagerStore;
 
-    public constructor(response: IResponse, task: ITaskData, context: Context) {
+    public constructor(response: IResponse, store: ITaskManagerStore) {
         this.response = response;
-        this.task = task;
-        this.context = context;
+        this.store = store;
     }
 
     public from(result: IResponseResult): Promise<IResponseResult> {
@@ -32,18 +31,18 @@ export class DatabaseResponse implements IResponseAsync {
                 return this.continue(result);
             case TaskResponseStatus.ERROR:
                 return this.error(result);
-            case TaskResponseStatus.STOPPED:
-                return this.stopped();
+            case TaskResponseStatus.ABORTED:
+                return this.aborted();
         }
     }
 
     public async done(params: IResponseDoneParams): Promise<IResponseDoneResult> {
         let message = params.message;
         try {
-            await this.context.tasks.updateTask(this.task.id, {
+            await this.store.updateTask({
                 status: TaskDataStatus.SUCCESS,
                 finishedOn: new Date().toISOString(),
-                log: (this.task.log || []).concat([
+                log: (this.store.getTask().log || []).concat([
                     {
                         message: message || "Task done.",
                         createdOn: new Date().toISOString()
@@ -62,18 +61,18 @@ export class DatabaseResponse implements IResponseAsync {
         });
     }
 
-    public async stopped() {
-        return this.response.stopped();
+    public async aborted() {
+        return this.response.aborted();
     }
 
     public async continue(
         params: IResponseContinueParams
     ): Promise<IResponseContinueResult | IResponseErrorResult> {
         try {
-            await this.context.tasks.updateTask(this.task.id, {
+            await this.store.updateTask({
                 values: params.values,
                 status: TaskDataStatus.RUNNING,
-                log: (this.task.log || []).concat([
+                log: (this.store.getTask().log || []).concat([
                     {
                         message: "Task continuing.",
                         createdOn: new Date().toISOString(),
@@ -92,7 +91,7 @@ export class DatabaseResponse implements IResponseAsync {
                         code: ex.code || "TASK_NOT_FOUND",
                         data: {
                             ...ex.data,
-                            values: this.task.values
+                            values: this.store.getValues()
                         }
                     }
                 });
@@ -115,14 +114,14 @@ export class DatabaseResponse implements IResponseAsync {
 
     public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
         try {
-            await this.context.tasks.updateTask(this.task.id, {
+            await this.store.updateTask({
                 status: TaskDataStatus.FAILED,
                 finishedOn: new Date().toISOString(),
-                log: (this.task.log || []).concat([
+                log: (this.store.getTask().log || []).concat([
                     {
                         message: params.error.message,
                         createdOn: new Date().toISOString(),
-                        values: this.task.values
+                        values: this.store.getValues()
                     }
                 ])
             });
@@ -136,7 +135,7 @@ export class DatabaseResponse implements IResponseAsync {
                     data: {
                         ...params.error.data,
                         ...ex.data,
-                        values: this.task.values
+                        values: this.store.getValues()
                     }
                 }
             });
@@ -150,7 +149,7 @@ export class DatabaseResponse implements IResponseAsync {
                 ...params.error,
                 data: {
                     ...params.error.data,
-                    values: this.task.values
+                    values: this.store.getValues()
                 }
             }
         });

@@ -10,6 +10,8 @@ import {
 import { ResponseContinueResult, ResponseDoneResult, ResponseErrorResult } from "~/response";
 import { createMockTask } from "~tests/mocks/task";
 import { createMockTaskDefinition } from "~tests/mocks/definition";
+import { createMockTaskResponse } from "~tests/mocks/taskResponse";
+import { createMockTaskManagerStore } from "~tests/mocks/store";
 
 describe("task manager", () => {
     const task = createMockTask();
@@ -17,13 +19,22 @@ describe("task manager", () => {
     const taskDefinition = createMockTaskDefinition();
 
     it("should create a task manager", async () => {
-        const factory = createMockResponseFactory();
+        const responseFactory = createMockResponseFactory();
+        const response = responseFactory(
+            createMockEvent({
+                webinyTaskId: task.id
+            })
+        );
+        const context = createMockContext();
         const manager = new TaskManager(
             createMockRunner(),
             createMockContext(),
-            factory(createMockEvent()),
-            task,
-            taskDefinition
+            response,
+            createMockTaskResponse(response),
+            createMockTaskManagerStore({
+                context,
+                task
+            })
         );
 
         expect(manager).toBeDefined();
@@ -31,24 +42,29 @@ describe("task manager", () => {
     });
 
     it("should run a task and return continue immediately because timeout is close", async () => {
-        const factory = createMockResponseFactory({});
+        const responseFactory = createMockResponseFactory({});
+        const response = responseFactory(
+            createMockEvent({
+                webinyTaskId: task.id
+            })
+        );
+        const context = createMockContext();
         const manager = new TaskManager(
             createMockRunner({
                 isCloseToTimeout: () => {
                     return true;
                 }
             }),
-            createMockContext(),
-            factory(
-                createMockEvent({
-                    webinyTaskId: task.id
-                })
-            ),
-            task,
-            taskDefinition
+            context,
+            response,
+            createMockTaskResponse(response),
+            createMockTaskManagerStore({
+                context,
+                task
+            })
         );
 
-        const result = await manager.run();
+        const result = await manager.run(taskDefinition);
         expect(result).toBeInstanceOf(ResponseContinueResult);
         expect(result).toEqual({
             status: TaskResponseStatus.CONTINUE,
@@ -61,23 +77,29 @@ describe("task manager", () => {
     });
 
     it("should run a task and update the task data to a running state - mock", async () => {
-        const factory = createMockResponseFactory({});
-        const manager = new TaskManager(
-            createMockRunner(),
-            createMockContext(),
-            factory(
-                createMockEvent({
-                    webinyTaskId: task.id
-                })
-            ),
-            task,
-            createMockTaskDefinition({
-                run: async params => {
-                    return params.response.done();
-                }
+        const responseFactory = createMockResponseFactory({});
+        const response = responseFactory(
+            createMockEvent({
+                webinyTaskId: task.id
             })
         );
-        const result = await manager.run();
+        const context = createMockContext();
+        const definition = createMockTaskDefinition({
+            run: async params => {
+                return params.response.done();
+            }
+        });
+        const manager = new TaskManager(
+            createMockRunner(),
+            context,
+            response,
+            createMockTaskResponse(response),
+            createMockTaskManagerStore({
+                context,
+                task
+            })
+        );
+        const result = await manager.run(definition);
         expect(result).toBeInstanceOf(ResponseDoneResult);
         expect(result).toEqual({
             status: TaskResponseStatus.DONE,
@@ -89,32 +111,42 @@ describe("task manager", () => {
     });
 
     it("should run a task and return an error on updating task data status to running  - mock", async () => {
-        const factory = createMockResponseFactory({});
+        const responseFactory = createMockResponseFactory({});
+        const response = responseFactory(
+            createMockEvent({
+                webinyTaskId: task.id
+            })
+        );
+        const context = createMockContext({
+            tasks: {
+                updateTask: async (id, data) => {
+                    throw new WebinyError("Error thrown on update task.", "UPDATE_TASK_ERROR", {
+                        id,
+                        data
+                    });
+                }
+            }
+        });
+        const definition = createMockTaskDefinition({
+            run: async params => {
+                return params.response.done();
+            }
+        });
         const manager = new TaskManager(
             createMockRunner(),
-            createMockContext({
-                tasks: {
-                    updateTask: async (id, data) => {
-                        throw new WebinyError("Error thrown on update task.", "UPDATE_TASK_ERROR", {
-                            id,
-                            data
-                        });
-                    }
-                }
-            }),
-            factory(
+            context,
+            responseFactory(
                 createMockEvent({
                     webinyTaskId: task.id
                 })
             ),
-            task,
-            createMockTaskDefinition({
-                run: async params => {
-                    return params.response.done();
-                }
+            createMockTaskResponse(response),
+            createMockTaskManagerStore({
+                context,
+                task
             })
         );
-        const result = await manager.run();
+        const result = await manager.run(definition);
         expect(result).toBeInstanceOf(ResponseErrorResult);
         expect(result).toEqual({
             error: {

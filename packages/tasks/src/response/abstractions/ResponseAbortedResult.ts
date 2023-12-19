@@ -1,9 +1,9 @@
 import { IResponseBaseResult } from "~/response/abstractions/ResponseBaseResult";
 import { TaskResponseStatus } from "~/types";
 
-export interface IResponseStoppedResult extends IResponseBaseResult {
+export interface IResponseAbortedResult extends IResponseBaseResult {
     webinyTaskId: string;
     tenant: string;
     locale: string;
-    status: TaskResponseStatus.STOPPED;
+    status: TaskResponseStatus.ABORTED;
 }

@@ -2,7 +2,7 @@ import { ITaskEvent } from "~/handler/types";
 import { IResponseContinueParams, IResponseContinueResult } from "./ResponseContinueResult";
 import { IResponseDoneParams, IResponseDoneResult } from "./ResponseDoneResult";
 import { IResponseErrorParams, IResponseErrorResult } from "./ResponseErrorResult";
-import { IResponseStoppedResult } from "./ResponseStoppedResult";
+import { IResponseAbortedResult } from "./ResponseAbortedResult";
 
 export type IResponseFromParams =
     | IResponseDoneResult
@@ -13,13 +13,13 @@ export type IResponseResult =
     | IResponseDoneResult
     | IResponseContinueResult
     | IResponseErrorResult
-    | IResponseStoppedResult;
+    | IResponseAbortedResult;
 
 export interface IResponse {
     readonly event: ITaskEvent;
     from: (params: IResponseFromParams) => IResponseResult;
     done: (params?: IResponseDoneParams) => IResponseDoneResult;
-    stopped: () => IResponseStoppedResult;
+    aborted: () => IResponseAbortedResult;
     continue: (params: IResponseContinueParams) => IResponseContinueResult;
     error: (params: IResponseErrorParams) => IResponseErrorResult;
 }
@@ -32,6 +32,6 @@ export interface IResponseAsync {
     continue: (
         params: IResponseContinueParams
     ) => Promise<IResponseContinueResult | IResponseErrorResult>;
-    stopped: () => Promise<IResponseStoppedResult>;
+    aborted: () => Promise<IResponseAbortedResult>;
     error: (params: IResponseErrorParams) => Promise<IResponseErrorResult>;
 }

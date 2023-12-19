@@ -1,20 +1,22 @@
 import { ITaskManager, ITaskRunner } from "./abstractions";
-import { Context, ITaskData, ITaskDefinition, TaskDataStatus, TaskResponseStatus } from "~/types";
+import {
+    Context,
+    ITaskDataValues,
+    ITaskDefinition,
+    TaskDataStatus,
+    TaskResponseStatus
+} from "~/types";
 import {
     IResponse,
     IResponseResult,
     ITaskResponse,
     ITaskResponseResult
 } from "~/response/abstractions";
-import { TaskResponse } from "~/response";
-import { ITaskManagerStore } from "~/runner/abstractions/ITaskManagerStore";
-import { TaskManagerStore } from "~/runner/TaskManagerStore";
+import { ITaskManagerStore } from "~/runner/abstractions";
 
-export class TaskManager<T = unknown> implements ITaskManager {
+export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
     private readonly context: Context;
-    private readonly definition: ITaskDefinition;
-    private readonly task: ITaskData<T>;
     private readonly response: IResponse;
     private readonly taskResponse: ITaskResponse;
     private readonly store: ITaskManagerStore;
@@ -23,19 +25,17 @@ export class TaskManager<T = unknown> implements ITaskManager {
         runner: Pick<ITaskRunner, "isCloseToTimeout">,
         context: Context,
         response: IResponse,
-        task: ITaskData<T>,
-        definition: ITaskDefinition
+        taskResponse: ITaskResponse,
+        store: ITaskManagerStore
     ) {
         this.runner = runner;
         this.context = context;
         this.response = response;
-        this.definition = definition;
-        this.task = task;
-        this.taskResponse = new TaskResponse(this.response);
-        this.store = new TaskManagerStore(this.context, this.task);
+        this.taskResponse = taskResponse;
+        this.store = store;
     }
 
-    public async run(): Promise<IResponseResult> {
+    public async run(definition: ITaskDefinition): Promise<IResponseResult> {
         /**
          * We should not even run if the Lambda timeout is close.
          */
@@ -44,31 +44,33 @@ export class TaskManager<T = unknown> implements ITaskManager {
              * We use the same input as the one on the task - we did not run anything, so no need to change the input.
              */
             return this.response.continue({
-                values: this.task.values
+                values: this.store.getValues()
             });
         }
         /**
-         * If task was stopped, do not run it again, return as it was done.
+         * If task was aborted, do not run it again, return as it was done.
          */
         //
-        else if (this.task.status === TaskDataStatus.STOPPED) {
-            return this.response.stopped();
+        else if (this.store.getStatus() === TaskDataStatus.ABORTED) {
+            return this.response.aborted();
         }
         /**
          * If the task status is pending, update it to running and add a log.
          */
         //
-        else if (this.task.status === TaskDataStatus.PENDING) {
+        else if (this.store.getStatus() === TaskDataStatus.PENDING) {
             try {
-                await this.context.tasks.updateTask(this.task.id, {
-                    status: TaskDataStatus.RUNNING,
-                    startedOn: new Date().toISOString(),
-                    log: (this.task.log || []).concat([
-                        {
-                            message: "Task started.",
-                            createdOn: new Date().toISOString()
-                        }
-                    ])
+                await this.store.updateTask(task => {
+                    return {
+                        status: TaskDataStatus.RUNNING,
+                        startedOn: new Date().toISOString(),
+                        log: (task.log || []).concat([
+                            {
+                                message: "Task started.",
+                                createdOn: new Date().toISOString()
+                            }
+                        ])
+                    };
                 });
             } catch (ex) {
                 return this.response.error({
@@ -80,15 +82,15 @@ export class TaskManager<T = unknown> implements ITaskManager {
         let result: ITaskResponseResult;
 
         try {
-            result = await this.definition.run({
-                values: structuredClone(this.task.values),
+            result = await definition.run({
+                values: structuredClone(this.store.getValues()),
                 context: this.context,
                 response: this.taskResponse,
                 isCloseToTimeout: () => {
                     return this.runner.isCloseToTimeout();
                 },
-                isStopped: () => {
-                    return this.task.status === TaskDataStatus.STOPPED;
+                isAborted: () => {
+                    return this.store.getStatus() === TaskDataStatus.ABORTED;
                 },
                 store: this.store
             });
@@ -106,8 +108,8 @@ export class TaskManager<T = unknown> implements ITaskManager {
             return this.response.error({
                 error: result.error
             });
-        } else if (result.status === TaskResponseStatus.STOPPED) {
-            return this.response.stopped();
+        } else if (result.status === TaskResponseStatus.ABORTED) {
+            return this.response.aborted();
         }
         return this.response.done({
             message: result.message

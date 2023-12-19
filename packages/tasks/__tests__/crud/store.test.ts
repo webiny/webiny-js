@@ -93,8 +93,8 @@ describe("store crud", () => {
         });
         const expectedCreatedTask = {
             id: expect.any(String),
-            createdOn: expect.any(Date),
-            savedOn: expect.any(Date),
+            createdOn: expect.stringMatching(/^20/),
+            savedOn: expect.stringMatching(/^20/),
             name: "My Custom Task",
             definitionId: "testDefinition",
             values: {
@@ -131,8 +131,8 @@ describe("store crud", () => {
         });
         const expectedUpdatedTask = {
             id: expect.any(String),
-            createdOn: expect.any(Date),
-            savedOn: expect.any(Date),
+            createdOn: expect.stringMatching(/^20/),
+            savedOn: expect.stringMatching(/^20/),
             name: "My Custom Task",
             definitionId: "testDefinition",
             values: {

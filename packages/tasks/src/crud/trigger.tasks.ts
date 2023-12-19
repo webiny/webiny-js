@@ -6,7 +6,7 @@ import {
     ITaskData,
     ITaskDataValues,
     ITasksContextTriggerObject,
-    ITaskStopParams,
+    ITaskAbortParams,
     ITaskTriggerParams,
     TaskDataStatus
 } from "~/types";
@@ -80,23 +80,23 @@ export const createTriggerTasksCrud = (
                 eventResponse: event
             });
         },
-        stop: async (params: ITaskStopParams): Promise<ITaskData> => {
+        abort: async (params: ITaskAbortParams): Promise<ITaskData> => {
             const task = await context.tasks.getTask(params.id);
             if (!task) {
                 throw new NotFoundError();
             }
             try {
                 return await context.tasks.updateTask(task.id, {
-                    status: TaskDataStatus.STOPPED,
+                    status: TaskDataStatus.ABORTED,
                     log: (task.log || []).concat([
                         {
-                            message: params.message || "Task stopped.",
+                            message: params.message || "Task aborted.",
                             createdOn: new Date().toISOString()
                         }
                     ])
                 });
             } catch (ex) {
-                throw new WebinyError(`Could not stop the task!`, "TASK_STOP_ERROR", {
+                throw new WebinyError(`Could not abort the task!`, "TASK_ABORT_ERROR", {
                     id: params.id,
                     message: ex.message
                 });

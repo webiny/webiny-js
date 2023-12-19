@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
-import { ITaskManagerStore } from "./runner/abstractions/ITaskManagerStore";
+import { ITaskManagerStore } from "./runner/abstractions";
 
 export interface ITaskConfig {
     readonly eventBusName: string;
@@ -29,7 +29,7 @@ export enum TaskDataStatus {
     RUNNING = "running",
     FAILED = "failed",
     SUCCESS = "success",
-    STOPPED = "stopped"
+    ABORTED = "aborted"
 }
 
 export interface ITaskIdentity {
@@ -43,11 +43,11 @@ export interface ITaskData<T = any> {
     status: TaskDataStatus;
     definitionId: string;
     values: T;
-    createdOn: Date;
-    savedOn: Date;
+    createdOn: string;
+    savedOn: string;
     createdBy: ITaskIdentity;
-    startedOn?: Date;
-    finishedOn?: Date;
+    startedOn?: string;
+    finishedOn?: string;
     eventResponse: Record<string, any>;
     log?: ITaskDataLog[];
 }
@@ -144,14 +144,14 @@ export interface ITaskTriggerParams<T = ITaskDataValues> {
     values?: T;
 }
 
-export interface ITaskStopParams {
+export interface ITaskAbortParams {
     id: string;
     message?: string;
 }
 
 export interface ITasksContextTriggerObject {
     trigger: <T = ITaskDataValues>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
-    stop: <T = ITaskDataValues>(params: ITaskStopParams) => Promise<ITaskData<T>>;
+    abort: <T = ITaskDataValues>(params: ITaskAbortParams) => Promise<ITaskData<T>>;
 }
 
 export interface ITasksContextObject
@@ -168,7 +168,7 @@ export interface ITaskRunParams<C extends Context, I = any> {
     context: C;
     response: ITaskResponse;
     isCloseToTimeout: () => boolean;
-    isStopped: () => boolean;
+    isAborted: () => boolean;
     values: I;
     store: ITaskManagerStore;
 }
@@ -187,7 +187,7 @@ export enum TaskResponseStatus {
     DONE = "done",
     ERROR = "error",
     CONTINUE = "continue",
-    STOPPED = "stopped"
+    ABORTED = "aborted"
 }
 
 export type ITaskDefinitionField = Pick<

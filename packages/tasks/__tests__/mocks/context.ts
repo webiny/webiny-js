@@ -1,28 +1,26 @@
 import { PluginsContainer } from "@webiny/plugins";
-import { Context, ITaskUpdateData, IUpdateTaskResponse } from "~/types";
-import { MOCK_TASK_DEFINITION_ID } from "~tests/mocks/definition";
+import { Context, ITaskData, ITaskUpdateData, IUpdateTaskResponse } from "~/types";
 import { PartialDeep } from "type-fest";
-import { createMockIdentity } from "~tests/mocks/identity";
+import { createMockTask } from "./task";
 
 export const createMockContext = (params?: PartialDeep<Context>): Context => {
+    const getTask = async (id: string): Promise<ITaskData> => {
+        return {
+            ...createMockTask(),
+            id
+        };
+    };
     return {
         ...params,
         plugins: params?.plugins || new PluginsContainer(),
         tasks: {
-            updateTask: async (
-                id: string,
-                data: Required<ITaskUpdateData>
-            ): Promise<IUpdateTaskResponse> => {
+            getTask,
+            updateTask: async (id: string, data: ITaskUpdateData): Promise<IUpdateTaskResponse> => {
+                const task = await getTask(id);
                 return {
-                    ...data,
-                    id,
-                    startedOn: new Date(),
-                    finishedOn: undefined,
-                    createdOn: new Date(),
-                    savedOn: new Date(),
-                    definitionId: MOCK_TASK_DEFINITION_ID,
-                    createdBy: createMockIdentity()
-                };
+                    ...task,
+                    ...data
+                } as unknown as IUpdateTaskResponse;
             },
             ...params?.tasks
         }

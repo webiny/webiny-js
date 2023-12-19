@@ -1,9 +1,10 @@
 import { ITaskEvent } from "~/handler/types";
-import { Context, ITaskData, TaskDataStatus } from "~/types";
+import { Context, ITaskData, ITaskDataValues, TaskDataStatus } from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
 import { IResponse, IResponseErrorResult } from "~/response/abstractions";
-import { DatabaseResponse } from "~/response";
+import { DatabaseResponse, TaskResponse } from "~/response";
+import { TaskManagerStore } from "./TaskManagerStore";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
@@ -24,24 +25,35 @@ export class TaskControl implements ITaskControl {
          * * child tasks can be in multiple levels (child task creates a child task, etc...).
          * * child tasks could be executed in parallel.
          */
-        let task: ITaskData;
+        let task: ITaskData<ITaskDataValues>;
         try {
             task = await this.getTask(taskId);
         } catch (ex: unknown) {
             return ex as IResponseErrorResult;
         }
         /**
-         * Make sure that task does not run if it is stopped.
+         * Make sure that task does not run if it is aborted.
          * This will effectively end the Step Function execution with a "success" status.
          */
-        if (task.status === TaskDataStatus.STOPPED) {
-            return this.response.stopped();
+        if (task.status === TaskDataStatus.ABORTED) {
+            return this.response.aborted();
         }
 
-        const databaseResponse = new DatabaseResponse(this.response, task, this.context);
+        const taskResponse = new TaskResponse(this.response);
+        const store = new TaskManagerStore(this.context, task);
 
-        const taskDefinition = this.context.tasks.getDefinition(task.definitionId);
-        if (!taskDefinition) {
+        const manager = new TaskManager(
+            this.runner,
+            this.context,
+            this.response,
+            taskResponse,
+            store
+        );
+
+        const databaseResponse = new DatabaseResponse(this.response, store);
+
+        const definition = this.context.tasks.getDefinition(task.definitionId);
+        if (!definition) {
             return await databaseResponse.error({
                 error: {
                     message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
@@ -53,16 +65,8 @@ export class TaskControl implements ITaskControl {
             });
         }
 
-        const manager = new TaskManager(
-            this.runner,
-            this.context,
-            this.response,
-            task,
-            taskDefinition
-        );
-
         try {
-            const result = await manager.run();
+            const result = await manager.run(definition);
 
             return await databaseResponse.from(result);
         } catch (ex) {

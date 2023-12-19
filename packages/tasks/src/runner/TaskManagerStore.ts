@@ -1,8 +1,15 @@
-import { Context, ITaskData, ITaskDataValues } from "~/types";
+import {
+    ITaskData,
+    ITaskDataLog,
+    ITaskDataValues,
+    ITasksContextObject,
+    TaskDataStatus
+} from "~/types";
 import {
     ITaskManagerStore,
-    ITaskManagerStoreUpdateTaskParam
-} from "./abstractions/ITaskManagerStore";
+    ITaskManagerStoreUpdateTaskParam,
+    ITaskManagerStoreUpdateTaskValuesParam
+} from "./abstractions";
 /**
  * Package deep-equal does not have types.
  */
@@ -11,7 +18,7 @@ import deepEqual from "deep-equal";
 
 const getValues = <T extends ITaskDataValues = ITaskDataValues>(
     values: T,
-    param: ITaskManagerStoreUpdateTaskParam<T>
+    param: ITaskManagerStoreUpdateTaskValuesParam<T>
 ) => {
     if (typeof param === "function") {
         return param(values);
@@ -22,12 +29,24 @@ const getValues = <T extends ITaskDataValues = ITaskDataValues>(
     };
 };
 
+export interface TaskManagerStoreContext {
+    tasks: Pick<ITasksContextObject, "updateTask">;
+}
+
 export class TaskManagerStore implements ITaskManagerStore {
-    private readonly context: Context;
+    private readonly context: TaskManagerStoreContext;
     private task: ITaskData;
 
-    public constructor(context: Context, task: ITaskData) {
+    public constructor(context: TaskManagerStoreContext, task: ITaskData) {
         this.context = context;
+        this.task = task;
+    }
+
+    public getStatus(): TaskDataStatus {
+        return this.task.status;
+    }
+
+    public setTask(task: ITaskData): void {
         this.task = task;
     }
 
@@ -35,8 +54,13 @@ export class TaskManagerStore implements ITaskManagerStore {
         return this.task as ITaskData<T>;
     }
 
+    public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
+        const values = typeof param === "function" ? param(this.task) : param;
+        this.task = await this.context.tasks.updateTask(this.task.id, values);
+    }
+
     public async updateValues<T extends ITaskDataValues = ITaskDataValues>(
-        param: ITaskManagerStoreUpdateTaskParam<T>
+        param: ITaskManagerStoreUpdateTaskValuesParam<T>
     ): Promise<void> {
         const values = getValues<T>(this.task.values, param);
         /**
@@ -52,5 +76,11 @@ export class TaskManagerStore implements ITaskManagerStore {
 
     public getValues<T extends ITaskDataValues = ITaskDataValues>(): T {
         return this.task.values as T;
+    }
+
+    public async addLog(log: ITaskDataLog): Promise<void> {
+        this.task = await this.context.tasks.updateTask(this.task.id, {
+            log: (this.task.log || []).concat([log])
+        });
     }
 }

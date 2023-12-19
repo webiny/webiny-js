@@ -19,32 +19,19 @@ import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 
-const getDate = <T extends Date | string | null | undefined>(date?: Date | string | null): T => {
-    if (!date) {
-        return undefined as T;
-    } else if (date instanceof Date) {
-        return date as T;
-    }
-    try {
-        return new Date(date) as T;
-    } catch {
-        return undefined as T;
-    }
-};
-
 const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
     return {
         id: entry.id,
-        createdOn: getDate<Date>(entry.createdOn),
-        savedOn: getDate<Date>(entry.savedOn),
+        createdOn: entry.createdOn,
+        savedOn: entry.savedOn,
         createdBy: entry.createdBy,
         name: entry.values.name,
         definitionId: entry.values.definitionId,
         values: entry.values.values,
         status: entry.values.status,
         eventResponse: entry.values.eventResponse,
-        startedOn: getDate(entry.values.startedOn),
-        finishedOn: getDate(entry.values.finishedOn),
+        startedOn: entry.values.startedOn,
+        finishedOn: entry.values.finishedOn,
         log: entry.values.log
     };
 };

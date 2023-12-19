@@ -1,13 +1,13 @@
 import { TaskResponseStatus } from "~/types";
-import { IResponseStoppedResult } from "./abstractions";
+import { IResponseAbortedResult } from "./abstractions";
 
-export class ResponseStoppedResult implements IResponseStoppedResult {
+export class ResponseAbortedResult implements IResponseAbortedResult {
     public readonly webinyTaskId: string;
     public readonly tenant: string;
     public readonly locale: string;
-    public readonly status: TaskResponseStatus.STOPPED = TaskResponseStatus.STOPPED;
+    public readonly status: TaskResponseStatus.ABORTED = TaskResponseStatus.ABORTED;
 
-    public constructor(params: Omit<IResponseStoppedResult, "status">) {
+    public constructor(params: Omit<IResponseAbortedResult, "status">) {
         this.webinyTaskId = params.webinyTaskId;
         this.tenant = params.tenant;
         this.locale = params.locale;
