@@ -107,9 +107,9 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
 
             input CmsPublishEntryOptionsInput {
                 # By default, updatePublishedOn is true. User can set it to false to skip the publishedOn field update.
-                updatePublishedOn: Boolean
+                updatePublishedOn: Boolean @deprecated(reason: "Will be removed in one of future releases.")
                 # By default, updateSavedOn is true. User can set it to false to skip the publishedOn field update.
-                updateSavedOn: Boolean
+                updateSavedOn: Boolean @deprecated(reason: "Will be removed in one of future releases.")
             }
 
             input CmsIdentityInput {
