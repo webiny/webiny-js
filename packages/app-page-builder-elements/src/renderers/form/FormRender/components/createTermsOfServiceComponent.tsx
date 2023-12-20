@@ -22,7 +22,7 @@ export interface TermsOfServiceProps {
     onExpired?: (...args: any[]) => void;
 }
 
-export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
+export type TermsOfServiceComponent = React.ComponentType<TermsOfServiceProps>;
 
 const createTermsOfServiceComponent = ({
     formData,

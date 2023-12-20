@@ -8,12 +8,12 @@ export interface FilterProps {
     after?: string;
 }
 
-export const Filter: React.FC<FilterProps> = ({
+export const Filter = ({
     name,
     after = undefined,
     before = undefined,
     remove = false
-}) => {
+}: FilterProps) => {
     const getId = useIdGenerator("filter");
 
     const placeAfter = after !== undefined ? getId(after) : undefined;

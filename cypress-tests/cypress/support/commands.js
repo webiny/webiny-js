@@ -15,6 +15,8 @@ import "./pageBuilder/pbClearMainMenu";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbCreateCategoryAndBlocks";
 import "./pageBuilder/pbUpdatePage";
+import "./pageBuilder/pbCreateCategory";
+import "./pageBuilder/pbDeleteAllCategories";
 import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeleteAllPages";
 import "./pageBuilder/pbDeletePage";

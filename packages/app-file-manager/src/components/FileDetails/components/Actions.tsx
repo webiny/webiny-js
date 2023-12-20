@@ -14,12 +14,16 @@ const ActionsContainer = styled.div`
     border-bottom: 1px solid var(--mdc-theme-on-background);
 `;
 
+interface ActionsProps {
+    file: FileItem;
+}
+
 export const Actions = () => {
     const { file } = useFile();
     const filePlugin = getFileTypePlugin(file);
 
     // TODO: implement actions using component composition
-    const actions: React.FC[] =
+    const actions: React.ComponentType<ActionsProps>[] =
         get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
 
     return (
@@ -27,7 +31,7 @@ export const Actions = () => {
             <Download />
             <MoveTo />
             <CopyUrl />
-            {actions.map((Component: React.FC<{ file: FileItem }>, index: number) => (
+            {actions.map((Component: React.ComponentType<ActionsProps>, index: number) => (
                 <Component key={index} file={file} />
             ))}
             <DeleteImage />
