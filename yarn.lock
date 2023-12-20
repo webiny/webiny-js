@@ -15181,7 +15181,7 @@ __metadata:
     "@webiny/validation": 0.0.0
     "@webiny/wcp": 0.0.0
     commodo-fields-object: ^1.0.6
-    deep-equal: ^2.0.5
+    deep-equal: ^2.2.3
     minimatch: ^5.1.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -18028,7 +18028,7 @@ __metadata:
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
     aws-lambda: ^1.0.7
-    deep-equal: ^2.2.0
+    deep-equal: ^2.2.3
     lodash: ^4.17.21
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
@@ -24376,7 +24376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-equal@npm:^2.2.0":
+"deep-equal@npm:^2.2.3":
   version: 2.2.3
   resolution: "deep-equal@npm:2.2.3"
   dependencies:

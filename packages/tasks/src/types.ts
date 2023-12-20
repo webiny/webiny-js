@@ -8,6 +8,7 @@ import {
 import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
 import { ITaskManagerStore } from "./runner/abstractions";
+import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
 
 export interface ITaskConfig {
     readonly eventBusName: string;
@@ -37,6 +38,7 @@ export interface ITaskIdentity {
     displayName: string | null;
     type: string;
 }
+
 export interface ITaskData<T = any> {
     id: string;
     name: string;
@@ -48,7 +50,7 @@ export interface ITaskData<T = any> {
     createdBy: ITaskIdentity;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse: Record<string, any>;
+    eventResponse: EventBridgeClientSendResponse;
     log?: ITaskDataLog[];
 }
 

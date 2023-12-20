@@ -115,11 +115,13 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getModel = async (): Promise<CmsModel> => {
-        const model = await context.cms.getModel(WEBINY_TASK_MODEL_ID);
-        if (model) {
-            return model;
-        }
-        throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
+        return await context.security.withoutAuthorization(async () => {
+            const model = await context.cms.getModel(WEBINY_TASK_MODEL_ID);
+            if (model) {
+                return model;
+            }
+            throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
+        });
     };
 
     return {

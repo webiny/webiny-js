@@ -13,7 +13,7 @@ const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
          * We can safely cast because we know that the event is of type ITaskEvent.
          * Check is done in the canUse() method.
          */
-        return createHandler(params)(event.Payload as ITaskEvent, context);
+        return createHandler(params)(event.Payload, context);
     }
 });
 

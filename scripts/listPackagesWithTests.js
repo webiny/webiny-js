@@ -117,6 +117,9 @@ const CUSTOM_HANDLERS = {
     },
     tasks: () => {
         return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
+    },
+    "api-elasticsearch-tasks": () => {
+        return ["packages/api-elasticsearch-tasks --storage=ddb-es,ddb"];
     }
 };
 

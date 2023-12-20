@@ -34,7 +34,13 @@ const createWebinyTaskDefinitionEnum = (definitions: ITaskDefinition[]): string 
 };
 
 export const createGraphQL = () => {
-    return new ContextPlugin<Context>(async context => {
+    const plugin = new ContextPlugin<Context>(async context => {
+        if (!context.tenancy.getCurrentTenant()) {
+            return;
+        } else if (!context.i18n.getDefaultLocale()) {
+            return;
+        }
+
         const model = await context.tasks.getModel();
 
         const models = await context.security.withoutAuthorization(async () => {
@@ -252,4 +258,8 @@ export const createGraphQL = () => {
         });
         context.plugins.register(plugin);
     });
+
+    plugin.name = "tasks.graphql";
+
+    return plugin;
 };

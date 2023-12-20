@@ -50,7 +50,7 @@ export interface SourceHandler<
     T = any
 > {
     name: string;
-    canUse: (event: E, context: LambdaContext) => boolean;
+    canUse: (event: Partial<E>, context: LambdaContext) => boolean;
     handle: (params: HandlerParams<E, P>) => Promise<T>;
 }
 

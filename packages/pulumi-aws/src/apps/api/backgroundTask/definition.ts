@@ -24,6 +24,7 @@ export const createBackgroundTaskDefinition = (
                 Resource: lambdaFunctionArn,
                 Next: "CheckStatus",
                 ResultPath: "$",
+                InputPath: "$",
                 /**
                  * Parameters will be received as an event in the lambda function.
                  * Task Handler determines that it can run a task based on the Payload.webinyTaskId parameter - it must be set!
@@ -31,10 +32,10 @@ export const createBackgroundTaskDefinition = (
                 Parameters: {
                     FunctionName: lambdaFunctionName,
                     Payload: {
-                        "webinyTaskId.$": "$.webinyTaskId",
-                        "tenant.$": "$.tenant",
+                        "webinyTaskId.$": "$.detail.webinyTaskId",
+                        "locale.$": "$.detail.locale",
+                        "tenant.$": "$.detail.tenant",
                         endpoint: "manage",
-                        "locale.$": "$.locale",
                         "stateMachineId.$": "$$.StateMachine.Id"
                     }
                 },
