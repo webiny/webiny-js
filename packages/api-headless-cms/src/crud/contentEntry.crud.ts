@@ -738,8 +738,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             };
 
             entryLevelPublishingMetaFields = {
-                entryFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
-                entryLastPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
+                entryFirstPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
+                entryLastPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
                 entryFirstPublishedBy: getIdentity(rawInput.entryFirstPublishedBy, currentIdentity),
                 entryLastPublishedBy: getIdentity(rawInput.entryLastPublishedBy, currentIdentity)
             };

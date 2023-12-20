@@ -56,11 +56,6 @@ export interface RecordWithEntryMetaFields {
     entryLastPublishedBy: CmsIdentity | null;
 }
 
-/**
- * Since we're setting a different revision as the latest, we need to update the meta fields.
- * The values are taken from the latest revision we're about to delete. The update of the
- * new latest revision is performed within the `storageOperations.entries.deleteRevision` method.
- */
 export const pickEntryMetaFields = (
     object: Partial<RecordWithEntryMetaFields>,
     filter?: (fieldName: string) => boolean
