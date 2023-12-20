@@ -1,7 +1,7 @@
-import pick from "lodash/pick";
 import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms";
 import { ApwBaseFields } from "~/types";
+import { pickEntryFieldValues as gfv } from "~/utils/pickEntryFieldValues";
 
 interface Transformer {
     fieldId: keyof ApwBaseFields;
@@ -20,10 +20,9 @@ export const getFieldValues = async <T extends ApwBaseFields>(
     params: GetFieldValuesParams
 ): Promise<T> => {
     const { entry, context, transformers = [], fields } = params;
-    const values = {
-        ...pick(entry, fields),
-        ...entry.values
-    } as T;
+
+    const values = gfv<T>(entry) ;
+
     /**
      * Transform field value for each transformers.
      */
