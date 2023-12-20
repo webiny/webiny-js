@@ -466,7 +466,9 @@ describe("Folder Level Permissions", () => {
                     parentId: folderA.id
                 }
             })
-            .then(([response]) => response.data.aco.createFolder.data);
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
 
         // 1. `hasNonInheritedPermissions` must show false for both folders. `canManagePermissions` must show true
         //    for both folders because the user has full-access security role attached.

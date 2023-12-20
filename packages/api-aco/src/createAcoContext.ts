@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createAcoHooks } from "~/createAcoHooks";
-import { baseFields, createAcoStorageOperations } from "~/createAcoStorageOperations";
+import {  createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
@@ -100,7 +100,7 @@ const setupAcoContext = async (
                     sort: ["title_ASC"]
                 });
 
-                return results.items.map(entry => getFolderFieldValues(entry, baseFields));
+                return results.items.map(getFolderFieldValues);
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),

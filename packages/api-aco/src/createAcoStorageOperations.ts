@@ -14,19 +14,6 @@ export interface CreateAcoStorageOperationsParams {
     getCmsContext: () => CmsContext;
 }
 
-export const baseFields = [
-    "id",
-    "entryId",
-
-    // On/by fields are mapped to entry-level fields (we use ":" to signal that).
-    "entryCreatedOn:createdOn",
-    "entryModifiedOn:modifiedOn",
-    "entrySavedOn:savedOn",
-    "entryCreatedBy:createdBy",
-    "entryModifiedBy:modifiedBy",
-    "entrySavedBy:savedBy"
-];
-
 export const createAcoStorageOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoStorageOperations => {

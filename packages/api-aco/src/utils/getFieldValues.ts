@@ -3,9 +3,22 @@ import { Filter } from "~/filter/filter.types";
 import { Folder } from "~/folder/folder.types";
 import { SearchRecord } from "~/record/record.types";
 
-const pickBaseEntryFieldValues = (entry: CmsEntry, fieldNames: string[]) => {
+const baseFields = [
+    // Entry ID is mapped to "id" (we don't use revisions with ACO entities).
+    "id",
+
+    // On/by fields are mapped to entry-level fields (we use ":" to signal that).
+    "entryCreatedOn:createdOn",
+    "entryModifiedOn:modifiedOn",
+    "entrySavedOn:savedOn",
+    "entryCreatedBy:createdBy",
+    "entryModifiedBy:modifiedBy",
+    "entrySavedBy:savedBy"
+];
+
+const pickBaseEntryFieldValues = (entry: CmsEntry) => {
     const pickedValues: Partial<CmsEntry> = {};
-    for (const fieldName of fieldNames) {
+    for (const fieldName of baseFields) {
         const [srcFieldName, targetFieldName = srcFieldName] = fieldName.split(":");
         if (srcFieldName in entry) {
             Object.assign(pickedValues, {
@@ -20,7 +33,7 @@ const pickBaseEntryFieldValues = (entry: CmsEntry, fieldNames: string[]) => {
 export function getRecordFieldValues(entry: CmsEntry<any>, baseFields?: string[]) {
     if (baseFields) {
         return {
-            ...pickBaseEntryFieldValues(entry, baseFields),
+            ...pickBaseEntryFieldValues(entry),
             ...entry.values
         } as SearchRecord<any>;
     }
@@ -31,13 +44,13 @@ export function getRecordFieldValues(entry: CmsEntry<any>, baseFields?: string[]
     } as SearchRecord<any>;
 }
 
-export function getFolderFieldValues(entry: CmsEntry, baseFields: string[]) {
-    return { ...pickBaseEntryFieldValues(entry, baseFields), ...entry.values } as Folder;
+export function getFolderFieldValues(entry: CmsEntry) {
+    return { ...pickBaseEntryFieldValues(entry), ...entry.values } as Folder;
 }
 
-export function getFilterFieldValues(entry: CmsEntry, baseFields: string[]) {
+export function getFilterFieldValues(entry: CmsEntry) {
     return {
-        ...pickBaseEntryFieldValues(entry, baseFields),
+        ...pickBaseEntryFieldValues(entry),
         ...entry.values
     } as Filter;
 }
