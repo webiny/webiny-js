@@ -1,11 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [
-    { "path": "../api-elasticsearch-tasks" },
-    { "path": "../plugins" },
-    { "path": "../tasks" }
-  ],
+  "references": [{ "path": "../plugins" }, { "path": "../tasks" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -13,8 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
-      "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],

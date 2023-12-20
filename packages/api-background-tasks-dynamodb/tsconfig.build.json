@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api-elasticsearch-tasks/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" }
   ],

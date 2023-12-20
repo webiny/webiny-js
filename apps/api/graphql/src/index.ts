@@ -35,7 +35,7 @@ import { createStorageOperations as createApwSaStorageOperations } from "@webiny
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
-import { createBackgroundTasks } from "@webiny/api-background-tasks";
+import { createBackgroundTasks } from "@webiny/api-background-tasks-dynamodb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";

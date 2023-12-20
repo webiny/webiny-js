@@ -114,7 +114,7 @@
       "path": "../../../packages/api-apw-scheduler-so-ddb"
     },
     {
-      "path": "../../../packages/api-background-tasks/tsconfig.build.json"
+      "path": "../../../packages/api-background-tasks-dynamodb/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -192,8 +192,12 @@
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
       "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
-      "@webiny/api-background-tasks/*": ["../../../packages/api-background-tasks/src/*"],
-      "@webiny/api-background-tasks": ["../../../packages/api-background-tasks/src"]
+      "@webiny/api-background-tasks-dynamodb/*": [
+        "../../../packages/api-background-tasks-dynamodb/src/*"
+      ],
+      "@webiny/api-background-tasks-dynamodb": [
+        "../../../packages/api-background-tasks-dynamodb/src"
+      ]
     },
     "baseUrl": "."
   }
