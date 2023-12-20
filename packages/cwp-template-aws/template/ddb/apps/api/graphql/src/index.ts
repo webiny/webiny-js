@@ -29,7 +29,7 @@ import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createAuditLogs } from "@webiny/api-audit-logs";
-import { createBackgroundTasks } from "@webiny/api-background-tasks-dynamodb";
+import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 /**
  * APW
  */

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-background-tasks-dynamodb",
+  "name": "@webiny/api-background-tasks-ddb",
   "private": true,
   "version": "0.0.0",
   "main": "index.js",

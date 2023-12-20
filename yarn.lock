@@ -14128,9 +14128,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-background-tasks-dynamodb@0.0.0, @webiny/api-background-tasks-dynamodb@workspace:packages/api-background-tasks-dynamodb":
+"@webiny/api-background-tasks-ddb@0.0.0, @webiny/api-background-tasks-ddb@workspace:packages/api-background-tasks-ddb":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-background-tasks-dynamodb@workspace:packages/api-background-tasks-dynamodb"
+  resolution: "@webiny/api-background-tasks-ddb@workspace:packages/api-background-tasks-ddb"
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
@@ -19105,7 +19105,7 @@ __metadata:
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
     "@webiny/api-audit-logs": 0.0.0
-    "@webiny/api-background-tasks-dynamodb": 0.0.0
+    "@webiny/api-background-tasks-ddb": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
