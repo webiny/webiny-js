@@ -1,9 +1,7 @@
 import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { Filter } from "~/filter/filter.types";
-import { Folder } from "~/folder/folder.types";
-import { SearchRecord } from "~/record/record.types";
+import {SearchRecord} from "~/record/record.types";
 
-const baseFields = [
+export const baseFields = [
     // Entry ID is mapped to "id" (we don't use revisions with ACO entities).
     "id",
 
@@ -30,6 +28,13 @@ const pickBaseEntryFieldValues = (entry: CmsEntry) => {
     return pickedValues;
 };
 
+export function pickEntryFieldValues<T>(entry: CmsEntry): T {
+    return {
+        ...pickBaseEntryFieldValues(entry),
+        ...entry.values
+    } as T;
+}
+
 export function getRecordFieldValues(entry: CmsEntry<any>, baseFields?: string[]) {
     if (baseFields) {
         return {
@@ -42,15 +47,4 @@ export function getRecordFieldValues(entry: CmsEntry<any>, baseFields?: string[]
         ...entry,
         ...entry.values
     } as SearchRecord<any>;
-}
-
-export function getFolderFieldValues(entry: CmsEntry) {
-    return { ...pickBaseEntryFieldValues(entry), ...entry.values } as Folder;
-}
-
-export function getFilterFieldValues(entry: CmsEntry) {
-    return {
-        ...pickBaseEntryFieldValues(entry),
-        ...entry.values
-    } as Filter;
 }

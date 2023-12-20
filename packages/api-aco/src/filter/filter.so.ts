@@ -3,8 +3,8 @@ import { FILTER_MODEL_ID } from "./filter.model";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFilterFieldValues } from "~/utils/getFieldValues";
-import { AcoFilterStorageOperations } from "./filter.types";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
+import { AcoFilterStorageOperations, Filter } from "./filter.types";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
@@ -27,7 +27,7 @@ export const createFilterOperations = (
                     });
                 }
 
-                return getFilterFieldValues(entry);
+                return pickEntryFieldValues(entry);
             });
         },
         listFilters(params) {
@@ -43,13 +43,13 @@ export const createFilterOperations = (
                     }
                 });
 
-                return [entries.map(getFilterFieldValues), meta];
+                return [entries.map(pickEntryFieldValues<Filter>), meta];
             });
         },
         createFilter({ data }) {
             return withModel(async model => {
                 const entry = await cms.createEntry(model, data);
-                return getFilterFieldValues(entry);
+                return pickEntryFieldValues(entry);
             });
         },
         updateFilter({ id, data }) {
@@ -62,7 +62,7 @@ export const createFilterOperations = (
                 };
 
                 const entry = await cms.updateEntry(model, original.id, input);
-                return getFilterFieldValues(entry);
+                return pickEntryFieldValues(entry);
             });
         },
         deleteFilter({ id }) {
