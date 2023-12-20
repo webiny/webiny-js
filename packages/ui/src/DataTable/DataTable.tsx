@@ -315,7 +315,7 @@ const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
     const width = getColumnWidth(cell.column);
 
     return (
-        <DataTableCell {...cell.column.columnDef.meta} style={{ width }}>
+        <DataTableCell {...cell.column.columnDef.meta} style={{ width, maxWidth: width }}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </DataTableCell>
     );
@@ -481,7 +481,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                                             key={header.id}
                                             {...header.column.columnDef.meta}
                                             colSpan={header.colSpan}
-                                            style={{ width }}
+                                            style={{ width, maxWidth: width }}
                                         >
                                             {header.isPlaceholder ? null : (
                                                 <ColumnHeaderWrapper

@@ -18,12 +18,6 @@ export const Wrapper = styled("div")`
     .mdc-data-table {
         display: inline-table;
     }
-
-    .mdc-data-table__cell {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
 `;
 
 export const SidebarContainer = styled("div")`
