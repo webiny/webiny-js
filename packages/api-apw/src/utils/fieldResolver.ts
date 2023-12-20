@@ -19,9 +19,9 @@ interface GetFieldValuesParams {
 export const getFieldValues = async <T extends ApwBaseFields>(
     params: GetFieldValuesParams
 ): Promise<T> => {
-    const { entry, context, transformers = [], fields } = params;
+    const { entry, context, transformers = [] } = params;
 
-    const values = pickEntryFieldValues<T>(entry) ;
+    const values = pickEntryFieldValues<T>(entry);
 
     /**
      * Transform field value for each transformers.
