@@ -7,23 +7,21 @@ export class ColumnRepository {
     private visibilityStorage: LocalStorage<IColumnVisibility>;
     private columns: ColumnDTO[] = [];
 
-    constructor(namespace: string, columns: ColumnDTO[]) {
-        this.visibilityStorage = new LocalStorage(`webiny_column_visibility_${namespace}`);
+    constructor(columns: ColumnDTO[], visibilityStorage: LocalStorage<IColumnVisibility>) {
+        this.visibilityStorage = visibilityStorage;
         this.columns = columns;
         makeAutoObservable(this);
     }
 
     async listColumns() {
+        this.getColumnVisibilityFromStorage();
+    }
+
+    getColumns() {
         return this.columns;
     }
 
-    async getColumnVisibility() {
-        const fromStorage = this.visibilityStorage.getFromStorage();
-
-        if (fromStorage) {
-            return fromStorage;
-        }
-
+    getColumnVisibility() {
         return this.columns.reduce((columnVisibility, column) => {
             const { name, visible } = column;
 
@@ -33,7 +31,35 @@ export class ColumnRepository {
         }, {} as IColumnVisibility);
     }
 
-    async updateColumnVisibility(columnVisibility: IColumnVisibility) {
+    updateColumnVisibility(columnVisibility: IColumnVisibility) {
+        this.columns = this.columns.map(column => {
+            const updatedColumn = { ...column };
+            const status = columnVisibility[column.name];
+
+            if (status !== undefined) {
+                updatedColumn.visible = status;
+            }
+
+            return updatedColumn;
+        });
+
         this.visibilityStorage.setToStorage(columnVisibility);
+    }
+
+    private getColumnVisibilityFromStorage() {
+        const columnVisibility = this.visibilityStorage.getFromStorage();
+
+        if (!columnVisibility) {
+            return;
+        }
+
+        this.columns = this.columns.map(column => {
+            const { name, visible } = column;
+
+            return {
+                ...column,
+                visible: columnVisibility[name] ?? visible
+            };
+        });
     }
 }

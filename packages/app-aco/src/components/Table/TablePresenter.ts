@@ -53,8 +53,8 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
     get vm() {
         return {
             columns: this.columnPresenter.vm.columns,
-            selectedRows: this.getSelectedRows(),
             columnVisibility: this.columnPresenter.vm.columnVisibility,
+            selectedRows: this.getSelectedRows(),
             initialSorting: this.getInitialSorting()
         };
     }

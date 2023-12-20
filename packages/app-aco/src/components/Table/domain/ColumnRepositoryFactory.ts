@@ -1,4 +1,6 @@
+import { ColumnVisibility as IColumnVisibility } from "@webiny/ui/DataTable";
 import { ColumnRepository } from "./ColumnRepository";
+import { LocalStorage } from "~/components/Table/LocalStorage";
 import { ColumnDTO } from "~/components/Table/domain/Column";
 
 class ColumnRepositoryFactory {
@@ -8,7 +10,10 @@ class ColumnRepositoryFactory {
         const cacheKey = this.getCacheKey(namespace, columns);
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(cacheKey, new ColumnRepository(namespace, columns));
+            const visibilityStorage = new LocalStorage<IColumnVisibility>(
+                `webiny_column_visibility_${namespace}`
+            );
+            this.cache.set(cacheKey, new ColumnRepository(columns, visibilityStorage));
         }
 
         return this.cache.get(cacheKey) as ColumnRepository;

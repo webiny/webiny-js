@@ -8,8 +8,6 @@ import { ColumnDTO } from "~/components/Table/domain";
 
 export class ColumnPresenter {
     private repository: ColumnRepository;
-    private columns: ColumnDTO[] = [];
-    private columnVisibility: IColumnVisibility = {};
 
     constructor(repository: ColumnRepository) {
         this.repository = repository;
@@ -17,36 +15,37 @@ export class ColumnPresenter {
     }
 
     async load() {
-        const columns = await this.repository.listColumns();
-        const columnVisibility = await this.repository.getColumnVisibility();
-
-        runInAction(() => {
-            this.columns = columns;
-            this.columnVisibility = columnVisibility;
-        });
+        await this.repository.listColumns();
     }
-
-    public updateColumnVisibility: OnColumnVisibilityChange = updaterOrValue => {
-        if (!this.columnVisibility) {
-            return;
-        }
-
-        if (typeof updaterOrValue === "function") {
-            updaterOrValue(this.columnVisibility);
-        }
-
-        this.columnVisibility = {
-            ...this.columnVisibility,
-            ...updaterOrValue
-        };
-
-        this.repository.updateColumnVisibility(this.columnVisibility);
-    };
 
     get vm() {
         return {
-            columns: this.columns,
-            columnVisibility: this.columnVisibility
+            columns: this.repository.getColumns(),
+            columnVisibility: this.repository.getColumnVisibility()
         };
+    }
+
+    public updateColumnVisibility: OnColumnVisibilityChange = updaterOrValue => {
+        const columnVisibility = this.repository.getColumnVisibility();
+
+        if (typeof updaterOrValue === "function") {
+            this.repository.updateColumnVisibility(updaterOrValue(columnVisibility));
+            return;
+        }
+
+        this.repository.updateColumnVisibility({
+            ...columnVisibility,
+            ...updaterOrValue
+        });
+    };
+
+    private getColumnVisibility(columns: ColumnDTO[]) {
+        return columns.reduce((columnVisibility, column) => {
+            const { name, visible } = column;
+
+            columnVisibility[name] = visible;
+
+            return columnVisibility;
+        }, {} as IColumnVisibility);
     }
 }
