@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-background-tasks",
+  "name": "@webiny/api-background-tasks-es",
   "private": true,
   "version": "0.0.0",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Wrapper for background tasks initialization.",
+  "description": "Wrapper for background tasks initialization for Elasticsearch.",
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
