@@ -1,8 +1,8 @@
 import { dirname } from "path";
 import { S3 } from "@webiny/aws-sdk/client-s3";
 import { getObjectParams, getEnvironment } from "~/handlers/utils";
-import * as newUtils from "../utils";
-import * as legacyUtils from "../legacyUtils";
+import * as newUtils from "./utils";
+import * as legacyUtils from "./legacyUtils";
 
 const isLegacyKey = (key: string) => {
     return !key.includes("/");
@@ -17,7 +17,7 @@ export interface ImageManagerProcessParams {
     key: string;
     extension: string;
 }
-export default {
+export const imageManager = {
     canProcess: (params: ImageManagerCanProcessParams) => {
         const { key, extension } = params;
         const utils = key.includes("/") ? newUtils : legacyUtils;

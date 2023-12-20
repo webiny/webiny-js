@@ -15,6 +15,8 @@ export const ApiCloudfront = createAppModule({
             whitelistedNames: ["wby-id-token"]
         };
 
+        const forwardHeaders = ["Origin", "Accept", "Accept-Language"];
+
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
@@ -27,7 +29,7 @@ export const ApiCloudfront = createAppModule({
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
                         cookies,
-                        headers: ["Accept", "Accept-Language"],
+                        headers: forwardHeaders,
                         queryString: true
                     },
                     // MinTTL <= DefaultTTL <= MaxTTL
@@ -74,7 +76,7 @@ export const ApiCloudfront = createAppModule({
                         cachedMethods: ["GET", "HEAD", "OPTIONS"],
                         forwardedValues: {
                             cookies: cookies,
-                            headers: ["Accept", "Accept-Language"],
+                            headers: forwardHeaders,
                             queryString: true
                         },
                         // MinTTL <= DefaultTTL <= MaxTTL

@@ -1,18 +1,18 @@
-import { S3 } from "@webiny/aws-sdk/client-s3";
 import {
     createAssetDelivery as createBaseAssetDelivery,
     createAssetDeliveryConfig
 } from "@webiny/api-file-manager";
-import { S3AssetResolver } from "./s3/S3AssetResolver";
+import { S3 } from "@webiny/aws-sdk/client-s3";
+import { S3AssetResolver } from "~/assetDelivery/s3/S3AssetResolver";
 import { S3OutputStrategy } from "~/assetDelivery/s3/S3OutputStrategy";
 import { SharpTransform } from "~/assetDelivery/s3/SharpTransform";
 
-type AssetDeliveryParams = Parameters<typeof createBaseAssetDelivery>[0] & {
+export type AssetDeliveryParams = Parameters<typeof createBaseAssetDelivery>[0] & {
     imageResizeWidths?: number[];
     presignedUrlTtl?: number;
 };
 
-export const createAssetDelivery = (params: AssetDeliveryParams) => {
+export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const bucket = process.env.S3_BUCKET as string;
     const region = process.env.AWS_REGION as string;
 

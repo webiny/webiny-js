@@ -3,6 +3,7 @@ import { Context as BaseContext } from "@webiny/handler/types";
 import { createContextPlugin } from "@webiny/api";
 import { authenticateUsingCookie } from "./authenticateUsingCookie";
 import { SecurityContext } from "~/types";
+import { setupSecureHeaders } from "~/plugins/secureHeaders";
 
 type Context = BaseContext & SecurityContext;
 
@@ -17,21 +18,25 @@ const defaultGetHeader: GetHeader = context => {
 };
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
-    return createContextPlugin<SecurityContext>(context => {
-        context.plugins.register(
-            createBeforeHandlerPlugin<Context>(async context => {
-                const token = getHeader(context);
+    return [
+        createContextPlugin<SecurityContext>(context => {
+            context.plugins.register(
+                createBeforeHandlerPlugin<Context>(async context => {
+                    const token = getHeader(context);
 
-                if (!token) {
-                    return;
-                }
+                    if (!token) {
+                        return;
+                    }
 
-                await context.security.authenticate(token);
-            })
-        );
+                    await context.security.authenticate(token);
+                })
+            );
 
-        if (context.wcp.canUsePrivateFiles()) {
-            authenticateUsingCookie(context);
-        }
-    });
+            if (context.wcp.canUsePrivateFiles()) {
+                authenticateUsingCookie(context);
+            }
+        }),
+        // To use cookies, we must tighten the setup of headers.
+        setupSecureHeaders()
+    ];
 };

@@ -1,3 +1,4 @@
+import { createWcp } from "@webiny/api-wcp";
 import { createHandlerOnRequest, ResponseHeaders } from "@webiny/handler";
 
 const whitelistedHeaders = [
@@ -11,19 +12,23 @@ const whitelistedHeaders = [
     "apollo-query-plan-experimental"
 ];
 
-export const setupPrivateFiles = () => {
+export const setupSecureHeaders = () => {
+    console.log("Setup secure headers!");
     return createHandlerOnRequest(async (request, reply) => {
+        const wcp = await createWcp();
+
+        if (!wcp.canUsePrivateFiles()) {
+            return undefined;
+        }
+
         const isOptions = request.method === "OPTIONS";
 
-        const domain = request.headers["origin"];
-
         const headers = ResponseHeaders.create();
-        headers.set("access-control-allow-origin", domain);
+        headers.set("access-control-allow-origin", request.headers["origin"]);
         headers.set("access-control-allow-credentials", "true");
 
         if (isOptions) {
-            // TODO: "Cache-Control": "public, max-age=86400",
-            headers.set("cache-control", "no-store");
+            headers.set("cache-control", "public, max-age=86400");
             headers.set("content-type", "application/json; charset=utf-8");
             headers.set("access-control-max-age", "86400");
             headers.set("access-control-allow-methods", "OPTIONS,POST,GET,DELETE,PUT,PATCH");

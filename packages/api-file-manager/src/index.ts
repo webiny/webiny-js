@@ -4,7 +4,6 @@ import { FileManagerContext } from "~/types";
 import { FileManagerContextSetup } from "./FileManagerContextSetup";
 import { setupAssetDelivery, AssetDeliveryParams } from "./delivery/setupAssetDelivery";
 import { createGraphQLSchemaPlugin } from "./graphql";
-import { setupPrivateFiles } from "~/delivery/privateFiles";
 
 export * from "./modelModifier/CmsModelModifier";
 export * from "./plugins";
@@ -28,8 +27,5 @@ export const createFileManagerGraphQL = () => {
 };
 
 export const createAssetDelivery = (config: AssetDeliveryParams) => {
-    if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
-        return [setupAssetDelivery(config)];
-    }
-    return [setupPrivateFiles()];
+    return setupAssetDelivery(config);
 };
