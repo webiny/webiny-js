@@ -6,15 +6,13 @@ import { LocalStorage } from "~/components/Table/LocalStorage";
 export class ColumnRepository {
     private visibilityStorage: LocalStorage<IColumnVisibility>;
     private columns: ColumnDTO[] = [];
+    private columnVisibility: IColumnVisibility = {};
 
     constructor(columns: ColumnDTO[], visibilityStorage: LocalStorage<IColumnVisibility>) {
         this.visibilityStorage = visibilityStorage;
         this.columns = columns;
+        this.columnVisibility = this.loadColumnVisibility();
         makeAutoObservable(this);
-    }
-
-    async listColumns() {
-        this.getColumnVisibilityFromStorage();
     }
 
     getColumns() {
@@ -22,44 +20,30 @@ export class ColumnRepository {
     }
 
     getColumnVisibility() {
-        return this.columns.reduce((columnVisibility, column) => {
-            const { name, visible } = column;
-
-            columnVisibility[name] = visible;
-
-            return columnVisibility;
-        }, {} as IColumnVisibility);
+        return this.columnVisibility;
     }
 
     updateColumnVisibility(columnVisibility: IColumnVisibility) {
-        this.columns = this.columns.map(column => {
-            const updatedColumn = { ...column };
-            const status = columnVisibility[column.name];
-
-            if (status !== undefined) {
-                updatedColumn.visible = status;
-            }
-
-            return updatedColumn;
-        });
-
+        this.columnVisibility = columnVisibility;
         this.visibilityStorage.setToStorage(columnVisibility);
     }
 
-    private getColumnVisibilityFromStorage() {
-        const columnVisibility = this.visibilityStorage.getFromStorage();
+    private loadColumnVisibility() {
+        // Get the state from Local Storage
+        const fromStorage = this.visibilityStorage.getFromStorage();
 
-        if (!columnVisibility) {
-            return;
+        // If the user saved a configuration previously, return it
+        if (fromStorage) {
+            return fromStorage;
         }
 
-        this.columns = this.columns.map(column => {
+        // Otherwise calculate it from the columns configuration
+        return this.columns.reduce((state, column) => {
             const { name, visible } = column;
 
-            return {
-                ...column,
-                visible: columnVisibility[name] ?? visible
-            };
-        });
+            state[name] = visible;
+
+            return state;
+        }, {} as IColumnVisibility);
     }
 }

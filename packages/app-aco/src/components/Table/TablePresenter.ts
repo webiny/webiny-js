@@ -42,8 +42,6 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
     }
 
     async load(params: LoadParamsInterface<T>) {
-        await this.columnPresenter.load();
-
         runInAction(() => {
             this.data = params.data;
             this.selected = params.selected;

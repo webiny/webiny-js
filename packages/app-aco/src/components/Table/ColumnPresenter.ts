@@ -1,10 +1,6 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import {
-    ColumnVisibility as IColumnVisibility,
-    OnColumnVisibilityChange
-} from "@webiny/ui/DataTable";
+import { makeAutoObservable } from "mobx";
+import { OnColumnVisibilityChange } from "@webiny/ui/DataTable";
 import { ColumnRepository } from "~/components/Table/domain/ColumnRepository";
-import { ColumnDTO } from "~/components/Table/domain";
 
 export class ColumnPresenter {
     private repository: ColumnRepository;
@@ -12,10 +8,6 @@ export class ColumnPresenter {
     constructor(repository: ColumnRepository) {
         this.repository = repository;
         makeAutoObservable(this);
-    }
-
-    async load() {
-        await this.repository.listColumns();
     }
 
     get vm() {
@@ -38,14 +30,4 @@ export class ColumnPresenter {
             ...updaterOrValue
         });
     };
-
-    private getColumnVisibility(columns: ColumnDTO[]) {
-        return columns.reduce((columnVisibility, column) => {
-            const { name, visible } = column;
-
-            columnVisibility[name] = visible;
-
-            return columnVisibility;
-        }, {} as IColumnVisibility);
-    }
 }
