@@ -37,16 +37,12 @@ const createEmptyRenderer = (name: string) => {
     }[name];
 };
 
-type ComposableProps<TProps> = ComposableFC<TProps> & {
-    children?: React.ReactNode;
-} & React.HTMLAttributes<any>;
-
 export function makeComposable<TProps>(name: string, Component?: React.ComponentType<TProps>) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
 
-    const Composable = (props: ComposableProps<TProps>) => {
+    const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
         const ComposedComponent = useComponent(Component as React.ComponentType<TProps>);
 
