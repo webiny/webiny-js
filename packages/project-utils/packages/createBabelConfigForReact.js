@@ -4,7 +4,7 @@ module.exports = ({ path, esm }) => ({
             "@babel/preset-env",
             {
                 targets: {
-                    browsers: ["last 2 versions", "safari >= 7"]
+                    browsers: ["last 2 versions"]
                 },
                 // Allow importing core-js in entrypoint and use browserlist to select polyfills
                 useBuiltIns: "entry",
@@ -14,7 +14,13 @@ module.exports = ({ path, esm }) => ({
                 // Do not transform modules to CJS
                 modules: esm ? false : "auto",
                 // Exclude transforms that make all code slower
-                exclude: ["transform-typeof-symbol"]
+                exclude: [
+                    "transform-typeof-symbol",
+                    "@babel/plugin-proposal-optional-chaining",
+                    "@babel/plugin-proposal-nullish-coalescing-operator",
+                    "@babel/plugin-transform-async-to-generator",
+                    "@babel/plugin-transform-regenerator"
+                ]
             }
         ],
         ["@babel/preset-react", { useBuiltIns: true }],
@@ -22,7 +28,6 @@ module.exports = ({ path, esm }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
         [
             "@babel/plugin-transform-runtime",
@@ -33,8 +38,6 @@ module.exports = ({ path, esm }) => ({
                 useESModules: false
             }
         ],
-        "@babel/plugin-proposal-optional-chaining",
-        "@babel/plugin-proposal-nullish-coalescing-operator",
         ["babel-plugin-emotion", { autoLabel: true }],
         [
             "@babel/plugin-proposal-object-rest-spread",

@@ -37,7 +37,8 @@ module.exports = options => {
         output: {
             libraryTarget: "commonjs",
             path: output.path,
-            filename: output.filename
+            filename: output.filename,
+            chunkFilename: "[name].chunk.js"
         },
         devtool: sourceMaps ? "source-map" : false,
         externals: [/^aws-sdk/, /^sharp$/],
