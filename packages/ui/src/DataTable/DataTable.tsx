@@ -308,6 +308,7 @@ const typedMemo: <T>(component: T) => T = memo;
 interface TableCellProps<T> {
     cell: Cell<T, unknown>;
     getColumnWidth: (column: DefaultColumn<T>) => number;
+    selected: boolean;
 }
 
 const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
@@ -332,7 +333,12 @@ const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => 
     return (
         <DataTableRow selected={selected}>
             {cells.map(cell => (
-                <MemoTableCell<T> key={cell.id} cell={cell} getColumnWidth={getColumnWidth} />
+                <MemoTableCell<T>
+                    key={cell.id}
+                    cell={cell}
+                    getColumnWidth={getColumnWidth}
+                    selected={selected}
+                />
             ))}
         </DataTableRow>
     );

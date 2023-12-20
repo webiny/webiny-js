@@ -52,8 +52,13 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
         return {
             columns: this.columnPresenter.vm.columns,
             columnVisibility: this.columnPresenter.vm.columnVisibility,
-            selectedRows: this.getSelectedRows(),
-            initialSorting: this.getInitialSorting()
+            selectedRows: this.data.filter(row => this.selected.find(item => row.id === item.id)),
+            initialSorting: [
+                {
+                    id: "savedOn",
+                    desc: true
+                }
+            ]
         };
     }
 
@@ -62,18 +67,5 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
 
     public isRowSelectable(row: TableRow<T>) {
         return row.original.$selectable || false;
-    }
-
-    private getInitialSorting = () => {
-        return [
-            {
-                id: "savedOn",
-                desc: true
-            }
-        ];
-    };
-
-    private getSelectedRows() {
-        return this.data.filter(row => this.selected.find(item => row.id === item.id));
     }
 }
