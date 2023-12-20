@@ -1,7 +1,7 @@
 import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms";
 import { ApwBaseFields } from "~/types";
-import { pickEntryFieldValues as gfv } from "~/utils/pickEntryFieldValues";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 
 interface Transformer {
     fieldId: keyof ApwBaseFields;
@@ -21,7 +21,7 @@ export const getFieldValues = async <T extends ApwBaseFields>(
 ): Promise<T> => {
     const { entry, context, transformers = [], fields } = params;
 
-    const values = gfv<T>(entry) ;
+    const values = pickEntryFieldValues<T>(entry) ;
 
     /**
      * Transform field value for each transformers.
