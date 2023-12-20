@@ -28,6 +28,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 name: String!
                 type: String!
                 size: Long!
+                key: String
+                keyPrefix: String
             }
 
             type GetPreSignedPostPayloadResponseDataFile {

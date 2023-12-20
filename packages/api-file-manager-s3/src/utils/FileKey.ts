@@ -27,7 +27,7 @@ export class FileKey {
     }
 
     private getSanitizedKey() {
-        const key = sanitizeFilename(this.data.name).replace(/\s/g, "");
+        const key = sanitizeFilename(this.data.key || this.data.name).replace(/\s/g, "");
 
         return [key, this.getExtension()].filter(Boolean).join(".");
     }
