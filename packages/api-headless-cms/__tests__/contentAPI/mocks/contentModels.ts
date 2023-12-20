@@ -1,5 +1,6 @@
 import { createContentModelGroup } from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { CmsModelInput, createCmsGroup, createCmsModel } from "~/plugins";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -84,7 +85,10 @@ const ids = {
     field701: "title",
     field702: "body",
     field703: "categories",
-    field704: "category"
+    field704: "category",
+    // wrapper
+    field_wrap_1: "title",
+    field_wrap_2: "references"
 };
 
 const models: CmsModel[] = [
@@ -1573,6 +1577,7 @@ const models: CmsModel[] = [
         tenant: "root",
         webinyVersion
     },
+    // article
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
@@ -1675,6 +1680,70 @@ const models: CmsModel[] = [
         ],
         tenant: "root",
         webinyVersion
+    },
+    // Wrap
+    /**
+     * Used to test the ref field with multiple models.
+     */
+    {
+        name: "Wrap",
+        modelId: "wrap",
+        singularApiName: "Wrap",
+        pluralApiName: "Wraps",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        fields: [
+            {
+                id: ids.field_wrap_1,
+                label: "Title",
+                fieldId: "title",
+                type: "text",
+                storageId: "text@titleStorageId",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field_wrap_2,
+                label: "References",
+                fieldId: "references",
+                type: "ref",
+                storageId: "ref@references",
+                multipleValues: true,
+                settings: {
+                    models: [
+                        {
+                            modelId: "product"
+                        },
+                        {
+                            modelId: "category"
+                        },
+                        {
+                            modelId: "author"
+                        }
+                    ]
+                },
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ],
+        layout: [],
+        tenant: "root",
+        locale: "en-US",
+        titleFieldId: "title",
+        description: "Wrapper model for ref field with multiple models",
+        webinyVersion
     }
 ];
 
@@ -1688,4 +1757,23 @@ export const getCmsModel = (modelId: string) => {
         throw new Error(message);
     }
     return model;
+};
+
+export const createModelPlugins = (targets: string[]) => {
+    return [
+        createCmsGroup({
+            ...contentModelGroup
+        }),
+        ...targets.map(modelId => {
+            const model = models.find(m => m.modelId === modelId);
+            if (!model) {
+                throw new Error(`There is no model ${modelId}.`);
+            }
+            const newModel: CmsModelInput = {
+                ...(model as Omit<CmsModel, "isPrivate">),
+                noValidate: true
+            };
+            return createCmsModel(newModel);
+        })
+    ];
 };
