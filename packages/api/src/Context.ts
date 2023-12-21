@@ -10,9 +10,19 @@ interface Waiter {
 }
 
 export interface ContextParams {
-    plugins?: PluginCollection;
+    plugins?: PluginCollection | PluginsContainer;
     WEBINY_VERSION: string;
 }
+
+const getPluginsContainer = (plugins?: PluginCollection | PluginsContainer): PluginsContainer => {
+    if (!plugins) {
+        return new PluginsContainer();
+    }
+    if (plugins instanceof PluginsContainer) {
+        return plugins;
+    }
+    return new PluginsContainer(plugins);
+};
 
 export class Context implements ContextInterface {
     public _result: any;
@@ -25,7 +35,7 @@ export class Context implements ContextInterface {
 
     public constructor(params: ContextParams) {
         const { plugins, WEBINY_VERSION } = params;
-        this.plugins = new PluginsContainer(plugins || []);
+        this.plugins = getPluginsContainer(plugins);
         this.WEBINY_VERSION = WEBINY_VERSION;
         /**
          * At the moment let's have benchmark as part of the context.
