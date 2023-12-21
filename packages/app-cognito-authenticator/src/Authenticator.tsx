@@ -16,9 +16,21 @@ export type AuthState =
     | "confirmSignUp"
     | "forgotPassword";
 
+export interface AuthDataVerified {
+    email?: string;
+    phone_number?: string;
+}
+
+export interface AuthDataUnverified {
+    email?: string;
+    phone_number?: string;
+}
+
 export interface AuthData {
     username?: string;
-    [key: string]: string | null | boolean | undefined;
+    verified?: AuthDataVerified;
+    unverified?: AuthDataUnverified;
+    [key: string]: string | null | boolean | undefined | AuthDataVerified | AuthDataUnverified;
 }
 
 export interface AuthMessage {

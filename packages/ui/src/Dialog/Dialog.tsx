@@ -30,6 +30,8 @@ export interface DialogProps extends RmwcDialogProps {
     onClose?: (evt: DialogOnCloseEventT) => void;
 
     preventOutsideDismiss?: boolean;
+
+    children?: React.ReactNode;
 }
 
 export class Dialog extends React.Component<DialogProps> {
