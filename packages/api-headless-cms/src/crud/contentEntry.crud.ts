@@ -1,11 +1,4 @@
-import lodashMerge from "lodash/merge";
-import {
-    createIdentifier,
-    mdbid,
-    parseIdentifier,
-    removeNullValues,
-    removeUndefinedValues
-} from "@webiny/utils";
+import { parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
@@ -16,13 +9,9 @@ import {
     CmsEntryListSort,
     CmsEntryListWhere,
     CmsEntryMeta,
-    CmsEntryStatus,
     CmsEntryValues,
     CmsModel,
-    CmsModelField,
     CmsStorageEntry,
-    CONTENT_ENTRY_STATUS,
-    CreateCmsEntryInput,
     EntryBeforeListTopicParams,
     HeadlessCms,
     HeadlessCmsStorageOperations,
@@ -58,16 +47,12 @@ import {
     OnEntryUnpublishErrorTopicParams,
     OnEntryUpdateErrorTopicParams
 } from "~/types";
-import {
-    validateModelEntryData,
-    validateModelEntryDataOrThrow
-} from "./contentEntry/entryDataValidation";
+import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
-import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { getSearchableFields } from "./contentEntry/searchableFields";
@@ -76,168 +61,21 @@ import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { pickEntryMetaFields, ROOT_FOLDER } from "~/constants";
-import { getDate } from "~/utils/date";
-import { getIdentity } from "~/utils/identity";
-
-export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
-export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
-export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
-
-type DefaultValue = boolean | number | string | null;
-/**
- * Used for some fields to convert their values.
- */
-const convertDefaultValue = (field: CmsModelField, value: DefaultValue): DefaultValue => {
-    switch (field.type) {
-        case "boolean":
-            return Boolean(value);
-        case "number":
-            return Number(value);
-        default:
-            return value;
-    }
-};
-const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) | undefined => {
-    const { settings, multipleValues } = field;
-    if (settings && settings.defaultValue !== undefined) {
-        return convertDefaultValue(field, settings.defaultValue);
-    }
-    const { predefinedValues } = field;
-    if (
-        !predefinedValues ||
-        !predefinedValues.enabled ||
-        Array.isArray(predefinedValues.values) === false
-    ) {
-        return undefined;
-    }
-    if (!multipleValues) {
-        const selectedValue = predefinedValues.values.find(value => {
-            return !!value.selected;
-        });
-        if (selectedValue) {
-            return convertDefaultValue(field, selectedValue.value);
-        }
-        return undefined;
-    }
-    return predefinedValues.values
-        .filter(({ selected }) => !!selected)
-        .map(({ value }) => {
-            return convertDefaultValue(field, value);
-        });
-};
-/**
- * Cleans and adds default values to create input data.
- */
-const mapAndCleanCreateInputData = (model: CmsModel, input: CreateCmsEntryInput) => {
-    return model.fields.reduce<CreateCmsEntryInput>((acc, field) => {
-        /**
-         * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the fieldId on the field definition.
-         */
-        if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
-                field
-            });
-        }
-        const value = input[field.fieldId];
-        /**
-         * We set the default value on create input if value is not defined.
-         */
-        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
-        return acc;
-    }, {});
-};
-/**
- * Cleans the update input entry data.
- */
-const mapAndCleanUpdatedInputData = (model: CmsModel, input: Record<string, any>) => {
-    return model.fields.reduce<Record<string, any>>((acc, field) => {
-        /**
-         * This should never happen, but let's make it sure.
-         * The fix would be for the user to add the fieldId on the field definition.
-         */
-        if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
-                field
-            });
-        }
-        /**
-         * We cannot set default value here because user might want to update only certain field values.
-         */
-        const value = input[field.fieldId];
-        if (value === undefined) {
-            return acc;
-        }
-        acc[field.fieldId] = value;
-        return acc;
-    }, {});
-};
-/**
- * This method takes original entry meta and new input.
- * When new meta is merged onto the existing one, everything that has undefined or null value is removed.
- */
-const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
-    const meta = lodashMerge(original || {}, input || {});
-    return removeUndefinedValues(removeNullValues(meta));
-};
+import { pickEntryMetaFields } from "~/constants";
+import {
+    createEntryData,
+    createEntryRevisionFromData,
+    createPublishEntryData,
+    createRepublishEntryData,
+    createUnpublishEntryData,
+    createUpdateEntryData,
+    mapAndCleanUpdatedInputData
+} from "./contentEntry/entryDataFactories";
 
 interface DeleteEntryParams {
     model: CmsModel;
     entry: CmsEntry;
 }
-
-const createEntryId = (input: CreateCmsEntryInput) => {
-    let entryId = mdbid();
-    if (input.id) {
-        if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
-            throw new WebinyError(
-                "The provided ID is not valid. It must be a string which can be A-Z, a-z, 0-9, - and it cannot start or end with a -.",
-                "INVALID_ID",
-                {
-                    id: input.id
-                }
-            );
-        }
-        entryId = input.id;
-    }
-    const version = 1;
-    return {
-        entryId,
-        version,
-        id: createIdentifier({
-            id: entryId,
-            version
-        })
-    };
-};
-
-const increaseEntryIdVersion = (id: string) => {
-    const { id: entryId, version } = parseIdentifier(id);
-    if (!version) {
-        throw new WebinyError(
-            "Cannot increase version on the ID without the version part.",
-            "WRONG_ID",
-            {
-                id
-            }
-        );
-    }
-    return {
-        entryId,
-        version: version + 1,
-        id: createIdentifier({
-            id: entryId,
-            version: version + 1
-        })
-    };
-};
-
-const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
-
-const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
-    return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
-};
 
 const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
     if (Array.isArray(sort) && sort.filter(Boolean).length > 0) {
@@ -644,161 +482,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model
         });
 
-        /**
-         * Make sure we only work with fields that are defined in the model.
-         */
-        const initialInput = mapAndCleanCreateInputData(model, rawInput);
-
-        await validateModelEntryDataOrThrow({
+        const { entry, input } = await createEntryData({
             context,
             model,
-            data: initialInput,
-            skipValidators: options?.skipValidators
+            options,
+            rawInput,
+            getLocale,
+            getTenant,
+            getIdentity: getSecurityIdentity,
+            entriesPermissions
         });
-
-        const input = await referenceFieldsMapping({
-            context,
-            model,
-            input: initialInput,
-            validateEntries: true
-        });
-
-        const locale = getLocale();
-
-        const { id, entryId, version } = createEntryId(rawInput);
-
-        /**
-         * There is a possibility that user sends an ID in the input, so we will use that one.
-         * There is no check if the ID is unique or not, that is up to the user.
-         */
-        const currentIdentity = getSecurityIdentity();
-        const currentDateTime = new Date();
-
-        /**
-         * Users can set the initial status of the entry. If so, we need to make
-         * sure they have the required permissions and also that all the fields
-         * are filled in correctly.
-         */
-        const status = rawInput.status || STATUS_DRAFT;
-        if (status !== STATUS_DRAFT) {
-            if (status === STATUS_PUBLISHED) {
-                await entriesPermissions.ensure({ pw: "p" });
-            } else if (status === STATUS_UNPUBLISHED) {
-                // If setting the status other than draft, we have to check if the user has permissions to publish.
-                await entriesPermissions.ensure({ pw: "u" });
-            }
-        }
-
-        const locked = status !== STATUS_DRAFT;
-
-        let revisionLevelPublishingMetaFields: Pick<
-            CmsEntry,
-            | "revisionFirstPublishedOn"
-            | "revisionLastPublishedOn"
-            | "revisionFirstPublishedBy"
-            | "revisionLastPublishedBy"
-        > = {
-            revisionFirstPublishedOn: null,
-            revisionLastPublishedOn: null,
-            revisionFirstPublishedBy: null,
-            revisionLastPublishedBy: null
-        };
-
-        let entryLevelPublishingMetaFields: Pick<
-            CmsEntry,
-            | "entryFirstPublishedOn"
-            | "entryLastPublishedOn"
-            | "entryFirstPublishedBy"
-            | "entryLastPublishedBy"
-        > = {
-            entryFirstPublishedOn: null,
-            entryLastPublishedOn: null,
-            entryFirstPublishedBy: null,
-            entryLastPublishedBy: null
-        };
-
-        if (status === STATUS_PUBLISHED) {
-            revisionLevelPublishingMetaFields = {
-                revisionFirstPublishedOn: getDate(
-                    rawInput.revisionFirstPublishedOn,
-                    currentDateTime
-                ),
-                revisionLastPublishedOn: getDate(
-                    rawInput.revisionFirstPublishedOn,
-                    currentDateTime
-                ),
-                revisionFirstPublishedBy: getIdentity(
-                    rawInput.revisionFirstPublishedBy,
-                    currentIdentity
-                ),
-                revisionLastPublishedBy: getIdentity(
-                    rawInput.revisionLastPublishedBy,
-                    currentIdentity
-                )
-            };
-
-            entryLevelPublishingMetaFields = {
-                entryFirstPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
-                entryLastPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
-                entryFirstPublishedBy: getIdentity(rawInput.entryFirstPublishedBy, currentIdentity),
-                entryLastPublishedBy: getIdentity(rawInput.entryLastPublishedBy, currentIdentity)
-            };
-        }
-
-        const entry: CmsEntry = {
-            webinyVersion: context.WEBINY_VERSION,
-            tenant: getTenant().id,
-            entryId,
-            id,
-            modelId: model.modelId,
-            locale: locale.code,
-
-            /**
-             * 🚫 Deprecated meta fields below.
-             * Will be fully removed in one of the next releases.
-             */
-            createdOn: getDate(rawInput.createdOn, currentDateTime),
-            savedOn: getDate(rawInput.savedOn, currentDateTime),
-            publishedOn: getDate(rawInput.publishedOn),
-            createdBy: getIdentity(rawInput.createdBy, currentIdentity),
-            ownedBy: getIdentity(rawInput.ownedBy, currentIdentity),
-            modifiedBy: getIdentity(rawInput.modifiedBy, null),
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-            ...revisionLevelPublishingMetaFields,
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDateTime),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, null),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, currentIdentity),
-            entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, null),
-            ...entryLevelPublishingMetaFields,
-
-            version,
-            status,
-            locked,
-            values: input,
-            location: {
-                folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
-            }
-        };
 
         let storageEntry: CmsStorageEntry | null = null;
         try {
@@ -854,11 +547,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         /**
-         * Make sure we only work with fields that are defined in the model.
-         */
-        const input = mapAndCleanUpdatedInputData(model, rawInput);
-
-        /**
          * Entries are identified by a common parent ID + Revision number.
          */
         const { id: uniqueId } = parseIdentifier(sourceId);
@@ -890,99 +578,20 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        const initialValues = {
-            ...originalEntry.values,
-            ...input
-        };
-
-        await validateModelEntryDataOrThrow({
-            context,
-            model,
-            data: initialValues,
-            entry: originalEntry,
-            skipValidators: options?.skipValidators
-        });
-
-        const values = await referenceFieldsMapping({
-            context,
-            model,
-            input: initialValues,
-            validateEntries: false
-        });
-
         await entriesPermissions.ensure({ owns: originalEntry.entryCreatedBy });
 
-        const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
-        const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
-
-        const currentIdentity = getSecurityIdentity();
-        const currentDateTime = new Date();
-
-        const entry: CmsEntry = {
-            ...originalEntry,
-            id,
-            version: nextVersion,
-
-            /**
-             * 🚫 Deprecated meta fields below.
-             * Will be fully removed in one of the next releases.
-             */
-            savedOn: getDate(rawInput.savedOn, currentDateTime),
-            createdOn: getDate(rawInput.createdOn, currentDateTime),
-            publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-            modifiedBy: getIdentity(rawInput.modifiedBy, null),
-            ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-            revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
-            revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
-            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-            revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
-            revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null),
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, latestStorageEntry.entryCreatedOn),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
-            entryFirstPublishedOn: getDate(
-                rawInput.entryFirstPublishedOn,
-                latestStorageEntry.entryFirstPublishedOn
-            ),
-            entryLastPublishedOn: getDate(
-                rawInput.entryLastPublishedOn,
-                latestStorageEntry.entryLastPublishedOn
-            ),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, latestStorageEntry.entryCreatedBy),
-            entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
-            entryFirstPublishedBy: getIdentity(
-                rawInput.entryFirstPublishedBy,
-                latestStorageEntry.entryFirstPublishedBy
-            ),
-            entryLastPublishedBy: getIdentity(
-                rawInput.entryLastPublishedBy,
-                latestStorageEntry.entryLastPublishedBy
-            ),
-
-            locked: false,
-            status: STATUS_DRAFT,
-            values
-        };
+        const { entry, input } = await createEntryRevisionFromData({
+            sourceId,
+            model,
+            rawInput,
+            options,
+            context,
+            getIdentity: getSecurityIdentity,
+            getTenant,
+            getLocale,
+            originalEntry,
+            latestStorageEntry
+        });
 
         let storageEntry: CmsStorageEntry | null = null;
 
@@ -1043,11 +652,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         /**
-         * Make sure we only work with fields that are defined in the model.
-         */
-        const input = mapAndCleanUpdatedInputData(model, rawInput);
-
-        /**
          * The entry we are going to update.
          */
         const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
@@ -1067,132 +671,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await validateModelEntryDataOrThrow({
-            context,
-            model,
-            data: input,
-            entry: originalEntry,
-            skipValidators: options?.skipValidators
-        });
-
         await entriesPermissions.ensure({ owns: originalEntry.revisionCreatedBy });
 
-        const initialValues = {
-            /**
-             * Existing values from the database, transformed back to original, of course.
-             */
-            ...originalEntry.values,
-            /**
-             * Add new values.
-             */
-            ...input
-        };
-
-        const values = await referenceFieldsMapping({
-            context,
+        const { entry, input } = await createUpdateEntryData({
             model,
-            input: initialValues,
-            validateEntries: false
+            rawInput,
+            options,
+            context,
+            getIdentity: getSecurityIdentity,
+            getTenant,
+            getLocale,
+            originalEntry,
+            metaInput
         });
-
-        /**
-         * If users wants to remove a key from meta values, they need to send meta key with the null value.
-         */
-        const meta = createEntryMeta(metaInput, originalEntry.meta);
-
-        const currentIdentity = getSecurityIdentity();
-        const currentDateTime = new Date();
-
-        /**
-         * We always send the full entry to the hooks and storage operations update.
-         */
-        const entry: CmsEntry = {
-            ...originalEntry,
-
-            /**
-             * 🚫 Deprecated meta fields below.
-             * Will be fully removed in one of the next releases.
-             */
-            savedOn: getDate(rawInput.savedOn, new Date()),
-            createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
-            publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-            modifiedBy: getIdentity(rawInput.modifiedBy, getSecurityIdentity()),
-            ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, originalEntry.revisionCreatedOn),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
-            revisionFirstPublishedOn: getDate(
-                rawInput.revisionFirstPublishedOn,
-                originalEntry.revisionFirstPublishedOn
-            ),
-            revisionLastPublishedOn: getDate(
-                rawInput.revisionLastPublishedOn,
-                originalEntry.revisionLastPublishedOn
-            ),
-            revisionCreatedBy: getIdentity(
-                rawInput.revisionCreatedBy,
-                originalEntry.revisionCreatedBy
-            ),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            revisionFirstPublishedBy: getIdentity(
-                rawInput.revisionFirstPublishedBy,
-                originalEntry.revisionFirstPublishedBy
-            ),
-            revisionLastPublishedBy: getIdentity(
-                rawInput.revisionLastPublishedBy,
-                originalEntry.revisionLastPublishedBy
-            ),
-
-            /**
-             * Entry-level meta fields. 👇
-             * If required, within storage operations, these entry-level updates
-             * will be propagated to the latest revision too.
-             */
-            entryCreatedOn: getDate(rawInput.entryCreatedOn, originalEntry.entryCreatedOn),
-            entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-            entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
-            entryFirstPublishedOn: getDate(
-                rawInput.entryFirstPublishedOn,
-                originalEntry.entryFirstPublishedOn
-            ),
-            entryLastPublishedOn: getDate(
-                rawInput.entryLastPublishedOn,
-                originalEntry.entryLastPublishedOn
-            ),
-            entryCreatedBy: getIdentity(rawInput.entryCreatedBy, originalEntry.entryCreatedBy),
-            entrySavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-            entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
-            entryFirstPublishedBy: getIdentity(
-                rawInput.entryFirstPublishedBy,
-                originalEntry.entryFirstPublishedBy
-            ),
-            entryLastPublishedBy: getIdentity(
-                rawInput.entryLastPublishedBy,
-                originalEntry.entryLastPublishedBy
-            ),
-
-            values,
-            meta,
-            status: transformEntryStatus(originalEntry.status)
-        };
-
-        const folderId = rawInput.wbyAco_location?.folderId;
-        if (folderId) {
-            entry.location = {
-                folderId
-            };
-        }
 
         let storageEntry: CmsStorageEntry | null = null;
 
@@ -1341,59 +832,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        const values = await referenceFieldsMapping({
+        const { entry } = await createRepublishEntryData({
             context,
             model,
-            input: originalEntry.values,
-            validateEntries: false
+            originalEntry,
+            getIdentity: getSecurityIdentity
         });
-
-        const currentDateTime = new Date().toISOString();
-        const currentIdentity = getSecurityIdentity();
-
-        const entry: CmsEntry = {
-            ...originalEntry,
-            status: STATUS_PUBLISHED,
-
-            /**
-             * 🚫 Deprecated meta fields below.
-             * Will be fully removed in one of the next releases.
-             */
-            publishedOn: getDate(originalEntry.publishedOn, currentDateTime),
-            savedOn: getDate(originalEntry.savedOn, currentDateTime),
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionSavedOn: currentDateTime,
-            revisionModifiedOn: currentDateTime,
-            revisionSavedBy: currentIdentity,
-            revisionModifiedBy: currentIdentity,
-            revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
-            revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-            revisionLastPublishedOn: currentDateTime,
-            revisionLastPublishedBy: currentIdentity,
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            entrySavedOn: currentDateTime,
-            entryModifiedOn: currentDateTime,
-            entrySavedBy: currentIdentity,
-            entryModifiedBy: currentIdentity,
-            entryFirstPublishedOn: originalEntry.entryFirstPublishedOn || currentDateTime,
-            entryFirstPublishedBy: originalEntry.entryFirstPublishedBy || currentIdentity,
-            entryLastPublishedOn: currentDateTime,
-            entryLastPublishedBy: currentIdentity,
-
-            webinyVersion: context.WEBINY_VERSION,
-            values
-        };
 
         const storageEntry = await entryToStorageTransform(context, model, entry);
         /**
@@ -1701,13 +1145,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await validateModelEntryDataOrThrow({
-            context,
-            model,
-            data: originalEntry.values,
-            entry: originalEntry
-        });
-
         // We need the latest entry to get the latest entry-level meta fields.
         const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
             model,
@@ -1722,71 +1159,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
 
-        const currentDateTime = new Date().toISOString();
-        const currentIdentity = getSecurityIdentity();
-
-        /**
-         * The existing functionality is to set the publishedOn date to the current date.
-         * Users can now choose to skip updating the publishedOn date - unless it is not set.
-         *
-         * Same logic goes for the savedOn date.
-         */
-        const { updatePublishedOn = true, updateSavedOn = true } = options || {};
-        let publishedOn = originalEntry.publishedOn;
-        if (updatePublishedOn || !publishedOn) {
-            publishedOn = currentDateTime;
-        }
-
-        let savedOn = originalEntry.savedOn;
-        if (updateSavedOn || !savedOn) {
-            savedOn = currentDateTime;
-        }
-
-        const entry: CmsEntry = {
-            ...originalEntry,
-            status: STATUS_PUBLISHED,
-            locked: true,
-
-            /**
-             * 🚫 Deprecated meta fields below.
-             * Will be fully removed in one of the next releases.
-             */
-            savedOn,
-            publishedOn,
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionCreatedOn: originalEntry.revisionCreatedOn,
-            revisionSavedOn: currentDateTime,
-            revisionModifiedOn: currentDateTime,
-            revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
-            revisionLastPublishedOn: currentDateTime,
-            revisionCreatedBy: originalEntry.revisionCreatedBy,
-            revisionSavedBy: currentIdentity,
-            revisionModifiedBy: currentIdentity,
-            revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-            revisionLastPublishedBy: currentIdentity,
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            entryCreatedOn: latestEntry.entryCreatedOn,
-            entrySavedOn: currentDateTime,
-            entryModifiedOn: currentDateTime,
-            entryFirstPublishedOn: latestEntry.entryFirstPublishedOn || currentDateTime,
-            entryLastPublishedOn: currentDateTime,
-            entryCreatedBy: latestEntry.entryCreatedBy,
-            entrySavedBy: currentIdentity,
-            entryModifiedBy: currentIdentity,
-            entryFirstPublishedBy: latestEntry.entryFirstPublishedBy || currentIdentity,
-            entryLastPublishedBy: currentIdentity
-        };
+        const { entry } = await createPublishEntryData({
+            context,
+            model,
+            options,
+            originalEntry,
+            latestEntry,
+            getIdentity: getSecurityIdentity
+        });
 
         let storageEntry: CmsStorageEntry | null = null;
 
@@ -1856,35 +1236,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        const currentDateTime = new Date().toISOString();
-        const currentIdentity = getSecurityIdentity();
-
-        const entry: CmsEntry = {
-            ...originalEntry,
-            status: STATUS_UNPUBLISHED,
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             * We want to update savedX and modifiedX fields on both revision and entry levels.
-             */
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionSavedOn: currentDateTime,
-            revisionModifiedOn: currentDateTime,
-            revisionSavedBy: currentIdentity,
-            revisionModifiedBy: currentIdentity,
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            entrySavedOn: currentDateTime,
-            entryModifiedOn: currentDateTime,
-            entrySavedBy: currentIdentity,
-            entryModifiedBy: currentIdentity
-        };
+        const { entry } = await createUnpublishEntryData({
+            context,
+            model,
+            originalEntry,
+            getIdentity: getSecurityIdentity
+        });
 
         let storageEntry: CmsStorageEntry | null = null;
 
