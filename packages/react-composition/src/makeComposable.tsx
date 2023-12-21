@@ -37,18 +37,19 @@ const createEmptyRenderer = (name: string) => {
     }[name];
 };
 
-type ComposableProps<TProps> = ComposableFC<TProps> & {
-    children?: React.ReactNode;
-} & React.HTMLAttributes<any>;
-
-export function makeComposable<TProps>(name: string, Component?: React.ComponentType<TProps>) {
+export function makeComposable<TProps>(
+    name: string,
+    Component?: React.ComponentType<React.PropsWithChildren<TProps>>
+) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
 
-    const Composable = (props: ComposableProps<TProps>) => {
+    const Composable: ComposableFC<React.PropsWithChildren<TProps>> = props => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component as React.ComponentType<TProps>);
+        const ComposedComponent = useComponent(
+            Component as React.ComponentType<TProps>
+        ) as ComposableFC<TProps>;
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 

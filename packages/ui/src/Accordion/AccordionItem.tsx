@@ -1,6 +1,6 @@
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "~/List";
-import Transition from "react-transition-group/Transition";
+import Transition, { TransitionStatus } from "react-transition-group/Transition";
 import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -66,8 +66,6 @@ const defaultStyle: CSSProperties = {
     pointerEvents: "auto",
     overflow: "hidden"
 };
-
-type TransitionStylesState = "entering" | "entered" | "exiting";
 
 const transitionStyles: Record<string, CSSProperties> = {
     entering: {
@@ -200,7 +198,7 @@ const AccordionItemComponent = (props: AccordionItemProps) => {
                 </Actions>
             </ListItem>
             <Transition in={open} timeout={duration}>
-                {(state: TransitionStylesState) => (
+                {(state: TransitionStatus) => (
                     <Content
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                         className="webiny-ui-accordion-item__content"
