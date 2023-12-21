@@ -40,6 +40,7 @@ import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
+import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -121,7 +122,8 @@ export const handler = createHandler({
                 }
             });
         }),
-        createAuditLogs()
+        createAuditLogs(),
+        createCountDynamoDbTask()
     ],
     debug
 });

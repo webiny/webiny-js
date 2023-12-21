@@ -19139,6 +19139,7 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/handler-logs": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/tasks": 0.0.0
     graphql-request: ^3.4.0
   languageName: unknown
   linkType: soft

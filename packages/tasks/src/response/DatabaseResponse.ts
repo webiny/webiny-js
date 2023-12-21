@@ -39,10 +39,11 @@ export class DatabaseResponse implements IResponseAsync {
     public async done(params: IResponseDoneParams): Promise<IResponseDoneResult> {
         let message = params.message;
         try {
+            const task = this.store.getTask();
             await this.store.updateTask({
                 status: TaskDataStatus.SUCCESS,
                 finishedOn: new Date().toISOString(),
-                log: (this.store.getTask().log || []).concat([
+                log: (task.log || []).concat([
                     {
                         message: message || "Task done.",
                         createdOn: new Date().toISOString()
@@ -69,10 +70,14 @@ export class DatabaseResponse implements IResponseAsync {
         params: IResponseContinueParams
     ): Promise<IResponseContinueResult | IResponseErrorResult> {
         try {
+            const task = this.store.getTask();
             await this.store.updateTask({
-                values: params.values,
+                values: {
+                    ...task.values,
+                    ...params.values
+                },
                 status: TaskDataStatus.RUNNING,
-                log: (this.store.getTask().log || []).concat([
+                log: (task.log || []).concat([
                     {
                         message: "Task continuing.",
                         createdOn: new Date().toISOString(),
@@ -114,10 +119,11 @@ export class DatabaseResponse implements IResponseAsync {
 
     public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
         try {
+            const task = this.store.getTask();
             await this.store.updateTask({
                 status: TaskDataStatus.FAILED,
                 finishedOn: new Date().toISOString(),
-                log: (this.store.getTask().log || []).concat([
+                log: (task.log || []).concat([
                     {
                         message: params.error.message,
                         createdOn: new Date().toISOString(),
