@@ -5,12 +5,13 @@ interface UiStateProviderProps {
     children: React.ReactNode;
 }
 
-export const createUiStateProvider = () => (Component: React.ComponentType<unknown>) => {
-    return function UiStateProvider({ children }: UiStateProviderProps) {
-        return (
-            <UiProvider>
-                <Component>{children}</Component>
-            </UiProvider>
-        );
+export const createUiStateProvider =
+    () => (Component: React.ComponentType<React.PropsWithChildren<unknown>>) => {
+        return function UiStateProvider({ children }: UiStateProviderProps) {
+            return (
+                <UiProvider>
+                    <Component>{children}</Component>
+                </UiProvider>
+            );
+        };
     };
-};

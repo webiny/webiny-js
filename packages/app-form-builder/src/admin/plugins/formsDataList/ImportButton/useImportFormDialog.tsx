@@ -38,12 +38,16 @@ interface ImportFormDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
+interface SetDialogStylesProps {
+    [key: string]: string | number;
+}
+
 export const ImportFormDialogContent = ({ onFileLink }: ImportFormDialogContentProps) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
     const setDialogStyles = useCallback(
-        style => {
+        (style: SetDialogStylesProps) => {
             ui.setState(state => dotProp.set(state, "dialog.options.style", style));
         },
         [ui]

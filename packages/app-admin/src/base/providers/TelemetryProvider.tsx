@@ -7,17 +7,18 @@ interface TelemetryProviderProps {
     children: React.ReactNode;
 }
 
-export const createTelemetryProvider = () => (Component: React.ComponentType) => {
-    return function TelemetryProvider({ children }: TelemetryProviderProps) {
-        useEffect(() => {
-            if (eventSent) {
-                return;
-            }
+export const createTelemetryProvider =
+    () => (Component: React.ComponentType<React.PropsWithChildren<unknown>>) => {
+        return function TelemetryProvider({ children }: TelemetryProviderProps) {
+            useEffect(() => {
+                if (eventSent) {
+                    return;
+                }
 
-            eventSent = true;
-            sendEvent("app-start");
-        }, []);
+                eventSent = true;
+                sendEvent("app-start");
+            }, []);
 
-        return <Component>{children}</Component>;
+            return <Component>{children}</Component>;
+        };
     };
-};

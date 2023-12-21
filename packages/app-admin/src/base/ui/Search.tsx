@@ -32,7 +32,9 @@ interface SearchProviderProps {
     [key: string]: any;
 }
 
-export const SearchProvider = (Component: React.ComponentType) => {
+export const SearchProvider = (
+    Component: React.ComponentType<React.PropsWithChildren<unknown>>
+) => {
     return function SearchProvider({ children, ...props }: SearchProviderProps) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 

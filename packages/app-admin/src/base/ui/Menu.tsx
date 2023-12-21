@@ -29,7 +29,6 @@ export interface MenuProps {
     target?: string;
     rel?: string;
     element?: JSX.Element;
-    children?: React.ReactNode | React.ReactNode[];
     pin?: "first" | "last";
 }
 
@@ -80,7 +79,7 @@ const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
 /**
  * Register a new menu item into the Admin app.
  */
-export const AddMenu = ({ children, ...props }: MenuProps) => {
+export const AddMenu = ({ children, ...props }: React.PropsWithChildren<MenuProps>) => {
     const menu = useMenu();
     const navigation = useNavigation();
 

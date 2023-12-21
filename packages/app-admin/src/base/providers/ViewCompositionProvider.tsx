@@ -71,12 +71,13 @@ interface ViewCompositionProviderHOCProps {
     children: React.ReactNode;
 }
 
-export const createViewCompositionProvider = () => (Component: React.ComponentType<unknown>) => {
-    return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
-        return (
-            <ViewCompositionProvider>
-                <Component>{children}</Component>
-            </ViewCompositionProvider>
-        );
+export const createViewCompositionProvider =
+    () => (Component: React.ComponentType<React.PropsWithChildren<unknown>>) => {
+        return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
+            return (
+                <ViewCompositionProvider>
+                    <Component>{children}</Component>
+                </ViewCompositionProvider>
+            );
+        };
     };
-};

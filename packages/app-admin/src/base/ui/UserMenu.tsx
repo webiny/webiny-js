@@ -31,7 +31,9 @@ interface UserMenuProviderProps {
     [key: string]: any;
 }
 
-export const UserMenuProvider = (Component: React.ComponentType) => {
+export const UserMenuProvider = (
+    Component: React.ComponentType<React.PropsWithChildren<unknown>>
+) => {
     return function UserMenuProvider({ children, ...props }: UserMenuProviderProps) {
         const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 

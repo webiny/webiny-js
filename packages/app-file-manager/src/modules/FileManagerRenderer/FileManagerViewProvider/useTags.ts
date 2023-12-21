@@ -29,7 +29,7 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
         [scope, own, identity]
     );
 
-    const setTags = useCallback(tags => {
+    const setTags = useCallback((tags: FileTag[]) => {
         setSortedTags(state => sortTags([...state, ...tags]));
     }, []);
 

@@ -88,7 +88,9 @@ interface NavigationProviderProps {
     children: React.ReactNode;
 }
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+export const NavigationProvider = (
+    Component: React.ComponentType<React.PropsWithChildren<unknown>>
+) => {
     return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
@@ -110,7 +112,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
             });
         };
         const removeMenu = useCallback(
-            id => {
+            (id: string) => {
                 setState(state => {
                     const index = state.findIndex(m => m.name === id);
 

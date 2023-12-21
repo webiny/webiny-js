@@ -7,7 +7,7 @@ interface AppInstallerProviderProps {
     children: React.ReactNode;
 }
 
-const AppInstallerHOC = (Component: ComponentType<unknown>) => {
+const AppInstallerHOC = (Component: ComponentType<React.PropsWithChildren<unknown>>) => {
     return function AppInstallerProvider({ children }: AppInstallerProviderProps) {
         return (
             <Installer>
