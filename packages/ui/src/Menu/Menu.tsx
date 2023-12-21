@@ -17,9 +17,14 @@ const style = {
     })
 };
 
+// Property "children" of "MenuProps" have type like this because "children" can be passed as a function.
+type MenuPropsChildren =
+    | React.ReactNode
+    | (({ closeMenu }: { closeMenu: () => void }) => React.ReactNode);
+
 type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: React.ReactNode;
+    children: MenuPropsChildren;
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;
