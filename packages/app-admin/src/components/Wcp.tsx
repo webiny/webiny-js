@@ -1,5 +1,5 @@
-import { useWcp } from "@webiny/app-wcp";
 import React from "react";
+import { useWcp } from "@webiny/app-wcp";
 
 interface CanUsePrivateFilesProps {
     children: React.ReactNode;

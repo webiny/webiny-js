@@ -48,6 +48,10 @@ export class AssetDeliveryConfigBuilder {
         this.assetResolverDecorators.push(decorator);
     }
 
+    decorateAssetProcessor(decorator: AssetProcessorDecorator) {
+        this.assetProcessorDecorators.push(decorator);
+    }
+
     decorateAssetTransformationStrategy(decorator: AssetTransformationDecorator) {
         this.assetTransformationStrategyDecorators.push(decorator);
     }

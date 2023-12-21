@@ -14,8 +14,9 @@ import {
 } from "@webiny/handler";
 import { Asset } from "~/delivery/AssetDelivery/Asset";
 import { FileManagerContext } from "~/types";
-import { PrivateFilesAssetProcessor } from "~/delivery/AssetDelivery/PrivateFilesAssetProcessor";
+import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor";
 import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest";
+import { PrivateAuthenticatedAuthorizer } from "~/delivery/AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -103,9 +104,13 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                         let assetProcessor = configBuilder.getAssetProcessor(context);
 
                         if (context.wcp.canUsePrivateFiles()) {
+                            // Currently, we only have one authorizer.
+                            const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
+
                             assetProcessor = new PrivateFilesAssetProcessor(
                                 context,
-                                assetProcessor
+                                assetAuthorizer,
+                                configBuilder.getAssetProcessor(context)
                             );
                         }
 
