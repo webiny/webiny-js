@@ -13,8 +13,14 @@ import { createMockTaskDefinition } from "~tests/mocks/definition";
 import { createMockTaskResponse } from "~tests/mocks/taskResponse";
 import { createMockTaskManagerStore } from "~tests/mocks/store";
 
+const mockTaskInputValues = {
+    someInputValue: 1
+};
+
 describe("task manager", () => {
-    const task = createMockTask();
+    const task = createMockTask({
+        values: mockTaskInputValues
+    });
 
     const taskDefinition = createMockTaskDefinition();
 
@@ -68,7 +74,7 @@ describe("task manager", () => {
         expect(result).toBeInstanceOf(ResponseContinueResult);
         expect(result).toEqual({
             status: TaskResponseStatus.CONTINUE,
-            values: {},
+            values: task.values,
             locale: "en-US",
             tenant: "root",
             message: undefined,
@@ -155,6 +161,7 @@ describe("task manager", () => {
                 data: {
                     id: "myCustomTaskDataId",
                     data: {
+                        ...task,
                         status: "running",
                         log: [
                             {

@@ -13,7 +13,7 @@ export const createMockTaskDefinition = (
             try {
                 if (isCloseToTimeout()) {
                     return response.continue({
-                        values
+                        ...values
                     });
                 }
                 return response.done();

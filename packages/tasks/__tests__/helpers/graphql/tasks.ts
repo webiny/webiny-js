@@ -1,8 +1,8 @@
 export const createListTasksQuery = () => {
     return /* GraphQL */ `
         query ListTasks(
-            $where: WebinyTaskListWhereInput
-            $sort: [WebinyTaskListSorter!]
+            $where: WebinyBackgroundTaskListWhereInput
+            $sort: [WebinyBackgroundTaskListSorter!]
             $limit: Int
             $after: String
         ) {

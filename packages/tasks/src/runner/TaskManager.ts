@@ -37,21 +37,9 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
 
     public async run(definition: ITaskDefinition): Promise<IResponseResult> {
         /**
-         * We should not even run if the Lambda timeout is close.
-         */
-        if (this.runner.isCloseToTimeout()) {
-            /**
-             * We use the same input as the one on the task - we did not run anything, so no need to change the input.
-             */
-            return this.response.continue({
-                values: this.store.getValues()
-            });
-        }
-        /**
          * If task was aborted, do not run it again, return as it was done.
          */
-        //
-        else if (this.store.getStatus() === TaskDataStatus.ABORTED) {
+        if (this.store.getStatus() === TaskDataStatus.ABORTED) {
             return this.response.aborted();
         }
         /**
@@ -82,8 +70,9 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
         let result: ITaskResponseResult;
 
         try {
+            const values = structuredClone(this.store.getValues());
             result = await definition.run({
-                values: structuredClone(this.store.getValues()),
+                values,
                 context: this.context,
                 response: this.taskResponse,
                 isCloseToTimeout: () => {

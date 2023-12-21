@@ -6,14 +6,10 @@ import { IIncomingEvent, ITaskEvent } from "./types";
 const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
     name: "handler-webiny-background-task",
     canUse: event => {
-        return !!event.Payload?.webinyTaskId;
+        return !!event.payload?.webinyTaskId;
     },
     handle: async ({ params, event, context }) => {
-        /**
-         * We can safely cast because we know that the event is of type ITaskEvent.
-         * Check is done in the canUse() method.
-         */
-        return createHandler(params)(event.Payload, context);
+        return createHandler(params)(event.payload, context);
     }
 });
 

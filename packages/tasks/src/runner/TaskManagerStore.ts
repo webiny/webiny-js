@@ -56,7 +56,16 @@ export class TaskManagerStore implements ITaskManagerStore {
 
     public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
         const values = typeof param === "function" ? param(this.task) : param;
-        this.task = await this.context.tasks.updateTask(this.task.id, values);
+        /**
+         * No need to update if nothing changed.
+         */
+        if (deepEqual(values, this.task)) {
+            return;
+        }
+        this.task = await this.context.tasks.updateTask(this.task.id, {
+            ...this.task,
+            ...values
+        });
     }
 
     public async updateValues<T extends ITaskDataValues = ITaskDataValues>(

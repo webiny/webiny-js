@@ -9,6 +9,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
 import { ITaskManagerStore } from "./runner/abstractions";
 import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 export interface ITaskConfig {
     readonly eventBusName: string;
@@ -249,4 +250,9 @@ export interface ITaskDefinition<C extends Context = Context, I = ITaskDataValue
      * Custom input fields and layout for the task input.
      */
     fields?: ITaskDefinitionField[];
+}
+
+export interface TaskPermission extends SecurityPermission {
+    name: "task";
+    rwd?: string;
 }

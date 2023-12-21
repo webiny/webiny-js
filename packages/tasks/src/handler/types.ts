@@ -1,6 +1,6 @@
 export interface IIncomingEvent<TEvent> {
-    FunctionName: string;
-    Payload: TEvent;
+    name: string;
+    payload: TEvent;
 }
 
 export interface ITaskEvent {
