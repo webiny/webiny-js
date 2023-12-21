@@ -15,10 +15,13 @@ function setup(props: SetupProps = {}) {
         onChange: (_: string) => {},
         value: null
     };
+
+    // We cast "as unknown as React.ReactNode" here because renderProp has a "jest.Mock<null, [controllerArg: any]>" type,
+    // but the "Input" component expect React.ReactNode to be the type of the "children" property.
     const renderProp = jest.fn(controllerArg => {
         Object.assign(renderArg, controllerArg);
         return null;
-    });
+    }) as unknown as React.ReactNode;
 
     const onChange = props.onChange
         ? props.onChange
