@@ -5,15 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
  */
 export enum StepFunctionDefinitionStatesType {
     Task = "Task",
+    Pass = "Pass",
     Choice = "Choice",
     Wait = "Wait",
     Fail = "Fail",
     Succeed = "Succeed"
-}
-
-export interface StepFunctionDefinitionStatesParameters<P extends Record<string, any>> {
-    FunctionName: string;
-    Payload: P;
 }
 
 export interface StepFunctionDefinitionStatesCatch {
@@ -21,15 +17,6 @@ export interface StepFunctionDefinitionStatesCatch {
     Next: string;
     ResultPath?: string;
 }
-
-// export interface StepFunctionDefinitionStatesChoice {
-//     Variable: string;
-//     Next?: string;
-//     StringEquals?: string;
-//     StringMatches?: string;
-//     IsPresent?: boolean;
-//     And?: StepFunctionDefinitionStatesChoice[];
-// }
 
 export interface StepFunctionDefinitionStatesChoiceBase {
     Variable: string;
@@ -62,14 +49,21 @@ export interface StepFunctionDefinitionStatesTypeBase {
     OutputPath?: string;
 }
 
-export interface StepFunctionDefinitionStatesTypeTask<P extends Record<string, any>>
-    extends StepFunctionDefinitionStatesTypeBase {
+export interface StepFunctionDefinitionStatesTypeTask extends StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType.Task;
     Resource: pulumi.Input<string>;
     Next: string;
     ResultPath?: string;
-    Parameters: StepFunctionDefinitionStatesParameters<P>;
+    Parameters: Record<string, any>;
     Catch: StepFunctionDefinitionStatesCatch[];
+    End?: boolean;
+}
+
+export interface StepFunctionDefinitionStatesTypePass extends StepFunctionDefinitionStatesTypeBase {
+    Type: StepFunctionDefinitionStatesType.Pass;
+    Next: string;
+    ResultPath?: string;
+    Parameters: Record<string, any>;
     End?: boolean;
 }
 
@@ -102,7 +96,8 @@ export interface StepFunctionDefinitionStatesTypeWait extends StepFunctionDefini
 }
 
 export type StepFunctionDefinitionStatesTypes =
-    | StepFunctionDefinitionStatesTypeTask<Record<string, any>>
+    | StepFunctionDefinitionStatesTypeTask
+    | StepFunctionDefinitionStatesTypePass
     | StepFunctionDefinitionStatesTypeChoice
     | StepFunctionDefinitionStatesTypeFail
     | StepFunctionDefinitionStatesTypeSucceed

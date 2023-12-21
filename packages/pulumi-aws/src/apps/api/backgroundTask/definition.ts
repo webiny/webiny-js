@@ -12,8 +12,20 @@ export const createBackgroundTaskDefinition = (
     const { lambdaFunctionName, lambdaFunctionArn } = params;
     return {
         Comment: "Background tasks",
-        StartAt: "Run",
+        StartAt: "TransformEvent",
         States: {
+            /**
+             * Transform the EventBridge event to a format that will be used in the Lambda function.
+             */
+            TransformEvent: {
+                Type: StepFunctionDefinitionStatesType.Pass,
+                Next: "Run",
+                Parameters: {
+                    "webinyTaskId.$": "$.detail.webinyTaskId",
+                    "tenant.$": "$.detail.tenant",
+                    "locale.$": "$.detail.locale"
+                }
+            },
             /**
              * Run the task and wait for the response from lambda.
              * On some fatal error go to Error step.
@@ -30,11 +42,11 @@ export const createBackgroundTaskDefinition = (
                  * Task Handler determines that it can run a task based on the Payload.webinyTaskId parameter - it must be set!
                  */
                 Parameters: {
-                    FunctionName: lambdaFunctionName,
-                    Payload: {
-                        "webinyTaskId.$": "$.detail.webinyTaskId",
-                        "locale.$": "$.detail.locale",
-                        "tenant.$": "$.detail.tenant",
+                    name: lambdaFunctionName,
+                    payload: {
+                        "webinyTaskId.$": "$.webinyTaskId",
+                        "locale.$": "$.locale",
+                        "tenant.$": "$.tenant",
                         endpoint: "manage",
                         "stateMachineId.$": "$$.StateMachine.Id"
                     }

@@ -77,6 +77,7 @@ export const useHandler = (params?: UseHandlerParams) => {
     return {
         handle: (event: ITaskEvent, context?: Partial<LambdaContext>) => {
             return handle(event, {
+                getRemainingTimeInMillis: () => 1000000,
                 ...context
             } as LambdaContext);
         },
