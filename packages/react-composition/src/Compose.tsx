@@ -3,7 +3,6 @@ import { HigherOrderComponent, useComposition } from "./Context";
 import { useCompositionScope } from "~/CompositionScope";
 
 export type ComposableFC<TProps = unknown> = React.ComponentType<TProps> & {
-    children?: React.ReactNode;
     original: React.ComponentType<TProps>;
     originalName: string;
 };
