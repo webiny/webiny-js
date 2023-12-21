@@ -28,6 +28,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 sorting={props.sorting}
                 onSortingChange={props.onSortingChange}
                 selected={view.selected}
+                namespace={"fm.file"}
             />
         </div>
     );

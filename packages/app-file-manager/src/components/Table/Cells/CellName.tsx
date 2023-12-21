@@ -47,13 +47,13 @@ export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
 };
 
 export const CellName = () => {
-    const { useTableCell, isFolderItem } = FileManagerViewConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
+    const { row } = useTableRow();
     const { showFileDetails, setFolderId } = useFileManagerView();
 
-    if (isFolderItem(item)) {
-        return <FolderCellName folder={item} onClick={setFolderId} />;
+    if (isFolderRow(row)) {
+        return <FolderCellName folder={row} onClick={setFolderId} />;
     }
 
-    return <FileCellName file={item} onClick={showFileDetails} />;
+    return <FileCellName file={row} onClick={showFileDetails} />;
 };

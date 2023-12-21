@@ -29,6 +29,6 @@ const BaseColumn: React.FC<ColumnProps> = ({ modelIds = [], ...props }) => {
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableCell: Table.Column.useTableCell<TableItem>,
-    isFolderItem: Table.Column.isFolderItem
+    useTableRow: Table.Column.useTableRow<TableItem>,
+    isFolderRow: Table.Column.isFolderRow
 });

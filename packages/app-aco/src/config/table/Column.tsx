@@ -1,16 +1,18 @@
 import React, { ReactElement } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useTableCell } from "~/components/Table/useTableCell";
+import { useTableRow } from "~/components/Table/useTableRow";
 import { FolderTableItem, BaseTableItem } from "~/types";
 
 export interface ColumnConfig {
     cell: string | ReactElement;
     className: string;
     header: string | ReactElement;
+    hideable: boolean;
     name: string;
     resizable: boolean;
     size: number;
     sortable: boolean;
+    visible: boolean;
 }
 
 export interface ColumnProps {
@@ -19,11 +21,13 @@ export interface ColumnProps {
     cell?: string | ReactElement;
     className?: string;
     header?: string | ReactElement;
+    hideable?: boolean;
     name: string;
     remove?: boolean;
     resizable?: boolean;
     size?: number;
     sortable?: boolean;
+    visible?: boolean;
 }
 
 const BaseColumn: React.FC<ColumnProps> = ({
@@ -32,11 +36,13 @@ const BaseColumn: React.FC<ColumnProps> = ({
     cell,
     className = undefined,
     header = undefined,
+    hideable = true,
     name,
     remove = false,
     resizable = true,
     size = 200,
-    sortable = false
+    sortable = false,
+    visible = true
 }) => {
     const getId = useIdGenerator("tableColumn");
 
@@ -56,7 +62,9 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 <Property id={getId(name, "name")} name={"name"} value={name} />
                 <Property id={getId(name, "sortable")} name={"sortable"} value={sortable} />
                 <Property id={getId(name, "resizable")} name={"resizable"} value={resizable} />
+                <Property id={getId(name, "hideable")} name={"hideable"} value={hideable} />
                 <Property id={getId(name, "size")} name={"size"} value={size} />
+                <Property id={getId(name, "visible")} name={"visible"} value={visible} />
                 {header ? (
                     <Property id={getId(name, "header")} name={"header"} value={header} />
                 ) : null}
@@ -69,8 +77,8 @@ const BaseColumn: React.FC<ColumnProps> = ({
     );
 };
 
-const isFolderItem = (item: BaseTableItem): item is FolderTableItem => {
-    return item.$type === "FOLDER";
+const isFolderRow = (row: BaseTableItem): row is FolderTableItem => {
+    return row.$type === "FOLDER";
 };
 
-export const Column = Object.assign(BaseColumn, { isFolderItem, useTableCell });
+export const Column = Object.assign(BaseColumn, { isFolderRow, useTableRow });

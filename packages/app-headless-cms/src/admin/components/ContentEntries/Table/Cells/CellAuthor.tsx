@@ -2,8 +2,8 @@ import React from "react";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 
 export const CellAuthor = () => {
-    const { useTableCell } = ContentEntryListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow } = ContentEntryListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    return <>{item.createdBy.displayName}</>;
+    return <>{row.createdBy.displayName}</>;
 };

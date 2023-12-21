@@ -2,8 +2,8 @@ import React from "react";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export const CellAuthor = () => {
-    const { useTableCell } = FileManagerViewConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow } = FileManagerViewConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    return <>{item.createdBy.displayName}</>;
+    return <>{row.createdBy.displayName}</>;
 };

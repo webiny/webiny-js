@@ -2,12 +2,12 @@ import React from "react";
 import { PageListConfig } from "~/admin/config/pages";
 
 export const CellAuthor = () => {
-    const { useTableCell, isFolderItem } = PageListConfig.Browser.Table.Column;
-    const { item } = useTableCell();
+    const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
+    const { row } = useTableRow();
 
-    if (isFolderItem(item)) {
-        return <>{item.createdBy.displayName}</>;
+    if (isFolderRow(row)) {
+        return <>{row.createdBy.displayName}</>;
     }
 
-    return <>{item.data.createdBy.displayName}</>;
+    return <>{row.data.createdBy.displayName}</>;
 };

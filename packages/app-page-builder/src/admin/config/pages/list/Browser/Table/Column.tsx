@@ -18,6 +18,6 @@ const BaseColumn: React.FC<React.ComponentProps<typeof AcoConfig.Table.Column>> 
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableCell: Table.Column.useTableCell<TableItem>,
-    isFolderItem: Table.Column.isFolderItem
+    useTableRow: Table.Column.useTableRow<TableItem>,
+    isFolderRow: Table.Column.isFolderRow
 });

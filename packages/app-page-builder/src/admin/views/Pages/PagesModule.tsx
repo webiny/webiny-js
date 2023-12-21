@@ -44,7 +44,8 @@ export const PagesModule = () => {
                 name={"title"}
                 header={"Name"}
                 cell={<CellName />}
-                size={400}
+                hideable={false}
+                size={300}
                 sortable={true}
             />
             <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
@@ -59,9 +60,10 @@ export const PagesModule = () => {
                 name={"actions"}
                 header={" "}
                 cell={<CellActions />}
-                size={60}
+                size={80}
                 className={"rmwc-data-table__cell--align-end"}
                 resizable={false}
+                hideable={false}
             />
         </PageListConfig>
     );
