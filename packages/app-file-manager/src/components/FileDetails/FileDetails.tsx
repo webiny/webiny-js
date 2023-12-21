@@ -5,7 +5,7 @@ import omit from "lodash/omit";
 import styled from "@emotion/styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { Form, FormOnSubmit } from "@webiny/form";
-import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
+import { DrawerRight, DrawerContent } from "@webiny/ui/Drawer";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
@@ -27,9 +27,9 @@ import { FileProvider } from "~/contexts/FileProvider";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import { CmsModelField } from "@webiny/app-headless-cms/types";
 
-type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
+type FileDetailsDrawerProps = React.ComponentProps<typeof DrawerRight> & { width: string };
 
-const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
+const FileDetailsDrawer = styled(DrawerRight)<FileDetailsDrawerProps>`
     z-index: 70;
     &.mdc-drawer {
         width: ${props => props.width};
@@ -41,12 +41,6 @@ const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
 
 const FormContainer = styled(SimpleForm)`
     margin: 0;
-    /* Fix for the dir=rtl when a form is inside a drawer placed on the right side */
-    .mdc-floating-label {
-        transform-origin: left top !important;
-        left: 16px !important;
-        right: initial !important;
-    }
 `;
 
 interface FileDetailsInnerProps {
@@ -109,7 +103,7 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
     return (
         <Form data={file} onSubmit={onSubmit}>
             {() => (
-                <DrawerContent dir="ltr">
+                <DrawerContent>
                     {isLoading ? <CircularProgress label={"Saving file..."} /> : null}
                     <FormContainer>
                         <Header />
@@ -168,13 +162,12 @@ export const FileDetails = ({ open, onClose, loading, file }: FileDetailsProps) 
     return (
         <FileDetailsDrawer
             width={drawerWidth}
-            dir="rtl"
             modal
             open={open}
             onClose={onClose}
             data-testid={"fm.file-details.drawer"}
         >
-            <DrawerContent dir="ltr">
+            <DrawerContent>
                 {loading && <CircularProgress label={"Loading file details..."} />}
                 {file && (
                     <FileProvider file={file}>
