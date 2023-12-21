@@ -17,19 +17,6 @@ export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
         typeDefs: createFormsTypeDefs(params),
         resolvers: {
             FbForm: {
-                overallStats: async (form: FbForm, _, { formBuilder }) => {
-                    try {
-                        return await formBuilder.getFormStats(form.id);
-                    } catch (ex) {
-                        console.log(`Could not fetch form "${form.id}" stats.`);
-                        console.log(ex.message);
-                    }
-                    return {
-                        views: 0,
-                        submissions: 0,
-                        conversionRate: 0
-                    };
-                },
                 settings: async (form: FbForm, _, { formBuilder }) => {
                     const settings = await formBuilder.getSettings({ auth: false });
 
@@ -75,13 +62,17 @@ export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
                         return new NotFoundResponse("Form ID missing.");
                     }
 
-                    const form = await formBuilder.getLatestPublishedFormRevision(args.formId);
+                    try {
+                        const form = await formBuilder.getLatestPublishedFormRevision(args.formId);
 
-                    if (!form) {
-                        return new NotFoundResponse("The requested form was not found.");
+                        if (!form) {
+                            return new NotFoundResponse("The requested form was not found.");
+                        }
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-
-                    return new Response(form);
                 }
             },
             FbMutation: {

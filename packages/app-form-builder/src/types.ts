@@ -152,6 +152,7 @@ export interface FbFormDetailsPluginRenderParams {
     security: Record<string, any>;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
+    stats: FbFormOverallStats;
     revisions: FbRevisionModel[];
     loading: boolean;
 }
@@ -163,7 +164,7 @@ export type FbFormDetailsPluginType = Plugin & {
 
 export type FbFormDetailsSubmissionsPlugin = Plugin & {
     type: "forms-form-details-submissions";
-    render: (props: { form: FbFormModel }) => React.ReactNode;
+    render: (props: { form: FbFormModel; stats: FbFormOverallStats }) => React.ReactNode;
 };
 
 export interface FbFormModel {
@@ -177,13 +178,13 @@ export interface FbFormModel {
     status: string;
     savedOn: string;
     revisions: FbRevisionModel[];
-    overallStats: {
-        submissions: number;
-        views: number;
-        conversionRate: number;
-    };
     createdBy: FbCreatedBy;
     triggers: Record<string, any>;
+}
+
+export interface FbFormOverallStats {
+    views: number;
+    submissions: number;
 }
 
 export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {

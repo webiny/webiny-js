@@ -95,15 +95,6 @@ describe("Forms Submission Security Test", () => {
                             fields: [],
                             publishedOn: null,
                             name: "A1-name",
-                            overallStats: {
-                                conversionRate: 0,
-                                submissions: 0,
-                                views: 0
-                            },
-                            stats: {
-                                submissions: 0,
-                                views: 0
-                            },
                             status: "draft",
                             steps: [
                                 {

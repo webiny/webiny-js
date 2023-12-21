@@ -9,6 +9,7 @@ import { createFormBuilderSettingsSchema } from "~/plugins/graphql/formSettings"
 import { createBaseSchema } from "~/plugins/graphql";
 import { createSubmissionsSchema } from "~/plugins/graphql/submissionsSchema";
 import { createFormsSchema } from "~/plugins/graphql/formsSchema";
+import { createFormStatsSchema } from "~/plugins/graphql/formStatsSchema";
 import { FormBuilderContext } from "~/types";
 
 export const createGraphQLSchemaPlugin = () => {
@@ -25,6 +26,7 @@ export const createGraphQLSchemaPlugin = () => {
             await context.security.withoutAuthorization(async () => {
                 const submissionModel = (await context.cms.getModel("fbSubmission")) as CmsModel;
                 const formsModel = (await context.cms.getModel("fbForm")) as CmsModel;
+                const formStatsModel = (await context.cms.getModel("fbFormStat")) as CmsModel;
                 const models = await context.cms.listModels();
                 const fieldPlugins = createFieldTypePluginRecords(context.plugins);
                 /**
@@ -47,6 +49,12 @@ export const createGraphQLSchemaPlugin = () => {
                     plugins: fieldPlugins
                 });
 
+                const formStatsGraphQlPlugin = createFormStatsSchema({
+                    model: formStatsModel,
+                    models,
+                    plugins: fieldPlugins
+                });
+
                 const submissionsGraphQlPlugin = createSubmissionsSchema({
                     model: submissionModel,
                     models,
@@ -56,6 +64,7 @@ export const createGraphQLSchemaPlugin = () => {
                 context.plugins.register([
                     ...plugins,
                     formsGraphQlPlugin,
+                    formStatsGraphQlPlugin,
                     submissionsGraphQlPlugin
                 ]);
             });

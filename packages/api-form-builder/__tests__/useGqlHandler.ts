@@ -30,6 +30,7 @@ import {
     UNPUBLISH_REVISION,
     UPDATE_REVISION
 } from "./graphql/forms";
+import { GET_FORM_STATS, GET_FORM_OVERALL_STATS } from "./graphql/formStats";
 import {
     CREATE_FROM_SUBMISSION,
     EXPORT_FORM_SUBMISSIONS,
@@ -213,6 +214,13 @@ export default (params: UseGqlHandlerParams = {}) => {
         },
         async listForms(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_FORMS, variables } });
+        },
+        // Form Stats
+        async getFormStats(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_FORM_STATS, variables } });
+        },
+        async getFormOverallStats(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_FORM_OVERALL_STATS, variables } });
         },
         // Form Submission
         async createFormSubmission(variables: Record<string, any>) {

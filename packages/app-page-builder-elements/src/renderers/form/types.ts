@@ -59,11 +59,6 @@ export interface FormData {
     status: string;
     savedOn: string;
     revisions: FormDataRevision[];
-    overallStats: {
-        submissions: number;
-        views: number;
-        conversionRate: number;
-    };
     createdBy: FormDataCreatedBy;
     triggers: Record<string, any>;
 }

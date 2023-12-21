@@ -112,7 +112,6 @@ export interface FbForm {
     status: string;
     fields: FbFormField[];
     steps: FbFormStep[];
-    stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
     formId: string;
@@ -137,12 +136,6 @@ interface FormUpdateInput {
     steps: FbFormStep[];
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
-}
-
-export interface FbFormStats {
-    submissions: number;
-    views: number;
-    conversionRate: number;
 }
 
 interface FbListSubmissionsOptions {
@@ -219,7 +212,6 @@ export interface OnFormAfterUnpublishTopicParams {
 
 export interface FormsCRUD {
     getForm(id: string, options?: FormBuilderGetFormOptions): Promise<FbForm>;
-    getFormStats(id: string): Promise<FbFormStats>;
     listForms(): Promise<FormBuilderStorageOperationsListFormsResponse>;
     createForm(data: FormCreateInput): Promise<FbForm>;
     updateForm(id: string, data: Partial<FormUpdateInput>): Promise<FbForm>;
@@ -437,7 +429,12 @@ export interface FbFormSettingsPermission extends SecurityPermission {
 /**
  * The object representing form builder internals.
  */
-export interface FormBuilder extends SystemCRUD, SettingsCRUD, FormsCRUD, SubmissionsCRUD {
+export interface FormBuilder
+    extends SystemCRUD,
+        SettingsCRUD,
+        FormsCRUD,
+        SubmissionsCRUD,
+        FormStatsCRUD {
     storageOperations: FormBuilderStorageOperations;
 }
 
@@ -774,5 +771,121 @@ export interface FormBuilderStorageOperations
     extends FormBuilderSystemStorageOperations,
         FormBuilderSettingsStorageOperations {
     forms: FormBuilderFormStorageOperations;
+    formStats: FormBuilderFormStatsStorageOperations;
     submissions: FormBuilderSubmissionStorageOperations;
+}
+
+export interface FbFormStats {
+    id: string;
+    formId: string;
+    formVersion: number;
+    views: number;
+    submissions: number;
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * FormStats CRUD Lifecycle Events
+ */
+export interface OnFormStatsBeforeCreate {
+    formStats: FbFormStats;
+}
+export interface OnFormStatsAfterCreate {
+    formStats: FbFormStats;
+}
+export interface OnFormStatsBeforeUpdate {
+    original: FbFormStats;
+    formStats: FbFormStats;
+}
+export interface OnFormStatsAfterUpdate {
+    original: FbFormStats;
+    formStats: FbFormStats;
+}
+export interface OnFormStatsBeforeDelete {
+    ids: string[];
+}
+export interface OnFormStatsAfterDelete {
+    ids: string[];
+}
+
+export interface FormStatsCRUD {
+    getFormStats(formRevisionId: string): Promise<FbFormStats | null>;
+    getFormOverallStats(formId: string): Promise<Omit<FbFormStats, "id" | "formVersion"> | null>;
+    createFormStats(form: FbForm): Promise<FbFormStats>;
+    updateFormStats(
+        formId: string,
+        input: { views?: number; submissions?: number }
+    ): Promise<FbFormStats>;
+    deleteFormStats(ids: string): Promise<void>;
+    /**
+     * Lifecycle events
+     */
+    onFormStatsBeforeCreate: Topic<OnFormStatsBeforeCreate>;
+    onFormStatsAfterCreate: Topic<OnFormStatsAfterCreate>;
+    onFormStatsBeforeUpdate: Topic<OnFormStatsBeforeUpdate>;
+    onFormStatsAfterUpdate: Topic<OnFormStatsAfterUpdate>;
+    onFormStatsBeforeDelete: Topic<OnFormStatsBeforeDelete>;
+    onFormStatsAfterDelete: Topic<OnFormStatsAfterDelete>;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsGetFormStatsParams {
+    where: { id: string; tenant: string; locale: string };
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsListFormStatsParams {
+    where: { formId: string; tenant: string; locale: string };
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsCreateFormStatsParams {
+    formStats: FbFormStats;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsUpdateFormStatsParams {
+    formStats: FbFormStats;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsDeleteFormStatsParams {
+    ids: string[];
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * @category StorageOperations
+ */
+export interface FormBuilderFormStatsStorageOperations {
+    getFormStats(
+        params: FormBuilderStorageOperationsGetFormStatsParams
+    ): Promise<FbFormStats | null>;
+    listFormStats(
+        params: FormBuilderStorageOperationsListFormStatsParams
+    ): Promise<FbFormStats[] | null>;
+    createFormStats(
+        params: FormBuilderStorageOperationsCreateFormStatsParams
+    ): Promise<FbFormStats>;
+    updateFormStats(
+        params: FormBuilderStorageOperationsUpdateFormStatsParams
+    ): Promise<FbFormStats>;
+    deleteFormStats(params: FormBuilderStorageOperationsDeleteFormStatsParams): Promise<void>;
 }
