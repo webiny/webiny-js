@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
-import { FieldLayoutPositionType, Container } from "~/types";
+import { FieldLayoutPositionType, Container, DropTargetType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -20,12 +20,10 @@ export interface DroppableCollectedProps {
     isOver: boolean;
 }
 
-export type DroppableUIElement = "row" | "field" | "conditionGroup" | "step";
-
 export interface IsVisibleCallableParams {
     type: string;
     isDragging: boolean;
-    ui: DroppableUIElement;
+    ui: DropTargetType;
     id?: string;
     pos: FieldLayoutPositionType;
     container?: Container;
@@ -37,7 +35,7 @@ export interface IsVisibleCallable {
 // We need to extend DragObjectWithType type because it does not support fields,
 // that we set through "beginDrag".
 export interface DragObjectWithFieldInfo extends DragObjectWithType {
-    ui: DroppableUIElement;
+    ui: DropTargetType;
     name: string;
     id?: string;
     pos: FieldLayoutPositionType;
