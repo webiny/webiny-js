@@ -85,7 +85,7 @@ export const DataListModalOverlay = ({ onDismiss, children }: DataListModalOverl
                 }}
                 showOverlay={isOpen}
             />
-            <DataListModalWrapper showOverlay={isOpen} data-id={"data-list-modal-wrapper"}>
+            <DataListModalWrapper showOverlay={isOpen} data-testid={"data-list-modal-wrapper"}>
                 {children}
             </DataListModalWrapper>
         </React.Fragment>

@@ -13,6 +13,7 @@ export const Dialog = styled(BaseDialog)({
 export const FullWidthDialog = styled(BaseDialog)({
     maxWidth: "100%",
     minWidth: "90%",
+    zIndex: "20",
     ".mdc-dialog__surface": {
         width: "auto",
         maxWidth: "100%",
