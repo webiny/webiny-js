@@ -10,14 +10,14 @@ import {
 } from "@webiny/storybook-utils/Story";
 import readme from "./README.md";
 
-import { RichTextEditor } from "./index";
+import { RichTextEditor, RichTextEditorValue } from "./index";
 
 const story = storiesOf("Components/RichTextEditor", module);
 
 story.add(
     "usage",
     () => {
-        const onChange = useCallback(data => {
+        const onChange = useCallback((data: RichTextEditorValue) => {
             console.log(data);
         }, []);
 
