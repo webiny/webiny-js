@@ -1,7 +1,5 @@
 import { FastifyRequest, FastifyReply, HTTPMethods, RouteHandlerMethod } from "fastify";
 
-import "@fastify/cookie";
-
 export { FastifyInstance, HTTPMethods } from "fastify";
 import { ClientContext } from "@webiny/handler-client/types";
 
