@@ -21,7 +21,7 @@ export interface TablePresenterViewModel<T> {
 export interface ITablePresenter<T extends DefaultData> {
     loadData: (data: T[]) => Promise<void>;
     updateColumnVisibility: OnColumnVisibilityChange;
-    isRowSelectable: (row: TableRow<T>) => boolean;
+    enableRowSelection: (row: TableRow<T>) => boolean;
     get vm(): TablePresenterViewModel<T>;
 }
 
@@ -61,7 +61,5 @@ export class TablePresenter<T extends DefaultData> implements ITablePresenter<T>
     public updateColumnVisibility: OnColumnVisibilityChange = updaterOrValue =>
         this.columnPresenter.updateColumnVisibility(updaterOrValue);
 
-    public isRowSelectable(row: TableRow<T>) {
-        return row.original.$selectable || false;
-    }
+    public enableRowSelection = (row: TableRow<T>) => this.dataPresenter.enableRowSelection(row);
 }

@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { DataRepository } from "~/components/Table/domain";
-import { DefaultData } from "@webiny/ui/DataTable";
+import { DefaultData, TableRow } from "@webiny/ui/DataTable";
 
 type Data<T> = Array<DefaultData & T>;
 
@@ -25,5 +25,9 @@ export class DataPresenter<T> {
 
     async loadSelected(selected: DefaultData[]) {
         await this.repository.loadSelected(selected);
+    }
+
+    public enableRowSelection(row: TableRow<T>) {
+        return row.original.$selectable || false;
     }
 }
