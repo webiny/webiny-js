@@ -3,11 +3,18 @@ import { Columns, DataTable, DefaultData, OnSortingChange, Sorting } from "@webi
 import { observer } from "mobx-react-lite";
 import { TablePresenter } from "~/components/Table/TablePresenter";
 import { TableRowProvider } from "~/components/Table/useTableRow";
-import { columnRepositoryFactory, ColumnMapper } from "~/components/Table/domain";
+import {
+    columnRepositoryFactory,
+    ColumnMapper,
+    ColumnRepository,
+    DataRepository,
+    dataRepositoryFactory
+} from "~/components/Table/domain";
 import { useAcoConfig } from "~/config";
 
 import { Column } from "./domain";
 import { ColumnPresenter } from "./ColumnPresenter";
+import { DataPresenter } from "./DataPresenter";
 
 export interface TableProps<T> {
     data: T[];
@@ -25,22 +32,30 @@ export const Table = observer(
     <T extends Record<string, any> & DefaultData>(props: TableProps<T>) => {
         const { table } = useAcoConfig();
 
-        const columnRepository = columnRepositoryFactory.getRepository(
-            props.namespace,
-            table.columns.map(column => Column.createFromConfig(column))
-        );
+        const columnRepository = useMemo<ColumnRepository>(() => {
+            return columnRepositoryFactory.getRepository(
+                props.namespace,
+                table.columns.map(column => Column.createFromConfig(column))
+            );
+        }, [props.namespace, table.columns]);
+
+        const dataRepository = useMemo<DataRepository<T>>(() => {
+            return dataRepositoryFactory.getRepository<T>(props.namespace);
+        }, [props.namespace]);
 
         const presenter = useMemo<TablePresenter<T>>(() => {
             const columnPresenter = new ColumnPresenter(columnRepository);
-            return new TablePresenter<T>(columnPresenter);
+            const dataPresenter = new DataPresenter(dataRepository);
+            return new TablePresenter<T>(columnPresenter, dataPresenter);
         }, [columnRepository]);
 
         useEffect(() => {
-            presenter.load({
-                data: props.data,
-                selected: props.selected
-            });
-        }, [props.data, props.selected]);
+            presenter.loadData(props.data);
+        }, [props.data]);
+
+        useEffect(() => {
+            presenter.loadSelected(props.selected);
+        }, [props.selected]);
 
         const cellRenderer = useCallback(
             (row: T, cell: string | React.ReactElement): string | number | JSX.Element | null => {
@@ -69,7 +84,7 @@ export const Table = observer(
             <DataTable
                 columns={columns}
                 columnVisibility={presenter.vm.columnVisibility}
-                data={props.data}
+                data={presenter.vm.data}
                 initialSorting={presenter.vm.initialSorting}
                 isRowSelectable={presenter.isRowSelectable}
                 loadingInitial={props.loading}
@@ -77,7 +92,7 @@ export const Table = observer(
                 onSelectRow={props.onSelectRow}
                 onSortingChange={props.onSortingChange}
                 onToggleRow={props.onToggleRow}
-                selectedRows={presenter.vm.selectedRows}
+                selectedRows={presenter.vm.selected}
                 sorting={props.sorting}
                 stickyRows={1}
             />

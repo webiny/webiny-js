@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { OnColumnVisibilityChange } from "@webiny/ui/DataTable";
-import { ColumnRepository } from "~/components/Table/domain/ColumnRepository";
+import { ColumnRepository } from "~/components/Table/domain";
 
 export class ColumnPresenter {
     private repository: ColumnRepository;

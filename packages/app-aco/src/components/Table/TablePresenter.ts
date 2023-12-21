@@ -5,24 +5,21 @@ import {
     Sorting,
     TableRow
 } from "@webiny/ui/DataTable";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { ColumnDTO } from "~/components/Table/domain";
 import { ColumnPresenter } from "~/components/Table/ColumnPresenter";
+import { DataPresenter } from "~/components/Table/DataPresenter";
 
 export interface TablePresenterViewModel<T> {
     columns: ColumnDTO[];
-    selectedRows: T[];
+    data: T[];
+    selected: DefaultData[];
     columnVisibility: IColumnVisibility;
     initialSorting: Sorting;
 }
 
-interface LoadParamsInterface<T> {
-    data: T[];
-    selected: DefaultData[];
-}
-
 export interface ITablePresenter<T extends DefaultData> {
-    load: (configs: LoadParamsInterface<T>) => void;
+    loadData: (data: T[]) => Promise<void>;
     updateColumnVisibility: OnColumnVisibilityChange;
     isRowSelectable: (row: TableRow<T>) => boolean;
     get vm(): TablePresenterViewModel<T>;
@@ -30,29 +27,28 @@ export interface ITablePresenter<T extends DefaultData> {
 
 export class TablePresenter<T extends DefaultData> implements ITablePresenter<T> {
     private columnPresenter: ColumnPresenter;
-    private data: T[];
-    private selected: DefaultData[];
+    private dataPresenter: DataPresenter<T>;
 
-    constructor(columnPresenter: ColumnPresenter) {
+    constructor(columnPresenter: ColumnPresenter, dataPresenter: DataPresenter<T>) {
         this.columnPresenter = columnPresenter;
-        this.data = [];
-        this.selected = [];
-
+        this.dataPresenter = dataPresenter;
         makeAutoObservable(this);
     }
 
-    async load(params: LoadParamsInterface<T>) {
-        runInAction(() => {
-            this.data = params.data;
-            this.selected = params.selected;
-        });
+    async loadData(data: T[]) {
+        await this.dataPresenter.loadData(data);
+    }
+
+    async loadSelected(selected: DefaultData[]) {
+        await this.dataPresenter.loadSelected(selected);
     }
 
     get vm() {
         return {
             columns: this.columnPresenter.vm.columns,
             columnVisibility: this.columnPresenter.vm.columnVisibility,
-            selectedRows: this.data.filter(row => this.selected.find(item => row.id === item.id)),
+            data: this.dataPresenter.vm.data,
+            selected: this.dataPresenter.vm.selected,
             initialSorting: [
                 {
                     id: "savedOn",
