@@ -9,8 +9,8 @@ import { usePagesPermissions } from "~/hooks/permissions";
 export const EditPage = () => {
     const { page } = usePage();
     const { canUpdate } = usePagesPermissions();
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
-    const { navigateToPageEditor } = useNavigatePage();
+    const { OptionsMenuItem, OptionsMenuLink } = AcoConfig.Record.Action;
+    const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
     const { createPageForm, loading } = useCreatePageFrom({
         page,
         onSuccess: () => navigateToPageEditor(page.data.pid)
@@ -33,12 +33,10 @@ export const EditPage = () => {
     }
 
     return (
-        <OptionsMenuItem
+        <OptionsMenuLink
             icon={<Edit />}
             label={"Edit"}
-            onAction={() => {
-                navigateToPageEditor(page.id);
-            }}
+            to={getPageEditorUrl(page.id)}
             data-testid={"aco.actions.pb.page.edit"}
         />
     );

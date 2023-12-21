@@ -6,18 +6,18 @@ import { useContentEntriesList, useEntry, usePermission } from "~/admin/hooks";
 export const EditEntry = () => {
     const { entry } = useEntry();
     const { canEdit } = usePermission();
-    const { onEditEntry } = useContentEntriesList();
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { getEntryEditUrl } = useContentEntriesList();
+    const { OptionsMenuLink } = AcoConfig.Record.Action;
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return null;
     }
 
     return (
-        <OptionsMenuItem
+        <OptionsMenuLink
             icon={<Edit />}
             label={"Edit"}
-            onAction={() => onEditEntry(entry)}
+            to={getEntryEditUrl(entry)}
             data-testid={"aco.actions.entry.edit"}
         />
     );
