@@ -34,6 +34,9 @@ const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
     &.mdc-drawer {
         width: ${props => props.width};
     }
+    & + .mdc-drawer-scrim {
+        z-index: 65;
+    }
 `;
 
 const FormContainer = styled(SimpleForm)`
@@ -56,9 +59,10 @@ const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => 
     if (fields.length === 0) {
         return output;
     }
+
     return {
         ...output,
-        extensions: prepareFormData(output.extensions, fields)
+        extensions: prepareFormData(output.extensions || {}, fields)
     };
 };
 
@@ -69,6 +73,8 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
     const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
     const { fileDetails } = useFileManagerViewConfig();
+
+    const [, leftPanel = "1", rightPanel = "1"] = fileDetails.width.split(",");
 
     const extensionFields = useMemo(() => {
         const fields = fileModel.fields.find(field => field.fieldId === "extensions");
@@ -87,6 +93,19 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
         close();
     };
 
+    const basicFieldsElement = (
+        <Grid>
+            {fileDetails.fields.map(field => (
+                <Cell span={12} key={field.name}>
+                    {field.element}
+                </Cell>
+            ))}
+        </Grid>
+    );
+
+    const extensionFieldsElement =
+        extensionFields.length > 0 ? <Extensions model={fileModel} /> : null;
+
     return (
         <Form data={file} onSubmit={onSubmit}>
             {() => (
@@ -95,30 +114,27 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
                     <FormContainer>
                         <Header />
                         <Content>
-                            <Content.Panel>
+                            <Content.Panel flex={parseFloat(leftPanel)}>
                                 <Elevation z={2} style={{ margin: 20 }}>
                                     <Actions />
                                     <Preview />
                                     <PreviewMeta />
                                 </Elevation>
                             </Content.Panel>
-                            <Content.Panel>
-                                <Tabs>
-                                    <Tab label={"Basic Details"}>
-                                        <Grid>
-                                            {fileDetails.fields.map(field => (
-                                                <Cell span={12} key={field.name}>
-                                                    {field.element}
-                                                </Cell>
-                                            ))}
-                                        </Grid>
-                                    </Tab>
-                                    {extensionFields.length > 0 ? (
+                            <Content.Panel flex={parseFloat(rightPanel)}>
+                                {fileDetails.groupFields ? (
+                                    <Tabs>
+                                        <Tab label={"Basic Details"}>{basicFieldsElement}</Tab>
                                         <Tab label={"Advanced Details"}>
-                                            <Extensions model={fileModel} />
+                                            {extensionFieldsElement}
                                         </Tab>
-                                    ) : null}
-                                </Tabs>
+                                    </Tabs>
+                                ) : (
+                                    <>
+                                        {basicFieldsElement}
+                                        {extensionFieldsElement}
+                                    </>
+                                )}
                             </Content.Panel>
                         </Content>
                         <Footer />
@@ -147,9 +163,11 @@ export const FileDetails = ({ open, onClose, loading, file }: FileDetailsProps) 
 
     const { fileDetails } = useFileManagerViewConfig();
 
+    const drawerWidth = fileDetails.width.split(",")[0];
+
     return (
         <FileDetailsDrawer
-            width={fileDetails.width}
+            width={drawerWidth}
             dir="rtl"
             modal
             open={open}

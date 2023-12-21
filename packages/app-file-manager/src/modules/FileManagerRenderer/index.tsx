@@ -68,6 +68,8 @@ export const FileManagerRendererModule = () => {
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
                 <FileDetails.Field name={"aliases"} element={<Aliases />} />
+                <FileDetails.GroupFields value={false} />
+                <FileDetails.Width value={"1000px"} />
             </FileManagerConfig>
         </>
     );
