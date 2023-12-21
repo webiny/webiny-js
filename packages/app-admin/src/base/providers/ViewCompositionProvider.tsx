@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
+import { ComponentWithChildren } from "~/types";
 
 export interface ViewElement {
     name: string;
@@ -71,13 +72,12 @@ interface ViewCompositionProviderHOCProps {
     children: React.ReactNode;
 }
 
-export const createViewCompositionProvider =
-    () => (Component: React.ComponentType<React.PropsWithChildren<unknown>>) => {
-        return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
-            return (
-                <ViewCompositionProvider>
-                    <Component>{children}</Component>
-                </ViewCompositionProvider>
-            );
-        };
+export const createViewCompositionProvider = () => (Component: ComponentWithChildren) => {
+    return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
+        return (
+            <ViewCompositionProvider>
+                <Component>{children}</Component>
+            </ViewCompositionProvider>
+        );
     };
+};

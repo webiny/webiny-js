@@ -13,6 +13,7 @@ import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tag
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
+import { ComponentWithChildren } from "~/types";
 
 export interface NavigationContext {
     menuItems: MenuData[];
@@ -88,9 +89,7 @@ interface NavigationProviderProps {
     children: React.ReactNode;
 }
 
-export const NavigationProvider = (
-    Component: React.ComponentType<React.PropsWithChildren<unknown>>
-) => {
+export const NavigationProvider = (Component: ComponentWithChildren) => {
     return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 

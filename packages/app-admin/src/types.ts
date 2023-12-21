@@ -106,3 +106,5 @@ export interface FileManagerSecurityPermission extends SecurityPermission {
     rwd?: string;
     own?: boolean;
 }
+
+export type ComponentWithChildren = React.ComponentType<{ children?: React.ReactNode }>;
