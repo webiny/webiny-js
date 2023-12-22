@@ -1,4 +1,3 @@
-import { css } from "emotion";
 import styled from "@emotion/styled";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 
@@ -13,12 +12,12 @@ export const StyledAccordionItem = styled(AccordionItem)`
     }
 `;
 
-export const EditContainer = styled("div")({
+export const EditContainer = styled.div({
     padding: 40,
     position: "relative"
 });
 
-export const RowContainer = styled("div")`
+export const RowContainer = styled.div<{ isDragging?: boolean }>`
     position: relative;
     display: flex;
     flex-direction: column;
@@ -32,9 +31,18 @@ export const RowContainer = styled("div")`
     background-color: var(--mdc-theme-surface);
     box-shadow: var(--mdc-theme-on-background) 1px 1px 1px,
         var(--mdc-theme-on-background) 1px 1px 2px;
+
+    border: 1px solid var(--mdc-theme-background);
+    box-shadow: none;
+
+    opacity: ${props => (props.isDragging ? 0.3 : 1)};
 `;
 
-export const Row = styled("div")({
+export const Wrapper = styled.div`
+    margin-left: 40px;
+`;
+
+export const Row = styled.div({
     display: "flex",
     flexDirection: "row",
     backgroundColor: "var(--mdc-theme-surface)",
@@ -46,7 +54,7 @@ export const Row = styled("div")({
     overflowX: "auto"
 });
 
-export const fieldContainer = css({
+export const FieldContainer = styled.div({
     position: "relative",
     flex: "1 100%",
     backgroundColor: "var(--mdc-theme-background)",
@@ -63,7 +71,7 @@ export const fieldContainer = css({
     }
 });
 
-export const rowHandle = css({
+export const RowHandle = styled.div({
     width: 30,
     cursor: "grab",
     position: "absolute",
@@ -74,6 +82,6 @@ export const rowHandle = css({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const fieldHandle = css({
+export const FieldHandle = styled.div({
     cursor: "grab"
 });
