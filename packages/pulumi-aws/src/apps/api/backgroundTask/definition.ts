@@ -54,7 +54,7 @@ export const createBackgroundTaskDefinition = (
                 Catch: [
                     {
                         ErrorEquals: ["States.ALL"],
-                        Next: "UnknownTaskError"
+                        Next: "UnknownError"
                     }
                 ]
             },
@@ -79,18 +79,22 @@ export const createBackgroundTaskDefinition = (
                                 StringEquals: "continue"
                             },
                             {
-                                Variable: "$.waitUntil",
+                                Variable: "$.wait",
                                 IsPresent: true
                             },
                             {
-                                Variable: "$.waitUntil",
-                                IsTimestamp: true
+                                Variable: "$.wait",
+                                IsNumeric: true
+                            },
+                            {
+                                Variable: "$.wait",
+                                NumericGreaterThan: 0
                             }
                         ],
                         Next: "Waiter"
                     },
                     /**
-                     * When no waitUntil value is present, go to Run.
+                     * When no wait value is present, go to Run.
                      */
                     {
                         Variable: "$.status",
@@ -117,10 +121,10 @@ export const createBackgroundTaskDefinition = (
             },
             Waiter: {
                 Type: StepFunctionDefinitionStatesType.Wait,
-                TimestampPath: "$.waitUntil",
+                SecondsPath: "$.wait",
                 Next: "Run"
             },
-            UnknownTaskError: {
+            UnknownError: {
                 Type: StepFunctionDefinitionStatesType.Fail,
                 Cause: "Fatal error - unknown task error."
             },

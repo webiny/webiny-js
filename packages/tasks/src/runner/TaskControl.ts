@@ -2,7 +2,7 @@ import { ITaskEvent } from "~/handler/types";
 import { Context, ITaskData, ITaskDataValues, TaskDataStatus } from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
-import { IResponse, IResponseErrorResult } from "~/response/abstractions";
+import { IResponse, IResponseErrorResult, IResponseResult } from "~/response/abstractions";
 import { DatabaseResponse, TaskResponse } from "~/response";
 import { TaskManagerStore } from "./TaskManagerStore";
 
@@ -17,7 +17,7 @@ export class TaskControl implements ITaskControl {
         this.response = response;
     }
 
-    public async run(event: Pick<ITaskEvent, "webinyTaskId">) {
+    public async run(event: Pick<ITaskEvent, "webinyTaskId">): Promise<IResponseResult> {
         const taskId = event.webinyTaskId;
         /**
          * This is the initial getTask idea.

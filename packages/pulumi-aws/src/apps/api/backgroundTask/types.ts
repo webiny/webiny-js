@@ -32,6 +32,8 @@ export interface StepFunctionDefinitionStatesChoiceAndItem {
     StringMatches?: string;
     IsPresent?: boolean;
     IsTimestamp?: boolean;
+    IsNumeric?: boolean;
+    NumericGreaterThan?: number;
 }
 export interface StepFunctionDefinitionStatesChoiceAnd {
     And: StepFunctionDefinitionStatesChoiceAndItem[];
