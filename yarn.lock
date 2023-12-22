@@ -6388,6 +6388,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:1.9.6":
+  version: 1.9.6
+  resolution: "@grpc/grpc-js@npm:1.9.6"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.8
+    "@types/node": ">=12.12.47"
+  checksum: c02981af11e9749bb8f9a71f5f7e125740da9e6addb13b65d006d41d4d7a80d94b6daa45426c6832a2accfd6f9a925d45a4660a88bd908684446ffaf4fe76c68
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:^1.2.7":
   version: 1.9.12
   resolution: "@grpc/grpc-js@npm:1.9.12"
@@ -9394,7 +9404,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/instrumentation@npm:0.32.0":
+"@opentelemetry/instrumentation@npm:0.32.0, @opentelemetry/instrumentation@npm:^0.32.0":
   version: 0.32.0
   resolution: "@opentelemetry/instrumentation@npm:0.32.0"
   dependencies:
@@ -9690,9 +9700,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^5.8.0":
-  version: 5.29.1
-  resolution: "@pulumi/aws@npm:5.29.1"
+"@pulumi/aws@npm:^5.42.0":
+  version: 5.43.0
+  resolution: "@pulumi/aws@npm:5.43.0"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -9700,7 +9710,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 7b5820417fda320154a5d0c926c2f7ca26a332ea2b66442316006d70dea76e5b87aee322503426a06737492bc2fb48a7809029d1c856fe588b475135c1cc75a7
+  checksum: 638bb25e32677590ef80a7340be55f6c20941c9f28595e6f3d325f52dd476731fa721592f9732bf67b1565665508871f3f7bf58626b85188aa93fe1a59a94981
   languageName: node
   linkType: hard
 
@@ -9728,7 +9738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.34.0":
+"@pulumi/pulumi@npm:^3.0.0":
   version: 3.54.0
   resolution: "@pulumi/pulumi@npm:3.54.0"
   dependencies:
@@ -9756,6 +9766,40 @@ __metadata:
     typescript: ~3.8.3
     upath: ^1.1.0
   checksum: 0ee833cf35923794a4c342ddcf1ea37c531466438cfa5dceb20573063d2bb6c124a9078f0375444795c5e4dc518048f6e311b5c3a302cd42edd2e31f1d1f1470
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.99.0":
+  version: 3.99.0
+  resolution: "@pulumi/pulumi@npm:3.99.0"
+  dependencies:
+    "@grpc/grpc-js": 1.9.6
+    "@logdna/tail-file": ^2.0.6
+    "@opentelemetry/api": ^1.2.0
+    "@opentelemetry/exporter-zipkin": ^1.6.0
+    "@opentelemetry/instrumentation": ^0.32.0
+    "@opentelemetry/instrumentation-grpc": ^0.32.0
+    "@opentelemetry/resources": ^1.6.0
+    "@opentelemetry/sdk-trace-base": ^1.6.0
+    "@opentelemetry/sdk-trace-node": ^1.6.0
+    "@opentelemetry/semantic-conventions": ^1.6.0
+    "@pulumi/query": ^0.3.0
+    "@types/google-protobuf": ^3.15.5
+    execa: ^5.1.0
+    google-protobuf: ^3.5.0
+    ini: ^2.0.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.6
+    normalize-package-data: ^3.0.0
+    pkg-dir: ^7.0.0
+    read-package-tree: ^5.3.1
+    require-from-string: ^2.0.1
+    semver: ^7.5.2
+    source-map-support: ^0.5.6
+    ts-node: ^7.0.1
+    typescript: ~3.8.3
+    upath: ^1.1.0
+  checksum: b899a4e4f642692302020c3a7016878e806043d8c3a4f00ad198ffba057d60841eefd192545cfa9687f630c5c77e8f5545a618da59bbde9012a66de84beca3f1
   languageName: node
   linkType: hard
 
@@ -12358,6 +12402,13 @@ __metadata:
     "@types/minimatch": "*"
     "@types/node": "*"
   checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
+  languageName: node
+  linkType: hard
+
+"@types/google-protobuf@npm:^3.15.5":
+  version: 3.15.12
+  resolution: "@types/google-protobuf@npm:3.15.12"
+  checksum: c64efd268170eac0865a42c9616b05100e5ac07e7fa1ed87c827c9d2a58eb02cb2d01cb3248c7ddd563468ecb079295b81ab966e399ba08858f525896631e961
   languageName: node
   linkType: hard
 
@@ -17601,8 +17652,8 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
-    "@pulumi/aws": ^5.8.0
-    "@pulumi/pulumi": ^3.34.0
+    "@pulumi/aws": ^5.42.0
+    "@pulumi/pulumi": ^3.99.0
     "@pulumi/random": ^3.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/aws-layers": 0.0.0
@@ -17628,8 +17679,8 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
-    "@pulumi/aws": ^5.8.0
-    "@pulumi/pulumi": ^3.34.0
+    "@pulumi/aws": ^5.42.0
+    "@pulumi/pulumi": ^3.99.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -17651,7 +17702,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
-    "@pulumi/pulumi": ^3.34.0
+    "@pulumi/pulumi": ^3.99.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -17777,8 +17828,8 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
-    "@pulumi/aws": ^5.8.0
-    "@pulumi/pulumi": ^3.34.0
+    "@pulumi/aws": ^5.42.0
+    "@pulumi/pulumi": ^3.99.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
@@ -27407,6 +27458,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-up@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "find-up@npm:6.3.0"
+  dependencies:
+    locate-path: ^7.1.0
+    path-exists: ^5.0.0
+  checksum: 9a21b7f9244a420e54c6df95b4f6fc3941efd3c3e5476f8274eb452f6a85706e7a6a90de71353ee4f091fcb4593271a6f92810a324ec542650398f928783c280
+  languageName: node
+  linkType: hard
+
 "find-versions@npm:^4.0.0":
   version: 4.0.0
   resolution: "find-versions@npm:4.0.0"
@@ -32946,6 +33007,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"locate-path@npm:^7.1.0":
+  version: 7.2.0
+  resolution: "locate-path@npm:7.2.0"
+  dependencies:
+    p-locate: ^6.0.0
+  checksum: c1b653bdf29beaecb3d307dfb7c44d98a2a98a02ebe353c9ad055d1ac45d6ed4e1142563d222df9b9efebc2bcb7d4c792b507fad9e7150a04c29530b7db570f8
+  languageName: node
+  linkType: hard
+
 "lock@npm:^1.1.0":
   version: 1.1.0
   resolution: "lock@npm:1.1.0"
@@ -35944,6 +36014,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-limit@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "p-limit@npm:4.0.0"
+  dependencies:
+    yocto-queue: ^1.0.0
+  checksum: 01d9d70695187788f984226e16c903475ec6a947ee7b21948d6f597bed788e3112cc7ec2e171c1d37125057a5f45f3da21d8653e04a3a793589e12e9e80e756b
+  languageName: node
+  linkType: hard
+
 "p-locate@npm:^2.0.0":
   version: 2.0.0
   resolution: "p-locate@npm:2.0.0"
@@ -35977,6 +36056,15 @@ __metadata:
   dependencies:
     p-limit: ^3.0.2
   checksum: 1623088f36cf1cbca58e9b61c4e62bf0c60a07af5ae1ca99a720837356b5b6c5ba3eb1b2127e47a06865fee59dd0453cad7cc844cda9d5a62ac1a5a51b7c86d3
+  languageName: node
+  linkType: hard
+
+"p-locate@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "p-locate@npm:6.0.0"
+  dependencies:
+    p-limit: ^4.0.0
+  checksum: 2bfe5234efa5e7a4e74b30a5479a193fdd9236f8f6b4d2f3f69e3d286d9a7d7ab0c118a2a50142efcf4e41625def635bd9332d6cbf9cc65d85eb0718c579ab38
   languageName: node
   linkType: hard
 
@@ -36397,6 +36485,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-exists@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "path-exists@npm:5.0.0"
+  checksum: 8ca842868cab09423994596eb2c5ec2a971c17d1a3cb36dbf060592c730c725cd524b9067d7d2a1e031fef9ba7bd2ac6dc5ec9fb92aa693265f7be3987045254
+  languageName: node
+  linkType: hard
+
 "path-is-absolute@npm:^1.0.0":
   version: 1.0.1
   resolution: "path-is-absolute@npm:1.0.1"
@@ -36721,6 +36816,15 @@ __metadata:
   dependencies:
     find-up: ^5.0.0
   checksum: b167bb8dac7bbf22b1d5e30ec223e6b064b84b63010c9d49384619a36734caf95ed23ad23d4f9bd975e8e8082b60a83395f43a89bb192df53a7c25a38ecb57d9
+  languageName: node
+  linkType: hard
+
+"pkg-dir@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pkg-dir@npm:7.0.0"
+  dependencies:
+    find-up: ^6.3.0
+  checksum: 94298b20a446bfbbd66604474de8a0cdd3b8d251225170970f15d9646f633e056c80520dd5b4c1d1050c9fed8f6a9e5054b141c93806439452efe72e57562c03
   languageName: node
   linkType: hard
 
@@ -46043,6 +46147,13 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"yocto-queue@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "yocto-queue@npm:1.0.0"
+  checksum: 2cac84540f65c64ccc1683c267edce396b26b1e931aa429660aefac8fbe0188167b7aee815a3c22fa59a28a58d898d1a2b1825048f834d8d629f4c2a5d443801
   languageName: node
   linkType: hard
 
