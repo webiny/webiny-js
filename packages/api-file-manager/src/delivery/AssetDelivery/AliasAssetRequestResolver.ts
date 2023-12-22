@@ -1,7 +1,6 @@
 import { Request } from "@webiny/handler/types";
-import { AssetRequestResolver } from "./abstractions/AssetRequestResolver";
-import { AssetRequest } from "./AssetRequest";
 import { DynamoDBClient, QueryCommand, unmarshall } from "@webiny/aws-sdk/client-dynamodb";
+import { AssetRequest, AssetRequestResolver } from "~/delivery";
 
 export class AliasAssetRequestResolver implements AssetRequestResolver {
     private documentClient: DynamoDBClient;
@@ -19,23 +18,24 @@ export class AliasAssetRequestResolver implements AssetRequestResolver {
             return resolvedAsset;
         }
 
-        console.log(`AliasAssetRequestResolver`, request.url);
-        const params = request.params as Record<string, any> ?? {};
-        const query = request.query as Record<string, any> ?? {};
+        const params = (request.params as Record<string, any>) ?? {};
+        const query = (request.query as Record<string, any>) ?? {};
         const path = decodeURI(params["*"]);
 
-        const tenant = query.tenant;
+        const tenant = query.tenant || "root";
         const fileKey = await this.getFileByAlias(tenant, path);
 
         if (!fileKey) {
             return undefined;
         }
 
+        const { original, ...options } = query;
+
         return new AssetRequest({
             key: fileKey,
             options: {
-                original: "original" in query,
-                width: query["width"]
+                original: original !== undefined,
+                ...options
             }
         });
     }
@@ -49,7 +49,7 @@ export class AliasAssetRequestResolver implements AssetRequestResolver {
                 KeyConditionExpression: "GSI1_PK = :GSI1_PK AND GSI1_SK = :GSI1_SK",
                 ExpressionAttributeValues: {
                     ":GSI1_PK": { S: `T#${tenant}#FM#FILE_ALIASES` },
-                    ":GSI1_SK": { S: `/${alias}` }
+                    ":GSI1_SK": { S: alias }
                 }
             })
         );

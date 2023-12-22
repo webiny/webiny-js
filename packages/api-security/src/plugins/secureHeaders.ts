@@ -1,4 +1,3 @@
-import { createWcp } from "@webiny/api-wcp";
 import { createHandlerOnRequest, ResponseHeaders } from "@webiny/handler";
 
 const whitelistedHeaders = [
@@ -13,14 +12,7 @@ const whitelistedHeaders = [
 ];
 
 export const setupSecureHeaders = () => {
-    console.log("Setup secure headers!");
     return createHandlerOnRequest(async (request, reply) => {
-        const wcp = await createWcp();
-
-        if (!wcp.canUsePrivateFiles()) {
-            return undefined;
-        }
-
         const isOptions = request.method === "OPTIONS";
 
         const headers = ResponseHeaders.create();

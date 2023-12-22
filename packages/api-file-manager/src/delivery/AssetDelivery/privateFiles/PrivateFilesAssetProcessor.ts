@@ -2,6 +2,7 @@ import { FileManagerContext } from "~/types";
 import { Asset, AssetProcessor, AssetRequest } from "~/delivery";
 import { AssetAuthorizer } from "~/delivery/AssetDelivery/privateFiles/AssetAuthorizer";
 import { NotAuthorizedOutputStrategy } from "~/delivery/AssetDelivery/privateFiles/NotAuthorizedOutputStrategy";
+import { internalIdentity } from "./internalIdentity";
 
 export class PrivateFilesAssetProcessor implements AssetProcessor {
     private readonly context: FileManagerContext;
@@ -20,22 +21,18 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         const id = asset.getId();
-        console.log("withoutAuthorization");
-        const file = await this.context.security.withoutAuthorization(() => {
-            console.log("Loading file", id);
-            return this.context.fileManager.getFile(id);
+        const { security } = this.context;
+
+        const file = await security.withIdentity(internalIdentity, () => {
+            return security.withoutAuthorization(() => this.context.fileManager.getFile(id));
         });
 
-        console.log("file", JSON.stringify(file, null, 2));
+        try {
+            await this.assetAuthorizer.authorize(file);
+        } catch (error) {
+            asset.setOutputStrategy(() => new NotAuthorizedOutputStrategy());
 
-        if (file.accessControl) {
-            try {
-                await this.assetAuthorizer.authorize(file);
-            } catch (error) {
-                asset.setOutputStrategy(() => new NotAuthorizedOutputStrategy());
-
-                return asset;
-            }
+            return asset;
         }
 
         return this.assetProcessor.process(assetRequest, asset);

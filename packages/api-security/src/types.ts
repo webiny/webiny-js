@@ -96,6 +96,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     isAuthorizationEnabled(): boolean;
 
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+    withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
     addAuthorizer(authorizer: Authorizer): void;
 

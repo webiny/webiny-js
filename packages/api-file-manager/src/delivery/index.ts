@@ -8,3 +8,4 @@ export * from "./AssetDelivery/abstractions/AssetContentsReader";
 export * from "./AssetDelivery/abstractions/AssetOutputStrategy";
 export * from "./AssetDelivery/abstractions/AssetTransformationStrategy";
 export * from "./AssetDelivery/abstractions/AssetReply";
+export * from "./AssetDelivery/createAssetDeliveryPluginLoader";

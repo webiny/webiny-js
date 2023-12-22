@@ -10,12 +10,11 @@ export class S3StreamAssetReply implements AssetReply {
 
     async reply(reply: Reply): Promise<Reply> {
         const body = await this.asset.getContents();
-        console.log("reply body", body);
 
         return reply
             .headers({
-                "Content-Type": this.asset.getContentType(),
-                "Cache-Control": "no-store"
+                "content-type": this.asset.getContentType(),
+                "cache-control": "no-store"
             })
             .send(body);
     }
