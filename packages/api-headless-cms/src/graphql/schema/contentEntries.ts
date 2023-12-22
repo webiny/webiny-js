@@ -8,6 +8,7 @@ import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import { ENTRY_META_FIELDS, isNullableEntryMetaField, isDateTimeEntryMetaField } from "~/constants";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -15,12 +16,18 @@ interface EntriesByModel {
 
 type GetContentEntryType = "latest" | "published" | "exact";
 
-const createDate = (date: string): Date => {
+const createDate = (date: string | null): Date | null => {
+    if (!date) {
+        return null;
+    }
+
     try {
         return new Date(date);
-    } catch {}
-    return new Date();
+    } catch {
+        return new Date();
+    }
 };
+
 interface CmsEntryRecord {
     id: string;
     entryId: string;
@@ -32,14 +39,46 @@ interface CmsEntryRecord {
     title: string;
     description?: string | null;
     image?: string | null;
+
+    /**
+     * 🚫 Deprecated meta fields below.
+     * Will be fully removed in one of the next releases.
+     */
     createdBy: CmsIdentity;
     modifiedBy?: CmsIdentity | null;
+
     /**
      * We can use the number since it is an internal field.
      * Created via Date.parse() method.
      */
     createdOn: Date;
     savedOn: Date;
+
+    /**
+     * 🆕 New meta fields below.
+     * Users are encouraged to use these instead of the deprecated ones above.
+     */
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string;
+    revisionSavedOn?: Date | string;
+    revisionModifiedOn?: Date | string | null;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
+    entryCreatedOn?: Date | string;
+    entrySavedOn?: Date | string;
+    entryModifiedOn?: Date | string | null;
+    entryCreatedBy?: CmsIdentity;
+    entryModifiedBy?: CmsIdentity | null;
+    entrySavedBy?: CmsIdentity;
+
     wbyAco_location?: {
         folderId?: string | null;
     };
@@ -57,10 +96,41 @@ const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord 
         title: getEntryTitle(model, entry),
         description: getEntryDescription(model, entry),
         image: getEntryImage(model, entry),
+
+        /**
+         * 🚫 Deprecated meta fields below.
+         * Will be fully removed in one of the next releases.
+         */
         createdBy: entry.createdBy,
         modifiedBy: entry.modifiedBy,
-        createdOn: createDate(entry.createdOn),
-        savedOn: createDate(entry.savedOn),
+        createdOn: createDate(entry.createdOn)!,
+        savedOn: createDate(entry.savedOn)!,
+
+        /**
+         * 🆕 New meta fields below.
+         * Users are encouraged to use these instead of the deprecated ones above.
+         */
+
+        /**
+         * Revision-level meta fields. 👇
+         */
+        revisionCreatedOn: createDate(entry.revisionCreatedOn)!,
+        revisionSavedOn: createDate(entry.revisionSavedOn)!,
+        revisionModifiedOn: createDate(entry.revisionModifiedOn),
+        revisionCreatedBy: entry.revisionCreatedBy,
+        revisionModifiedBy: entry.revisionModifiedBy,
+        revisionSavedBy: entry.revisionSavedBy,
+
+        /**
+         * Entry-level meta fields. 👇
+         */
+        entryCreatedOn: createDate(entry.revisionCreatedOn)!,
+        entrySavedOn: createDate(entry.revisionSavedOn)!,
+        entryModifiedOn: createDate(entry.revisionModifiedOn),
+        entryCreatedBy: entry.entryCreatedBy,
+        entryModifiedBy: entry.entryModifiedBy,
+        entrySavedBy: entry.entrySavedBy,
+
         wbyAco_location: {
             folderId: entry.location?.folderId || null
         }
@@ -95,6 +165,7 @@ const getFetchMethod = (type: GetContentEntryType, context: CmsContext): FetchMe
 
     return context.cms[methodName];
 };
+
 /**
  * Function to get the list of content entries depending on latest, published or exact GraphQL queries.
  */
@@ -105,11 +176,13 @@ interface GetContentEntriesParams {
     context: CmsContext;
     type: GetContentEntryType;
 }
+
 enum GetContentEntryMethods {
     getLatestEntriesByIds = "getLatestEntriesByIds",
     getPublishedEntriesByIds = "getPublishedEntriesByIds",
     getEntriesByIds = "getEntriesByIds"
 }
+
 const getContentEntriesMethods = {
     latest: "getLatestEntriesByIds",
     published: "getPublishedEntriesByIds",
@@ -180,6 +253,7 @@ interface GetContentEntryParams {
     context: CmsContext;
     type: "latest" | "published" | "exact";
 }
+
 const getContentEntry = async (
     params: GetContentEntryParams
 ): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
@@ -250,6 +324,7 @@ const createResolveDescription = (): Resolvers<CmsContext> => {
 interface Params {
     context: CmsContext;
 }
+
 export const createContentEntriesSchema = ({
     context
 }: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
@@ -262,8 +337,25 @@ export const createContentEntriesSchema = ({
         return plugin;
     }
 
+    const deprecatedOnByMetaFields = [
+        `createdBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
+        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
+        `modifiedBy: CmsIdentity @deprecated(reason: "Use 'entryModifiedBy'.")`,
+        `published: CmsPublishedContentEntry`,
+        `createdOn: DateTime! @deprecated(reason: "Use 'entryCreatedOn'.")`,
+        `savedOn: DateTime! @deprecated(reason: "Use 'entrySavedOn'.")`
+    ].join("\n");
+
+    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
+        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
+
+        return `${field}: ${fieldType}${isNullable}`;
+    }).join("\n");
+
     const plugin = new CmsGraphQLSchemaPlugin({
-        typeDefs: /* GraphQL */ `
+        // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+        typeDefs: `
             type CmsModelMeta {
                 modelId: String!
                 name: String!
@@ -285,12 +377,10 @@ export const createContentEntriesSchema = ({
                 title: String!
                 description: String
                 image: String
-                createdBy: CmsIdentity!
-                ownedBy: CmsIdentity!
-                modifiedBy: CmsIdentity
-                published: CmsPublishedContentEntry
-                createdOn: DateTime!
-                savedOn: DateTime!
+                
+                ${deprecatedOnByMetaFields}
+                ${onByMetaFields}
+            
                 wbyAco_location: WbyAcoLocation
             }
 

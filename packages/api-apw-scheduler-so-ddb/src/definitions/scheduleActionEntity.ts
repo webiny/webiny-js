@@ -39,10 +39,19 @@ export const createScheduleActionsEntity = ({ entityName, table, attributes }: P
             createdOn: {
                 type: "string"
             },
+            modifiedOn: {
+                type: "string"
+            },
             savedOn: {
                 type: "string"
             },
             createdBy: {
+                type: "map"
+            },
+            modifiedBy: {
+                type: "map"
+            },
+            savedBy: {
                 type: "map"
             },
             tenant: {

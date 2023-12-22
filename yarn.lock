@@ -16973,6 +16973,7 @@ __metadata:
     inquirer: 7.3.3
     load-json-file: 6.2.0
     lodash: ^4.17.20
+    open: ^8.4.0
     write-json-file: 4.3.0
   languageName: unknown
   linkType: soft
@@ -31333,9 +31334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-extended@npm:^3.2.4":
-  version: 3.2.4
-  resolution: "jest-extended@npm:3.2.4"
+"jest-extended@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "jest-extended@npm:4.0.2"
   dependencies:
     jest-diff: ^29.0.0
     jest-get-type: ^29.0.0
@@ -31344,7 +31345,7 @@ __metadata:
   peerDependenciesMeta:
     jest:
       optional: true
-  checksum: 16e4f300d9c5bf110f7f3422e49e06c968a99a44cede2b2821ddd480c33b3d9cd4dc58035b2f022e6018247da8f887295d6c2499647675dedb6e305142604e7d
+  checksum: afdc255eec7caa173f9e805e94562273d8b8aa4c7ab9b396668f018c18ea5236270a6ac499ca84b8c60e90ccbe9ccb4aebf998daef13aec9542c426df1df6079
   languageName: node
   linkType: hard
 
@@ -40784,7 +40785,7 @@ __metadata:
     inquirer-maxlength-input-prompt: ^1.0.0
     jest: ^29.5.0
     jest-environment-jsdom: ^29.5.0
-    jest-extended: ^3.2.4
+    jest-extended: ^4.0.0
     lerna: 3.22.1
     lint-staged: ^7.2.2
     listr: ^0.14.3

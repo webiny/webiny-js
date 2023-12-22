@@ -147,9 +147,13 @@ export interface ApwIdentity {
 export interface ApwBaseFields {
     id: string;
     entryId: string;
+
     createdOn: string;
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: ApwIdentity;
+    modifiedBy: ApwIdentity;
+    savedBy: ApwIdentity;
 }
 
 export interface ApwReviewer extends ApwBaseFields {

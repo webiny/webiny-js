@@ -391,7 +391,7 @@ describe("`filter` CRUD", () => {
             data: null,
             error: {
                 code: "NOT_FOUND",
-                message: "Entry not found!",
+                message: 'Entry by ID "any-id" not found.',
                 data: null
             }
         });
