@@ -7,4 +7,6 @@ export type Plugin<T = Record<string, any>> = {
     [key: string]: any;
 } & T;
 
-export type PluginCollection = (Plugin | PluginCollection)[];
+export type PluginCollection = (Plugin | PluginFactory | PluginCollection)[];
+
+export type PluginFactory = () => Promise<Plugin | PluginCollection>;

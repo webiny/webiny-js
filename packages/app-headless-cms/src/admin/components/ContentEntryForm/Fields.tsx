@@ -20,13 +20,7 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
-export const Fields: React.FC<FieldsProps> = ({
-    Bind,
-    fields,
-    layout,
-    contentModel,
-    gridClassName
-}) => {
+export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     return (
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (

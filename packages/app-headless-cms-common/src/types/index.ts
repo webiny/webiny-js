@@ -225,7 +225,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: React.FC;
+    Label: React.ComponentType;
     getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
     contentModel: CmsModel;
 }
@@ -374,7 +374,7 @@ export interface CmsContentEntryRevision {
     };
 }
 
-export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.ComponentType<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -533,7 +533,7 @@ interface BindComponentProps<T = any, F = any>
     children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent<T = any, F = any> = React.FC<BindComponentProps<T, F>> & {
+export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
     parentName?: string;
 };
 

@@ -65,7 +65,7 @@ export const prepareFormData = (
 
         if (field.multipleValues) {
             const values = Array.isArray(inputValue) ? inputValue : undefined;
-            if (!values?.length) {
+            if (!values) {
                 return output;
             }
             /**

@@ -5,7 +5,7 @@ import { usePage } from "@webiny/app-page-builder-elements";
 import { Menu } from "@webiny/app-website";
 import { Navigation } from "./Navigation";
 
-export const HeaderDesktop: React.FC = () => {
+export const HeaderDesktop = () => {
     const { layoutProps } = usePage();
     const { settings } = layoutProps;
     const { name, logo } = settings;

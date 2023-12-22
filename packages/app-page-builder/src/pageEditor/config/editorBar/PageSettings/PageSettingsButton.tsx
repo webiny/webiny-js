@@ -6,7 +6,7 @@ import { ReactComponent as SettingsIcon } from "./settings.svg";
 import { pageSettingsStateAtom } from "~/pageEditor/config/editorBar/PageSettings/state";
 import { EditorBar } from "~/editor";
 
-const PageSettingsButton: React.FC = () => {
+const PageSettingsButton = () => {
     const [, setState] = useRecoilState(pageSettingsStateAtom);
     const onClickHandler = useCallback(() => {
         setState(true);

@@ -4,7 +4,7 @@ import BlockCategoriesDataList from "./BlockCategoriesDataList";
 import BlockCategoriesForm from "./BlockCategoriesForm";
 import { useBlockCategoriesPermissions } from "~/hooks/permissions";
 
-const BlockCategories: React.FC = () => {
+const BlockCategories = () => {
     const { canCreate } = useBlockCategoriesPermissions();
 
     return (

@@ -44,7 +44,7 @@ interface HorizontalAlignActionPropsType extends PbEditorPageElementSettingsRend
     value: string;
     onChange: (type: AlignTypesType) => void;
 }
-const TextAlignment: React.FC<HorizontalAlignActionPropsType> = ({ value, onChange }) => {
+const TextAlignment = ({ value, onChange }: HorizontalAlignActionPropsType) => {
     return (
         <ContentWrapper>
             {alignments.map(type => (

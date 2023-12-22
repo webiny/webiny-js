@@ -45,7 +45,7 @@ export interface MenusDialogProps {
     children: any;
 }
 
-const MenusDialog: React.FC<MenusDialogProps> = ({ open, onClose, onSelect, children }) => {
+const MenusDialog = ({ open, onClose, onSelect, children }: MenusDialogProps) => {
     const { history } = useRouter();
     return (
         <Dialog

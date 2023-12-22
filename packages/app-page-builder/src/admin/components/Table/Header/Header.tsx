@@ -21,7 +21,7 @@ export interface HeaderProps {
     onSearchChange: (value: string) => void;
 }
 
-export const Header: React.VFC<HeaderProps> = ({
+export const Header = ({
     canCreateFolder,
     canCreateContent,
     onCreatePage,
@@ -31,7 +31,7 @@ export const Header: React.VFC<HeaderProps> = ({
     selected,
     searchValue,
     onSearchChange
-}) => {
+}: HeaderProps) => {
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>

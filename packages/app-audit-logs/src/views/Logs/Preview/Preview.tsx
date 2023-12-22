@@ -17,7 +17,7 @@ type HeaderProps = {
     hasAccessToUsers: boolean;
 };
 
-export const Preview: React.FC<HeaderProps> = ({ auditLog, onClose, hasAccessToUsers }) => {
+export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) => {
     if (!auditLog) {
         return null;
     }

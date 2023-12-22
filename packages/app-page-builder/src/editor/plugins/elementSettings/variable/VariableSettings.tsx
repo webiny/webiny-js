@@ -18,7 +18,7 @@ const labelStyle = css({
     }
 });
 
-const VariableSettings: React.FC = () => {
+const VariableSettings = () => {
     const [element] = useActiveElement();
 
     const variableRenderers = useMemo(() => {

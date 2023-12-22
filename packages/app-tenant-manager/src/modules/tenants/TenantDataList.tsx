@@ -40,7 +40,7 @@ const SORTERS: Sorter[] = [
     }
 ];
 
-const TenantDataList: React.FC = () => {
+const TenantDataList = () => {
     const {
         tenants,
         loading,

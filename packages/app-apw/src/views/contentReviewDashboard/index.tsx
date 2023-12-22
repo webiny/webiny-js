@@ -4,7 +4,11 @@ import { leftPanel } from "@webiny/app-admin/components/SplitView/SplitView";
 import { restGridStyles } from "../publishingWorkflows/components/Styled";
 import { ContentReviewDataList } from "./ContentReviewDataList";
 
-const LayoutCenter: React.FC = ({ children }) => {
+interface LayoutCenterProps {
+    children: React.ReactNode;
+}
+
+const LayoutCenter = ({ children }: LayoutCenterProps) => {
     return (
         <Grid className={restGridStyles}>
             <Cell span={3} />

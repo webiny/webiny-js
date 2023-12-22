@@ -116,14 +116,14 @@ export interface AccordionProps {
     className?: string;
 }
 
-const Accordion: React.FC<AccordionProps> = ({
+const Accordion = ({
     title,
     children,
     action,
     icon,
     defaultValue = false,
     className
-}) => {
+}: AccordionProps) => {
     const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 

@@ -26,7 +26,7 @@ interface InvalidFieldsProps {
     expanded: boolean;
 }
 
-const InvalidFields: React.VFC<InvalidFieldsProps> = ({ invalidFields, expanded }) => {
+const InvalidFields = ({ invalidFields, expanded }: InvalidFieldsProps) => {
     if (!expanded) {
         return null;
     }
@@ -40,11 +40,11 @@ const InvalidFields: React.VFC<InvalidFieldsProps> = ({ invalidFields, expanded 
     );
 };
 
-interface Props {
+interface DataListModelItemErrorProps {
     error: CmsErrorResponse;
 }
 
-export const DataListModelItemError: React.VFC<Props> = ({ error }) => {
+export const DataListModelItemError = ({ error }: DataListModelItemErrorProps) => {
     const [expanded, setExpanded] = useState(false);
 
     const toggleContainer = useCallback(() => {

@@ -38,9 +38,7 @@ const classes = {
 const STEP = 50;
 const MAX_VALUE = 3000;
 const DATA_NAMESPACE = "data.settings.animation";
-const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
-    defaultAccordionValue
-}) => {
+const Settings = ({ defaultAccordionValue }: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -174,9 +172,9 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FC<
-    AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = props => {
+type AnimationSettingsProps = AnimationSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps;
+const AnimationSettings = (props: AnimationSettingsProps) => {
     return <Settings {...props} />;
 };
 export default AnimationSettings;

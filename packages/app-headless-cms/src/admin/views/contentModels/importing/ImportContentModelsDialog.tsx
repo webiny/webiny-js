@@ -16,7 +16,7 @@ export interface ImportContentModelsDialogProps {
     onClose: () => void;
 }
 
-export const ImportContentModelsDialog: React.VFC<ImportContentModelsDialogProps> = props => {
+export const ImportContentModelsDialog = (props: ImportContentModelsDialogProps) => {
     const { onClose } = props;
 
     const onCloseClick = useCallback(() => {

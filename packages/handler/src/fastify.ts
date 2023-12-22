@@ -1,4 +1,4 @@
-import { PluginCollection } from "@webiny/plugins/types";
+import { PluginCollection, PluginsContainer } from "@webiny/plugins/types";
 import fastify, {
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
@@ -78,7 +78,7 @@ const OPTIONS_HEADERS: Record<string, string> = {
 };
 
 export interface CreateHandlerParams {
-    plugins: PluginCollection;
+    plugins: PluginCollection | PluginsContainer;
     options?: ServerOptions;
     debug?: boolean;
 }
@@ -236,21 +236,23 @@ export const createHandler = (params: CreateHandlerParams) => {
         }
     };
     let context: Context;
+
+    const plugins = new PluginsContainer([
+        /**
+         * We must have handlerClient by default.
+         * And it must be one of the first context plugins applied.
+         */
+        createHandlerClient()
+    ]);
+    plugins.merge(params.plugins || []);
+
     try {
         context = new Context({
-            plugins: [
-                /**
-                 * We must have handlerClient by default.
-                 * And it must be one of the first context plugins applied.
-                 */
-                createHandlerClient(),
-                ...(params.plugins || [])
-            ],
+            plugins,
             /**
-             * Inserted via webpack on build time.
+             * Inserted via webpack at build time.
              */
             WEBINY_VERSION: process.env.WEBINY_VERSION as string,
-            server: app,
             routes
         });
     } catch (ex) {

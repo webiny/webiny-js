@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
-import { FieldLayoutPositionType } from "~/types";
+import { FieldLayoutPositionType, Container, DropTargetType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -23,37 +23,24 @@ export interface DroppableCollectedProps {
 export interface IsVisibleCallableParams {
     type: string;
     isDragging: boolean;
+    ui: DropTargetType;
     name?: string;
-    ui: "row" | "field" | "conditionGroup" | "step";
     id?: string;
     pos: FieldLayoutPositionType;
-    container?: {
-        type: "step" | "conditionGroup";
-        id: string;
-    };
+    container?: Container;
 }
 export interface IsVisibleCallable {
     (params: IsVisibleCallableParams): boolean;
 }
-/*
-    We need to extend DragObjectWithType type because it does not support fields,
-    that we set through "beginDrag".
-    * "ui" propetry gives us information about the Entity that we are moving.
-    "Entity" can be step, field, row or conditionGroup.
-    * "name" property contains the type of the field, it can be text, number or one of the available fields.
-    * "pos" propety contains info about Entity position that we are moving.
-    * "container" propety contains info about source "Entity".
-    pos can be undefined in case we are moving field from a "Custom Field" menu.
-*/
+
+// We need to extend DragObjectWithType type because it does not support fields,
+// that we set through "beginDrag".
 export interface DragObjectWithFieldInfo extends DragObjectWithType {
-    ui: "row" | "field" | "conditionGroup" | "step";
+    ui: DropTargetType;
     name: string;
     id?: string;
     pos: FieldLayoutPositionType;
-    container: {
-        type: "step" | "conditionGroup";
-        id: string;
-    };
+    container?: Container;
 }
 export interface OnDropCallable {
     (item: DragObjectWithFieldInfo): DroppableDropResult | undefined;
@@ -67,7 +54,7 @@ export interface DroppableProps {
     onDrop?: OnDropCallable;
 }
 
-const DroppableComponent: React.FC<DroppableProps> = props => {
+const DroppableComponent = (props: DroppableProps) => {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop<
@@ -95,4 +82,4 @@ const DroppableComponent: React.FC<DroppableProps> = props => {
     return children({ isDragging: Boolean(item), isOver, item, drop });
 };
 
-export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);
+export const Droppable: React.ComponentType<DroppableProps> = React.memo(DroppableComponent);

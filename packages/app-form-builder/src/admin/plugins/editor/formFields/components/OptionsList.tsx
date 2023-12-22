@@ -76,11 +76,9 @@ interface SortableContainerProps {
     transitionDuration: number;
     onSortEnd: OnSortEndCallable;
 }
-const SortableContainer: React.FC<SortableContainerProps> = sortableContainer(
-    ({ children }: SortableContainerProps) => {
-        return <OptionList>{children}</OptionList>;
-    }
-);
+const SortableContainer = sortableContainer(({ children }: SortableContainerProps) => {
+    return <OptionList>{children}</OptionList>;
+});
 
 interface SetEditOptionParams {
     index: number | null;
@@ -96,7 +94,7 @@ interface SortableItemProps {
     Bind: BindComponent;
     index: number;
 }
-const SortableItem: React.FC<SortableItemProps> = sortableElement(
+const SortableItem = sortableElement(
     ({
         setOptionsValue,
         setEditOption,
@@ -135,7 +133,7 @@ interface OptionsListBindParams {
     onChange: (values: FieldOption[]) => void;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }) => {
+const OptionsList = ({ form, multiple, otherOption }: OptionsListProps) => {
     const { Bind } = form;
 
     const [editOption, setEditOption] = useState<SetEditOptionParams>({

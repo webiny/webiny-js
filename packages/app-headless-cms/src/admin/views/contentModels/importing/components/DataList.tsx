@@ -10,7 +10,7 @@ const getGroupModels = (group: ImportGroupData, models?: ImportModelData[] | nul
     return models.filter(model => model.group === group.id);
 };
 
-export const DataList: React.VFC = () => {
+export const DataList = () => {
     const { groups, models } = useImport();
     if (!groups) {
         return null;

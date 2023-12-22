@@ -36,7 +36,7 @@ interface EditBlockDialogProps {
     loading: boolean;
 }
 
-const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
+const EditBlockDialog = (props: EditBlockDialogProps) => {
     const { open, onClose, onSubmit, plugin, loading } = props;
 
     const blockCategoryPlugins = plugins.byType<PbEditorBlockCategoryPlugin>(

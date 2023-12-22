@@ -6,12 +6,12 @@ export const RendererContext = createContext<RendererContextValue>(
     null as unknown as RendererContextValue
 );
 
-export const RendererProvider: React.FC<RendererProviderProps> = ({
+export const RendererProvider = ({
     children,
     element,
     attributes,
     meta
-}) => {
+}: RendererProviderProps) => {
     const getElement = () => element;
     const getAttributes = () => attributes;
 

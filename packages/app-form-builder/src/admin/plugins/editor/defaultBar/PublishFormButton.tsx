@@ -15,7 +15,7 @@ import { usePermission } from "~/hooks/usePermission";
 
 const t = i18n.namespace("FormEditor.PublishPageButton");
 
-const PublishFormButton: React.FC = () => {
+const PublishFormButton = () => {
     const {
         state: { data }
     } = useFormEditor();

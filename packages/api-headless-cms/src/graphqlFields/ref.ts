@@ -167,12 +167,15 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                          * We cast because value really can be array and single value.
                          * At this point, we are 99% sure that it is an array (+ we check for it)
                          */
-                        const value = initialValue as RefFieldValue[];
-                        if (Array.isArray(value) === false || value.length === 0) {
+                        const referenceFieldValues = initialValue as RefFieldValue[];
+                        if (
+                            Array.isArray(referenceFieldValues) === false ||
+                            referenceFieldValues.length === 0
+                        ) {
                             return [];
                         }
 
-                        const entriesByModel = value.reduce((collection, ref) => {
+                        const entriesByModel = referenceFieldValues.reduce((collection, ref) => {
                             if (!collection[ref.modelId]) {
                                 collection[ref.modelId] = [];
                             } else if (collection[ref.modelId].includes(ref.entryId) === true) {
@@ -198,13 +201,25 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                             else {
                                 entries = await model.getLatestByIds(idList);
                             }
-
                             return appendTypename(entries, modelIdToTypeName.get(modelId));
                         });
 
-                        return await Promise.all(getters).then((results: any[]) =>
-                            results.reduce((result, item) => result.concat(item), [])
+                        const references = await Promise.all(getters).then(
+                            (results: CmsEntry[][]) => {
+                                return results.reduce((result, item) => {
+                                    return result.concat(item);
+                                }, []);
+                            }
                         );
+                        /**
+                         * We need to return the referenced entries in the same order they are in the ref field.
+                         * Maybe implement user defined sorting in the future?
+                         */
+                        return referenceFieldValues
+                            .map(v => {
+                                return references.find(ref => ref.entryId === v.entryId);
+                            })
+                            .filter(Boolean);
                     }
 
                     const value = initialValue as RefFieldValue;

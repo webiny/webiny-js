@@ -207,7 +207,7 @@ interface Props {
     dropRef?: React.RefCallback<any>;
 }
 
-export const ElementControlsOverlay: React.FC<Props> = props => {
+export const ElementControlsOverlay = (props: Props) => {
     const [{ isDragging }, setUi] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 

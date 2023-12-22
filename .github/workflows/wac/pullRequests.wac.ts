@@ -217,6 +217,7 @@ export const pullRequests = createWorkflow({
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
         jestTestsDdbEs: createJestTestsJob("ddb-es"),
+        jestTestsDdbOs: createJestTestsJob("ddb-os"),
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",

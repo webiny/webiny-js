@@ -75,7 +75,7 @@ export interface PageItemProps {
     LinkComponent: LinkComponent;
 }
 
-const PagesListItem: React.FC<PageItemProps> = ({ data, LinkComponent }) => {
+const PagesListItem = ({ data, LinkComponent }: PageItemProps) => {
     const image = data?.images.general?.src;
 
     return (
@@ -101,7 +101,7 @@ const PagesListItem: React.FC<PageItemProps> = ({ data, LinkComponent }) => {
     );
 };
 
-const SkeletonPagesListItem: React.FC = () => {
+const SkeletonPagesListItem = () => {
     return (
         <pb-pages-list-default-list-li>
             <pb-pages-list-default-list-li-img style={{ backgroundColor: "lightgray" }} />
@@ -117,11 +117,13 @@ export interface CreateDefaultPagesListComponentParams {
     linkComponent?: LinkComponent;
 }
 
-const PbPagesListDefault: React.FC<{ className?: string; style: React.CSSProperties }> = ({
-    className,
-    style,
-    children
-}) => (
+interface PbPagesListDefaultProps {
+    className?: string;
+    style: React.CSSProperties;
+    children: React.ReactNode;
+}
+
+const PbPagesListDefault = ({ className, style, children }: PbPagesListDefaultProps) => (
     <pb-pages-list-default class={className} style={style}>
         {children}
     </pb-pages-list-default>

@@ -21,7 +21,7 @@ export type TabProps = RmwcTabProps & {
     "data-testid"?: string;
 };
 
-export const Tab: React.FC<TabProps> = React.memo(props => {
+export const Tab = React.memo((props: TabProps) => {
     const tabsContext = useContext(TabsContext);
     const idRef = useRef(shortid.generate());
 
