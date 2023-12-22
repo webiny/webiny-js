@@ -41,6 +41,7 @@ import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
+import { createContinuingTask } from "~/plugins/continuingTask";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -123,7 +124,8 @@ export const handler = createHandler({
             });
         }),
         createAuditLogs(),
-        createCountDynamoDbTask()
+        createCountDynamoDbTask(),
+        createContinuingTask()
     ],
     debug
 });
