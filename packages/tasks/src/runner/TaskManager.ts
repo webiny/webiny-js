@@ -91,7 +91,8 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
 
         if (result.status === TaskResponseStatus.CONTINUE) {
             return this.response.continue({
-                values: result.values
+                values: result.values,
+                wait: result.wait
             });
         } else if (result.status === TaskResponseStatus.ERROR) {
             return this.response.error({

@@ -50,7 +50,8 @@ export class Response implements IResponse {
             values: params.values,
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             tenant: params?.tenant || this.event.tenant,
-            locale: params?.locale || this.event.locale
+            locale: params?.locale || this.event.locale,
+            wait: params.wait
         });
     }
 

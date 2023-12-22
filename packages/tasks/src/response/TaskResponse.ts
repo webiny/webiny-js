@@ -2,12 +2,30 @@ import {
     IResponse,
     IResponseError,
     ITaskResponse,
+    ITaskResponseAbortedResult,
+    ITaskResponseContinueOptions,
     ITaskResponseContinueResult,
     ITaskResponseDoneResult,
-    ITaskResponseErrorResult,
-    ITaskResponseAbortedResult
+    ITaskResponseErrorResult
 } from "./abstractions";
 import { ITaskDataValues } from "~/types";
+
+/**
+ * There are options to send:
+ * * seconds - number of seconds to wait
+ * * date - date until which to wait
+ */
+const getWaitingTime = (options?: ITaskResponseContinueOptions): number | undefined => {
+    if (!options) {
+        return undefined;
+    } else if ("seconds" in options) {
+        return options.seconds;
+    } else if ("date" in options) {
+        const now = new Date();
+        return (options.date.getTime() - now.getTime()) / 1000;
+    }
+    return undefined;
+};
 
 export class TaskResponse implements ITaskResponse {
     private readonly response: IResponse;
@@ -22,9 +40,20 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public continue<T = ITaskDataValues>(values: T): ITaskResponseContinueResult {
+    public continue<T = ITaskDataValues>(
+        values: T,
+        options?: ITaskResponseContinueOptions
+    ): ITaskResponseContinueResult {
+        const wait = getWaitingTime(options);
+        if (!wait || wait < 1) {
+            console.log(`continue() - wait time is less than 1 second, continuing immediately...`);
+            return this.response.continue({
+                values
+            });
+        }
         return this.response.continue({
-            values
+            values,
+            wait
         });
     }
 

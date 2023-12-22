@@ -8,6 +8,7 @@ export class ResponseContinueResult<T = ITaskDataValues> implements IResponseCon
     public readonly locale: string;
     public readonly status: TaskResponseStatus.CONTINUE = TaskResponseStatus.CONTINUE;
     public readonly values: T;
+    public readonly wait?: number;
 
     public constructor(params: Omit<IResponseContinueResult<T>, "status">) {
         this.message = params.message;
@@ -15,5 +16,6 @@ export class ResponseContinueResult<T = ITaskDataValues> implements IResponseCon
         this.tenant = params.tenant;
         this.locale = params.locale;
         this.values = params.values;
+        this.wait = params.wait;
     }
 }
