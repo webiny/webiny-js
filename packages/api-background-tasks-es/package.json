@@ -1,6 +1,5 @@
 {
   "name": "@webiny/api-background-tasks-es",
-  "private": true,
   "version": "0.0.0",
   "main": "index.js",
   "repository": {
