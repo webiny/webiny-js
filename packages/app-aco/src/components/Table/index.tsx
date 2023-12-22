@@ -1,3 +1,3 @@
+export * from "./components";
 export * from "./createTableData";
-export * from "./Table";
 export * from "./useTableRow";

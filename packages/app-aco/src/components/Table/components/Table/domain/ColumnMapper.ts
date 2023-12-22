@@ -1,6 +1,6 @@
+import React from "react";
 import { Column as DataTableColumn } from "@webiny/ui/DataTable";
 import { Column, ColumnDTO } from "./Column";
-import React from "react";
 
 export class ColumnMapper {
     static toDTO(column: Column | ColumnDTO): ColumnDTO {

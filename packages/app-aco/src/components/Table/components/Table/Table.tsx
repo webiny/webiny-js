@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Columns, DataTable, DefaultData, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { observer } from "mobx-react-lite";
-import { TablePresenter } from "~/components/Table/TablePresenter";
+
 import { TableRowProvider } from "~/components/Table/useTableRow";
 import {
-    columnRepositoryFactory,
+    columnsRepositoryFactory,
+    Column,
     ColumnMapper,
-    ColumnRepository,
-    DataRepository,
-    dataRepositoryFactory
-} from "~/components/Table/domain";
+    columnsVisibilityRepositoryFactory,
+    ColumnsVisibilityDecorator
+} from "./domain";
+import { ColumnsVisibilityLocalStorageGateway } from "./gateways";
+import { ColumnsPresenter } from "./ColumnsPresenter";
+import { ColumnsVisibilityUpdater } from "./ColumnsVisibilityUpdater";
+import { TablePresenter } from "./TablePresenter";
 import { useAcoConfig } from "~/config";
-
-import { Column } from "./domain";
-import { ColumnPresenter } from "./ColumnPresenter";
-import { DataPresenter } from "./DataPresenter";
 
 export interface TableProps<T> {
     data: T[];
@@ -32,30 +32,33 @@ export const Table = observer(
     <T extends Record<string, any> & DefaultData>(props: TableProps<T>) => {
         const { table } = useAcoConfig();
 
-        const columnRepository = useMemo<ColumnRepository>(() => {
-            return columnRepositoryFactory.getRepository(
+        const columnsRepo = useMemo(() => {
+            return columnsRepositoryFactory.getRepository(
                 props.namespace,
                 table.columns.map(column => Column.createFromConfig(column))
             );
         }, [props.namespace, table.columns]);
 
-        const dataRepository = useMemo<DataRepository<T>>(() => {
-            return dataRepositoryFactory.getRepository<T>(props.namespace);
+        const visibilityRepo = useMemo(() => {
+            const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(
+                props.namespace
+            );
+
+            return columnsVisibilityRepositoryFactory.getRepository(
+                props.namespace,
+                columnsVisibilityLocalStorage
+            );
         }, [props.namespace]);
 
+        const repo = useMemo(() => {
+            return new ColumnsVisibilityDecorator(visibilityRepo, columnsRepo);
+        }, [props.namespace, table.columns]);
+
         const presenter = useMemo<TablePresenter<T>>(() => {
-            const columnPresenter = new ColumnPresenter(columnRepository);
-            const dataPresenter = new DataPresenter(dataRepository);
-            return new TablePresenter<T>(columnPresenter, dataPresenter);
-        }, [columnRepository]);
-
-        useEffect(() => {
-            presenter.loadData(props.data);
-        }, [props.data]);
-
-        useEffect(() => {
-            presenter.loadSelected(props.selected);
-        }, [props.selected]);
+            const columnsVisibilityUpdater = new ColumnsVisibilityUpdater(visibilityRepo);
+            const columnsPresenter = new ColumnsPresenter(columnsVisibilityUpdater, repo);
+            return new TablePresenter<T>(columnsPresenter);
+        }, [repo]);
 
         const cellRenderer = useCallback(
             (row: T, cell: string | React.ReactElement): string | number | JSX.Element | null => {
@@ -78,21 +81,23 @@ export const Table = observer(
 
                 return result;
             }, {} as Columns<T>);
-        }, [presenter.vm.columns]);
+        }, [table.columns]);
 
         return (
             <DataTable
                 columns={columns}
-                columnVisibility={presenter.vm.columnVisibility}
-                data={presenter.vm.data}
-                initialSorting={presenter.vm.initialSorting}
-                isRowSelectable={presenter.enableRowSelection}
-                loadingInitial={props.loading}
+                columnVisibility={presenter.vm.columnsVisibility}
                 onColumnVisibilityChange={presenter.updateColumnVisibility}
+                data={props.data}
+                initialSorting={presenter.vm.initialSorting}
+                isRowSelectable={row => row.original.$selectable ?? false}
+                loadingInitial={props.loading}
                 onSelectRow={props.onSelectRow}
                 onSortingChange={props.onSortingChange}
                 onToggleRow={props.onToggleRow}
-                selectedRows={presenter.vm.selected}
+                selectedRows={props.data.filter(row =>
+                    props.selected.find(item => row.id === item.id)
+                )}
                 sorting={props.sorting}
                 stickyRows={1}
             />
