@@ -1,5 +1,4 @@
-import pick from "lodash/pick";
-import { CmsContext, CmsEntry, HeadlessCms } from "@webiny/api-headless-cms/types";
+import { CmsContext, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { ApwStorageOperations } from "~/types";
 import { createReviewerStorageOperations } from "./reviewerStorageOperations";
 import { createWorkflowStorageOperations } from "./workflowStorageOperations";
@@ -14,16 +13,6 @@ export interface CreateApwStorageOperationsParams {
     security: Security;
     getCmsContext: () => CmsContext;
 }
-
-/**
- * Using any because value can be a lot of types.
- * TODO @ts-refactor figure out correct types.
- */
-export function getFieldValues(entry: CmsEntry, fields: string[]): any {
-    return { ...pick(entry, fields), ...entry.values };
-}
-
-export const baseFields = ["id", "entryId", "createdBy", "createdOn", "savedOn"];
 
 export const createStorageOperations = (
     params: CreateApwStorageOperationsParams
