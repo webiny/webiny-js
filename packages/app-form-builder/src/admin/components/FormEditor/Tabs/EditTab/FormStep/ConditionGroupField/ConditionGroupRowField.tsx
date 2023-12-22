@@ -1,29 +1,28 @@
-import React, { useCallback, useMemo } from "react";
-import { FbFormModelField, FbFormStep } from "~/types";
+import React, { useMemo, useCallback } from "react";
 import Draggable, { BeginDragProps } from "~/admin/components/FormEditor/Draggable";
-import Field from "~/admin/components/FormEditor/Tabs/EditTab/Field";
-import { FieldHandle, FieldContainer } from "~/admin/components/FormEditor/Tabs/EditTab/Styled";
-
-import { Vertical } from "~/admin/components/FormEditor/DropZone";
-import { useFormStep } from "~/admin/components/FormEditor/Tabs/EditTab/FormStep/useFormStep";
 import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
-import { useFormEditor } from "~/admin/components/FormEditor";
-import ConditionalGroupField from "../ConditionGroupField/ConditionGroup";
+import { FbFormModelField } from "~/types";
+import { useConditionGroup } from "./useConditionGroup";
+import { FieldContainer, FieldHandle } from "../../Styled";
+import { Vertical } from "~/admin/components/FormEditor/DropZone";
+import Field from "../../Field";
+import { useFormEditor } from "~/admin/components/FormEditor/Context";
 
-export interface FormStepFieldRowFieldProps {
-    formStep: FbFormStep;
+export interface ConditionGroupRowFieldProps {
+    conditionGroup: FbFormModelField;
     row: FbFormModelField[];
     rowIndex: number;
     field: FbFormModelField;
     fieldIndex: number;
 }
 
-export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
-    const { formStep, row, rowIndex, field, fieldIndex } = props;
-    const { handleDrop, editField } = useFormStep();
-    const { deleteField, deleteConditionGroup } = useFormEditor();
+export const ConditionGroupRowField = (props: ConditionGroupRowFieldProps) => {
+    const { conditionGroup, row, rowIndex, field, fieldIndex } = props;
 
-    const fieldBeginDragParams: BeginDragProps = useMemo(() => {
+    const { handleDrop, editField } = useConditionGroup();
+    const { deleteField } = useFormEditor();
+
+    const beginFieldDragParams: BeginDragProps = useMemo(() => {
         return {
             ui: "field",
             name: field.name,
@@ -33,17 +32,17 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
                 index: fieldIndex
             },
             container: {
-                type: "step",
-                id: formStep.id
+                type: "conditionGroup",
+                id: conditionGroup._id
             }
         };
-    }, [field, fieldIndex, formStep, rowIndex]);
+    }, [field, fieldIndex, conditionGroup, rowIndex]);
 
     const onFieldVerticalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
             handleDrop({
                 item,
-                formStep,
+                conditionGroup,
                 destinationPosition: {
                     row: rowIndex,
                     index: fieldIndex
@@ -52,14 +51,14 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [handleDrop, formStep, rowIndex, fieldIndex]
+        [handleDrop, conditionGroup, rowIndex, fieldIndex]
     );
 
     const onLastFieldVerticalZoneDrop = useCallback(
         (item: DragObjectWithFieldInfo) => {
             handleDrop({
                 item,
-                formStep,
+                conditionGroup,
                 destinationPosition: {
                     row: rowIndex,
                     index: fieldIndex + 1
@@ -68,17 +67,21 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
 
             return undefined;
         },
-        [handleDrop, formStep, rowIndex, fieldIndex]
+        [handleDrop, conditionGroup, rowIndex, fieldIndex]
     );
 
     const onDeleteField = useCallback(() => {
-        deleteField({ field, containerId: formStep.id });
-    }, [field, formStep]);
+        deleteField({
+            field,
+            containerId: conditionGroup._id || "",
+            containerType: "conditionGroup"
+        });
+    }, [field, conditionGroup]);
 
     const isLastField = fieldIndex === row.length - 1;
 
     return (
-        <Draggable key={`step-field-${fieldIndex}`} beginDrag={fieldBeginDragParams}>
+        <Draggable beginDrag={beginFieldDragParams} key={`condition-group-field-${fieldIndex}`}>
             {({ drag }) => (
                 <FieldContainer ref={drag}>
                     <Vertical
@@ -89,22 +92,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
                     />
 
                     <FieldHandle>
-                        {field.name === "conditionGroup" ? (
-                            <ConditionalGroupField
-                                field={field}
-                                onDelete={deleteField}
-                                formStep={formStep}
-                                deleteConditionGroup={deleteConditionGroup}
-                                targetStepId={formStep.id}
-                                onEdit={editField}
-                            />
-                        ) : (
-                            <Field
-                                field={field}
-                                onEdit={editField}
-                                onDelete={() => onDeleteField()}
-                            />
-                        )}
+                        <Field field={field} onEdit={editField} onDelete={() => onDeleteField()} />
                     </FieldHandle>
 
                     {isLastField && (

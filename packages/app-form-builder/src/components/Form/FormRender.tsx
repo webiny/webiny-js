@@ -77,7 +77,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
     // so it won't trigger an error when we trying to view the step that we have deleted,
-    // we will simpy change currentStep to the first step.
+    // we will simply change currentStep to the first step.
     useEffect(() => {
         setCurrentStepIndex(0);
         setModifiedSteps(data.steps);
@@ -168,23 +168,28 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                 if (!field) {
                     return;
                 }
-
                 if (field.settings.rules !== undefined) {
-                    field.settings?.rules.forEach((rule: FbFormRule) => {
-                        if (checkIfConditionsMet({ formData: formState, rule })) {
-                            if (rule.action === "show") {
-                                fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                    if (field.settings?.rules.length) {
+                        field.settings.rules.forEach((rule: FbFormRule) => {
+                            if (checkIfConditionsMet({ formData: formState, rule })) {
+                                if (rule.action === "show") {
+                                    fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                                } else {
+                                    fieldLayout.splice(fieldIndex, field.settings.layout.length, [
+                                        field._id
+                                    ]);
+                                }
                             } else {
-                                fieldLayout.splice(fieldIndex, field.settings.layout.length, [
-                                    field._id
-                                ]);
+                                if (field.settings.defaultBehaviour === "show") {
+                                    fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                                }
                             }
-                        } else {
-                            if (field.settings.defaultBehaviour === "show") {
-                                fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
-                            }
+                        });
+                    } else {
+                        if (field.settings.defaultBehaviour === "show") {
+                            fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
                         }
-                    });
+                    }
                 }
             });
         });

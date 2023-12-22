@@ -1,42 +1,46 @@
-import { useCallback } from "react";
-import { useFormEditor } from "~/admin/components/FormEditor";
+import { useCallback, useContext } from "react";
+import { useFormEditor } from "~/admin/components/FormEditor/Context";
 import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
-import { DropTarget, DropSource, DropDestination, FbFormModelField } from "~/types";
+import { DropDestination, DropPosition, DropSource, DropTarget, FbFormModelField } from "~/types";
+import { FormStepContext } from "../FormStepContext/FormStepContext";
+import { useFormStep } from "../useFormStep";
 
-interface UseFormDragParams {
-    editField: (field: FbFormModelField | null) => void;
-    setDropDestination: (desitnation: DropDestination | null) => void;
-}
-
-interface HadleDropParams {
-    target: DropTarget;
-    source: DropSource;
-    destination: DropDestination;
-}
-
-interface CreateCustomFieldParams {
-    data: FbFormModelField;
-    dropDestination: DropDestination;
-}
-
-export interface ComposeHadleDropParams {
+interface HandleDropParams {
     item: DragObjectWithFieldInfo;
-    destination: DropDestination;
+    destinationPosition: DropPosition;
+    conditionGroup: FbFormModelField;
 }
 
-export const useFormDragAndDrop = (params: UseFormDragParams) => {
+export const useConditionGroup = () => {
     const { data, moveRow, moveField, getFieldPlugin, insertField } = useFormEditor();
+    const { editField } = useFormStep();
 
-    const { editField, setDropDestination } = params;
+    const { setDropDestination } = useContext(FormStepContext);
 
     const handleDrop = useCallback(
-        (params: HadleDropParams) => {
-            const { target, source, destination } = params;
+        (params: HandleDropParams) => {
+            const { item, conditionGroup, destinationPosition } = params;
+
+            const target: DropTarget = {
+                type: item.ui,
+                id: item.id,
+                name: item.name
+            };
+
+            const source: DropSource = {
+                containerId: item?.container?.id,
+                containerType: item?.container?.type,
+                position: item.pos
+            };
+
+            const destination: DropDestination = {
+                containerId: conditionGroup._id,
+                containerType: "conditionGroup",
+                position: destinationPosition
+            };
 
             if (target.name === "custom") {
-                /**
-                 * We can cast because field is empty in the start
-                 */
+                // We can cast because field is empty in the start.
                 editField({} as FbFormModelField);
                 setDropDestination(destination);
                 return;
@@ -57,19 +61,15 @@ export const useFormDragAndDrop = (params: UseFormDragParams) => {
                     console.log(source);
                     return;
                 }
-
                 const sourceContainer =
                     source.containerType === "conditionGroup"
                         ? data.fields.find(f => f._id === source.containerId)?.settings
                         : data.steps.find(step => step.id === source.containerId);
-
                 const fieldId = sourceContainer?.layout[source.position.row][source.position.index];
-
                 if (!fieldId) {
                     console.log("Missing data when moving field.");
                     return;
                 }
-
                 moveField({ field: fieldId, target, source, destination });
                 return;
             }
@@ -82,58 +82,17 @@ export const useFormDragAndDrop = (params: UseFormDragParams) => {
             insertField({
                 data: plugin.field.createField(),
                 target,
+                source,
                 destination
             });
+
+            return undefined;
         },
         [data]
     );
 
-    const composeHandleDropParams = (params: ComposeHadleDropParams) => {
-        const { item, destination } = params;
-
-        // We don't want to drop steps inside of steps.
-        if (item.ui === "step") {
-            return undefined;
-        }
-
-        handleDrop({
-            target: {
-                type: item.ui,
-                id: item.id,
-                name: item.name
-            },
-            source: {
-                containerId: item.container?.id,
-                containerType: item.container?.type,
-                position: item.pos
-            },
-            destination
-        });
-
-        return undefined;
-    };
-
-    const createCustomField = (params: CreateCustomFieldParams) => {
-        const { data, dropDestination } = params;
-
-        insertField({
-            data,
-            target: {
-                id: data._id,
-                type: "field",
-                name: data.name
-            },
-            destination: {
-                containerType: dropDestination.containerType,
-                containerId: dropDestination.containerId,
-                position: dropDestination.position
-            }
-        });
-    };
-
     return {
         handleDrop,
-        composeHandleDropParams,
-        createCustomField
+        editField
     };
 };
