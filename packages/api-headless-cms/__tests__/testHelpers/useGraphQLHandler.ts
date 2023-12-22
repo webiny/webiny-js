@@ -58,6 +58,8 @@ export interface InvokeParams {
         variables?: Record<string, any>;
     };
     headers?: Record<string, string>;
+    path?: string;
+    getResponse?: (result: any) => any;
 }
 
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
@@ -83,6 +85,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         httpMethod = "POST",
         body,
         headers = {},
+        path: customPath,
+        getResponse,
         ...rest
     }: InvokeParams): Promise<[T, any]> => {
         const response = await handler(
@@ -90,7 +94,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 /**
                  * If no path defined, use /graphql as we want to make request to main api
                  */
-                path: path ? `/cms/${path}` : "/graphql",
+                path: customPath ? customPath : path ? `/cms/${path}` : "/graphql",
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
@@ -102,6 +106,9 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             } as unknown as APIGatewayEvent,
             {} as unknown as LambdaContext
         );
+        if (getResponse) {
+            return getResponse(response) as any;
+        }
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
     };
