@@ -1,8 +1,37 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
+import {
+    ENTRY_META_FIELDS,
+    isDateTimeEntryMetaField,
+    isIdentityEntryMetaField
+} from "@webiny/api-headless-cms/constants";
+import lodashStartCase from "lodash/startCase";
 
 type Field = Pick<CmsModelField, "id" | "type" | "storageId" | "fieldId" | "settings" | "label">;
 
 export const createSystemFields = (): Field[] => {
+    const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).map(fieldName => {
+        return {
+            id: fieldName,
+            type: "datetime",
+            storageId: fieldName,
+            fieldId: fieldName,
+            label: lodashStartCase(fieldName)
+        };
+    });
+
+    const byMetaFields = ENTRY_META_FIELDS.filter(isIdentityEntryMetaField).map(fieldName => {
+        return {
+            id: fieldName,
+            type: "plainObject",
+            storageId: fieldName,
+            fieldId: fieldName,
+            label: lodashStartCase(fieldName),
+            settings: {
+                path: `${fieldName}.id`
+            }
+        };
+    });
+
     return [
         {
             id: "id",
@@ -18,6 +47,10 @@ export const createSystemFields = (): Field[] => {
             fieldId: "entryId",
             label: "Entry ID"
         },
+        /**
+         * 🚫 Deprecated meta fields below.
+         * Will be fully removed in one of the next releases.
+         */
         {
             id: "createdOn",
             type: "datetime",
@@ -42,6 +75,24 @@ export const createSystemFields = (): Field[] => {
                 path: "createdBy.id"
             }
         },
+        {
+            id: "ownedBy",
+            type: "plainObject",
+            storageId: "ownedBy",
+            fieldId: "ownedBy",
+            label: "Owned By",
+            settings: {
+                path: "ownedBy.id"
+            }
+        },
+
+        /**
+         * 🆕 New meta fields below.
+         * Users are encouraged to use these instead of the deprecated ones above.
+         */
+        ...onMetaFields,
+        ...byMetaFields,
+
         {
             id: "meta",
             type: "plainObject",
@@ -70,16 +121,7 @@ export const createSystemFields = (): Field[] => {
                 ]
             }
         },
-        {
-            id: "ownedBy",
-            type: "plainObject",
-            storageId: "ownedBy",
-            fieldId: "ownedBy",
-            label: "Owned By",
-            settings: {
-                path: "ownedBy.id"
-            }
-        },
+
         {
             id: "version",
             type: "number",

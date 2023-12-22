@@ -50,6 +50,116 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Saved On"
     },
+    revisionCreatedOn: {
+        id: "revisionCreatedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionCreatedOn",
+        fieldId: "revisionCreatedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Created On"
+    },
+    revisionModifiedOn: {
+        id: "revisionModifiedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionModifiedOn",
+        fieldId: "revisionModifiedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Modified On"
+    },
+    revisionSavedOn: {
+        id: "revisionSavedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionSavedOn",
+        fieldId: "revisionSavedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Saved On"
+    },
+    revisionFirstPublishedOn: {
+        id: "revisionFirstPublishedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionFirstPublishedOn",
+        fieldId: "revisionFirstPublishedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision First Published On"
+    },
+    revisionLastPublishedOn: {
+        id: "revisionLastPublishedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionLastPublishedOn",
+        fieldId: "revisionLastPublishedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Last Published On"
+    },
+    entryCreatedOn: {
+        id: "entryCreatedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "entryCreatedOn",
+        fieldId: "entryCreatedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Created On"
+    },
+    entryModifiedOn: {
+        id: "entryModifiedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "entryModifiedOn",
+        fieldId: "entryModifiedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Modified On"
+    },
+    entrySavedOn: {
+        id: "entrySavedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "entrySavedOn",
+        fieldId: "entrySavedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Saved On"
+    },
+    entryFirstPublishedOn: {
+        id: "entryFirstPublishedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "entryFirstPublishedOn",
+        fieldId: "entryFirstPublishedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry First Published On"
+    },
+    entryLastPublishedOn: {
+        id: "entryLastPublishedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "entryLastPublishedOn",
+        fieldId: "entryLastPublishedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Last Published On"
+    },
     createdBy: {
         id: "createdBy",
         parents: [],
@@ -62,6 +172,146 @@ const expectedSystemFields: Record<string, Field> = {
         label: "Created By",
         settings: {
             path: "createdBy.id"
+        }
+    },
+    revisionCreatedBy: {
+        id: "revisionCreatedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionCreatedBy",
+        fieldId: "revisionCreatedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Created By",
+        settings: {
+            path: "revisionCreatedBy.id"
+        }
+    },
+    revisionModifiedBy: {
+        id: "revisionModifiedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionModifiedBy",
+        fieldId: "revisionModifiedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Modified By",
+        settings: {
+            path: "revisionModifiedBy.id"
+        }
+    },
+    revisionSavedBy: {
+        id: "revisionSavedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionSavedBy",
+        fieldId: "revisionSavedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Saved By",
+        settings: {
+            path: "revisionSavedBy.id"
+        }
+    },
+    revisionFirstPublishedBy: {
+        id: "revisionFirstPublishedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionFirstPublishedBy",
+        fieldId: "revisionFirstPublishedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision First Published By",
+        settings: {
+            path: "revisionFirstPublishedBy.id"
+        }
+    },
+    revisionLastPublishedBy: {
+        id: "revisionLastPublishedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionLastPublishedBy",
+        fieldId: "revisionLastPublishedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Last Published By",
+        settings: {
+            path: "revisionLastPublishedBy.id"
+        }
+    },
+    entryCreatedBy: {
+        id: "entryCreatedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "entryCreatedBy",
+        fieldId: "entryCreatedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Created By",
+        settings: {
+            path: "entryCreatedBy.id"
+        }
+    },
+    entryModifiedBy: {
+        id: "entryModifiedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "entryModifiedBy",
+        fieldId: "entryModifiedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Modified By",
+        settings: {
+            path: "entryModifiedBy.id"
+        }
+    },
+    entrySavedBy: {
+        id: "entrySavedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "entrySavedBy",
+        fieldId: "entrySavedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Saved By",
+        settings: {
+            path: "entrySavedBy.id"
+        }
+    },
+    entryFirstPublishedBy: {
+        id: "entryFirstPublishedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "entryFirstPublishedBy",
+        fieldId: "entryFirstPublishedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry First Published By",
+        settings: {
+            path: "entryFirstPublishedBy.id"
+        }
+    },
+    entryLastPublishedBy: {
+        id: "entryLastPublishedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "entryLastPublishedBy",
+        fieldId: "entryLastPublishedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Entry Last Published By",
+        settings: {
+            path: "entryLastPublishedBy.id"
         }
     },
     meta: {

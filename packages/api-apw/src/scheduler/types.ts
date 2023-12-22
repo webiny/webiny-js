@@ -54,9 +54,14 @@ export enum ApwContentTypes {
 
 export interface BaseFields {
     id: string;
+
     createdOn: string;
-    savedOn?: string;
+    modifiedOn: string | null;
+    savedOn: string;
     createdBy: ApwIdentity;
+    modifiedBy: ApwIdentity | null;
+    savedBy: ApwIdentity;
+
     tenant: string;
     locale: string;
 }

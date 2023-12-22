@@ -1,12 +1,10 @@
 import WebinyError from "@webiny/error";
-
 import { FOLDER_MODEL_ID } from "./folder.model";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFolderFieldValues } from "~/utils/getFieldValues";
-
-import { AcoFolderStorageOperations } from "./folder.types";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
+import { AcoFolderStorageOperations, Folder } from "./folder.types";
 
 interface AcoCheckExistingFolderParams {
     params: {
@@ -48,7 +46,7 @@ export const createFolderOperations = (
                 });
             }
 
-            return getFolderFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         });
     };
 
@@ -100,7 +98,7 @@ export const createFolderOperations = (
                     }
                 });
 
-                return [entries.map(entry => getFolderFieldValues(entry, baseFields)), meta];
+                return [entries.map(pickEntryFieldValues<Folder>), meta];
             });
         },
         createFolder({ data }) {
@@ -118,7 +116,7 @@ export const createFolderOperations = (
                     parentId: data.parentId || null
                 });
 
-                return getFolderFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         updateFolder({ id, data }) {
@@ -142,7 +140,7 @@ export const createFolderOperations = (
                 };
 
                 const entry = await cms.updateEntry(model, id, input);
-                return getFolderFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         deleteFolder({ id }) {
