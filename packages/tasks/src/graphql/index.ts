@@ -69,7 +69,7 @@ export const createGraphQL = () => {
             fields: model.fields,
             type: "manage",
             fieldTypePlugins,
-            excludeFields: ["entryId", "status"]
+            excludeFields: ["entryId"]
         });
 
         const sortEnumRender = renderSortEnum({

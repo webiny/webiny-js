@@ -57,7 +57,7 @@ describe("graphql - tasks", () => {
                                     someOtherValue: 12345678
                                 },
                                 id: expect.any(String),
-                                status: TaskDataStatus.PENDING,
+                                taskStatus: TaskDataStatus.PENDING,
                                 startedOn: null,
                                 finishedOn: null,
                                 createdBy: createMockIdentity(),
@@ -73,7 +73,7 @@ describe("graphql - tasks", () => {
                                     someOtherValue: 4321
                                 },
                                 id: expect.any(String),
-                                status: TaskDataStatus.PENDING,
+                                taskStatus: TaskDataStatus.PENDING,
                                 startedOn: null,
                                 finishedOn: null,
                                 createdBy: createMockIdentity(),
@@ -89,7 +89,7 @@ describe("graphql - tasks", () => {
                                     someOtherValue: 123
                                 },
                                 id: expect.any(String),
-                                status: TaskDataStatus.PENDING,
+                                taskStatus: TaskDataStatus.PENDING,
                                 startedOn: null,
                                 finishedOn: null,
                                 createdBy: createMockIdentity(),

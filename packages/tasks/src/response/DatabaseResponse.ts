@@ -41,9 +41,9 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             const task = this.store.getTask();
             await this.store.updateTask({
-                status: TaskDataStatus.SUCCESS,
+                taskStatus: TaskDataStatus.SUCCESS,
                 finishedOn: new Date().toISOString(),
-                log: (task.log || []).concat([
+                log: task.log.concat([
                     {
                         message: message || "Task done.",
                         createdOn: new Date().toISOString()
@@ -76,8 +76,8 @@ export class DatabaseResponse implements IResponseAsync {
                     ...task.values,
                     ...params.values
                 },
-                status: TaskDataStatus.RUNNING,
-                log: (task.log || []).concat([
+                taskStatus: TaskDataStatus.RUNNING,
+                log: task.log.concat([
                     {
                         message: "Task continuing.",
                         createdOn: new Date().toISOString(),
@@ -121,9 +121,9 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             const task = this.store.getTask();
             await this.store.updateTask({
-                status: TaskDataStatus.FAILED,
+                taskStatus: TaskDataStatus.FAILED,
                 finishedOn: new Date().toISOString(),
-                log: (task.log || []).concat([
+                log: task.log.concat([
                     {
                         message: params.error.message,
                         createdOn: new Date().toISOString(),

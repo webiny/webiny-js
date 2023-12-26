@@ -8,11 +8,11 @@ export const createTaskMock = (task?: Partial<ITaskData>): ITaskData => {
         values: {},
         name: "A custom task defined via method",
         log: [],
-        createdOn: new Date(),
-        savedOn: new Date(),
-        status: TaskDataStatus.PENDING,
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
+        taskStatus: TaskDataStatus.PENDING,
         createdBy: createMockIdentity(),
-        eventResponse: {},
+        eventResponse: undefined,
         ...task
     };
 };

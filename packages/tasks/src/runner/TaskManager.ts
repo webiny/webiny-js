@@ -50,9 +50,9 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
             try {
                 await this.store.updateTask(task => {
                     return {
-                        status: TaskDataStatus.RUNNING,
+                        taskStatus: TaskDataStatus.RUNNING,
                         startedOn: new Date().toISOString(),
-                        log: (task.log || []).concat([
+                        log: task.log.concat([
                             {
                                 message: "Task started.",
                                 createdOn: new Date().toISOString()

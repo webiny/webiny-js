@@ -53,7 +53,7 @@ describe("reindexing", () => {
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),
-            status: TaskDataStatus.SUCCESS,
+            taskStatus: TaskDataStatus.SUCCESS,
             log: [
                 {
                     message: "Task started.",
@@ -92,7 +92,7 @@ describe("reindexing", () => {
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: undefined,
-            status: TaskDataStatus.RUNNING,
+            taskStatus: TaskDataStatus.RUNNING,
             log: [
                 {
                     message: "Task started.",
@@ -126,7 +126,7 @@ describe("reindexing", () => {
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),
-            status: TaskDataStatus.SUCCESS,
+            taskStatus: TaskDataStatus.SUCCESS,
             log: [
                 {
                     message: "Task started.",

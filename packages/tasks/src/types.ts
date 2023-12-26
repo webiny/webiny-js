@@ -43,7 +43,7 @@ export interface ITaskIdentity {
 export interface ITaskData<T = any> {
     id: string;
     name: string;
-    status: TaskDataStatus;
+    taskStatus: TaskDataStatus;
     definitionId: string;
     values: T;
     createdOn: string;
@@ -51,8 +51,8 @@ export interface ITaskData<T = any> {
     createdBy: ITaskIdentity;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse: EventBridgeClientSendResponse;
-    log?: ITaskDataLog[];
+    eventResponse: EventBridgeClientSendResponse | undefined;
+    log: ITaskDataLog[];
 }
 
 export type IGetTaskResponse<T = any> = ITaskData<T> | null;
@@ -77,7 +77,7 @@ export interface ITaskCreateData<T = ITaskDataValues> {
 export interface ITaskUpdateData<T = ITaskDataValues> {
     name?: string;
     values?: T;
-    status?: TaskDataStatus;
+    taskStatus?: TaskDataStatus;
     log?: ITaskDataLog[];
     startedOn?: string;
     finishedOn?: string;

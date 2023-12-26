@@ -12,7 +12,7 @@ export const createListTasksQuery = () => {
                         id
                         definitionId
                         name
-                        status
+                        taskStatus
                         createdOn
                         savedOn
                         eventResponse

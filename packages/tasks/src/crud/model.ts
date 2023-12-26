@@ -53,9 +53,9 @@ const modelPlugin = createCmsModel({
             label: "Values"
         },
         {
-            id: "status",
-            fieldId: "status",
-            storageId: "text@status",
+            id: "taskStatus",
+            fieldId: "taskStatus",
+            storageId: "text@taskStatus",
             type: "text",
             label: "Status",
             predefinedValues: {

@@ -1,6 +1,6 @@
 import { useHandler } from "~tests/helpers/useHandler";
 import { createTaskDefinition } from "~/task";
-import { TaskDataStatus } from "~/types";
+import { ITaskData, TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createMockIdentity } from "~tests/mocks/identity";
@@ -91,7 +91,7 @@ describe("store crud", () => {
                 someOtherValue: 123
             }
         });
-        const expectedCreatedTask = {
+        const expectedCreatedTask: ITaskData = {
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),
@@ -105,7 +105,8 @@ describe("store crud", () => {
             log: [],
             startedOn: undefined,
             finishedOn: undefined,
-            status: TaskDataStatus.PENDING
+            eventResponse: undefined,
+            taskStatus: TaskDataStatus.PENDING
         };
         expect(task).toEqual(expectedCreatedTask);
 
@@ -129,7 +130,7 @@ describe("store crud", () => {
                 addedNewValue: "yes!"
             }
         });
-        const expectedUpdatedTask = {
+        const expectedUpdatedTask: ITaskData = {
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),
@@ -144,7 +145,8 @@ describe("store crud", () => {
             log: [],
             startedOn: undefined,
             finishedOn: undefined,
-            status: TaskDataStatus.PENDING
+            eventResponse: undefined,
+            taskStatus: TaskDataStatus.PENDING
         };
         expect(updatedTask).toEqual(expectedUpdatedTask);
 

@@ -162,7 +162,7 @@ describe("task manager", () => {
                     id: "myCustomTaskDataId",
                     data: {
                         ...task,
-                        status: "running",
+                        taskStatus: "running",
                         log: [
                             {
                                 message: "Task started.",

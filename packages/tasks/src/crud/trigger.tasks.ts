@@ -87,8 +87,8 @@ export const createTriggerTasksCrud = (
             }
             try {
                 return await context.tasks.updateTask(task.id, {
-                    status: TaskDataStatus.ABORTED,
-                    log: (task.log || []).concat([
+                    taskStatus: TaskDataStatus.ABORTED,
+                    log: task.log.concat([
                         {
                             message: params.message || "Task aborted.",
                             createdOn: new Date().toISOString()

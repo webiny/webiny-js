@@ -28,7 +28,7 @@ export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
         log: [],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        status: TaskDataStatus.PENDING,
+        taskStatus: TaskDataStatus.PENDING,
         createdBy: createMockIdentity(),
         eventResponse: createMockTaskEventResponse(),
         ...task

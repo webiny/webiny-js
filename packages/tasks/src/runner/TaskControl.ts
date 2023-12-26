@@ -35,7 +35,7 @@ export class TaskControl implements ITaskControl {
          * Make sure that task does not run if it is aborted.
          * This will effectively end the Step Function execution with a "success" status.
          */
-        if (task.status === TaskDataStatus.ABORTED) {
+        if (task.taskStatus === TaskDataStatus.ABORTED) {
             return this.response.aborted();
         }
 

@@ -43,7 +43,7 @@ export class TaskManagerStore implements ITaskManagerStore {
     }
 
     public getStatus(): TaskDataStatus {
-        return this.task.status;
+        return this.task.taskStatus;
     }
 
     public setTask(task: ITaskData): void {
@@ -89,7 +89,7 @@ export class TaskManagerStore implements ITaskManagerStore {
 
     public async addLog(log: ITaskDataLog): Promise<void> {
         this.task = await this.context.tasks.updateTask(this.task.id, {
-            log: (this.task.log || []).concat([log])
+            log: this.task.log.concat([log])
         });
     }
 }

@@ -47,7 +47,7 @@ describe("trigger crud", () => {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
             },
-            status: TaskDataStatus.PENDING,
+            taskStatus: TaskDataStatus.PENDING,
             createdBy: createMockIdentity(),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),

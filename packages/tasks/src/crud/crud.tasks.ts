@@ -28,7 +28,7 @@ const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
         name: entry.values.name,
         definitionId: entry.values.definitionId,
         values: entry.values.values,
-        status: entry.values.status,
+        taskStatus: entry.values.taskStatus,
         eventResponse: entry.values.eventResponse,
         startedOn: entry.values.startedOn,
         finishedOn: entry.values.finishedOn,
@@ -89,7 +89,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return await context.cms.createEntry(model, {
                 ...values,
                 log: [],
-                status: TaskDataStatus.PENDING
+                taskStatus: TaskDataStatus.PENDING
             });
         });
         return convertToTask(entry as unknown as CmsEntry<ITaskData>);
