@@ -7,7 +7,7 @@ type ExtraHeaders = {
 
 type AllHeaders = http.OutgoingHttpHeaders & ExtraHeaders;
 
-export type StandardHeaderValue = http.OutgoingHttpHeader | undefined;
+export type StandardHeaderValue = http.OutgoingHttpHeader | boolean | undefined;
 
 // Extract known standard headers, and remove all non-string keys.
 export type StandardHeaders = {
@@ -42,10 +42,16 @@ export class ResponseHeaders {
             const previousValue = this.headers.get(header) as StandardHeaders[T];
             const newValue = setter(previousValue);
             this.headers.set(header, newValue);
-            return;
+            return this;
         }
 
         this.headers.set(header, setter);
+
+        return this;
+    }
+
+    merge(headers: ResponseHeaders) {
+        return ResponseHeaders.create({ ...this.getHeaders(), ...headers.getHeaders() });
     }
 
     getHeaders() {

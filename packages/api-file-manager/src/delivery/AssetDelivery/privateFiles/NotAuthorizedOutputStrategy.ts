@@ -1,8 +1,8 @@
 import { AssetOutputStrategy, AssetReply } from "~/delivery";
-import { NotAuthorizedReply } from "./NotAuthorizedReply";
+import { NotAuthorizedAssetReply } from "./NotAuthorizedAssetReply";
 
 export class NotAuthorizedOutputStrategy implements AssetOutputStrategy {
     async output(): Promise<AssetReply> {
-        return new NotAuthorizedReply();
+        return new NotAuthorizedAssetReply();
     }
 }

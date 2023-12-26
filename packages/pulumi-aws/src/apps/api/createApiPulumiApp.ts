@@ -213,6 +213,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
+                "private-any": {
+                    path: "/private/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
+                },
                 "cms-post": {
                     path: "/cms/{key+}",
                     method: "POST",

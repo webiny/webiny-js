@@ -13,7 +13,7 @@ export class PrivateAuthenticatedAuthorizer implements AssetAuthorizer {
         if (file.accessControl && file.accessControl.type === "private-authenticated") {
             // Make sure there's a valid identity!
             const identity = this.context.security.getIdentity();
-            console.log("identity", identity);
+
             if (!identity) {
                 throw new Error({
                     code: "NOT_AUTHORIZED",

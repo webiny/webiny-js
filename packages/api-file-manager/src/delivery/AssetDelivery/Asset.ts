@@ -69,7 +69,11 @@ export class Asset {
         return this.outputStrategy.output(this);
     }
 
-    setOutputStrategy(setter: Setter<AssetOutputStrategy>) {
-        this.outputStrategy = setter(this.outputStrategy);
+    setOutputStrategy(setter: Setter<AssetOutputStrategy> | AssetOutputStrategy) {
+        if (typeof setter === "function") {
+            this.outputStrategy = setter(this.outputStrategy);
+        } else {
+            this.outputStrategy = setter;
+        }
     }
 }

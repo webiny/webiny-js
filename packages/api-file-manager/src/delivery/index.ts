@@ -9,3 +9,6 @@ export * from "./AssetDelivery/abstractions/AssetOutputStrategy";
 export * from "./AssetDelivery/abstractions/AssetTransformationStrategy";
 export * from "./AssetDelivery/abstractions/AssetReply";
 export * from "./AssetDelivery/createAssetDeliveryPluginLoader";
+export * from "./AssetDelivery/FilesAssetRequestResolver";
+export * from "./AssetDelivery/AliasAssetRequestResolver";
+export * from "./AssetDelivery/SetCacheControlHeaders";

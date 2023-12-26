@@ -33,6 +33,9 @@ export class AliasAssetRequestResolver implements AssetRequestResolver {
 
         return new AssetRequest({
             key: fileKey,
+            context: {
+                url: request.url
+            },
             options: {
                 original: original !== undefined,
                 ...options

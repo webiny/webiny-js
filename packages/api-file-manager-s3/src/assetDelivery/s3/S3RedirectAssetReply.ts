@@ -1,22 +1,15 @@
-import { Reply } from "@webiny/handler/types";
 import { AssetReply } from "@webiny/api-file-manager";
+import { ResponseHeaders } from "@webiny/handler";
 
-export class S3RedirectAssetReply implements AssetReply {
-    private readonly url: string;
-    private cacheDuration: number;
-
+export class S3RedirectAssetReply extends AssetReply {
     constructor(url: string, cacheDuration: number) {
-        this.cacheDuration = cacheDuration;
-        this.url = url;
-    }
-
-    async reply(reply: Reply): Promise<Reply> {
-        return reply
-            .code(301)
-            .headers({
-                Location: this.url,
-                "Cache-Control": "public, max-age=" + this.cacheDuration
-            })
-            .send("");
+        super({
+            code: 301,
+            headers: ResponseHeaders.create({
+                location: url,
+                "cache-control": "public, max-age=" + cacheDuration
+            }),
+            body: () => ""
+        });
     }
 }

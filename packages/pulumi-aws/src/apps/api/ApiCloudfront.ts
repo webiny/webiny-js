@@ -64,16 +64,26 @@ export const ApiCloudfront = createAppModule({
                         targetOriginId: gateway.api.output.name
                     },
                     {
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                        allowedMethods: ["HEAD", "GET", "OPTIONS"],
+                        cachedMethods: ["HEAD", "GET", "OPTIONS"],
+                        forwardedValues: {
+                            cookies: {
+                                forward: "none"
+                            },
+                            headers: forwardHeaders,
+                            queryString: true
+                        },
+                        // MinTTL <= DefaultTTL <= MaxTTL
+                        minTtl: 0,
+                        defaultTtl: 0,
+                        maxTtl: 2592000,
+                        pathPattern: "/files/*",
+                        viewerProtocolPolicy: "allow-all",
+                        targetOriginId: gateway.api.output.name
+                    },
+                    {
+                        allowedMethods: ["HEAD", "GET", "OPTIONS"],
+                        cachedMethods: ["HEAD", "GET", "OPTIONS"],
                         forwardedValues: {
                             cookies: cookies,
                             headers: forwardHeaders,
@@ -83,7 +93,7 @@ export const ApiCloudfront = createAppModule({
                         minTtl: 0,
                         defaultTtl: 0,
                         maxTtl: 2592000,
-                        pathPattern: "/files/*",
+                        pathPattern: "/private/*",
                         viewerProtocolPolicy: "allow-all",
                         targetOriginId: gateway.api.output.name
                     }

@@ -1,22 +1,23 @@
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
-import { FilesAssetRequestResolver } from "./AssetDelivery/FilesAssetRequestResolver";
-import { AliasAssetRequestResolver } from "./AssetDelivery/AliasAssetRequestResolver";
-import {
-    AssetDeliveryConfigBuilder,
-    AssetDeliveryConfigModifierPlugin,
-    createAssetDeliveryConfig
-} from "~/delivery/AssetDelivery/AssetDeliveryConfig";
 import {
     createHandlerOnRequest,
     createModifyFastifyPlugin,
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import { Asset } from "~/delivery/AssetDelivery/Asset";
 import { FileManagerContext } from "~/types";
 import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor";
-import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest";
-import { PrivateAuthenticatedAuthorizer } from "~/delivery/AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer";
+import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer";
+import { PrivateFileAssetRequestResolver } from "./AssetDelivery/privateFiles/PrivateFileAssetRequestResolver";
+import {
+    Asset,
+    AssetDeliveryConfigBuilder,
+    AssetDeliveryConfigModifierPlugin,
+    AssetRequest,
+    AliasAssetRequestResolver,
+    FilesAssetRequestResolver,
+    createAssetDeliveryConfig
+} from "./index";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -42,6 +43,7 @@ export interface AssetDeliveryParams {
 export const setupAssetDelivery = (params: AssetDeliveryParams) => {
     return [
         createModifyFastifyPlugin(app => {
+            console.log(app.webiny.args);
             // Config builder allows config modification via plugins.
             const configBuilder = new AssetDeliveryConfigBuilder();
 
@@ -101,45 +103,45 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                         assertAssetRequestWasResolved(resolvedRequest);
                         assertAssetWasResolved(resolvedAsset);
 
-                        let assetProcessor = configBuilder.getAssetProcessor(context);
-
                         if (context.wcp.canUsePrivateFiles()) {
-                            // Currently, we only have one authorizer.
-                            const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
+                            configBuilder.decorateAssetProcessor((context, processor) => {
+                                // Currently, we only have one authorizer.
+                                const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
 
-                            assetProcessor = new PrivateFilesAssetProcessor(
-                                context,
-                                assetAuthorizer,
-                                configBuilder.getAssetProcessor(context)
-                            );
+                                return new PrivateFilesAssetProcessor(
+                                    context,
+                                    assetAuthorizer,
+                                    processor
+                                );
+                            });
                         }
+
+                        const outputStrategy = configBuilder.getAssetOutputStrategy(
+                            context,
+                            resolvedRequest,
+                            resolvedAsset
+                        );
+
+                        resolvedAsset.setOutputStrategy(() => outputStrategy);
+
+                        const assetProcessor = configBuilder.getAssetProcessor(context);
 
                         const processedAsset = await assetProcessor.process(
                             resolvedRequest,
                             resolvedAsset
                         );
 
-                        // Determine the output strategy. If strategy is already set, do not override it.
-                        processedAsset.setOutputStrategy(strategy => {
-                            if (strategy) {
-                                return strategy;
-                            }
-
-                            assertAssetRequestWasResolved(resolvedRequest);
-
-                            return configBuilder.getAssetOutputStrategy(
-                                context,
-                                resolvedRequest,
-                                processedAsset
-                            );
-                        });
-
+                        // Get reply object (runs the output strategy under the hood).
                         const assetReply = await processedAsset.output();
 
-                        // Set default headers.
-                        reply.headers({ "x-webiny-base64-encoded": true });
+                        const headers = assetReply.getHeaders();
 
-                        return await assetReply.reply(reply);
+                        // Set default headers.
+                        headers.set("x-webiny-base64-encoded", true);
+
+                        reply.code(assetReply.getCode());
+                        reply.headers(headers.getHeaders());
+                        return reply.send(await assetReply.getBody());
                     },
                     { override: true }
                 );
@@ -157,6 +159,11 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             config.decorateRequestResolver(resolver => {
                 // This resolver tries to resolve the request using aliases.
                 return new AliasAssetRequestResolver(params.documentClient, resolver);
+            });
+
+            config.decorateRequestResolver(resolver => {
+                // This resolver works with `/private/*` requests.
+                return new PrivateFileAssetRequestResolver(resolver);
             });
         })
     ];

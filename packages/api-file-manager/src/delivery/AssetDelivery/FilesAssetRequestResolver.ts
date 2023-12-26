@@ -17,6 +17,9 @@ export class FilesAssetRequestResolver implements AssetRequestResolver {
 
         return new AssetRequest({
             key: decodeURI(path).replace("/files/", ""),
+            context: {
+                url: request.url
+            },
             options: {
                 ...query,
                 width: query.width ? parseInt(query.width) : undefined
