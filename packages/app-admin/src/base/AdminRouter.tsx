@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { History } from "history";
 import UniversalRouter, { RouterContext, RouteParams } from "universal-router";

@@ -1,46 +1,87 @@
-import { UniversalRouterGateway } from "~/Router/UniversalRouterGateway";
+import { HistoryRouterGateway } from "~/Router/HistoryRouterGateway";
+import { createMemoryHistory } from "history";
+
+const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
 describe("Router Gateway", () => {
-    it("should register and match routes", async () => {
-        const gateway = new UniversalRouterGateway("");
-        gateway.registerRoutes([{ path: "/" }, { path: "/login" }]);
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-        const loginRoute = await gateway.matchRoute("/login");
+    it("should execute onMatch when history changes", async () => {
+        const spyHome = jest.fn();
+        const spyLogin = jest.fn();
+        const spyDynamic = jest.fn();
 
-        expect(loginRoute).toEqual({
+        const history = createMemoryHistory();
+        const gateway = new HistoryRouterGateway(history, "");
+        gateway.registerRoutes([
+            { name: "home", path: "/", onMatch: spyHome },
+            { name: "login", path: "/login", onMatch: spyLogin },
+            { name: "test", path: "/dynamic-route/:name", onMatch: spyDynamic }
+        ]);
+
+        history.push("/login");
+        await wait();
+        history.push("/");
+        await wait();
+        history.push("/dynamic-route/cars");
+        await wait();
+        history.push("/login");
+        await wait();
+        history.push("/dynamic-route/blogs");
+        await wait();
+
+        expect(spyLogin).toHaveBeenCalledTimes(2);
+        expect(spyLogin).toHaveBeenNthCalledWith(1, {
+            name: "login",
             path: "/login",
             pathname: "/login",
             params: {}
         });
-
-        const indexRoute = await gateway.matchRoute("/");
-        expect(indexRoute).toEqual({
+        expect(spyLogin).toHaveBeenNthCalledWith(2, {
+            name: "login",
+            path: "/login",
+            pathname: "/login",
+            params: {}
+        });
+        expect(spyHome).toHaveBeenCalledTimes(1);
+        expect(spyHome).toHaveBeenLastCalledWith({
+            name: "home",
             path: "/",
             pathname: "/",
             params: {}
         });
-
-        const missingRoute = await gateway.matchRoute("/not-found");
-        expect(missingRoute).toBe(undefined);
-
-        gateway.registerRoutes([{ path: "/dynamic-route/:name" }]);
-
-        const dynamicRoute = await gateway.matchRoute("/dynamic-route/content-model");
-        expect(dynamicRoute).toEqual({
+        expect(spyDynamic).toHaveBeenCalledTimes(2);
+        expect(spyDynamic).toHaveBeenNthCalledWith(1, {
+            name: "test",
             path: "/dynamic-route/:name",
-            pathname: "/dynamic-route/content-model",
+            pathname: "/dynamic-route/cars",
             params: {
-                name: "content-model"
+                name: "cars"
+            }
+        });
+        expect(spyDynamic).toHaveBeenNthCalledWith(2, {
+            name: "test",
+            path: "/dynamic-route/:name",
+            pathname: "/dynamic-route/blogs",
+            params: {
+                name: "blogs"
             }
         });
     });
 
     it("should generate route URLs", async () => {
-        const gateway = new UniversalRouterGateway("");
+        const spyHome = jest.fn();
+        const spyLogin = jest.fn();
+        const spyDynamic = jest.fn();
+
+        const history = createMemoryHistory();
+        const gateway = new HistoryRouterGateway(history, "");
         gateway.registerRoutes([
-            { name: "root", path: "/" },
-            { name: "login", path: "/login" },
-            { name: "dynamic", path: "/dynamic-route/:name" }
+            { name: "root", path: "/", onMatch: spyHome },
+            { name: "login", path: "/login", onMatch: spyLogin },
+            { name: "dynamic", path: "/dynamic-route/:name", onMatch: spyDynamic }
         ]);
 
         const urls = [

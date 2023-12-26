@@ -9,7 +9,7 @@ import React, {
     useRef
 } from "react";
 import { createBrowserHistory } from "history";
-import { RouteProps, Route } from "@webiny/react-router";
+import { RouteProps, Route, Router, RouteContent, BrowserRouter } from "@webiny/react-router";
 import { compose, CompositionProvider, Decorator } from "@webiny/react-composition";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
@@ -120,14 +120,16 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
         <AppContext.Provider value={appContext}>
             <CompositionProvider>
                 {children}
-                <Router routes={allRoutes} history={history.current}>
-                    <Providers>
-                        <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender wait={debounceRender}>
-                            <RouteContent />
-                        </DebounceRender>
-                    </Providers>
-                </Router>
+                <BrowserRouter history={history.current}>
+                    <Router routes={allRoutes} history={history.current} getBaseUrl={() => "/"}>
+                        <Providers>
+                            <PluginsProvider>{state.plugins}</PluginsProvider>
+                            <DebounceRender wait={debounceRender}>
+                                <RouteContent />
+                            </DebounceRender>
+                        </Providers>
+                    </Router>
+                </BrowserRouter>
             </CompositionProvider>
         </AppContext.Provider>
     );

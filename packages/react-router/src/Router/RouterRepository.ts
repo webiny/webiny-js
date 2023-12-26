@@ -1,20 +1,46 @@
-import { RouterGateway } from "~/Router/RouterGateway.interface";
+import { makeAutoObservable } from "mobx";
+import {
+    MatchedRoute,
+    RouteDefinition,
+    RouteParams,
+    IRouterGateway
+} from "~/Router/abstractions/IRouterGateway";
+import { IRouterRepository } from "~/Router/abstractions/IRouterRepository";
 
-interface Route {
-    // Pathname that was used to match the route.
-    pathname: string;
-    // Path pattern that matched this route.
-    path: string;
-    // Route params extracted from the pathname.
-    params: Record<string, any>;
-    queryParams: Record<string, any>;
-}
+export class RouterRepository implements IRouterRepository {
+    private gateway: IRouterGateway;
+    private currentRoute: MatchedRoute | undefined;
+    private routes: RouteDefinition[] = [];
 
-export class RouterRepository {
-    private gateway: RouterGateway;
-    private currentRoute: Route;
-
-    constructor(gateway: RouterGateway) {
+    constructor(gateway: IRouterGateway) {
         this.gateway = gateway;
+
+        makeAutoObservable(this);
+    }
+
+    getCurrentRoute() {
+        return this.currentRoute;
+    }
+
+    registerRoutes(routes: RouteDefinition[]) {
+        this.routes = routes;
+        const routesWithAction = routes.map<RouteDefinition>(route => {
+            return {
+                ...route,
+                onMatch: (route: MatchedRoute) => {
+                    this.currentRoute = route;
+                }
+            };
+        });
+
+        this.gateway.registerRoutes(routesWithAction);
+    }
+
+    getRouteByName(name: string): RouteDefinition | undefined {
+        return this.routes.find(route => route.name === name);
+    }
+
+    goToRoute(name: string, params?: RouteParams): void {
+        this.gateway.goToRoute(name, params ?? {});
     }
 }

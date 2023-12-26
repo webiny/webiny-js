@@ -22,17 +22,28 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
 
+    // const getBasename = (tenant: string | null) => {
+    //     if (tenant === "root") {
+    //         return "";
+    //     }
+    //
+    //     return tenant ? `/t_${tenant}` : "";
+    // };
+
     return (
         <ApolloProvider>
             <ThemeProvider>
                 <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
                     <TenancyProvider>
-                        <App>
-                            <Provider hoc={TelemetryProvider} />
-                            <Provider hoc={UiStateProvider} />
-                            <Provider hoc={SearchProvider} />
-                            <Provider hoc={UserMenuProvider} />
-                            <Provider hoc={NavigationProvider} />
+                        <App
+                            providers={[
+                                TelemetryProvider,
+                                UiStateProvider,
+                                SearchProvider,
+                                UserMenuProvider,
+                                NavigationProvider
+                            ]}
+                        >
                             <Base />
                             {children}
                         </App>

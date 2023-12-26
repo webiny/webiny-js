@@ -3,11 +3,14 @@ export interface RouteParams {
 }
 
 export interface RouteDefinition {
-    name?: string;
+    name: string;
     path: string;
+    onMatch(route: MatchedRoute): void;
 }
 
 export interface MatchedRoute {
+    // Name of the matched route.
+    name: string;
     // Pathname that was used to match the route.
     pathname: string;
     // Path pattern that matched this route.
@@ -16,8 +19,8 @@ export interface MatchedRoute {
     params: Record<string, any>;
 }
 
-export interface RouterGateway {
+export interface IRouterGateway {
     registerRoutes(routes: RouteDefinition[]): void;
-    matchRoute(location: string): Promise<MatchedRoute | undefined>;
+    goToRoute(name: string, params: RouteParams): void;
     generateRouteUrl(id: string, params?: RouteParams): string;
 }

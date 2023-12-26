@@ -91,3 +91,4 @@ export function useRouter(): UseRouter {
  */
 export const BrowserRouter: React.FC<BrowserRouterProps> = WebinyRouter;
 export type { BrowserRouterProps };
+export { Router, RouteContent } from "./Router";
