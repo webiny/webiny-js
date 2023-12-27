@@ -6,22 +6,22 @@ export class EntryRepositoryFactory {
     private gateway: EntriesGatewayInterface | undefined;
     private cache: Map<string, EntryRepository> = new Map();
 
-    getRepository(client: ApolloClient<any>, modelId: string) {
+    getRepository(client: ApolloClient<any>, modelIds: string[]) {
         if (!this.gateway) {
             this.gateway = new EntriesGraphQLGateway(client);
         }
 
-        const cacheKey = this.getCacheKey(modelId);
+        const cacheKey = this.getCacheKey(modelIds);
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(cacheKey, new EntryRepository(this.gateway, modelId));
+            this.cache.set(cacheKey, new EntryRepository(this.gateway, modelIds));
         }
 
         return this.cache.get(cacheKey) as EntryRepository;
     }
 
-    private getCacheKey(modelId: string) {
-        return `${modelId}#${Date.now().toString()}`;
+    private getCacheKey(modelIds: string[]) {
+        return [Date.now().toString(), ...modelIds].join("#");
     }
 }
 

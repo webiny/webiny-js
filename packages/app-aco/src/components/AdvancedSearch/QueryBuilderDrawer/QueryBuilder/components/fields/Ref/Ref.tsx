@@ -11,19 +11,19 @@ import { entryRepositoryFactory } from "./domain";
 
 export interface RefProps {
     name: string;
-    modelId: string;
+    modelIds: string[];
 }
 
-export const Ref = observer(({ name, modelId }: RefProps) => {
+export const Ref = observer(({ name, modelIds }: RefProps) => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
     const currentLocale = getCurrentLocale();
 
     const presenter = useMemo<RefPresenter>(() => {
         const client = createApolloClient({ uri: `${apiUrl}/cms/manage/${currentLocale}` });
-        const repository = entryRepositoryFactory.getRepository(client, modelId);
+        const repository = entryRepositoryFactory.getRepository(client, modelIds);
         return new RefPresenter(repository);
-    }, [modelId, apiUrl, currentLocale]);
+    }, [modelIds, apiUrl, currentLocale]);
 
     const { value } = useBind({
         name

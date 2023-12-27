@@ -15,14 +15,14 @@ export class EntriesGraphQLGateway implements EntriesGatewayInterface {
         this.client = client;
     }
 
-    async list(modelId: string, query?: string) {
+    async list(modelIds: string[], query?: string) {
         const { data: response } = await this.client.query<
             ListEntriesResponse,
             ListEntriesQueryVariables
         >({
             query: SEARCH_CONTENT_ENTRIES,
             variables: {
-                modelIds: [modelId],
+                modelIds,
                 query,
                 limit: 50
             },

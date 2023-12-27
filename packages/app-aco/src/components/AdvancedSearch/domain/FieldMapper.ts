@@ -7,7 +7,9 @@ import {
     PredefinedDTO,
     Type,
     FieldType,
-    Value
+    Value,
+    Settings,
+    SettingsDTO
 } from "./Field";
 
 export class FieldMapper {
@@ -18,7 +20,8 @@ export class FieldMapper {
                 value: ValueMapper.toDTO(field.value),
                 conditions: ConditionMapper.toDTO(field.conditions),
                 predefined: PredefinedMapper.toDTO(field.predefined),
-                type: TypeMapper.toTDO(field.type)
+                type: TypeMapper.toDTO(field.type),
+                settings: SettingsMapper.toDTO(field.settings)
             };
         });
     }
@@ -49,7 +52,15 @@ export class PredefinedMapper {
 }
 
 export class TypeMapper {
-    static toTDO(type: Type): FieldType {
+    static toDTO(type: Type): FieldType {
         return type.value;
+    }
+}
+
+export class SettingsMapper {
+    static toDTO(settings: Settings): SettingsDTO {
+        return {
+            modelIds: settings.modelIds
+        };
     }
 }

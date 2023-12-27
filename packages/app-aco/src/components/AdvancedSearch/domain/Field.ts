@@ -27,12 +27,17 @@ export interface PredefinedDTO {
     value: string;
 }
 
+export interface SettingsDTO {
+    modelIds: string[];
+}
+
 export interface FieldDTO {
     label: string;
     value: string;
     conditions: ConditionDTO[];
     type: FieldType;
     predefined: PredefinedDTO[];
+    settings: SettingsDTO;
 }
 
 export class Field {
@@ -41,6 +46,7 @@ export class Field {
     public readonly type: Type;
     public readonly conditions: Condition[];
     public readonly predefined: Predefined[];
+    public readonly settings: Settings;
 
     static createFromRaw(fieldRaw: FieldRaw) {
         const label = fieldRaw.label;
@@ -48,8 +54,9 @@ export class Field {
         const type = Type.createFromField(fieldRaw);
         const conditions = Condition.createFromField(fieldRaw);
         const predefined = Predefined.createFromField(fieldRaw);
+        const settings = Settings.createFromField(fieldRaw);
 
-        return new Field(label, value, type, conditions, predefined);
+        return new Field(label, value, type, conditions, predefined, settings);
     }
 
     private constructor(
@@ -57,13 +64,15 @@ export class Field {
         value: Value,
         type: Type,
         conditions: Condition[],
-        predefined: Predefined[]
+        predefined: Predefined[],
+        settings: Settings
     ) {
         this.label = label;
         this.value = value;
         this.type = type;
         this.predefined = predefined;
         this.conditions = conditions;
+        this.settings = settings;
     }
 }
 
@@ -221,5 +230,18 @@ export class Type {
 
     private constructor(value: FieldType) {
         this.value = value;
+    }
+}
+
+export class Settings {
+    public readonly modelIds: string[];
+
+    static createFromField(rawData: FieldRaw) {
+        const modelIds = rawData.settings?.models?.map(model => model.modelId) || [];
+        return new Settings(modelIds);
+    }
+
+    private constructor(modelIds: string[]) {
+        this.modelIds = modelIds;
     }
 }

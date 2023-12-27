@@ -6,13 +6,13 @@ import { Loading } from "~/components/AdvancedSearch/domain";
 import { EntryMapper } from "./EntryMapper";
 
 export class EntryRepository {
-    public readonly modelId: string;
+    public readonly modelIds: string[];
     private gateway: EntriesGatewayInterface;
     private loading: Loading;
     private entries: EntryDTO[] = [];
 
-    constructor(gateway: EntriesGatewayInterface, modelId: string) {
-        this.modelId = modelId;
+    constructor(gateway: EntriesGatewayInterface, modelIds: string[]) {
+        this.modelIds = modelIds;
         this.gateway = gateway;
         this.loading = new Loading();
         makeAutoObservable(this);
@@ -30,7 +30,7 @@ export class EntryRepository {
 
     async listEntries(query: string) {
         const response = await this.runWithLoading<EntryDTO[]>(
-            this.gateway.list(this.modelId, query)
+            this.gateway.list(this.modelIds, query)
         );
 
         if (!response) {
@@ -49,7 +49,9 @@ export class EntryRepository {
             return entryInCache;
         }
 
-        const response = await this.runWithLoading<EntryDTO>(this.gateway.get(this.modelId, id));
+        const response = await this.runWithLoading<EntryDTO>(
+            this.gateway.get(this.modelIds[0], id)
+        );
 
         if (!response) {
             return;
