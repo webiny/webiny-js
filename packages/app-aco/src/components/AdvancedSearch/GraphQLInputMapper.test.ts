@@ -84,4 +84,90 @@ describe("GraphQLInputMapper", () => {
             ]
         });
     });
+
+    it("should return a GraphQL formatted output and support nested objects", () => {
+        const filterDTO: FilterDTO = {
+            id: "any-id",
+            name: "Untitled",
+            operation: Operation.AND,
+            groups: [
+                {
+                    operation: Operation.AND,
+                    filters: [
+                        {
+                            field: "field-1",
+                            condition: " ",
+                            value: "value-1"
+                        },
+                        {
+                            field: "field-2",
+                            condition: "_not",
+                            value: "value-2"
+                        },
+                        {
+                            field: "field-3#entryId",
+                            condition: " ",
+                            value: "value-3"
+                        },
+                        {
+                            field: "field-4#entryId",
+                            condition: "_not",
+                            value: "value-4"
+                        },
+                        {
+                            field: "field-5#sub-field#entryId",
+                            condition: " ",
+                            value: "value-5"
+                        },
+                        {
+                            field: "field-6#sub-field#entryId",
+                            condition: "_not",
+                            value: "value-6"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const output = GraphQLInputMapper.toGraphQL(filterDTO);
+
+        expect(output).toEqual({
+            [Operation.AND]: [
+                {
+                    [Operation.AND]: [
+                        {
+                            "field-1": "value-1"
+                        },
+                        {
+                            "field-2_not": "value-2"
+                        },
+                        {
+                            "field-3": {
+                                entryId: "value-3"
+                            }
+                        },
+                        {
+                            "field-4": {
+                                entryId_not: "value-4"
+                            }
+                        },
+                        {
+                            "field-5": {
+                                "sub-field": {
+                                    entryId: "value-5"
+                                }
+                            }
+                        },
+                        {
+                            "field-6": {
+                                "sub-field": {
+                                    entryId_not: "value-6"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+    });
 });

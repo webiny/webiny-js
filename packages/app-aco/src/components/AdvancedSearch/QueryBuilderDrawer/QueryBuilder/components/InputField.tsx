@@ -31,7 +31,7 @@ export const InputField = ({ field, name }: InputFieldProps) => {
         case FieldType.MULTIPLE_VALUES:
             return <MultipleValues predefined={field.predefined} name={name} />;
         case FieldType.REF:
-            return <Ref name={name} modelId={field.value} />;
+            return <Ref name={name} modelId={field.value.split("#")[0]} />;
         default:
             return <Input name={name} type={field.type} />;
     }

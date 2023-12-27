@@ -71,9 +71,9 @@ export class Value {
     public readonly value: string;
 
     static createFromField(rawData: FieldRaw) {
-        // if (rawData.type === FieldType.REF) {
-        //     return new Value(`${rawData.id}#entryId`);
-        // }
+        if (rawData.type === FieldType.REF) {
+            return new Value(`${rawData.id}#entryId`);
+        }
 
         return new Value(rawData.id);
     }

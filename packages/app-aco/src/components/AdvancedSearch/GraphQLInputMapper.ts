@@ -1,5 +1,9 @@
 import { FilterDTO } from "~/components/AdvancedSearch/domain";
 
+interface NestedObject {
+    [key: string]: string | boolean | NestedObject;
+}
+
 export class GraphQLInputMapper {
     static toGraphQL(configuration: FilterDTO) {
         return {
@@ -7,9 +11,10 @@ export class GraphQLInputMapper {
                 return {
                     [group.operation]: group.filters.map(filter => {
                         const { field, condition, value } = filter;
-                        const key = `${field}${condition}`.trim();
-
-                        return { [key]: this.convertToBooleanOrString(value) };
+                        return this.createNestedObject(
+                            this.createKeys(field, condition),
+                            this.convertToBooleanOrString(value)
+                        );
                     })
                 };
             })
@@ -26,5 +31,13 @@ export class GraphQLInputMapper {
         }
 
         return value ?? "";
+    }
+
+    private static createKeys(field: string, condition: string): string[] {
+        return `${field}${condition}`.trim().split("#");
+    }
+
+    private static createNestedObject(keys: string[], value: string | boolean): NestedObject {
+        return keys.reduceRight((acc, key) => ({ [key]: acc }), value as unknown as NestedObject);
     }
 }
