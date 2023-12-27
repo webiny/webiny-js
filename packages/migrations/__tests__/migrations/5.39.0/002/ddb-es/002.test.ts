@@ -22,7 +22,7 @@ import { createMigratedEsData } from "~tests/migrations/5.38.0/002/ddb-es/002.mi
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.39.0-1358", () => {
+describe("5.39.0-002", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();

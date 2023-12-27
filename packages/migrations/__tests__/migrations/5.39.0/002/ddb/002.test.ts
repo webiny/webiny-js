@@ -7,14 +7,14 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { CmsEntriesInitNewMetaFields_5_39_0_1358 } from "~/migrations/5.39.0/1358/ddb";
-import { createEntriesData } from "./1358.data";
-import { migratedData } from "./1358.data.migrated";
+import { CmsEntriesInitNewMetaFields_5_39_0_002 } from "~/migrations/5.39.0/002/ddb";
+import { ddbPrimaryTableData } from "./002.ddbPrimaryTableData";
+import { ddbPrimaryTableDataMigrated } from "./002.ddbPrimaryTableData.migrated";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.39.0-1358", () => {
+describe("5.39.0-002", () => {
     const table = getPrimaryDynamoDbTable();
 
     logTestNameBeforeEachTest();
@@ -22,7 +22,7 @@ describe("5.39.0-1358", () => {
     it("should not run if no form submissions found", async () => {
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_1358]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
         });
 
         const { data, error } = await handler();
@@ -36,11 +36,11 @@ describe("5.39.0-1358", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, createEntriesData());
+        await insertTestData(table, ddbPrimaryTableData);
 
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_1358]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
         });
         const { data, error } = await handler();
 
@@ -60,15 +60,15 @@ describe("5.39.0-1358", () => {
                     }
                 ]
             })
-        ).resolves.toEqual(migratedData);
+        ).resolves.toEqual(ddbPrimaryTableDataMigrated);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, createEntriesData());
+        await insertTestData(table, ddbPrimaryTableData);
 
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_1358]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
         });
 
         // Should run the migration

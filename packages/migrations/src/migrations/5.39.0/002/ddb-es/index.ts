@@ -24,8 +24,8 @@ import { FbForm, FbFormSubmission } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
-import { createFormSubmissionEntity } from "~/migrations/5.39.0/1358/entities/createFormSubmissionEntity";
-import { createFormSubmissionDdbEsEntity } from "~/migrations/5.39.0/1358/entities/createFormSubmissionDdbEsEntity";
+import { createFormSubmissionEntity } from "~/migrations/5.39.0/002/entities/createFormSubmissionEntity";
+import { createFormSubmissionDdbEsEntity } from "~/migrations/5.39.0/002/entities/createFormSubmissionDdbEsEntity";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -46,7 +46,7 @@ interface FormSubmissionsDataMigrationCheckpoint {
     };
 }
 
-export class MultiStepForms_5_39_0_1358 implements DataMigration {
+export class MultiStepForms_5_39_0_002 implements DataMigration {
     private readonly table: Table<string, string, string>;
     private readonly esTable: Table<string, string, string>;
     private readonly formSubmissionEntity: ReturnType<typeof createFormSubmissionEntity>;
@@ -66,7 +66,7 @@ export class MultiStepForms_5_39_0_1358 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-1358";
+        return "5.39.0-002";
     }
 
     getDescription() {
@@ -323,7 +323,7 @@ export class MultiStepForms_5_39_0_1358 implements DataMigration {
     }
 }
 
-makeInjectable(MultiStepForms_5_39_0_1358, [
+makeInjectable(MultiStepForms_5_39_0_002, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

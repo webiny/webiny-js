@@ -23,7 +23,7 @@ interface FolderSubmissionsDataMigrationCheckpoint {
 
 const REVISION_CREATED_ON_FIELD = "revisionCreatedOn";
 
-export class CmsEntriesInitNewMetaFields_5_39_0_1358 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
 
     constructor(table: Table<string, string, string>) {
@@ -31,7 +31,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_1358 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-1358";
+        return "5.39.0-002";
     }
 
     getDescription() {
@@ -173,4 +173,4 @@ export class CmsEntriesInitNewMetaFields_5_39_0_1358 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_1358, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_002, [inject(PrimaryDynamoTableSymbol)]);
