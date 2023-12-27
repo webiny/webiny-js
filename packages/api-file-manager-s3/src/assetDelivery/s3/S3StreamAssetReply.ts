@@ -6,8 +6,7 @@ export class S3StreamAssetReply extends AssetReply {
         super({
             code: 200,
             headers: ResponseHeaders.create({
-                "content-type": asset.getContentType(),
-                "cache-control": "no-store"
+                "content-type": asset.getContentType()
             }),
             body: () => asset.getContents()
         });

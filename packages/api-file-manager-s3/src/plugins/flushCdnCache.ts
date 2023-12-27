@@ -1,6 +1,7 @@
-import { CloudFront } from "@webiny/aws-sdk/client-cloudfront";
+// import { CloudFront } from "@webiny/aws-sdk/client-cloudfront";
 import { ContextPlugin } from "@webiny/api";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
+// import { ServiceDiscovery } from "@webiny/api";
 
 export const flushCdnCache = () => {
     return new ContextPlugin<FileManagerContext>(context => {
@@ -12,11 +13,18 @@ export const flushCdnCache = () => {
                 return;
             }
 
-            // TODO: discuss this part
-            // const services = await ServiceDiscovery.load();
-            // const { distributionId } = services.get<ApiServices>("api");
+            // const { api } = await ServiceDiscovery.load();
+            // const { distributionId } = api.cloudfront;
 
-            const invalidatePaths = [`/files/${file.key}`, `/private/${file.key}`, ...file.aliases];
+            const invalidatePaths = [
+                `/files/${file.key}*`,
+                `/private/${file.key}*`,
+                ...file.aliases
+            ];
+        });
+
+        context.fileManager.onFileAfterDelete.subscribe(async ({ file }) => {
+            // TODO: flush cache
         });
     });
 };

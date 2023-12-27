@@ -14,6 +14,7 @@ import {
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
+import { withServiceManifest } from "~/utils/withServiceManifest";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -71,7 +72,7 @@ export interface CreateApiPulumiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
-    const app = createPulumiApp({
+    const baseApp = createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
@@ -287,5 +288,18 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         }
     });
 
-    return withCommonLambdaEnvVariables(app);
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+
+    app.addHandler(() => {
+        app.addServiceManifest({
+            name: "api",
+            manifest: {
+                cloudfront: {
+                    distributionId: baseApp.resources.cloudfront.output.id
+                }
+            }
+        });
+    });
+
+    return app;
 };

@@ -1,5 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
+import { createPulumiApp, PulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
 import { ElasticSearch } from "./CoreElasticSearch";
@@ -8,6 +8,8 @@ import { CoreEventBus } from "./CoreEventBus";
 import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
+import { withServiceManifest } from "~/utils/withServiceManifest";
+import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -77,7 +79,7 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
@@ -125,7 +127,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as CorePulumiApp);
+                    return projectAppParams.pulumi!(app as unknown as CorePulumiApp);
                 });
             }
 
@@ -189,5 +191,17 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 elasticSearch
             };
         }
+    });
+
+    return withServiceManifest(app, manifests => {
+        const dynamoTable = app.resources.dynamoDbTable;
+
+        const table: TableDefinition = {
+            tableName: dynamoTable.output.name,
+            hashKey: dynamoTable.output.hashKey,
+            rangeKey: dynamoTable.output.rangeKey
+        };
+
+        manifests.forEach(manifest => addServiceManifestTableItem(app, table, manifest));
     });
 }
