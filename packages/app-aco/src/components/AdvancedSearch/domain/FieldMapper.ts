@@ -6,7 +6,8 @@ import {
     Predefined,
     PredefinedDTO,
     Type,
-    FieldType
+    FieldType,
+    Value
 } from "./Field";
 
 export class FieldMapper {
@@ -14,12 +15,18 @@ export class FieldMapper {
         return configuration.map(field => {
             return {
                 label: field.label,
-                value: field.value,
+                value: ValueMapper.toDTO(field.value),
                 conditions: ConditionMapper.toDTO(field.conditions),
                 predefined: PredefinedMapper.toDTO(field.predefined),
                 type: TypeMapper.toTDO(field.type)
             };
         });
+    }
+}
+
+export class ValueMapper {
+    static toDTO(value: Value): string {
+        return value.value;
     }
 }
 

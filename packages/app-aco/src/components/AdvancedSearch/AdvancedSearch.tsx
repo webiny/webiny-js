@@ -24,7 +24,7 @@ export const AdvancedSearch = observer(
     ({ fields, repository, onApplyFilter }: AdvancedSearchProps) => {
         const presenter = useMemo<AdvancedSearchPresenter>(() => {
             return new AdvancedSearchPresenter(repository);
-        }, [FilterRepository]);
+        }, [repository]);
 
         useEffect(() => {
             presenter.load();

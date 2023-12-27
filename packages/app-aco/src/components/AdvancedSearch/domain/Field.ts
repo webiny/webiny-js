@@ -13,7 +13,8 @@ export enum FieldType {
     TIME = "time",
     DATETIME_WITH_TIMEZONE = "dateTimeWithTimezone",
     DATETIME_WITHOUT_TIMEZONE = "dateTimeWithoutTimezone",
-    MULTIPLE_VALUES = "multipleValues"
+    MULTIPLE_VALUES = "multipleValues",
+    REF = "ref"
 }
 
 export interface ConditionDTO {
@@ -36,14 +37,14 @@ export interface FieldDTO {
 
 export class Field {
     public readonly label: string;
-    public readonly value: string;
+    public readonly value: Value;
     public readonly type: Type;
     public readonly conditions: Condition[];
     public readonly predefined: Predefined[];
 
     static createFromRaw(fieldRaw: FieldRaw) {
         const label = fieldRaw.label;
-        const value = fieldRaw.id;
+        const value = Value.createFromField(fieldRaw);
         const type = Type.createFromField(fieldRaw);
         const conditions = Condition.createFromField(fieldRaw);
         const predefined = Predefined.createFromField(fieldRaw);
@@ -53,7 +54,7 @@ export class Field {
 
     private constructor(
         label: string,
-        value: string,
+        value: Value,
         type: Type,
         conditions: Condition[],
         predefined: Predefined[]
@@ -63,6 +64,22 @@ export class Field {
         this.type = type;
         this.predefined = predefined;
         this.conditions = conditions;
+    }
+}
+
+export class Value {
+    public readonly value: string;
+
+    static createFromField(rawData: FieldRaw) {
+        // if (rawData.type === FieldType.REF) {
+        //     return new Value(`${rawData.id}#entryId`);
+        // }
+
+        return new Value(rawData.id);
+    }
+
+    private constructor(value: string) {
+        this.value = value;
     }
 }
 
@@ -129,6 +146,12 @@ export class Condition {
                     { label: "is after or equal to", value: "_gte" }
                 ]);
 
+            case "ref":
+                return createConditions([
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" }
+                ]);
+
             default:
                 return [];
         }
@@ -187,6 +210,10 @@ export class Type {
 
         if (rawData.type === FieldType.NUMBER) {
             return new Type(FieldType.NUMBER);
+        }
+
+        if (rawData.type === FieldType.REF) {
+            return new Type(FieldType.REF);
         }
 
         return new Type(FieldType.TEXT);

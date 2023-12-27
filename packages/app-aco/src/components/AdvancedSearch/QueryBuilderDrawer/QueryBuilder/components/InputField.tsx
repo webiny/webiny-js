@@ -1,6 +1,13 @@
 import React from "react";
 
-import { Boolean, DateWithoutTimezone, DateWithTimezone, Input, MultipleValues } from "./fields";
+import {
+    Boolean,
+    DateWithoutTimezone,
+    DateWithTimezone,
+    Input,
+    MultipleValues,
+    Ref
+} from "./fields";
 
 import { FieldDTO, FieldType } from "~/components/AdvancedSearch/domain";
 
@@ -23,6 +30,8 @@ export const InputField = ({ field, name }: InputFieldProps) => {
             return <DateWithoutTimezone name={name} />;
         case FieldType.MULTIPLE_VALUES:
             return <MultipleValues predefined={field.predefined} name={name} />;
+        case FieldType.REF:
+            return <Ref name={name} modelId={field.value} />;
         default:
             return <Input name={name} type={field.type} />;
     }
