@@ -70,7 +70,7 @@ export class HistoryRouterGateway implements IRouterGateway {
         return this.urlGenerator(id, params);
     }
 
-    registerRoutes(routes: RouteDefinition[]): void {
+    async registerRoutes(routes: RouteDefinition[]): void {
         routes.forEach(route => {
             this.routes.push({
                 ...route,
@@ -90,6 +90,17 @@ export class HistoryRouterGateway implements IRouterGateway {
         });
 
         this.sortRoutes(this.routes);
+
+        console.log(this.routes);
+
+        const result = await this.router.resolve(location.pathname);
+        if (!result) {
+            return;
+        }
+
+        const [matchedRoute, onMatch] = result;
+
+        onMatch(matchedRoute);
     }
 
     private sortRoutes(routes: RouteDefinition[]) {

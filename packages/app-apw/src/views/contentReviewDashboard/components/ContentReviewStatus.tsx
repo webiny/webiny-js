@@ -17,7 +17,11 @@ export const statusToLevel = {
     [ApwContentReviewStatus.PUBLISHED]: 2
 };
 
-const CommentBadge: React.FC<{ comments: number }> = ({ comments, ...props }) => {
+interface CommentBadgeProps {
+    comments: number;
+}
+
+const CommentBadge = ({ comments, ...props }: CommentBadgeProps) => {
     return (
         <CommentCountBox {...props} width={"fit-content"}>
             <CommentsCount>{comments}</CommentsCount>
@@ -39,13 +43,13 @@ export interface ContentReviewStatusProps {
     content: ApwContentReviewContent;
 }
 
-export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
+export const ContentReviewStatus = ({
     status,
     comments,
     reviewers,
     content,
     ...boxProps
-}) => {
+}: ContentReviewStatusProps) => {
     const level = statusToLevel[status];
     const label = content.scheduledOn ? getScheduledMessage(status) : status;
     return (

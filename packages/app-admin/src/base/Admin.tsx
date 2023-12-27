@@ -1,5 +1,5 @@
 import React from "react";
-import { App, Provider } from "@webiny/app";
+import { App } from "@webiny/app";
 import { WcpProvider } from "@webiny/app-wcp";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ThemeProvider } from "@webiny/app-theme";

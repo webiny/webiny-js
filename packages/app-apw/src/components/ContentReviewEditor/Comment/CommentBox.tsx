@@ -14,6 +14,7 @@ import { Box, Columns } from "~/components/Layout";
 import Spinner from "react-spinner-material";
 import { FileManager } from "@webiny/app-admin/components";
 import { richTextWrapperStyles } from "../Styled";
+import { ApwComment } from "~/types";
 
 const richTextStyles = css`
     /**
@@ -77,10 +78,10 @@ const InputBox = styled(Box)`
 `;
 
 interface CommentBoxProps {
-    scrollToLatestComment: Function;
+    scrollToLatestComment: () => void;
 }
 
-export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment }) => {
+export const CommentBox = ({ scrollToLatestComment }: CommentBoxProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { createComment } = useComment();
     const changeRequestId = useCurrentChangeRequestId();
@@ -89,13 +90,17 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
     return (
         <Form
             key={commentBoxKey}
-            onSubmit={async formData => {
-                const data = {
+            onSubmit={async (formData: ApwComment) => {
+                const data: ApwComment = {
                     ...formData,
-                    changeRequest: changeRequestId
+                    changeRequest: changeRequestId as string
                 };
                 setLoading(true);
-                const response = await createComment({ variables: { data } });
+                const response = await createComment({
+                    variables: {
+                        data
+                    }
+                });
                 /*
                  * After submitting comment we're using the "id" state to re-mount entire Form component,
                  * so that we have a clean slate for "RichTextEditor" for new comment.
@@ -107,7 +112,7 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
         >
             {({ Bind, submit, data }) => (
                 <CommentBoxColumns space={2} alignItems={"center"} paddingX={6}>
-                    <AttachmentBox active={data.media}>
+                    <AttachmentBox active={!!data.media}>
                         <Bind name={"media"}>
                             {props => (
                                 <FileManager

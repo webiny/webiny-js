@@ -19,7 +19,7 @@ const RenderBlock = styled("div")({
     padding: 25
 });
 
-const PreviewContentTab: React.FC<FbFormDetailsPluginRenderParams> = props => {
+const PreviewContentTab = (props: FbFormDetailsPluginRenderParams) => {
     const [revisionId, setRevisionId] = useState<string>();
 
     useEffect((): void => {

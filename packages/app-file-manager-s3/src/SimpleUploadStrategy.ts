@@ -2,6 +2,13 @@ import { UploadedFile, UploadOptions } from "@webiny/app/types";
 import { GET_PRE_SIGNED_POST_PAYLOAD } from "./graphql";
 import { FileUploadStrategy } from "~/index";
 
+declare global {
+    interface File {
+        key?: string;
+        keyPrefix?: string;
+    }
+}
+
 export class SimpleUploadStrategy implements FileUploadStrategy {
     async upload(file: File, { apolloClient, onProgress }: UploadOptions): Promise<UploadedFile> {
         // 1. GET PreSignedPostPayload
@@ -9,7 +16,13 @@ export class SimpleUploadStrategy implements FileUploadStrategy {
             query: GET_PRE_SIGNED_POST_PAYLOAD,
             fetchPolicy: "no-cache",
             variables: {
-                data: { size: file.size, name: file.name, type: file.type }
+                data: {
+                    size: file.size,
+                    name: file.name,
+                    type: file.type,
+                    key: file.key,
+                    keyPrefix: file.keyPrefix
+                }
             }
         });
 

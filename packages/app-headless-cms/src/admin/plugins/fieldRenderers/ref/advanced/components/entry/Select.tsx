@@ -54,12 +54,12 @@ const Text = styled("span")({
     marginLeft: "10px"
 });
 
-interface Props {
+interface SelectProps {
     entry: CmsReferenceContentEntry;
     selected?: boolean;
     onChange: (value: CmsReferenceValue) => void;
 }
-export const Select: React.VFC<Props> = ({ entry, selected, onChange }) => {
+export const Select = ({ entry, selected, onChange }: SelectProps) => {
     const onIconClick = useCallback(() => {
         onChange({
             id: entry.id,

@@ -19,7 +19,7 @@ interface SliderWithInputPropsType {
     step?: number;
     max?: number;
 }
-const SliderWithInput: React.FC<SliderWithInputPropsType> = ({
+const SliderWithInput = ({
     icon,
     placeholder,
     updateValue,
@@ -28,7 +28,7 @@ const SliderWithInput: React.FC<SliderWithInputPropsType> = ({
     valueKey,
     max = 100,
     step = 1
-}) => {
+}: SliderWithInputPropsType) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const value = lodashGet(element, valueKey, 0);

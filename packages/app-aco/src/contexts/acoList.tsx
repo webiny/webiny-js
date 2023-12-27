@@ -105,7 +105,7 @@ export interface AcoListProviderProps {
     titleFieldId: string | null;
 }
 
-export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...props }) => {
+export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) => {
     const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();

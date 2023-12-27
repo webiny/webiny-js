@@ -10,7 +10,7 @@ export interface CreatableItem {
     };
 }
 
-const PageBlocks: React.FC = () => {
+const PageBlocks = () => {
     const [filter, setFilter] = useState<string>("");
     const { canCreate, canUpdate, canDelete } = useBlocksPermissions();
 

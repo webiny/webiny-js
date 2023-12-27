@@ -12,7 +12,7 @@ import { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types
 
 const t = i18n.ns("app-headless-cms/pages-table/actions/page/publish");
 
-interface Props {
+interface RecordActionPublishProps {
     record: {
         id: string;
         title: string;
@@ -26,7 +26,7 @@ interface Props {
     };
 }
 
-export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
+export const RecordActionPublish = ({ record }: RecordActionPublishProps) => {
     const { canPublish, canUnpublish } = usePermission();
 
     const { unpublishRevision, publishRevision } = useRevision({

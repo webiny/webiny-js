@@ -8,7 +8,7 @@ interface GridProps {
     element: PbEditorElement;
 }
 
-const Grid: React.FC<GridProps> = props => {
+const Grid = (props: GridProps) => {
     const { element, ...rest } = props;
     return <PeGrid element={element as Element} {...rest} />;
 };

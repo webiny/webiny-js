@@ -17,7 +17,7 @@ const CommentStack = styled(Stack)`
     flex-direction: column;
 `;
 
-export const RightPanel: React.FC = () => {
+export const RightPanel = () => {
     const changeRequestId = useCurrentChangeRequestId();
     const ref = useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,7 @@ export const RightPanel: React.FC = () => {
      * After adding a comment we scroll the comments list to the bottom,
      * so that the latest comment is always visible.
      */
-    const scrollToLatestComment = () => {
+    const scrollToLatestComment = (): void => {
         if (!ref.current || typeof ref.current.scrollIntoView !== "function") {
             return;
         }

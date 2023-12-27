@@ -18,11 +18,11 @@ interface HasContentEntryPermissionsProps {
     children: JSX.Element;
 }
 
-const HasContentEntryPermissions: React.FC<HasContentEntryPermissionsProps> = ({
+const HasContentEntryPermissions = ({
     group,
     contentModel,
     children
-}) => {
+}: HasContentEntryPermissionsProps) => {
     const { canReadEntries } = usePermission();
 
     if (contentModel) {
@@ -48,7 +48,7 @@ const HasContentEntryPermissions: React.FC<HasContentEntryPermissionsProps> = ({
 interface IconProps {
     group: CmsGroup;
 }
-const Icon: React.FC<IconProps> = ({ group }) => {
+const Icon = ({ group }: IconProps) => {
     return (
         <FontAwesomeIcon
             style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
@@ -57,7 +57,7 @@ const Icon: React.FC<IconProps> = ({ group }) => {
     );
 };
 
-export const ContentGroupsMenuItems: React.FC = () => {
+export const ContentGroupsMenuItems = () => {
     const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
     const groups: CmsGroup[] = get(response, "data.listContentModelGroups.data") || [];
 

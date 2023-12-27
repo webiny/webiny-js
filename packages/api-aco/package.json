@@ -22,7 +22,6 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@ungap/structured-clone": "^1.2.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-authentication": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",

@@ -28,7 +28,7 @@ interface FolderNameProps {
     record: FolderEntry;
 }
 
-export const FolderName: React.VFC<FolderNameProps> = ({ record }) => {
+export const FolderName = ({ record }: FolderNameProps) => {
     const { navigateToFolder } = useNavigateFolder();
 
     const { hasNonInheritedPermissions, canManagePermissions } = record.original;
@@ -50,7 +50,7 @@ interface EntryNameProps {
     onClick?: () => void;
 }
 
-export const EntryName: React.VFC<EntryNameProps> = ({ record, onClick }) => {
+export const EntryName = ({ record, onClick }: EntryNameProps) => {
     return (
         <Title onClick={onClick} className="cms-data-list-record-title">
             <Icon>

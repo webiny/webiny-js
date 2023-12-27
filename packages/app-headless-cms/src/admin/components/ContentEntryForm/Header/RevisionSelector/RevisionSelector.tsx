@@ -25,7 +25,7 @@ const defaultRevisions: CmsEntryRevision[] = [
     }
 ];
 
-export const RevisionSelector: React.FC = () => {
+export const RevisionSelector = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

@@ -46,7 +46,7 @@ interface FieldProps {
     onFieldDragStart: DragEventHandler;
     fieldType: CmsModelFieldTypePlugin["field"];
 }
-const Field: React.FC<FieldProps> = props => {
+const Field = (props: FieldProps) => {
     const {
         onFieldDragStart,
         fieldType: { type, label, icon, description }
@@ -78,7 +78,7 @@ const Field: React.FC<FieldProps> = props => {
 interface FieldsSidebarProps {
     onFieldDragStart: DragEventHandler;
 }
-export const FieldsSidebar: React.FC<FieldsSidebarProps> = ({ onFieldDragStart }) => {
+export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
     const fieldTypePlugin = plugins.byType<CmsModelFieldTypePlugin>("cms-editor-field-type");
 
     return (

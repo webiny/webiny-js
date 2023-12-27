@@ -116,7 +116,7 @@ export interface AcoFolderCrud {
 
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
 
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 
     getAncestors(folder: Folder): Promise<Folder[]>;
 

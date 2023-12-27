@@ -25,12 +25,12 @@ interface LexicalHtmlRendererProps {
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
 }
 
-export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+export const BaseLexicalHtmlRenderer = ({
     nodes,
     value,
     theme,
     themeEmotionMap
-}) => {
+}: LexicalHtmlRendererProps) => {
     const editorTheme = useRef(createTheme());
     const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
@@ -66,7 +66,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
 /**
  * @description Main editor container
  */
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => {
+export const LexicalHtmlRenderer = (props: LexicalHtmlRendererProps) => {
     return (
         <ClassNames>
             {({ css }) => {

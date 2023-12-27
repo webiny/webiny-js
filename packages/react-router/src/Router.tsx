@@ -44,19 +44,19 @@ export const RouterInner = ({ presenter, routes, children }: RouterInnerProps) =
         presenter.bootstrap(routeDefs);
     }, [routes.length]);
 
-    const currentRoute = presenter.vm;
-
-    if (!currentRoute) {
-        return null;
-    }
-
-    const route = routes.find(route => route.props.name === currentRoute.name);
-    if (!route) {
-        return null;
-    }
+    // const currentRoute = presenter.vm;
+    //
+    // if (!currentRoute) {
+    //     return null;
+    // }
+    //
+    // const route = routes.find(route => route.props.name === currentRoute.name);
+    // if (!route) {
+    //     return null;
+    // }
 
     return (
-        <RouteContext.Provider value={{ ...currentRoute, element: route.props.element }}>
+        <RouteContext.Provider value={undefined}>
             {children}
         </RouteContext.Provider>
     );

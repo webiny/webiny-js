@@ -11,11 +11,11 @@ const FormWrapper = styled("div")({
     overflow: "auto"
 });
 
-interface Props {
+interface ContentEntryFormPreviewProps {
     contentModel: CmsEditorContentModel;
 }
 
-export const ContentEntryFormPreview: React.FC<Props> = props => {
+export const ContentEntryFormPreview = (props: ContentEntryFormPreviewProps) => {
     const { contentModel } = props;
 
     const formRenderer = plugins

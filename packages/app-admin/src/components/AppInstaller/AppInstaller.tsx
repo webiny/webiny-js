@@ -18,7 +18,11 @@ declare global {
 import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialog } from "./styled";
 import { config as appConfig } from "@webiny/app/config";
 
-export const AppInstaller: React.FC = ({ children }) => {
+interface AppInstallerProps {
+    children: React.ReactNode;
+}
+
+export const AppInstaller = ({ children }: AppInstallerProps) => {
     const { tenant: tenantId } = useTenancy();
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);

@@ -65,6 +65,7 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
     const history = useRef(createBrowserHistory());
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {
+        console.log("addRoute", route);
         setState(state => {
             return {
                 ...state,

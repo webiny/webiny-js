@@ -51,7 +51,7 @@ const useLightbox = () => {
 export interface MosaicProps {
     data: Image[];
 }
-const MosaicComponent: React.FC<MosaicProps> = props => {
+const MosaicComponent = (props: MosaicProps) => {
     const { data } = props;
     const { opened, open, close, next, prev, currentIndex } = useLightbox();
 
@@ -84,4 +84,4 @@ const MosaicComponent: React.FC<MosaicProps> = props => {
     return <span>No images to display.</span>;
 };
 
-export const Mosaic: React.FC<MosaicProps> = React.memo(MosaicComponent);
+export const Mosaic: React.ComponentType<MosaicProps> = React.memo(MosaicComponent);
