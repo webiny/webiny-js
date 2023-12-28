@@ -54,10 +54,10 @@ export const Table = observer(
             return new ColumnsVisibilityDecorator(visibilityRepo, columnsRepo);
         }, [props.namespace, table.columns]);
 
-        const presenter = useMemo<TablePresenter<T>>(() => {
+        const presenter = useMemo<TablePresenter>(() => {
             const columnsVisibilityUpdater = new ColumnsVisibilityUpdater(visibilityRepo);
             const columnsPresenter = new ColumnsPresenter(columnsVisibilityUpdater, repo);
-            return new TablePresenter<T>(columnsPresenter);
+            return new TablePresenter(columnsPresenter);
         }, [repo]);
 
         const cellRenderer = useCallback(
