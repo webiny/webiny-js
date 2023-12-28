@@ -8,11 +8,11 @@ export class ColumnsVisibilityUpdater implements IColumnsVisibilityUpdater {
 
     constructor(repository: IColumnsVisibilityRepository) {
         this.repository = repository;
-        makeAutoObservable(this)
+        makeAutoObservable(this);
     }
 
     public update: OnColumnVisibilityChange = async updaterOrValue => {
-        const currentVisibility = this.repository.getVisibility()
+        const currentVisibility = this.repository.getVisibility();
         let newVisibility = currentVisibility;
 
         if (typeof updaterOrValue === "function") {

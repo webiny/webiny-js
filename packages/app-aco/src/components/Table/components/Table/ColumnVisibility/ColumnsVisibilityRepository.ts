@@ -32,7 +32,6 @@ export class ColumnsVisibilityRepository implements IColumnsVisibilityRepository
         await this.gateway.set(newState);
 
         runInAction(() => {
-            console.log("inAction", newState);
             this.state = newState;
         });
     }
