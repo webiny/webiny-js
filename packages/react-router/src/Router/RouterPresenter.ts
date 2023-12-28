@@ -1,3 +1,4 @@
+import { makeAutoObservable, toJS } from "mobx";
 import {
     IRouterRepository,
     RouteDefinition,
@@ -9,13 +10,18 @@ export class RouterPresenter {
 
     constructor(routerRepository: IRouterRepository) {
         this.routerRepository = routerRepository;
+
+        makeAutoObservable(this);
     }
 
     get vm() {
-        return this.routerRepository.getCurrentRoute();
+        return {
+            currentRoute: toJS(this.routerRepository.getCurrentRoute())
+        };
     }
 
     bootstrap(routes: RouteDefinition[]) {
+        console.log("bootstrap", routes);
         this.routerRepository.registerRoutes(
             routes.map(route => ({ name: route.name, path: route.path }))
         );

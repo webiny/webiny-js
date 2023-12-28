@@ -1,17 +1,11 @@
-import React, { useContext } from "react";
-import {
-    UNSAFE_RouteContext as __RouterContext,
-    useLocation,
-    useParams,
-    useSearchParams
-} from "react-router-dom";
-import { ReactRouterContext, RouterContext } from "./context/RouterContext";
+import React from "react";
+import { useLocation, useParams, useSearchParams, useNavigate } from "react-router-dom";
+export { useLocation, useParams, useSearchParams, useNavigate };
 /**
  * Webiny enhancements and backwards compatibility with react-router v5.
  */
 import { BrowserRouter as WebinyRouter, BrowserRouterProps } from "./BrowserRouter";
 import { useHistory, UseHistory } from "~/useHistory";
-import { RouteProps } from "./Route";
 
 /**
  * Re-export types from react-router-dom.
@@ -43,8 +37,6 @@ export type {
     URLSearchParamsInit
 } from "react-router-dom";
 
-export * from "react-router-dom";
-
 export { Link } from "./Link";
 export type { LinkProps } from "./Link";
 
@@ -63,22 +55,23 @@ export type { UseHistory } from "./useHistory";
 
 export { usePrompt } from "./usePrompt";
 
-export type UseRouter = RouteProps &
-    ReactRouterContext & {
-        history: UseHistory;
-        location: ReturnType<typeof useLocation>;
-        params: Record<string, any>;
-        search: ReturnType<typeof useSearchParams>;
-    };
+export type UseRouter = {
+    navigate: ReturnType<typeof useNavigate>;
+    history: UseHistory;
+    location: ReturnType<typeof useLocation>;
+    params: Record<string, any>;
+    search: ReturnType<typeof useSearchParams>;
+};
 
 export function useRouter(): UseRouter {
     const history = useHistory();
     const location = useLocation();
     const params = useParams();
     const search = useSearchParams();
+    const navigate = useNavigate();
+
     return {
-        ...useContext(RouterContext),
-        ...useContext(__RouterContext),
+        navigate,
         history,
         search,
         location,
@@ -91,4 +84,4 @@ export function useRouter(): UseRouter {
  */
 export const BrowserRouter: React.FC<BrowserRouterProps> = WebinyRouter;
 export type { BrowserRouterProps };
-export { Router, RouteContent } from "./Router";
+export { Router, RouteContent, RouteDefinition } from "./Router";

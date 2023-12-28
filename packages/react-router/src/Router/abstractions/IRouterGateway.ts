@@ -17,6 +17,8 @@ export interface MatchedRoute {
     path: string;
     // Route params extracted from the pathname.
     params: Record<string, any>;
+    // Query string params.
+    queryParams: Record<string, any>;
 }
 
 export interface IRouterGateway {

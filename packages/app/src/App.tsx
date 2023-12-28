@@ -46,6 +46,18 @@ export const useApp = () => {
     return appContext;
 };
 
+type RouteDefinitions = React.ComponentProps<typeof Router>["routes"];
+
+const normalizeRoutes = (routes: FunctionComponentElement<RouteProps>[]): RouteDefinitions => {
+    return routes.filter(Boolean).map(route => {
+        return {
+            name: route.props.path,
+            path: route.props.path,
+            element: route.props.element || route.props.children || route.props.render
+        };
+    }) as RouteDefinitions;
+};
+
 export interface AppProps {
     debounceRender?: number;
     routes?: Array<RouteProps>;
@@ -65,7 +77,6 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
     const history = useRef(createBrowserHistory());
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {
-        console.log("addRoute", route);
         setState(state => {
             return {
                 ...state,
@@ -107,7 +118,10 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
     );
 
     const routesFromPlugins = plugins.byType<RoutePlugin>("route").map(({ route }) => route);
-    const allRoutes = [...Object.values(state.routes), ...routesFromPlugins] as JSX.Element[];
+    const allRoutes = normalizeRoutes([
+        ...Object.values(state.routes),
+        ...routesFromPlugins
+    ] as FunctionComponentElement<RouteProps>[]);
 
     const Providers = useMemo(() => {
         return compose(...(state.providers || []))(({ children }: any) => (
@@ -122,7 +136,7 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
             <CompositionProvider>
                 {children}
                 <BrowserRouter history={history.current}>
-                    <Router routes={allRoutes} history={history.current} getBaseUrl={() => "/"}>
+                    <Router routes={allRoutes} history={history.current} getBaseUrl={() => ""}>
                         <Providers>
                             <PluginsProvider>{state.plugins}</PluginsProvider>
                             <DebounceRender wait={debounceRender}>

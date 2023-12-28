@@ -26,6 +26,8 @@ export class HistoryRouterGateway implements IRouterGateway {
     constructor(history: History, baseUrl: string) {
         this.history = history;
 
+        console.log("gateway.baseUrl", baseUrl);
+
         this.router = new UniversalRouter<RouteResolveResult>(this.routes, {
             baseUrl,
             resolveRoute(context, params) {
@@ -51,7 +53,8 @@ export class HistoryRouterGateway implements IRouterGateway {
         });
 
         history.listen(async ({ location }) => {
-            const result = await this.router.resolve(location.pathname);
+            const queryParams = Object.fromEntries(new URLSearchParams(location.search).entries());
+            const result = await this.router.resolve({ pathname: location.pathname, queryParams });
             if (!result) {
                 return;
             }
@@ -70,19 +73,25 @@ export class HistoryRouterGateway implements IRouterGateway {
         return this.urlGenerator(id, params);
     }
 
-    async registerRoutes(routes: RouteDefinition[]): void {
+    async registerRoutes(routes: RouteDefinition[]): Promise<void> {
+        this.routes.length = 0;
+
         routes.forEach(route => {
             this.routes.push({
                 ...route,
+                path: route.path === "*" ? "(.*)" : route.path,
                 action(context, params) {
                     const matchedRoute = {
                         name: route.name,
                         path: route.path,
                         pathname: context.pathname,
-                        params
+                        params,
+                        queryParams: context.queryParams
                     };
 
-                    const onMatch = (matchedRoute: MatchedRoute) => route.onMatch(matchedRoute);
+                    const onMatch = (matchedRoute: MatchedRoute) => {
+                        route.onMatch(matchedRoute);
+                    };
 
                     return [matchedRoute, onMatch];
                 }
@@ -91,9 +100,8 @@ export class HistoryRouterGateway implements IRouterGateway {
 
         this.sortRoutes(this.routes);
 
-        console.log(this.routes);
-
-        const result = await this.router.resolve(location.pathname);
+        const queryParams = Object.fromEntries(new URLSearchParams(location.search).entries());
+        const result = await this.router.resolve({ pathname: location.pathname, queryParams });
         if (!result) {
             return;
         }

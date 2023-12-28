@@ -1,6 +1,6 @@
 import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { HigherOrderComponent } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -24,7 +24,7 @@ export const PublishEntryRevisionHoc: HigherOrderComponent = OriginalRenderer =>
         const { entry, contentModel: model } = useContentEntry();
 
         const contentReviewId = useContentReviewId(entry.id, model);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (!contentReviewId) {
             return <OriginalRenderer />;
@@ -50,7 +50,7 @@ export const PublishEntryMenuOptionHoc: HigherOrderComponent = OriginalRenderer 
         const { entry, contentModel: model } = useContentEntry();
 
         const contentReviewId = useContentReviewId(entry.id, model);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (entry.status === "published") {
             return null;
@@ -80,7 +80,7 @@ export const PublishEntryButtonHoc: HigherOrderComponent = OriginalRenderer => {
         const { entry, contentModel: model } = useContentEntry();
 
         const contentReviewId = useContentReviewId(entry.id, model);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (!contentReviewId) {
             return <OriginalRenderer />;

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import dotPropImmutable from "dot-prop-immutable";
-import { useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
@@ -23,7 +23,7 @@ export const ApwOnPublish = () => {
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const navigate = useNavigate();
+    const { navigate } = useRouter();
 
     const { showConfirmation: showRequestReviewConfirmation } = useConfirmationDialog({
         title: t`Request review`,

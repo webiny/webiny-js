@@ -1,14 +1,26 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import type { History } from "history";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import type { History, Location } from "history";
 import { observer } from "mobx-react-lite";
 import { HistoryRouterGateway } from "~/Router/HistoryRouterGateway";
 import { RouterRepository } from "./Router/RouterRepository";
 import { RouterPresenter } from "./Router/RouterPresenter";
 import { MatchedRoute } from "~/Router/abstractions/IRouterGateway";
 
+/**
+ * @deprecated Use proper JSX.Element instead!
+ */
+interface DeprecatedRenderFunction {
+    (params: { location: Location }): JSX.Element;
+}
+
+export interface RouteDefinition {
+    name: string;
+    path: string;
+    element: JSX.Element | DeprecatedRenderFunction;
+}
+
 interface RouterProps {
-    // TODO: change this. input should NOT be an element.
-    routes: JSX.Element[];
+    routes: RouteDefinition[];
     getBaseUrl: () => string;
     history: History;
     children: JSX.Element;
@@ -20,54 +32,80 @@ interface MatchedRouteWithElement extends MatchedRoute {
 
 const RouteContext = React.createContext<MatchedRouteWithElement | undefined>(undefined);
 
-export const Router = observer(({ getBaseUrl, routes, history, children }: RouterProps) => {
+export const Router = ({ getBaseUrl, routes, history, children }: RouterProps) => {
     const gateway = new HistoryRouterGateway(history, getBaseUrl());
     const repository = new RouterRepository(gateway);
     const presenter = useMemo(() => new RouterPresenter(repository), [repository]);
 
+    const getElementFromRoute = useCallback(
+        (route: RouteDefinition) => {
+            // For backwards compatibility.
+            if (typeof route.element === "function") {
+                console.warn(
+                    `Deprecated "element" property usage in route ${route.name} (${route.path}).`
+                );
+                return route.element({ location: history.location });
+            }
+            return route.element;
+        },
+        [history]
+    );
+
     return (
-        <RouterInner presenter={presenter} routes={routes}>
+        <RouterInner
+            presenter={presenter}
+            routes={routes}
+            getElementFromRoute={getElementFromRoute}
+        >
             {children}
         </RouterInner>
     );
-});
+};
 
 interface RouterInnerProps {
     presenter: RouterPresenter;
-    routes: JSX.Element[];
+    routes: RouteDefinition[];
+    getElementFromRoute: (route: RouteDefinition) => JSX.Element;
     children: JSX.Element;
 }
 
-export const RouterInner = ({ presenter, routes, children }: RouterInnerProps) => {
-    useEffect(() => {
-        const routeDefs = routes.map(route => ({ name: route.props.name, path: route.props.path }));
-        presenter.bootstrap(routeDefs);
-    }, [routes.length]);
+export const RouterInner = observer(
+    ({ presenter, routes, getElementFromRoute, children }: RouterInnerProps) => {
+        useEffect(() => {
+            const routeDefs = routes.map(route => ({
+                name: route.name,
+                path: route.path
+            }));
 
-    // const currentRoute = presenter.vm;
-    //
-    // if (!currentRoute) {
-    //     return null;
-    // }
-    //
-    // const route = routes.find(route => route.props.name === currentRoute.name);
-    // if (!route) {
-    //     return null;
-    // }
+            presenter.bootstrap(routeDefs);
+        }, [routes.length]);
 
-    return (
-        <RouteContext.Provider value={undefined}>
-            {children}
-        </RouteContext.Provider>
-    );
-};
+        const { currentRoute } = presenter.vm;
 
-export const RouteContent = () => {
+        console.log("presenter", currentRoute);
+
+        const route = currentRoute ? routes.find(route => route.name === currentRoute.name) : null;
+
+        console.log("route", route);
+
+        const context: MatchedRouteWithElement | undefined = useMemo(() => {
+            return route && currentRoute
+                ? { ...currentRoute, element: getElementFromRoute(route) }
+                : undefined;
+        }, [route, currentRoute]);
+
+        return <RouteContext.Provider value={context}>{children}</RouteContext.Provider>;
+    }
+);
+
+export const RouteContent = observer(() => {
     const route = useContext(RouteContext);
+
+    console.log("RouteContent.route", route);
 
     if (!route) {
         return null;
     }
 
     return <>{route.element}</>;
-};
+});

@@ -36,6 +36,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
                 <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
                     <TenancyProvider>
                         <App
+
                             providers={[
                                 TelemetryProvider,
                                 UiStateProvider,

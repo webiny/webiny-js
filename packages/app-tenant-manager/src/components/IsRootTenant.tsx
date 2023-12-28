@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { useSecurity } from "@webiny/app-security";
-import { Tenant } from "@webiny/app-tenancy";
+import { Tenant } from "@webiny/app-admin/types";
 
 interface IsTenantProps {
     condition(tenant: Tenant): boolean;

@@ -12666,15 +12666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/navigo@npm:^8.1.2":
-  version: 8.1.2
-  resolution: "@types/navigo@npm:8.1.2"
-  dependencies:
-    navigo: "*"
-  checksum: 84107e6ed826ff50b62f614e5aa7ca191f8a07839588d5113da4ac76bd33a8d0143832756ed7cfeeac2e51dfc558180fd35ae206c5fe84b5e6384e86d4b6bf4f
-  languageName: node
-  linkType: hard
-
 "@types/ncp@npm:^2.0.4":
   version: 2.0.5
   resolution: "@types/ncp@npm:2.0.5"
@@ -15467,7 +15458,6 @@ __metadata:
     "@types/graphlib": ^2.1.8
     "@types/is-hotkey": ^0.1.7
     "@types/mime": ^2.0.3
-    "@types/navigo": ^8.1.2
     "@types/react": 17.0.39
     "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
@@ -34722,13 +34712,6 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
-  languageName: node
-  linkType: hard
-
-"navigo@npm:*":
-  version: 8.11.1
-  resolution: "navigo@npm:8.11.1"
-  checksum: ad82170d0551a2c93665b3e26e0f783a9dcaca632edfdc7db4adff13c4127131bb0aba11d7af4d32b58e7019cdd361ce815f0d5d3c4a2de4dc816e97dff01804
   languageName: node
   linkType: hard
 

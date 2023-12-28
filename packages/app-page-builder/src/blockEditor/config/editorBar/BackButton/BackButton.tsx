@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { useLocation, useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
 import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
@@ -13,8 +13,10 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
-        const { key } = useLocation();
-        const navigate = useNavigate();
+        const {
+            location: { key },
+            navigate
+        } = useRouter();
         const [block] = useBlock();
 
         const onClick = useCallback(() => {

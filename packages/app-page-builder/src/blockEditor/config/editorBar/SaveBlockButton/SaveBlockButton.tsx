@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
-import { useLocation, useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
@@ -23,8 +23,10 @@ const SpinnerWrapper = styled.div`
 const DefaultSaveBlockButton = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
-    const { key } = useLocation();
-    const navigate = useNavigate();
+    const {
+        navigate,
+        location: { key }
+    } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
     const { setDisplayMode } = useDisplayMode();

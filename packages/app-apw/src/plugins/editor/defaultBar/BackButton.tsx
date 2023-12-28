@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
-import { useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { ReactComponent as BackIcon } from "~/assets/icons/round-arrow-back_24dp.svg";
 
 const backStyles = css({
@@ -9,7 +9,7 @@ const backStyles = css({
 });
 
 export const BackButton = React.memo(() => {
-    const navigate = useNavigate();
+    const { navigate } = useRouter();
 
     return (
         <IconButton

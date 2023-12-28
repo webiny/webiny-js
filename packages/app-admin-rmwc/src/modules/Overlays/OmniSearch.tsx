@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigation } from "@webiny/app-admin";
-import { useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
 import { getTenantId } from "@webiny/app/utils";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
@@ -83,7 +83,7 @@ export const OmniSearch = () => {
     const [focusedItemIndex, focusItemAtIndex] = useState(0);
     const { menuItems } = useNavigation();
     const { showSnackbar } = useSnackbar();
-    const navigate = useNavigate();
+    const { navigate } = useRouter();
     const showOmniSearch = useCallback(() => {
         setShowOmniSearch(true);
     }, []);

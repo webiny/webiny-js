@@ -1,6 +1,6 @@
 import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { HigherOrderComponent } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -22,7 +22,7 @@ const t = i18n.ns("app-apw/page-builder/publish-page");
 export const PublishRevisionHoc: HigherOrderComponent<PublishRevisionProps> = OriginalRenderer => {
     return function PageReview(props) {
         const contentReviewId = useContentReviewId(props.page.id);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (!contentReviewId) {
             return <OriginalRenderer {...props} />;
@@ -48,7 +48,7 @@ export const PublishPageMenuOptionHoc: HigherOrderComponent<
 > = OriginalRenderer => {
     return function PageReview(props) {
         const contentReviewId = useContentReviewId(props.revision.id);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (props.revision.status === "published") {
             return null;
@@ -77,7 +77,7 @@ export const PublishPageButtonHoc: HigherOrderComponent = OriginalRenderer => {
     return function PageReview() {
         const [page] = usePage();
         const contentReviewId = useContentReviewId(page.id as string);
-        const navigate = useNavigate();
+        const { navigate } = useRouter();
 
         if (!contentReviewId) {
             return <OriginalRenderer />;

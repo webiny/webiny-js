@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Box, Columns, Stack } from "~/components/Layout";
@@ -34,8 +34,7 @@ type ChangeRequestItemProps = ApwChangeRequest;
 
 export const ChangeRequestListItem = (props: ChangeRequestItemProps) => {
     const { createdOn, createdBy, title, id, body, resolved } = props;
-    const location = useLocation();
-    const navigate = useNavigate();
+    const { location, navigate } = useRouter();
 
     const status = resolved ? ApwChangeRequestStatus.RESOLVED : ApwChangeRequestStatus.ACTIVE;
     /**

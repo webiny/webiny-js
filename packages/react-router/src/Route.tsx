@@ -11,6 +11,7 @@ interface RoutePropsRenderParams {
 }
 
 export type RouteProps = BaseRouteProps & {
+    path: string;
     /**
      * @deprecated This prop is here for backwards compatibility with react-router v5 routes.
      */

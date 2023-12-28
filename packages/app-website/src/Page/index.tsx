@@ -9,7 +9,7 @@ import {
     SettingsQueryResponse,
     SettingsQueryResponseData
 } from "./graphql";
-import { useSearchParams, useLocation } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 
 declare global {
     interface Window {
@@ -35,8 +35,11 @@ const notFoundInitialPath = trimPath(location.pathname);
  * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
 export const Page = () => {
-    const { pathname } = useLocation();
-    const [search] = useSearchParams();
+    const {
+        location: { pathname, search: searchString }
+    } = useRouter();
+
+    const search = new URLSearchParams(searchString);
 
     const getPath = useCallback(() => {
         const path = trimPath(pathname);

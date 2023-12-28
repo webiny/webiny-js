@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog, useFolders } from "@webiny/app-aco";
-import { useHistory, useLocation } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
@@ -28,8 +28,7 @@ interface Props {
 }
 
 export const Main = ({ folderId: initialFolderId }: Props) => {
-    const location = useLocation();
-    const history = useHistory();
+    const { history, location } = useRouter();
 
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
