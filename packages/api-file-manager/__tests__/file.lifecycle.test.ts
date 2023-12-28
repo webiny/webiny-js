@@ -27,7 +27,13 @@ describe("File lifecycle events", () => {
     const hookParamsExpected = {
         id: expect.any(String),
         createdOn: expect.stringMatching(/^20/),
+        savedOn: expect.stringMatching(/^20/),
         createdBy: {
+            id: "12345678",
+            displayName: "John Doe",
+            type: "admin"
+        },
+        savedBy: {
             id: "12345678",
             displayName: "John Doe",
             type: "admin"
@@ -219,6 +225,7 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
+                modifiedOn: null,
                 modifiedBy: null,
                 location: {
                     folderId: ROOT_FOLDER
@@ -231,6 +238,7 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
+                modifiedOn: null,
                 modifiedBy: null,
                 location: {
                     folderId: ROOT_FOLDER
@@ -279,6 +287,8 @@ describe("File lifecycle events", () => {
                 {
                     ...fileData,
                     ...hookParamsExpected,
+                    modifiedOn: null,
+                    modifiedBy: null,
                     location: {
                         folderId: ROOT_FOLDER
                     },
@@ -292,6 +302,8 @@ describe("File lifecycle events", () => {
                 {
                     ...fileData,
                     ...hookParamsExpected,
+                    modifiedOn: null,
+                    modifiedBy: null,
                     location: {
                         folderId: ROOT_FOLDER
                     },

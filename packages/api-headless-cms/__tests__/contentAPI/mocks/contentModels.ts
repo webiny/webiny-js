@@ -92,6 +92,84 @@ const ids = {
 };
 
 const models: CmsModel[] = [
+    // Test entry.
+    {
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
+        locale: "en-US",
+        titleFieldId: "title",
+        lockedFields: [],
+        name: "Test Entry",
+        description: "This is a test model with test entries.",
+        modelId: "testModel",
+        singularApiName: "TestEntry",
+        pluralApiName: "TestEntries",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field11], [ids.field12]],
+        fields: [
+            {
+                id: ids.field11,
+                multipleValues: false,
+                helpText: "",
+                label: "Title",
+                type: "text",
+                storageId: "text@titleStorageId",
+                fieldId: "title",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    },
+                    {
+                        name: "minLength",
+                        message: "Enter at least 3 characters",
+                        settings: {
+                            min: 3.0
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field12,
+                multipleValues: false,
+                helpText: "",
+                label: "Slug",
+                type: "text",
+                storageId: "text@slugStorageId",
+                fieldId: "slug",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ],
+        tenant: "root",
+        webinyVersion
+    },
+
     // category
     {
         createdOn: new Date().toISOString(),

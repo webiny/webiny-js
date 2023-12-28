@@ -27,14 +27,3 @@ export const validateModelAccess = async (
         model
     });
 };
-
-export const checkModelAccess = async (
-    context: PickedCmsContext,
-    model: PickedCmsModel
-): Promise<void> => {
-    const { models } = context.cms.permissions;
-
-    await models.ensureCanAccessModel({
-        model
-    });
-};
