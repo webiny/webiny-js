@@ -13,19 +13,18 @@ import {
     BatchWriteItem,
     ddbScanWithCallback,
     disableElasticsearchIndexing,
-    esGetIndexExist,
     esGetIndexName,
-    esQueryAll,
     fetchOriginalElasticsearchSettings,
-    forEachTenantLocale,
-    restoreOriginalElasticsearchSettings
+    restoreOriginalElasticsearchSettings,
+    scan
 } from "~/utils";
-import { FbForm, FbFormSubmission } from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
-import { createFormSubmissionEntity } from "~/migrations/5.39.0/002/entities/createFormSubmissionEntity";
-import { createFormSubmissionDdbEsEntity } from "~/migrations/5.39.0/002/entities/createFormSubmissionDdbEsEntity";
+import { createDdbEntryEntity, createDdbEsEntryEntity } from "../entities/createEntryEntity";
+import { getDecompressedData } from "~/migrations/5.37.0/002/utils/getDecompressedData";
+import { CmsEntry } from "../types";
+import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -39,30 +38,34 @@ interface IndexSettings {
     refresh_interval: `${number}s`;
 }
 
-interface FormSubmissionsDataMigrationCheckpoint {
+interface CmsEntriesRootFolderDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
     indexes: {
         [index: string]: IndexSettings | null;
     };
 }
 
-export class MultiStepForms_5_39_0_002 implements DataMigration {
-    private readonly table: Table<string, string, string>;
-    private readonly esTable: Table<string, string, string>;
-    private readonly formSubmissionEntity: ReturnType<typeof createFormSubmissionEntity>;
-    private readonly formSubmissionDdbEsEntity: ReturnType<typeof createFormSubmissionDdbEsEntity>;
-    private readonly elasticsearchClient: Client;
+interface DynamoDbElasticsearchRecord {
+    PK: string;
+    SK: string;
+    data: string;
+}
 
-    constructor(
+const REVISION_CREATED_ON_FIELD = "revisionCreatedOn";
+
+export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
+    private readonly elasticsearchClient: Client;
+    private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
+    private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
+
+    public constructor(
         table: Table<string, string, string>,
         esTable: Table<string, string, string>,
         elasticsearchClient: Client
     ) {
-        this.table = table;
-        this.esTable = esTable;
-        this.formSubmissionEntity = createFormSubmissionEntity(table);
-        this.formSubmissionDdbEsEntity = createFormSubmissionDdbEsEntity(esTable);
         this.elasticsearchClient = elasticsearchClient;
+        this.ddbEntryEntity = createDdbEntryEntity(table);
+        this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
     }
 
     getId() {
@@ -70,75 +73,59 @@ export class MultiStepForms_5_39_0_002 implements DataMigration {
     }
 
     getDescription() {
-        return "Convert forms to multi-step forms (form submissions).";
+        return "Write new revision and entry-level on/by meta fields.";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        let shouldExecute = false;
-
-        await forEachTenantLocale({
-            table: this.table,
-            logger,
-            callback: async ({ tenantId, localeCode }) => {
-                const indexNameParams = {
-                    tenant: tenantId,
-                    locale: localeCode,
-                    type: "form-builder",
-                    isHeadlessCmsModel: false
-                };
-
-                const indexExists = await esGetIndexExist({
-                    elasticsearchClient: this.elasticsearchClient,
-                    ...indexNameParams
-                });
-
-                if (!indexExists) {
-                    logger.info(
-                        `No Elasticsearch index found for folders in tenant "${tenantId}" and locale "${localeCode}"; skipping.`
-                    );
-
-                    // Continue with next locale.
-                    return true;
-                }
-
-                const esRecords = await esQueryAll<FbForm>({
-                    elasticsearchClient: this.elasticsearchClient,
-                    index: esGetIndexName(indexNameParams),
-                    body: {
-                        query: {
-                            bool: {
-                                filter: [{ term: { "__type.keyword": "fb.submission" } }],
-                                must_not: {
-                                    exists: {
-                                        field: "form.steps"
-                                    }
-                                }
-                            }
-                        },
-                        size: 1
+        const result = await scan<DynamoDbElasticsearchRecord>({
+            entity: this.ddbEsEntryEntity,
+            options: {
+                filters: [
+                    {
+                        attr: "PK",
+                        contains: "#CMS#CME#"
                     }
-                });
-
-                if (esRecords.length) {
-                    shouldExecute = true;
-                    return false;
-                }
-
-                return true;
+                ],
+                limit: 100
             }
         });
 
-        return shouldExecute;
+        if (result.items.length === 0) {
+            logger.info(`No CMS entries found in the system; skipping migration.`);
+            return false;
+        } else if (result.error) {
+            logger.error(result.error);
+            throw new Error(result.error);
+        }
+
+        for (const item of result.items) {
+            const data = await getDecompressedData<CmsEntry>(item.data);
+            if (!data) {
+                continue;
+            }
+
+            // If no `revisionCreatedOn` was set, we need to push the upgrade.
+            if (!data[REVISION_CREATED_ON_FIELD]) {
+                return true;
+            }
+        }
+        logger.info(`CMS entries already upgraded. skipping...`);
+        return false;
     }
 
     async execute({
         logger,
         ...context
-    }: DataMigrationContext<FormSubmissionsDataMigrationCheckpoint>): Promise<void> {
+    }: DataMigrationContext<CmsEntriesRootFolderDataMigrationCheckpoint>): Promise<void> {
         const migrationStatus =
-            context.checkpoint || ({} as FormSubmissionsDataMigrationCheckpoint);
+            context.checkpoint || ({} as CmsEntriesRootFolderDataMigrationCheckpoint);
 
         if (migrationStatus.lastEvaluatedKey === true) {
+            await restoreOriginalElasticsearchSettings({
+                indexSettings: migrationStatus.indexes,
+                logger,
+                elasticsearchClient: this.elasticsearchClient
+            });
             logger.info(`Migration completed, no need to start again.`);
             return;
         }
@@ -148,55 +135,36 @@ export class MultiStepForms_5_39_0_002 implements DataMigration {
             usingKey = JSON.stringify(migrationStatus.lastEvaluatedKey);
         }
 
-        logger.debug(`Scanning DynamoDB table... ${usingKey}`);
-
-        await ddbScanWithCallback<FbFormSubmission>(
+        logger.debug(`Scanning DynamoDB Elasticsearch table... ${usingKey}`);
+        await ddbScanWithCallback<CmsEntry>(
             {
-                entity: this.formSubmissionEntity,
+                entity: this.ddbEntryEntity,
                 options: {
                     filters: [
                         {
                             attr: "TYPE",
-                            eq: "fb.formSubmission"
+                            beginsWith: "cms.entry"
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,
                     limit: 500
                 }
             },
-            async scanResults => {
-                logger.debug(`Processing ${scanResults.items.length} items...`);
-                const primaryTableRecordsToWrite: BatchWriteItem[] = [];
-                const ddbEsTableRecordsToRead: BatchReadItem[] = [];
-                const ddbEsTableRecordsToWrite: BatchWriteItem[] = [];
+            async result => {
+                logger.debug(`Processing ${result.items.length} items...`);
+                const ddbItems: BatchWriteItem[] = [];
+                const ddbEsItems: BatchWriteItem[] = [];
 
-                // First, let's prepare a list of records to write to the primary table.
-                for (const scanResult of scanResults.items) {
-                    if (scanResult.form.steps) {
-                        continue;
-                    }
-
-                    // If no steps are defined, we need to create a single step.
-                    scanResult.form.steps = [];
-
-                    if (Array.isArray(scanResult.form.layout)) {
-                        // If layout is an array, we need to create a single step with all the fields.
-                        scanResult.form.steps = [
-                            { title: "Step 1", layout: scanResult.form.layout }
-                        ];
-                        delete scanResult.form.layout;
-                    }
-
-                    primaryTableRecordsToWrite.push(this.formSubmissionEntity.putBatch(scanResult));
-                    ddbEsTableRecordsToRead.push(
-                        this.formSubmissionDdbEsEntity.getBatch(scanResult)
-                    );
-
+                const ddbEsGetItems: Record<string, BatchReadItem> = {};
+                /**
+                 * Update the DynamoDB part of the records.
+                 */
+                for (const item of result.items) {
                     const index = esGetIndexName({
-                        tenant: scanResult.tenant,
-                        locale: scanResult.locale,
-                        type: "form-builder",
-                        isHeadlessCmsModel: false
+                        tenant: item.tenant,
+                        locale: item.locale,
+                        type: item.modelId,
+                        isHeadlessCmsModel: true
                     });
 
                     // Check for the elasticsearch index settings
@@ -213,7 +181,6 @@ export class MultiStepForms_5_39_0_002 implements DataMigration {
                             ...migrationStatus.indexes,
                             [index]: settings
                         };
-
                         // and then set not to index
                         await disableElasticsearchIndexing({
                             elasticsearchClient: this.elasticsearchClient,
@@ -221,82 +188,147 @@ export class MultiStepForms_5_39_0_002 implements DataMigration {
                             logger
                         });
                     }
+
+                    ddbItems.push(
+                        this.ddbEntryEntity.putBatch({
+                            ...item,
+
+                            // Revision-level meta fields.
+                            revisionCreatedOn: item.createdOn,
+
+                            // `modifiedOn` does not exist, that's why we're using `savedOn`.
+                            revisionModifiedOn: item.savedOn,
+
+                            revisionSavedOn: item.savedOn,
+                            revisionCreatedBy: item.createdBy,
+                            revisionModifiedBy: item.modifiedBy || null,
+                            revisionSavedBy: item.modifiedBy || item.createdBy,
+
+                            // Entry-level meta fields.
+                            entryCreatedOn: item.createdOn,
+
+                            // `modifiedOn` does not exist, that's why we're using `savedOn`.
+                            entryModifiedOn: item.savedOn,
+
+                            entrySavedOn: item.savedOn,
+                            entryCreatedBy: item.createdBy,
+                            entryModifiedBy: item.modifiedBy || null,
+                            entrySavedBy: item.modifiedBy || item.createdBy
+                        })
+                    );
+                    /**
+                     * Prepare the loading of DynamoDB Elasticsearch part of the records.
+                     */
+                    if (ddbEsGetItems[`${item.entryId}:L`]) {
+                        continue;
+                    }
+                    ddbEsGetItems[`${item.entryId}:L`] = this.ddbEsEntryEntity.getBatch({
+                        PK: item.PK,
+                        SK: "L"
+                    });
+                    if (item.status === "published" || !!item.locked) {
+                        ddbEsGetItems[`${item.entryId}:P`] = this.ddbEsEntryEntity.getBatch({
+                            PK: item.PK,
+                            SK: "P"
+                        });
+                    }
                 }
 
-                // Second, let's prepare a list of records to write to the DDB-ES table.
-                const ddbEsTableRecords = await batchReadAll({
-                    table: this.esTable,
-                    items: ddbEsTableRecordsToRead
+                /**
+                 * Get all the records from DynamoDB Elasticsearch.
+                 */
+                const esRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
+                    table: this.ddbEsEntryEntity.table,
+                    items: Object.values(ddbEsGetItems)
                 });
 
-                for (const ddbEsTableRecord of ddbEsTableRecords) {
-                    if (!ddbEsTableRecord.data || !ddbEsTableRecord.data.form) {
+                for (const esRecord of esRecords) {
+                    const decompressedData = await getDecompressedData<CmsEntry>(esRecord.data);
+                    if (!decompressedData) {
+                        logger.trace(
+                            `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
+                        );
+                        continue;
+                    } else if (
+                        !context.forceExecute &&
+                        decompressedData[REVISION_CREATED_ON_FIELD]
+                    ) {
+                        logger.trace(
+                            `Skipping record "${decompressedData.entryId}" as it already has meta fields defined...`
+                        );
                         continue;
                     }
 
-                    if (ddbEsTableRecord.data.form.steps) {
-                        continue;
-                    }
+                    const compressedData = await getCompressedData({
+                        ...decompressedData,
+                        // Revision-level meta fields.
+                        revisionCreatedOn: decompressedData.createdOn,
 
-                    // If no steps are defined, we need to create a single step.
-                    ddbEsTableRecord.data.form.steps = [];
+                        // `modifiedOn` does not exist, that's why we're using `savedOn`.
+                        revisionModifiedOn: decompressedData.savedOn,
 
-                    if (Array.isArray(ddbEsTableRecord.data.form.layout)) {
-                        // If layout is an array, we need to create a single step with all the fields.
-                        ddbEsTableRecord.data.form.steps = [
-                            { title: "Step 1", layout: ddbEsTableRecord.data.form.layout }
-                        ];
-                        delete ddbEsTableRecord.data.form.layout;
-                    }
+                        revisionSavedOn: decompressedData.savedOn,
+                        revisionCreatedBy: decompressedData.createdBy,
+                        revisionModifiedBy: decompressedData.modifiedBy || null,
+                        revisionSavedBy: decompressedData.modifiedBy || decompressedData.createdBy,
 
-                    ddbEsTableRecordsToWrite.push(
-                        this.formSubmissionDdbEsEntity.putBatch(ddbEsTableRecord)
+                        // Entry-level meta fields.
+                        entryCreatedOn: decompressedData.createdOn,
+
+                        // `modifiedOn` does not exist, that's why we're using `savedOn`.
+                        entryModifiedOn: decompressedData.savedOn,
+
+                        entrySavedOn: decompressedData.savedOn,
+                        entryCreatedBy: decompressedData.createdBy,
+                        entryModifiedBy: decompressedData.modifiedBy || null,
+                        entrySavedBy: decompressedData.modifiedBy || decompressedData.createdBy
+                    });
+
+                    ddbEsItems.push(
+                        this.ddbEsEntryEntity.putBatch({
+                            ...esRecord,
+                            data: compressedData
+                        })
                     );
                 }
 
-                {
-                    // 1. Update DynamoDB records (primary table).
-                    const execute = () => {
-                        return batchWriteAll({
-                            table: this.formSubmissionEntity.table,
-                            items: primaryTableRecordsToWrite
-                        });
-                    };
-
-                    logger.trace("Storing the DynamoDB records (primary table)...");
-                    await executeWithRetry(execute, {
-                        onFailedAttempt: error => {
-                            logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                            logger.error(error.message);
-                        }
+                const execute = () => {
+                    return batchWriteAll({
+                        table: this.ddbEntryEntity.table,
+                        items: ddbItems
                     });
+                };
 
-                    logger.trace("...stored.");
-                }
-
-                {
-                    // 2. Update DynamoDB records (DDB-ES table).
-                    const execute = () => {
-                        return batchWriteAll({
-                            table: this.formSubmissionDdbEsEntity.table,
-                            items: ddbEsTableRecordsToWrite
-                        });
-                    };
-
-                    logger.trace("Storing the DynamoDB records (DynamoDB-ES table)...");
-                    await executeWithRetry(execute, {
-                        onFailedAttempt: error => {
-                            logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
-                            logger.error(error.message);
-                        }
+                const executeDdbEs = () => {
+                    return batchWriteAll({
+                        table: this.ddbEsEntryEntity.table,
+                        items: ddbEsItems
                     });
+                };
 
-                    logger.trace("...stored.");
-                }
+                logger.trace("Storing the DynamoDB records...");
+                await executeWithRetry(execute, {
+                    onFailedAttempt: error => {
+                        logger.error(
+                            `"batchWriteAll" attempt #${error.attemptNumber} failed: ${error.message}`
+                        );
+                    }
+                });
+                logger.trace("...stored.");
+
+                logger.trace("Storing the DynamoDB Elasticsearch records...");
+                await executeWithRetry(executeDdbEs, {
+                    onFailedAttempt: error => {
+                        logger.error(
+                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed: ${error.message}`
+                        );
+                    }
+                });
+                logger.trace("...stored.");
 
                 // Update checkpoint after every batch
-                migrationStatus.lastEvaluatedKey = scanResults.lastEvaluatedKey?.PK
-                    ? (scanResults.lastEvaluatedKey as unknown as LastEvaluatedKey)
+                migrationStatus.lastEvaluatedKey = result.lastEvaluatedKey?.PK
+                    ? (result.lastEvaluatedKey as unknown as LastEvaluatedKey)
                     : true;
 
                 // Check if we should store checkpoint and exit.
@@ -323,7 +355,7 @@ export class MultiStepForms_5_39_0_002 implements DataMigration {
     }
 }
 
-makeInjectable(MultiStepForms_5_39_0_002, [
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_002, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

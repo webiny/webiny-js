@@ -19,7 +19,7 @@ describe("5.39.0-002", () => {
 
     logTestNameBeforeEachTest();
 
-    it("should not run if no form submissions found", async () => {
+    it("should not run if no entries without new meta fields were found", async () => {
         const handler = createDdbMigrationHandler({
             table,
             migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]

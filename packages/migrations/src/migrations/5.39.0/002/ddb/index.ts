@@ -65,9 +65,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
         }
 
         for (const item of result.items) {
-            /**
-             * If no `revisionCreatedOn` was set, we need to push the upgrade.
-             */
+            // If no `revisionCreatedOn` was set, we need to push the upgrade.
             if (!item[REVISION_CREATED_ON_FIELD]) {
                 return true;
             }
