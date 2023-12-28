@@ -1,4 +1,3 @@
-import cloneDeep from "lodash/cloneDeep";
 import { makeAutoObservable, runInAction } from "mobx";
 import { EntryDTO } from "./Entry";
 import { EntriesGatewayInterface } from "../gateways";
@@ -19,7 +18,7 @@ export class EntryRepository {
     }
 
     getEntries() {
-        return cloneDeep(this.entries);
+        return this.entries;
     }
 
     getLoading() {
@@ -49,20 +48,20 @@ export class EntryRepository {
             return entryInCache;
         }
 
-        const response = await this.runWithLoading<EntryDTO>(
-            this.gateway.get(this.modelIds[0], id)
-        );
+        for (const modelId of this.modelIds) {
+            const response = await this.runWithLoading<EntryDTO>(this.gateway.get(modelId, id));
 
-        if (!response) {
-            return;
+            if (response) {
+                const entryDTO = EntryMapper.toDTO(response);
+                runInAction(() => {
+                    this.entries = [entryDTO, ...this.entries];
+                });
+
+                return entryDTO;
+            }
         }
 
-        const entryDTO = EntryMapper.toDTO(response);
-        runInAction(() => {
-            this.entries = [entryDTO, ...this.entries];
-        });
-
-        return cloneDeep(entryDTO);
+        return;
     }
 
     private async runWithLoading<T>(action: Promise<T>) {
