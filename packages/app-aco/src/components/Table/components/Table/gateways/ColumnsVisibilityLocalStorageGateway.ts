@@ -11,7 +11,7 @@ export class ColumnsVisibilityLocalStorageGateway implements IColumnsVisibilityG
     }
 
     get() {
-        return this.localStorage.getFromStorage();
+        return Promise.resolve(this.localStorage.getFromStorage());
     }
 
     async set(value: Record<string, boolean>) {
