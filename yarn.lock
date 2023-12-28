@@ -15223,6 +15223,7 @@ __metadata:
     lodash: ^4.2.0
     mobx: ^6.9.0
     mobx-react-lite: ^3.4.3
+    mobx-utils: ^6.0.8
     react: 17.0.2
     react-dnd: ^16.0.1
     react-dom: 17.0.2
@@ -34441,6 +34442,15 @@ __metadata:
     react-native:
       optional: true
   checksum: 60a2580eb9a0b9988fc76959d7299f018733dc33cacaa73c45500953006d4d45e738d9ae39ccfc767ac19a75656dbc028d833282c848fbc67d8d18a2bcb5c262
+  languageName: node
+  linkType: hard
+
+"mobx-utils@npm:^6.0.8":
+  version: 6.0.8
+  resolution: "mobx-utils@npm:6.0.8"
+  peerDependencies:
+    mobx: ^6.0.0
+  checksum: 3cab9a858d6b19b2f5c4d5c39fcef7c171fe37c2b5e9f899e0988b475521e0ad0d52af290c04bcb694d8974f8bfac3ca6ee3340a0aeadd9efd770cfee3f44e4e
   languageName: node
   linkType: hard
 

@@ -4,15 +4,22 @@ import { IColumnsVisibilityRepository } from "./IColumnsVisibilityRepository";
 
 export class ColumnsVisibilityRepository implements IColumnsVisibilityRepository {
     private gateway: IColumnsVisibilityGateway;
-    private state: Record<string, boolean> | undefined;
+    private state: Record<string, boolean>;
 
     constructor(gateway: IColumnsVisibilityGateway) {
         this.gateway = gateway;
-        this.state = this.gateway.get();
+        this.state = {};
         makeAutoObservable(this);
     }
 
-    get() {
+    async init() {
+        const visibility = await this.gateway.get();
+        runInAction(() => {
+            this.state = visibility ?? {};
+        });
+    }
+
+    getVisibility() {
         return this.state;
     }
 
@@ -25,6 +32,7 @@ export class ColumnsVisibilityRepository implements IColumnsVisibilityRepository
         await this.gateway.set(newState);
 
         runInAction(() => {
+            console.log("inAction", newState);
             this.state = newState;
         });
     }
