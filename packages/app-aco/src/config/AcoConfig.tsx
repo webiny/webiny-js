@@ -10,7 +10,7 @@ export { ColumnConfig as TableColumnConfig } from "./table/Column";
 
 const base = createConfigurableComponent<AcoConfig>("AcoConfig");
 
-export const AcoConfig = Object.assign(base.Config, { Record, Folder, Table });
+export const AcoConfig = Object.assign(base.Config, { Folder, Record, Table });
 export const AcoWithConfig = base.WithConfig;
 
 interface AcoConfig {
