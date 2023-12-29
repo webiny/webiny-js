@@ -19,6 +19,7 @@ import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
 import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
 import { HandlerOnRequestPlugin } from "~/plugins/HandlerOnRequestPlugin";
 import { ResponseHeaders } from "~/ResponseHeaders";
+import { ModifyResponseHeadersPlugin } from "~/plugins/ModifyResponseHeadersPlugin";
 
 function createDefaultHeaders() {
     return ResponseHeaders.create({
@@ -30,6 +31,13 @@ function createDefaultHeaders() {
         ...getWebinyVersionHeaders()
     });
 }
+
+const getDefaultOptionsHeaders = () => {
+    return ResponseHeaders.create({
+        "access-control-max-age": "86400",
+        "cache-control": "public, max-age=86400"
+    });
+};
 
 const getDefaultHeaders = (routes: DefinedContextRoutes): ResponseHeaders => {
     const headers = createDefaultHeaders();
@@ -270,11 +278,17 @@ export const createHandler = (params: CreateHandlerParams) => {
      * Also, if it is an options request, we skip everything after this hook and output options headers.
      */
     app.addHook("onRequest", async (request, reply) => {
+        const isOptionsRequest = request.method === "OPTIONS";
         /**
          * Our default headers are always set. Users can override them.
          */
         const defaultHeaders = getDefaultHeaders(definedRoutes);
-        reply.headers(defaultHeaders.getHeaders());
+
+        const initialHeaders = isOptionsRequest
+            ? defaultHeaders.merge(getDefaultOptionsHeaders())
+            : defaultHeaders;
+
+        reply.headers(initialHeaders.getHeaders());
         /**
          * Users can define their own custom handlers for the onRequest event - so let's run them first.
          */
@@ -305,7 +319,7 @@ export const createHandler = (params: CreateHandlerParams) => {
          *
          * Users can prevent this by creating their own HandlerOnRequestPlugin and returning false as the result of the callable.
          */
-        if (request.method !== "OPTIONS") {
+        if (!isOptionsRequest) {
             return;
         }
 
@@ -323,12 +337,7 @@ export const createHandler = (params: CreateHandlerParams) => {
             return;
         }
 
-        const headers = createDefaultHeaders();
-
-        headers.set("access-control-max-age", "86400");
-        headers.set("cache-control", "public, max-age=86400");
-
-        reply.headers(headers.getHeaders()).code(204).send("").hijack();
+        reply.code(204).send("").hijack();
     });
 
     app.addHook("preParsing", async (request, reply) => {
@@ -451,12 +460,33 @@ export const createHandler = (params: CreateHandlerParams) => {
 
         return reply;
     });
+
+    /**
+     * Apply response headers modifier plugins.
+     */
+    app.addHook("onSend", async (request, reply, payload) => {
+        const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
+            ModifyResponseHeadersPlugin.type
+        );
+
+        const headers = ResponseHeaders.create(reply.getHeaders());
+
+        modifyHeaders.forEach(plugin => {
+            plugin.modify(request, headers);
+        });
+
+        reply.headers(headers.getHeaders());
+
+        return payload;
+    });
+
     /**
      * We need to output the benchmark results at the end of the request in both response and timeout cases
      */
     app.addHook("onResponse", async () => {
         await context.benchmark.output();
     });
+
     app.addHook("onTimeout", async () => {
         await context.benchmark.output();
     });

@@ -30,14 +30,6 @@ export const setupSecureHeaders = () => {
             headers.set("vary", "origin");
         }
 
-        // TODO: add response modifier plugin processing
         reply.headers(headers.getHeaders());
-
-        if (isOptions) {
-            reply.code(204).send("").hijack();
-            return false;
-        }
-
-        return undefined;
     });
 };

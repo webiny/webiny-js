@@ -20,7 +20,7 @@ export type StandardHeaders = {
     [name: string]: StandardHeaderValue;
 };
 
-function isFunction(setter: unknown): setter is Function {
+function isFunction<T>(setter: unknown): setter is (value: T) => T {
     return typeof setter === "function";
 }
 
@@ -38,7 +38,7 @@ export class ResponseHeaders {
     }
 
     set<T extends keyof StandardHeaders>(header: T, setter: Setter<StandardHeaders[T]>) {
-        if (isFunction(setter)) {
+        if (isFunction<StandardHeaders[T]>(setter)) {
             const previousValue = this.headers.get(header) as StandardHeaders[T];
             const newValue = setter(previousValue);
             this.headers.set(header, newValue);
