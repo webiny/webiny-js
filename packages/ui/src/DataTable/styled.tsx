@@ -99,11 +99,11 @@ export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
     transform: ${props => (props.direction === "asc" ? "rotate(180deg)" : "rotate(0deg)")};
 `;
 
-export const ColumnVisibilityMenuHeader = styled(Typography)`
+export const ColumnsVisibilityMenuHeader = styled(Typography)`
     padding: 4px 16px;
     font-weight: 600;
 `;
 
-export const ColumnVisibilityMenuItem = styled("div")`
+export const ColumnsVisibilityMenuItem = styled("div")`
     padding: 0 16px;
 `;

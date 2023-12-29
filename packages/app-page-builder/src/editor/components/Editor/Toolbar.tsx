@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
+import { DrawerLeft, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
 import { makeComposable } from "@webiny/app-admin";
 import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
@@ -30,7 +30,7 @@ const ToolbarContainer = styled("div")({
     boxShadow: "1px 0px 5px 0px var(--mdc-theme-on-background)",
     zIndex: 3
 });
-const DrawerContainer = styled("div")(({ open }: any) => ({
+const DrawerContainer = styled("div")<{ open: boolean }>(({ open }) => ({
     pointerEvents: open ? "all" : "none",
     ".mdc-drawer__drawer": {
         "> .mdc-list": {
@@ -93,9 +93,13 @@ const ToolbarDrawer = ({ name, active, children, drawerClassName }: ToolbarDrawe
     });
     return (
         <DrawerContainer open={active}>
-            <Drawer dismissible open={active} className={classNames(drawerStyle, drawerClassName)}>
+            <DrawerLeft
+                dismissible
+                open={active}
+                className={classNames(drawerStyle, drawerClassName)}
+            >
                 <DrawerContent>{children}</DrawerContent>
-            </Drawer>
+            </DrawerLeft>
         </DrawerContainer>
     );
 };

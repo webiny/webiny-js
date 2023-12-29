@@ -42,8 +42,11 @@ export interface AcoBaseFields {
     id: string;
     entryId: string;
     createdOn: string;
-    createdBy: User;
+    modifiedOn: string | null;
     savedOn: string;
+    createdBy: User;
+    modifiedBy: User | null;
+    savedBy: User;
 }
 
 export interface AdvancedContentOrganisation {

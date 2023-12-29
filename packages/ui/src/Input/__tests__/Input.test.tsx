@@ -8,6 +8,7 @@ afterEach(cleanup);
 interface SetupProps {
     onChange?: () => void;
 }
+
 function setup(props: SetupProps = {}) {
     const renderArg = {
         // eslint-disable-next-line
@@ -69,7 +70,6 @@ describe("Input tests", () => {
     test("passes expected props to render prop", () => {
         const { renderArg } = setup();
 
-        // @ts-expect-error
         expect(renderArg).toContainKeys(["value", "validation", "onChange", "onBlur"]);
     });
 

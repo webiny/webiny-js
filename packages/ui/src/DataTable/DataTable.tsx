@@ -34,7 +34,7 @@ import {
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
-import { ColumnSelector } from "~/DataTable/ColumnSelector";
+import { ColumnsVisibility } from "~/DataTable/ColumnsVisibility";
 
 import "@rmwc/data-table/data-table.css";
 import {
@@ -499,7 +499,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                                                         }
                                                     />
                                                     {isLastCell && (
-                                                        <ColumnSelector
+                                                        <ColumnsVisibility
                                                             columns={table.getAllColumns()}
                                                         />
                                                     )}

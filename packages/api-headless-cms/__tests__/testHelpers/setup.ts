@@ -8,7 +8,8 @@ interface SetupContentModelParams {
     model: CmsModel;
     group: CmsGroup;
 }
-const setupContentModel = async (params: SetupContentModelParams) => {
+
+export const setupContentModel = async (params: SetupContentModelParams) => {
     const { manager, model, group } = params;
     const [createResponse] = await manager.createContentModelMutation({
         data: {
@@ -47,7 +48,7 @@ const setupContentModel = async (params: SetupContentModelParams) => {
     return updateResponse.data.updateContentModel.data;
 };
 
-const getModel = (item: CmsModel | string): CmsModel => {
+export const getModel = (item: CmsModel | string): CmsModel => {
     if (typeof item === "string") {
         const model = models.find(m => m.modelId === item);
         if (!model) {
@@ -63,6 +64,7 @@ interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
     models: (CmsModel | string)[];
 }
+
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
     const { manager, models } = params;
     const group = await setupContentModelGroup(manager);
@@ -83,17 +85,32 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
     };
 };
 
+export interface SetupContentModelGroupGqlVars {
+    data: {
+        name: string;
+        slug: string;
+        icon: string;
+        description: string;
+    };
+}
+
 export const setupContentModelGroup = async (
-    manager: ReturnType<typeof useGraphQLHandler>
+    manager: ReturnType<typeof useGraphQLHandler>,
+    vars?: SetupContentModelGroupGqlVars
 ): Promise<CmsGroup> => {
-    const [response] = await manager.createContentModelGroupMutation({
-        data: {
-            name: "Group",
-            slug: "group",
-            icon: "ico/ico",
-            description: "description"
-        }
-    });
+    if (!vars) {
+        vars = {
+            data: {
+                name: "Group",
+                slug: "group",
+                icon: "ico/ico",
+                description: "description"
+            }
+        };
+    }
+
+    const [response] = await manager.createContentModelGroupMutation(vars);
+
     const error = response?.data?.createContentModelGroup?.error || response?.errors?.shift();
     if (error) {
         console.log("[setupContentModelGroup] could not create group");

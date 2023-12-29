@@ -11,7 +11,7 @@ export interface FormDataFieldValidator {
 }
 
 export interface FormDataField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;

@@ -10,27 +10,24 @@ import {
     UpdateFormRevisionMutationResponse,
     UpdateFormRevisionMutationVariables
 } from "./graphql";
-import {
-    deleteField,
-    getFieldPosition,
-    moveField,
-    moveFieldBetweenSteps,
-    moveRow,
-    moveRowBetweenSteps,
-    moveStep
-} from "./functions";
+import { deleteField, moveStep, handleMoveRow, handleMoveField } from "./functions";
+import moveField from "./functions/handleMoveField/moveField";
+import getFieldPosition from "./functions/handleMoveField/getFieldPosition";
 import { plugins } from "@webiny/plugins";
 
 import {
-    FbBuilderFieldPlugin,
-    FbErrorResponse,
-    FbFormModel,
     FbFormModelField,
-    FbFormStep,
-    FbUpdateFormInput,
     FieldIdType,
     FieldLayoutPositionType,
-    MoveFieldParams
+    FbBuilderFieldPlugin,
+    FbFormModel,
+    FbUpdateFormInput,
+    FbErrorResponse,
+    FbFormStep,
+    MoveStepParams,
+    DropTarget,
+    DropDestination,
+    DropSource
 } from "~/types";
 import { ApolloClient } from "apollo-client";
 import {
@@ -46,12 +43,23 @@ interface SetDataCallable {
     (value: FbFormModel): FbFormModel;
 }
 
-interface MoveStepParams {
-    step: FbFormStep;
-    formStep: FbFormStep;
+type State = FormEditorProviderContextState;
+
+export interface InsertFieldParams {
+    data: FbFormModelField;
+    target: DropTarget;
+    destination: DropDestination;
 }
 
-type State = FormEditorProviderContextState;
+export interface MoveFieldParams {
+    target: DropTarget;
+    field: FbFormModelField | string;
+    source: DropSource;
+    destination: DropDestination;
+}
+
+export type SaveFormResult = Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;
@@ -61,27 +69,21 @@ export interface FormEditor {
     deleteStep: (id: string) => void;
     updateStep: (title: string, id: string | null) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
-    saveForm: (
-        data: FbFormModel | null
-    ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+    saveForm: (data: FbFormModel | null) => SaveFormResult;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
-    getLayoutFields: (targetStepId: string) => FbFormModelField[][];
+    getStepFields: (targetStepId: string) => FbFormModelField[][];
     getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
-    insertField: (
-        field: FbFormModelField,
-        position: FieldLayoutPositionType,
-        targetStepId: string
-    ) => void;
+    insertField: (params: InsertFieldParams) => void;
     moveField: (params: MoveFieldParams) => void;
     moveRow: (
-        source: number,
-        destination: number,
-        targetStepId: string,
-        sourceStepId?: any
+        sourceRow: number,
+        destinationRow: number,
+        source: DropSource,
+        destination: DropDestination
     ) => void;
     moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
@@ -278,23 +280,20 @@ export const useFormEditorFactory = (
             /**
              * Returns complete layout with fields data in it (not just field IDs)
              */
-            getLayoutFields: targetStepId => {
-                const step = state.data.steps.find(v => v.id === targetStepId);
-                if (!step) {
-                    return [];
-                }
+            getStepFields: targetStepId => {
+                const stepLayout = state.data.steps
+                    .find(v => v.id === targetStepId)
+                    ?.layout.filter(row => Boolean(row));
                 // Replace every field ID with actual field object.
-                return step.layout
-                    .filter(row => Boolean(row))
-                    .map(row => {
-                        return row
-                            .map(id => {
-                                return self.getField({
-                                    _id: id
-                                });
-                            })
-                            .filter(Boolean) as FbFormModelField[];
-                    });
+                return (stepLayout || []).map(row => {
+                    return row
+                        .map(id => {
+                            return self.getField({
+                                _id: id
+                            });
+                        })
+                        .filter(Boolean) as FbFormModelField[];
+                });
             },
 
             /**
@@ -350,7 +349,7 @@ export const useFormEditorFactory = (
                 self.setData(data => {
                     data.steps.push({
                         id: mdbid(),
-                        title: `Step ${data.steps.length + 1}`,
+                        title: `New Step`,
                         layout: []
                     });
 
@@ -358,7 +357,7 @@ export const useFormEditorFactory = (
                 });
             },
             deleteStep: (targetStepId: string) => {
-                const stepFields = self.getLayoutFields(targetStepId).flat(1);
+                const stepFields = self.getStepFields(targetStepId).flat(1);
 
                 const deleteStepFields = (data: FbFormModel) => {
                     const stepLayout = stepFields.map(field =>
@@ -389,11 +388,9 @@ export const useFormEditorFactory = (
             /**
              * Inserts a new field into the target position.
              */
-            insertField: (data, position, targetStepId) => {
+            insertField: ({ data, destination, target }) => {
                 const field = cloneDeep(data);
-                if (!field._id) {
-                    field._id = shortid.generate();
-                }
+                field._id = shortid.generate();
 
                 if (!data.name) {
                     throw new Error(`Field "name" missing.`);
@@ -413,10 +410,10 @@ export const useFormEditorFactory = (
                     data.fields.push(field);
 
                     moveField({
-                        field,
-                        position,
                         data,
-                        targetStepId
+                        field,
+                        target,
+                        destination
                     });
 
                     // We are dropping a new field at the specified index.
@@ -427,38 +424,23 @@ export const useFormEditorFactory = (
             /**
              * Moves field to the given target position.
              */
-            moveField: ({ field, position, targetStepId, sourceStepId }) => {
-                // If sourceStepId ("source step" is the step from which we take a field) is different,
-                // to a targetStepId ("target step" is the step in which we want to move a field) then we need to use function "moveFieldBetweenRows",
-                // if targetStepId equals to sourceStepId then it means that we are moving field inside of the same step.
-                if (targetStepId === sourceStepId) {
-                    self.setData(data => {
-                        moveField({
-                            field,
-                            position,
-                            data,
-                            targetStepId
-                        });
-                        return data;
+            moveField: ({ field, target, source, destination }) => {
+                self.setData(data => {
+                    handleMoveField({
+                        data,
+                        field,
+                        target,
+                        source,
+                        destination
                     });
-                } else {
-                    self.setData(data => {
-                        moveFieldBetweenSteps({
-                            field,
-                            position,
-                            data,
-                            targetStepId,
-                            sourceStepId
-                        });
-                        return data;
-                    });
-                }
+                    return data;
+                });
             },
-            moveStep: ({ step, formStep }) => {
+            moveStep: ({ source, destination }) => {
                 self.setData(data => {
                     moveStep({
-                        step,
-                        formStep,
+                        source,
+                        destination,
                         data: data.steps
                     });
 
@@ -468,28 +450,17 @@ export const useFormEditorFactory = (
             /**
              * Moves row to a destination row.
              */
-            moveRow: (source, destination, targetStepId, sourceStep) => {
-                if (targetStepId === sourceStep.id) {
-                    self.setData(data => {
-                        moveRow({
-                            data: data.steps.find(v => v.id === targetStepId) as FbFormStep,
-                            source,
-                            destination
-                        });
-                        return data;
+            moveRow: (sourceRow, destinationRow, source, destination) => {
+                self.setData(data => {
+                    handleMoveRow({
+                        data,
+                        sourceRow,
+                        destinationRow,
+                        source,
+                        destination
                     });
-                } else {
-                    self.setData(data => {
-                        moveRowBetweenSteps({
-                            data,
-                            source,
-                            destination,
-                            targetStepId,
-                            sourceStep
-                        });
-                        return data;
-                    });
-                }
+                    return data;
+                });
             },
 
             /**
