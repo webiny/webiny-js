@@ -122,11 +122,25 @@ describe("5.39.0-002", () => {
             ddbPrimaryTableDataMigrated
         );
 
-        const ddbEsTableRecords = await scanTable(dynamoToEsTable, {
+        const ddbEsTableRecordsCompressed = await scanTable(dynamoToEsTable, {
             limit: 1_000_000
         });
 
-        expect(ddbEsTableRecords).toEqual(ddbEsTableDataMigrated);
+        const ddbEsTableRecordsDecompressed = await Promise.all(
+            ddbEsTableRecordsCompressed.map(async item => {
+                if (!item.PK.includes("#CMS#CME#")) {
+                    return item;
+                }
+
+                const decompressed = await getDecompressedData(item.data);
+                return {
+                    ...item,
+                    data: decompressed
+                };
+            })
+        );
+
+        expect(ddbEsTableRecordsDecompressed).toEqual(ddbEsTableDataMigrated);
 
         // In the following lines, we're going to check if the data in Elasticsearch is correct.
         await transferDynamoDbToElasticsearch(
