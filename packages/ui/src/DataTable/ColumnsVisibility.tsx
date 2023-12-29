@@ -4,9 +4,9 @@ import { Column } from "@tanstack/react-table";
 import { IconButton } from "~/Button";
 import { Checkbox } from "~/Checkbox";
 import { Menu, MenuDivider } from "~/Menu";
-import { ColumnVisibilityMenuHeader, ColumnVisibilityMenuItem } from "~/DataTable/styled";
+import { ColumnsVisibilityMenuHeader, ColumnsVisibilityMenuItem } from "~/DataTable/styled";
 
-interface ColumnSelectorProps<T> {
+interface ColumnsVisibilityProps<T> {
     columns: Column<T>[];
 }
 
@@ -17,7 +17,7 @@ interface Option {
     getValue: () => boolean;
 }
 
-export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
+export const ColumnsVisibility = <T,>(props: ColumnsVisibilityProps<T>) => {
     /**
      * `@tanstack/react-table` does not have a simple method to return the header component.
      * The only possible way is to use `flexRenderer`, but this is not working with the current implementation
@@ -57,19 +57,19 @@ export const ColumnSelector = <T,>(props: ColumnSelectorProps<T>) => {
 
     return (
         <Menu handle={<IconButton icon={<SettingsIcon />} />}>
-            <ColumnVisibilityMenuHeader use={"subtitle2"} tag={"h6"}>
+            <ColumnsVisibilityMenuHeader use={"subtitle2"} tag={"h6"}>
                 {"Toggle column visibility"}
-            </ColumnVisibilityMenuHeader>
+            </ColumnsVisibilityMenuHeader>
             <MenuDivider />
             {options.map(option => {
                 return (
-                    <ColumnVisibilityMenuItem key={option.id}>
+                    <ColumnsVisibilityMenuItem key={option.id}>
                         <Checkbox
                             label={option.header}
                             onChange={option.onChange}
                             value={option.getValue()}
                         />
-                    </ColumnVisibilityMenuItem>
+                    </ColumnsVisibilityMenuItem>
                 );
             })}
         </Menu>
