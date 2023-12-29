@@ -1,3 +1,4 @@
+import { Sort as ElasticsearchSort } from "elastic-ts";
 import {
     assertNotError,
     createDdbEsMigrationHandler,
@@ -167,10 +168,17 @@ describe("5.39.0-002", () => {
         ] = indexes;
 
         // Ensure correct data ended up in Elasticsearch.
+        const sort = [
+            {
+                "entryCreatedOn.keyword": { order: "desc", unmapped_type: "keyword" }
+            }
+        ] as ElasticsearchSort;
+
         // 1. Check ACO Search Record PB Page index.
         const migratedHeadlessCmsAcoSearchRecordPbPageRecords = await listElasticsearchItems({
             client: elasticsearchClient,
-            index: headlessCmsAcoSearchRecordPbPageIndexName
+            index: headlessCmsAcoSearchRecordPbPageIndexName,
+            body: { sort }
         });
 
         expect(migratedHeadlessCmsAcoSearchRecordPbPageRecords).toBeArrayOfSize(2);
@@ -181,7 +189,8 @@ describe("5.39.0-002", () => {
         // 2. Check FM File index.
         const migratedHeadlessCmsFmFileRecords = await listElasticsearchItems({
             client: elasticsearchClient,
-            index: headlessCmsFmFileIndexName
+            index: headlessCmsFmFileIndexName,
+            body: { sort }
         });
 
         expect(migratedHeadlessCmsFmFileRecords).toBeArrayOfSize(21);
@@ -190,16 +199,18 @@ describe("5.39.0-002", () => {
         // 3. Check Model A index.
         const migratedHeadlessCmsModelARecords = await listElasticsearchItems({
             client: elasticsearchClient,
-            index: headlessCmsModelAIndexName
+            index: headlessCmsModelAIndexName,
+            body: { sort }
         });
 
         expect(migratedHeadlessCmsModelARecords).toBeArrayOfSize(7);
         expect(migratedHeadlessCmsModelARecords).toEqual(headlessCmsModelAMigrated);
 
-        // 3. Check Model A index.
+        // 4. Check Model B index.
         const migratedHeadlessCmsModelBRecords = await listElasticsearchItems({
             client: elasticsearchClient,
-            index: headlessCmsModelBIndexName
+            index: headlessCmsModelBIndexName,
+            body: { sort }
         });
 
         expect(migratedHeadlessCmsModelBRecords).toBeArrayOfSize(3);
