@@ -40,7 +40,7 @@ module.exports = options => {
             filename: output.filename
         },
         devtool: sourceMaps ? "source-map" : false,
-        externals: [/^aws-sdk/],
+        externals: [/^aws-sdk/, /^sharp$/],
         mode: production ? "production" : "development",
         optimization: {
             minimize: production
