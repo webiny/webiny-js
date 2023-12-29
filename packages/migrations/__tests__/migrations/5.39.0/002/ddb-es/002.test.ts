@@ -128,15 +128,7 @@ describe("5.39.0-002", () => {
 
         expect(ddbEsTableRecords).toEqual(ddbEsTableDataMigrated);
 
-        // Check decompressed data. TODO
-        for (const record of ddbEsTableRecords) {
-            const entry = await getDecompressedData(record.data);
-            if (entry?.TYPE?.startsWith("cms.entry")) {
-                expect(entry.revisionCreatedOn).toBeDateString();
-            }
-        }
-
-        // CHECK ES DATA TODO COMMENT
+        // In the following lines, we're going to check if the data in Elasticsearch is correct.
         await transferDynamoDbToElasticsearch(
             elasticsearchClient,
             dynamoToEsTable,
@@ -225,9 +217,18 @@ describe("5.39.0-002", () => {
             migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
         });
 
-        // Should skip the migration
+        // Should run the migration
         {
             process.stdout.write("[First run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(1);
+        }
+
+        // Should skip the migration
+        {
+            process.stdout.write("[Second run]\n");
             const { data, error } = await handler();
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
