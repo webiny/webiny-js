@@ -5,6 +5,8 @@ import { ApiGraphql, CoreOutput } from "~/apps";
 import { createBackgroundTaskDefinition } from "./backgroundTask/definition";
 import { createBackgroundTaskStepFunctionPolicy } from "~/apps/api/backgroundTask/policy";
 import { createBackgroundTaskStepFunctionRole } from "./backgroundTask/role";
+// @ts-expect-error
+import { getLayerArn } from "@webiny/aws-layers";
 
 export type ApiBackgroundTask = PulumiAppModule<typeof ApiBackgroundTask>;
 
@@ -21,6 +23,9 @@ export const ApiBackgroundTask = createAppModule({
             name: ApiBackgroundTaskLambdaName,
             config: {
                 ...baseConfig,
+                layers: graphql.functions.graphql.output.layers.apply(arns => {
+                    return Array.from(new Set([...(arns || []), getLayerArn("sharp")]));
+                }),
                 timeout: 900,
                 memorySize: 512,
                 description: "Performs background tasks."
