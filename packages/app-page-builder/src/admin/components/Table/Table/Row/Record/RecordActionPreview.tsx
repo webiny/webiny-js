@@ -10,12 +10,12 @@ import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
-import { PbPageDataItem } from "~/types";
+import { PbPageTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/preview");
 
 interface Props {
-    record: PbPageDataItem;
+    record: PbPageTableItem;
 }
 
 export const RecordActionPreview = ({ record }: Props): ReactElement => {
@@ -30,7 +30,7 @@ export const RecordActionPreview = ({ record }: Props): ReactElement => {
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
 
-    const url = getPageUrl(record);
+    const url = getPageUrl(record.data);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -40,7 +40,7 @@ export const RecordActionPreview = ({ record }: Props): ReactElement => {
         }
     }, [url, isSiteRunning]);
 
-    const previewButtonLabel = record.status === "published" ? t`View` : t`Preview`;
+    const previewButtonLabel = record.data.status === "published" ? t`View` : t`Preview`;
 
     return (
         <MenuItem onClick={handlePreviewClick}>

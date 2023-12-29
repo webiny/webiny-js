@@ -9,13 +9,13 @@ import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
-import { PbPageDataItem } from "~/types";
+import { PbPageTableItem } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
 
 interface Props {
-    record: PbPageDataItem;
+    record: PbPageTableItem;
 }
 export const RecordActionEdit = ({ record }: Props): ReactElement => {
     const { canUpdate } = usePagesPermissions();
@@ -45,11 +45,11 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         navigateToPageEditor(data.id);
     }, [record, navigateToPageEditor]);
 
-    if (!canUpdate(record?.createdBy?.id)) {
+    if (!canUpdate(record.data.createdBy.id)) {
         return <></>;
     }
 
-    if (record.locked) {
+    if (record.data.locked) {
         return (
             <MenuItem disabled={inProgress} onClick={createFromAndEdit}>
                 <ListItemGraphic>

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog, useFolders } from "@webiny/app-aco";
-import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
@@ -28,9 +27,6 @@ interface Props {
 }
 
 export const Main = ({ folderId: initialFolderId }: Props) => {
-    const location = useLocation();
-    const history = useHistory();
-
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList();
@@ -44,10 +40,6 @@ export const Main = ({ folderId: initialFolderId }: Props) => {
     const [showTemplatesDialog, setTemplatesDialog] = useState(false);
     const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
-
-    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
-    const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
-    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
@@ -95,16 +87,6 @@ export const Main = ({ folderId: initialFolderId }: Props) => {
         }
     }, 200);
 
-    useEffect(() => {
-        if (!showPreviewDrawer) {
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete("id");
-            history.push({
-                search: queryParams.toString()
-            });
-        }
-    }, [showPreviewDrawer]);
-
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });
     }, [folderId]);
@@ -138,8 +120,8 @@ export const Main = ({ folderId: initialFolderId }: Props) => {
                     ) : (
                         <>
                             <Preview
-                                open={showPreviewDrawer}
-                                onClose={() => closePreviewDrawer()}
+                                open={list.showPreviewDrawer}
+                                onClose={list.closePreviewDrawer}
                                 canCreate={canCreate()}
                                 onCreatePage={openTemplatesDialog}
                             />
@@ -147,17 +129,7 @@ export const Main = ({ folderId: initialFolderId }: Props) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    openPreviewDrawer={openPreviewDrawer}
-                                    onSelectRow={list.onSelectRow}
-                                    selectedRows={list.selected}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}

@@ -102,16 +102,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                    onSelectRow={list.onSelectRow}
-                                    selectedRows={list.selected}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}

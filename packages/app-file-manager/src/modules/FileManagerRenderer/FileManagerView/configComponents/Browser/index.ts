@@ -3,6 +3,7 @@ import { Filter, FilterConfig } from "./Filter";
 import { FiltersToWhere, FiltersToWhereConverter } from "./FiltersToWhere";
 import { FilterByTags } from "./FilterByTags";
 import { FolderAction, FolderActionConfig } from "./FolderAction";
+import { Table, TableConfig } from "./Table";
 
 export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
@@ -10,6 +11,7 @@ export interface BrowserConfig {
     filtersToWhere: FiltersToWhereConverter[];
     filterByTags: boolean;
     folderActions: FolderActionConfig[];
+    table: TableConfig;
 }
 
 export const Browser = {
@@ -17,5 +19,6 @@ export const Browser = {
     Filter,
     FiltersToWhere,
     FilterByTags,
-    FolderAction
+    FolderAction,
+    Table
 };

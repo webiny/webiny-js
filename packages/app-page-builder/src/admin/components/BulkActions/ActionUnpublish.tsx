@@ -30,7 +30,7 @@ export const ActionUnpublish = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await unpublishPage(
-                            { id: item.id },
+                            { id: item.data.id },
                             {
                                 client: client
                             }
@@ -47,7 +47,7 @@ export const ActionUnpublish = observer(() => {
                         await getRecord(page.id);
 
                         report.success({
-                            title: `${item.title}`,
+                            title: `${item.data.title}`,
                             message: "Page successfully unpublished."
                         });
                     } catch (e) {
