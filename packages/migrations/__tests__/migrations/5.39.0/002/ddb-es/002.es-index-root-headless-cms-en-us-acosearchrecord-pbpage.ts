@@ -1,4 +1,4 @@
-export const rootHeadlessCmsEnUsAcosearchrecordPbpage = [
+export const headlessCmsAcoSearchRecordPbPage = [
     {
         _index: "root-headless-cms-en-us-acosearchrecord-pbpage",
         _type: "_doc",

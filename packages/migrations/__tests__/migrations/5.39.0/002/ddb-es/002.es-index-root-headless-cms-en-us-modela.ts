@@ -1,4 +1,4 @@
-export const esIndexRootHeadlessCmsEnUsModelA = [
+export const headlessCmsModelA = [
     {
         _index: "root-headless-cms-en-us-modela",
         _type: "_doc",

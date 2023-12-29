@@ -2,6 +2,7 @@ import {
     assertNotError,
     createDdbEsMigrationHandler,
     getDynamoToEsTable,
+    importElasticsearchTestData,
     getPrimaryDynamoDbTable,
     groupMigrations,
     insertDynamoDbTestData as insertTestData,
@@ -10,26 +11,28 @@ import {
 } from "~tests/utils";
 import { CmsEntriesInitNewMetaFields_5_39_0_002 } from "~/migrations/5.39.0/002/ddb-es";
 
+import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
+import { esGetIndexSettings } from "~/utils";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
+import { listElasticsearchItems } from "~tests/utils/listElasticsearchItems";
+import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
+
 // Test data.
 import { ddbPrimaryTableData } from "./002.ddbPrimaryTableData";
 import { ddbEsTableData } from "./002.ddbEsTableData";
-import { rootHeadlessCmsEnUsAcosearchrecordPbpage } from "./002.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
-import { esIndexRootHeadlessCmsEnUsFmfile } from "./002.es-index-root-headless-cms-en-us-fmfile";
-import { esIndexRootHeadlessCmsEnUsModelA } from "./002.es-index-root-headless-cms-en-us-modela";
-import { esIndexRootHeadlessCmsEnUsModelB } from "./002.es-index-root-headless-cms-en-us-modelb";
+import { headlessCmsAcoSearchRecordPbPage } from "./002.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
+import { headlessCmsFmFile } from "./002.es-index-root-headless-cms-en-us-fmfile";
+import { headlessCmsModelA } from "./002.es-index-root-headless-cms-en-us-modela";
+import { headlessCmsModelB } from "./002.es-index-root-headless-cms-en-us-modelb";
 
 // Migrated test data.
-import { ddbPrimaryTableDataMigrated } from "./migrated/002.ddbPrimaryTableData.migrated";
-import { ddbEsTableDataMigrated } from "./migrated/002.ddbEsTableData.migrated";
-import { rootHeadlessCmsEnUsAcosearchrecordPbpageMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-acosearchrecord-pbpage.migrated";
-import { esIndexRootHeadlessCmsEnUsFmfileMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-fmfile.migrated";
-import { esIndexRootHeadlessCmsEnUsModelAMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-modela.migrated";
-import { esIndexRootHeadlessCmsEnUsModelBMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-modelb.migrated";
-
-import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { esGetIndexName } from "~/utils";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { createMigratedEsData } from "~tests/migrations/5.38.0/002/ddb-es/002.migratedEsData";
+import { ddbPrimaryTableDataMigrated } from "./migrated/002.ddbPrimaryTableData";
+import { ddbEsTableDataMigrated } from "./migrated/002.ddbEsTableData";
+import { headlessCmsAcoSearchRecordPbPageMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
+import { headlessCmsFmFileMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-fmfile";
+import { headlessCmsModelAMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-modela";
+import { headlessCmsModelBMigrated } from "./migrated/002.es-index-root-headless-cms-en-us-modelb";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -39,11 +42,25 @@ describe("5.39.0-002", () => {
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
 
-    const esIndexData = {
-        acosearchrecordPpPpage: rootHeadlessCmsEnUsAcosearchrecordPbpage,
-        fmFile: esIndexRootHeadlessCmsEnUsFmfile,
-        modelA: esIndexRootHeadlessCmsEnUsModelA,
-        modelB: esIndexRootHeadlessCmsEnUsModelB
+    const insertAllTestData = async () => {
+        await insertTestData(primaryTable, ddbPrimaryTableData);
+        await insertTestData(dynamoToEsTable, ddbEsTableData);
+
+        const esIndexData = {
+            "acosearchrecord-pbpage": headlessCmsAcoSearchRecordPbPage,
+            fmfile: headlessCmsFmFile,
+            modela: headlessCmsModelA,
+            modelb: headlessCmsModelB
+        };
+
+        for (const indexName in esIndexData) {
+            await importElasticsearchTestData(
+                elasticsearchClient,
+                esIndexData[indexName as keyof typeof esIndexData]
+            );
+        }
+
+        await elasticsearchClient.indices.refreshAll();
     };
 
     beforeAll(async () => {
@@ -77,25 +94,7 @@ describe("5.39.0-002", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(primaryTable, ddbPrimaryTableData);
-        await insertTestData(dynamoToEsTable, ddbEsTableData);
-
-        for (const indexName in esIndexData) {
-            await insertElasticsearchTestData(
-                elasticsearchClient,
-                rootHeadlessCmsEnUsAcosearchrecordPbpage,
-                item => {
-                    return esGetIndexName({
-                        tenant: item._source.tenant,
-                        locale: item._source.locale,
-                        isHeadlessCmsModel: true,
-                        type: indexName
-                    });
-                }
-            );
-        }
-
-        await elasticsearchClient.indices.refreshAll();
+        await insertAllTestData();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable,
@@ -123,39 +122,107 @@ describe("5.39.0-002", () => {
             ddbPrimaryTableDataMigrated
         );
 
-        await expect(
-            scanTable(dynamoToEsTable, {
-                limit: 1_000_000
-            })
-        ).resolves.toEqual(ddbEsTableDataMigrated);
+        const ddbEsTableRecords = await scanTable(dynamoToEsTable, {
+            limit: 1_000_000
+        });
+
+        expect(ddbEsTableRecords).toEqual(ddbEsTableDataMigrated);
+
+        // Check decompressed data. TODO
+        for (const record of ddbEsTableRecords) {
+            const entry = await getDecompressedData(record.data);
+            if (entry?.TYPE?.startsWith("cms.entry")) {
+                expect(entry.revisionCreatedOn).toBeDateString();
+            }
+        }
+
+        // CHECK ES DATA TODO COMMENT
+        await transferDynamoDbToElasticsearch(
+            elasticsearchClient,
+            dynamoToEsTable,
+            getRecordIndexName
+        );
+
+        const indexes = new Set<string>();
+        for (const record of ddbEsTableData) {
+            const entry = await getDecompressedData(record.data);
+            if (entry && entry.modelId) {
+                indexes.add(getRecordIndexName(entry));
+            }
+        }
+
+        expect(indexes.size).toBe(4);
+
+        const [
+            headlessCmsAcoSearchRecordPbPageIndexName,
+            headlessCmsFmFileIndexName,
+            headlessCmsModelAIndexName,
+            headlessCmsModelBIndexName
+        ] = indexes;
+
+        // Ensure correct data ended up in Elasticsearch.
+        // 1. Check ACO Search Record PB Page index.
+        const migratedHeadlessCmsAcoSearchRecordPbPageRecords = await listElasticsearchItems({
+            client: elasticsearchClient,
+            index: headlessCmsAcoSearchRecordPbPageIndexName
+        });
+
+        expect(migratedHeadlessCmsAcoSearchRecordPbPageRecords).toBeArrayOfSize(2);
+        expect(migratedHeadlessCmsAcoSearchRecordPbPageRecords).toEqual(
+            headlessCmsAcoSearchRecordPbPageMigrated
+        );
+
+        // 2. Check FM File index.
+        const migratedHeadlessCmsFmFileRecords = await listElasticsearchItems({
+            client: elasticsearchClient,
+            index: headlessCmsFmFileIndexName
+        });
+
+        expect(migratedHeadlessCmsFmFileRecords).toBeArrayOfSize(21);
+        expect(migratedHeadlessCmsFmFileRecords).toEqual(headlessCmsFmFileMigrated);
+
+        // 3. Check Model A index.
+        const migratedHeadlessCmsModelARecords = await listElasticsearchItems({
+            client: elasticsearchClient,
+            index: headlessCmsModelAIndexName
+        });
+
+        expect(migratedHeadlessCmsModelARecords).toBeArrayOfSize(7);
+        expect(migratedHeadlessCmsModelARecords).toEqual(headlessCmsModelAMigrated);
+
+        // 3. Check Model A index.
+        const migratedHeadlessCmsModelBRecords = await listElasticsearchItems({
+            client: elasticsearchClient,
+            index: headlessCmsModelBIndexName
+        });
+
+        expect(migratedHeadlessCmsModelBRecords).toBeArrayOfSize(3);
+        expect(migratedHeadlessCmsModelBRecords).toEqual(headlessCmsModelBMigrated);
+
+        /**
+         * Test that all indexes have the expected settings after the migration.
+         */
+        for (const index of indexes) {
+            const settings = await esGetIndexSettings({
+                elasticsearchClient,
+                index,
+                fields: ["number_of_replicas", "refresh_interval"]
+            });
+            expect(Number(settings?.number_of_replicas)).toBeGreaterThanOrEqual(1);
+            expect(settings?.refresh_interval).not.toBe(-1);
+            const interval = parseInt((settings?.refresh_interval as string).replace("s", ""));
+            expect(interval).toBeGreaterThanOrEqual(1);
+        }
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(primaryTable, ddbPrimaryTableData);
-        await insertTestData(dynamoToEsTable, ddbEsTableData);
-
-        for (const indexName in esIndexData) {
-            await insertElasticsearchTestData(
-                elasticsearchClient,
-                rootHeadlessCmsEnUsAcosearchrecordPbpage,
-                item => {
-                    return esGetIndexName({
-                        tenant: item._source.tenant,
-                        locale: item._source.locale,
-                        isHeadlessCmsModel: true,
-                        type: indexName
-                    });
-                }
-            );
-        }
-
-        await elasticsearchClient.indices.refreshAll();
+        await insertAllTestData();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [MultiStepForms_5_38_0_002]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
         });
 
         // Should skip the migration

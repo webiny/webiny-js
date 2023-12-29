@@ -15,7 +15,7 @@ export const listElasticsearchItems = async <T = any>(
         const result = await client.search({
             index,
             body: {
-                size: 1000000,
+                size: 10_000,
                 ...body
             }
         });
