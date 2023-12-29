@@ -64,7 +64,7 @@ export const createReadSDL: CreateReadSDL = ({
         `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")`
     ].join("\n");
 
-    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
+    const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
         const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
@@ -79,7 +79,8 @@ export const createReadSDL: CreateReadSDL = ({
             ${hasModelIdField ? "" : "modelId: String!"}
             
             ${deprecatedOnByMetaFields}
-            ${onByMetaFields} 
+            
+            meta: ${singularName}Meta
             
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
@@ -88,6 +89,11 @@ export const createReadSDL: CreateReadSDL = ({
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
+        
+        type ${singularName}Meta {
+            ${onByMetaGqlFields}
+            status: String
+        }
         
         input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}

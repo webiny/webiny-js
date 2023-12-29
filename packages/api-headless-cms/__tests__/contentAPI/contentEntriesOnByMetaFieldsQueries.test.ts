@@ -24,7 +24,7 @@ describe("Content entries - Entry Meta Fields Queries", () => {
             const manager = i % 2 !== 0 ? manageApiIdentityA : manageApiIdentityB;
             const { data: testEntry } = await manager.createTestEntry({
                 // Immediately publish so that we can do tests with READ API.
-                data: { status: "published" }
+                data: { meta: { status: "published" } }
             });
             testEntries.push(testEntry);
         }

@@ -1,3 +1,11 @@
+export const identityFields = /* GraphQL */ `
+    {
+        id
+        displayName
+        type
+    }
+`;
+
 const data = /* GraphQL */ `
     {
         id
@@ -6,10 +14,32 @@ const data = /* GraphQL */ `
         savedOn
         title
         slug
+        meta {
+            revisionCreatedOn
+            revisionSavedOn
+            revisionModifiedOn
+            revisionFirstPublishedOn
+            revisionLastPublishedOn
+            revisionCreatedBy ${identityFields}
+            revisionSavedBy ${identityFields}
+            revisionModifiedBy ${identityFields}
+            revisionFirstPublishedBy ${identityFields}
+            revisionLastPublishedBy ${identityFields}
+            entryCreatedOn
+            entrySavedOn
+            entryModifiedOn
+            entryCreatedBy ${identityFields}
+            entrySavedBy ${identityFields}
+            entryModifiedBy ${identityFields}
+            entryFirstPublishedBy ${identityFields}
+            entryLastPublishedBy ${identityFields}
+            entryFirstPublishedOn
+            entryLastPublishedOn
+        }
     }
 `;
 
-const error = /* GraphQL */ `
+const errorFields = /* GraphQL */ `
     {
         code
         message
@@ -21,7 +51,7 @@ export const GET_TEST_ENTRY = `
     query GetTestEntry($where: TestEntryGetWhereInput!) {
         getTestEntry(where: $where) {
             data ${data}
-            error ${error}
+            error ${errorFields}
         }
     }`;
 
@@ -34,7 +64,7 @@ export const LIST_TEST_ENTRIES = `
     ) {
         listTestEntries(where: $where, sort: $sort, limit: $limit, after: $after) {
             data ${data}
-            error ${error}
+            error ${errorFields}
             meta {
                 cursor
                 hasMoreItems
