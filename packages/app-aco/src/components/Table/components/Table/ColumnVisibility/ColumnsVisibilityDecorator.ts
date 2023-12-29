@@ -24,12 +24,10 @@ export class ColumnsVisibilityDecorator implements IColumnsRepository {
         const columns = this.columnsRepository.getColumns();
         const visibility = this.columnsVisibilityRepository.getVisibility();
 
-        const withVisibility = visibility
+        return visibility
             ? columns.map(column => {
                   return { ...column, visible: visibility[column.name] ?? column.visible };
               })
             : columns;
-
-        return withVisibility;
     }
 }

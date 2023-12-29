@@ -9,8 +9,8 @@ export class ColumnsPresenter {
         makeAutoObservable(this);
     }
 
-    init() {
-        this.repository.init();
+    async init() {
+        await this.repository.init();
     }
 
     get vm() {
