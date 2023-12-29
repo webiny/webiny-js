@@ -10,11 +10,12 @@ import useExportPageRevisionSelectorDialog from "~/editor/plugins/defaultBar/com
 import useExportPageDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageDialog";
 
 import { PbPageDataItem } from "~/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/table-actions");
 
 export interface TableActionsProps {
-    selected: PbPageDataItem[];
+    selected: SearchRecordItem<PbPageDataItem>[];
     onImportPage: (event?: React.SyntheticEvent) => void;
 }
 
@@ -34,7 +35,7 @@ export const TableActions = ({ selected, onImportPage }: TableActionsProps): Rea
     }, [selected.length]);
 
     const selectedIds = useMemo(() => {
-        return selected.map(item => item.pid);
+        return selected.map(item => item.data.pid);
     }, [selected]);
 
     return (
