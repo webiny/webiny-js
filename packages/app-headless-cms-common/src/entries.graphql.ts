@@ -26,14 +26,62 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     id
     entryId
-    savedOn
-    createdOn
-    createdBy {
+    entryCreatedOn
+    entrySavedOn
+    entryModifiedOn
+    entryFirstPublishedOn
+    entryLastPublishedOn
+    entryCreatedBy {
         id
         type
         displayName
     }
-    ownedBy {
+    entrySavedBy {
+        id
+        type
+        displayName
+    }
+    entryModifiedBy {
+        id
+        type
+        displayName
+    }
+    entryFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    entryLastPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy {
+        id
+        type
+        displayName
+    }
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
         id
         type
         displayName

@@ -343,9 +343,27 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
-    savedOn: string;
     modelId: string;
-    createdBy: CmsIdentity;
+    entryCreatedOn: string;
+    entrySavedOn: string;
+    entryModifiedOn: string;
+    entryFirstPublishedOn: string;
+    entryLastPublishedOn: string;
+    entryCreatedBy: CmsIdentity;
+    entrySavedBy: CmsIdentity;
+    entryModifiedBy: CmsIdentity;
+    entryFirstPublishedBy: CmsIdentity;
+    entryLastPublishedBy: CmsIdentity;
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string;
+    revisionFirstPublishedOn: string;
+    revisionLastPublishedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity;
+    revisionFirstPublishedBy: CmsIdentity;
+    revisionLastPublishedBy: CmsIdentity;
     wbyAco_location: Location;
     meta: {
         title: string;

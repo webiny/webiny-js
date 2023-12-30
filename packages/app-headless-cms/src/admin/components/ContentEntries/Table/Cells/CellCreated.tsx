@@ -1,13 +1,14 @@
 import React from "react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 
-export const CellAuthor = () => {
+export const CellCreated = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
     if (isFolderRow(row)) {
-        return <>{row.createdBy.displayName}</>;
+        return <TimeAgo datetime={row.createdOn} />;
     }
 
-    return <>{row.entryCreatedBy.displayName}</>;
+    return <TimeAgo datetime={row.entryCreatedOn} />;
 };
