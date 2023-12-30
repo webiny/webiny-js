@@ -5,7 +5,6 @@ import { ApiGraphql, CoreOutput } from "~/apps";
 import { createBackgroundTaskDefinition } from "./backgroundTask/definition";
 import { createBackgroundTaskStepFunctionPolicy } from "~/apps/api/backgroundTask/policy";
 import { createBackgroundTaskStepFunctionRole } from "./backgroundTask/role";
-// @ts-expect-error
 import { getLayerArn } from "@webiny/aws-layers";
 
 export type ApiBackgroundTask = PulumiAppModule<typeof ApiBackgroundTask>;
