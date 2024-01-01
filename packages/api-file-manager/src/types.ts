@@ -33,10 +33,16 @@ export interface FilePermission extends SecurityPermission {
 
 export interface FileInput {
     id: string;
+
+    // In the background, we're actually mapping these to entry-level fields.
+    // This is fine since we don't use revisions for files.
     createdOn?: string | Date | null;
+    modifiedOn?: string | Date | null;
     savedOn?: string | Date | null;
     createdBy?: CreatedBy | null;
     modifiedBy?: CreatedBy | null;
+    savedBy?: CreatedBy | null;
+
     key: string;
     name: string;
     size: number;

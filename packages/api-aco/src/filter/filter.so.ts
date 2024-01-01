@@ -1,12 +1,10 @@
 import WebinyError from "@webiny/error";
-
 import { FILTER_MODEL_ID } from "./filter.model";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFilterFieldValues } from "~/utils/getFieldValues";
-
-import { AcoFilterStorageOperations } from "./filter.types";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
+import { AcoFilterStorageOperations, Filter } from "./filter.types";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
@@ -21,7 +19,7 @@ export const createFilterOperations = (
     return {
         getFilter({ id }) {
             return withModel(async model => {
-                const entry = await cms.getEntry(model, { where: { entryId: id, latest: true } });
+                const entry = await cms.getEntryById(model, id);
 
                 if (!entry) {
                     throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
@@ -29,7 +27,7 @@ export const createFilterOperations = (
                     });
                 }
 
-                return getFilterFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         listFilters(params) {
@@ -45,20 +43,18 @@ export const createFilterOperations = (
                     }
                 });
 
-                return [entries.map(entry => getFilterFieldValues(entry, baseFields)), meta];
+                return [entries.map(pickEntryFieldValues<Filter>), meta];
             });
         },
         createFilter({ data }) {
             return withModel(async model => {
                 const entry = await cms.createEntry(model, data);
-                return getFilterFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         updateFilter({ id, data }) {
             return withModel(async model => {
-                const original = await cms.getEntry(model, {
-                    where: { entryId: id, latest: true }
-                });
+                const original = await cms.getEntryById(model, id);
 
                 const input = {
                     ...original,
@@ -66,7 +62,7 @@ export const createFilterOperations = (
                 };
 
                 const entry = await cms.updateEntry(model, original.id, input);
-                return getFilterFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         deleteFilter({ id }) {

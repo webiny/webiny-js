@@ -1,1 +1,1 @@
-export function getLayerArn(name: string, region?: string): string;
+export declare function getLayerArn(name: string, region?: string): string;

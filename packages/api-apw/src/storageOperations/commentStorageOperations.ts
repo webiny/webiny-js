@@ -1,7 +1,9 @@
 import { ApwStorageOperations } from "./types";
 import { ApwCommentStorageOperations } from "./types";
-import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
+import { baseFields } from "~/utils/pickEntryFieldValues";
+
 import WebinyError from "@webiny/error";
 import { ApwComment } from "~/types";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";

@@ -4,25 +4,25 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
-import { CreatableItem, EditableItem } from "~/admin/hooks/usePermission";
+import { useContentEntriesList, usePermission } from "~/admin/hooks";
+import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
 interface RecordActionEditProps {
-    canEdit: (params: CreatableItem) => boolean;
-    onClick?: () => void;
-    record: {
-        original: EditableItem;
-    };
+    record: EntryTableItem;
 }
 
-export const RecordActionEdit = ({ record, onClick, canEdit }: RecordActionEditProps) => {
-    if (!canEdit(record.original)) {
+export const RecordActionEdit = ({ record }: RecordActionEditProps) => {
+    const { onEditEntry } = useContentEntriesList();
+    const { canEdit } = usePermission();
+
+    if (!canEdit(record, "cms.contentEntry")) {
         return null;
     }
 
     return (
-        <MenuItem onClick={onClick}>
+        <MenuItem onClick={() => onEditEntry(record)}>
             <ListItemGraphic>
                 <Icon icon={<Edit />} />
             </ListItemGraphic>

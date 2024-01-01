@@ -72,10 +72,12 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
 
         type FmFile {
             id: ID!
-            savedOn: DateTime!
             createdOn: DateTime!
+            modifiedOn: DateTime
+            savedOn: DateTime!
             createdBy: FmCreatedBy!
             modifiedBy: FmCreatedBy
+            savedBy: FmCreatedBy!
             src: String
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
@@ -91,17 +93,21 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         input FmFileCreateInput {
             id: ID!
             createdOn: DateTime
+            modifiedOn: DateTime
             savedOn: DateTime
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
+            savedBy: FmCreatedByInput
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
         input FmFileUpdateInput {
             createdOn: DateTime
+            modifiedOn: DateTime
             savedOn: DateTime
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
+            savedBy: FmCreatedByInput
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 

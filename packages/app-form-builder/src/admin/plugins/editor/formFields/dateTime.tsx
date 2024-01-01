@@ -19,6 +19,7 @@ const plugin: FbBuilderFieldPlugin = {
         icon: <DateIcon />,
         createField() {
             return {
+                _id: "",
                 fieldId: "",
                 type: this.type,
                 name: this.name,

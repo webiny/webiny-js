@@ -1,5 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { createPulumiApp, PulumiApp, PulumiAppParam } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
 import { ElasticSearch } from "./CoreElasticSearch";
@@ -174,6 +174,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 cognitoUserPoolArn: cognito.userPool.output.arn,
                 cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
                 cognitoAppClientId: cognito.userPoolClient.output.id,
+                eventBusName: eventBus.output.name,
                 eventBusArn: eventBus.output.arn
             });
 

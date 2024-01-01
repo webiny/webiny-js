@@ -1,5 +1,6 @@
 import { ApwChangeRequestStorageOperations } from "./types";
-import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { baseFields } from "~/utils/pickEntryFieldValues";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwChangeRequest } from "~/types";

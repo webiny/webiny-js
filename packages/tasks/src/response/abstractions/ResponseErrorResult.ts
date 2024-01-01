@@ -1,0 +1,24 @@
+import { TaskResponseStatus } from "~/types";
+import { IResponseBaseResult } from "./ResponseBaseResult";
+
+export interface IResponseError {
+    message: string;
+    code: string;
+    data?: Record<string, any>;
+    stack?: string;
+}
+
+export interface IResponseErrorParams {
+    error: IResponseError;
+    tenant?: string;
+    locale?: string;
+    webinyTaskId?: string;
+}
+
+export interface IResponseErrorResult extends IResponseBaseResult {
+    webinyTaskId: string;
+    tenant: string;
+    locale: string;
+    error: IResponseError;
+    status: TaskResponseStatus.ERROR;
+}
