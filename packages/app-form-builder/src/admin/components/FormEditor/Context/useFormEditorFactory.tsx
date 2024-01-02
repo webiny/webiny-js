@@ -26,12 +26,12 @@ import {
     FbFormModelField,
     FieldIdType,
     FieldLayoutPositionType,
+    FbFormRule,
     FbBuilderFieldPlugin,
     FbFormModel,
     FbUpdateFormInput,
     FbErrorResponse,
     FbFormStep,
-    FbFormRule,
     MoveStepParams,
     DropTarget,
     DropDestination,
@@ -52,6 +52,41 @@ interface SetDataCallable {
 }
 
 type State = FormEditorProviderContextState;
+
+export interface InsertFieldParams {
+    data: FbFormModelField;
+    target: DropTarget;
+    // "source" can be undefined if we create a custom field
+    source?: DropSource;
+    destination: DropDestination;
+}
+
+export interface MoveFieldParams {
+    target: DropTarget;
+    field: FbFormModelField | string;
+    source: DropSource;
+    destination: DropDestination;
+}
+
+export interface DeleteFieldParams {
+    field: FbFormModelField;
+    containerType?: "conditionGroup" | "step";
+    containerId: string;
+}
+
+export interface DeleteConditionGroupParams {
+    formStep: FbFormStep;
+    conditionGroup: FbFormModelField;
+}
+
+export interface UpdateStepParams {
+    id: string | null;
+    title: string;
+    rules: FbFormRule[];
+}
+
+export type SaveFormResult = Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;
@@ -59,51 +94,20 @@ export interface FormEditor {
     state: State;
     addStep: () => void;
     deleteStep: (id: string) => void;
-    updateStep: (
-        { title, rules }: { title: string; rules: FbFormRule[] },
-        id: string | null
-    ) => void;
+    updateStep: (params: UpdateStepParams) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
-    saveForm: (
-        data: FbFormModel | null
-    ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
+    saveForm: (data: FbFormModel | null) => SaveFormResult;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
-    getLayoutFields: (targetStepId: string) => FbFormModelField[][];
+    getStepFields: (targetStepId: string) => FbFormModelField[][];
     getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
-    deleteConditionGroup: ({
-        formStep,
-        conditionGroup
-    }: {
-        formStep: FbFormStep;
-        conditionGroup: FbFormModelField;
-    }) => void;
+    deleteConditionGroup: (params: DeleteConditionGroupParams) => void;
     getConditionGroupLayoutFields: (conditionGroupId: string) => FbFormModelField[][];
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
-    insertField: ({
-        data,
-        target,
-        destination,
-        source
-    }: {
-        data: FbFormModelField;
-        target: DropTarget;
-        destination: DropDestination;
-        source?: DropSource;
-    }) => void;
-    moveField: ({
-        target,
-        field,
-        source,
-        destination
-    }: {
-        target: DropTarget;
-        field: FbFormModelField | string;
-        source: DropSource;
-        destination: DropDestination;
-    }) => void;
+    insertField: (params: InsertFieldParams) => void;
+    moveField: (params: MoveFieldParams) => void;
     moveRow: (
         sourceRow: number,
         destinationRow: number,
@@ -112,15 +116,7 @@ export interface FormEditor {
     ) => void;
     moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
-    deleteField: ({
-        field,
-        containerType,
-        containerId
-    }: {
-        field: FbFormModelField;
-        containerType?: "conditionGroup" | "step";
-        containerId: string;
-    }) => void;
+    deleteField: (params: DeleteFieldParams) => void;
     getFieldPosition: (
         field: FieldIdType | FbFormModelField,
         data: FbFormStep
@@ -315,13 +311,12 @@ export const useFormEditorFactory = (
             /**
              * Returns complete layout with fields data in it (not just field IDs)
              */
-            getLayoutFields: targetStepId => {
+            getStepFields: targetStepId => {
                 const stepLayout = state.data.steps
                     .find(v => v.id === targetStepId)
                     ?.layout.filter(row => Boolean(row));
                 // Replace every field ID with actual field object.
-                // @ts-ignore
-                return stepLayout.map(row => {
+                return (stepLayout || []).map(row => {
                     return row
                         .map(id => {
                             return self.getField({
@@ -412,7 +407,7 @@ export const useFormEditorFactory = (
                 });
             },
             deleteStep: (stepId: string) => {
-                const stepFields = self.getLayoutFields(stepId).flat(1);
+                const stepFields = self.getStepFields(stepId).flat(1);
 
                 const deleteStepFields = (data: FbFormModel) => {
                     const formStep = data.steps.find(step => step.id === stepId) as FbFormStep;
@@ -448,7 +443,7 @@ export const useFormEditorFactory = (
                     };
                 });
             },
-            updateStep: ({ title, rules }, id) => {
+            updateStep: ({ title, rules, id }) => {
                 if (!title) {
                     showSnackbar("Step title cannot be empty");
                 } else {
@@ -468,7 +463,7 @@ export const useFormEditorFactory = (
                     return;
                 }
 
-                const stepFields = self.getLayoutFields(formStep.id).flat(1);
+                const stepFields = self.getStepFields(formStep.id).flat(1);
                 const conditionGroupFields = self
                     .getConditionGroupLayoutFields(conditionGroup._id)
                     .flat(1);
@@ -540,10 +535,10 @@ export const useFormEditorFactory = (
                     };
                 });
             },
-            moveStep: ({ target, destination }) => {
+            moveStep: ({ source, destination }) => {
                 self.setData(data => {
                     moveStep({
-                        target,
+                        source,
                         destination,
                         data: data.steps
                     });
