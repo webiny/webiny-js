@@ -1,13 +1,13 @@
 import { Provider } from "~/index";
 import React from "react";
-import { ComponentType } from "react";
 import { AppInstaller as Installer } from "./AppInstaller";
+import { ComponentWithChildren } from "~/types";
 
 interface AppInstallerProviderProps {
     children: React.ReactNode;
 }
 
-const AppInstallerHOC = (Component: ComponentType<unknown>) => {
+const AppInstallerHOC = (Component: ComponentWithChildren) => {
     return function AppInstallerProvider({ children }: AppInstallerProviderProps) {
         return (
             <Installer>

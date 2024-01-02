@@ -97,6 +97,11 @@ export const FileManagerRenderer = makeDecoratable(
     createVoidComponent<FileManagerRendererProps>()
 );
 
+type ShowFileManagerProps =
+    | FileManagerOnChange<FileManagerFileItem>
+    | FileManagerOnChange<FileManagerFileItem[]>
+    | undefined;
+
 export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
@@ -106,7 +111,7 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
         onChangeRef.current = onChange;
     }, [onChange]);
 
-    const showFileManager = useCallback(onChange => {
+    const showFileManager = useCallback((onChange: ShowFileManagerProps) => {
         if (typeof onChange === "function") {
             onChangeRef.current = onChange;
         }
