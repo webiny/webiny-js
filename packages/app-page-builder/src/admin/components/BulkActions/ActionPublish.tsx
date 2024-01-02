@@ -30,7 +30,7 @@ export const ActionPublish = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await publishPage(
-                            { id: item.id },
+                            { id: item.data.id },
                             {
                                 client: client
                             }
@@ -47,12 +47,12 @@ export const ActionPublish = observer(() => {
                         await getRecord(page.id);
 
                         report.success({
-                            title: `${item.title}`,
+                            title: `${item.data.title}`,
                             message: "Page successfully published."
                         });
                     } catch (e) {
                         report.error({
-                            title: `${item.title}`,
+                            title: `${item.data.title}`,
                             message: e.message
                         });
                     }
