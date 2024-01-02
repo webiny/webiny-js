@@ -6,6 +6,7 @@ import { Form, FormOnSubmit } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { validation } from "@webiny/validation";
+import { FbFormStep } from "~/types";
 
 const EditStepDialog = styled(BaseDialog)`
     font-size: 1.4rem;
@@ -47,10 +48,10 @@ const DialogActions = styled.div`
 export interface DialogProps {
     isEditStep: {
         isOpened: boolean;
-        id: string | null;
+        step: FbFormStep;
     };
     stepTitle: string;
-    setIsEditStep: (params: { isOpened: boolean; id: string | null }) => void;
+    setIsEditStep: (params: { isOpened: boolean; step: FbFormStep }) => void;
     updateStep: (title: string, id: string | null) => void;
 }
 
@@ -63,8 +64,8 @@ export const EditFormStepDialog = ({
     updateStep
 }: DialogProps) => {
     const onSubmit: FormOnSubmit<SubmitData> = (_, form) => {
-        updateStep(form.data.title, isEditStep.id);
-        setIsEditStep({ isOpened: false, id: null });
+        updateStep(form.data.title, isEditStep.step.id);
+        setIsEditStep({ isOpened: false, step: {} as FbFormStep });
     };
     return (
         <>
@@ -73,7 +74,7 @@ export const EditFormStepDialog = ({
                 onClose={() =>
                     setIsEditStep({
                         isOpened: false,
-                        id: null
+                        step: {} as FbFormStep
                     })
                 }
             >
@@ -90,7 +91,9 @@ export const EditFormStepDialog = ({
                             </DialogBody>
                             <DialogActions>
                                 <ButtonSecondary
-                                    onClick={() => setIsEditStep({ isOpened: false, id: null })}
+                                    onClick={() =>
+                                        setIsEditStep({ isOpened: false, step: {} as FbFormStep })
+                                    }
                                 >
                                     Cancel
                                 </ButtonSecondary>

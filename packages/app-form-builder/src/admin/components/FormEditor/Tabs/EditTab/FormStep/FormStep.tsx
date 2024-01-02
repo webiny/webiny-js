@@ -1,4 +1,4 @@
-import React from "react";
+  import React from "react";
 
 import { FbFormModelField, FbFormStep } from "~/types";
 import { RowHandle, StyledAccordion, StyledAccordionItem, Wrapper } from "../Styled";
