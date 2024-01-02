@@ -84,3 +84,8 @@ export const FormStep = (props: FormStepProps) => {
                             editField(null);
                         }}
                     />
+                </StyledAccordionItem>
+            </StyledAccordion>
+        </Wrapper>
+    );
+};

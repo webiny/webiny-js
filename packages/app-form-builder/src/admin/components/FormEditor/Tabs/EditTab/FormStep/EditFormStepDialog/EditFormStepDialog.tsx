@@ -11,6 +11,7 @@ import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { RulesTab } from "./RulesTab";
 
 import { FbFormModel, FbFormStep, FbFormRule } from "~/types";
+import { UpdateStepParams } from "~/admin/components/FormEditor/Context/useFormEditorFactory";
 
 const EditStepDialog = styled(BaseDialog)`
     font-size: 1.4rem;
@@ -53,10 +54,7 @@ export interface DialogProps {
     };
     stepTitle: string;
     setEditStep: (params: { isOpened: boolean; step: FbFormStep }) => void;
-    updateStep: (
-        { title, rules }: { title: string; rules: FbFormRule[] },
-        id: string | null
-    ) => void;
+    updateStep: (params: UpdateStepParams) => void;
     formData: FbFormModel;
 }
 
@@ -79,10 +77,11 @@ export const EditFormStepDialog = ({
     const onSubmit: FormOnSubmit<SubmitData> = (_, form) => {
         const data = {
             title: form.data.title,
-            rules: form.data.rules
+            rules: form.data.rules,
+            id: editStep.step.id
         };
 
-        updateStep(data, editStep.step.id);
+        updateStep(data);
         closeEditStepDialog();
     };
 
