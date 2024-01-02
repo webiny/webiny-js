@@ -1,69 +1,42 @@
 import React, { ReactElement } from "react";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
-import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
-import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export type DraggableChildrenFunction = (params: {
+interface DraggableChildrenFunctionParams {
     isDragging: boolean;
     drag: ConnectDragSource;
-}) => ReactElement;
-
-interface BeginDragProps {
-    ui?: "row" | "field" | "step";
-    pos?: {
-        row: number;
-        index?: number;
-    };
-    name?: string;
-    id?: string;
-    /*
-        "container" contains info about source element.
-    */
-    container?: {
-        type: "step" | "conditionGroup";
-        id: string;
-    };
+}
+export interface DraggableChildrenFunction {
+    (params: DraggableChildrenFunctionParams): ReactElement;
 }
 
-type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
-type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
-
-export interface DraggableProps extends BeginDragProps {
+export interface DraggableProps {
     children: DraggableChildrenFunction;
-    beginDrag?: BeginDrag | BeginDragProps;
-    endDrag?: EndDrag;
+    beginDrag?: any;
+    endDrag?: any;
     target?: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable = (props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: {
-            type: "element",
-            /**
-             * TODO @ts-refactor
-             * There is no target on item in types.
-             */
-            // @ts-ignore
-            target
-        },
+        item: { type: "element", target },
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
         begin(monitor) {
-            if (typeof beginDrag !== "function") {
-                return beginDrag as undefined;
+            if (typeof beginDrag === "function") {
+                return beginDrag(props, monitor);
             }
-            return beginDrag(props, monitor);
+            return beginDrag;
         },
         end(item, monitor) {
-            if (typeof endDrag !== "function") {
-                return endDrag as undefined;
+            if (typeof endDrag === "function") {
+                return endDrag(item, monitor);
             }
-            return endDrag(item as unknown as DragObjectWithType, monitor);
+            return endDrag;
         }
     });
 
@@ -75,4 +48,5 @@ const Draggable: React.FC<DraggableProps> = props => {
     );
 };
 
-export default React.memo(Draggable);
+const MemoizedDraggable: React.ComponentType<DraggableProps> = React.memo(Draggable);
+export default MemoizedDraggable;

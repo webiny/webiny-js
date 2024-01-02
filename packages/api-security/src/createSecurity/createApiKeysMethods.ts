@@ -2,12 +2,12 @@ import crypto from "crypto";
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { withFields, string } from "@commodo/fields";
 /**
  * Package commodo-fields-object does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { createTopic } from "@webiny/pubsub";

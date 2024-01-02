@@ -31,14 +31,6 @@ const cleanupEmptyRows = (params: MoveFieldBetweenParams): void => {
         row => row.length > 0
     );
 };
-/*
-    The difference between moving field between steps, step and condition group or between two condition groups:
-    * When we move field between steps we are going to change property "layout" of those steps;
-    * When we move field between step and condition group we are going to change property "layout" of step 
-      and the property "layout" that is being stored inside of the Condition Group settings;
-    * When we move field between condition groups we are going to change property "layout" of those condition groups and we don't need information about steps in which
-      those condition groups are being stored, because we are not affecting layout of steps in this case.
-*/
 const moveFieldBetween = (params: MoveFieldBetweenParams) => {
     const { data, field, destination, source } = params;
     const fieldId = typeof field === "string" ? field : field._id;

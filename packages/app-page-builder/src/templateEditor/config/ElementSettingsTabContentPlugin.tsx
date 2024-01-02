@@ -23,7 +23,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
         return function SettingsTabContent({ children, ...props }) {
             const [element] = useActiveElement();
             const elementSettings = useElementSettings();
-            const refreshBlock = useRefreshBlock(element as PbEditorElement);
+            const { refreshBlock, loading } = useRefreshBlock(element as PbEditorElement);
             const canHaveVariable =
                 element &&
                 variablePlugins.some(variablePlugin => variablePlugin.elementType === element.type);
@@ -58,7 +58,8 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                     }
                                 />
                                 <Action
-                                    tooltip={"Refresh block"}
+                                    disabled={loading}
+                                    tooltip={loading ? "Refreshing..." : "Refresh block"}
                                     onClick={refreshBlock}
                                     icon={<RefreshIcon />}
                                 />

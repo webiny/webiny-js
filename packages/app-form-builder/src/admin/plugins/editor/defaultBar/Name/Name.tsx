@@ -6,7 +6,7 @@ import { useFormEditor } from "~/admin/components/FormEditor";
 /**
  * Package react-hotkeyz does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import {
     FormMeta,
@@ -25,7 +25,7 @@ declare global {
     }
 }
 
-export const Name: React.FC = () => {
+export const Name = () => {
     const { state, setData } = useFormEditor();
     const [localName, setLocalName] = useState("");
     const [editingEnabled, setEditing] = useState<boolean>(false);

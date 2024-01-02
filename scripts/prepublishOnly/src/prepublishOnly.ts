@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import getYarnWorkspaces from "get-yarn-workspaces";
 import { blueBright, gray } from "chalk";
 import fs from "fs-extra";
@@ -51,8 +51,9 @@ class FileLocker {
                 });
 
                 if (resolvedVersion) {
-                    // @ts-ignore
-                    lockPackageJson[depKey][key] = resolvedVersion;
+                    const newDepValue = lockPackageJson[depKey] || {};
+                    newDepValue[key] = resolvedVersion;
+                    lockPackageJson[depKey] = newDepValue;
                 } else {
                     console.log(`Failed to resolve`, dependencies[key]);
                 }
@@ -125,8 +126,10 @@ class PackageLoader {
 const extraFiles: string[] = [
     "packages/cwp-template-aws/template/ddb/dependencies.json",
     "packages/cwp-template-aws/template/ddb-es/dependencies.json",
+    "packages/cwp-template-aws/template/ddb-os/dependencies.json",
     "packages/cwp-template-aws/template/ddb/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/ddb-es/apps/api/graphql/package.json",
+    "packages/cwp-template-aws/template/ddb-os/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/common/apps/admin/package.json",
     "packages/cwp-template-aws/template/common/apps/theme/package.json",
     "packages/cwp-template-aws/template/common/apps/website/package.json"

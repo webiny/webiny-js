@@ -45,10 +45,10 @@ export interface BindComponentProps<T = any> {
     defaultValue?: any;
     validators?: Validator | Validator[];
     children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
-    validate?: Function;
+    validate?: Validator;
 }
 
-export type BindComponent = React.FC<BindComponentProps>;
+export type BindComponent = React.ComponentType<BindComponentProps>;
 
 export interface FormRenderPropParamsSubmit {
     (event?: React.SyntheticEvent<any, any>): Promise<void>;
@@ -81,10 +81,13 @@ export interface FormOnSubmit<T = GenericFormData> {
     (data: T, form: FormAPI<T>): void;
 }
 
+export interface FormPropsState<T extends GenericFormData = GenericFormData> {
+    data: T;
+}
 export interface FormProps<T extends GenericFormData = GenericFormData> {
     invalidFields?: { [key: string]: any };
     data?: Partial<T>;
-    disabled?: boolean | Function;
+    disabled?: boolean | ((state: FormPropsState<T>) => boolean);
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
     onSubmit?: FormOnSubmit<T>;

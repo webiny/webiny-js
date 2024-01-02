@@ -71,7 +71,7 @@ const getTimeGte = (date: string | undefined): string => {
     return "";
 };
 
-const ScheduleActionMessage: React.FC<ScheduleActionMessageProps> = ({ Bind, data }) => {
+const ScheduleActionMessage = ({ Bind, data }: ScheduleActionMessageProps) => {
     const dateGte = getTodayDate();
     const timeGte = getTimeGte(data?.date);
 
@@ -133,7 +133,7 @@ const dialogContainerStyles = css`
     }
 `;
 
-export const ScheduleActionDialog: React.FC = () => {
+export const ScheduleActionDialog = () => {
     const { action, openPublishLaterDialog, setOpenPublishLaterDialog } = useScheduleActionDialog();
     const useContentReviewIdResult = useContentReviewId();
     if (!useContentReviewIdResult) {

@@ -286,7 +286,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         const { where } = params;
 
         const tenant = where.tenant;
-        // @ts-ignore
+        // @ts-expect-error
         delete where.tenant;
 
         let partitionKey = this.createPartitionKey({ tenant });

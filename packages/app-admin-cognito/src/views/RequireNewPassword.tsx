@@ -15,7 +15,7 @@ const sentenceCase = (str: string) => {
     return lower[0].toUpperCase() + lower.substring(1);
 };
 
-const RequireNewPassword: React.FC = () => {
+const RequireNewPassword = () => {
     const { shouldRender, requiredAttributes, confirm } = useRequireNewPassword();
 
     if (!shouldRender) {

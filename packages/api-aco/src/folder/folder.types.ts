@@ -6,8 +6,11 @@ export interface Folder {
     id: string;
     entryId: string;
     createdOn: string;
-    createdBy: User;
+    modifiedOn: string | null;
     savedOn: string;
+    createdBy: User;
+    modifiedBy: User | null;
+    savedBy: User;
     title: string;
     slug: string;
     permissions?: FolderPermission[];
@@ -116,7 +119,7 @@ export interface AcoFolderCrud {
 
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
 
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 
     getAncestors(folder: Folder): Promise<Folder[]>;
 

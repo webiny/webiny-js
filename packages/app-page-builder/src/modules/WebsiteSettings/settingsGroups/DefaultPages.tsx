@@ -8,7 +8,7 @@ import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-const Homepage: React.FC = () => {
+const Homepage = () => {
     const { settings, editPage } = usePbWebsiteSettings();
 
     return (
@@ -27,7 +27,7 @@ const Homepage: React.FC = () => {
     );
 };
 
-const NotFoundPage: React.FC = () => {
+const NotFoundPage = () => {
     const { settings, editPage } = usePbWebsiteSettings();
 
     return (
@@ -46,7 +46,7 @@ const NotFoundPage: React.FC = () => {
     );
 };
 
-export const DefaultPages: React.FC = () => {
+export const DefaultPages = () => {
     return (
         <Group name={"defaultPages"} label={"Default Pages"}>
             <Element>

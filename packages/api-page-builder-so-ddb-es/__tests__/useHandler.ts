@@ -31,10 +31,6 @@ import elasticsearchClientContextPlugin, {
     createGzipCompression,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
-/**
- * File does not have types.
- */
-// @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { configurations } from "~/configurations";
 import { createAco } from "@webiny/api-aco";

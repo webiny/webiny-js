@@ -141,7 +141,7 @@ export const createPageTemplatesCrud = (
                     tenant: getTenantId(),
                     locale: getLocaleCode()
                 },
-                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_DESC"]
             };
 
             // If user can only manage own records, let's add that to the listing.

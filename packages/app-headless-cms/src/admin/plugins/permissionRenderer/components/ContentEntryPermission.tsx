@@ -29,14 +29,14 @@ interface ContentEntryPermissionProps {
     title: string;
     disabled?: boolean;
 }
-export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
+export const ContentEntryPermission = ({
     Bind,
     data,
     entity,
     setValue,
     title,
     disabled
-}) => {
+}: ContentEntryPermissionProps) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (

@@ -19,12 +19,11 @@ export const createBlockReference = (name: string): PbEditorElement => {
 
     const blockElement = addElementId(plugin.create());
     return {
-        // @ts-ignore
+        // @ts-expect-error
         id: getNanoid(),
-        // @ts-ignore
+        // @ts-expect-error
         elements: [],
         ...blockElement,
-        // @ts-ignore
         data: { ...blockElement.data, blockId: plugin.id }
     };
 };
@@ -53,7 +52,6 @@ export const removeElementVariableIds = (
             // we need to replace element value with the one from variables before removing variableId
             el = elementVariablePlugin?.setElementValue(el, elementVariables) || el;
 
-            // @ts-ignore
             delete el.data?.variableId;
         }
         if (el.elements && el.elements.length) {

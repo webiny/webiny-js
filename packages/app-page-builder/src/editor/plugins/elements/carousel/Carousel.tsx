@@ -8,7 +8,7 @@ interface CarouselProps {
     element: PbEditorElement;
 }
 
-const Carousel: React.FC<CarouselProps> = props => {
+const Carousel = (props: CarouselProps) => {
     const { element, ...rest } = props;
     return <PeCarousel element={element as Element} {...rest} />;
 };

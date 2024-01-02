@@ -9,7 +9,7 @@ export interface PageProps {
     layoutProps?: Record<string, any>;
 }
 
-export const Page: React.FC<PageProps> = props => {
+export const Page = (props: PageProps) => {
     const { page, layout } = props;
 
     let content = <Content content={page.content} />;

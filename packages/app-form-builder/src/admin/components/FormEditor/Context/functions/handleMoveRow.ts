@@ -10,13 +10,6 @@ interface HandleMoveRowParams {
     sourceRow: number;
     destinationRow: number;
 }
-/*
-    The difference between moving row between steps, step and condition group or between two condition groups:
-    * When we move row between steps we are going to change property "layout" of those steps.
-    * When we move row between step and condition group we are going to change property "layout" of step and the property "layout" of the Condition Group.
-    * When we move row between condition groups we are going to change property "layout" of those condition groups and we don't need information about steps in which those,
-      those condition groups are being stored, because we are not affecting layout of steps in this case.
-*/
 export default ({
     data,
     sourceRow,

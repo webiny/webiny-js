@@ -8,14 +8,14 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { usePublishRevisionHandler } from "~/admin/plugins/pageDetails/pageRevisions/usePublishRevisionHandler";
 
-import { PbPageDataItem } from "~/types";
+import { PbPageTableItem } from "~/types";
 import { Icon } from "@webiny/ui/Icon";
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/publish");
 
 interface Props {
-    record: PbPageDataItem;
+    record: PbPageTableItem;
 }
 
 export const RecordActionPublish = ({ record }: Props): ReactElement => {
@@ -51,12 +51,12 @@ export const RecordActionPublish = ({ record }: Props): ReactElement => {
         return <></>;
     }
 
-    if (record.status === "published" && canUnpublish()) {
+    if (record.data.status === "published" && canUnpublish()) {
         return (
             <MenuItem
                 onClick={() =>
                     showUnpublishConfirmation(async () => {
-                        await unpublishRevision(record);
+                        await unpublishRevision(record.data);
                     })
                 }
             >
@@ -73,7 +73,7 @@ export const RecordActionPublish = ({ record }: Props): ReactElement => {
             <MenuItem
                 onClick={() =>
                     showPublishConfirmation(async () => {
-                        await publishRevision(record);
+                        await publishRevision(record.data);
                     })
                 }
             >

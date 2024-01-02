@@ -46,6 +46,7 @@ import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
+import { pickEntryMetaFields } from "@webiny/api-headless-cms/constants";
 
 interface ElasticsearchDbRecord {
     index: string;
@@ -58,6 +59,7 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -397,33 +399,106 @@ export const createEntriesStorageOperations = (
         const { index: esIndex } = configurations.es({
             model
         });
+
         /**
          * If the latest entry is the one being updated, we need to create a new latest entry records.
          */
-        if (latestStorageEntry?.id === entry.id) {
-            /**
-             * First we update the regular DynamoDB table
-             */
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    ...latestKeys,
-                    TYPE: createLatestSortKey()
-                })
-            );
-            /**
-             * And then update the Elasticsearch table to propagate changes to the Elasticsearch
-             */
-            const elasticsearchLatestData = await transformer.getElasticsearchLatestEntryData();
+        if (latestStorageEntry) {
+            const updatingLatestRevision = latestStorageEntry.id === entry.id;
+            if (updatingLatestRevision) {
+                /**
+                 * First we update the regular DynamoDB table.
+                 */
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        ...latestKeys,
+                        TYPE: createLatestSortKey()
+                    })
+                );
 
-            esItems.push(
-                esEntity.putBatch({
+                /**
+                 * And then update the Elasticsearch table to propagate changes to the Elasticsearch
+                 */
+                const elasticsearchLatestData = await transformer.getElasticsearchLatestEntryData();
+
+                esItems.push(
+                    esEntity.putBatch({
+                        ...latestKeys,
+                        index: esIndex,
+                        data: elasticsearchLatestData
+                    })
+                );
+            } else {
+                /**
+                 * If not updating latest revision, we still want to update the latest revision's
+                 * entry-level meta fields to match the current revision's entry-level meta fields.
+                 */
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
+                    return field.startsWith("entry");
+                });
+
+                const updatedLatestStorageEntry = {
+                    ...latestStorageEntry,
                     ...latestKeys,
-                    index: esIndex,
-                    data: elasticsearchLatestData
-                })
-            );
+                    ...updatedEntryLevelMetaFields
+                };
+
+                /**
+                 * First we update the regular DynamoDB table. Two updates are needed:
+                 * - one for the actual revision record
+                 * - one for the latest record
+                 */
+                items.push(
+                    entity.putBatch({
+                        ...updatedLatestStorageEntry,
+                        PK: createPartitionKey({
+                            id: latestStorageEntry.id,
+                            locale: model.locale,
+                            tenant: model.tenant
+                        }),
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createRecordType()
+                    })
+                );
+
+                items.push(
+                    entity.putBatch({
+                        ...updatedLatestStorageEntry,
+                        TYPE: createLatestSortKey()
+                    })
+                );
+
+                /**
+                 * Update the Elasticsearch table to propagate changes to the Elasticsearch.
+                 */
+                const latestEsEntry = await getClean<ElasticsearchDbRecord>({
+                    entity: esEntity,
+                    keys: latestKeys
+                });
+
+                if (latestEsEntry) {
+                    const latestEsEntryDataDecompressed = (await decompress(
+                        plugins,
+                        latestEsEntry.data
+                    )) as CmsIndexEntry;
+
+                    const updatedLatestEntry = await compress(plugins, {
+                        ...latestEsEntryDataDecompressed,
+                        ...updatedEntryLevelMetaFields
+                    });
+
+                    esItems.push(
+                        esEntity.putBatch({
+                            ...latestKeys,
+                            index: esIndex,
+                            data: updatedLatestEntry
+                        })
+                    );
+                }
+            }
         }
+
         if (isPublished && publishedStorageEntry?.id === entry.id) {
             const elasticsearchPublishedData =
                 await transformer.getElasticsearchPublishedEntryData();
@@ -746,16 +821,10 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
+
         if (latestEntry && latestStorageEntry) {
-            const latestTransformer = createTransformer({
-                plugins,
-                model,
-                entry: latestEntry,
-                storageEntry: latestStorageEntry
-            });
-            const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
             /**
-             * In the end we need to set the new latest entry
+             * In the end we need to set the new latest entry.
              */
             items.push(
                 entity.putBatch({
@@ -765,6 +834,32 @@ export const createEntriesStorageOperations = (
                     TYPE: createLatestRecordType()
                 })
             );
+
+            /**
+             * Also perform an update on the actual revision. This is needed
+             * because of updates on the entry-level meta fields.
+             */
+            items.push(
+                entity.putBatch({
+                    ...latestStorageEntry,
+                    PK: createPartitionKey({
+                        id: latestStorageEntry.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey(latestStorageEntry),
+                    TYPE: createRecordType()
+                })
+            );
+
+            const latestTransformer = createTransformer({
+                plugins,
+                model,
+                entry: latestEntry,
+                storageEntry: latestStorageEntry
+            });
+
+            const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
             esItems.push(
                 esEntity.putBatch({
                     PK: partitionKey,
@@ -1087,7 +1182,7 @@ export const createEntriesStorageOperations = (
         ];
         const esItems: BatchWriteItem[] = [];
 
-        const { index } = configurations.es({
+        const { index: esIndex } = configurations.es({
             model
         });
 
@@ -1144,40 +1239,118 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        /**
-         * If we are publishing the latest revision, let's also update the latest revision's status in ES.
-         */
-        if (latestEsEntry && latestStorageEntry?.id === entry.id) {
+
+        if (latestEsEntry) {
+            const publishingLatestRevision = latestStorageEntry?.id === entry.id;
+
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              *
-             * No need to transform it for the storage because it was fetched directly from the Elasticsearch table, where it sits transformed.
+             * No need to transform it for the storage because it was fetched
+             * directly from the Elasticsearch table, where it sits transformed.
              */
             const latestEsEntryDataDecompressed = (await decompress(
                 plugins,
                 latestEsEntry.data
             )) as CmsIndexEntry;
 
-            const latestTransformer = createTransformer({
-                plugins,
-                model,
-                transformedToIndex: {
-                    ...latestEsEntryDataDecompressed,
-                    status: CONTENT_ENTRY_STATUS.PUBLISHED,
-                    locked: true,
-                    savedOn: entry.savedOn,
-                    publishedOn: entry.publishedOn
-                }
-            });
+            if (publishingLatestRevision) {
+                const updatedMetaFields = pickEntryMetaFields(entry);
 
-            esItems.push(
-                esEntity.putBatch({
-                    index,
-                    PK: createPartitionKey(latestEsEntryDataDecompressed),
-                    SK: createLatestSortKey(),
-                    data: await latestTransformer.getElasticsearchLatestEntryData()
-                })
-            );
+                const latestTransformer = createTransformer({
+                    plugins,
+                    model,
+                    transformedToIndex: {
+                        ...latestEsEntryDataDecompressed,
+                        status: CONTENT_ENTRY_STATUS.PUBLISHED,
+                        locked: true,
+                        /**
+                         * 🚫 Deprecated meta fields below.
+                         * Will be fully removed in one of the next releases.
+                         */
+                        savedOn: entry.savedOn,
+                        publishedOn: entry.publishedOn,
+
+                        /**
+                         * 🆕 New meta fields below.
+                         * Users are encouraged to use these instead of the deprecated ones above.
+                         */
+                        ...updatedMetaFields
+                    }
+                });
+
+                esItems.push(
+                    esEntity.putBatch({
+                        index: esIndex,
+                        PK: createPartitionKey(latestEsEntryDataDecompressed),
+                        SK: createLatestSortKey(),
+                        data: await latestTransformer.getElasticsearchLatestEntryData()
+                    })
+                );
+            } else {
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
+                    return field.startsWith("entry");
+                });
+
+                const updatedLatestStorageEntry = {
+                    ...latestStorageEntry,
+                    ...latestKeys,
+                    ...updatedEntryLevelMetaFields
+                };
+
+                /**
+                 * First we update the regular DynamoDB table. Two updates are needed:
+                 * - one for the actual revision record
+                 * - one for the latest record
+                 */
+                items.push(
+                    entity.putBatch({
+                        ...updatedLatestStorageEntry,
+                        PK: createPartitionKey({
+                            id: latestStorageEntry.id,
+                            locale: model.locale,
+                            tenant: model.tenant
+                        }),
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createRecordType()
+                    })
+                );
+
+                items.push(
+                    entity.putBatch({
+                        ...updatedLatestStorageEntry,
+                        TYPE: createLatestSortKey()
+                    })
+                );
+
+                /**
+                 * Update the Elasticsearch table to propagate changes to the Elasticsearch.
+                 */
+                const latestEsEntry = await getClean<ElasticsearchDbRecord>({
+                    entity: esEntity,
+                    keys: latestKeys
+                });
+
+                if (latestEsEntry) {
+                    const latestEsEntryDataDecompressed = (await decompress(
+                        plugins,
+                        latestEsEntry.data
+                    )) as CmsIndexEntry;
+
+                    const updatedLatestEntry = await compress(plugins, {
+                        ...latestEsEntryDataDecompressed,
+                        ...updatedEntryLevelMetaFields
+                    });
+
+                    esItems.push(
+                        esEntity.putBatch({
+                            ...latestKeys,
+                            index: esIndex,
+                            data: updatedLatestEntry
+                        })
+                    );
+                }
+            }
         }
 
         /**
@@ -1187,7 +1360,7 @@ export const createEntriesStorageOperations = (
         esItems.push(
             esEntity.putBatch({
                 ...publishedKeys,
-                index,
+                index: esIndex,
                 data: esPublishedData
             })
         );

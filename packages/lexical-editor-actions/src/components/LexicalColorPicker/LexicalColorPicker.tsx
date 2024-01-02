@@ -107,16 +107,16 @@ const styles = {
 
 interface LexicalColorPickerProps {
     value: string;
-    onChange?: Function;
-    onChangeComplete: Function;
+    onChange?: (color: string) => void;
+    onChangeComplete: (color: string, name?: string) => void;
     handlerClassName?: string;
 }
 
-export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
+export const LexicalColorPicker = ({
     value,
     onChange,
     onChangeComplete
-}) => {
+}: LexicalColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
     // Either a custom color or a color coming from the theme object.
     const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");

@@ -243,7 +243,7 @@ export class CmsModelPlugin extends Plugin {
             /**
              * We can safely ignore error because we are going through the fields and making sure each has storageId.
              */
-            // @ts-ignore
+            // @ts-expect-error
             let settings: BaseCmsModelFieldSettings = input.settings;
 
             const childFields = settings?.fields || [];

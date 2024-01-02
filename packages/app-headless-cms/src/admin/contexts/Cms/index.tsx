@@ -134,7 +134,7 @@ export interface CmsProviderProps {
     children: React.ReactNode;
 }
 
-export const CmsProvider: React.FC<CmsProviderProps> = props => {
+export const CmsProvider = (props: CmsProviderProps) => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
 

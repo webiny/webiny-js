@@ -2,7 +2,7 @@ import React from "react";
 /**
  * Package react-columned does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import Columned from "react-columned";
 
 export interface MosaicProps {
@@ -13,9 +13,11 @@ export interface MosaicProps {
 
     // Custom class for the mosaic container.
     className?: string;
+
+    children: React.ReactNode;
 }
 
-const Mosaic: React.FC<MosaicProps> = ({ children, columns, className }) => {
+const Mosaic = ({ children, columns, className }: MosaicProps) => {
     return (
         <Columned columns={columns} className={className}>
             {children}

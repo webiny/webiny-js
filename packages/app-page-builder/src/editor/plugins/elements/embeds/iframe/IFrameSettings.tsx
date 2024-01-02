@@ -39,9 +39,10 @@ interface LinkSettingsFormData {
 interface LinkSettingsPropsType {
     element: PbEditorElement;
 }
-const LinkSettingsComponent: React.FC<
-    LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ element, defaultAccordionValue }) => {
+
+type LinkSettingsComponentProps = LinkSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps;
+const LinkSettingsComponent = ({ element, defaultAccordionValue }: LinkSettingsComponentProps) => {
     const handler = useEventActionHandler();
 
     const { url } = element.data?.["iframe"] || {};

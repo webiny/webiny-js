@@ -147,9 +147,13 @@ export interface ApwIdentity {
 export interface ApwBaseFields {
     id: string;
     entryId: string;
+
     createdOn: string;
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: ApwIdentity;
+    modifiedBy: ApwIdentity;
+    savedBy: ApwIdentity;
 }
 
 export interface ApwReviewer extends ApwBaseFields {
@@ -341,7 +345,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
     update(id: string, data: TUpdateEntryParams): Promise<TEntry>;
 
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 }
 
 export interface ApwWorkflowCrud
@@ -436,18 +440,18 @@ export interface ApwContentReviewCrud
     > {
     list(params: ApwContentReviewListParams): Promise<[ApwContentReview[], ListMeta]>;
 
-    provideSignOff(id: string, step: string): Promise<Boolean>;
+    provideSignOff(id: string, step: string): Promise<boolean>;
 
-    retractSignOff(id: string, step: string): Promise<Boolean>;
+    retractSignOff(id: string, step: string): Promise<boolean>;
 
     isReviewRequired(data: ApwContentReviewContent): Promise<{
         isReviewRequired: boolean;
         contentReviewId?: string | null;
     }>;
 
-    publishContent(id: string, datetime?: string): Promise<Boolean>;
+    publishContent(id: string, datetime?: string): Promise<boolean>;
 
-    unpublishContent(id: string, datetime?: string): Promise<Boolean>;
+    unpublishContent(id: string, datetime?: string): Promise<boolean>;
 
     scheduleAction(data: ApwScheduleActionData): Promise<string>;
 
@@ -473,12 +477,12 @@ export type ContentGetter = (
 export type ContentPublisher = (
     id: string,
     settings: { modelId?: string }
-) => Promise<Boolean | null>;
+) => Promise<boolean | null>;
 
 export type ContentUnPublisher = (
     id: string,
     settings: { modelId?: string }
-) => Promise<Boolean | null>;
+) => Promise<boolean | null>;
 
 export interface AdvancedPublishingWorkflow {
     addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;
@@ -639,7 +643,7 @@ export interface ApwReviewerStorageOperations {
 
     updateReviewer(params: StorageOperationsUpdateReviewerParams): Promise<ApwReviewer>;
 
-    deleteReviewer(params: StorageOperationsDeleteReviewerParams): Promise<Boolean>;
+    deleteReviewer(params: StorageOperationsDeleteReviewerParams): Promise<boolean>;
 }
 
 export interface ApwWorkflowStorageOperations {
@@ -654,7 +658,7 @@ export interface ApwWorkflowStorageOperations {
 
     updateWorkflow(params: StorageOperationsUpdateWorkflowParams): Promise<ApwWorkflow>;
 
-    deleteWorkflow(params: StorageOperationsDeleteWorkflowParams): Promise<Boolean>;
+    deleteWorkflow(params: StorageOperationsDeleteWorkflowParams): Promise<boolean>;
 }
 
 export interface ApwContentReviewStorageOperations {
@@ -675,7 +679,7 @@ export interface ApwContentReviewStorageOperations {
         params: StorageOperationsUpdateContentReviewParams
     ): Promise<ApwContentReview>;
 
-    deleteContentReview(params: StorageOperationsDeleteContentReviewParams): Promise<Boolean>;
+    deleteContentReview(params: StorageOperationsDeleteContentReviewParams): Promise<boolean>;
 }
 
 export interface ApwChangeRequestStorageOperations {
@@ -696,7 +700,7 @@ export interface ApwChangeRequestStorageOperations {
         params: StorageOperationsUpdateChangeRequestParams
     ): Promise<ApwChangeRequest>;
 
-    deleteChangeRequest(params: StorageOperationsDeleteChangeRequestParams): Promise<Boolean>;
+    deleteChangeRequest(params: StorageOperationsDeleteChangeRequestParams): Promise<boolean>;
 }
 
 export interface ApwCommentStorageOperations {
@@ -711,7 +715,7 @@ export interface ApwCommentStorageOperations {
 
     updateComment(params: StorageOperationsUpdateCommentParams): Promise<ApwComment>;
 
-    deleteComment(params: StorageOperationsDeleteCommentParams): Promise<Boolean>;
+    deleteComment(params: StorageOperationsDeleteCommentParams): Promise<boolean>;
 }
 
 export interface ApwStorageOperations

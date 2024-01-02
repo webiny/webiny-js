@@ -105,7 +105,7 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     /**
      * Render list item when `useMultipleSelectionList` is used.
      */
-    renderListItemLabel?: Function;
+    renderListItemLabel?: (item: any) => React.ReactNode;
     /**
      * Render in meta wrapper
      */
@@ -127,7 +127,7 @@ interface MultiAutoCompleteState {
     reorderFormValue: string;
 }
 
-const Spinner: React.FC = () => {
+const Spinner = () => {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 };
 
@@ -139,6 +139,7 @@ interface RenderOptionsParams
 
 interface OptionsListProps {
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+    children: React.ReactNode;
 }
 
 interface AssignedValueAfterClearing {
@@ -146,7 +147,7 @@ interface AssignedValueAfterClearing {
     selection: string | null;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
+const OptionsList = ({ getMenuProps, children }: OptionsListProps) => {
     return (
         <Elevation z={1}>
             <ul
@@ -636,7 +637,7 @@ export class MultiAutoComplete extends React.Component<
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
-                    // @ts-ignore there is no className on Downshift
+                    // @ts-expect-error there is no className on Downshift
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}
@@ -669,7 +670,7 @@ export class MultiAutoComplete extends React.Component<
                             <Input
                                 {...getInputProps({
                                     ...otherInputProps,
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     validation,
 
                                     // Only pass description if not using "useMultipleSelectionList".

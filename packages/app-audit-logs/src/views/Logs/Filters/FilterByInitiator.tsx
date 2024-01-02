@@ -14,7 +14,7 @@ const getValidFilterValue = (value: string): string | undefined => {
     return value;
 };
 
-export const FilterByInitiator: React.FC = () => {
+export const FilterByInitiator = () => {
     const { data: listUsers } = useQuery(LIST_USERS);
     const bind = useBind({
         name: "data.initiator",

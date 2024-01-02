@@ -31,7 +31,7 @@ const PublishContentBox = styled(Box)`
 const defaultButtonStyles = { width: "217px" };
 const activeButtonStyles = { backgroundColor: "var(--mdc-theme-secondary)" };
 
-export const ChangeContentStatusButton: React.FC = () => {
+export const ChangeContentStatusButton = () => {
     const { contentReview } = useCurrentContentReview();
     const { loading, deleteScheduledAction } = usePublishContent();
     const { setAction, setOpenPublishNowDialog } = useScheduleActionDialog();
@@ -132,7 +132,7 @@ const AuthorName = styled(TypographySecondary)`
 
 export type ContentStatusProps = Pick<ApwContentReview, "content">;
 
-export const ContentStatus: React.FC<ContentStatusProps> = ({ content }) => {
+export const ContentStatus = ({ content }: ContentStatusProps) => {
     const label = content.scheduledOn ? t`Content Scheduled On:` : t`Content Published On:`;
     const name = content.scheduledOn
         ? content.scheduledBy?.displayName

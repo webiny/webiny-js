@@ -48,14 +48,14 @@ const isSelected = (entryId: string, values: CmsReferenceValue[]) => {
     });
 };
 
-interface Props extends CmsModelFieldRendererProps {
+interface ReferencesDialogProps extends CmsModelFieldRendererProps {
     values?: CmsReferenceValue[] | null;
     onDialogClose: () => void;
     storeValues: (values: CmsReferenceValue[]) => void;
     multiple: boolean;
 }
 
-export const ReferencesDialog: React.VFC<Props> = props => {
+export const ReferencesDialog = (props: ReferencesDialogProps) => {
     const { contentModel, onDialogClose, storeValues, values: initialValues, multiple } = props;
     const { showSnackbar } = useSnackbar();
 

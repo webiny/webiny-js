@@ -18,9 +18,7 @@ interface MoveField {
     field: FbFormModelField | string;
     target: DropTarget;
     destination: DropDestination;
-    /*
-        We need "source" in case we are moving fields between condition group and step in scope of ONE STEP.
-    */
+    // We need "source" in case we are moving fields between condition group and step in scope of ONE STEP.
     source?: DropSource;
 }
 

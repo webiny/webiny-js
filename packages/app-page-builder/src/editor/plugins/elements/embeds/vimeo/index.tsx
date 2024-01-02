@@ -27,7 +27,7 @@ const PreviewBox = styled("div")({
 });
 
 const render: EmbedPluginConfigRenderCallable = props => (
-    // @ts-ignore Sync `elements` property type.
+    // @ts-expect-error Sync `elements` property type.
     <PeVimeo {...props} />
 );
 
@@ -51,10 +51,14 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             /**
              * TODO @ts-refactor @ashutosh
              */
-            // @ts-ignore
+            // @ts-expect-error
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
+            /**
+             * TODO Figure out types.
+             */
+            // @ts-expect-error
             settings: args.settings,
             oembed: {
                 renderEmbed(props) {

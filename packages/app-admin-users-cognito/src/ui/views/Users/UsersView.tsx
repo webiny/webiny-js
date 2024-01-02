@@ -5,7 +5,7 @@ import UsersDataList from "~/ui/views/Users/UsersDataList";
 import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
 import { useWcp } from "@webiny/app-admin";
 
-export const UsersView: React.FC = () => {
+export const UsersView = () => {
     const { getProject } = useWcp();
 
     const project = getProject();

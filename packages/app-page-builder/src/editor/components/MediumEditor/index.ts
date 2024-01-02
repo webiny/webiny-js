@@ -21,14 +21,14 @@ interface ReactMediumEditorProps {
     [key: string]: any;
 }
 
-const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
+const ReactMediumEditor = ({
     tag = "div",
     value,
     onChange,
     options = {},
     onSelect,
     autoFocus
-}) => {
+}: ReactMediumEditorProps) => {
     const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
@@ -115,7 +115,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
                 // Approach was taken from: https://github.com/yabwe/medium-editor/issues/850
                 editorRef.current?.selectElement(elementRef.current as HTMLElement);
                 elementRef.current?.click();
-                // @ts-ignore
+                // @ts-expect-error
                 MediumEditor.selection.moveCursor(document, elementRef.current);
             }, 200);
         }

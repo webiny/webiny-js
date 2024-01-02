@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
-// @ts-ignore
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -72,8 +72,8 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
     const ref = useRef<FormAPI | null>(null);
 
     return (
-        <DrawerContainer modal open={props.vm.isOpen} onClose={props.onClose} dir="rtl">
-            <DrawerContent dir="ltr">
+        <DrawerContainer modal open={props.vm.isOpen} onClose={props.onClose}>
+            <DrawerContent>
                 <Header onClose={props.onClose} />
                 <QueryBuilder
                     onForm={form => (ref.current = form)}

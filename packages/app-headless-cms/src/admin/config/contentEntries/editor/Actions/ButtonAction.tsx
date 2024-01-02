@@ -5,7 +5,7 @@ import { BaseAction, BaseActionProps } from "./BaseAction";
 export type ButtonActionType = "button-action";
 export type ButtonActionProps = Omit<BaseActionProps, "$type">;
 
-export const BaseButtonAction: React.FC<ButtonActionProps> = props => {
+export const BaseButtonAction = (props: ButtonActionProps) => {
     return <BaseAction {...props} $type={"button-action"} />;
 };
 

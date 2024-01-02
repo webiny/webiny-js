@@ -1,9 +1,13 @@
 import dotProp from "dot-prop-immutable";
 import { DataProxy } from "apollo-cache";
 import ApolloClient from "apollo-client";
-import { LIST_CONTENT_MODELS, LIST_MENU_CONTENT_GROUPS_MODELS } from "../../viewsGraphql";
+import {
+    LIST_CONTENT_MODELS,
+    LIST_MENU_CONTENT_GROUPS_MODELS,
+    ListCmsModelsQueryResponse,
+    ListMenuCmsGroupsQueryResponse
+} from "../../viewsGraphql";
 import { CmsEditorContentModel } from "~/types";
-import { ListCmsModelsQueryResponse, ListMenuCmsGroupsQueryResponse } from "../../viewsGraphql";
 
 export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
     const response = cache.readQuery<ListCmsModelsQueryResponse>({
@@ -59,13 +63,13 @@ export const removeModelFromCache = (
 ): void => {
     const id = `CmsContentModel:${model.modelId}`;
 
-    // @ts-ignore
+    // @ts-expect-error
     client.cache.data.delete(id);
 
-    // @ts-ignore
+    // @ts-expect-error
     Object.keys(client.cache.data.data).forEach(key => {
         if (key.startsWith(`${id}.`) || key.startsWith(`$${id}.`)) {
-            // @ts-ignore
+            // @ts-expect-error
             client.cache.data.delete(key);
         }
     });

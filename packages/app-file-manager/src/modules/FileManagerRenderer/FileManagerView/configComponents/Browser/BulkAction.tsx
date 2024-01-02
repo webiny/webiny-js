@@ -17,13 +17,13 @@ export interface BulkActionProps {
     element?: React.ReactElement;
 }
 
-export const BaseBulkAction: React.FC<BulkActionProps> = ({
+export const BaseBulkAction = ({
     name,
     after = undefined,
     before = undefined,
     remove = false,
     element
-}) => {
+}: BulkActionProps) => {
     const getId = useIdGenerator("bulkAction");
 
     const placeAfter = after !== undefined ? getId(after) : undefined;

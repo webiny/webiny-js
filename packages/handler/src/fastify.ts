@@ -1,4 +1,4 @@
-import { PluginCollection } from "@webiny/plugins/types";
+import { PluginCollection, PluginsContainer } from "@webiny/plugins/types";
 import fastify, {
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
@@ -11,7 +11,7 @@ import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
-import { middleware } from "~/middleware";
+import { middleware, MiddlewareCallable } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
@@ -78,7 +78,7 @@ const OPTIONS_HEADERS: Record<string, string> = {
 };
 
 export interface CreateHandlerParams {
-    plugins: PluginCollection;
+    plugins: PluginCollection | PluginsContainer;
     options?: ServerOptions;
     debug?: boolean;
 }
@@ -236,21 +236,23 @@ export const createHandler = (params: CreateHandlerParams) => {
         }
     };
     let context: Context;
+
+    const plugins = new PluginsContainer([
+        /**
+         * We must have handlerClient by default.
+         * And it must be one of the first context plugins applied.
+         */
+        createHandlerClient()
+    ]);
+    plugins.merge(params.plugins || []);
+
     try {
         context = new Context({
-            plugins: [
-                /**
-                 * We must have handlerClient by default.
-                 * And it must be one of the first context plugins applied.
-                 */
-                createHandlerClient(),
-                ...(params.plugins || [])
-            ],
+            plugins,
             /**
-             * Inserted via webpack on build time.
+             * Inserted via webpack at build time.
              */
             WEBINY_VERSION: process.env.WEBINY_VERSION as string,
-            server: app,
             routes
         });
     } catch (ex) {
@@ -471,7 +473,7 @@ export const createHandler = (params: CreateHandlerParams) => {
 
         const handler = middleware(
             plugins.map(pl => {
-                return (context: Context, error: Error, next: Function) => {
+                return (context: Context, error: Error, next: MiddlewareCallable) => {
                     return pl.handle(context, error, next);
                 };
             })

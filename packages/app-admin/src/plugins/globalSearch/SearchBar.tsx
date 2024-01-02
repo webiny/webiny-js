@@ -8,7 +8,7 @@ import classnames from "classnames";
 /**
  * Package react-hotkeyz does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
 
 // UI components
@@ -169,7 +169,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             <Hotkeys
                                 zIndex={10}
                                 keys={{
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     esc: () => document.activeElement.blur(),
                                     "/": this.handleOpenHotkey
                                 }}
@@ -212,7 +212,6 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                                     ),
                                                     ref: this.input,
                                                     value: this.state.searchTerm.current,
-                                                    // @ts-ignore
                                                     onClick: openMenu,
                                                     onBlur: () => {
                                                         this.cancelSearchTerm();
@@ -248,7 +247,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-const SearchBarContainer: React.FC = () => {
+const SearchBarContainer = () => {
     const routerProps = useRouter();
 
     return <SearchBar {...routerProps} />;

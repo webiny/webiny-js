@@ -27,13 +27,13 @@ interface ColorPickerProps {
     value?: string;
     valueKey?: string;
     defaultValue?: string;
-    updatePreview: Function;
-    updateValue: Function;
+    updatePreview: (value: string) => void;
+    updateValue: (value: string) => void;
     className?: string;
     handlerClassName?: string;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
+const ColorPicker = ({
     label,
     value,
     valueKey,
@@ -41,7 +41,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     updatePreview,
     updateValue,
     className
-}) => {
+}: ColorPickerProps) => {
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <Grid className={className}>
@@ -63,14 +63,14 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 export default React.memo(ColorPicker);
 
 type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
-export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = ({
+export const BaseColorPickerComponent = ({
     value,
     valueKey,
     defaultValue,
     updatePreview,
     updateValue,
     handlerClassName
-}) => {
+}: BaseColorPickerComponent) => {
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <ColorPickerCmp

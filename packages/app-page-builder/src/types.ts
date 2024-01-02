@@ -12,6 +12,7 @@ import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
+import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -691,7 +692,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FC;
+    icon: React.ComponentType;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -1011,3 +1012,7 @@ declare global {
         }
     }
 }
+
+export type PbPageTableItem = SearchRecordItem<PbPageDataItem> & RecordTableItem;
+
+export type TableItem = FolderTableItem | PbPageTableItem;

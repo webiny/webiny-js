@@ -2,15 +2,17 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ApwReviewerListParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
-    typeDefs: /* GraphQL */ `
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    typeDefs: `
         type ApwReviewerListItem {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # Reviewer specific fields
             identityId: ID
             displayName: String
@@ -27,9 +29,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwReviewer {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # Reviewer specific fields
             identityId: ID
             displayName: String
@@ -50,10 +52,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         enum ApwListReviewersSort {
             id_ASC
             id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
+
+            ${dateTimeFieldsSorters}
+            
             publishedOn_ASC
             publishedOn_DESC
             title_ASC

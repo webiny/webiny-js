@@ -33,7 +33,7 @@ export interface EditorProps {
     stateInitializerFactory: EditorStateInitializerFactory;
 }
 
-export const Editor: React.FC<EditorProps> = ({ stateInitializerFactory }) => {
+export const Editor = ({ stateInitializerFactory }: EditorProps) => {
     const initializeState = useCallback(
         snapshot => {
             const { content, recoilInitializer } = stateInitializerFactory();

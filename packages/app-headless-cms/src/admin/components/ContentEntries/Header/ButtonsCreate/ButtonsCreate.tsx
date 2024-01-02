@@ -7,19 +7,19 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/header/buttons/create");
 
-interface Props {
+interface ButtonsCreateProps {
     onCreateEntry: (event: React.SyntheticEvent) => void;
     onCreateFolder: (event: React.SyntheticEvent) => void;
     canCreateFolder: boolean;
     canCreateContent: boolean;
 }
 
-export const ButtonsCreate: React.VFC<Props> = ({
+export const ButtonsCreate = ({
     onCreateFolder,
     onCreateEntry,
     canCreateContent,
     canCreateFolder
-}) => {
+}: ButtonsCreateProps) => {
     let newFolderButton = (
         <ButtonSecondary
             data-testid="new-folder-button"

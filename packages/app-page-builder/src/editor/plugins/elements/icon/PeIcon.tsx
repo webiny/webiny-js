@@ -9,7 +9,7 @@ interface Props {
     element: Element;
 }
 
-const PeIcon: React.FC<Props> = props => {
+const PeIcon = (props: Props) => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
     if (variableValue?.svg) {

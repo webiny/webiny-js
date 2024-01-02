@@ -24,7 +24,7 @@ interface DisplayErrorProps {
     children: React.ReactNode;
 }
 
-export const DisplayError: React.VFC<DisplayErrorProps> = ({ children }) => {
+export const DisplayError = ({ children }: DisplayErrorProps) => {
     return (
         <Wrapper>
             <Box>{children}</Box>
