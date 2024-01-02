@@ -1,7 +1,7 @@
-import styled from "@emotion/styled";
-import { Menu as OriginalMenu } from "@webiny/ui/Menu";
+import styled, { StyledComponent } from "@emotion/styled";
+import { MenuProps, Menu as OriginalMenu } from "@webiny/ui/Menu";
 
-export const Menu = styled(OriginalMenu)`
+export const Menu: StyledComponent<MenuProps> = styled(OriginalMenu)`
     .disabled {
         opacity: 0.5;
         pointer-events: none;

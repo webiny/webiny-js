@@ -22,7 +22,7 @@ type MenuPropsChildren =
     | React.ReactNode
     | (({ closeMenu }: { closeMenu: () => void }) => React.ReactNode);
 
-type MenuProps = RmwcMenuProps & {
+export type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
     children: MenuPropsChildren;
 

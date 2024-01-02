@@ -31,6 +31,11 @@ const MESSAGES: Record<string, string> = {
 interface ImportFormLoadingDialogContentProps {
     taskId: string;
 }
+
+interface FormImportExportData {
+    [key: string]: any;
+}
+
 const ImportFormLoadingDialogContent = ({ taskId }: ImportFormLoadingDialogContentProps) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
@@ -53,7 +58,7 @@ const ImportFormLoadingDialogContent = ({ taskId }: ImportFormLoadingDialogConte
         }
     });
 
-    const pollExportFormTaskStatus = useCallback(response => {
+    const pollExportFormTaskStatus = useCallback((response: FormImportExportData) => {
         const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             return showSnackbar(error.message);

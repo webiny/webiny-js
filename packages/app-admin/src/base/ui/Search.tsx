@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { makeComposable } from "@webiny/app";
+import { ComponentWithChildren } from "~/types";
 
 export interface SearchOptionData {
     route: string;
@@ -32,7 +33,7 @@ interface SearchProviderProps {
     [key: string]: any;
 }
 
-export const SearchProvider = (Component: React.ComponentType) => {
+export const SearchProvider = (Component: ComponentWithChildren) => {
     return function SearchProvider({ children, ...props }: SearchProviderProps) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 
