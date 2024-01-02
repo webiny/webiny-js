@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
+import { ComponentWithChildren } from "~/types";
 
 export interface ViewElement {
     name: string;
@@ -71,7 +72,7 @@ interface ViewCompositionProviderHOCProps {
     children: React.ReactNode;
 }
 
-export const createViewCompositionProvider = () => (Component: React.ComponentType<unknown>) => {
+export const createViewCompositionProvider = () => (Component: ComponentWithChildren) => {
     return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
         return (
             <ViewCompositionProvider>

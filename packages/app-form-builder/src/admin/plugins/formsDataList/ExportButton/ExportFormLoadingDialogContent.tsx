@@ -29,6 +29,10 @@ interface ExportFormLoadingDialogContent {
     taskId: string;
 }
 
+interface FormImportExportData {
+    [key: string]: any;
+}
+
 const ExportFormLoadingDialogContent = ({ taskId }: ExportFormLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
@@ -45,7 +49,7 @@ const ExportFormLoadingDialogContent = ({ taskId }: ExportFormLoadingDialogConte
         notifyOnNetworkStatusChange: true
     });
 
-    const pollExportFormTaskStatus = useCallback(response => {
+    const pollExportFormTaskStatus = useCallback((response: FormImportExportData) => {
         const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             showSnackbar(error.message);

@@ -107,7 +107,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     const { canUpdate, canDelete } = usePermission();
 
     const deleteRecord = useCallback(
-        async item => {
+        async (item: FbFormModel) => {
             const res = await client.mutate({
                 mutation: DELETE_FORM,
                 variables: { id: item.id },
@@ -179,7 +179,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     }, []);
 
     const filterData = useCallback(
-        ({ name }) => {
+        ({ name }: FbFormModel) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
