@@ -105,22 +105,22 @@ describe("GraphQLInputMapper", () => {
                             value: "value-2"
                         },
                         {
-                            field: "field-3#entryId",
+                            field: "field-3.entryId",
                             condition: " ",
                             value: "value-3"
                         },
                         {
-                            field: "field-4#entryId",
+                            field: "field-4.entryId",
                             condition: "_not",
                             value: "value-4"
                         },
                         {
-                            field: "field-5#sub-field#entryId",
+                            field: "field-5.sub-field.entryId",
                             condition: " ",
                             value: "value-5"
                         },
                         {
-                            field: "field-6#sub-field#entryId",
+                            field: "field-6.sub-field.entryId",
                             condition: "_not",
                             value: "value-6"
                         }

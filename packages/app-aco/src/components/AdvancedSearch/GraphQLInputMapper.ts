@@ -34,7 +34,7 @@ export class GraphQLInputMapper {
     }
 
     private static createKeys(field: string, condition: string): string[] {
-        return `${field}${condition}`.trim().split("#");
+        return `${field}${condition}`.trim().split(".");
     }
 
     private static createNestedObject(keys: string[], value: string | boolean): NestedObject {
