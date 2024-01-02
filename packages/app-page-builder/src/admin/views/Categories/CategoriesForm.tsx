@@ -118,7 +118,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: any) => {
             const isUpdate = loadedCategory.slug;
             const data = pick(formData, ["slug", "name", "url", "layout"]);
 

@@ -61,12 +61,14 @@ const DividerRenderer = makeComposable("DividerRenderer", () => {
     return <StyledDivider />;
 });
 
-type EditorBar = ComposableFC & {
-    LeftSection: ComposableFC;
-    CenterSection: ComposableFC;
-    RightSection: ComposableFC;
-    BackButton: ComposableFC;
-    Divider: ComposableFC;
+type ComposableFCWithChildren = ComposableFC<React.PropsWithChildren<unknown>>;
+
+type EditorBar = ComposableFCWithChildren & {
+    LeftSection: ComposableFCWithChildren;
+    CenterSection: ComposableFCWithChildren;
+    RightSection: ComposableFCWithChildren;
+    BackButton: ComposableFCWithChildren;
+    Divider: ComposableFCWithChildren;
 };
 
 const ComposableEditorBar = makeComposable("EditorBar", () => {

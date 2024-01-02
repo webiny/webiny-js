@@ -39,7 +39,7 @@ type CreatePageTemplateDialogProps = {
 const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
     const [loading, setLoading] = useState(false);
     const submitForm = useCallback(
-        async data => {
+        async (data: any) => {
             setLoading(true);
             await onSubmit(data);
             setLoading(false);

@@ -76,6 +76,15 @@ const ElementsList = ({ groupPlugin, elements, renderDraggable, refresh }: Eleme
     );
 };
 
+interface RenderOverlayCb {
+    (
+        element: any,
+        onClick: ((event: React.MouseEvent<any, MouseEvent>) => any) | undefined,
+        label: string,
+        plugin: any
+    ): React.ReactNode;
+}
+
 const AddElement = () => {
     const handler = useEventActionHandler();
     const params = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
@@ -146,8 +155,8 @@ const AddElement = () => {
         el.classList.remove("pb-editor-dragging");
     }, []);
 
-    const renderOverlay = useCallback(
-        (element, onClick = null, label, plugin) => {
+    const renderOverlay = useCallback<RenderOverlayCb>(
+        (element, onClick, label, plugin) => {
             return (
                 <Styled.ElementPreview>
                     <Styled.Overlay>
@@ -170,7 +179,7 @@ const AddElement = () => {
         [enableDragOverlay, disableDragOverlay]
     );
 
-    const renderDraggable = useCallback(
+    const renderDraggable = useCallback<ElementsListProps["renderDraggable"]>(
         (element, plugin) => {
             const { elementType } = plugin;
 
@@ -236,7 +245,7 @@ const AddElement = () => {
                                           });
                                           setTimeout(deactivatePlugin, 20);
                                       }
-                                    : null,
+                                    : undefined,
                                 params ? "Click to Add" : "Drag to Add",
                                 plugin
                             )}

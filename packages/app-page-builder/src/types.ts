@@ -723,7 +723,7 @@ export enum DisplayMode {
 export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
-        displayMode: string;
+        displayMode: DisplayMode;
         toolTip: {
             title: string;
             subTitle: string;

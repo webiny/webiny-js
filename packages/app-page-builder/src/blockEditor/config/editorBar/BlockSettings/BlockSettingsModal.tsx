@@ -40,7 +40,7 @@ const BlockSettingsModal = () => {
         );
     };
 
-    const onSubmit = useCallback(formData => {
+    const onSubmit = useCallback((formData: Partial<BlockAtomType>) => {
         updateBlock({ blockCategory: formData.blockCategory });
         onClose();
     }, []);

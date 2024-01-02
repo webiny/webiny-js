@@ -42,9 +42,12 @@ const ImageSettings = ({
 
     const { getUpdateValue } = useUpdateHandlers({ element, dataNamespace: "data.image" });
 
-    const updateTitle = useCallback(value => getUpdateValue("title")(value), []);
-    const updateWidth = useCallback(value => getUpdateValue("width")(value), []);
-    const updateHeight = useCallback(value => getUpdateValue("height")(value), []);
+    const updateTitle = useCallback((value: string) => getUpdateValue("title")(value), []);
+    const updateWidth = useCallback((value: string | number) => getUpdateValue("width")(value), []);
+    const updateHeight = useCallback(
+        (value: string | number) => getUpdateValue("height")(value),
+        []
+    );
 
     return (
         <Accordion title={"Image"} defaultValue={defaultAccordionValue}>

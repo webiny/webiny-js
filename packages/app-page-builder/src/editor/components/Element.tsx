@@ -78,7 +78,7 @@ const ElementComponent = ({ id: elementId, className = "", isActive }: ElementPr
     }, [elementId, isActive]);
 
     const onMouseOver = useCallback(
-        (ev): void => {
+        (ev: React.MouseEvent): void => {
             if (!element || element.type === "document") {
                 return;
             }

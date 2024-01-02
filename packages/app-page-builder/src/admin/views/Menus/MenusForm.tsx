@@ -92,7 +92,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: any) => {
             const isUpdate = loadedMenu.slug;
             const data = pick(formData, ["slug", "title", "description", "items"]);
             const [operation, args] = isUpdate

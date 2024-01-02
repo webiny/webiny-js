@@ -50,7 +50,7 @@ const PBInstaller = ({ onInstalled }: PbInstallerProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const onSubmit = useCallback(async form => {
+    const onSubmit = useCallback(async (form: any) => {
         setLoading(true);
         setError(null);
 

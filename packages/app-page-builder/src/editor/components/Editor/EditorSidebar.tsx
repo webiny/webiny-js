@@ -46,7 +46,7 @@ export const EditorSidebar = React.memo(() => {
     const [element] = useActiveElement();
     const [sidebar, setSidebar] = useElementSidebar();
 
-    const setActiveTabIndex = useCallback(index => {
+    const setActiveTabIndex = useCallback((index: number) => {
         setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
     }, []);
 

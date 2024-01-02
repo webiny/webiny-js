@@ -73,14 +73,14 @@ const PageBuilderBlockCategoriesDataList = ({
     });
 
     const filterData = useCallback(
-        ({ slug, name }) => {
+        ({ slug, name }: PbBlockCategory) => {
             return slug.toLowerCase().includes(filter) || name.toLowerCase().includes(filter);
         },
         [filter]
     );
 
     const sortData = useCallback(
-        categories => {
+        (categories: PbBlockCategory[]) => {
             if (!sort) {
                 return categories;
             }
@@ -96,7 +96,7 @@ const PageBuilderBlockCategoriesDataList = ({
     const slug = new URLSearchParams(location.search).get("slug");
 
     const deleteItem = useCallback(
-        item => {
+        (item: PbBlockCategory) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item

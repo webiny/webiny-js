@@ -9,7 +9,7 @@ import {
     PbEditorPageElementVariableRendererPlugin
 } from "~/types";
 
-export const createBlockReference = (name: string): PbEditorElement => {
+export const createBlockReference = (name?: string): PbEditorElement => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);

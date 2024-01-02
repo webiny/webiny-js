@@ -101,14 +101,14 @@ const PageTemplatesDataList = ({
         listQuery?.data?.pageBuilder?.listPageTemplates?.data || [];
 
     const filterData = useCallback(
-        ({ title }) => {
+        ({ title }: PbPageTemplate) => {
             return title.toLowerCase().includes(filter);
         },
         [filter]
     );
 
     const sortData = useCallback(
-        templates => {
+        (templates: PbPageTemplate[]) => {
             if (!sort) {
                 return templates;
             }

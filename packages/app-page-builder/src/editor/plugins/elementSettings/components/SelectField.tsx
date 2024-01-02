@@ -61,7 +61,6 @@ const SelectField = ({
     return (
         <React.Fragment>
             <select
-                placeholder={placeholder}
                 className={classNames(selectStyle, className)}
                 value={value}
                 onChange={({ target: { value } }) => {
