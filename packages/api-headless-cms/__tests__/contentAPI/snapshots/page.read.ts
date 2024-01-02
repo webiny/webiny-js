@@ -7,30 +7,15 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime!
+        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime!
+        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity!
+        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
-        revisionCreatedOn: DateTime!
-        revisionSavedOn: DateTime!
-        revisionModifiedOn: DateTime
-        revisionFirstPublishedOn: DateTime
-        revisionLastPublishedOn: DateTime
-        revisionCreatedBy: CmsIdentity!
-        revisionSavedBy: CmsIdentity!
-        revisionModifiedBy: CmsIdentity
-        revisionFirstPublishedBy: CmsIdentity
-        revisionLastPublishedBy: CmsIdentity
-        entryCreatedOn: DateTime!
-        entrySavedOn: DateTime!
-        entryModifiedOn: DateTime
-        entryFirstPublishedOn: DateTime
-        entryLastPublishedOn: DateTime
-        entryCreatedBy: CmsIdentity!
-        entrySavedBy: CmsIdentity!
-        entryModifiedBy: CmsIdentity
-        entryFirstPublishedBy: CmsIdentity
-        entryLastPublishedBy: CmsIdentity
+
+        meta: PageModelApiNameMeta
 
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
@@ -42,7 +27,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content =
-          PageModelApiName_Content_Hero
+        PageModelApiName_Content_Hero
         | PageModelApiName_Content_SimpleText
         | PageModelApiName_Content_Objecting
         | PageModelApiName_Content_Author
@@ -89,7 +74,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Content_Objecting_DynamicZone =
-          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
+        PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
 
     type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         authors(populate: Boolean = true): [AuthorApiModel!]
@@ -106,7 +91,7 @@ export default /* GraphQL */ `
     }
 
     union PageModelApiName_Header =
-          PageModelApiName_Header_TextHeader
+        PageModelApiName_Header_TextHeader
         | PageModelApiName_Header_ImageHeader
 
     type PageModelApiName_Header_TextHeader {
@@ -184,49 +169,36 @@ export default /* GraphQL */ `
         _empty: String
     }
 
+    type PageModelApiNameMeta {
+        revisionCreatedOn: DateTime!
+        revisionSavedOn: DateTime!
+        revisionModifiedOn: DateTime
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentity!
+        revisionSavedBy: CmsIdentity!
+        revisionModifiedBy: CmsIdentity
+        revisionFirstPublishedBy: CmsIdentity
+        revisionLastPublishedBy: CmsIdentity
+        entryCreatedOn: DateTime!
+        entrySavedOn: DateTime!
+        entryModifiedOn: DateTime
+        entryFirstPublishedOn: DateTime
+        entryLastPublishedOn: DateTime
+        entryCreatedBy: CmsIdentity!
+        entrySavedBy: CmsIdentity!
+        entryModifiedBy: CmsIdentity
+        entryFirstPublishedBy: CmsIdentity
+        entryLastPublishedBy: CmsIdentity
+        status: String
+    }
+
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
     }
 
-    input PageModelApiNameListWhereInput {
-        id: ID
-        id_not: ID
-        id_in: [ID!]
-        id_not_in: [ID!]
-        entryId: String
-        entryId_not: String
-        entryId_in: [String!]
-        entryId_not_in: [String!]
-        createdOn: DateTime
-        createdOn_gt: DateTime
-        createdOn_gte: DateTime
-        createdOn_lt: DateTime
-        createdOn_lte: DateTime
-        createdOn_between: [DateTime!]
-        createdOn_not_between: [DateTime!]
-        savedOn: DateTime
-        savedOn_gt: DateTime
-        savedOn_gte: DateTime
-        savedOn_lt: DateTime
-        savedOn_lte: DateTime
-        savedOn_between: [DateTime!]
-        savedOn_not_between: [DateTime!]
-        publishedOn: DateTime
-        publishedOn_gt: DateTime
-        publishedOn_gte: DateTime
-        publishedOn_lt: DateTime
-        publishedOn_lte: DateTime
-        publishedOn_between: [DateTime!]
-        publishedOn_not_between: [DateTime!]
-        createdBy: String
-        createdBy_not: String
-        createdBy_in: [String!]
-        createdBy_not_in: [String!]
-        ownedBy: String
-        ownedBy_not: String
-        ownedBy_in: [String!]
-        ownedBy_not_in: [String!]
+    input PageModelApiNameListWhereMetaInput {
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -337,7 +309,48 @@ export default /* GraphQL */ `
         entryLastPublishedBy_not: ID
         entryLastPublishedBy_in: [ID!]
         entryLastPublishedBy_not_in: [ID!]
+    }
+
+    input PageModelApiNameListWhereInput {
+        id: ID
+        id_not: ID
+        id_in: [ID!]
+        id_not_in: [ID!]
+        entryId: String
+        entryId_not: String
+        entryId_in: [String!]
+        entryId_not_in: [String!]
+        createdOn: DateTime
+        createdOn_gt: DateTime
+        createdOn_gte: DateTime
+        createdOn_lt: DateTime
+        createdOn_lte: DateTime
+        createdOn_between: [DateTime!]
+        createdOn_not_between: [DateTime!]
+        savedOn: DateTime
+        savedOn_gt: DateTime
+        savedOn_gte: DateTime
+        savedOn_lt: DateTime
+        savedOn_lte: DateTime
+        savedOn_between: [DateTime!]
+        savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
+        createdBy: String
+        createdBy_not: String
+        createdBy_in: [String!]
+        createdBy_not_in: [String!]
+        ownedBy: String
+        ownedBy_not: String
+        ownedBy_in: [String!]
+        ownedBy_not_in: [String!]
         ghostObject: PageModelApiName_GhostObjectWhereInput
+        meta: PageModelApiNameListWhereMetaInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }
@@ -383,7 +396,9 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getPageModelApiName(where: PageModelApiNameGetWhereInput!): PageModelApiNameResponse
+        getPageModelApiName(
+            where: PageModelApiNameGetWhereInput!
+        ): PageModelApiNameResponse
 
         listPagesModelApiName(
             where: PageModelApiNameListWhereInput

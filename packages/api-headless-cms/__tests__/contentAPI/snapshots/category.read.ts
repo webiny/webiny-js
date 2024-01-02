@@ -7,10 +7,21 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime!
+        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime!
+        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity!
+        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
+
+        meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
+
+        title: String
+        slug: String
+    }
+
+    type CategoryApiNameWhichIsABitDifferentThanModelIdMeta {
         revisionCreatedOn: DateTime!
         revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
@@ -31,9 +42,7 @@ export default /* GraphQL */ `
         entryModifiedBy: CmsIdentity
         entryFirstPublishedBy: CmsIdentity
         entryLastPublishedBy: CmsIdentity
-
-        title: String
-        slug: String
+        status: String
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
@@ -43,44 +52,7 @@ export default /* GraphQL */ `
         slug: String
     }
 
-    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
-        id: ID
-        id_not: ID
-        id_in: [ID!]
-        id_not_in: [ID!]
-        entryId: String
-        entryId_not: String
-        entryId_in: [String!]
-        entryId_not_in: [String!]
-        createdOn: DateTime
-        createdOn_gt: DateTime
-        createdOn_gte: DateTime
-        createdOn_lt: DateTime
-        createdOn_lte: DateTime
-        createdOn_between: [DateTime!]
-        createdOn_not_between: [DateTime!]
-        savedOn: DateTime
-        savedOn_gt: DateTime
-        savedOn_gte: DateTime
-        savedOn_lt: DateTime
-        savedOn_lte: DateTime
-        savedOn_between: [DateTime!]
-        savedOn_not_between: [DateTime!]
-        publishedOn: DateTime
-        publishedOn_gt: DateTime
-        publishedOn_gte: DateTime
-        publishedOn_lt: DateTime
-        publishedOn_lte: DateTime
-        publishedOn_between: [DateTime!]
-        publishedOn_not_between: [DateTime!]
-        createdBy: String
-        createdBy_not: String
-        createdBy_in: [String!]
-        createdBy_not_in: [String!]
-        ownedBy: String
-        ownedBy_not: String
-        ownedBy_in: [String!]
-        ownedBy_not_in: [String!]
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereMetaInput {
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -191,6 +163,46 @@ export default /* GraphQL */ `
         entryLastPublishedBy_not: ID
         entryLastPublishedBy_in: [ID!]
         entryLastPublishedBy_not_in: [ID!]
+    }
+
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
+        id: ID
+        id_not: ID
+        id_in: [ID!]
+        id_not_in: [ID!]
+        entryId: String
+        entryId_not: String
+        entryId_in: [String!]
+        entryId_not_in: [String!]
+        createdOn: DateTime
+        createdOn_gt: DateTime
+        createdOn_gte: DateTime
+        createdOn_lt: DateTime
+        createdOn_lte: DateTime
+        createdOn_between: [DateTime!]
+        createdOn_not_between: [DateTime!]
+        savedOn: DateTime
+        savedOn_gt: DateTime
+        savedOn_gte: DateTime
+        savedOn_lt: DateTime
+        savedOn_lte: DateTime
+        savedOn_between: [DateTime!]
+        savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
+        createdBy: String
+        createdBy_not: String
+        createdBy_in: [String!]
+        createdBy_not_in: [String!]
+        ownedBy: String
+        ownedBy_not: String
+        ownedBy_in: [String!]
+        ownedBy_not_in: [String!]
 
         title: String
         title_not: String
@@ -210,6 +222,7 @@ export default /* GraphQL */ `
         slug_startsWith: String
         slug_not_startsWith: String
 
+        meta: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereMetaInput
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
     }
