@@ -12,6 +12,25 @@ export default /* GraphQL */ `
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")
         modifiedBy: CmsIdentity
             @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+
+        meta: PageModelApiNameMeta
+        content: [PageModelApiName_Content!]
+        header: PageModelApiName_Header
+        objective: PageModelApiName_Objective
+        reference: PageModelApiName_Reference
+        references1: PageModelApiName_References1
+        references2: [PageModelApiName_References2!]
+        ghostObject: PageModelApiName_GhostObject
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
+    }
+
+    type PageModelApiNameMeta {
+        modelId: String
+        version: Int
+        locked: Boolean
+        publishedOn: DateTime
+
         revisionCreatedOn: DateTime!
         revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
@@ -32,24 +51,6 @@ export default /* GraphQL */ `
         entryModifiedBy: CmsIdentity
         entryFirstPublishedBy: CmsIdentity
         entryLastPublishedBy: CmsIdentity
-
-        meta: PageModelApiNameMeta
-        content: [PageModelApiName_Content!]
-        header: PageModelApiName_Header
-        objective: PageModelApiName_Objective
-        reference: PageModelApiName_Reference
-        references1: PageModelApiName_References1
-        references2: [PageModelApiName_References2!]
-        ghostObject: PageModelApiName_GhostObject
-        # Advanced Content Organization - make required in 5.38.0
-        wbyAco_location: WbyAcoLocation
-    }
-
-    type PageModelApiNameMeta {
-        modelId: String
-        version: Int
-        locked: Boolean
-        publishedOn: DateTime
 
         status: String
         """
@@ -355,6 +356,31 @@ export default /* GraphQL */ `
         _empty: String
     }
 
+    input PageModelApiNameMetaInput {
+        status: String
+
+        revisionCreatedOn: DateTime
+        revisionSavedOn: DateTime
+        revisionModifiedOn: DateTime
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentityInput
+        revisionSavedBy: CmsIdentityInput
+        revisionModifiedBy: CmsIdentityInput
+        revisionFirstPublishedBy: CmsIdentityInput
+        revisionLastPublishedBy: CmsIdentityInput
+        entryCreatedOn: DateTime
+        entrySavedOn: DateTime
+        entryModifiedOn: DateTime
+        entryFirstPublishedOn: DateTime
+        entryLastPublishedOn: DateTime
+        entryCreatedBy: CmsIdentityInput
+        entrySavedBy: CmsIdentityInput
+        entryModifiedBy: CmsIdentityInput
+        entryFirstPublishedBy: CmsIdentityInput
+        entryLastPublishedBy: CmsIdentityInput
+    }
+
     input PageModelApiNameInput {
         id: ID
 
@@ -382,6 +408,25 @@ export default /* GraphQL */ `
         # Set a different identity as the owner of the entry.
         ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
 
+        wbyAco_location: WbyAcoLocationInput
+
+        meta: PageModelApiNameMetaInput
+
+        content: [PageModelApiName_ContentInput]
+        header: PageModelApiName_HeaderInput
+        objective: PageModelApiName_ObjectiveInput
+        reference: PageModelApiName_ReferenceInput
+        references1: PageModelApiName_References1Input
+        references2: [PageModelApiName_References2Input]
+        ghostObject: PageModelApiName_GhostObjectInput
+    }
+
+    input PageModelApiNameGetWhereInput {
+        id: ID
+        entryId: String
+    }
+
+    input PageModelApiNameMetaWhereInput {
         revisionCreatedOn: DateTime
         revisionSavedOn: DateTime
         revisionModifiedOn: DateTime
@@ -402,62 +447,9 @@ export default /* GraphQL */ `
         entryModifiedBy: CmsIdentityInput
         entryFirstPublishedBy: CmsIdentityInput
         entryLastPublishedBy: CmsIdentityInput
-
-        wbyAco_location: WbyAcoLocationInput
-
-        content: [PageModelApiName_ContentInput]
-        header: PageModelApiName_HeaderInput
-        objective: PageModelApiName_ObjectiveInput
-        reference: PageModelApiName_ReferenceInput
-        references1: PageModelApiName_References1Input
-        references2: [PageModelApiName_References2Input]
-        ghostObject: PageModelApiName_GhostObjectInput
     }
 
-    input PageModelApiNameGetWhereInput {
-        id: ID
-        entryId: String
-    }
-
-    input PageModelApiNameListWhereInput {
-        wbyAco_location: WbyAcoLocationWhereInput
-        id: ID
-        id_not: ID
-        id_in: [ID!]
-        id_not_in: [ID!]
-        entryId: String
-        entryId_not: String
-        entryId_in: [String!]
-        entryId_not_in: [String!]
-        createdOn: DateTime
-        createdOn_gt: DateTime
-        createdOn_gte: DateTime
-        createdOn_lt: DateTime
-        createdOn_lte: DateTime
-        createdOn_between: [DateTime!]
-        createdOn_not_between: [DateTime!]
-        savedOn: DateTime
-        savedOn_gt: DateTime
-        savedOn_gte: DateTime
-        savedOn_lt: DateTime
-        savedOn_lte: DateTime
-        savedOn_between: [DateTime!]
-        savedOn_not_between: [DateTime!]
-        publishedOn: DateTime
-        publishedOn_gt: DateTime
-        publishedOn_gte: DateTime
-        publishedOn_lt: DateTime
-        publishedOn_lte: DateTime
-        publishedOn_between: [DateTime!]
-        publishedOn_not_between: [DateTime!]
-        createdBy: String
-        createdBy_not: String
-        createdBy_in: [String!]
-        createdBy_not_in: [String!]
-        ownedBy: String
-        ownedBy_not: String
-        ownedBy_in: [String!]
-        ownedBy_not_in: [String!]
+    input PageModelApiNameListWhereMetaInput {
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -568,11 +560,53 @@ export default /* GraphQL */ `
         entryLastPublishedBy_not: ID
         entryLastPublishedBy_in: [ID!]
         entryLastPublishedBy_not_in: [ID!]
+    }
+
+    input PageModelApiNameListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
+        id: ID
+        id_not: ID
+        id_in: [ID!]
+        id_not_in: [ID!]
+        entryId: String
+        entryId_not: String
+        entryId_in: [String!]
+        entryId_not_in: [String!]
+        createdOn: DateTime
+        createdOn_gt: DateTime
+        createdOn_gte: DateTime
+        createdOn_lt: DateTime
+        createdOn_lte: DateTime
+        createdOn_between: [DateTime!]
+        createdOn_not_between: [DateTime!]
+        savedOn: DateTime
+        savedOn_gt: DateTime
+        savedOn_gte: DateTime
+        savedOn_lt: DateTime
+        savedOn_lte: DateTime
+        savedOn_between: [DateTime!]
+        savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
+        createdBy: String
+        createdBy_not: String
+        createdBy_in: [String!]
+        createdBy_not_in: [String!]
+        ownedBy: String
+        ownedBy_not: String
+        ownedBy_in: [String!]
+        ownedBy_not_in: [String!]
         status: String
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
         ghostObject: PageModelApiName_GhostObjectWhereInput
+        meta: PageModelApiNameListWhereMetaInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }
@@ -605,26 +639,26 @@ export default /* GraphQL */ `
         savedOn_DESC
         createdOn_ASC
         createdOn_DESC
-        revisionCreatedOn_ASC
-        revisionCreatedOn_DESC
-        revisionSavedOn_ASC
-        revisionSavedOn_DESC
-        revisionModifiedOn_ASC
-        revisionModifiedOn_DESC
-        revisionFirstPublishedOn_ASC
-        revisionFirstPublishedOn_DESC
-        revisionLastPublishedOn_ASC
-        revisionLastPublishedOn_DESC
-        entryCreatedOn_ASC
-        entryCreatedOn_DESC
-        entrySavedOn_ASC
-        entrySavedOn_DESC
-        entryModifiedOn_ASC
-        entryModifiedOn_DESC
-        entryFirstPublishedOn_ASC
-        entryFirstPublishedOn_DESC
-        entryLastPublishedOn_ASC
-        entryLastPublishedOn_DESC
+        metaRevisionCreatedOn_ASC
+        metaRevisionCreatedOn_DESC
+        metaRevisionSavedOn_ASC
+        metaRevisionSavedOn_DESC
+        metaRevisionModifiedOn_ASC
+        metaRevisionModifiedOn_DESC
+        metaRevisionFirstPublishedOn_ASC
+        metaRevisionFirstPublishedOn_DESC
+        metaRevisionLastPublishedOn_ASC
+        metaRevisionLastPublishedOn_DESC
+        metaEntryCreatedOn_ASC
+        metaEntryCreatedOn_DESC
+        metaEntrySavedOn_ASC
+        metaEntrySavedOn_DESC
+        metaEntryModifiedOn_ASC
+        metaEntryModifiedOn_DESC
+        metaEntryFirstPublishedOn_ASC
+        metaEntryFirstPublishedOn_DESC
+        metaEntryLastPublishedOn_ASC
+        metaEntryLastPublishedOn_DESC
     }
 
     extend type Query {

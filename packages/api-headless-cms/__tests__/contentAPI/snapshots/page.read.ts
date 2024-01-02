@@ -349,26 +349,26 @@ export default /* GraphQL */ `
         savedOn_DESC
         createdOn_ASC
         createdOn_DESC
-        revisionCreatedOn_ASC
-        revisionCreatedOn_DESC
-        revisionSavedOn_ASC
-        revisionSavedOn_DESC
-        revisionModifiedOn_ASC
-        revisionModifiedOn_DESC
-        revisionFirstPublishedOn_ASC
-        revisionFirstPublishedOn_DESC
-        revisionLastPublishedOn_ASC
-        revisionLastPublishedOn_DESC
-        entryCreatedOn_ASC
-        entryCreatedOn_DESC
-        entrySavedOn_ASC
-        entrySavedOn_DESC
-        entryModifiedOn_ASC
-        entryModifiedOn_DESC
-        entryFirstPublishedOn_ASC
-        entryFirstPublishedOn_DESC
-        entryLastPublishedOn_ASC
-        entryLastPublishedOn_DESC
+        metaRevisionCreatedOn_ASC
+        metaRevisionCreatedOn_DESC
+        metaRevisionSavedOn_ASC
+        metaRevisionSavedOn_DESC
+        metaRevisionModifiedOn_ASC
+        metaRevisionModifiedOn_DESC
+        metaRevisionFirstPublishedOn_ASC
+        metaRevisionFirstPublishedOn_DESC
+        metaRevisionLastPublishedOn_ASC
+        metaRevisionLastPublishedOn_DESC
+        metaEntryCreatedOn_ASC
+        metaEntryCreatedOn_DESC
+        metaEntrySavedOn_ASC
+        metaEntrySavedOn_DESC
+        metaEntryModifiedOn_ASC
+        metaEntryModifiedOn_DESC
+        metaEntryFirstPublishedOn_ASC
+        metaEntryFirstPublishedOn_DESC
+        metaEntryLastPublishedOn_ASC
+        metaEntryLastPublishedOn_DESC
     }
 
     type PageModelApiNameResponse {
