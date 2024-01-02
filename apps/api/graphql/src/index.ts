@@ -68,6 +68,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -99,7 +100,6 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createBackgroundTasks(),
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
