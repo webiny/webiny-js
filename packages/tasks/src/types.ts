@@ -11,6 +11,9 @@ import { ITaskManagerStore } from "./runner/abstractions";
 import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
 
+export * from "./response/abstractions";
+export * from "./runner/abstractions";
+
 export interface ITaskConfig {
     readonly eventBusName: string;
 }
