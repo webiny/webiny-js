@@ -862,6 +862,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdOn: string;
     createdBy: PbIdentity;
 }
 
@@ -992,6 +993,10 @@ export interface PageBuilderFormDataSettings {
 }
 
 export interface PageBuilderSecurityPermission extends SecurityPermission {
+    accessLevel?: string;
+    settingsAccessLevel?: string;
+    templateUnlink?: boolean;
+    blockUnlink?: boolean;
     own?: boolean;
     rwd?: string;
     pw?: string | boolean;

@@ -71,7 +71,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     const { showConfirmation } = useConfirmationDialog();
 
     const filterMenus = useCallback(
-        ({ title, slug, description }: any) => {
+        ({ title, slug, description }: PbMenu) => {
             return (
                 title.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
@@ -82,7 +82,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     );
 
     const sortMenus = useCallback(
-        (menus: any) => {
+        (menus: PbMenu[]) => {
             if (!sort) {
                 return menus;
             }

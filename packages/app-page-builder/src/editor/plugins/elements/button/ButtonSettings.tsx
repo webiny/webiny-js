@@ -75,9 +75,12 @@ const ButtonSettings = ({
         postModifyElement: updateButtonElementIcon
     });
 
-    const updateType = useCallback((value: any) => getUpdateValue("type")(value), [getUpdateValue]);
+    const updateType = useCallback(
+        (value: string) => getUpdateValue("type")(value),
+        [getUpdateValue]
+    );
     const updateIcon = useCallback(
-        (value: PbIcon) => getUpdateValue("icon.id")(value?.id),
+        (value: PbIcon) => getUpdateValue("icon.id")(value.id),
         [getUpdateValue]
     );
     const updateIconColor = useCallback(

@@ -52,7 +52,7 @@ const ExportTemplateLoadingDialogContent = ({ taskId }: ExportTemplateLoadingDia
 
     const pollExportTemplateTaskStatus = useCallback(
         (response: GetTemplateImportExportTaskResponse) => {
-            const { error, data } = response?.pageBuilder.getImportExportTask || {};
+            const { error, data } = response.pageBuilder.getImportExportTask || {};
             if (error) {
                 showSnackbar(error.message);
                 return;

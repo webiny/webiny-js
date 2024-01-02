@@ -48,7 +48,7 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
     });
 
     const pollExportPageTaskStatus = useCallback((response: GetPageImportExportSubTaskResponse) => {
-        const { error, data } = response?.pageBuilder.getImportExportTask || {};
+        const { error, data } = response.pageBuilder.getImportExportTask || {};
         if (error) {
             showSnackbar(error.message);
             return;
