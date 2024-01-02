@@ -37,5 +37,5 @@ export interface ITaskManagerStore<T extends ITaskDataValues = ITaskDataValues> 
      */
     updateValues: (param: ITaskManagerStoreUpdateTaskValuesParam<T>) => Promise<void>;
     getValues: () => T;
-    addLog: (log: ITaskDataLog) => Promise<void>;
+    addLog: (log: Omit<ITaskDataLog, "createdOn">) => Promise<void>;
 }
