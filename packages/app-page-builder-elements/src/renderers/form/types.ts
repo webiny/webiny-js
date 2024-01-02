@@ -99,8 +99,8 @@ export interface ErrorResponse {
 }
 
 export type FormLayoutComponentProps<T = any> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
+    getFieldById: (id: string) => FormDataField | null;
+    getFieldByFieldId: (id: string) => FormDataField | null;
     getFields: (stepIndex?: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
@@ -128,15 +128,15 @@ export interface ReCaptchaChildrenFunction {
 export type ReCaptchaProps = {
     children?: React.ReactNode | ReCaptchaChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any[]) => void;
+    onExpired?: (...args: any[]) => void;
 };
 
-export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
+export type ReCaptchaComponent = React.ComponentType<ReCaptchaProps>;
 
 export type TermsOfServiceChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: String;
+    errorMessage: string;
     // Should be `OutputBlockData` from `@editorjs/editorjs`, but didn't want to introduce an extra dependency.
     message: any;
 }) => React.ReactNode;
@@ -144,11 +144,11 @@ export type TermsOfServiceChildrenFunction = (params: {
 export interface TermsOfServiceProps {
     children: TermsOfServiceChildrenFunction;
     onChange?: (value: string) => void;
-    onErrored?: Function;
-    onExpired?: Function;
+    onErrored?: (...args: any[]) => void;
+    onExpired?: (...args: any[]) => void;
 }
 
-export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
+export type TermsOfServiceComponent = React.ComponentType<TermsOfServiceProps>;
 
 export type FormSubmissionFieldValues = Record<string, any>;
 
@@ -208,7 +208,7 @@ export interface CreateFormParams {
         | (() => CreateFormParamsFormLayoutComponent[]);
     fieldValidators?: CreateFormParamsValidator[] | (() => CreateFormParamsValidator[]);
     triggers?: CreateFormParamsTrigger[] | (() => CreateFormParamsTrigger[]);
-    renderFormNotSelected?: React.VFC;
-    renderFormLoading?: React.VFC;
-    renderFormNotFound?: React.VFC;
+    renderFormNotSelected?: React.FC;
+    renderFormLoading?: React.FC;
+    renderFormNotFound?: React.FC;
 }

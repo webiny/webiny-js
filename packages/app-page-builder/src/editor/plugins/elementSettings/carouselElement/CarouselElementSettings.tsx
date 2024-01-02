@@ -13,9 +13,9 @@ import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from
 
 const DATA_NAMESPACE = "data.settings.carouselElement";
 
-const CarouselElementSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const CarouselElementSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
     const { getUpdateValue } = useUpdateHandlers({
         element,

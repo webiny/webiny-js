@@ -19,7 +19,7 @@ interface PbElementControlsOverlayBorderProps {
 }
 
 const ElementControlsOverlayBorder = styled((props: PbElementControlsOverlayBorderProps) => {
-    // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+    // @ts-expect-error Not supported by `React.HTMLProps<HTMLDivElement>`.
     return <pb-eco-border data-type={props.type} class={props.className} />;
 })((props: PbElementControlsOverlayBorderProps) => {
     const { placement, zIndex, color } = props;
@@ -46,7 +46,7 @@ interface Props {
     zIndex: number;
 }
 
-export const ElementControlsOverlayBorders: React.FC<Props> = props => {
+export const ElementControlsOverlayBorders = (props: Props) => {
     return (
         <>
             <ElementControlsOverlayBorder placement={"top"} {...props} />

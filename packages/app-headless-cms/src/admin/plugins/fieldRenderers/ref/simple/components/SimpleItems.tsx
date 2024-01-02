@@ -33,7 +33,7 @@ interface ItemProps {
     onChange: (checked?: boolean) => void;
 }
 
-const Item: React.VFC<ItemProps> = props => {
+const Item = (props: ItemProps) => {
     const { multiple, value, item, onChange } = props;
     if (!multiple) {
         return <Radio value={value} onChange={onChange} label={item.title} />;
@@ -41,7 +41,7 @@ const Item: React.VFC<ItemProps> = props => {
     return <Checkbox value={value} onChange={onChange} label={item.title} />;
 };
 
-interface Props {
+interface SimpleItemsProps {
     multiple?: boolean;
     field: CmsModelField;
     items?: CmsReferenceContentEntry[];
@@ -50,7 +50,7 @@ interface Props {
     removeItem: (params: RemoveItemParams) => void;
 }
 
-export const SimpleItems: React.VFC<Props> = props => {
+export const SimpleItems = (props: SimpleItemsProps) => {
     const { field, items, values, addItem, removeItem, multiple } = props;
 
     const onChange = useCallback(

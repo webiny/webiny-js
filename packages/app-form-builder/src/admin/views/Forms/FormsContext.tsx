@@ -67,7 +67,11 @@ export interface FormContextProvider {
     listQuery: QueryResult<ListFormsQueryResponse>;
 }
 
-export const FormsProvider: React.FC = ({ children }) => {
+interface FormsProviderProps {
+    children: React.ReactNode;
+}
+
+export const FormsProvider = ({ children }: FormsProviderProps) => {
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
     const { canCreate } = usePermission();

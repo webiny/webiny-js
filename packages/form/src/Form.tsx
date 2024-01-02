@@ -151,7 +151,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         if (!onChangeFns.current[name]) {
             const linkStateChange = (
                 value: unknown,
-                inlineCallback: Function = lodashNoop
+                inlineCallback: (value?: any) => void = lodashNoop
             ): Promise<unknown> => {
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
@@ -437,7 +437,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
-            // @ts-ignore
+            // @ts-expect-error
             e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();

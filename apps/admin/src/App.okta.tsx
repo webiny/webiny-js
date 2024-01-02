@@ -5,7 +5,7 @@ import "./App.scss";
 
 import { oktaFactory, rootAppClientId } from "./okta";
 
-export const App: React.FC = () => {
+export const App = () => {
     return (
         <Admin>
             <Okta factory={oktaFactory} rootAppClientId={rootAppClientId} />

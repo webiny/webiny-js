@@ -11,49 +11,42 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
 
+export type DropTargetType = "field" | "row" | "conditionGroup" | "step";
+
 export interface DropTarget {
-    /*
-        Contains info about the Element that we are dragging.
-    */
-    type: "field" | "row" | "conditionGroup" | "step";
-    /*
-        Property "id" is optional,
-        because when we move row it does not have an id.
-    */
+    // Contains info about the Element that we are dragging.
+    type: DropTargetType;
+    // Property "id" is optional because when we move row it does not have an id.
     id?: string;
     name: string;
 }
 
+export type DropPosition = {
+    row: number;
+    // Property "index" can be null in case we move row.
+    index: number | null;
+};
+
+export type ContainerType = "step" | "conditionGroup";
+
+export type Container = {
+    type: ContainerType;
+    id: string;
+};
+
 export interface DropSource {
-    /*
-        Contains info about the Container from which we are dragging an element or elements.
-        containerId and containerType could be undefined in case we are creating a custom field.
-    */
+    // Contains info about the Container from which we are dragging an element or elements.
+    // containerId and containerType could be undefined in case we are creating a custom field.
     containerId?: string;
-    containerType?: "step" | "conditionGroup";
-    position: {
-        row: number;
-        /*
-            Property "index" can be null in case we move row.
-        */
-        index: number | null;
-    };
+    containerType?: ContainerType;
+    position: DropPosition;
 }
 
 export interface DropDestination {
-    /*
-        Contains info about the Container,
-        in which we are dropping an element or elements.
-    */
+    // Contains info about the Container in which we are dropping an element or elements.
     containerId: string;
-    containerType: "step" | "conditionGroup";
-    position: {
-        row: number;
-        /*
-            Property "index" can be null in case we move row.
-        */
-        index: number | null;
-    };
+    containerType: ContainerType;
+    position: DropPosition;
 }
 
 export interface FbErrorResponse {
@@ -73,25 +66,26 @@ export interface FbBuilderFieldValidator {
     message: string;
     settings: any;
 }
-
+export interface FbBuilderFormFieldValidatorPluginValidator {
+    name: string;
+    label: string;
+    description: string;
+    defaultMessage: string;
+    defaultSettings?: Record<string, any>;
+    renderSettings?: (props: {
+        Bind: BindComponent;
+        setValue: (name: string, value: any) => void;
+        setMessage: (message: string) => void;
+        data: FbBuilderFieldValidator;
+        // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
+        formFieldData?: {
+            [key: string]: any;
+        };
+    }) => React.ReactElement;
+}
 export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     type: "form-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        renderSettings?: (props: {
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: FbBuilderFieldValidator;
-            // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
-            formFieldData?: {
-                [key: string]: any;
-            };
-        }) => React.ReactElement;
-    };
+    validator: FbBuilderFormFieldValidatorPluginValidator;
 };
 
 export type FbBuilderFormFieldPatternValidatorPlugin = Plugin & {
@@ -175,39 +169,7 @@ export type FbFormCondition = {
 };
 
 export interface MoveStepParams {
-    target: {
-        containerId: string;
-        position: {
-            row: number;
-            index: number | null;
-        };
-    };
-    destination: {
-        containerId: string;
-    };
-}
-
-export interface MoveStepParams {
-    target: {
-        containerId: string;
-        position: {
-            row: number;
-            index: number | null;
-        };
-    };
-    destination: {
-        containerId: string;
-    };
-}
-
-export interface MoveStepParams {
-    target: {
-        containerId: string;
-        position: {
-            row: number;
-            index: number | null;
-        };
-    };
+    source: Omit<DropSource, "containerType">;
     destination: {
         containerId: string;
     };
@@ -395,8 +357,8 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 };
 
 export type FormRenderPropsType<T = Record<string, any>> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
+    getFieldById: (id: string) => FbFormModelField | null;
+    getFieldByFieldId: (id: string) => FbFormModelField | null;
     getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;

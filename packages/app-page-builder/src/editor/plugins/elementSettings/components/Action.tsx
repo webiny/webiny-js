@@ -17,6 +17,7 @@ const activeStyle = css({
 });
 
 interface ActionProps {
+    disabled?: boolean;
     plugin?: string;
     icon?: ReactElement;
     tooltip?: string;
@@ -26,14 +27,15 @@ interface ActionProps {
     "data-testid"?: string;
 }
 
-const Action: React.FC<ActionProps> = ({
+const Action = ({
     plugin,
     icon,
     tooltip,
     onClick,
     shortcut = [],
+    disabled = false,
     ...props
-}) => {
+}: ActionProps) => {
     const eventActionHandler = useEventActionHandler();
     const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin as string));
     const settingsActive =
@@ -82,6 +84,7 @@ const Action: React.FC<ActionProps> = ({
             {...(isPluginActive ? { visible: false } : {})}
         >
             <IconButton
+                disabled={disabled}
                 icon={icon}
                 onClick={clickHandler}
                 className={isPluginActive ? activeStyle : ""}

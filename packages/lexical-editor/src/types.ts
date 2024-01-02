@@ -6,7 +6,7 @@ export type ImageActionType = "image-action";
 export type ToolbarActionType = ImageActionType | string;
 export interface ToolbarActionPlugin {
     targetAction: ToolbarActionType;
-    plugin: Record<string, any> | Function | undefined;
+    plugin: Record<string, any> | ((cb: (value: any) => void) => any) | undefined;
 }
 
 /* Commands payload types */

@@ -1,10 +1,7 @@
-import { CreateApwWorkflowParams } from "~/types";
+import { ApwWorkflow, CreateApwWorkflowParams } from "~/types";
 import { ApwStorageOperations, ApwWorkflowStorageOperations } from "./types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import WebinyError from "@webiny/error";
 import { WORKFLOW_MODEL_ID } from "~/storageOperations/models/workflow.model";
 
@@ -47,7 +44,7 @@ export const createWorkflowStorageOperations = (
         const entry = await security.withoutAuthorization(async () => {
             return cms.getEntryById(model, id);
         });
-        return getFieldValues(entry, baseFields);
+        return pickEntryFieldValues(entry);
     };
     return {
         getWorkflowModel,
@@ -63,7 +60,7 @@ export const createWorkflowStorageOperations = (
                     }
                 });
             });
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(pickEntryFieldValues<ApwWorkflow>), meta];
         },
         async createWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
@@ -75,7 +72,7 @@ export const createWorkflowStorageOperations = (
                 return cms.createEntry(model, data);
             });
 
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async updateWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
@@ -87,7 +84,8 @@ export const createWorkflowStorageOperations = (
             const existingEntry = await getWorkflow({ id: params.id });
             const input = {
                 ...existingEntry,
-                ...params.data
+                ...params.data,
+                savedOn: new Date()
             };
             const data = formatReviewersForRefInput(
                 input as CreateApwWorkflowParams,
@@ -98,7 +96,7 @@ export const createWorkflowStorageOperations = (
                 return cms.updateEntry(model, params.id, data);
             });
 
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async deleteWorkflow(params) {
             const model = await getWorkflowModel();

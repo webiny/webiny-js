@@ -2,15 +2,17 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwChangeRequestListParams, ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
+import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
-    typeDefs: /* GraphQL */ `
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    typeDefs: `
         type ApwChangeRequestListItem {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+        
             # ChangeRequest specific fields
             step: String!
             title: String!
@@ -28,9 +30,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwChangeRequest {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # ChangeRequest specific fields
             step: String!
             title: String!
@@ -52,12 +54,12 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         enum ApwListChangeRequestSort {
             id_ASC
             id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
+            
+            ${dateTimeFieldsSorters}
+            
             publishedOn_ASC
             publishedOn_DESC
+            
             title_ASC
             title_DESC
         }

@@ -2,7 +2,7 @@ import * as React from "react";
 /**
  * Package react-remarkable does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import Remarkable from "react-remarkable";
 import hljs from "highlight.js";
 

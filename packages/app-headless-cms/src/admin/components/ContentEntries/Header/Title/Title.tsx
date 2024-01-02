@@ -2,11 +2,11 @@ import React from "react";
 import { Skeleton } from "@webiny/ui/Skeleton";
 import { Name } from "./styled";
 
-interface Props {
+interface TitleProps {
     title?: string;
 }
 
-export const Title: React.VFC<Props> = ({ title }) => {
+export const Title = ({ title }: TitleProps) => {
     return (
         <Name use={"headline6"} tag={"h1"}>
             {title || <Skeleton theme={"dark"} />}

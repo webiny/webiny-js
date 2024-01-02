@@ -70,7 +70,19 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         }
 
         const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.createEntry(model, { ...file, wbyAco_location: file.location });
+            return this.cms.createEntry(model, {
+                ...file,
+                wbyAco_location: file.location,
+
+                // We're mapping on/by meta fields onto entry-level meta
+                // fields because we don't use revisions with files.
+                entryCreatedOn: file.createdOn,
+                entryModifiedOn: file.modifiedOn,
+                entrySavedOn: file.savedOn,
+                entryCreatedBy: file.createdBy,
+                entryModifiedBy: file.modifiedBy,
+                entrySavedBy: file.savedBy
+            });
         });
 
         await this.aliases.storeAliases(file);
@@ -164,18 +176,20 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 where: { entryId: file.id, latest: true }
             });
 
-            const values = omit(file, [
-                "id",
-                "createdOn",
-                "createdBy",
-                "tenant",
-                "locale",
-                "webinyVersion"
-            ]);
+            const values = omit(file, ["id", "tenant", "locale", "webinyVersion"]);
 
             const updatedEntry = await this.cms.updateEntry(model, entry.id, {
                 ...values,
-                wbyAco_location: values.location ?? entry.location
+                wbyAco_location: values.location ?? entry.location,
+
+                // We're mapping on/by meta fields onto entry-level meta
+                // fields because we don't use revisions with files.
+                entryCreatedOn: file.createdOn,
+                entryModifiedOn: file.modifiedOn,
+                entrySavedOn: file.savedOn,
+                entryCreatedBy: file.createdBy,
+                entryModifiedBy: file.modifiedBy,
+                entrySavedBy: file.savedBy
             });
 
             await this.aliases.storeAliases(file);
@@ -187,9 +201,15 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private getFileFieldValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
-            createdBy: entry.createdBy,
-            createdOn: entry.createdOn,
-            savedOn: entry.savedOn,
+
+            // We're safe to use entry-level meta fields because we don't use revisions with files.
+            createdBy: entry.entryCreatedBy,
+            modifiedBy: entry.entryModifiedBy || null,
+            savedBy: entry.entrySavedBy,
+            createdOn: entry.entryCreatedOn,
+            modifiedOn: entry.entryModifiedOn || null,
+            savedOn: entry.entrySavedOn,
+
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

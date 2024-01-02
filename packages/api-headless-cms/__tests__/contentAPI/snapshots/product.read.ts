@@ -6,10 +6,32 @@ export default /* GraphQL */ `
         id: ID!
         entryId: String!
         modelId: String!
-        createdOn: DateTime!
-        savedOn: DateTime!
-        createdBy: CmsIdentity!
-        ownedBy: CmsIdentity!
+
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
+        revisionCreatedOn: DateTime!
+        revisionSavedOn: DateTime!
+        revisionModifiedOn: DateTime
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentity!
+        revisionSavedBy: CmsIdentity!
+        revisionModifiedBy: CmsIdentity
+        revisionFirstPublishedBy: CmsIdentity
+        revisionLastPublishedBy: CmsIdentity
+        entryCreatedOn: DateTime!
+        entrySavedOn: DateTime!
+        entryModifiedOn: DateTime
+        entryFirstPublishedOn: DateTime
+        entryLastPublishedOn: DateTime
+        entryCreatedBy: CmsIdentity!
+        entrySavedBy: CmsIdentity!
+        entryModifiedBy: CmsIdentity
+        entryFirstPublishedBy: CmsIdentity
+        entryLastPublishedBy: CmsIdentity
+
         title: String
         category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
@@ -150,6 +172,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        publishedOn: DateTime
+        publishedOn_gt: DateTime
+        publishedOn_gte: DateTime
+        publishedOn_lt: DateTime
+        publishedOn_lte: DateTime
+        publishedOn_between: [DateTime!]
+        publishedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]
@@ -158,6 +187,116 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        revisionCreatedOn: DateTime
+        revisionCreatedOn_gt: DateTime
+        revisionCreatedOn_gte: DateTime
+        revisionCreatedOn_lt: DateTime
+        revisionCreatedOn_lte: DateTime
+        revisionCreatedOn_between: [DateTime!]
+        revisionCreatedOn_not_between: [DateTime!]
+        revisionSavedOn: DateTime
+        revisionSavedOn_gt: DateTime
+        revisionSavedOn_gte: DateTime
+        revisionSavedOn_lt: DateTime
+        revisionSavedOn_lte: DateTime
+        revisionSavedOn_between: [DateTime!]
+        revisionSavedOn_not_between: [DateTime!]
+        revisionModifiedOn: DateTime
+        revisionModifiedOn_gt: DateTime
+        revisionModifiedOn_gte: DateTime
+        revisionModifiedOn_lt: DateTime
+        revisionModifiedOn_lte: DateTime
+        revisionModifiedOn_between: [DateTime!]
+        revisionModifiedOn_not_between: [DateTime!]
+        revisionFirstPublishedOn: DateTime
+        revisionFirstPublishedOn_gt: DateTime
+        revisionFirstPublishedOn_gte: DateTime
+        revisionFirstPublishedOn_lt: DateTime
+        revisionFirstPublishedOn_lte: DateTime
+        revisionFirstPublishedOn_between: [DateTime!]
+        revisionFirstPublishedOn_not_between: [DateTime!]
+        revisionLastPublishedOn: DateTime
+        revisionLastPublishedOn_gt: DateTime
+        revisionLastPublishedOn_gte: DateTime
+        revisionLastPublishedOn_lt: DateTime
+        revisionLastPublishedOn_lte: DateTime
+        revisionLastPublishedOn_between: [DateTime!]
+        revisionLastPublishedOn_not_between: [DateTime!]
+        revisionCreatedBy: ID
+        revisionCreatedBy_not: ID
+        revisionCreatedBy_in: [ID!]
+        revisionCreatedBy_not_in: [ID!]
+        revisionSavedBy: ID
+        revisionSavedBy_not: ID
+        revisionSavedBy_in: [ID!]
+        revisionSavedBy_not_in: [ID!]
+        revisionModifiedBy: ID
+        revisionModifiedBy_not: ID
+        revisionModifiedBy_in: [ID!]
+        revisionModifiedBy_not_in: [ID!]
+        revisionFirstPublishedBy: ID
+        revisionFirstPublishedBy_not: ID
+        revisionFirstPublishedBy_in: [ID!]
+        revisionFirstPublishedBy_not_in: [ID!]
+        revisionLastPublishedBy: ID
+        revisionLastPublishedBy_not: ID
+        revisionLastPublishedBy_in: [ID!]
+        revisionLastPublishedBy_not_in: [ID!]
+        entryCreatedOn: DateTime
+        entryCreatedOn_gt: DateTime
+        entryCreatedOn_gte: DateTime
+        entryCreatedOn_lt: DateTime
+        entryCreatedOn_lte: DateTime
+        entryCreatedOn_between: [DateTime!]
+        entryCreatedOn_not_between: [DateTime!]
+        entrySavedOn: DateTime
+        entrySavedOn_gt: DateTime
+        entrySavedOn_gte: DateTime
+        entrySavedOn_lt: DateTime
+        entrySavedOn_lte: DateTime
+        entrySavedOn_between: [DateTime!]
+        entrySavedOn_not_between: [DateTime!]
+        entryModifiedOn: DateTime
+        entryModifiedOn_gt: DateTime
+        entryModifiedOn_gte: DateTime
+        entryModifiedOn_lt: DateTime
+        entryModifiedOn_lte: DateTime
+        entryModifiedOn_between: [DateTime!]
+        entryModifiedOn_not_between: [DateTime!]
+        entryFirstPublishedOn: DateTime
+        entryFirstPublishedOn_gt: DateTime
+        entryFirstPublishedOn_gte: DateTime
+        entryFirstPublishedOn_lt: DateTime
+        entryFirstPublishedOn_lte: DateTime
+        entryFirstPublishedOn_between: [DateTime!]
+        entryFirstPublishedOn_not_between: [DateTime!]
+        entryLastPublishedOn: DateTime
+        entryLastPublishedOn_gt: DateTime
+        entryLastPublishedOn_gte: DateTime
+        entryLastPublishedOn_lt: DateTime
+        entryLastPublishedOn_lte: DateTime
+        entryLastPublishedOn_between: [DateTime!]
+        entryLastPublishedOn_not_between: [DateTime!]
+        entryCreatedBy: ID
+        entryCreatedBy_not: ID
+        entryCreatedBy_in: [ID!]
+        entryCreatedBy_not_in: [ID!]
+        entrySavedBy: ID
+        entrySavedBy_not: ID
+        entrySavedBy_in: [ID!]
+        entrySavedBy_not_in: [ID!]
+        entryModifiedBy: ID
+        entryModifiedBy_not: ID
+        entryModifiedBy_in: [ID!]
+        entryModifiedBy_not_in: [ID!]
+        entryFirstPublishedBy: ID
+        entryFirstPublishedBy_not: ID
+        entryFirstPublishedBy_in: [ID!]
+        entryFirstPublishedBy_not_in: [ID!]
+        entryLastPublishedBy: ID
+        entryLastPublishedBy_not: ID
+        entryLastPublishedBy_in: [ID!]
+        entryLastPublishedBy_not_in: [ID!]
 
         title: String
         title_not: String
@@ -239,6 +378,26 @@ export default /* GraphQL */ `
         savedOn_DESC
         createdOn_ASC
         createdOn_DESC
+        revisionCreatedOn_ASC
+        revisionCreatedOn_DESC
+        revisionSavedOn_ASC
+        revisionSavedOn_DESC
+        revisionModifiedOn_ASC
+        revisionModifiedOn_DESC
+        revisionFirstPublishedOn_ASC
+        revisionFirstPublishedOn_DESC
+        revisionLastPublishedOn_ASC
+        revisionLastPublishedOn_DESC
+        entryCreatedOn_ASC
+        entryCreatedOn_DESC
+        entrySavedOn_ASC
+        entrySavedOn_DESC
+        entryModifiedOn_ASC
+        entryModifiedOn_DESC
+        entryFirstPublishedOn_ASC
+        entryFirstPublishedOn_DESC
+        entryLastPublishedOn_ASC
+        entryLastPublishedOn_DESC
         title_ASC
         title_DESC
         price_ASC

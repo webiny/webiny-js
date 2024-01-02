@@ -45,7 +45,7 @@ const ButtonWrapper = styled("div")({
 interface ContentModelGroupsFormProps {
     canCreate: boolean;
 }
-const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCreate }) => {
+const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { canEdit } = usePermission();

@@ -35,7 +35,7 @@ const listStyle = css`
     }
 `;
 
-const Accordion: React.FC<AccordionProps> = props => {
+const Accordion = (props: AccordionProps) => {
     const { children, elevation = 2, className, ...other } = props;
     return (
         <Elevation z={elevation} className={classNames("webiny-ui-accordion", className)}>

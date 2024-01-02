@@ -5,11 +5,11 @@ interface MoveStep extends MoveStepParams {
 }
 
 export default (params: MoveStep) => {
-    const { target, destination, data } = params;
+    const { source, destination, data } = params;
 
     // "targetStep" is the step that is being dragged
-    const targetStep = data.find((v: FbFormStep) => v.id === target.containerId);
-    const targetStepIndex = data.findIndex((v: FbFormStep) => v.id === target.containerId);
+    const targetStep = data.find((v: FbFormStep) => v.id === source.containerId);
+    const targetStepIndex = data.findIndex((v: FbFormStep) => v.id === source.containerId);
 
     const destinationStep = data.find((v: FbFormStep) => v.id === destination.containerId);
     const destinationStepIndex = data.findIndex(

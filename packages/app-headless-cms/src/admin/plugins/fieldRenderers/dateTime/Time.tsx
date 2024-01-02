@@ -5,7 +5,7 @@ import {
     getDefaultFieldValue
 } from "~/admin/plugins/fieldRenderers/dateTime/utils";
 
-export const Time: React.FC<InputProps> = props => {
+export const Time = (props: InputProps) => {
     const { field, bind } = props;
     const time = getDefaultFieldValue(field, bind, () => {
         return getCurrentLocalTime(new Date());

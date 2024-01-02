@@ -3,7 +3,7 @@ import React from "react";
  *
  * Package react-sortable-tree does not have types
  */
-// @ts-ignore
+// @ts-expect-error
 import SortableTree from "react-sortable-tree";
 import { plugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";

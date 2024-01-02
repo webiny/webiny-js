@@ -1,7 +1,9 @@
 import { ApwStorageOperations } from "./types";
 import { ApwCommentStorageOperations } from "./types";
-import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
+import { baseFields } from "~/utils/pickEntryFieldValues";
+
 import WebinyError from "@webiny/error";
 import { ApwComment } from "~/types";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
@@ -104,7 +106,8 @@ export const createCommentStorageOperations = ({
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
                     ...existingEntry,
-                    ...params.data
+                    ...params.data,
+                    savedOn: new Date()
                 });
             });
 

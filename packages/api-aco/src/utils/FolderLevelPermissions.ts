@@ -2,7 +2,6 @@ import { Authentication } from "@webiny/api-authentication/types";
 import { SecurityPermission, Team } from "@webiny/api-security/types";
 import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import structuredClone from "@ungap/structured-clone";
 
 export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 

@@ -8,23 +8,20 @@ import {
 import { Context as ContextInterface } from "~/types";
 
 export interface ContextParams extends BaseContextParams {
-    server: ContextInterface["server"];
     routes: ContextInterface["routes"];
 }
 
 export class Context extends BaseContext implements ContextInterface {
-    public readonly server: ContextInterface["server"];
     public readonly routes: ContextInterface["routes"];
-    // @ts-ignore
+    // @ts-expect-error
     public handlerClient: ContextInterface["handlerClient"];
-    // @ts-ignore
+    // @ts-expect-error
     public request: ContextInterface["request"];
-    // @ts-ignore
+    // @ts-expect-error
     public reply: ContextInterface["reply"];
 
     public constructor(params: ContextParams) {
         super(params);
-        this.server = params.server;
         this.routes = params.routes;
     }
 }

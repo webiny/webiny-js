@@ -4,7 +4,7 @@ import { LIST_TEAMS } from "./graphql";
 import { useQuery } from "@apollo/react-hooks";
 
 type TeamAutocompleteProps = Partial<AutoCompleteProps>;
-export const TeamAutocomplete: React.FC<TeamAutocompleteProps> = props => {
+export const TeamAutocomplete = (props: TeamAutocompleteProps) => {
     const { data, loading } = useQuery(LIST_TEAMS);
 
     const options = loading || !data ? [] : data.security.teams.data;

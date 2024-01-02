@@ -6,6 +6,7 @@ import { Select } from "@webiny/ui/Select";
 import { Page } from "@webiny/app-page-builder-elements/components/Page";
 import { Zoom } from "./Zoom";
 import { PbPageData, PbPageTemplate } from "~/types";
+import { QueryResult } from "@apollo/react-common";
 
 const webinyZoomStyles = css`
     &.mdc-select--no-label:not(.mdc-select--outlined)
@@ -81,10 +82,10 @@ const SelectPageZoom: React.ComponentType<PagePreviewInnerProps> = ({ zoom, setZ
 
 interface PagePreviewProps {
     page: PbPageData | PbPageTemplate;
-    getPageQuery?: Function;
+    getPageQuery?: QueryResult;
 }
 
-const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
+const PagePreview = ({ page }: PagePreviewProps) => {
     return (
         <Zoom>
             {({ zoom, setZoom }) => (

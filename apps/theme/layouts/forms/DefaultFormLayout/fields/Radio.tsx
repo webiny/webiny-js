@@ -56,7 +56,7 @@ const OtherInput = styled(StyledInput)`
     margin-left: 16px;
 `;
 
-export const RadioField: React.FC<RadioProps> = ({ field }) => {
+export const RadioField = ({ field }: RadioProps) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators

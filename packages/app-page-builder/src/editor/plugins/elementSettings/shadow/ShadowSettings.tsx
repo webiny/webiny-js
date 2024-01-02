@@ -13,7 +13,7 @@ import { PbEditorElement } from "~/types";
 
 const DATA_NAMESPACE = "data.settings.shadow";
 
-const Settings: React.FC = () => {
+const Settings = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)

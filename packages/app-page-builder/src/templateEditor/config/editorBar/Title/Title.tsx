@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-const Title: React.FC = () => {
+const Title = () => {
     const handler = useEventActionHandler();
     const [template] = useTemplate();
     const { showSnackbar } = useSnackbar();
@@ -55,7 +55,7 @@ const Title: React.FC = () => {
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();

@@ -105,7 +105,8 @@ export const handler = createHandler({
                 type: "text",
                 renderer: {
                     name: "text-input"
-                }
+                },
+                bulkEdit: true
             });
 
             modifier.addField({

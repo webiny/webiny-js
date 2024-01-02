@@ -75,7 +75,7 @@ export interface AuthenticationFactoryConfig extends AuthOptions {
 }
 
 interface AuthenticationFactory {
-    (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
+    (params: AuthenticationFactoryConfig): React.ComponentType<AuthenticationProps>;
 }
 
 export const createAuthentication: AuthenticationFactory = ({
@@ -86,11 +86,11 @@ export const createAuthentication: AuthenticationFactory = ({
     /**
      * TODO @ts-refactor
      */
-    // @ts-ignore
+    // @ts-expect-error
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
-    const Authentication: React.FC<AuthenticationProps> = props => {
+    const Authentication = (props: AuthenticationProps) => {
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
         const { setIdentity } = useSecurity();

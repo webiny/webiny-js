@@ -5,8 +5,12 @@ import React from "react";
 import { Provider } from "@webiny/app";
 import { SecurityProvider as ContextProvider } from "./contexts/Security";
 
-const SecurityProviderHOC = (Component: React.FC<any>): React.FC<any> => {
-    return function SecurityProvider({ children }) {
+interface SecurityProviderProps {
+    children: React.ReactNode;
+}
+
+const SecurityProviderHOC = (Component: React.ComponentType) => {
+    return function SecurityProvider({ children }: SecurityProviderProps) {
         return (
             <ContextProvider>
                 <Component>{children}</Component>
@@ -15,6 +19,6 @@ const SecurityProviderHOC = (Component: React.FC<any>): React.FC<any> => {
     };
 };
 
-export const Security: React.FC = () => {
+export const Security = () => {
     return <Provider hoc={SecurityProviderHOC} />;
 };

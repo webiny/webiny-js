@@ -38,7 +38,7 @@ const PeParagraph = createRenderer(() => {
     // If the text already contains `p` tags (happens when c/p-ing text into the editor),
     // we don't want to wrap it with another pair of `p` tag.
     if (__html.startsWith("<p")) {
-        // @ts-ignore We don't need type-checking here.
+        // @ts-expect-error We don't need type-checking here.
         return <p-wrap dangerouslySetInnerHTML={{ __html }} />;
     }
 

@@ -9,7 +9,7 @@ interface CreateVariableActionPropsType {
     children: React.ReactElement;
 }
 
-const CreateVariableAction: React.FC<CreateVariableActionPropsType> = ({ children }) => {
+const CreateVariableAction = ({ children }: CreateVariableActionPropsType) => {
     const [element] = useActiveElement();
     const { block } = useCurrentBlockElement();
     const updateElement = useUpdateElement();

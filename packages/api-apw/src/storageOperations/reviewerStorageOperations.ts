@@ -1,10 +1,8 @@
 import { ApwReviewerStorageOperations } from "./types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import WebinyError from "@webiny/error";
+import { ApwReviewer } from "~/types";
 
 export const createReviewerStorageOperations = ({
     cms,
@@ -28,7 +26,7 @@ export const createReviewerStorageOperations = ({
         const entry = await security.withoutAuthorization(async () => {
             return cms.getEntryById(model, id);
         });
-        return getFieldValues(entry, baseFields);
+        return pickEntryFieldValues(entry);
     };
     return {
         getReviewerModel,
@@ -44,14 +42,14 @@ export const createReviewerStorageOperations = ({
                     }
                 });
             });
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(pickEntryFieldValues<ApwReviewer>), meta];
         },
         async createReviewer(params) {
             const model = await getReviewerModel();
             const entry = await security.withoutAuthorization(async () => {
                 return cms.createEntry(model, params.data);
             });
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async updateReviewer(params) {
             const model = await getReviewerModel();
@@ -64,10 +62,11 @@ export const createReviewerStorageOperations = ({
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
                     ...existingEntry,
-                    ...params.data
+                    ...params.data,
+                    savedOn: new Date()
                 });
             });
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async deleteReviewer(params) {
             const model = await getReviewerModel();

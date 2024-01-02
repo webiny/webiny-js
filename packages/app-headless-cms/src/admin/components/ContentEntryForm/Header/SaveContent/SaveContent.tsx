@@ -3,7 +3,7 @@ import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import usePermission from "~/admin/hooks/usePermission";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 
-export const SaveContentButton: React.FC = () => {
+export const SaveContentButton = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
     const { useButtons } = ContentEntryEditorConfig.Actions.ButtonAction;

@@ -4,7 +4,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 
 describe("identity test", () => {
     const tenant = "root";
-    // @ts-ignore
+    // @ts-expect-error
     const { storageOperations } = getStorageOps<SecurityStorageOperations>("security");
     let security: Security;
 
