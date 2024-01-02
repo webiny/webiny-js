@@ -35,7 +35,7 @@ const accordionStyle = css`
 type ElementsListProps = {
     groupPlugin: PbEditorPageElementGroupPlugin;
     elements: PbEditorPageElementPlugin[];
-    renderDraggable: (element: any, plugin: any) => JSX.Element;
+    renderDraggable: (element: React.ReactNode, plugin: PbEditorPageElementPlugin) => JSX.Element;
     refresh: () => void;
 };
 
@@ -78,10 +78,10 @@ const ElementsList = ({ groupPlugin, elements, renderDraggable, refresh }: Eleme
 
 interface RenderOverlayCb {
     (
-        element: any,
+        element: React.ReactNode,
         onClick: ((event: React.MouseEvent<any, MouseEvent>) => any) | undefined,
         label: string,
-        plugin: any
+        plugin: PbEditorPageElementPlugin
     ): React.ReactNode;
 }
 
