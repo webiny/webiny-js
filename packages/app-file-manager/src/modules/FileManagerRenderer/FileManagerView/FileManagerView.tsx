@@ -12,7 +12,7 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary, ButtonProps, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
@@ -50,6 +50,16 @@ const FileListWrapper = styled("div")({
         display: "inline-table"
     }
 });
+
+type BrowseFilesHandler = {
+    browseFiles: FilesRenderChildren["browseFiles"];
+};
+
+type GetFileUploadErrorMessageProps =
+    | string
+    | {
+          message: string;
+      };
 
 const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     if (!sorting?.length) {
@@ -105,7 +115,7 @@ const FileManagerView = () => {
         view.setListSort(sort);
     }, [tableSorting]);
 
-    const getFileUploadErrorMessage = useCallback(e => {
+    const getFileUploadErrorMessage = useCallback((e: GetFileUploadErrorMessageProps) => {
         if (typeof e === "string") {
             const match = e.match(/Message>(.*?)<\/Message/);
             if (match) {
@@ -154,12 +164,16 @@ const FileManagerView = () => {
     };
 
     const renderUploadFileAction = useCallback(
-        ({ browseFiles }) => {
+        ({ browseFiles }: BrowseFilesHandler) => {
             if (!fileManager.canCreate) {
                 return null;
             }
             return (
-                <ButtonPrimary flat={true} small={true} onClick={browseFiles}>
+                <ButtonPrimary
+                    flat={true}
+                    small={true}
+                    onClick={browseFiles as ButtonProps["onClick"]}
+                >
                     <ButtonIcon icon={<UploadIcon />} />
                     {t`Upload...`}
                 </ButtonPrimary>
@@ -291,7 +305,7 @@ const FileManagerView = () => {
                                         {t`Select`} {view.multiple && `(${view.selected.length})`}
                                     </ButtonPrimary>
                                 ) : (
-                                    renderUploadFileAction({ browseFiles })
+                                    renderUploadFileAction({ browseFiles } as BrowseFilesHandler)
                                 )}
                                 <ButtonSecondary
                                     data-testid={"file-manager.create-folder-button"}
