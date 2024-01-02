@@ -12,7 +12,7 @@ const useImportForm = () => {
     const { showImportFormDialog } = useImportFormDialog();
     const { showImportFormLoadingDialog } = useImportFormLoadingDialog();
 
-    const importFormMutation = useCallback(async zipFileUrl => {
+    const importFormMutation = useCallback(async (zipFileUrl: string) => {
         try {
             const res = await importForm({
                 variables: {
