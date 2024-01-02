@@ -113,8 +113,8 @@ export const createBackgroundTaskDefinition = (
                     },
                     {
                         Variable: "$.status",
-                        StringEquals: "stopped",
-                        Next: "Stopped"
+                        StringEquals: "aborted",
+                        Next: "Aborted"
                     }
                 ],
                 Default: "UnknownStatus"
@@ -141,7 +141,7 @@ export const createBackgroundTaskDefinition = (
             Error: {
                 Type: StepFunctionDefinitionStatesType.Fail,
                 CausePath: "States.JsonToString($.error)",
-                ErrorPath: "$.error.code"
+                ErrorPath: "$.error.message"
             },
             /**
              * Complete the task.
@@ -149,7 +149,7 @@ export const createBackgroundTaskDefinition = (
             Done: {
                 Type: StepFunctionDefinitionStatesType.Succeed
             },
-            Stopped: {
+            Aborted: {
                 Type: StepFunctionDefinitionStatesType.Succeed
             }
         }
