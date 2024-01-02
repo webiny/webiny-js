@@ -170,7 +170,8 @@ describe("5.39.0-002", () => {
         // Ensure correct data ended up in Elasticsearch.
         const sort = [
             {
-                "id.keyword": { order: "desc", unmapped_type: "keyword" }
+                "id.keyword": { order: "desc", unmapped_type: "keyword" },
+                "TYPE.keyword": { order: "asc", unmapped_type: "keyword" }
             }
         ] as ElasticsearchSort;
 
