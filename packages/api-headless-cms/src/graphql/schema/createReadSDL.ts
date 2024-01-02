@@ -1,5 +1,6 @@
 import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
+import { renderListFilterMetaFields } from "~/utils/renderListFilterMetaFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
@@ -42,12 +43,16 @@ export const createReadSDL: CreateReadSDL = ({
         type,
         fieldTypePlugins
     });
+
+    const listFilterMetaFieldsRender = renderListFilterMetaFields();
+
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
         fieldTypePlugins,
         sorterPlugins
     });
+
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
         fieldTypePlugins
@@ -99,13 +104,16 @@ export const createReadSDL: CreateReadSDL = ({
             ${getFilterFieldsRender}
         }
         
+        input ${singularName}ListWhereMetaInput {
+            ${listFilterMetaFieldsRender}
+        }
         
         input ${singularName}ListWhereInput {
             ${listFilterFieldsRender}
+            meta: ${singularName}ListWhereMetaInput
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }
-        
         
         enum ${singularName}ListSorter {
             ${sortEnumRender}

@@ -1,5 +1,6 @@
 import { CmsFieldTypePlugins, CmsModel } from "~/types";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
+import { renderListFilterMetaFields } from "~/utils/renderListFilterMetaFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
@@ -33,6 +34,9 @@ export const createManageSDL: CreateManageSDL = ({
     if (inputFields.length === 0) {
         return "";
     }
+
+    const listFilterMetaFieldsRender = renderListFilterMetaFields();
+
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
@@ -170,9 +174,19 @@ export const createManageSDL: CreateManageSDL = ({
             ${getFilterFieldsRender}
         }
 
+        input ${singularName}MetaWhereInput {
+            ${onByMetaInputGqlFields}
+        }
+        
+        
+        input ${singularName}ListWhereMetaInput {
+            ${listFilterMetaFieldsRender}
+        }
+        
         input ${singularName}ListWhereInput {
             wbyAco_location: WbyAcoLocationWhereInput
             ${listFilterFieldsRender}
+            meta: ${singularName}ListWhereMetaInput
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }

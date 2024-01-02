@@ -38,7 +38,10 @@ export const renderSortEnum: RenderSortEnum = ({
          * Users are encouraged to use these instead of the deprecated ones above.
          */
         ...ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField)
-            .map(field => [`${field}_ASC`, `${field}_DESC`])
+            .map(field => {
+                const ucFirstField = field[0].toUpperCase() + field.slice(1);
+                return [`meta${ucFirstField}_ASC`, `meta${ucFirstField}_DESC`];
+            })
             .flat()
     ];
 

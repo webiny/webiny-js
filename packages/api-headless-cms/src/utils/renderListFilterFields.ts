@@ -6,7 +6,6 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -81,29 +80,8 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         "ownedBy_not_in: [String!]",
 
         /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
+         * Note: new meta fields are rendered in the `renderListFilterMetaFields` function.
          */
-        ...ENTRY_META_FIELDS.map(field => {
-            if (isDateTimeEntryMetaField(field)) {
-                return [
-                    `${field}: DateTime`,
-                    `${field}_gt: DateTime`,
-                    `${field}_gte: DateTime`,
-                    `${field}_lt: DateTime`,
-                    `${field}_lte: DateTime`,
-                    `${field}_between: [DateTime!]`,
-                    `${field}_not_between: [DateTime!]`
-                ];
-            }
-
-            return [
-                `${field}: ID`,
-                `${field}_not: ID`,
-                `${field}_in: [ID!]`,
-                `${field}_not_in: [ID!]`
-            ];
-        }).flat()
     ];
 
     /**

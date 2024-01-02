@@ -43,7 +43,7 @@ describe("Content entries - Entry Meta Fields Queries", () => {
             ]
         };
 
-        const revisionCreatedOnDescVariables = { sort: ["revisionCreatedOn_DESC"] };
+        const revisionCreatedOnDescVariables = { sort: ["metaRevisionCreatedOn_DESC"] };
 
         const entriesListByCreatedOnDescManageApi = await manageApiIdentityA.listTestEntries(
             revisionCreatedOnDescVariables
@@ -66,7 +66,7 @@ describe("Content entries - Entry Meta Fields Queries", () => {
             ]
         };
 
-        const revisionCreatedOnAscVariables = { sort: ["revisionCreatedOn_ASC"] };
+        const revisionCreatedOnAscVariables = { sort: ["metaRevisionCreatedOn_ASC"] };
 
         const entriesListByCreatedOnAscManageApi = await manageApiIdentityA.listTestEntries(
             revisionCreatedOnAscVariables
