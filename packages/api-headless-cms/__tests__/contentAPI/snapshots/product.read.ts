@@ -7,20 +7,15 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime!
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime!
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity!
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
 
         meta: ProductApiSingularMeta
 
         title: String
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -37,12 +32,8 @@ export default /* GraphQL */ `
         name: String
         price: Number
         image: String
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
-        categories(
-            populate: Boolean = true
-        ): [CategoryApiNameWhichIsABitDifferentThanModelId!]
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        categories(populate: Boolean = true): [CategoryApiNameWhichIsABitDifferentThanModelId!]
         longText: [String]
     }
 
@@ -81,9 +72,7 @@ export default /* GraphQL */ `
         name: String
         price: Number
         images: [String]
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         options: [ProductApiSingular_Variant_Options!]
     }
 
@@ -447,9 +436,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getProductApiSingular(
-            where: ProductApiSingularGetWhereInput!
-        ): ProductApiSingularResponse
+        getProductApiSingular(where: ProductApiSingularGetWhereInput!): ProductApiSingularResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput

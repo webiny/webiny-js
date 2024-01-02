@@ -537,18 +537,20 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(entriesListAfterRepublish[0]).toMatchObject(matchObject);
 
         expect(
-            revAfterRepublish.meta.revisionLastPublishedOn > revAfterPublish.meta.revisionLastPublishedOn
+            revAfterRepublish.meta.revisionLastPublishedOn >
+                revAfterPublish.meta.revisionLastPublishedOn
         ).toBe(true);
-        expect(revAfterRepublish.meta.entryLastPublishedOn > revAfterPublish.meta.entryLastPublishedOn).toBe(
-            true
-        );
+        expect(
+            revAfterRepublish.meta.entryLastPublishedOn > revAfterPublish.meta.entryLastPublishedOn
+        ).toBe(true);
 
         expect(
             entriesListAfterRepublish[0].meta.revisionLastPublishedOn >
                 revAfterPublish.meta.revisionLastPublishedOn
         ).toBe(true);
         expect(
-            entriesListAfterRepublish[0].meta.entryLastPublishedOn > revAfterPublish.meta.entryLastPublishedOn
+            entriesListAfterRepublish[0].meta.entryLastPublishedOn >
+                revAfterPublish.meta.entryLastPublishedOn
         ).toBe(true);
     });
 });

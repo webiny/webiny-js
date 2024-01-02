@@ -120,13 +120,22 @@ export const createEntryData = async ({
 
     if (status === STATUS_PUBLISHED) {
         revisionLevelPublishingMetaFields = {
-            revisionFirstPublishedOn: getDate(rawInputMeta.revisionFirstPublishedOn, currentDateTime),
-            revisionLastPublishedOn: getDate(rawInputMeta.revisionFirstPublishedOn, currentDateTime),
+            revisionFirstPublishedOn: getDate(
+                rawInputMeta.revisionFirstPublishedOn,
+                currentDateTime
+            ),
+            revisionLastPublishedOn: getDate(
+                rawInputMeta.revisionFirstPublishedOn,
+                currentDateTime
+            ),
             revisionFirstPublishedBy: getIdentity(
                 rawInputMeta.revisionFirstPublishedBy,
                 currentIdentity
             ),
-            revisionLastPublishedBy: getIdentity(rawInputMeta.revisionLastPublishedBy, currentIdentity)
+            revisionLastPublishedBy: getIdentity(
+                rawInputMeta.revisionLastPublishedBy,
+                currentIdentity
+            )
         };
 
         entryLevelPublishingMetaFields = {

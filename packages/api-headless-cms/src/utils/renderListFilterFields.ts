@@ -77,7 +77,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         "ownedBy: String",
         "ownedBy_not: String",
         "ownedBy_in: [String!]",
-        "ownedBy_not_in: [String!]",
+        "ownedBy_not_in: [String!]"
 
         /**
          * Note: new meta fields are rendered in the `renderListFilterMetaFields` function.

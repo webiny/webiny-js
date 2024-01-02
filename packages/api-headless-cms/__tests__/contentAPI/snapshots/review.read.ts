@@ -7,12 +7,9 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime!
-        @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-        savedOn: DateTime!
-        @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity!
-        @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
+        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
+        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
+        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
         ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")
 
         meta: ReviewApiModelMeta
