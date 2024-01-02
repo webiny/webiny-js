@@ -7,13 +7,13 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { useCms, useModel, usePermission } from "~/admin/hooks";
 import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
-import { RecordEntry } from "../../types";
 import { useNavigateFolder, useRecords } from "@webiny/app-aco";
+import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
 interface RecordActionDeleteProps {
-    record: RecordEntry;
+    record: EntryTableItem;
 }
 
 export const RecordActionDelete = ({ record }: RecordActionDeleteProps) => {
@@ -29,7 +29,7 @@ export const RecordActionDelete = ({ record }: RecordActionDeleteProps) => {
                 {t`You are about to delete this content entry and all of its revisions!`}
                 <br />
                 {t`Are you sure you want to permanently delete {title}?`({
-                    title: <strong>{record.title}</strong>
+                    title: <strong>{record.meta.title}</strong>
                 })}
             </p>
         ),
@@ -55,14 +55,16 @@ export const RecordActionDelete = ({ record }: RecordActionDeleteProps) => {
             }
 
             showSnackbar(
-                t`{title} was deleted successfully!`({ title: <strong>{record.title}</strong> })
+                t`{title} was deleted successfully!`({
+                    title: <strong>{record.meta.title}</strong>
+                })
             );
             removeRecordFromCache(record.id);
             navigateToLatestFolder();
         });
     }, [record.id]);
 
-    if (!canDelete(record.original, "cms.contentEntry")) {
+    if (!canDelete(record, "cms.contentEntry")) {
         console.log("Does not have permission to delete CMS entry.");
         return null;
     }

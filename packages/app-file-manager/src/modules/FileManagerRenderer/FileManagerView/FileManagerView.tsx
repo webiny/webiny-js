@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { positionValues } from "react-custom-scrollbars";
 // @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
@@ -26,7 +27,7 @@ import { Empty } from "~/components/Empty";
 import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
 import { LayoutSwitch } from "~/components/LayoutSwitch";
-import { Entry, Table, TableProps } from "~/components/Table";
+import { Table, TableProps } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
@@ -34,6 +35,7 @@ import { SearchWidget } from "./components/SearchWidget";
 import { Filters } from "./components/Filters";
 import { TagsList } from "~/modules/FileManagerRenderer/FileManagerView/components/TagsList";
 import { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql";
+import { TableItem } from "~/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -46,13 +48,6 @@ const FileListWrapper = styled("div")({
     position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
-    },
-    ".mdc-data-table__cell": {
-        width: "250px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
     }
 });
 
@@ -186,8 +181,10 @@ const FileManagerView = () => {
         }
 
         if (view.listTable) {
-            const getSelectableRow = (rows: Entry[]) =>
-                rows.filter(row => row.$type === "RECORD").map(row => row.original as FileItem);
+            const getSelectableRow = (rows: TableItem[]) =>
+                rows
+                    .filter(row => row.$type === "RECORD")
+                    .map(row => omit(row, ["$type", "$selectable"]) as FileItem);
 
             const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback
                 ? rows => {
@@ -221,17 +218,10 @@ const FileManagerView = () => {
 
             return (
                 <Table
-                    folders={view.folders}
-                    records={view.files}
-                    selectedRecords={view.selected}
-                    loading={view.isListLoading}
-                    onRecordClick={view.showFileDetails}
-                    onFolderClick={view.setFolderId}
                     onSelectRow={onSelectRow}
                     onToggleRow={onToggleRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
-                    settings={view.settings}
                 />
             );
         }
