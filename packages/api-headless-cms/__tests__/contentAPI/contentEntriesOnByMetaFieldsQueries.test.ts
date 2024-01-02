@@ -88,7 +88,9 @@ describe("Content entries - Entry Meta Fields Queries", () => {
 
         const revisionCreatedByIdentityAVariables = {
             where: {
-                revisionCreatedBy: identityA.id
+                meta: {
+                    revisionCreatedBy: identityA.id
+                }
             }
         };
 
@@ -108,7 +110,9 @@ describe("Content entries - Entry Meta Fields Queries", () => {
 
         const revisionCreatedByIdentityBVariables = {
             where: {
-                revisionCreatedBy: identityB.id
+                meta: {
+                    revisionCreatedBy: identityB.id
+                }
             }
         };
 
