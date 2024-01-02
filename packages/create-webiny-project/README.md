@@ -1,3 +1,5 @@
+TEST
+
 # create-webiny-project
 
 [![](https://img.shields.io/npm/dw/create-webiny-project.svg)](https://www.npmjs.com/package/create-webiny-project)
