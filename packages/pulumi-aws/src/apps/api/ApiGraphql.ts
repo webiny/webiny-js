@@ -228,6 +228,12 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Action: "events:PutEvents",
                             Resource: core.eventBusArn
                         },
+                        {
+                            Sid: "PermissionForCloudfront",
+                            Effect: "Allow",
+                            Action: "cloudfront:CreateInvalidation",
+                            Resource: pulumi.interpolate`arn:aws:cloudfront::${awsAccountId}:distribution/*`
+                        },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
                         ...(core.elasticsearchDomainArn
                             ? [
