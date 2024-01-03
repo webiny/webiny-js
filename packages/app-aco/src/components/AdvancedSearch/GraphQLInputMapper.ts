@@ -1,3 +1,4 @@
+import get from "lodash/get";
 import { FilterDTO } from "~/components/AdvancedSearch/domain";
 
 interface NestedObject {
@@ -11,10 +12,29 @@ export class GraphQLInputMapper {
                 return {
                     [group.operation]: group.filters.map(filter => {
                         const { field, condition, value } = filter;
-                        return this.createNestedObject(
-                            this.createKeys(field, condition),
-                            this.convertToBooleanOrString(value)
-                        );
+
+                        const keys = field.trim().split(".");
+                        keys.shift();
+
+                        if (keys.length === 0) {
+                            return this.createNestedObject(
+                                this.createKeys(field, condition),
+                                this.convertToBooleanOrString(value)
+                            );
+                        }
+
+                        try {
+                            const values = JSON.parse(value);
+                            return this.createNestedObject(
+                                this.createKeys(field, condition),
+                                this.convertToBooleanOrString(get(values, keys))
+                            );
+                        } catch {
+                            return this.createNestedObject(
+                                this.createKeys(field, condition),
+                                this.convertToBooleanOrString(value)
+                            );
+                        }
                     })
                 };
             })

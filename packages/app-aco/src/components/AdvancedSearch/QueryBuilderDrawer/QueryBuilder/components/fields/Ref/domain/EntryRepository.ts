@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { EntryDTO } from "./Entry";
+import { EntryDTO, EntryReference } from "./Entry";
 import { EntriesGatewayInterface } from "../gateways";
 import { Loading } from "~/components/AdvancedSearch/domain";
 import { EntryMapper } from "./EntryMapper";
@@ -28,7 +28,7 @@ export class EntryRepository {
     }
 
     async listEntries(query: string) {
-        const response = await this.runWithLoading<EntryDTO[]>(
+        const response = await this.runWithLoading<EntryReference[]>(
             this.gateway.list(this.modelIds, query)
         );
 
@@ -37,31 +37,29 @@ export class EntryRepository {
         }
 
         runInAction(() => {
-            this.entries = response.map(entry => EntryMapper.toDTO(entry));
+            this.entries = response.map(entry => EntryMapper.fromStorage(entry));
         });
     }
 
-    async getEntryById(id: string) {
+    async getEntryById(modelId: string, id: string) {
         const entryInCache = this.entries.find(entry => entry.id === id);
 
         if (entryInCache) {
             return entryInCache;
         }
 
-        for (const modelId of this.modelIds) {
-            const response = await this.runWithLoading<EntryDTO>(this.gateway.get(modelId, id));
+        const response = await this.runWithLoading<EntryReference>(this.gateway.get(modelId, id));
 
-            if (response) {
-                const entryDTO = EntryMapper.toDTO(response);
-                runInAction(() => {
-                    this.entries = [entryDTO, ...this.entries];
-                });
-
-                return entryDTO;
-            }
+        if (!response) {
+            return;
         }
 
-        return;
+        const entryDTO = EntryMapper.fromStorage(response);
+        runInAction(() => {
+            this.entries = [entryDTO, ...this.entries];
+        });
+
+        return entryDTO;
     }
 
     private async runWithLoading<T>(action: Promise<T>) {

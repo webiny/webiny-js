@@ -1,6 +1,6 @@
-import { CmsReferenceContentEntry } from "./entries.types";
+import { EntryReference } from "../domain";
 
 export interface EntriesGatewayInterface {
-    list: (modelIds: string[], query: string) => Promise<CmsReferenceContentEntry[]>;
-    get: (modelId: string, id: string) => Promise<CmsReferenceContentEntry>;
+    list: (modelIds: string[], query: string) => Promise<EntryReference[]>;
+    get: (modelId: string, id: string) => Promise<EntryReference>;
 }

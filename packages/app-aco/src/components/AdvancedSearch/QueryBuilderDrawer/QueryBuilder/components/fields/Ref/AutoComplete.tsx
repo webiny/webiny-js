@@ -17,7 +17,18 @@ export const AutoComplete = (props: AutoCompleteProps) => {
                     label={"Value"}
                     value={props.vm.selected}
                     validation={validation}
-                    onChange={onChange}
+                    onChange={(_, selection) => {
+                        if (!selection) {
+                            return;
+                        }
+
+                        onChange(
+                            JSON.stringify({
+                                entryId: selection.entryId,
+                                modelId: selection.modelId
+                            })
+                        );
+                    }}
                     onInput={props.onInput}
                     options={props.vm.options}
                     loading={props.vm.loading}

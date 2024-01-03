@@ -107,22 +107,26 @@ describe("GraphQLInputMapper", () => {
                         {
                             field: "field-3.entryId",
                             condition: " ",
-                            value: "value-3"
+                            value: JSON.stringify({ entryId: "value-3", modelId: "any-modelId" })
                         },
                         {
                             field: "field-4.entryId",
                             condition: "_not",
-                            value: "value-4"
+                            value: JSON.stringify({ entryId: "value-4", modelId: "any-modelId" })
                         },
                         {
                             field: "field-5.sub-field.entryId",
                             condition: " ",
-                            value: "value-5"
+                            value: JSON.stringify({
+                                "sub-field": { entryId: "value-5", modelId: "any-modelId" }
+                            })
                         },
                         {
                             field: "field-6.sub-field.entryId",
                             condition: "_not",
-                            value: "value-6"
+                            value: JSON.stringify({
+                                "sub-field": { entryId: "value-6", modelId: "any-modelId" }
+                            })
                         }
                     ]
                 }

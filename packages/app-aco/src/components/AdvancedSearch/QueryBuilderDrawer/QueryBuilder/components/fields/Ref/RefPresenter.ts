@@ -27,19 +27,26 @@ export class RefPresenter implements IRefPresenter {
         makeAutoObservable(this);
     }
 
-    async load(id?: string) {
-        if (!id) {
+    async load(value: string) {
+        try {
+            if (!value) {
+                return;
+            }
+
+            const { entryId, modelId } = JSON.parse(value);
+
+            const entry = await this.repository.getEntryById(modelId, entryId);
+
+            if (!entry) {
+                return;
+            }
+
+            runInAction(() => {
+                this.currentEntry = entry;
+            });
+        } catch (e) {
             return;
         }
-        const entry = await this.repository.getEntryById(id);
-
-        if (!entry) {
-            return;
-        }
-
-        runInAction(() => {
-            this.currentEntry = entry;
-        });
     }
 
     async search(query: string) {
@@ -50,14 +57,18 @@ export class RefPresenter implements IRefPresenter {
         return {
             selected: this.currentEntry
                 ? {
-                      id: this.currentEntry.entryId,
-                      name: this.currentEntry.title
+                      id: this.currentEntry.id,
+                      name: this.currentEntry.title,
+                      entryId: this.currentEntry.entryId,
+                      modelId: this.currentEntry.modelId
                   }
                 : undefined,
             loading: this.repository.getLoading().isLoading,
             options: this.repository.getEntries().map(entry => ({
-                id: entry.entryId,
-                name: entry.title
+                id: entry.id,
+                name: entry.title,
+                entryId: entry.entryId,
+                modelId: entry.modelId
             }))
         };
     }

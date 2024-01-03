@@ -13,6 +13,9 @@ const DATA_FIELD = /* GraphQL */ `
         id
         entryId
         title
+        model {
+            modelId
+        }
     }
 `;
 
