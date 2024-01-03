@@ -1,13 +1,6 @@
-import includes from "lodash/includes";
-import endsWith from "lodash/endsWith";
-import startsWith from "lodash/startsWith";
-import eq from "lodash/eq";
-import lte from "lodash/lte";
-import lt from "lodash/lt";
-import gte from "lodash/gte";
-import gt from "lodash/gt";
+import { validation } from "@webiny/validation";
 
-import { FbFormRule, FbFormCondition } from "~/types";
+import { FbFormCondition, FbFormRule } from "~/types";
 
 interface Props {
     formData: Record<string, any>;
@@ -19,7 +12,7 @@ const includesValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    return includes(fieldValue, filterValue);
+    return fieldValue.includes(filterValue);
 };
 
 const startsWithValidator = (filterValue: string, fieldValue: string) => {
@@ -27,7 +20,14 @@ const startsWithValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    return startsWith(fieldValue, filterValue);
+    // Need to use try catch block because without it validation will throw and error,
+    // so user won't be able to interact with page.
+    // Same applies to all validation methods below.
+    try {
+        return validation.validateSync(fieldValue, `starts:${filterValue}`);
+    } catch {
+        return;
+    }
 };
 
 const endsWithValidator = (filterValue: string, fieldValue: string) => {
@@ -35,7 +35,11 @@ const endsWithValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    return endsWith(fieldValue, filterValue);
+    try {
+        return validation.validateSync(fieldValue, `ends:${filterValue}`);
+    } catch {
+        return;
+    }
 };
 
 const isValidator = (filterValue: string, fieldValue: string | string[]) => {
@@ -43,11 +47,15 @@ const isValidator = (filterValue: string, fieldValue: string | string[]) => {
         return;
     }
 
-    // This is check for checkboxes.
-    if (typeof fieldValue === "object") {
-        return fieldValue.includes(filterValue);
-    } else {
-        return eq(fieldValue, filterValue);
+    try {
+        // This is check for checkboxes.
+        if (typeof fieldValue === "object") {
+            return fieldValue.includes(filterValue);
+        } else {
+            return validation.validateSync(fieldValue, `eq:${filterValue}`);
+        }
+    } catch {
+        return;
     }
 };
 
@@ -64,10 +72,14 @@ const gtValidator = ({
         return;
     }
 
-    if (!equal) {
-        return gt(fieldValue, filterValue);
-    } else {
-        return gte(fieldValue, filterValue);
+    try {
+        if (!equal) {
+            return validation.validateSync(fieldValue, `gt:${filterValue}`);
+        } else {
+            return validation.validateSync(fieldValue, `gte:${filterValue}`);
+        }
+    } catch {
+        return;
     }
 };
 
@@ -84,10 +96,14 @@ const ltValidator = ({
         return;
     }
 
-    if (!equal) {
-        return lt(filterValue, filterValue);
-    } else {
-        return lte(fieldValue, filterValue);
+    try {
+        if (!equal) {
+            return validation.validateSync(fieldValue, `lt:${filterValue}`);
+        } else {
+            return validation.validateSync(fieldValue, `lte:${filterValue}`);
+        }
+    } catch {
+        return;
     }
 };
 
@@ -104,10 +120,17 @@ const timeGtValidator = ({
         return;
     }
 
-    if (!equal) {
-        return gt(Date.parse(fieldValue), Date.parse(filterValue));
-    } else {
-        return gte(Date.parse(fieldValue), Date.parse(filterValue));
+    try {
+        if (!equal) {
+            return validation.validateSync(Date.parse(fieldValue), `gt:${Date.parse(filterValue)}`);
+        } else {
+            return validation.validateSync(
+                Date.parse(fieldValue),
+                `gte:${Date.parse(filterValue)}`
+            );
+        }
+    } catch {
+        return;
     }
 };
 
@@ -124,10 +147,17 @@ const timeLtValidator = ({
         return;
     }
 
-    if (!equal) {
-        return lt(Date.parse(fieldValue), Date.parse(filterValue));
-    } else {
-        return lte(Date.parse(fieldValue), Date.parse(filterValue));
+    try {
+        if (!equal) {
+            return validation.validateSync(Date.parse(fieldValue), `lt:${Date.parse(filterValue)}`);
+        } else {
+            return validation.validateSync(
+                Date.parse(fieldValue),
+                `lte:${Date.parse(filterValue)}`
+            );
+        }
+    } catch {
+        return;
     }
 };
 
