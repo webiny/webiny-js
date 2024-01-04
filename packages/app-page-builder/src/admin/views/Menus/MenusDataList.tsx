@@ -96,7 +96,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     const slug = new URLSearchParams(location.search).get("slug");
 
     const deleteItem = useCallback(
-        (item: any) => {
+        (item: PbMenu) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item
