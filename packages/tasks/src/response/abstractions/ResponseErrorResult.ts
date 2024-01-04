@@ -16,9 +16,6 @@ export interface IResponseErrorParams {
 }
 
 export interface IResponseErrorResult extends IResponseBaseResult {
-    webinyTaskId: string;
-    tenant: string;
-    locale: string;
     error: IResponseError;
     status: TaskResponseStatus.ERROR;
 }

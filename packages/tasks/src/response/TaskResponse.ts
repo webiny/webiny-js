@@ -46,7 +46,6 @@ export class TaskResponse implements ITaskResponse {
     ): ITaskResponseContinueResult {
         const wait = getWaitingTime(options);
         if (!wait || wait < 1) {
-            console.log(`continue() - wait time is less than 1 second, continuing immediately...`);
             return this.response.continue({
                 values
             });

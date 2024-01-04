@@ -10,8 +10,5 @@ export interface IResponseDoneParams {
 
 export interface IResponseDoneResult extends IResponseBaseResult {
     message?: string;
-    webinyTaskId: string;
-    tenant: string;
-    locale: string;
     status: TaskResponseStatus.DONE;
 }

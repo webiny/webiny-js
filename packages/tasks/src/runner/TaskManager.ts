@@ -52,6 +52,7 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
                     return {
                         taskStatus: TaskDataStatus.RUNNING,
                         startedOn: new Date().toISOString(),
+                        executionName: this.response.event.executionName,
                         log: task.log.concat([
                             {
                                 message: "Task started.",

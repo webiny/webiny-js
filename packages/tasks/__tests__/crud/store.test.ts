@@ -106,6 +106,7 @@ describe("store crud", () => {
             startedOn: undefined,
             finishedOn: undefined,
             eventResponse: undefined,
+            executionName: "",
             taskStatus: TaskDataStatus.PENDING
         };
         expect(task).toEqual(expectedCreatedTask);
@@ -146,6 +147,7 @@ describe("store crud", () => {
             startedOn: undefined,
             finishedOn: undefined,
             eventResponse: undefined,
+            executionName: "",
             taskStatus: TaskDataStatus.PENDING
         };
         expect(updatedTask).toEqual(expectedUpdatedTask);

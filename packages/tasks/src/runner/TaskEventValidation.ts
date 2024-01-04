@@ -6,9 +6,11 @@ import { ITaskEvent } from "~/handler/types";
 const validation = zod
     .object({
         webinyTaskId: zod.string(),
+        webinyTaskDefinitionId: zod.string(),
         endpoint: zod.string(),
         tenant: zod.string(),
         locale: zod.string(),
+        executionName: zod.string(),
         stateMachineId: zod.string()
     })
     .required();

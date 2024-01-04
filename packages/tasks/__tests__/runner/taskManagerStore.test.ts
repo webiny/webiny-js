@@ -1,11 +1,21 @@
-import { createMockContext } from "~tests/mocks";
 import { TaskManagerStore } from "~/runner/TaskManagerStore";
 import { createMockTask } from "~tests/mocks/task";
+import { useHandler } from "~tests/helpers/useHandler";
+import { createMockTaskDefinitions } from "~tests/mocks/definition";
 
 describe("task manager store", () => {
     it("should get task", async () => {
-        const context = createMockContext();
-        const task = createMockTask();
+        const mockTask = createMockTask();
+
+        const { handle } = useHandler({
+            plugins: [...createMockTaskDefinitions()]
+        });
+        const context = await handle();
+
+        const task = await context.tasks.createTask({
+            ...mockTask,
+            definitionId: "myCustomTaskNumber1"
+        });
 
         const store = new TaskManagerStore(context, task);
 
@@ -13,19 +23,23 @@ describe("task manager store", () => {
     });
 
     it("should update task values", async () => {
-        const task = createMockTask();
-        const context = createMockContext({
-            tasks: {
-                getTask: async () => {
-                    return task;
-                }
-            }
+        const mockTask = createMockTask();
+
+        const { handle } = useHandler({
+            plugins: [...createMockTaskDefinitions()]
         });
+        const context = await handle();
+
+        const task = await context.tasks.createTask({
+            ...mockTask,
+            definitionId: "myCustomTaskNumber1"
+        });
+
         const store = new TaskManagerStore(context, task);
         const values = {
             test: "test"
         };
-        await store.updateValues({ values });
+        await store.updateValues({ ...values });
         expect(store.getValues()).toEqual(values);
         expect(store.getTask()).toEqual({
             ...task,
@@ -60,13 +74,16 @@ describe("task manager store", () => {
     });
 
     it("should not update values", async () => {
-        const task = createMockTask();
-        const context = createMockContext({
-            tasks: {
-                getTask: async () => {
-                    return task;
-                }
-            }
+        const mockTask = createMockTask();
+
+        const { handle } = useHandler({
+            plugins: [...createMockTaskDefinitions()]
+        });
+        const context = await handle();
+
+        const task = await context.tasks.createTask({
+            ...mockTask,
+            definitionId: "myCustomTaskNumber1"
         });
         const store = new TaskManagerStore(context, task);
 
@@ -80,5 +97,32 @@ describe("task manager store", () => {
             return values;
         });
         expect(store.getValues()).toEqual(task.values);
+    });
+
+    it("should update task", async () => {
+        const mockTask = createMockTask();
+
+        const { handle } = useHandler({
+            plugins: [...createMockTaskDefinitions()]
+        });
+        const context = await handle();
+
+        const task = await context.tasks.createTask({
+            ...mockTask,
+            definitionId: "myCustomTaskNumber1"
+        });
+        const store = new TaskManagerStore(context, task);
+        expect(store.getTask()).toEqual(task);
+
+        await store.updateTask(() => {
+            return {
+                executionName: "a test execution name"
+            };
+        });
+        expect(store.getTask()).toEqual({
+            ...task,
+            savedOn: expect.stringMatching(/^20/),
+            executionName: "a test execution name"
+        });
     });
 });

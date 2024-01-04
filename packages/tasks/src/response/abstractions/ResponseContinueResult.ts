@@ -16,9 +16,6 @@ export interface IResponseContinueParams<T = ITaskDataValues> {
 
 export interface IResponseContinueResult<T = ITaskDataValues> extends IResponseBaseResult {
     message?: string;
-    webinyTaskId: string;
-    tenant: string;
-    locale: string;
     values: T;
     wait?: number;
     status: TaskResponseStatus.CONTINUE;

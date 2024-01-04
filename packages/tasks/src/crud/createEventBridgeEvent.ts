@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
 import { ITaskConfig, ITaskData } from "~/types";
-import { ITaskEvent } from "~/handler/types";
+import { ITaskEventInput } from "~/handler/types";
 
 interface CreateEventBridgeEventParams {
     client: EventBridgeClient;
-    task: ITaskData;
+    task: Pick<ITaskData, "id" | "definitionId">;
     tenant: string;
     locale: string;
     eventBusName: string;
@@ -17,8 +17,9 @@ const createEventBridgeEvent = async (params: CreateEventBridgeEventParams) => {
      * The ITaskEvent is what our handler expect to get.
      * Endpoint and stateMachineId are added by the step function.
      */
-    const event: Omit<ITaskEvent, "endpoint" | "stateMachineId"> = {
+    const event: ITaskEventInput = {
         webinyTaskId: task.id,
+        webinyTaskDefinitionId: task.definitionId,
         tenant,
         locale
     };

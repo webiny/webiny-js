@@ -33,7 +33,7 @@ describe("trigger crud", () => {
         const result = await context.tasks.trigger({
             definition: "myCustomTaskNumber1",
             name: "A test of triggering task",
-            values: {
+            input: {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
             }
@@ -43,6 +43,7 @@ describe("trigger crud", () => {
             id: expect.any(String),
             name: "A test of triggering task",
             definitionId: "myCustomTaskNumber1",
+            executionName: "",
             values: {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
