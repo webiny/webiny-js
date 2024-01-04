@@ -1,5 +1,5 @@
 import React from "react";
-import { App, Provider } from "@webiny/app";
+import { App } from "@webiny/app";
 import { WcpProvider } from "@webiny/app-wcp";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
@@ -8,7 +8,7 @@ import { createUiStateProvider } from "./providers/UiStateProvider";
 import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
-import { DefaultIcons } from "~/components/IconPicker/config";
+import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ThemeProvider } from "@webiny/app-theme";
 
@@ -26,12 +26,16 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
         <ApolloProvider>
             <ThemeProvider>
                 <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                    <App>
-                        <Provider hoc={TelemetryProvider} />
-                        <Provider hoc={UiStateProvider} />
-                        <Provider hoc={SearchProvider} />
-                        <Provider hoc={UserMenuProvider} />
-                        <Provider hoc={NavigationProvider} />
+                    <App
+                        providers={[
+                            TelemetryProvider,
+                            UiStateProvider,
+                            SearchProvider,
+                            UserMenuProvider,
+                            NavigationProvider,
+                            IconPickerConfigProvider
+                        ]}
+                    >
                         <DefaultIcons />
                         <Base />
                         {children}

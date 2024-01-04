@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     Menu as BaseMenu,
     MenuProps as RmwcMenuProps,
@@ -17,9 +17,13 @@ const style = {
     })
 };
 
+type MenuChildrenFunctionProps = {
+    closeMenu: () => void;
+};
+
 type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: React.ReactNode;
+    children: React.ReactNode | ((props: MenuChildrenFunctionProps) => React.ReactNode);
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;
@@ -49,79 +53,78 @@ type MenuProps = RmwcMenuProps & {
     "data-testid"?: string;
 };
 
-interface MenuState {
-    menuIsOpen: boolean;
-}
-
 /**
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
-class Menu extends React.Component<MenuProps, MenuState> {
-    static defaultProps: Partial<MenuProps> = {
-        anchor: "topStart"
-    };
+const Menu = (props: MenuProps) => {
+    const {
+        children,
+        handle,
+        anchor = "topStart",
+        className,
+        disabled,
+        onOpen,
+        onClose,
+        onSelect,
+        open,
+        renderToPortal
+    } = props;
 
-    public override state: MenuState = {
-        menuIsOpen: false
-    };
+    const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-    private readonly openMenu = () => {
-        if (this.props.disabled !== true) {
-            this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+    useEffect(() => {
+        if (typeof open === "boolean") {
+            setMenuIsOpen(open);
         }
-    };
+    }, [open]);
 
-    private readonly closeMenu = () => {
-        this.setState({ menuIsOpen: false }, () => this.props.onClose && this.props.onClose());
-    };
+    const openMenu = useCallback(() => {
+        if (disabled) {
+            return;
+        }
 
-    private readonly renderMenuWithPortal = () => {
-        return (
-            <BaseMenu
-                anchorCorner={this.props.anchor}
-                open={this.state.menuIsOpen}
-                className={this.props.className}
-                onClose={this.closeMenu}
-                onSelect={this.props.onSelect}
-                renderToPortal={true}
-                style={{ zIndex: 99 }} // Fixes Menu in Drawers
-            >
-                {this.props.children}
-            </BaseMenu>
-        );
-    };
+        setMenuIsOpen(true);
 
-    private readonly renderCustomContent = () => {
-        const { children } = this.props;
-        return (
-            <MenuSurface
-                open={this.state.menuIsOpen}
-                onClose={this.closeMenu}
-                renderToPortal={this.props.renderToPortal}
-            >
-                {typeof children === "function"
-                    ? children({ closeMenu: this.closeMenu })
-                    : children}
-            </MenuSurface>
-        );
-    };
+        if (onOpen) {
+            onOpen();
+        }
+    }, [disabled, onOpen]);
 
-    private readonly renderMenuContent = () => {
-        return Array.isArray(this.props.children)
-            ? this.renderMenuWithPortal()
-            : this.renderCustomContent();
-    };
+    const closeMenu = useCallback(() => {
+        setMenuIsOpen(false);
 
-    public override render(): React.ReactNode {
-        return (
-            <MenuSurfaceAnchor data-testid={this.props["data-testid"]}>
-                {this.renderMenuContent()}
-                {this.props.handle &&
-                    React.cloneElement(this.props.handle, { onClick: this.openMenu })}
-            </MenuSurfaceAnchor>
-        );
-    }
-}
+        if (onClose) {
+            onClose();
+        }
+    }, [onClose]);
+
+    const renderMenuWithPortal = () => (
+        <BaseMenu
+            anchorCorner={anchor}
+            open={menuIsOpen}
+            className={className}
+            onClose={closeMenu}
+            onSelect={onSelect}
+            renderToPortal={true}
+            style={{ zIndex: 99 }} // Fixes Menu in Drawers
+        >
+            {children}
+        </BaseMenu>
+    );
+
+    const renderCustomContent = () => (
+        <MenuSurface open={menuIsOpen} onClose={closeMenu} renderToPortal={renderToPortal}>
+            {typeof children === "function" ? children({ closeMenu }) : children}
+        </MenuSurface>
+    );
+
+    return (
+        <MenuSurfaceAnchor data-testid={props["data-testid"]}>
+            {Array.isArray(children) ? renderMenuWithPortal() : renderCustomContent()}
+            {handle && React.cloneElement(handle, { onClick: openMenu })}
+        </MenuSurfaceAnchor>
+    );
+};
 
 const MenuDivider: React.FC = () => {
     return <li className="mdc-list-divider" role="separator" />;

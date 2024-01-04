@@ -41,6 +41,7 @@ export {
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
 export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
+export * from "./components/IconPicker";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {

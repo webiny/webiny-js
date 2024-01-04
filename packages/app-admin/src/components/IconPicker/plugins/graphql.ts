@@ -2,9 +2,9 @@ import gql from "graphql-tag";
 
 /**
  * ###########################
- * List Icon Files Query Response
+ * List Custom Icons Query Response
  */
-export interface ListIconFilesQueryResponse {
+export interface ListCustomIconsQueryResponse {
     fileManager: {
         listFiles: {
             data: [{ name: string; src: string }] | null;
@@ -13,14 +13,19 @@ export interface ListIconFilesQueryResponse {
     };
 }
 
-export const LIST_ICON_FILES = gql`
-    query ListIconFiles {
+export const LIST_CUSTOM_ICONS = gql`
+    query ListCustomIcons($limit: Int!) {
         fileManager {
-            listFiles(where: { tags_contains: "scope:iconPicker" }) {
+            listFiles(where: { tags_startsWith: "scope:iconPicker" }, limit: $limit) {
                 data {
                     name
                     src
                     tags
+                }
+                error {
+                    code
+                    data
+                    message
                 }
             }
         }

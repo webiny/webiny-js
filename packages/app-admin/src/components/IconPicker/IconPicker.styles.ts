@@ -39,16 +39,25 @@ export const MenuHeader = styled.div`
     }
 `;
 
+export const MenuContent = styled.div`
+    position: relative;
+    width: 364px;
+    height: 524px;
+`;
+
 export const Row = styled.div`
     display: flex;
     align-items: center;
 `;
 
-export const Cell = styled.div<{ color: string; isActive: boolean }>`
+export const Cell = styled.div<{ isActive: boolean }>`
     cursor: pointer;
-    color: ${({ color }) => color};
     background-color: ${({ isActive, theme }) =>
         isActive ? theme.styles.colors.color5 : theme.styles.colors.color6};
+
+    &:hover {
+        background: ${({ theme }) => theme.styles.colors.color5};
+    }
 
     & > * {
         padding: 4px;
@@ -98,12 +107,6 @@ export const InputsWrapper = styled.div`
 
     .webiny-ui-input {
         height: 40px !important;
-    }
-`;
-
-export const addButtonStyle = css`
-    &.mdc-button {
-        height: 40px;
     }
 `;
 
