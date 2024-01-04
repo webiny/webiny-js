@@ -1,6 +1,6 @@
-// listMenus.js
-import { gqlClient } from "../utils";
+import { createGqlQuery, GqlListResponse } from "../utils";
 
+// 1. GraphQL query.
 const LIST_MENUS_QUERY = /* GraphQL */ `
     query pbListMenus {
         pageBuilder {
@@ -10,33 +10,28 @@ const LIST_MENUS_QUERY = /* GraphQL */ `
                     slug
                     description
                     items
-                    createdOn
-                    createdBy {
-                        id
-                        displayName
-                    }
                 }
             }
         }
     }
 `;
 
+export const pbListMenus = createGqlQuery<
+    GqlListResponse<{
+        title: string;
+        slug: string;
+        description: string;
+        items: Record<string, any>;
+    }>
+>(LIST_MENUS_QUERY);
+
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbListMenus(): Promise<Record<string, any>[]>;
+            pbListMenus: typeof pbListMenus;
         }
     }
 }
 
-Cypress.Commands.add("pbListMenus", () => {
-    return cy.login().then(user => {
-        return gqlClient
-            .request({
-                query: LIST_MENUS_QUERY,
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => response.pageBuilder.listMenus.data);
-    });
-});
+Cypress.Commands.add("pbListMenus", pbListMenus);

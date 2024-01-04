@@ -1,5 +1,4 @@
-import { gqlClient } from "../utils";
-import { login, User } from "../login";
+import { createGqlQuery, GqlResponse } from "../utils";
 
 const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
@@ -15,32 +14,15 @@ const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
-interface PbDeletePageParams {
-    user: User;
-    variables: { id: string };
-}
-
-export const pbDeletePage = ({ user, variables }: PbDeletePageParams) => {
-    return gqlClient.request({
-        query: DELETE_PAGE,
-        variables,
-        authToken: user.idToken.jwtToken
-    });
-};
+export const pbDeletePage = createGqlQuery<GqlResponse<null>, { id: string }>(DELETE_PAGE);
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeletePage(
-                variables: PbDeletePageParams["variables"]
-            ): ReturnType<typeof pbDeletePage>;
+            pbDeletePage: typeof pbDeletePage;
         }
     }
 }
 
-Cypress.Commands.add("pbDeletePage", variables => {
-    return login().then(user => {
-        return pbDeletePage({ user, variables });
-    });
-});
+Cypress.Commands.add("pbDeletePage", pbDeletePage);

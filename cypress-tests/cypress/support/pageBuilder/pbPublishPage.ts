@@ -1,13 +1,4 @@
-import { gqlClient } from "../utils";
-
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace Cypress {
-        interface Chainable {
-            pbPublishPage(id: string): Promise<{ id: string }>;
-        }
-    }
-}
+import { createGqlQuery, GqlResponse } from "../utils";
 
 const PUBLISH_PAGE = /* GraphQL */ `
     mutation PbPublishPage($id: ID!) {
@@ -21,23 +12,17 @@ const PUBLISH_PAGE = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbPublishPage", id => {
-    return cy.login().then(user => {
-        return gqlClient
-            .request({
-                query: PUBLISH_PAGE,
-                variables: { id },
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => {
-                // Check for any error in the response
-                const { error, data } = response.pageBuilder.publishPage;
-                if (error) {
-                    // Handle the error as needed
-                    throw new Error(`Failed to publish page: ${error.message}`);
-                }
+export const pbPublishPage = createGqlQuery<GqlResponse<{ id: string }>, { id: string }>(
+    PUBLISH_PAGE
+);
 
-                return data;
-            });
-    });
-});
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbPublishPage: typeof pbPublishPage;
+        }
+    }
+}
+
+Cypress.Commands.add("pbPublishPage", pbPublishPage);
