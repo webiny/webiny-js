@@ -42,6 +42,15 @@ export class ReindexingTaskRunner {
         limit = 200
     ): Promise<ITaskResponseResult> {
         this.keys = keys;
+
+        const isIndexAllowed = (index: string): boolean => {
+            const values = this.manager.store.getValues();
+            if (typeof values.matching !== "string" || !values.matching) {
+                return true;
+            }
+            return index.includes(values.matching);
+        };
+
         try {
             while (this.manager.isCloseToTimeout() === false) {
                 if (this.manager.isAborted()) {
@@ -66,6 +75,9 @@ export class ReindexingTaskRunner {
                      * No index defined? Impossible but let's skip if really happens.
                      */
                     if (!item.index) {
+                        continue;
+                    }
+                    if (isIndexAllowed(item.index) === false) {
                         continue;
                     }
                     /**

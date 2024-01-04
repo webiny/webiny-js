@@ -1,4 +1,4 @@
-import { ITaskIdentity } from "~/types";
+import { ITaskIdentity } from "@webiny/tasks/types";
 
 export const createMockIdentity = (): ITaskIdentity => {
     return {

@@ -42,6 +42,7 @@ describe("reindexing task runner", () => {
         expect(result).toEqual(
             new ResponseContinueResult({
                 webinyTaskId: "mockEventId",
+                webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
                 locale: "en-US",
                 values: {
@@ -81,6 +82,7 @@ describe("reindexing task runner", () => {
         expect(result).toEqual(
             new ResponseAbortedResult({
                 webinyTaskId: "mockEventId",
+                webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
                 locale: "en-US"
             })
@@ -110,6 +112,7 @@ describe("reindexing task runner", () => {
             new ResponseDoneResult({
                 message: "No more items to process.",
                 webinyTaskId: "mockEventId",
+                webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
                 locale: "en-US"
             })

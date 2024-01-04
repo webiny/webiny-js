@@ -25,6 +25,7 @@ export interface IElasticsearchIndexingTaskValuesSettings {
 }
 
 export interface IElasticsearchIndexingTaskValues {
+    matching?: string;
     keys?: IElasticsearchIndexingTaskValuesKeys;
     settings?: IElasticsearchIndexingTaskValuesSettings;
 }
