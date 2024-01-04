@@ -1,22 +1,30 @@
-// This will ensure the page is tested for 10 minutes, until the test can be considered as failed.
+import { sleep } from "@webiny/utils";
+
 const MAX_RETRIES = 100;
 const WAIT_BETWEEN_RETRIES = 3000;
 const REPEAT_WAIT_BETWEEN_RETRIES = 2000;
 
-const sleep = (ms = WAIT_BETWEEN_RETRIES) =>
-    new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            reloadUntil(callback: () => Promise<boolean> | boolean, options?: any): Chainable<any>;
+        }
+    }
+}
 
+// This will ensure the page is tested for 10 minutes, until the test can be considered as failed.
 Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
     return cy.log(`Reloading until a condition is met...`).then(() => {
         let retries = -1;
         let repeat = 0;
-        function check() {
+
+        function check(): any {
             retries++;
-            return cy.then(async response => {
+            // @ts-expect-error
+            return cy.then(async () => {
                 await sleep(REPEAT_WAIT_BETWEEN_RETRIES);
-                const result = await callback(response);
+                const result = await callback();
                 try {
                     if (!result) {
                         throw Error();
@@ -48,7 +56,7 @@ Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
                         throw new Error(`retried too many times (${--retries})`);
                     }
 
-                    await sleep();
+                    await sleep(WAIT_BETWEEN_RETRIES);
                     return cy
                         .log(`Reloading (attempt #${retries + 1})...`)
                         .reload()
@@ -56,7 +64,6 @@ Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
                             return check();
                         });
                 }
-                return response;
             });
         }
 

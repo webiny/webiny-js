@@ -32,39 +32,47 @@ context("Page Builder - Menu Items", () => {
         cy.pbCreateMenu(menuData);
         cy.pbCreatePage({ category: "static" }).then(page => {
             cy.pbUpdatePage({
-                id: page.id,
-                data: {
-                    category: "static",
-                    path: `/${pageNameNew}`,
-                    title: pageNameNew,
-                    settings: {
-                        general: {
-                            layout: "static",
-                            tags: [pageNameNew, pageNameNew]
+                variables: {
+                    id: page.id,
+                    data: {
+                        category: "static",
+                        path: `/${pageNameNew}`,
+                        title: pageNameNew,
+                        settings: {
+                            general: {
+                                layout: "static",
+                                tags: [pageNameNew, pageNameNew]
+                            }
                         }
                     }
                 }
             }).then(page => {
-                cy.pbPublishPage(page.id);
+                cy.pbPublishPage({ variables: { id: page.data.id } });
             });
         });
 
         cy.pbCreatePage({ category: "static" }).then(page => {
             cy.pbUpdatePage({
-                id: page.id,
-                data: {
-                    category: "static",
-                    path: `/${pageNameNewEdit}`,
-                    title: pageNameNewEdit,
-                    settings: {
-                        general: {
-                            layout: "static",
-                            tags: [pageNameNewEdit, pageNameNewEdit]
+                variables: {
+                    id: page.id,
+                    data: {
+                        category: "static",
+                        path: `/${pageNameNewEdit}`,
+                        title: pageNameNewEdit,
+                        settings: {
+                            general: {
+                                layout: "static",
+                                tags: [pageNameNewEdit, pageNameNewEdit]
+                            }
                         }
                     }
                 }
             }).then(page => {
-                cy.pbPublishPage(page.id);
+                cy.pbPublishPage({
+                    variables: {
+                        id: page.data.id
+                    }
+                });
             });
         });
     });

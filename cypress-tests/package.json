@@ -8,6 +8,7 @@
     "@4tw/cypress-drag-drop": "^1.4.0",
     "@testing-library/cypress": "^10.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "amazon-cognito-identity-js": "^4.5.3",
     "cypress": "^13.0.0",
     "cypress-image-snapshot": "^4.0.1",
