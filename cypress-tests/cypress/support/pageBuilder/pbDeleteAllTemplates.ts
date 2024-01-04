@@ -49,14 +49,13 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
                 // Loop through the templates and delete each one.
                 return Promise.all(
                     templates.map(async (template: { id: string }) => {
-                        await gqlClient
-                            .request({
-                                query: DELETE_MUTATION,
-                                variables: {
-                                    id: template.id
-                                },
-                                authToken: user.idToken.jwtToken
-                            })
+                        await gqlClient.request({
+                            query: DELETE_MUTATION,
+                            variables: {
+                                id: template.id
+                            },
+                            authToken: user.idToken.jwtToken
+                        });
                     })
                 );
             });
