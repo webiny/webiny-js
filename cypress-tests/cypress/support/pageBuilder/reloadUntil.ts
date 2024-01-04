@@ -1,8 +1,11 @@
-import { sleep } from "@webiny/utils";
-
 const MAX_RETRIES = 100;
 const WAIT_BETWEEN_RETRIES = 3000;
 const REPEAT_WAIT_BETWEEN_RETRIES = 2000;
+
+export const sleep = (ms = 1000) =>
+    new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
