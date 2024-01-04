@@ -13,6 +13,7 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { ITaskManagerStore } from "~/runner/abstractions";
+import { getErrorProperties } from "~/runner/utils/getErrorProperties";
 
 export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
@@ -86,7 +87,7 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
             });
         } catch (ex) {
             return this.response.error({
-                error: ex
+                error: getErrorProperties(ex)
             });
         }
 
