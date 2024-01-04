@@ -2,26 +2,27 @@ import * as pulumi from "@pulumi/pulumi";
 import { StepFunctionDefinition, StepFunctionDefinitionStatesType } from "./types";
 
 export interface BackgroundTaskParams {
-    lambdaFunctionName: string;
-    lambdaFunctionArn: pulumi.Input<string>;
+    lambdaName: string;
+    lambdaArn: pulumi.Input<string>;
 }
 
 export const createBackgroundTaskDefinition = (
     params: BackgroundTaskParams
 ): StepFunctionDefinition => {
-    const { lambdaFunctionName, lambdaFunctionArn } = params;
+    const { lambdaName, lambdaArn } = params;
     return {
         Comment: "Background tasks",
         StartAt: "TransformEvent",
         States: {
             /**
-             * Transform the EventBridge event to a format that will be used in the Lambda function.
+             * Transform the EventBridge event to a format that will be used in the Lambda.
              */
             TransformEvent: {
                 Type: StepFunctionDefinitionStatesType.Pass,
                 Next: "Run",
                 Parameters: {
                     "webinyTaskId.$": "$.detail.webinyTaskId",
+                    "webinyTaskDefinitionId.$": "$.detail.webinyTaskDefinitionId",
                     "tenant.$": "$.detail.tenant",
                     "locale.$": "$.detail.locale"
                 }
@@ -33,21 +34,23 @@ export const createBackgroundTaskDefinition = (
              */
             Run: {
                 Type: StepFunctionDefinitionStatesType.Task,
-                Resource: lambdaFunctionArn,
+                Resource: lambdaArn,
                 Next: "CheckStatus",
                 ResultPath: "$",
                 InputPath: "$",
                 /**
-                 * Parameters will be received as an event in the lambda function.
+                 * Parameters will be received as an event in the Lambda.
                  * Task Handler determines that it can run a task based on the Payload.webinyTaskId parameter - it must be set!
                  */
                 Parameters: {
-                    name: lambdaFunctionName,
+                    name: lambdaName,
                     payload: {
                         "webinyTaskId.$": "$.webinyTaskId",
+                        "webinyTaskDefinitionId.$": "$.webinyTaskDefinitionId",
                         "locale.$": "$.locale",
                         "tenant.$": "$.tenant",
                         endpoint: "manage",
+                        "executionName.$": "$$.Execution.Name",
                         "stateMachineId.$": "$$.StateMachine.Id"
                     }
                 },

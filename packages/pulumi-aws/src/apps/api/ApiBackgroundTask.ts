@@ -9,7 +9,7 @@ import { getLayerArn } from "@webiny/aws-layers";
 
 export type ApiBackgroundTask = PulumiAppModule<typeof ApiBackgroundTask>;
 
-export const ApiBackgroundTaskLambdaName = "background-task-lambda";
+export const ApiBackgroundTaskLambdaName = "background-task";
 
 export const ApiBackgroundTask = createAppModule({
     name: "ApiBackgroundTask",
@@ -32,17 +32,17 @@ export const ApiBackgroundTask = createAppModule({
         });
 
         const stepFunctionPolicy = createBackgroundTaskStepFunctionPolicy(app, {
-            name: "background-task-stepFn-policy",
+            name: "background-task-sfn-policy",
             lambdaFunctionArn: backgroundTask.output.arn
         });
 
         const stepFunctionRole = createBackgroundTaskStepFunctionRole(app, {
-            name: "background-task-stepFn-role",
+            name: "background-task-sfn-role",
             policy: stepFunctionPolicy.output
         });
 
         const stepFunction = app.addResource(aws.sfn.StateMachine, {
-            name: "background-task-step-function",
+            name: "background-task-sfn",
             config: {
                 // TODO logging to cloudwatch
                 /*
@@ -55,8 +55,8 @@ export const ApiBackgroundTask = createAppModule({
                 roleArn: stepFunctionRole.output.arn,
                 definition: pulumi.jsonStringify(
                     createBackgroundTaskDefinition({
-                        lambdaFunctionName: ApiBackgroundTaskLambdaName,
-                        lambdaFunctionArn: backgroundTask.output.arn
+                        lambdaName: ApiBackgroundTaskLambdaName,
+                        lambdaArn: backgroundTask.output.arn
                     })
                 )
             }
