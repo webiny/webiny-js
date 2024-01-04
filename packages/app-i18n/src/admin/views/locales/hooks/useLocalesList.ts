@@ -6,7 +6,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useI18N } from "~/hooks/useI18N";
-import { LIST_LOCALES, DELETE_LOCALE } from "./graphql";
+import { LIST_LOCALES, DELETE_LOCALE, ListI18NLocalesResponse } from "./graphql";
 import { useCurrentLocale } from "./useCurrentLocale";
 import { I18NLocaleItem } from "~/types";
 
@@ -34,12 +34,7 @@ interface Config {
 interface UseLocalesListHook {
     (config: Config): {
         loading: boolean;
-        locales: Array<{
-            code: string;
-            default: boolean;
-            createdOn: string;
-            [key: string]: any;
-        }>;
+        locales: I18NLocaleItem[];
         currentLocaleCode: string | null;
         createLocale: () => void;
         filter: string;
@@ -58,7 +53,7 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
     const { refetchLocales, getDefaultLocale, getCurrentLocale, setCurrentLocale } = useI18N();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_LOCALES);
+    const listQuery = useQuery<ListI18NLocalesResponse>(LIST_LOCALES);
     const currentLocaleCode = useCurrentLocale();
     const [deleteIt, deleteMutation] = useMutation(DELETE_LOCALE, {
         refetchQueries: [{ query: LIST_LOCALES }]
@@ -69,14 +64,14 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
     });
 
     const filterLocales = useCallback(
-        ({ code }) => {
+        ({ code }: I18NLocaleItem) => {
             return code.toLowerCase().includes(filter);
         },
         [filter]
     );
 
     const sortLocaleList = useCallback(
-        locales => {
+        (locales: I18NLocaleItem[]) => {
             if (!sort) {
                 return locales;
             }
@@ -86,7 +81,7 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
         [sort]
     );
 
-    const data = listQuery.loading ? [] : listQuery.data.i18n.listI18NLocales.data;
+    const data = listQuery.loading ? [] : listQuery.data?.i18n.listI18NLocales.data || [];
 
     const deleteLocale = useCallback(
         (item: I18NLocaleItem) => {

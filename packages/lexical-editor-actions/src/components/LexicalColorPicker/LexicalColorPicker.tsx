@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, SyntheticEvent } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import classnames from "classnames";
-import { ChromePicker } from "react-color";
+import { ChromePicker, ColorChangeHandler, RGBColor } from "react-color";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
@@ -122,11 +122,11 @@ export const LexicalColorPicker = ({
     const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");
     let themeColor = false;
 
-    const getColorValue = useCallback(rgb => {
+    const getColorValue = useCallback((rgb: RGBColor) => {
         return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
     }, []);
 
-    const onColorChange = useCallback(
+    const onColorChange: ColorChangeHandler = useCallback(
         (color, event) => {
             event.preventDefault();
             // controls of the picker are updated as user moves the mouse
@@ -139,7 +139,7 @@ export const LexicalColorPicker = ({
         [onChange]
     );
 
-    const onColorChangeComplete = useCallback(
+    const onColorChangeComplete: ColorChangeHandler = useCallback(
         ({ rgb }, event) => {
             setActualSelectedColor(value);
             onChangeComplete(getColorValue(rgb));
@@ -148,7 +148,7 @@ export const LexicalColorPicker = ({
         [onChangeComplete]
     );
 
-    const togglePicker = useCallback(e => {
+    const togglePicker = useCallback((e: SyntheticEvent) => {
         e.stopPropagation();
         setShowPicker(!showPicker);
     }, []);
