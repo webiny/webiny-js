@@ -6,12 +6,6 @@
   "author": "Webiny Ltd.",
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^1.4.0",
-    "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/introspection": "4.0.0",
-    "@graphql-codegen/typescript": "4.0.1",
-    "@graphql-codegen/typescript-document-nodes": "4.0.1",
-    "@graphql-codegen/typescript-graphql-files-modules": "3.0.0",
-    "@graphql-codegen/typescript-operations": "4.0.1",
     "@testing-library/cypress": "^10.0.0",
     "@webiny/project-utils": "0.0.0",
     "amazon-cognito-identity-js": "^4.5.3",
@@ -20,7 +14,6 @@
     "cypress-mailosaur": "^2.7.0",
     "cypress-wait-until": "^1.7.1",
     "del": "^6.0.0",
-    "graphql": "^15.5.0",
     "graphql-request": "^3.3.0",
     "lodash": "^4.17.11",
     "nanoid": "^3.0.0",
@@ -32,7 +25,6 @@
     "cypress:open": "yarn cypress open",
     "cy:open": "yarn cypress:open",
     "cypress:run": "yarn cypress run",
-    "cy:run": "yarn cypress:run",
-    "gql:codegen": "graphql-codegen --config codegen.yml"
+    "cy:run": "yarn cypress:run"
   }
 }
