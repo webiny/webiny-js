@@ -272,6 +272,18 @@ module.exports = async function createProject({
         const node = process.versions.node;
         const os = process.platform;
 
+        let npm = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npm", ["--version"], { cwd: projectRoot });
+            npm = subprocess.stdout;
+        } catch {}
+
+        let npx = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npx", ["--version"], { cwd: projectRoot });
+            npx = subprocess.stdout;
+        } catch {}
+
         let yarn = NOT_APPLICABLE;
         try {
             const subprocess = await execa("yarn", ["--version"], { cwd: projectRoot });
@@ -312,6 +324,8 @@ module.exports = async function createProject({
                 `Operating System: ${os}`,
                 `Node: ${node}`,
                 `Yarn: ${yarn}`,
+                `Npm: ${npm}`,
+                `Npx: ${npx}`,
                 `create-webiny-project: ${cwp}`,
                 `Template: ${cwpTemplate}`,
                 `Template Options: ${templateOptionsJson}`,
