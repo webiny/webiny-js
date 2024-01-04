@@ -26,10 +26,12 @@ Cypress.Commands.add("pbDeleteAllPages", async () => {
             continue;
         }
 
-        await pbDeletePage({
-            user,
-            variables: { id: pages[i].pid }
-        });
+        await pbDeletePage(
+            {
+                id: pages[i].pid
+            },
+            { user }
+        );
     }
 
     return until(

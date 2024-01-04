@@ -63,22 +63,25 @@ export const createGqlClient = (gqlClientOptions: CreateGqlClientParams = {}) =>
 
 export const gqlClient = createGqlClient();
 
-type GqlQueryFunctionParams<TVars> = { user?: User; variables?: TVars };
+interface GqlQueryOptions {
+    user?: User;
+}
 
-type GqlQueryFunction<TReturn, TVars> = (params: GqlQueryFunctionParams<TVars>) => Promise<TReturn>;
+type GqlQueryFunction<TReturn, TVariables> = (
+    variables: TVariables,
+    options?: GqlQueryOptions
+) => Promise<TReturn>;
 
-export const createGqlQuery = <TResponse, TVars = Record<string, never>>(
+export const createGqlQuery = <TReturn, TVariables = Record<string, never>>(
     query: string
-): GqlQueryFunction<TResponse, TVars> => {
-    return async params => {
-        let user = params.user;
+): GqlQueryFunction<TReturn, TVariables> => {
+    return async (variables: TVariables, options?: GqlQueryOptions) => {
+        let user = options?.user;
         if (!user) {
             user = await getSuperAdminUser();
         }
 
         const authToken = user?.idToken.jwtToken;
-
-        const { variables } = params;
 
         return gqlClient.query({
             query,

@@ -12,22 +12,20 @@ describe("Page Builder - List Menu Item Types", () => {
             cy.pbCreatePage({ category: "static" }).then(page => {
                 // eslint-disable-next-line jest/valid-expect-in-promise
                 cy.pbUpdatePage({
-                    variables: {
-                        id: page.id,
-                        data: {
-                            category: "static",
-                            path: `/page-${id}-${i}`,
-                            title: `Page-${id}-${i}`,
-                            settings: {
-                                general: {
-                                    layout: "static",
-                                    tags: [`page-${id}`, `page-${id}-${i}`]
-                                }
+                    id: page.id,
+                    data: {
+                        category: "static",
+                        path: `/page-${id}-${i}`,
+                        title: `Page-${id}-${i}`,
+                        settings: {
+                            general: {
+                                layout: "static",
+                                tags: [`page-${id}`, `page-${id}-${i}`]
                             }
                         }
                     }
                 }).then(page => {
-                    cy.pbPublishPage({ variables: { id: page.data.id } });
+                    cy.pbPublishPage({ id: page.data.id });
                 });
             });
         }
