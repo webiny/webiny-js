@@ -41,11 +41,6 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
             config.decorateAssetTransformationStrategy(() => {
                 return new SharpTransform({ s3, bucket, imageResizeWidths });
             });
-
-            /*config.setResponseHeaders(({ headers }) => {
-                headers.set("x-custom-header", `123456`);
-                headers.set("x-image-preset", `q1.23`);
-            });*/
         })
     ];
 };

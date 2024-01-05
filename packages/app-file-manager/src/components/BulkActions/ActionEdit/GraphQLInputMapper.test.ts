@@ -2,32 +2,68 @@ import { GraphQLInputMapper } from "./GraphQLInputMapper";
 import { BatchDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
 import { FileItem } from "@webiny/app-admin/types";
 
+const fileMock: FileItem = {
+    id: "12345678",
+    createdOn: new Date().toISOString(),
+    savedOn: new Date().toISOString(),
+    location: {
+        folderId: "root"
+    },
+    createdBy: {
+        id: "123",
+        displayName: "123"
+    },
+    src: `https://demo.website.com/files/12345678/filenameA.png`,
+    key: `12345678/filenameA.png`,
+    name: "filenameA.png",
+    size: 123456,
+    type: "image/png",
+    tags: ["sketch", "file-a", "webiny"],
+    aliases: []
+};
+
 describe("GraphQLInputMapper", () => {
     it("should return a GraphQL formatted output based on the received BatchDTO and previous data", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field1",
-            field2: "old-field2",
-            field3: ["old-field3"]
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: "old-field1",
+                field2: "old-field2",
+                field3: ["old-field3"]
+            }
         };
 
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "accessControl",
                     operator: OperatorType.OVERRIDE,
                     value: {
-                        field1: "new-field1"
+                        accessControl: {
+                            type: "private"
+                        }
                     }
                 },
                 {
-                    field: "field2",
+                    field: "extensions.field1",
+                    operator: OperatorType.OVERRIDE,
+                    value: {
+                        extensions: {
+                            field1: "new-field1"
+                        }
+                    }
+                },
+                {
+                    field: "extensions.field2",
                     operator: OperatorType.REMOVE
                 },
                 {
-                    field: "field3",
+                    field: "extensions.field3",
                     operator: OperatorType.APPEND,
                     value: {
-                        field3: ["new-field3-1", "new-field3-2"]
+                        extensions: {
+                            field3: ["new-field3-1", "new-field3-2"]
+                        }
                     }
                 }
             ]
@@ -36,25 +72,39 @@ describe("GraphQLInputMapper", () => {
         const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "new-field1",
-            field2: null,
-            field3: ["old-field3", "new-field3-1", "new-field3-2"]
+            ...data,
+            accessControl: {
+                type: "private"
+            },
+            extensions: {
+                field1: "new-field1",
+                field2: null,
+                field3: ["old-field3", "new-field3-1", "new-field3-2"]
+            }
         });
     });
 
     it("should not override data for fields not defined in the batch", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field1",
-            field2: "old-field2"
+        const data: FileItem = {
+            ...fileMock,
+            accessControl: {
+                type: "public"
+            },
+            extensions: {
+                field1: "old-field1",
+                field2: "old-field2"
+            }
         };
 
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.OVERRIDE,
                     value: {
-                        field1: "new-field1"
+                        extensions: {
+                            field1: "new-field1"
+                        }
                     }
                 }
             ]
@@ -63,8 +113,11 @@ describe("GraphQLInputMapper", () => {
         const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "new-field1",
-            field2: "old-field2"
+            ...data,
+            extensions: {
+                field1: "new-field1",
+                field2: "old-field2"
+            }
         });
     });
 });

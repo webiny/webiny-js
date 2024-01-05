@@ -1,4 +1,10 @@
-import { AssetOutputStrategy, Asset, AssetReply, AssetRequest } from "~/delivery";
+import {
+    AssetOutputStrategy,
+    Asset,
+    AssetReply,
+    AssetRequest,
+    AssetOutputStrategyDecoratorParams
+} from "~/delivery";
 import { FileManagerContext } from "~/types";
 import { ResponseHeaders } from "@webiny/handler";
 
@@ -15,32 +21,23 @@ export interface ResponseHeadersSetter {
 
 export class SetResponseHeaders implements AssetOutputStrategy {
     private readonly setter: ResponseHeadersSetter;
-    private readonly context: FileManagerContext;
-    private readonly assetRequest: AssetRequest;
-    private readonly asset: Asset;
-    private strategy: AssetOutputStrategy;
+    private strategyDecoratorParams: AssetOutputStrategyDecoratorParams;
 
     constructor(
         setter: ResponseHeadersSetter,
-        context: FileManagerContext,
-        assetRequest: AssetRequest,
-        asset: Asset,
-        strategy: AssetOutputStrategy
+        strategyDecoratorParams: AssetOutputStrategyDecoratorParams
     ) {
+        this.strategyDecoratorParams = strategyDecoratorParams;
         this.setter = setter;
-        this.context = context;
-        this.assetRequest = assetRequest;
-        this.asset = asset;
-        this.strategy = strategy;
     }
 
     async output(asset: Asset): Promise<AssetReply> {
-        const reply = await this.strategy.output(asset);
+        const reply = await this.strategyDecoratorParams.assetOutputStrategy.output(asset);
 
         await this.setter({
-            asset: this.asset,
-            assetRequest: this.assetRequest,
-            context: this.context,
+            asset: this.strategyDecoratorParams.asset,
+            assetRequest: this.strategyDecoratorParams.assetRequest,
+            context: this.strategyDecoratorParams.context,
             headers: reply.getHeaders()
         });
 

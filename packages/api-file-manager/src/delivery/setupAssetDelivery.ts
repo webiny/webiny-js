@@ -104,14 +104,14 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                         assertAssetWasResolved(resolvedAsset);
 
                         if (context.wcp.canUsePrivateFiles()) {
-                            configBuilder.decorateAssetProcessor((context, processor) => {
+                            configBuilder.decorateAssetProcessor(({ assetProcessor, context }) => {
                                 // Currently, we only have one authorizer.
                                 const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
 
                                 return new PrivateFilesAssetProcessor(
                                     context,
                                     assetAuthorizer,
-                                    processor
+                                    assetProcessor
                                 );
                             });
                         }
@@ -151,19 +151,19 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
         }),
         // Create the default configuration
         createAssetDeliveryConfig(config => {
-            config.decorateRequestResolver(() => {
+            config.decorateAssetRequestResolver(() => {
                 // This resolver works with `/files/*` requests.
                 return new FilesAssetRequestResolver();
             });
 
-            config.decorateRequestResolver(resolver => {
+            config.decorateAssetRequestResolver(({ assetRequestResolver }) => {
                 // This resolver tries to resolve the request using aliases.
-                return new AliasAssetRequestResolver(params.documentClient, resolver);
+                return new AliasAssetRequestResolver(params.documentClient, assetRequestResolver);
             });
 
-            config.decorateRequestResolver(resolver => {
+            config.decorateAssetRequestResolver(({ assetRequestResolver }) => {
                 // This resolver works with `/private/*` requests.
-                return new PrivateFileAssetRequestResolver(resolver);
+                return new PrivateFileAssetRequestResolver(assetRequestResolver);
             });
         })
     ];

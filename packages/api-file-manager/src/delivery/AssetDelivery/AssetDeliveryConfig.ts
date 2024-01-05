@@ -17,33 +17,52 @@ import { NullAssetOutputStrategy } from "./NullAssetOutputStrategy";
 import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor";
 import { PassthroughAssetTransformationStrategy } from "./transformation/PassthroughAssetTransformationStrategy";
 
-type Setter<T extends any[]> = T extends [...any, infer TLast] ? (...args: T) => TLast : never;
+type Setter<TParams, TReturn> = (params: TParams) => TReturn;
 
-export type AssetRequestResolverDecorator = Setter<[AssetRequestResolver]>;
-export type AssetResolverDecorator = Setter<[AssetResolver]>;
-export type AssetProcessorDecorator = Setter<[FileManagerContext, AssetProcessor]>;
-export type AssetTransformationDecorator = Setter<
-    [FileManagerContext, AssetTransformationStrategy]
+export type AssetRequestResolverDecorator = Setter<
+    { assetRequestResolver: AssetRequestResolver },
+    AssetRequestResolver
 >;
+
+export type AssetResolverDecorator = Setter<{ assetResolver: AssetResolver }, AssetResolver>;
+
+export type AssetProcessorDecorator = Setter<
+    { context: FileManagerContext; assetProcessor: AssetProcessor },
+    AssetProcessor
+>;
+
+export type AssetTransformationDecorator = Setter<
+    { context: FileManagerContext; assetTransformationStrategy: AssetTransformationStrategy },
+    AssetTransformationStrategy
+>;
+
+export interface AssetOutputStrategyDecoratorParams {
+    context: FileManagerContext;
+    assetRequest: AssetRequest;
+    asset: Asset;
+    assetOutputStrategy: AssetOutputStrategy;
+}
+
 export type AssetOutputStrategyDecorator = Setter<
-    [FileManagerContext, AssetRequest, Asset, AssetOutputStrategy]
+    AssetOutputStrategyDecoratorParams,
+    AssetOutputStrategy
 >;
 
 export class AssetDeliveryConfigBuilder {
-    private requestResolverDecorators: AssetRequestResolverDecorator[] = [];
+    private assetRequestResolverDecorators: AssetRequestResolverDecorator[] = [];
     private assetResolverDecorators: AssetResolverDecorator[] = [];
     private assetProcessorDecorators: AssetProcessorDecorator[] = [];
     private assetTransformationStrategyDecorators: AssetTransformationDecorator[] = [];
     private assetOutputStrategyDecorators: AssetOutputStrategyDecorator[] = [];
 
     setResponseHeaders(setter: ResponseHeadersSetter) {
-        this.decorateAssetOutputStrategy((context, assetRequest, asset, strategy) => {
-            return new SetResponseHeaders(setter, context, assetRequest, asset, strategy);
+        this.decorateAssetOutputStrategy(params => {
+            return new SetResponseHeaders(setter, params);
         });
     }
 
-    decorateRequestResolver(decorator: AssetRequestResolverDecorator) {
-        this.requestResolverDecorators.push(decorator);
+    decorateAssetRequestResolver(decorator: AssetRequestResolverDecorator) {
+        this.assetRequestResolverDecorators.push(decorator);
     }
 
     decorateAssetResolver(decorator: AssetResolverDecorator) {
@@ -66,8 +85,8 @@ export class AssetDeliveryConfigBuilder {
      * @internal
      */
     getAssetRequestResolver() {
-        return this.requestResolverDecorators.reduce<AssetRequestResolver>(
-            (value, decorator) => decorator(value),
+        return this.assetRequestResolverDecorators.reduce<AssetRequestResolver>(
+            (value, decorator) => decorator({ assetRequestResolver: value }),
             new NullRequestResolver()
         );
     }
@@ -77,7 +96,7 @@ export class AssetDeliveryConfigBuilder {
      */
     getAssetResolver() {
         return this.assetResolverDecorators.reduce<AssetResolver>(
-            (value, decorator) => decorator(value),
+            (value, decorator) => decorator({ assetResolver: value }),
             new NullAssetResolver()
         );
     }
@@ -87,21 +106,23 @@ export class AssetDeliveryConfigBuilder {
      */
     getAssetProcessor(context: FileManagerContext) {
         return this.assetProcessorDecorators.reduce<AssetProcessor>(
-            (value, decorator) => decorator(context, value),
+            (value, decorator) => decorator({ assetProcessor: value, context }),
             new TransformationAssetProcessor(this.getAssetTransformationStrategy(context))
         );
     }
 
     getAssetOutputStrategy(context: FileManagerContext, assetRequest: AssetRequest, asset: Asset) {
         return this.assetOutputStrategyDecorators.reduce<AssetOutputStrategy>(
-            (value, decorator) => decorator(context, assetRequest, asset, value),
+            (value, decorator) => {
+                return decorator({ context, assetRequest, asset, assetOutputStrategy: value });
+            },
             new NullAssetOutputStrategy()
         );
     }
 
     getAssetTransformationStrategy(context: FileManagerContext) {
         return this.assetTransformationStrategyDecorators.reduce<AssetTransformationStrategy>(
-            (value, decorator) => decorator(context, value),
+            (value, decorator) => decorator({ context, assetTransformationStrategy: value }),
             new PassthroughAssetTransformationStrategy()
         );
     }
