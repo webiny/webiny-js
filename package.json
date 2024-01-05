@@ -134,6 +134,7 @@
     "cy:open": "yarn cypress:open",
     "cypress:run": "cd cypress-tests && yarn cypress run",
     "cy:run": "yarn cypress:run",
+    "cy:ts": "yarn cypress:ts",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
