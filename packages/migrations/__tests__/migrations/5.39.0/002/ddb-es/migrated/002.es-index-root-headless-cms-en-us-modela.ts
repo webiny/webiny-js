@@ -14,9 +14,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:42.180Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: null,
         entryId: "658c24aa6607be00087f1169",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: null,
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:42.180Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -44,8 +56,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:42.180Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: null,
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: null,
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:42.180Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -77,9 +101,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:33.775Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:34.175Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -108,8 +144,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:33.775Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:34.175Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:34.175Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:34.175Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -141,9 +189,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:33.775Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:34.175Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -171,8 +231,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:33.775Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:34.175Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:34.175Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:34.175Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -204,9 +276,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:25.235Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:25.701Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -235,8 +319,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:25.235Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:25.701Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:25.701Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:25.701Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -268,9 +364,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:25.235Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:25.701Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -298,8 +406,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:25.235Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:25.701Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:25.701Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:25.701Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -331,9 +451,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:11.821Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:12.775Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -362,8 +494,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:11.821Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:12.775Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:12.775Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:12.775Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -395,9 +539,21 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T13:20:11.821Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
         entryModifiedBy: null,
-        entryModifiedOn: "2023-12-27T13:20:12.775Z",
+        entryModifiedOn: null,
         entrySavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -425,8 +581,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:20:11.821Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: "2023-12-27T13:20:12.775Z",
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: "2023-12-27T13:20:12.775Z",
         revisionModifiedBy: null,
-        revisionModifiedOn: "2023-12-27T13:20:12.775Z",
+        revisionModifiedOn: null,
         revisionSavedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",

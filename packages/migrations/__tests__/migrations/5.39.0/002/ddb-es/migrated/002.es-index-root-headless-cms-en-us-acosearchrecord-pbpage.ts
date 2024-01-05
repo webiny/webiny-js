@@ -14,7 +14,19 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T12:43:00.024Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: null,
         entryId: "wby-aco-658c1bd3c39bb10008431b5c",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: null,
         entryModifiedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -58,6 +70,18 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T12:43:00.024Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: null,
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: null,
         revisionModifiedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -117,7 +141,19 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         entryCreatedOn: "2023-12-27T12:43:00.006Z",
+        entryFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryFirstPublishedOn: null,
         entryId: "wby-aco-658c1bd3c39bb10008431b5b",
+        entryLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        entryLastPublishedOn: null,
         entryModifiedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -161,6 +197,18 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T12:43:00.006Z",
+        revisionFirstPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionFirstPublishedOn: null,
+        revisionLastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        revisionLastPublishedOn: null,
         revisionModifiedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",

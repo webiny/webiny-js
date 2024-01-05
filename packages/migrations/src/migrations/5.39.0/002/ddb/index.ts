@@ -9,6 +9,8 @@ import { inject, makeInjectable } from "@webiny/ioc";
 import { executeWithRetry } from "@webiny/utils";
 import { CmsEntry } from "../types";
 import { createDdbEntryEntity } from "../entities/createEntryEntity";
+import { assignNewMetaFields } from "../assignNewMetaFields";
+import { isMigratedEntry } from "~/migrations/5.39.0/002/isMigratedEntry";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -20,8 +22,6 @@ interface LastEvaluatedKey {
 interface FolderSubmissionsDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
 }
-
-const REVISION_CREATED_ON_FIELD = "revisionCreatedOn";
 
 export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
@@ -65,8 +65,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
         }
 
         for (const item of result.items) {
-            // If no `revisionCreatedOn` was set, we need to push the upgrade.
-            if (!item[REVISION_CREATED_ON_FIELD]) {
+            if (!isMigratedEntry(item)) {
                 return true;
             }
         }
@@ -110,33 +109,10 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                 logger.debug(`Processing ${result.items.length} items...`);
                 const items: BatchWriteItem[] = [];
                 for (const item of result.items) {
-                    if (item[REVISION_CREATED_ON_FIELD]) {
-                        continue;
+                    if (!isMigratedEntry(item)) {
+                        assignNewMetaFields(item);
+                        items.push(this.entryEntity.putBatch(item));
                     }
-
-                    // Revision-level meta fields.
-                    item.revisionCreatedOn = item.createdOn;
-
-                    // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                    item.revisionModifiedOn = item.savedOn;
-
-                    item.revisionSavedOn = item.savedOn;
-                    item.revisionCreatedBy = item.createdBy;
-                    item.revisionModifiedBy = item.modifiedBy || null;
-                    item.revisionSavedBy = item.modifiedBy || item.createdBy;
-
-                    // Entry-level meta fields.
-                    item.entryCreatedOn = item.createdOn;
-
-                    // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                    item.entryModifiedOn = item.savedOn;
-
-                    item.entrySavedOn = item.savedOn;
-                    item.entryCreatedBy = item.createdBy;
-                    item.entryModifiedBy = item.modifiedBy || null;
-                    item.entrySavedBy = item.modifiedBy || item.createdBy;
-
-                    items.push(this.entryEntity.putBatch(item));
                 }
 
                 const execute = () => {

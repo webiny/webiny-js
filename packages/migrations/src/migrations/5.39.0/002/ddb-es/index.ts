@@ -25,6 +25,8 @@ import { createDdbEntryEntity, createDdbEsEntryEntity } from "../entities/create
 import { getDecompressedData } from "~/migrations/5.37.0/002/utils/getDecompressedData";
 import { CmsEntry } from "../types";
 import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
+import { assignNewMetaFields } from "../assignNewMetaFields";
+import { isMigratedEntry } from "~/migrations/5.39.0/002/isMigratedEntry";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -50,8 +52,6 @@ interface DynamoDbElasticsearchRecord {
     SK: string;
     data: string;
 }
-
-const REVISION_CREATED_ON_FIELD = "revisionCreatedOn";
 
 export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     private readonly elasticsearchClient: Client;
@@ -104,8 +104,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                 continue;
             }
 
-            // If no `revisionCreatedOn` was set, we need to push the upgrade.
-            if (!data[REVISION_CREATED_ON_FIELD]) {
+            if (!isMigratedEntry(data)) {
                 return true;
             }
         }
@@ -189,33 +188,10 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                         });
                     }
 
-                    ddbItems.push(
-                        this.ddbEntryEntity.putBatch({
-                            ...item,
+                    assignNewMetaFields(item);
 
-                            // Revision-level meta fields.
-                            revisionCreatedOn: item.createdOn,
+                    ddbItems.push(this.ddbEntryEntity.putBatch(item));
 
-                            // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                            revisionModifiedOn: item.savedOn,
-
-                            revisionSavedOn: item.savedOn,
-                            revisionCreatedBy: item.createdBy,
-                            revisionModifiedBy: item.modifiedBy || null,
-                            revisionSavedBy: item.modifiedBy || item.createdBy,
-
-                            // Entry-level meta fields.
-                            entryCreatedOn: item.createdOn,
-
-                            // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                            entryModifiedOn: item.savedOn,
-
-                            entrySavedOn: item.savedOn,
-                            entryCreatedBy: item.createdBy,
-                            entryModifiedBy: item.modifiedBy || null,
-                            entrySavedBy: item.modifiedBy || item.createdBy
-                        })
-                    );
                     /**
                      * Prepare the loading of DynamoDB Elasticsearch part of the records.
                      */
@@ -249,40 +225,21 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                             `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
                         );
                         continue;
-                    } else if (
-                        !context.forceExecute &&
-                        decompressedData[REVISION_CREATED_ON_FIELD]
-                    ) {
-                        logger.trace(
-                            `Skipping record "${decompressedData.entryId}" as it already has meta fields defined...`
-                        );
-                        continue;
                     }
 
-                    const compressedData = await getCompressedData({
-                        ...decompressedData,
-                        // Revision-level meta fields.
-                        revisionCreatedOn: decompressedData.createdOn,
+                    if (isMigratedEntry(decompressedData)) {
+                        const forceExecute = context.forceExecute;
+                        if (!forceExecute) {
+                            logger.trace(
+                                `Skipping record "${decompressedData.entryId}" as it already has meta fields defined...`
+                            );
+                            continue;
+                        }
+                    }
 
-                        // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                        revisionModifiedOn: decompressedData.savedOn,
+                    assignNewMetaFields(decompressedData);
 
-                        revisionSavedOn: decompressedData.savedOn,
-                        revisionCreatedBy: decompressedData.createdBy,
-                        revisionModifiedBy: decompressedData.modifiedBy || null,
-                        revisionSavedBy: decompressedData.modifiedBy || decompressedData.createdBy,
-
-                        // Entry-level meta fields.
-                        entryCreatedOn: decompressedData.createdOn,
-
-                        // `modifiedOn` does not exist, that's why we're using `savedOn`.
-                        entryModifiedOn: decompressedData.savedOn,
-
-                        entrySavedOn: decompressedData.savedOn,
-                        entryCreatedBy: decompressedData.createdBy,
-                        entryModifiedBy: decompressedData.modifiedBy || null,
-                        entrySavedBy: decompressedData.modifiedBy || decompressedData.createdBy
-                    });
+                    const compressedData = await getCompressedData(decompressedData);
 
                     ddbEsItems.push(
                         this.ddbEsEntryEntity.putBatch({

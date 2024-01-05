@@ -19,7 +19,19 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:43:00.024Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "wby-aco-658c1bd3c39bb10008431b5c",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -63,6 +75,18 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:43:00.024Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -212,9 +236,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814bef4a940008b3ba27",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -245,8 +281,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -296,9 +344,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228145f98841000981c721",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -329,8 +389,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -380,9 +452,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814b7a77e60008f70d62",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -413,8 +497,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -465,9 +561,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602282e07a77e60008f70d63",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -498,8 +606,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -550,9 +670,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:25.235Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
             entryId: "658c24996607be00087f1167",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:25.701Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -581,8 +713,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:25.235Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:25.701Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:25.701Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:25.701Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -622,9 +766,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:25.235Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
             entryId: "658c24996607be00087f1167",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:25.701Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -652,8 +808,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:25.235Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:25.701Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:25.701Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:25.701Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -693,9 +861,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228145f98841000981c720",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -726,8 +906,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -778,9 +970,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602281486ed41f0008bc2dab",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -811,8 +1015,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -863,7 +1079,19 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:43:00.006Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "wby-aco-658c1bd3c39bb10008431b5b",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -907,6 +1135,18 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:43:00.006Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1056,9 +1296,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814bef4a940008b3ba26",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1089,8 +1341,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1141,9 +1405,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814851197600081724ae",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1174,8 +1450,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1225,9 +1513,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814a0df4b000088735bb",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1258,8 +1558,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1310,9 +1622,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:11.821Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
             entryId: "658c248b6607be00087f1166",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:12.775Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1341,8 +1665,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:11.821Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:12.775Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:12.775Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:12.775Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1382,9 +1718,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:11.821Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
             entryId: "658c248b6607be00087f1166",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:12.775Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1412,8 +1760,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:11.821Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:12.775Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:12.775Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:12.775Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1453,9 +1813,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228148f98841000981c723",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1486,8 +1858,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1537,9 +1921,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602281486639200009fd35eb",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1570,8 +1966,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1622,9 +2030,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814891bd1300087bd24c",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1655,8 +2075,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1707,9 +2139,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228145f98841000981c71f",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1740,8 +2184,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1791,9 +2247,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602281486639200009fd35ec",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1824,8 +2292,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1876,9 +2356,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:22:44.672Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
             entryId: "658c2524adbc1700090e1ad1",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:22:46.091Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1907,8 +2399,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:22:44.672Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:22:46.091Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:22:46.091Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:22:46.091Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1948,9 +2452,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:22:44.672Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
             entryId: "658c2524adbc1700090e1ad1",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:22:46.091Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -1978,8 +2494,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:22:44.672Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:22:46.091Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:22:46.091Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:22:46.091Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2019,9 +2547,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228148fa244d0008c47c79",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2052,8 +2592,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2104,9 +2656,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228148f98841000981c724",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2137,8 +2701,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2188,9 +2764,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:33.775Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
             entryId: "658c24a16607be00087f1168",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:34.175Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2219,8 +2807,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:33.775Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:34.175Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:34.175Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:34.175Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2260,9 +2860,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:33.775Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
             entryId: "658c24a16607be00087f1168",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:34.175Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2290,8 +2902,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:33.775Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: "2023-12-27T13:20:34.175Z",
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: "2023-12-27T13:20:34.175Z",
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:34.175Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2331,9 +2955,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "60228148fa244d0008c47c7a",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2364,8 +3000,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2416,9 +3064,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814b0df4b000088735bc",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2449,8 +3109,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2501,9 +3173,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:20:42.180Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "658c24aa6607be00087f1169",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T13:20:42.180Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2531,8 +3215,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:20:42.180Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T13:20:42.180Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2572,7 +3268,19 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T13:22:57.094Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "658c2531adbc1700090e1ad2",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2613,6 +3321,18 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T13:22:57.094Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2658,9 +3378,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602281486ed41f0008bc2dad",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2691,8 +3423,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2743,9 +3487,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "6022814bef4a940008b3ba28",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2776,8 +3532,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2828,9 +3596,21 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             entryCreatedOn: "2023-12-27T12:42:58.754Z",
+            entryFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryFirstPublishedOn: null,
             entryId: "602281486ed41f0008bc2dac",
+            entryLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            entryLastPublishedOn: null,
             entryModifiedBy: null,
-            entryModifiedOn: "2023-12-27T12:42:58.754Z",
+            entryModifiedOn: null,
             entrySavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",
@@ -2861,8 +3641,20 @@ export const ddbEsTableDataMigrated = [
                 type: "admin"
             },
             revisionCreatedOn: "2023-12-27T12:42:58.754Z",
+            revisionFirstPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionFirstPublishedOn: null,
+            revisionLastPublishedBy: {
+                displayName: "ad min",
+                id: "658c1b73c39bb10008431b44",
+                type: "admin"
+            },
+            revisionLastPublishedOn: null,
             revisionModifiedBy: null,
-            revisionModifiedOn: "2023-12-27T12:42:58.754Z",
+            revisionModifiedOn: null,
             revisionSavedBy: {
                 displayName: "ad min",
                 id: "658c1b73c39bb10008431b44",

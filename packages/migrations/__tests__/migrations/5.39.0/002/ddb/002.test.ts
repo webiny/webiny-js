@@ -9,7 +9,7 @@ import {
 } from "~tests/utils";
 import { CmsEntriesInitNewMetaFields_5_39_0_002 } from "~/migrations/5.39.0/002/ddb";
 import { ddbPrimaryTableData } from "./002.ddbPrimaryTableData";
-import { ddbPrimaryTableDataMigrated } from "./002.ddbPrimaryTableData.migrated";
+import { ddbPrimaryTableDataMigrated } from "./migrated/002.ddbPrimaryTableData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);

@@ -38,6 +38,16 @@ import { headlessCmsModelBMigrated } from "./migrated/002.es-index-root-headless
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
+// Ensures that either both modifiedOn and modifiedBy fields are set or none is set.
+const expectModifiedFieldsAreSynced = (entry: Record<string, unknown>) => {
+    const hasRevisionModifiedOn = !!entry.revisionModifiedOn;
+    const hasRevisionModifiedBy = !!entry.revisionModifiedBy;
+    expect(hasRevisionModifiedBy).toBe(hasRevisionModifiedOn);
+
+    const hasEntryModifiedOn = !!entry.entryModifiedOn;
+    const hasEntryModifiedBy = !!entry.entryModifiedBy;
+    expect(hasEntryModifiedOn).toBe(hasEntryModifiedBy);
+};
 describe("5.39.0-002", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
@@ -187,6 +197,8 @@ describe("5.39.0-002", () => {
             headlessCmsAcoSearchRecordPbPageMigrated
         );
 
+        headlessCmsAcoSearchRecordPbPageMigrated.forEach(expectModifiedFieldsAreSynced);
+
         // 2. Check FM File index.
         const migratedHeadlessCmsFmFileRecords = await listElasticsearchItems({
             client: elasticsearchClient,
@@ -196,6 +208,8 @@ describe("5.39.0-002", () => {
 
         expect(migratedHeadlessCmsFmFileRecords).toBeArrayOfSize(21);
         expect(migratedHeadlessCmsFmFileRecords).toEqual(headlessCmsFmFileMigrated);
+
+        headlessCmsFmFileMigrated.forEach(expectModifiedFieldsAreSynced);
 
         // 3. Check Model A index.
         const migratedHeadlessCmsModelARecords = await listElasticsearchItems({
@@ -207,6 +221,8 @@ describe("5.39.0-002", () => {
         expect(migratedHeadlessCmsModelARecords).toBeArrayOfSize(7);
         expect(migratedHeadlessCmsModelARecords).toEqual(headlessCmsModelAMigrated);
 
+        headlessCmsModelAMigrated.forEach(expectModifiedFieldsAreSynced);
+
         // 4. Check Model B index.
         const migratedHeadlessCmsModelBRecords = await listElasticsearchItems({
             client: elasticsearchClient,
@@ -216,6 +232,8 @@ describe("5.39.0-002", () => {
 
         expect(migratedHeadlessCmsModelBRecords).toBeArrayOfSize(3);
         expect(migratedHeadlessCmsModelBRecords).toEqual(headlessCmsModelBMigrated);
+
+        headlessCmsModelBMigrated.forEach(expectModifiedFieldsAreSynced);
 
         /**
          * Test that all indexes have the expected settings after the migration.
