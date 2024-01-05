@@ -33,7 +33,7 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
             field1: "new-field1",
@@ -60,7 +60,7 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
             field1: "new-field1",

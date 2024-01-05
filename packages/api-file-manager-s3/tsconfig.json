@@ -10,6 +10,7 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
+    { "path": "../tasks" },
     { "path": "../utils" },
     { "path": "../validation" }
   ],
@@ -36,6 +37,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

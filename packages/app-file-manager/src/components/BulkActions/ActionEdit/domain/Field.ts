@@ -23,7 +23,7 @@ export class Field {
 
     static createFromRaw(field: FieldRaw) {
         const label = field.label;
-        const value = field.id;
+        const value = field.fieldId;
         const operators = Operator.createFromField(field);
         return new Field(label, value, operators, field);
     }

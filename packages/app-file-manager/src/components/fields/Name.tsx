@@ -1,8 +1,8 @@
 import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { useFile, useFileManagerApi } from "~/index";
 import { useBind } from "@webiny/form";
+import { useFile, useFileManagerApi } from "~/index";
 
 export const Name = () => {
     const { file } = useFile();

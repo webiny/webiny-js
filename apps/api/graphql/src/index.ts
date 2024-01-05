@@ -36,8 +36,6 @@ import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
-
-// Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
@@ -68,6 +66,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -100,7 +99,6 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createBackgroundTasks(),
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({

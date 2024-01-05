@@ -29,13 +29,6 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
         createAssetDeliveryConfig(config => {
             const s3 = new S3({ region });
 
-            config.setImageResizeWidths(() => imageResizeWidths);
-
-            // config.setHeaders((asset, headers) => {
-            //     // headers.set("cache-control", `public, max-age=${30758400}`);
-            //     headers.set("cache-control", `no-store`);
-            // });
-
             config.decorateAssetResolver(() => {
                 // This resolver loads file information from the `.metadata` file.
                 return new S3AssetResolver(s3, bucket);
@@ -48,6 +41,11 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
             config.decorateAssetTransformationStrategy(() => {
                 return new SharpTransform({ s3, bucket, imageResizeWidths });
             });
+
+            /*config.setResponseHeaders(({ headers }) => {
+                headers.set("x-custom-header", `123456`);
+                headers.set("x-image-preset", `q1.23`);
+            });*/
         })
     ];
 };

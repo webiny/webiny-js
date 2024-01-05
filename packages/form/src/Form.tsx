@@ -27,6 +27,7 @@ import {
 } from "~/types";
 import { Validator } from "@webiny/validation/types";
 import camelCase from "lodash/camelCase";
+import { useBindPrefix } from "~/BindPrefix";
 
 interface State<T extends GenericFormData = GenericFormData> {
     data: T;
@@ -57,15 +58,18 @@ export const useForm = <T extends GenericFormData = GenericFormData>() => {
 
 export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
     const form = useForm();
+    const bindPrefix = useBindPrefix();
+
+    const bindName = [bindPrefix, props.name].filter(Boolean).join(".");
 
     useEffect(() => {
-        if (props.defaultValue !== undefined && lodashGet(form.data, props.name) === undefined) {
-            form.setValue(props.name, props.defaultValue);
+        if (props.defaultValue !== undefined && lodashGet(form.data, bindName) === undefined) {
+            form.setValue(bindName, props.defaultValue);
         }
     }, []);
 
     // @ts-expect-error
-    return form.createField(props);
+    return form.createField({ ...props, name: bindName });
 }
 
 interface InputRecord {
@@ -236,6 +240,9 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     });
 
     useImperativeHandle(ref, () => ({
+        validate: () => {
+            return formRef.current.validate();
+        },
         submit: (ev: React.SyntheticEvent, options?: FormSubmitOptions) => {
             /**
              * We need to `return` to utilize the `props.onSubmit` return value. It's useful for plugins and chaining

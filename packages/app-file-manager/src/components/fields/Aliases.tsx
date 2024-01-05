@@ -1,12 +1,12 @@
 import React, { Fragment, useMemo } from "react";
+import styled from "@emotion/styled";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Input } from "@webiny/ui/Input";
-import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonDefault, IconButton } from "@webiny/ui/Button";
 import { validation } from "@webiny/validation";
 import { Bind, useBind } from "@webiny/form";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 
 const Fieldset = styled("div")({
     position: "relative",

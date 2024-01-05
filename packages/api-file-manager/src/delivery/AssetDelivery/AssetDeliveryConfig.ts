@@ -6,7 +6,9 @@ import {
     AssetOutputStrategy,
     AssetRequest,
     Asset,
-    AssetTransformationStrategy
+    AssetTransformationStrategy,
+    ResponseHeadersSetter,
+    SetResponseHeaders
 } from "~/delivery";
 import { FileManagerContext } from "~/types";
 import { NullRequestResolver } from "~/delivery/AssetDelivery/NullRequestResolver";
@@ -17,7 +19,6 @@ import { PassthroughAssetTransformationStrategy } from "./transformation/Passthr
 
 type Setter<T extends any[]> = T extends [...any, infer TLast] ? (...args: T) => TLast : never;
 
-export type ImageResizeWidthsSetter = Setter<[number[]]>;
 export type AssetRequestResolverDecorator = Setter<[AssetRequestResolver]>;
 export type AssetResolverDecorator = Setter<[AssetResolver]>;
 export type AssetProcessorDecorator = Setter<[FileManagerContext, AssetProcessor]>;
@@ -29,15 +30,16 @@ export type AssetOutputStrategyDecorator = Setter<
 >;
 
 export class AssetDeliveryConfigBuilder {
-    private imageResizeWidths: ImageResizeWidthsSetter[] = [];
     private requestResolverDecorators: AssetRequestResolverDecorator[] = [];
     private assetResolverDecorators: AssetResolverDecorator[] = [];
     private assetProcessorDecorators: AssetProcessorDecorator[] = [];
     private assetTransformationStrategyDecorators: AssetTransformationDecorator[] = [];
     private assetOutputStrategyDecorators: AssetOutputStrategyDecorator[] = [];
 
-    setImageResizeWidths(setter: ImageResizeWidthsSetter) {
-        this.imageResizeWidths.push(setter);
+    setResponseHeaders(setter: ResponseHeadersSetter) {
+        this.decorateAssetOutputStrategy((context, assetRequest, asset, strategy) => {
+            return new SetResponseHeaders(setter, context, assetRequest, asset, strategy);
+        });
     }
 
     decorateRequestResolver(decorator: AssetRequestResolverDecorator) {
@@ -58,13 +60,6 @@ export class AssetDeliveryConfigBuilder {
 
     decorateAssetOutputStrategy(decorator: AssetOutputStrategyDecorator) {
         this.assetOutputStrategyDecorators.push(decorator);
-    }
-
-    /**
-     * @internal
-     */
-    getImageResizeWidths() {
-        return this.imageResizeWidths.reduce<number[]>((value, decorator) => decorator(value), []);
     }
 
     /**

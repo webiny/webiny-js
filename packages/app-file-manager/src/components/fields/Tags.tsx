@@ -1,10 +1,11 @@
 import React from "react";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useBind } from "@webiny/form";
-import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useFileManagerApi, useFileManagerView } from "~/index";
+import { useFileOrUndefined } from "./useFileOrUndefined";
 
 export const Tags = () => {
-    const { file } = useFile();
+    const { file } = useFileOrUndefined();
     const { canEdit } = useFileManagerApi();
     const { tags } = useFileManagerView();
 
@@ -22,7 +23,7 @@ export const Tags = () => {
             unique={true}
             allowFreeInput={true}
             useSimpleValues={true}
-            disabled={!canEdit(file)}
+            disabled={file ? !canEdit(file) : false}
         />
     );
 };

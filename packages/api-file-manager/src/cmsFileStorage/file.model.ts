@@ -109,6 +109,7 @@ const accessControlField = () => {
     return createModelField({
         label: "Access Control",
         type: "object",
+        tags: ["$bulk-edit"],
         settings: {
             fields: [accessControlTypeField()]
         }
@@ -119,6 +120,7 @@ const tagsField = () => {
     return createModelField({
         label: "Tags",
         type: "text",
+        tags: ["$bulk-edit"],
         multipleValues: true,
         validation: [required()]
     });

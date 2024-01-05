@@ -7,6 +7,7 @@ import { FileLifecycleEvents } from "./types/file.lifecycle";
 import { CreatedBy, File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { Context as TasksContext } from "@webiny/tasks/types";
 
 export * from "./types/file.lifecycle";
 export * from "./types/file";
@@ -21,7 +22,8 @@ export interface FileManagerContext
         SecurityContext,
         TenancyContext,
         I18NContext,
-        CmsContext {
+        CmsContext,
+        TasksContext {
     fileManager: FileManagerContextObject;
 }
 

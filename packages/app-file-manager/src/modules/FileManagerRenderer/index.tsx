@@ -1,12 +1,11 @@
 import React from "react";
 import { Wcp } from "@webiny/app-admin";
+import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/index";
 import { FileManagerRenderer } from "./FileManagerView";
 import { FilterByType } from "./filters/FilterByType";
 import { ActionDelete, ActionEdit, ActionMove } from "~/components/BulkActions";
-import { Name } from "~/components/FileDetails/components/Name";
-import { Tags } from "~/components/FileDetails/components/Tags";
-import { Aliases } from "~/components/FileDetails/components/Aliases";
+import { Name, Tags, Aliases, AccessControl } from "~/components/fields";
 import {
     CellActions,
     CellAuthor,
@@ -15,8 +14,6 @@ import {
     CellSize,
     CellType
 } from "~/components/Table";
-import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
-import { AccessControl } from "~/components/FileDetails/components/AccessControl";
 
 const { Browser, FileDetails } = FileManagerConfig;
 
@@ -66,12 +63,19 @@ export const FileManagerRendererModule = () => {
                 />
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
+                <Browser.BulkEditField name={"tags"} element={<Tags />} />
                 <FileDetails.Field name={"aliases"} element={<Aliases />} />
                 <Wcp.CanUsePrivateFiles>
-                    <FileDetails.Field name={"accessControl"} element={<AccessControl />} />
+                    <FileDetails.Field
+                        name={"accessControl"}
+                        element={<AccessControl defaultValue={"public"} />}
+                    />
+                    <Browser.BulkEditField
+                        name={"accessControl"}
+                        element={<AccessControl placeholder={"Select privacy settings"} />}
+                    />
                 </Wcp.CanUsePrivateFiles>
                 <FileDetails.GroupFields value={false} />
-                <FileDetails.Width value={"1000px"} />
             </FileManagerConfig>
         </>
     );
