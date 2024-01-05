@@ -50,8 +50,10 @@ export const createGqlClient = (gqlClientOptions: CreateGqlClientParams = {}) =>
 
     const query = <TResponse = GqlResponse>(params: RequestParams) => {
         return request(params).then(response => {
-            const [gqlOperationName] = Object.keys(response.data);
-            return response.data[gqlOperationName] as TResponse;
+            // TODO: could be improved.
+            const [appName] = Object.keys(response);
+            const [gqlOperationName] = Object.keys(response[appName]);
+            return response[appName][gqlOperationName] as TResponse;
         });
     };
 
