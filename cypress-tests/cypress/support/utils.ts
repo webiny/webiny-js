@@ -53,7 +53,20 @@ export const createGqlClient = (gqlClientOptions: CreateGqlClientParams = {}) =>
             // TODO: could be improved.
             const [appName] = Object.keys(response);
             const [gqlOperationName] = Object.keys(response[appName]);
-            return response[appName][gqlOperationName] as TResponse;
+
+            const data = response[appName][gqlOperationName] as TResponse;
+
+            if (response.error) {
+                console.error(
+                    `An error occurred while executing ${appName}.${gqlOperationName} GraphQl operation.`,
+                    {
+                        params,
+                        response
+                    }
+                );
+            }
+
+            return data;
         });
     };
 
