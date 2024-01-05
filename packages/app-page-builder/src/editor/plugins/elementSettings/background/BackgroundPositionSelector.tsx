@@ -47,10 +47,10 @@ const PositionWrapper = styled("div")({
 interface BackgroundPositionSelectorProps {
     disabled?: boolean;
     value?: string;
-    onChange: Function;
+    onChange: (value: string) => void;
 }
 
-const BackgroundPositionSelector: React.FC<BackgroundPositionSelectorProps> = props => {
+const BackgroundPositionSelector = (props: BackgroundPositionSelectorProps) => {
     return (
         <PositionWrapper>
             <Typography style={{ width: "60%" }} use={"body2"}>

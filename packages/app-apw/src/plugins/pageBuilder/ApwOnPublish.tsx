@@ -18,7 +18,7 @@ const t = i18n.ns("app-apw/page-builder/dialog");
 
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
-export const ApwOnPublish: React.FC = () => {
+export const ApwOnPublish = () => {
     const pageBuilder = useAdminPageBuilder();
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();

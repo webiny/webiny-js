@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 
-export const DialogContainer: React.FC = () => {
+export const DialogContainer = () => {
     const ui = useUi();
     const message = get(ui, "dialog.message");
     const {

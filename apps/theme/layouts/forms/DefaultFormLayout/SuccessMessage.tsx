@@ -37,11 +37,11 @@ const Wrapper = styled.div`
     text-align: center;
 `;
 
-interface Props {
+interface SuccessMessageProps {
     formData: FbFormModel;
 }
 
-export const SuccessMessage: React.FC<Props> = ({ formData }) => {
+export const SuccessMessage = ({ formData }: SuccessMessageProps) => {
     const heading = "Success!";
 
     let message;

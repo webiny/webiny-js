@@ -11,11 +11,11 @@ const Settings = lazy(() => import("~/views/settings"));
 interface LoaderProps {
     children: React.ReactElement;
 }
-const Loader: React.FC<LoaderProps> = ({ children, ...props }) => (
+const Loader = ({ children, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const MailerSettings: React.FC = () => {
+const MailerSettings = () => {
     const { canChangeSettings } = usePermission();
 
     const changeSettings = canChangeSettings();
@@ -53,7 +53,7 @@ const MailerSettings: React.FC = () => {
     );
 };
 
-export const Module: React.FC = () => {
+export const Module = () => {
     return (
         <Plugins>
             <MailerSettings />

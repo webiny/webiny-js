@@ -41,19 +41,19 @@ export const setSelection = ({
     // Check if the `toggledFile` is already in the `selected` files.
     const existingIndex = getFileIndex(state.selected, toggledFile);
     const toggledFileIndex = getFileIndex(files, toggledFile) as number;
-    const selected = new Set([...state.selected]);
+    const selected = new Map(state.selected.map(item => [item.id, item]));
     const selection = { ...state.selection };
 
     // Add a single file to selection.
     if (existingIndex === undefined && !shiftKeyPressed) {
-        selected.add(toggledFile);
+        selected.set(toggledFile.id, toggledFile);
         selection.anchor = toggledFileIndex;
         selection.focus = undefined;
     }
 
     // Remove a single file from selection.
     if (existingIndex !== undefined && !shiftKeyPressed) {
-        selected.delete(toggledFile);
+        selected.delete(toggledFile.id);
         const prevSelectedFile = Array.from(selected.values()).pop();
         selection.anchor = getFileIndex(files, prevSelectedFile);
         selection.focus = undefined;
@@ -94,7 +94,7 @@ export const setSelection = ({
              */
             // @ts-expect-error We already checked for `undefined` above.
             if (newFocus < oldFocus && index > newFocus && index <= oldFocus) {
-                selected.delete(file);
+                selected.delete(file.id);
             }
 
             /**
@@ -105,12 +105,12 @@ export const setSelection = ({
              */
             // @ts-expect-error We already checked for `undefined` above.
             if (selectionAnchor > oldAnchor && index >= oldAnchor && index < oldFocus) {
-                selected.delete(file);
+                selected.delete(file.id);
             }
         });
 
         selectedRange.forEach(file => {
-            selected.add(file);
+            selected.set(file.id, file);
         });
     }
 

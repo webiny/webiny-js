@@ -33,7 +33,7 @@ export interface CognitoIdentityProviderConfig {
     attributeMapping?: IdentityAttributeMapping;
 }
 
-const isString = (value?: any): value is String => {
+const isString = (value?: any): value is string => {
     return typeof value === "string";
 };
 

@@ -24,13 +24,13 @@ export interface ImageRendererComponentProps extends Props, CreateImageParams {}
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
-export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
+export const ImageRendererComponent = ({
     onClick,
     renderEmpty,
     value,
     link,
     linkComponent
-}) => {
+}: ImageRendererComponentProps) => {
     const LinkComponent = linkComponent || DefaultLinkComponent;
 
     const { getElement } = useRenderer();

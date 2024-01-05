@@ -8,32 +8,22 @@ import { Icon } from "@webiny/ui/Icon";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { usePermission } from "~/admin/hooks";
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
-import { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types";
+import { EntryTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/pages-table/actions/page/publish");
 
-interface Props {
-    record: {
-        id: string;
-        title: string;
-        status: CmsContentEntryStatusType;
-        original: {
-            id: string;
-            meta: {
-                version: number;
-            };
-        };
-    };
+interface RecordActionPublishProps {
+    record: EntryTableItem;
 }
 
-export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
+export const RecordActionPublish = ({ record }: RecordActionPublishProps) => {
     const { canPublish, canUnpublish } = usePermission();
 
     const { unpublishRevision, publishRevision } = useRevision({
         revision: {
-            id: record.original.id,
+            id: record.id,
             meta: {
-                version: record.original.meta.version
+                version: record.meta.version
             }
         }
     });
@@ -44,7 +34,7 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
             <p>
                 {t`You are about to publish the {title} CMS entry. Are you sure you want to continue?`(
                     {
-                        title: <strong>{record.title}</strong>
+                        title: <strong>{record.meta.title}</strong>
                     }
                 )}
             </p>
@@ -57,19 +47,19 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
             <p>
                 {t`You are about to unpublish the {title} CMS entry. Are you sure you want to continue?`(
                     {
-                        title: <strong>{record.title}</strong>
+                        title: <strong>{record.meta.title}</strong>
                     }
                 )}
             </p>
         )
     });
 
-    if (record.status === "published" && canUnpublish("cms.contentEntry")) {
+    if (record.meta.status === "published" && canUnpublish("cms.contentEntry")) {
         return (
             <MenuItem
                 onClick={() =>
                     showUnpublishConfirmation(async () => {
-                        await unpublishRevision(record.original.id);
+                        await unpublishRevision(record.id);
                     })
                 }
             >
@@ -89,7 +79,7 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
         <MenuItem
             onClick={() =>
                 showPublishConfirmation(async () => {
-                    await publishRevision(record.original.id);
+                    await publishRevision(record.id);
                 })
             }
         >

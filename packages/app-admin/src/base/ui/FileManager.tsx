@@ -59,7 +59,7 @@ export type MultipleProps =
       };
 
 export type FileManagerProps = {
-    accept?: Array<string>;
+    accept?: string[];
     images?: boolean;
     maxSize?: number | string;
     /**
@@ -70,7 +70,7 @@ export type FileManagerProps = {
     onUploadCompletion?: (files: FileManagerFileItem[]) => void;
     own?: boolean;
     scope?: string;
-    tags?: Array<string>;
+    tags?: string[];
     show?: boolean;
     /**
      * @deprecated This prop is no longer used. Use the `render` prop to get better TS autocomplete.
@@ -95,13 +95,7 @@ export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "rende
 
 export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
 
-export const FileManager: React.FC<FileManagerProps> = ({
-    children,
-    render,
-    onChange,
-    onClose,
-    ...rest
-}) => {
+export const FileManager = ({ children, render, onChange, onClose, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);

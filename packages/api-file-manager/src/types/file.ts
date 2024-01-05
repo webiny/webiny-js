@@ -10,10 +10,14 @@ export interface File {
     };
     tags: string[];
     aliases: string[];
+
     createdOn: string;
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: CreatedBy;
-    modifiedBy?: CreatedBy | null;
+    modifiedBy: CreatedBy | null;
+    savedBy: CreatedBy;
+
     /**
      * Added with new storage operations refactoring.
      */
@@ -23,6 +27,7 @@ export interface File {
     /**
      * User can add new fields to the File object, so we must allow it in the types.
      */
+
     [key: string]: any;
 }
 

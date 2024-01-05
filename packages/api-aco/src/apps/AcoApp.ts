@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import structuredClone from "@ungap/structured-clone";
 import {
     AcoContext,
     AcoRequestAction,
@@ -78,7 +77,7 @@ export class AcoApp implements IAcoApp {
                 const items = await onEntryList(entries);
                 return [items, meta];
             },
-            delete: async (id: string): Promise<Boolean> => {
+            delete: async (id: string): Promise<boolean> => {
                 await this.execOnAnyRequest("delete");
                 return this.context.aco.search.delete(this.getModel(), id);
             },

@@ -40,7 +40,7 @@ const INSTALL = gql`
 interface FBInstallerProps {
     onInstalled: () => void;
 }
-const FBInstaller: React.FC<FBInstallerProps> = ({ onInstalled }) => {
+const FBInstaller = ({ onInstalled }: FBInstallerProps) => {
     const client = useApolloClient();
     const [error, setError] = useState<string | null>(null);
 

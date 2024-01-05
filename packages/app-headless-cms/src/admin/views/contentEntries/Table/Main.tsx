@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { FolderDialogCreate, useFolders } from "@webiny/app-aco";
+import { useCreateDialog, useFolders } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Filters } from "~/admin/components/ContentEntries/Filters";
@@ -15,17 +15,14 @@ import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
 import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
 
-interface Props {
+interface MainProps {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+export const Main = ({ folderId: initialFolderId }: MainProps) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const list = useContentEntriesList();
-
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const { history } = useRouter();
 
@@ -64,6 +61,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, 200);
 
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
+
     const { showEmptyView } = useContentEntry();
 
     if (!showEmptyView) {
@@ -78,7 +79,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     canCreateFolder={canCreateFolder}
                     canCreateContent={canCreateContent}
                     onCreateEntry={createEntry}
-                    onCreateFolder={openFoldersDialog}
+                    onCreateFolder={onCreateFolder}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
@@ -93,7 +94,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             canCreateFolder={canCreateFolder}
                             canCreateContent={canCreateContent}
                             onCreateEntry={createEntry}
-                            onCreateFolder={openFoldersDialog}
+                            onCreateFolder={onCreateFolder}
                         />
                     ) : (
                         <>
@@ -101,16 +102,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                    onSelectRow={list.onSelectRow}
-                                    selectedRows={list.selected}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}
@@ -124,11 +116,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     )}
                 </Wrapper>
             </MainContainer>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
-            />
         </>
     );
 };

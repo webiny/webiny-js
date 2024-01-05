@@ -11,7 +11,7 @@ const getValidFilterValue = (value: string): string | undefined => {
     return value;
 };
 
-export const FilterByEntity: React.FC = () => {
+export const FilterByEntity = () => {
     const { data, setValue } = useForm();
     const bind = useBind({
         name: "data.entity",

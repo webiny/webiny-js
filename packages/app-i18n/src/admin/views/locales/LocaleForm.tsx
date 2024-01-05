@@ -26,7 +26,7 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-const I18NLocaleForm: React.FC = () => {
+const I18NLocaleForm = () => {
     const { loading, showEmptyView, createLocale, cancelEditing, locale, onSubmit } =
         useLocaleForm();
 

@@ -31,7 +31,7 @@ const CustomFileManager = createComponentPlugin(FileManagerRenderer, () => {
     };
 });
 
-export const App: React.FC = () => {
+export const App = () => {
     return (
         <Admin>
             <Cognito />

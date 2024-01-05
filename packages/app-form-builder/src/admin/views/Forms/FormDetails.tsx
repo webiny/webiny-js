@@ -36,7 +36,7 @@ interface EmptyFormDetailsProps {
     onCreateForm: () => void;
     canCreate: () => boolean;
 }
-const EmptyFormDetails: React.FC<EmptyFormDetailsProps> = ({ canCreate, onCreateForm }) => {
+const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display form details {message}`({
@@ -57,7 +57,7 @@ export interface FormDetailsProps {
     onCreateForm: () => void;
 }
 
-const FormDetails: React.FC<FormDetailsProps> = ({ onCreateForm }) => {
+const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();

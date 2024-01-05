@@ -35,10 +35,12 @@ export function useNavigation() {
     return useContext(NavigationContext);
 }
 
+type LegacyMenuProps = MenuProps | SectionProps | ItemProps;
+
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
+const LegacyMenu = (props: LegacyMenuProps & { children: React.ReactNode }) => {
     return (
         <Menu
             {...props}
@@ -50,7 +52,7 @@ const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     );
 };
 
-const LegacyMenuPlugins: React.FC = () => {
+const LegacyMenuPlugins = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
     const [menus, setMenus] = useState<JSX.Element | null>(null);
 
@@ -82,8 +84,12 @@ const LegacyMenuPlugins: React.FC = () => {
     return menus;
 };
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>): React.FC => {
-    return function NavigationProvider({ children }) {
+interface NavigationProviderProps {
+    children: React.ReactNode;
+}
+
+export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+    return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
         const setMenu = (id: string, updater: MenuUpdater): void => {
@@ -136,7 +142,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>): Rea
     };
 };
 
-export const Navigation: React.FC = () => {
+export const Navigation = () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
@@ -184,7 +190,7 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     );
 });
 
-export const MenuItem: React.FC = () => {
+export const MenuItem = () => {
     return <MenuItemRenderer />;
 };
 

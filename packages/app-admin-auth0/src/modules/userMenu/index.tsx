@@ -10,13 +10,13 @@ import { SignOut } from "~/modules/userMenu/signOut";
 import { UserImage } from "~/modules/userMenu/userImage";
 import { ExitTenant } from "./exitTenant";
 
-const UserImageHOC = (): React.FC => {
+const UserImageHOC = () => {
     return function UserImageHOC() {
         return <UserImage />;
     };
 };
 
-export const UserMenuModule: React.FC = () => {
+export const UserMenuModule = () => {
     return (
         <Fragment>
             <Compose component={UserMenuHandleRenderer} with={UserImageHOC} />

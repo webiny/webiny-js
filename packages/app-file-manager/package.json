@@ -26,6 +26,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/plugins": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
     "@webiny/utils": "0.0.0",

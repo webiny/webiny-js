@@ -27,10 +27,12 @@ export type SelectProps = FormComponentProps &
         box?: string;
 
         // One or more <option> or <optgroup> elements.
-        children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
+        children?: (React.ReactElement<"option"> | React.ReactElement<"optgroup">)[];
 
         // IconProps for the root element. By default, additional props spread to the native select element.
-        rootProps?: Object;
+        rootProps?: {
+            [key: string]: any;
+        };
 
         // A className for the root element.
         className?: string;
@@ -89,7 +91,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
  * We check for null and undefined in the value because React is complaining about those values.
  * Error says to use the empty string in null/undefined case.
  */
-export const Select: React.FC<SelectProps> = props => {
+export const Select = (props: SelectProps) => {
     const { value: initialValue, description, validation, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;

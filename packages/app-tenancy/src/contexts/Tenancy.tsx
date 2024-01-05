@@ -15,6 +15,10 @@ export interface TenancyContextValue {
     isMultiTenant: boolean;
 }
 
+interface TenancyProviderProps {
+    children: React.ReactNode;
+}
+
 export const TenancyContext = React.createContext<TenancyContextValue>({
     tenant: null,
     setTenant: () => {
@@ -46,7 +50,7 @@ const getInitialTenant = (): string | null => {
     return currentTenant;
 };
 
-export const TenancyProvider: React.FC = props => {
+export const TenancyProvider = (props: TenancyProviderProps) => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
     const { canUseFeature } = useWcp();
 

@@ -1,14 +1,17 @@
+import { CSSProperties } from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as ArrowDown } from "@material-design-icons/svg/outlined/arrow_downward.svg";
 import {
     DataTable as RmwcDataTable,
+    DataTableCell as RmwcDataTableCell,
     DataTableHeadCell as RmwcDataTableHeadCell,
     DataTableProps,
-    DataTableHeadCellProps
+    DataTableHeadCellProps,
+    DataTableCellProps
 } from "@rmwc/data-table";
-import { ColumnDirectionProps } from "~/DataTable/DataTable";
-import { CSSProperties } from "react";
+import { ColumnDirectionProps } from "~/DataTable/ColumnDirection";
+import { Typography } from "~/Typography";
 
 interface TableProps extends DataTableProps {
     bordered?: boolean;
@@ -54,21 +57,33 @@ interface TableHeadCell extends DataTableHeadCellProps {
 
 export const TableHeadCell = styled(RmwcDataTableHeadCell)<TableHeadCell>`
     position: relative;
+    width: auto;
 
     &:hover ${Resizer} {
         opacity: 1;
     }
 `;
 
+interface DataTableCell extends DataTableCellProps {
+    style?: CSSProperties;
+}
+
+export const DataTableCell = styled(RmwcDataTableCell)<DataTableCell>`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
 interface ColumnHeaderWrapperProps {
     sortable: boolean;
+    isLastCell: boolean;
 }
 
 export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
     cursor: ${props => (props.sortable ? "pointer" : "cursor")};
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: ${props => (props.isLastCell ? "flex-end" : "start")};
 `;
 
 export const ColumnDirectionWrapper = styled("span")`
@@ -82,4 +97,13 @@ export const ColumnDirectionWrapper = styled("span")`
 
 export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
     transform: ${props => (props.direction === "asc" ? "rotate(180deg)" : "rotate(0deg)")};
+`;
+
+export const ColumnsVisibilityMenuHeader = styled(Typography)`
+    padding: 4px 16px;
+    font-weight: 600;
+`;
+
+export const ColumnsVisibilityMenuItem = styled("div")`
+    padding: 0 16px;
 `;

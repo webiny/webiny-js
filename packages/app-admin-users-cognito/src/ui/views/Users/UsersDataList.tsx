@@ -53,7 +53,7 @@ const SORTERS = [
     }
 ];
 
-const UsersDataList: React.FC = () => {
+const UsersDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const { identity } = useSecurity();

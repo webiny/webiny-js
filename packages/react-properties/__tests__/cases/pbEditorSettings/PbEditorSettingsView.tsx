@@ -8,18 +8,14 @@ interface SettingsGroupProps {
     icon?: string;
     remove?: boolean;
     replace?: string;
+    children: React.ReactNode;
 }
 
 type DynamicProps<T> = T & {
     [key: string]: any;
 };
 
-const SettingsGroup: React.FC<SettingsGroupProps> = ({
-    children,
-    replace,
-    remove = false,
-    ...rest
-}) => {
+const SettingsGroup = ({ children, replace, remove = false, ...rest }: SettingsGroupProps) => {
     const props: DynamicProps<typeof rest> = rest;
     const id = `group:${props.name}`;
     const toReplace = replace !== undefined ? `group:${replace}` : undefined;
@@ -47,14 +43,14 @@ interface FormFieldProps extends Record<string, unknown> {
     replace?: string;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
+const FormField = ({
     children,
     after,
     before,
     replace,
     remove = false,
     ...props
-}) => {
+}: FormFieldProps) => {
     const parent = useParentProperty();
     if (!parent) {
         throw Error(`<FormField> must be a child of a <SettingsGroup> element.`);

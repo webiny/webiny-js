@@ -30,7 +30,7 @@ interface SecurityPermissionsProps {
     onChange: (value: SecurityPermission[]) => void;
 }
 
-export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value, onChange }) => {
+export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProps) => {
     const { getPermission } = useSecurity();
     const { getProject } = useWcp();
 

@@ -8,7 +8,7 @@ interface SearchProps {
     onChange: (value: string) => void;
 }
 
-export const Search: React.VFC<SearchProps> = ({ value, onChange }) => {
+export const Search = ({ value, onChange }: SearchProps) => {
     return (
         <SearchWrapper>
             <SearchUI value={value} onChange={onChange} />

@@ -51,7 +51,7 @@ export interface ApiKeysDataListProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
-export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
+export const ApiKeysDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const { history, location } = useRouter();

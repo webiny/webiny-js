@@ -19,7 +19,7 @@ interface GroupProps {
     group: Pick<ImportGroupData, "id" | "name">;
 }
 
-const Group: React.VFC<GroupProps> = ({ group }) => {
+const Group = ({ group }: GroupProps) => {
     return <GroupName>{group.name || group.id}</GroupName>;
 };
 
@@ -28,7 +28,7 @@ interface DataListGroupProps {
     models: ImportModelData[];
 }
 
-export const DataListGroup: React.VFC<DataListGroupProps> = ({ group, models }) => {
+export const DataListGroup = ({ group, models }: DataListGroupProps) => {
     return (
         <Container>
             <Group group={group} />

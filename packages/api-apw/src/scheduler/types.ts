@@ -54,9 +54,14 @@ export enum ApwContentTypes {
 
 export interface BaseFields {
     id: string;
+
     createdOn: string;
-    savedOn?: string;
+    modifiedOn: string | null;
+    savedOn: string;
     createdBy: ApwIdentity;
+    modifiedBy: ApwIdentity | null;
+    savedBy: ApwIdentity;
+
     tenant: string;
     locale: string;
 }
@@ -93,7 +98,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
     update(id: string, data: TUpdateEntryParams): Promise<TEntry>;
 
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 }
 
 export interface ApwScheduleActionCrud
@@ -104,7 +109,7 @@ export interface ApwScheduleActionCrud
 
     updateCurrentTask(item: ApwScheduleAction): Promise<ApwScheduleAction>;
 
-    deleteCurrentTask(): Promise<Boolean>;
+    deleteCurrentTask(): Promise<boolean>;
 }
 
 export interface ScheduleActionContext extends Context, I18NContext, TenancyContext {
@@ -183,7 +188,7 @@ export interface ApwScheduleActionStorageOperations {
 
     update(params: StorageOperationsUpdateScheduleActionParams): Promise<ApwScheduleAction>;
 
-    delete(params: StorageOperationsDeleteScheduleActionParams): Promise<Boolean>;
+    delete(params: StorageOperationsDeleteScheduleActionParams): Promise<boolean>;
 
     getCurrentTask(
         params: StorageOperationsGetCurrentTaskParams
@@ -191,7 +196,7 @@ export interface ApwScheduleActionStorageOperations {
 
     updateCurrentTask(params: StorageOperationsUpdateCurrentTaskParams): Promise<ApwScheduleAction>;
 
-    deleteCurrentTask(params: StorageOperationsDeleteCurrentTaskParams): Promise<Boolean>;
+    deleteCurrentTask(params: StorageOperationsDeleteCurrentTaskParams): Promise<boolean>;
 }
 
 export interface CreateApwContextParams {

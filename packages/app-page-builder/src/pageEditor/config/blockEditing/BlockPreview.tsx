@@ -20,7 +20,7 @@ interface BlockPreviewProps {
     onDelete: (ev: React.MouseEvent) => void;
 }
 
-const BlockPreview: React.FC<BlockPreviewProps> = props => {
+const BlockPreview = (props: BlockPreviewProps) => {
     const { plugin, addBlockToContent, onEdit, onDelete } = props;
     const onClickToAddHandler = useCallback(() => {
         addBlockToContent(plugin);

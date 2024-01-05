@@ -8,7 +8,7 @@ import { ClassNames } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Navigation } from "./Navigation";
 
-export const HeaderMobile: React.FC = () => {
+export const HeaderMobile = () => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
     const [menuOpened, setMenuOpened] = useState(false);
 

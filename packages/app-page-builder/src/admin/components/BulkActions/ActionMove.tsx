@@ -31,7 +31,7 @@ export const ActionMove = observer(() => {
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
                             await moveRecord({
-                                id: item.pid,
+                                id: item.data.pid,
                                 location: {
                                     folderId: folder.id
                                 }

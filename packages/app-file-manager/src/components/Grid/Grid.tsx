@@ -21,12 +21,12 @@ interface GridProps {
     multiple?: boolean;
     toggleSelected: (file: FileItem) => void;
     deselectAll: () => void;
-    onChange?: Function;
-    onClose?: Function;
+    onChange?: (file: FileItem) => void;
+    onClose?: () => void;
     hasOnSelectCallback: boolean;
 }
 
-export const Grid: React.FC<GridProps> = ({
+export const Grid = ({
     folders,
     records,
     loading,
@@ -39,7 +39,7 @@ export const Grid: React.FC<GridProps> = ({
     deselectAll,
     multiple,
     hasOnSelectCallback
-}) => {
+}: GridProps) => {
     if (loading) {
         return <CircularProgress label={t`Loading Files...`} style={{ opacity: 1 }} />;
     }

@@ -19,7 +19,7 @@ const narrowDialog = css({
     }
 });
 
-export const SettingsDialog: React.FC<Props> = ({ open, onClose }) => {
+export const SettingsDialog = ({ open, onClose }: Props) => {
     const { tenant, loading, saving, update } = useTenant({ onSaved: onClose });
 
     return (

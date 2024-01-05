@@ -8,12 +8,12 @@ import { useMovePageToFolder } from "~/admin/views/Pages/hooks/useMovePageToFold
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 
-import { PageEntry } from "~/admin/components/Table/Table";
+import { PbPageTableItem } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/move");
 
 interface Props {
-    record: PageEntry;
+    record: PbPageTableItem;
 }
 
 export const RecordActionMove = ({ record }: Props): ReactElement => {

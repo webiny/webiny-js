@@ -109,7 +109,7 @@ export const updateLatestCommentId = ({ apw }: Pick<LifeCycleHookCallbackParams,
         if (contentReview && contentReview.latestCommentId === comment.id) {
             const [[latestComment]] = await apw.comment.list({
                 where: { changeRequest: { id: comment.changeRequest } },
-                sort: ["createdOn_DESC"]
+                sort: ["entryCreatedOn_DESC"]
             });
 
             await updateContentReview({

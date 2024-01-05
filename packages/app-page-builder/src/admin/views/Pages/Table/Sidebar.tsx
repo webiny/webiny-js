@@ -6,7 +6,7 @@ interface Props {
     folderId?: string;
 }
 
-export const Sidebar: React.VFC<Props> = ({ folderId }) => {
+export const Sidebar = ({ folderId }: Props) => {
     const { navigateToFolder } = useNavigateFolder();
 
     return (

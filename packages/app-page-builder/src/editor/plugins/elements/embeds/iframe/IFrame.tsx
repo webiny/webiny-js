@@ -8,7 +8,7 @@ interface IframeProps {
     element: PbEditorElement;
 }
 
-const Iframe: React.FC<IframeProps> = props => {
+const Iframe = (props: IframeProps) => {
     const { element, ...rest } = props;
     return <PeIframe element={element as Element} {...rest} />;
 };

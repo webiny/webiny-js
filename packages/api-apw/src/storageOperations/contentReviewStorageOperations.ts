@@ -1,11 +1,9 @@
 import { ApwContentReviewStorageOperations } from "./types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import WebinyError from "@webiny/error";
 import { CONTENT_REVIEW_MODEL_ID } from "~/storageOperations/models/contentReview.model";
+import { ApwContentReview } from "~/types";
 
 export const createContentReviewStorageOperations = ({
     cms,
@@ -30,7 +28,7 @@ export const createContentReviewStorageOperations = ({
         const entry = await security.withoutAuthorization(async () => {
             return cms.getEntryById(model, id);
         });
-        return getFieldValues(entry, baseFields);
+        return pickEntryFieldValues(entry);
     };
     return {
         getContentReviewModel,
@@ -47,7 +45,7 @@ export const createContentReviewStorageOperations = ({
                 });
             });
 
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(pickEntryFieldValues<ApwContentReview>), meta];
         },
         async createContentReview(params) {
             const model = await getContentReviewModel();
@@ -55,7 +53,7 @@ export const createContentReviewStorageOperations = ({
             const entry = await security.withoutAuthorization(async () => {
                 return cms.createEntry(model, params.data);
             });
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async updateContentReview(params) {
             const model = await getContentReviewModel();
@@ -72,7 +70,7 @@ export const createContentReviewStorageOperations = ({
                     savedOn: new Date()
                 });
             });
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async deleteContentReview(params) {
             const model = await getContentReviewModel();

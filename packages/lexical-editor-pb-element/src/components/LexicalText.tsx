@@ -17,7 +17,7 @@ interface TextElementProps {
 }
 
 const DATA_NAMESPACE = "data.text";
-export const LexicalText: React.FC<TextElementProps> = ({ elementId, tag: customTag }) => {
+export const LexicalText = ({ elementId, tag: customTag }: TextElementProps) => {
     const [element] = useElementById(elementId);
     const { displayMode } = useDisplayMode();
     const [activeElement, setActiveElement] = useActiveElement();
