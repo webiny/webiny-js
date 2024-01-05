@@ -1,6 +1,5 @@
 import { createGqlQuery, GqlListResponse } from "../utils";
 
-// 1. GraphQL query.
 const LIST_MENUS_QUERY = /* GraphQL */ `
     query pbListMenus {
         pageBuilder {
