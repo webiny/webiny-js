@@ -6,7 +6,13 @@ import { createEntry } from "~/definitions/entry";
 import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { ITaskResponse } from "@webiny/tasks/response/abstractions";
 import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions";
-import { batchReadAll, BatchReadItem, batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb";
+import {
+    batchReadAll,
+    BatchReadItem,
+    batchWriteAll,
+    BatchWriteItem,
+    BatchWriteResult
+} from "@webiny/db-dynamodb";
 
 export interface ManagerParams {
     context: Context;
@@ -68,7 +74,7 @@ export class Manager implements IManager {
         });
     }
 
-    public async write(items: BatchWriteItem[]): Promise<void> {
+    public async write(items: BatchWriteItem[]): Promise<BatchWriteResult> {
         return await batchWriteAll({
             table: this.table,
             items

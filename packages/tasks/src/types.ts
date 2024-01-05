@@ -11,6 +11,9 @@ import { ITaskManagerStore } from "./runner/abstractions";
 import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
 
+export * from "./response/abstractions";
+export * from "./runner/abstractions";
+
 export interface ITaskConfig {
     readonly eventBusName: string;
 }
@@ -45,6 +48,7 @@ export interface ITaskData<T = any> {
     name: string;
     taskStatus: TaskDataStatus;
     definitionId: string;
+    executionName: string;
     values: T;
     createdOn: string;
     savedOn: string;
@@ -78,6 +82,7 @@ export interface ITaskUpdateData<T = ITaskDataValues> {
     name?: string;
     values?: T;
     taskStatus?: TaskDataStatus;
+    executionName?: string;
     log?: ITaskDataLog[];
     startedOn?: string;
     finishedOn?: string;
@@ -144,7 +149,7 @@ export interface ITasksContextDefinitionObject {
 export interface ITaskTriggerParams<T = ITaskDataValues> {
     definition: string;
     name?: string;
-    values?: T;
+    input?: T;
 }
 
 export interface ITaskAbortParams {

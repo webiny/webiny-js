@@ -18,12 +18,13 @@ export const createContextMock = (
                 return {
                     ...data,
                     id,
-                    startedOn: new Date(),
+                    startedOn: new Date().toISOString(),
                     finishedOn: undefined,
-                    createdOn: new Date(),
-                    savedOn: new Date(),
+                    createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     definitionId: "myCustomTaskDefinition",
-                    createdBy: createMockIdentity()
+                    createdBy: createMockIdentity(),
+                    eventResponse: {} as any
                 };
             },
             ...params?.tasks

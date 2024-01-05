@@ -46,6 +46,13 @@ const modelPlugin = createCmsModel({
             ]
         },
         {
+            id: "executionName",
+            fieldId: "executionName",
+            storageId: "text@executionName",
+            type: "text",
+            label: "Execution Name"
+        },
+        {
             id: "values",
             fieldId: "values",
             storageId: "object@values",

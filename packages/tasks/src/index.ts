@@ -12,3 +12,4 @@ export const createBackgroundTaskContext = (config?: ITaskConfig): Plugin[] => {
 };
 
 export * from "./task";
+export * from "./types";

@@ -75,6 +75,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -111,7 +112,6 @@ export const handler = createHandler({
         createAco(),
         createAcoPageBuilderContext(),
         createAuditLogs(),
-        createBackgroundTasks(),
         scaffoldsPlugins()
     ],
     debug

@@ -78,7 +78,9 @@ describe("task manager", () => {
             locale: "en-US",
             tenant: "root",
             message: undefined,
-            webinyTaskId: task.id
+            webinyTaskId: task.id,
+            webinyTaskDefinitionId: taskDefinition.id,
+            wait: undefined
         });
     });
 
@@ -112,7 +114,8 @@ describe("task manager", () => {
             locale: "en-US",
             tenant: "root",
             message: undefined,
-            webinyTaskId: task.id
+            webinyTaskId: task.id,
+            webinyTaskDefinitionId: taskDefinition.id
         });
     });
 
@@ -162,6 +165,7 @@ describe("task manager", () => {
                     id: "myCustomTaskDataId",
                     data: {
                         ...task,
+                        executionName: "executionNameMock",
                         taskStatus: "running",
                         log: [
                             {
@@ -177,7 +181,8 @@ describe("task manager", () => {
             status: TaskResponseStatus.ERROR,
             locale: "en-US",
             tenant: "root",
-            webinyTaskId: task.id
+            webinyTaskId: task.id,
+            webinyTaskDefinitionId: taskDefinition.id
         });
     });
 });

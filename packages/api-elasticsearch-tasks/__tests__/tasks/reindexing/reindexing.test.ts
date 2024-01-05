@@ -12,11 +12,18 @@ const createContextTaskAndEvent = async (handler: ReturnType<typeof useHandler>)
     const task = await context.tasks.createTask({
         name: "Run reindexing to test it",
         definitionId: "elasticsearchReindexing",
-        values: {}
+        values: {
+            /**
+             * We do not actually want to reindex anything, so we will use a non-existing index.
+             */
+            matching: "non-existing-index-for-testing"
+        }
     });
 
     const event: ITaskEvent = {
         webinyTaskId: task.id,
+        webinyTaskDefinitionId: task.definitionId,
+        executionName: "someExecutionName",
         tenant: "root",
         locale: "en-US",
         stateMachineId: "someStateMachineId",
@@ -40,6 +47,7 @@ describe("reindexing", () => {
         expect(result).toEqual(
             new ResponseDoneResult({
                 webinyTaskId: task.id,
+                webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
                 message: "No more items to process - no last evaluated keys."
@@ -50,6 +58,10 @@ describe("reindexing", () => {
 
         expect(updatedTask).toEqual({
             ...task,
+            values: {
+                ...task.values,
+                settings: {}
+            },
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),
@@ -79,6 +91,7 @@ describe("reindexing", () => {
         expect(result).toEqual(
             new ResponseContinueResult({
                 webinyTaskId: task.id,
+                webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
                 values: {}
@@ -113,6 +126,7 @@ describe("reindexing", () => {
         expect(resultAfterContinue).toEqual(
             new ResponseDoneResult({
                 webinyTaskId: task.id,
+                webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
                 message: "No more items to process - no last evaluated keys."
@@ -123,6 +137,10 @@ describe("reindexing", () => {
 
         expect(updatedTaskAfterContinue).toEqual({
             ...task,
+            values: {
+                ...task.values,
+                settings: {}
+            },
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),

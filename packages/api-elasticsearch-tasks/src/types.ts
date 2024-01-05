@@ -6,7 +6,7 @@ import { Client } from "@webiny/api-elasticsearch";
 import { createTable } from "~/definitions";
 import { ITaskResponse } from "@webiny/tasks/response/abstractions";
 import { ITaskManagerStore } from "@webiny/tasks/runner/abstractions";
-import { BatchWriteItem } from "@webiny/db-dynamodb";
+import { BatchWriteItem, BatchWriteResult } from "@webiny/db-dynamodb";
 
 export interface Context extends ElasticsearchContext, TasksContext {}
 
@@ -25,6 +25,7 @@ export interface IElasticsearchIndexingTaskValuesSettings {
 }
 
 export interface IElasticsearchIndexingTaskValues {
+    matching?: string;
     keys?: IElasticsearchIndexingTaskValuesKeys;
     settings?: IElasticsearchIndexingTaskValuesSettings;
 }
@@ -56,5 +57,5 @@ export interface IManager {
 
     getEntity: (name: string) => Entity<any>;
 
-    write: (items: BatchWriteItem[]) => Promise<void>;
+    write: (items: BatchWriteItem[]) => Promise<BatchWriteResult>;
 }

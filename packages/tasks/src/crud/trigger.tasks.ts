@@ -33,7 +33,7 @@ export const createTriggerTasksCrud = (
         trigger: async <T = ITaskDataValues>(
             params: ITaskTriggerParams<T>
         ): Promise<ITaskData<T>> => {
-            const { definition: id, values, name } = params;
+            const { definition: id, input: inputValues, name } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
@@ -43,7 +43,7 @@ export const createTriggerTasksCrud = (
             const input: ITaskCreateData<T> = {
                 name: name || definition.title,
                 definitionId: id,
-                values: values || ({} as T)
+                values: inputValues || ({} as T)
             };
             if (definition.onBeforeTrigger) {
                 await definition.onBeforeTrigger<T>({

@@ -2,6 +2,7 @@ import { ITaskEvent } from "~/handler/types";
 import { TaskResponseStatus } from "~/types";
 import {
     IResponse,
+    IResponseAbortedResult,
     IResponseContinueParams,
     IResponseContinueResult,
     IResponseDoneParams,
@@ -10,8 +11,7 @@ import {
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseFromParams,
-    IResponseResult,
-    IResponseAbortedResult
+    IResponseResult
 } from "./abstractions";
 import { ResponseContinueResult } from "~/response/ResponseContinueResult";
 import { ResponseDoneResult } from "~/response/ResponseDoneResult";
@@ -49,6 +49,7 @@ export class Response implements IResponse {
         return new ResponseContinueResult({
             values: params.values,
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
+            webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
             wait: params.wait
@@ -58,6 +59,7 @@ export class Response implements IResponse {
     public done(params?: IResponseDoneParams): IResponseDoneResult {
         return new ResponseDoneResult({
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
+            webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
             message: params?.message
@@ -67,6 +69,7 @@ export class Response implements IResponse {
     public aborted(): IResponseAbortedResult {
         return new ResponseAbortedResult({
             webinyTaskId: this.event.webinyTaskId,
+            webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: this.event.tenant,
             locale: this.event.locale
         });
@@ -75,6 +78,7 @@ export class Response implements IResponse {
     public error(params: IResponseErrorParams): IResponseErrorResult {
         return new ResponseErrorResult({
             webinyTaskId: params.webinyTaskId || this.event.webinyTaskId,
+            webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params.tenant || this.event.tenant,
             locale: params.locale || this.event.locale,
             error: transformError(params.error)

@@ -18,14 +18,14 @@ import deepEqual from "deep-equal";
 
 const getValues = <T extends ITaskDataValues = ITaskDataValues>(
     values: T,
-    param: ITaskManagerStoreUpdateTaskValuesParam<T>
+    input: ITaskManagerStoreUpdateTaskValuesParam<T>
 ) => {
-    if (typeof param === "function") {
-        return param(values);
+    if (typeof input === "function") {
+        return input(values);
     }
     return {
         ...values,
-        ...param.values
+        ...input
     };
 };
 
@@ -72,6 +72,7 @@ export class TaskManagerStore implements ITaskManagerStore {
         param: ITaskManagerStoreUpdateTaskValuesParam<T>
     ): Promise<void> {
         const values = getValues<T>(this.task.values, param);
+
         /**
          * No need to update if nothing changed.
          */
@@ -87,9 +88,14 @@ export class TaskManagerStore implements ITaskManagerStore {
         return this.task.values as T;
     }
 
-    public async addLog(log: ITaskDataLog): Promise<void> {
+    public async addLog(log: Omit<ITaskDataLog, "createdOn">): Promise<void> {
         this.task = await this.context.tasks.updateTask(this.task.id, {
-            log: this.task.log.concat([log])
+            log: this.task.log.concat([
+                {
+                    ...log,
+                    createdOn: new Date().toISOString()
+                }
+            ])
         });
     }
 }
