@@ -1,7 +1,7 @@
 import { ITaskManager, ITaskRunner } from "./abstractions";
 import {
     Context,
-    ITaskDataValues,
+    ITaskDataInput,
     ITaskDefinition,
     TaskDataStatus,
     TaskResponseStatus
@@ -15,7 +15,7 @@ import {
 import { ITaskManagerStore } from "~/runner/abstractions";
 import { getErrorProperties } from "~/runner/utils/getErrorProperties";
 
-export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
+export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
     private readonly context: Context;
     private readonly response: IResponse;
@@ -72,9 +72,9 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
         let result: ITaskResponseResult;
 
         try {
-            const values = structuredClone(this.store.getValues());
+            const input = structuredClone(this.store.getInput());
             result = await definition.run({
-                values,
+                input,
                 context: this.context,
                 response: this.taskResponse,
                 isCloseToTimeout: () => {
@@ -93,7 +93,7 @@ export class TaskManager<T = ITaskDataValues> implements ITaskManager<T> {
 
         if (result.status === TaskResponseStatus.CONTINUE) {
             return this.response.continue({
-                values: result.values,
+                input: result.input,
                 wait: result.wait
             });
         } else if (result.status === TaskResponseStatus.ERROR) {

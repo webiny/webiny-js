@@ -19,7 +19,7 @@ const mockTaskInputValues = {
 
 describe("task manager", () => {
     const task = createMockTask({
-        values: mockTaskInputValues
+        input: mockTaskInputValues
     });
 
     const taskDefinition = createMockTaskDefinition();
@@ -74,7 +74,7 @@ describe("task manager", () => {
         expect(result).toBeInstanceOf(ResponseContinueResult);
         expect(result).toEqual({
             status: TaskResponseStatus.CONTINUE,
-            values: task.values,
+            input: task.input,
             locale: "en-US",
             tenant: "root",
             message: undefined,

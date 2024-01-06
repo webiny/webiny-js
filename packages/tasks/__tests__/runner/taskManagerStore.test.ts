@@ -22,7 +22,7 @@ describe("task manager store", () => {
         expect(store.getTask()).toEqual(task);
     });
 
-    it("should update task values", async () => {
+    it("should update task input", async () => {
         const mockTask = createMockTask();
 
         const { handle } = useHandler({
@@ -36,36 +36,36 @@ describe("task manager store", () => {
         });
 
         const store = new TaskManagerStore(context, task);
-        const values = {
+        const input = {
             test: "test"
         };
-        await store.updateValues({ ...values });
-        expect(store.getValues()).toEqual(values);
+        await store.updateInput({ ...input });
+        expect(store.getInput()).toEqual(input);
         expect(store.getTask()).toEqual({
             ...task,
-            values: {
-                ...task.values,
-                ...values
+            input: {
+                ...task.input,
+                ...input
             },
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/)
         });
 
-        await store.updateValues(values => {
+        await store.updateInput(input => {
             return {
-                ...values,
+                ...input,
                 anotherOne: true
             };
         });
-        expect(store.getValues()).toEqual({
-            ...values,
+        expect(store.getInput()).toEqual({
+            ...input,
             anotherOne: true
         });
         expect(store.getTask()).toEqual({
             ...task,
-            values: {
-                ...task.values,
-                ...values,
+            input: {
+                ...task.input,
+                ...input,
                 anotherOne: true
             },
             createdOn: expect.stringMatching(/^20/),
@@ -73,7 +73,7 @@ describe("task manager store", () => {
         });
     });
 
-    it("should not update values", async () => {
+    it("should not update input", async () => {
         const mockTask = createMockTask();
 
         const { handle } = useHandler({
@@ -87,16 +87,16 @@ describe("task manager store", () => {
         });
         const store = new TaskManagerStore(context, task);
 
-        await store.updateValues({ ...task.values });
-        expect(store.getValues()).toEqual(task.values);
+        await store.updateInput({ ...task.input });
+        expect(store.getInput()).toEqual(task.input);
 
-        await store.updateValues({});
-        expect(store.getValues()).toEqual(task.values);
+        await store.updateInput({});
+        expect(store.getInput()).toEqual(task.input);
 
-        await store.updateValues(values => {
-            return values;
+        await store.updateInput(input => {
+            return input;
         });
-        expect(store.getValues()).toEqual(task.values);
+        expect(store.getInput()).toEqual(task.input);
     });
 
     it("should update task", async () => {

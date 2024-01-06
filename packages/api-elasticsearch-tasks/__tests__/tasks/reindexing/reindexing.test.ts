@@ -12,7 +12,7 @@ const createContextTaskAndEvent = async (handler: ReturnType<typeof useHandler>)
     const task = await context.tasks.createTask({
         name: "Run reindexing to test it",
         definitionId: "elasticsearchReindexing",
-        values: {
+        input: {
             /**
              * We do not actually want to reindex anything, so we will use a non-existing index.
              */
@@ -58,10 +58,11 @@ describe("reindexing", () => {
 
         expect(updatedTask).toEqual({
             ...task,
-            values: {
-                ...task.values,
+            input: {
+                ...task.input,
                 settings: {}
             },
+            executionName: "someExecutionName",
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),
@@ -94,7 +95,7 @@ describe("reindexing", () => {
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
-                values: {}
+                input: {}
             })
         );
 
@@ -102,6 +103,7 @@ describe("reindexing", () => {
 
         expect(updatedTask).toEqual({
             ...task,
+            executionName: "someExecutionName",
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: undefined,
@@ -114,7 +116,7 @@ describe("reindexing", () => {
                 {
                     createdOn: expect.stringMatching(/^20/),
                     message: "Task continuing.",
-                    values: {}
+                    input: {}
                 }
             ]
         });
@@ -137,10 +139,11 @@ describe("reindexing", () => {
 
         expect(updatedTaskAfterContinue).toEqual({
             ...task,
-            values: {
-                ...task.values,
+            input: {
+                ...task.input,
                 settings: {}
             },
+            executionName: "someExecutionName",
             savedOn: expect.stringMatching(/^20/),
             startedOn: expect.stringMatching(/^20/),
             finishedOn: expect.stringMatching(/^20/),
@@ -153,7 +156,7 @@ describe("reindexing", () => {
                 {
                     createdOn: expect.stringMatching(/^20/),
                     message: "Task continuing.",
-                    values: {}
+                    input: {}
                 },
                 {
                     createdOn: expect.stringMatching(/^20/),

@@ -12,7 +12,7 @@ export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIn
     return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",
-        run: async ({ context, isCloseToTimeout, response, values, isAborted, store }) => {
+        run: async ({ context, isCloseToTimeout, response, input, isAborted, store }) => {
             const { Manager } = await import("../Manager");
             const { IndexManager } = await import("~/settings");
             const { ReindexingTaskRunner } = await import("./ReindexingTaskRunner");
@@ -27,10 +27,10 @@ export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIn
                 store
             });
 
-            const indexManager = new IndexManager(manager.elasticsearch, values.settings || {});
+            const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});
             const reindexing = new ReindexingTaskRunner(manager, indexManager);
 
-            const keys = values.keys || undefined;
+            const keys = input.keys || undefined;
             return reindexing.exec(keys, 200);
         }
     });

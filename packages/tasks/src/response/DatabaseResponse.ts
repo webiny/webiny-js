@@ -72,16 +72,16 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             const task = this.store.getTask();
             await this.store.updateTask({
-                values: {
-                    ...task.values,
-                    ...params.values
+                input: {
+                    ...task.input,
+                    ...params.input
                 },
                 taskStatus: TaskDataStatus.RUNNING,
                 log: task.log.concat([
                     {
                         message: "Task continuing.",
                         createdOn: new Date().toISOString(),
-                        values: params.values
+                        input: params.input
                     }
                 ])
             });
@@ -96,7 +96,7 @@ export class DatabaseResponse implements IResponseAsync {
                         code: ex.code || "TASK_NOT_FOUND",
                         data: {
                             ...ex.data,
-                            values: this.store.getValues()
+                            input: this.store.getInput()
                         }
                     }
                 });
@@ -106,7 +106,7 @@ export class DatabaseResponse implements IResponseAsync {
              */
             return this.error({
                 error: {
-                    message: `Failed to update task values: ${ex.message || "unknown error"}`,
+                    message: `Failed to update task input: ${ex.message || "unknown error"}`,
                     code: ex.code || "TASK_UPDATE_ERROR"
                 }
             });
@@ -127,7 +127,7 @@ export class DatabaseResponse implements IResponseAsync {
                     {
                         message: params.error.message,
                         createdOn: new Date().toISOString(),
-                        values: this.store.getValues()
+                        input: this.store.getInput()
                     }
                 ])
             });
@@ -141,7 +141,7 @@ export class DatabaseResponse implements IResponseAsync {
                     data: {
                         ...params.error.data,
                         ...ex.data,
-                        values: this.store.getValues()
+                        input: this.store.getInput()
                     }
                 }
             });
@@ -155,7 +155,7 @@ export class DatabaseResponse implements IResponseAsync {
                 ...params.error,
                 data: {
                     ...params.error.data,
-                    values: this.store.getValues()
+                    input: this.store.getInput()
                 }
             }
         });

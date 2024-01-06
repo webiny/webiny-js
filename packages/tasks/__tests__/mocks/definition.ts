@@ -9,11 +9,11 @@ export const createMockTaskDefinition = (
     return createTaskDefinition<Context, any>({
         id: MOCK_TASK_DEFINITION_ID,
         title: "A custom task defined via method",
-        run: async ({ response, isCloseToTimeout, values }) => {
+        run: async ({ response, isCloseToTimeout, input }) => {
             try {
                 if (isCloseToTimeout()) {
                     return response.continue({
-                        ...values
+                        ...input
                     });
                 }
                 return response.done();

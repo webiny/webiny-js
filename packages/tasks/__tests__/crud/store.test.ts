@@ -49,7 +49,7 @@ describe("store crud", () => {
             await context.tasks.createTask({
                 name: "My Custom Task",
                 definitionId: "non-existing-definition",
-                values: {
+                input: {
                     someValue: true,
                     someOtherValue: 123
                 }
@@ -86,7 +86,7 @@ describe("store crud", () => {
         const task = await context.tasks.createTask({
             name: "My Custom Task",
             definitionId: "testDefinition",
-            values: {
+            input: {
                 someValue: true,
                 someOtherValue: 123
             }
@@ -97,7 +97,7 @@ describe("store crud", () => {
             savedOn: expect.stringMatching(/^20/),
             name: "My Custom Task",
             definitionId: "testDefinition",
-            values: {
+            input: {
                 someValue: true,
                 someOtherValue: 123
             },
@@ -125,8 +125,8 @@ describe("store crud", () => {
         });
 
         const updatedTask = await context.tasks.updateTask(task.id, {
-            values: {
-                ...task.values,
+            input: {
+                ...task.input,
                 someValue: false,
                 addedNewValue: "yes!"
             }
@@ -137,7 +137,7 @@ describe("store crud", () => {
             savedOn: expect.stringMatching(/^20/),
             name: "My Custom Task",
             definitionId: "testDefinition",
-            values: {
+            input: {
                 someValue: false,
                 someOtherValue: 123,
                 addedNewValue: "yes!"

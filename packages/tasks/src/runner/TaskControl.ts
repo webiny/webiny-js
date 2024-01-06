@@ -1,5 +1,5 @@
 import { ITaskEvent } from "~/handler/types";
-import { Context, ITaskData, ITaskDataValues, TaskDataStatus } from "~/types";
+import { Context, ITaskData, ITaskDataInput, TaskDataStatus } from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
 import { IResponse, IResponseErrorResult, IResponseResult } from "~/response/abstractions";
@@ -25,7 +25,7 @@ export class TaskControl implements ITaskControl {
          * * child tasks can be in multiple levels (child task creates a child task, etc...).
          * * child tasks could be executed in parallel.
          */
-        let task: ITaskData<ITaskDataValues>;
+        let task: ITaskData<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
         } catch (ex: unknown) {
@@ -77,7 +77,7 @@ export class TaskControl implements ITaskControl {
                     stack: ex.stack,
                     data: {
                         ...ex.data,
-                        values: task.values
+                        input: task.input
                     }
                 }
             });

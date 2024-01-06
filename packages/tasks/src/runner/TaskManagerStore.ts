@@ -1,14 +1,14 @@
 import {
     ITaskData,
     ITaskDataLog,
-    ITaskDataValues,
+    ITaskDataInput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types";
 import {
     ITaskManagerStore,
     ITaskManagerStoreUpdateTaskParam,
-    ITaskManagerStoreUpdateTaskValuesParam
+    ITaskManagerStoreUpdateTaskInputParam
 } from "./abstractions";
 /**
  * Package deep-equal does not have types.
@@ -16,15 +16,15 @@ import {
 // @ts-expect-error
 import deepEqual from "deep-equal";
 
-const getValues = <T extends ITaskDataValues = ITaskDataValues>(
-    values: T,
-    input: ITaskManagerStoreUpdateTaskValuesParam<T>
+const getInput = <T extends ITaskDataInput = ITaskDataInput>(
+    originalInput: T,
+    input: ITaskManagerStoreUpdateTaskInputParam<T>
 ) => {
     if (typeof input === "function") {
-        return input(values);
+        return input(originalInput);
     }
     return {
-        ...values,
+        ...originalInput,
         ...input
     };
 };
@@ -50,42 +50,42 @@ export class TaskManagerStore implements ITaskManagerStore {
         this.task = task;
     }
 
-    public getTask<T extends ITaskDataValues = ITaskDataValues>(): ITaskData<T> {
+    public getTask<T extends ITaskDataInput = ITaskDataInput>(): ITaskData<T> {
         return this.task as ITaskData<T>;
     }
 
     public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
-        const values = typeof param === "function" ? param(this.task) : param;
+        const data = typeof param === "function" ? param(this.task) : param;
         /**
          * No need to update if nothing changed.
          */
-        if (deepEqual(values, this.task)) {
+        if (deepEqual(data, this.task)) {
             return;
         }
         this.task = await this.context.tasks.updateTask(this.task.id, {
             ...this.task,
-            ...values
+            ...data
         });
     }
 
-    public async updateValues<T extends ITaskDataValues = ITaskDataValues>(
-        param: ITaskManagerStoreUpdateTaskValuesParam<T>
+    public async updateInput<T extends ITaskDataInput = ITaskDataInput>(
+        param: ITaskManagerStoreUpdateTaskInputParam<T>
     ): Promise<void> {
-        const values = getValues<T>(this.task.values, param);
+        const input = getInput<T>(this.task.input, param);
 
         /**
          * No need to update if nothing changed.
          */
-        if (deepEqual(values, this.task.values)) {
+        if (deepEqual(input, this.task.input)) {
             return;
         }
         this.task = await this.context.tasks.updateTask(this.task.id, {
-            values
+            input
         });
     }
 
-    public getValues<T extends ITaskDataValues = ITaskDataValues>(): T {
-        return this.task.values as T;
+    public getInput<T extends ITaskDataInput = ITaskDataInput>(): T {
+        return this.task.input as T;
     }
 
     public async addLog(log: Omit<ITaskDataLog, "createdOn">): Promise<void> {

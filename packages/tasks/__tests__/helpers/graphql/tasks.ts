@@ -23,7 +23,7 @@ export const createListTasksQuery = () => {
                         }
                         startedOn
                         finishedOn
-                        values
+                        input
                     }
                     meta {
                         cursor

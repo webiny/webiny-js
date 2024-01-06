@@ -4,7 +4,7 @@ import {
     ITaskConfig,
     ITaskCreateData,
     ITaskData,
-    ITaskDataValues,
+    ITaskDataInput,
     ITasksContextTriggerObject,
     ITaskAbortParams,
     ITaskTriggerParams,
@@ -30,7 +30,7 @@ export const createTriggerTasksCrud = (
     });
 
     return {
-        trigger: async <T = ITaskDataValues>(
+        trigger: async <T = ITaskDataInput>(
             params: ITaskTriggerParams<T>
         ): Promise<ITaskData<T>> => {
             const { definition: id, input: inputValues, name } = params;
@@ -43,12 +43,12 @@ export const createTriggerTasksCrud = (
             const input: ITaskCreateData<T> = {
                 name: name || definition.title,
                 definitionId: id,
-                values: inputValues || ({} as T)
+                input: inputValues || ({} as T)
             };
             if (definition.onBeforeTrigger) {
                 await definition.onBeforeTrigger<T>({
                     context,
-                    values: input.values
+                    input: input.input
                 });
             }
 
