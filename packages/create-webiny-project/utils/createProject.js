@@ -140,10 +140,6 @@ module.exports = async function createProject({
                     const target = path.join(projectRoot, yarnReleasesFilePath);
                     fs.copyFileSync(source, target);
 
-                    await execa("yarn", ["set", "version", yarnVersion], {
-                        cwd: projectRoot
-                    });
-
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
                     if (!fs.existsSync(yamlPath)) {
                         fs.writeFileSync(yamlPath, `yarnPath: ${yarnReleasesFilePath}`, "utf-8");
