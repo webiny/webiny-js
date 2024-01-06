@@ -211,6 +211,10 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Build packages (full)",
                     run: "yarn build"
+                },
+                {
+                    name: "Check types for Cypress tests",
+                    run: "yarn cy:ts"
                 }
             ]
         }),
