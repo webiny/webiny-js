@@ -9,8 +9,9 @@ import { inject, makeInjectable } from "@webiny/ioc";
 import { executeWithRetry } from "@webiny/utils";
 import { CmsEntry } from "../types";
 import { createDdbEntryEntity } from "../entities/createEntryEntity";
-import { assignNewMetaFields } from "../assignNewMetaFields";
-import { isMigratedEntry } from "~/migrations/5.39.0/002/isMigratedEntry";
+import { assignNewMetaFields } from "../utils/assignNewMetaFields";
+import { isMigratedEntry } from "../utils/isMigratedEntry";
+import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -109,10 +110,19 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                 logger.debug(`Processing ${result.items.length} items...`);
                 const items: BatchWriteItem[] = [];
                 for (const item of result.items) {
-                    if (!isMigratedEntry(item)) {
-                        assignNewMetaFields(item);
-                        items.push(this.entryEntity.putBatch(item));
+                    if (isMigratedEntry(item)) {
+                        continue;
                     }
+
+                    // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
+                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                        entry: item,
+                        entryEntity: this.entryEntity
+                    });
+
+                    assignNewMetaFields(item, { entryCreatedOn });
+
+                    items.push(this.entryEntity.putBatch(item));
                 }
 
                 const execute = () => {

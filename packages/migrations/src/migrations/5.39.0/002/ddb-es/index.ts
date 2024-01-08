@@ -22,11 +22,12 @@ import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
 import { createDdbEntryEntity, createDdbEsEntryEntity } from "../entities/createEntryEntity";
-import { getDecompressedData } from "~/migrations/5.37.0/002/utils/getDecompressedData";
 import { CmsEntry } from "../types";
-import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
-import { assignNewMetaFields } from "../assignNewMetaFields";
-import { isMigratedEntry } from "~/migrations/5.39.0/002/isMigratedEntry";
+import { getDecompressedData } from "../utils/getDecompressedData";
+import { getCompressedData } from "../utils/getCompressedData";
+import { assignNewMetaFields } from "../utils/assignNewMetaFields";
+import { isMigratedEntry } from "../utils/isMigratedEntry";
+import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -188,7 +189,13 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                         });
                     }
 
-                    assignNewMetaFields(item);
+                    // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
+                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                        entry: item,
+                        entryEntity: this.ddbEntryEntity
+                    });
+
+                    assignNewMetaFields(item, { entryCreatedOn });
 
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));
 
@@ -237,7 +244,13 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                         }
                     }
 
-                    assignNewMetaFields(decompressedData);
+                    // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
+                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                        entry: { ...decompressedData, PK: esRecord.PK },
+                        entryEntity: this.ddbEntryEntity
+                    });
+
+                    assignNewMetaFields(decompressedData, { entryCreatedOn });
 
                     const compressedData = await getCompressedData(decompressedData);
 

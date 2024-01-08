@@ -1,4 +1,4 @@
-import { CmsEntry } from "./types";
+import { CmsEntry } from "../types";
 
 export const isMigratedEntry = (entry: CmsEntry) => {
     return "revisionCreatedOn" in entry;
