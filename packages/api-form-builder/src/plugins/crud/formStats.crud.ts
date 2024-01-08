@@ -3,6 +3,7 @@ import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
+import { parseIdentifier } from "@webiny/utils";
 
 import {
     FbFormStats,
@@ -16,10 +17,10 @@ import {
     OnFormStatsAfterDelete
 } from "~/types";
 
-const getFormStatsId = (formId: string) => {
-    const [id, revision] = formId.split("#");
+const getFormStatsId = (id: string) => {
+    const { id: formId, version } = parseIdentifier(id);
 
-    return `${id}-${revision}-stats`;
+    return `${formId}-${version}-stats`;
 };
 
 interface CreateFormStatsCrudParams {
@@ -62,12 +63,16 @@ export const createFormStatsCrud = (params: CreateFormStatsCrudParams): FormStat
         async getFormStats(this: FormBuilder, formRevisionId) {
             const id = getFormStatsId(formRevisionId);
 
-            let formStats;
-
             try {
-                formStats = await this.storageOperations.formStats.getFormStats({
+                const formStats = await this.storageOperations.formStats.getFormStats({
                     where: { id, tenant: getTenant().id, locale: getLocale().code }
                 });
+
+                if (!formStats) {
+                    throw new NotFoundError("Form stats not found.");
+                }
+
+                return formStats;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load form stats.",
@@ -77,22 +82,33 @@ export const createFormStatsCrud = (params: CreateFormStatsCrudParams): FormStat
                     }
                 );
             }
-
-            if (!formStats) {
-                throw new NotFoundError("Form stats not found.");
-            }
-
-            return formStats;
         },
         async getFormOverallStats(this: FormBuilder, id) {
-            const [formId] = id.split("#");
-
-            let formStats;
+            const { id: formId } = parseIdentifier(id);
 
             try {
-                formStats = await this.storageOperations.formStats.listFormStats({
+                const formStats = await this.storageOperations.formStats.listFormStats({
                     where: { formId, tenant: getTenant().id, locale: getLocale().code }
                 });
+
+                if (!formStats?.length) {
+                    throw new NotFoundError("Form overall stats not found.");
+                }
+
+                const overallFormStats = {
+                    formId,
+                    views: 0,
+                    submissions: 0,
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                };
+
+                formStats.forEach(stat => {
+                    overallFormStats.views += stat.views;
+                    overallFormStats.submissions += stat.submissions;
+                });
+
+                return overallFormStats;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load form overall stats.",
@@ -102,25 +118,6 @@ export const createFormStatsCrud = (params: CreateFormStatsCrudParams): FormStat
                     }
                 );
             }
-
-            if (!formStats?.length) {
-                throw new NotFoundError("Form overall stats not found.");
-            }
-
-            const overallFormStats = {
-                formId,
-                views: 0,
-                submissions: 0,
-                tenant: getTenant().id,
-                locale: getLocale().code
-            };
-
-            formStats.forEach(stat => {
-                overallFormStats.views += stat.views;
-                overallFormStats.submissions += stat.submissions;
-            });
-
-            return overallFormStats;
         },
         async createFormStats(this: FormBuilder, form) {
             const id = getFormStatsId(form.id);

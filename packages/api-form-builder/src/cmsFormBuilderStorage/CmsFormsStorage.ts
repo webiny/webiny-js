@@ -126,9 +126,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         const model = this.modelWithContext(form);
 
         await this.security.withoutAuthorization(async () => {
-            return await this.cms.deleteEntry(model, form.id, {
-                force: true
-            });
+            return await this.cms.deleteEntry(model, form.id);
         });
     }
 

@@ -268,16 +268,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            let result;
-
             try {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                result = await this.storageOperations.forms.createForm({ form });
+                const result = await this.storageOperations.forms.createForm({ form });
                 await onFormAfterCreate.publish({
                     form: result
                 });
+
+                await this.createFormStats(result);
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form.",
@@ -287,10 +289,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
-
-            await this.createFormStats(result);
-
-            return result;
         },
         async updateForm(this: FormBuilder, id, input) {
             await formsPermissions.ensure({ rwd: "w" });
@@ -514,18 +512,20 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            let result;
-
             try {
                 await onFormRevisionBeforeCreate.publish({
                     form
                 });
-                result = await this.storageOperations.forms.createFormFrom({
+                const result = await this.storageOperations.forms.createFormFrom({
                     form
                 });
                 await onFormRevisionAfterCreate.publish({
                     form: result
                 });
+
+                await this.createFormStats(result);
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form from given one.",
@@ -536,10 +536,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
-
-            await this.createFormStats(result);
-
-            return result;
         },
         async incrementFormViews(this: FormBuilder, id) {
             const original = await this.getFormStats(id);

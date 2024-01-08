@@ -1,5 +1,6 @@
 import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
+import { createIdentifier } from "@webiny/utils";
 
 import {
     FormBuilderStorageOperationsGetFormStatsParams,
@@ -74,8 +75,11 @@ export class CmsFormStatsStorage implements FormBuilderFormStatsStorageOperation
     async updateFormStats({ formStats }: FormBuilderStorageOperationsUpdateFormStatsParams) {
         const model = this.modelWithContext(formStats);
 
-        // Append `#0001` since `formStats` always has only one revision.
-        const formStatsRevisionId = `${formStats.id}#0001`;
+        // The version is set to 1, as `formStats` always has only one revision.
+        const formStatsRevisionId = createIdentifier({
+            id: formStats.id,
+            version: 1
+        });
 
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.updateEntry(model, formStatsRevisionId, formStats);
