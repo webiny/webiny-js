@@ -27,8 +27,19 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     id
     entryId
     savedOn
+    savedBy {
+        id
+        type
+        displayName
+    }
     createdOn
     createdBy {
+        id
+        type
+        displayName
+    }
+    modifiedOn
+    modifiedBy {
         id
         type
         displayName

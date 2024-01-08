@@ -345,8 +345,11 @@ export interface CmsContentEntry {
     id: string;
     modelId: string;
     createdOn: string;
-    savedOn: string;
     createdBy: CmsIdentity;
+    savedOn: string;
+    savedBy: CmsIdentity;
+    modifiedOn: string;
+    modifiedBy: CmsIdentity;
     entryCreatedOn: string;
     entrySavedOn: string;
     entryModifiedOn: string;

@@ -8,6 +8,21 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     location: Location;
     data: TData;
     tags: string[];
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
+    savedOn: string;
+    savedBy: {
+        id: string;
+        displayName: string;
+    };
+    modifiedOn: string;
+    modifiedBy: {
+        id: string;
+        displayName: string;
+    };
 }
 
 export type MovableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;
