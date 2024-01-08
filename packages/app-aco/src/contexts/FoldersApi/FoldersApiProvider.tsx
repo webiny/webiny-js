@@ -50,6 +50,9 @@ export interface FoldersApiContext {
             | "createdOn"
             | "createdBy"
             | "savedOn"
+            | "savedBy"
+            | "modifiedOn"
+            | "modifiedBy"
         >
     ) => Promise<FolderItem>;
 
@@ -84,6 +87,15 @@ const rootFolder: FolderItem = {
     canManageStructure: true,
     canManageContent: true,
     savedOn: "",
+    savedBy: {
+        id: "",
+        displayName: ""
+    },
+    modifiedOn: "",
+    modifiedBy: {
+        id: "",
+        displayName: ""
+    },
     type: "$ROOT"
 };
 
