@@ -12,6 +12,7 @@ export interface FileManagerOnChange<T> {
 export interface FileManagerFileItem {
     id: string;
     src: string;
+    name?: string;
     meta?: Array<FileManagerFileItemMetaItem>;
 }
 
@@ -94,7 +95,7 @@ export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "rende
 
 export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
 
-export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
+export const FileManager = ({ children, render, onChange, onClose, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);
@@ -110,6 +111,14 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
         setShow(true);
     }, []);
 
+    const handleClose = useCallback(() => {
+        if (onClose) {
+            onClose();
+        }
+
+        setShow(false);
+    }, [onClose]);
+
     return (
         <>
             {show &&
@@ -119,7 +128,7 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
                      */
                     // @ts-expect-error
                     <FileManagerRenderer
-                        onClose={() => setShow(false)}
+                        onClose={handleClose}
                         onChange={
                             /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
                             onChangeRef.current

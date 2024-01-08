@@ -21,12 +21,13 @@ import { CompositionScope } from "@webiny/react-composition";
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
  */
-const formatFileItem = ({ id, src, ...rest }: FileItem): FileManagerFileItem => {
+const formatFileItem = ({ id, src, name, ...rest }: FileItem): FileManagerFileItem => {
     const props: { [key: string]: any } = rest;
 
     return {
         id,
         src,
+        name,
         meta: Object.keys(rest).map(key => ({ key, value: props[key] }))
     };
 };
@@ -51,6 +52,7 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
         const { onChange, images, accept, ...forwardProps } = props;
 
         const handleFileOnChange = (value?: FileItem[] | FileItem) => {
+            console.log(value);
             if (!onChange || !value || (Array.isArray(value) && !value.length)) {
                 return;
             }

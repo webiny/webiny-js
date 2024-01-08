@@ -3,6 +3,8 @@ import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { ItemProps, MenuProps, SectionProps } from "~/plugins/MenuPlugin";
 
+export { Icon } from "~/components/IconPicker/types";
+
 export type AdminGlobalSearchPlugin = Plugin & {
     type: "admin-global-search";
     label: string;
