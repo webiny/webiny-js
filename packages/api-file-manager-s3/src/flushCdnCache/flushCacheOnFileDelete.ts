@@ -15,7 +15,7 @@ class FlushCacheOnFileDelete {
     private onFileAfterDelete = async ({ file }: OnFileBeforeUpdateTopicParams) => {
         await this.context.tasks.trigger({
             definition: "cloudfrontInvalidateCache",
-            values: {
+            input: {
                 caller: "fm-before-delete",
                 paths: this.pathsGenerator.generate(file)
             }

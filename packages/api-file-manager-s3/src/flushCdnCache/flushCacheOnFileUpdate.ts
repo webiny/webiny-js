@@ -22,7 +22,7 @@ class FlushCacheOnFileUpdate {
 
         await this.context.tasks.trigger({
             definition: "cloudfrontInvalidateCache",
-            values: {
+            input: {
                 caller: "fm-before-update",
                 paths: this.pathsGenerator.generate(file)
             }

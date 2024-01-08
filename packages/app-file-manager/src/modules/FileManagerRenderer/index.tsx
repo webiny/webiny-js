@@ -12,7 +12,11 @@ import {
     CellModified,
     CellName,
     CellSize,
-    CellType
+    CellType,
+    CopyFile,
+    DeleteFile,
+    EditFile,
+    MoveFile
 } from "~/components/Table";
 
 const { Browser, FileDetails } = FileManagerConfig;

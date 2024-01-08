@@ -122,8 +122,11 @@ describe("GraphQLInputMapper", () => {
     });
 
     it("should not OVERRIDE data in case of nullish value", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field-1"
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: "old-field-1"
+            }
         };
 
         const batch: BatchDTO = {
@@ -138,7 +141,7 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
             field1: "old-field-1"
@@ -146,8 +149,11 @@ describe("GraphQLInputMapper", () => {
     });
 
     it("should not APPEND data in case of nullish value", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field-1"
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: "old-field-1"
+            }
         };
 
         const batch: BatchDTO = {
@@ -162,16 +168,22 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "old-field-1"
+            ...data,
+            extensions: {
+                field1: "old-field-1"
+            }
         });
     });
 
     it("should not APPEND data in case of non-array value", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field-1"
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: "old-field-1"
+            }
         };
 
         const batch: BatchDTO = {
@@ -186,7 +198,7 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
             field1: "old-field-1"
@@ -194,7 +206,7 @@ describe("GraphQLInputMapper", () => {
     });
 
     it("should APPEND new data to non existing envelope", () => {
-        const data: FileItem["extensions"] = {};
+        const data: FileItem = { ...fileMock };
 
         const batch: BatchDTO = {
             operations: [
@@ -208,16 +220,22 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: ["new-field1-1", "new-field1-2"]
+            ...data,
+            extensions: {
+                field1: ["new-field1-1", "new-field1-2"]
+            }
         });
     });
 
     it("should APPEND new data for fields with nullish value", () => {
-        const data: FileItem["extensions"] = {
-            field1: null
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: null
+            }
         };
 
         const batch: BatchDTO = {
@@ -232,16 +250,22 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: ["new-field1-1", "new-field1-2"]
+            ...data,
+            extensions: {
+                field1: ["new-field1-1", "new-field1-2"]
+            }
         });
     });
 
     it("should return existing data in case of invalid operation", () => {
-        const data: FileItem["extensions"] = {
-            field1: "old-field1"
+        const data: FileItem = {
+            ...fileMock,
+            extensions: {
+                field1: "old-field1"
+            }
         };
 
         const batch: BatchDTO = {
@@ -256,10 +280,13 @@ describe("GraphQLInputMapper", () => {
             ]
         };
 
-        const output = GraphQLInputMapper.toGraphQLExtensions(data, batch);
+        const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "old-field1"
+            ...data,
+            extensions: {
+                field1: "old-field1"
+            }
         });
     });
 });

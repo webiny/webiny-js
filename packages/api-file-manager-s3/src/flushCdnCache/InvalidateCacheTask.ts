@@ -22,7 +22,7 @@ export class InvalidateCloudfrontCacheTask {
     private continueIfCode = ["TooManyInvalidationsInProgress", "Throttling"];
 
     public async run({
-        values,
+        input,
         response,
         isCloseToTimeout
     }: ITaskRunParams<FileManagerContext, InvalidateCacheInput>): Promise<ITaskResponseResult> {
@@ -41,7 +41,7 @@ export class InvalidateCloudfrontCacheTask {
         const { distributionId } = manifest.api.cloudfront;
 
         const invalidateCache = () => {
-            return this.invalidateCache(values.caller, distributionId as string, values.paths);
+            return this.invalidateCache(input.caller, distributionId as string, input.paths);
         };
 
         try {
@@ -64,13 +64,13 @@ export class InvalidateCloudfrontCacheTask {
             });
         } catch (error) {
             if (error instanceof ReturnContinue) {
-                return response.continue(values);
+                return response.continue(input);
             }
 
             return response.error({
                 message: error.message,
                 code: "EXECUTE_WITH_RETRY_FAILED",
-                data: values.paths
+                data: input.paths
             });
         }
 
