@@ -1,11 +1,11 @@
 import { TaskManagerStore, TaskManagerStoreContext } from "~/runner/TaskManagerStore";
-import { ITaskData, ITaskDataValues } from "~/types";
+import { ITaskData, ITaskDataInput } from "~/types";
 import { createMockContext } from "~tests/mocks/context";
 import { createMockTask } from "~tests/mocks/task";
 
 interface Params {
     context?: TaskManagerStoreContext;
-    task?: ITaskData<ITaskDataValues>;
+    task?: ITaskData<ITaskDataInput>;
 }
 
 export const createMockTaskManagerStore = (params?: Params) => {

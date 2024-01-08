@@ -44,11 +44,11 @@ export class ReindexingTaskRunner {
         this.keys = keys;
 
         const isIndexAllowed = (index: string): boolean => {
-            const values = this.manager.store.getValues();
-            if (typeof values.matching !== "string" || !values.matching) {
+            const input = this.manager.store.getInput();
+            if (typeof input.matching !== "string" || !input.matching) {
                 return true;
             }
-            return index.includes(values.matching);
+            return index.includes(input.matching);
         };
 
         try {
@@ -112,7 +112,7 @@ export class ReindexingTaskRunner {
                  * Also, we always want to store what was the last key we processed, just in case something breaks, so we can continue from this point.
                  */
                 this.keys = getKeys(results);
-                await this.manager.store.updateValues({
+                await this.manager.store.updateInput({
                     settings: this.indexManager.settings,
                     keys: this.keys
                 });

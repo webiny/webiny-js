@@ -1,4 +1,4 @@
-import { ITaskDataValues, TaskResponseStatus } from "~/types";
+import { ITaskDataInput, TaskResponseStatus } from "~/types";
 import { IResponseBaseResult } from "./ResponseBaseResult";
 
 /**
@@ -6,17 +6,17 @@ import { IResponseBaseResult } from "./ResponseBaseResult";
  * For example, if the task is hammering the Elasticsearch cluster too much, you can use this to pause the execution for some time.
  */
 
-export interface IResponseContinueParams<T = ITaskDataValues> {
+export interface IResponseContinueParams<T = ITaskDataInput> {
     tenant?: string;
     locale?: string;
     webinyTaskId?: string;
-    values: T;
+    input: T;
     wait?: number;
 }
 
-export interface IResponseContinueResult<T = ITaskDataValues> extends IResponseBaseResult {
+export interface IResponseContinueResult<T = ITaskDataInput> extends IResponseBaseResult {
     message?: string;
-    values: T;
+    input: T;
     wait?: number;
     status: TaskResponseStatus.CONTINUE;
 }

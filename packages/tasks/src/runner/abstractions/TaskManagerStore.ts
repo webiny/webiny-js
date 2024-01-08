@@ -1,41 +1,41 @@
-import { ITaskData, ITaskDataLog, ITaskDataValues, ITaskUpdateData, TaskDataStatus } from "~/types";
+import { ITaskData, ITaskDataLog, ITaskDataInput, ITaskUpdateData, TaskDataStatus } from "~/types";
 
-export type ITaskManagerStoreUpdateTaskValues<T extends ITaskDataValues = ITaskDataValues> = T;
+export type ITaskManagerStoreUpdateTaskValues<T extends ITaskDataInput = ITaskDataInput> = T;
 
-export interface ITaskManagerStoreUpdateTaskValuesCb<T extends ITaskDataValues = ITaskDataValues> {
-    (values: T): Partial<T>;
+export interface ITaskManagerStoreUpdateTaskValuesCb<T extends ITaskDataInput = ITaskDataInput> {
+    (input: T): Partial<T>;
 }
 
-export type ITaskManagerStoreUpdateTaskValuesParam<T extends ITaskDataValues = ITaskDataValues> =
+export type ITaskManagerStoreUpdateTaskInputParam<T extends ITaskDataInput = ITaskDataInput> =
     | ITaskManagerStoreUpdateTaskValuesCb<T>
     | Partial<ITaskManagerStoreUpdateTaskValues<T>>;
 
-export interface ITaskManagerStoreUpdateTaskParamCb<T extends ITaskDataValues = ITaskDataValues> {
+export interface ITaskManagerStoreUpdateTaskParamCb<T extends ITaskDataInput = ITaskDataInput> {
     (task: ITaskData<T>): ITaskUpdateData<T>;
 }
 
-export type ITaskManagerStoreUpdateTask<T extends ITaskDataValues = ITaskDataValues> =
+export type ITaskManagerStoreUpdateTask<T extends ITaskDataInput = ITaskDataInput> =
     ITaskUpdateData<T>;
 
-export type ITaskManagerStoreUpdateTaskParam<T extends ITaskDataValues = ITaskDataValues> =
+export type ITaskManagerStoreUpdateTaskParam<T extends ITaskDataInput = ITaskDataInput> =
     | ITaskManagerStoreUpdateTaskParamCb<T>
     | Partial<ITaskManagerStoreUpdateTask<T>>;
 
-export interface ITaskManagerStore<T extends ITaskDataValues = ITaskDataValues> {
+export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
     setTask: (task: ITaskData<T>) => void;
     getTask: () => ITaskData<T>;
     getStatus: () => TaskDataStatus;
     /**
      * @throws {Error} If task not found or something goes wrong during the database update.
      */
-    updateTask: (values: ITaskManagerStoreUpdateTaskParam) => Promise<void>;
+    updateTask: (params: ITaskManagerStoreUpdateTaskParam) => Promise<void>;
     /**
-     * Update task values, which are used to store custom user data.
-     * You can send partial values, and they will be merged with the existing values.
+     * Update task input, which are used to store custom user data.
+     * You can send partial input, and they will be merged with the existing input.
      *
      * @throws {Error} If task not found or something goes wrong during the database update.
      */
-    updateValues: (param: ITaskManagerStoreUpdateTaskValuesParam<T>) => Promise<void>;
-    getValues: () => T;
+    updateInput: (params: ITaskManagerStoreUpdateTaskInputParam<T>) => Promise<void>;
+    getInput: () => T;
     addLog: (log: Omit<ITaskDataLog, "createdOn">) => Promise<void>;
 }

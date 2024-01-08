@@ -1,6 +1,6 @@
 import { IResponseResult } from "~/response/abstractions";
-import { ITaskData, ITaskDataValues, ITaskDefinition } from "~/types";
+import { ITaskData, ITaskDataInput, ITaskDefinition } from "~/types";
 
-export interface ITaskManager<T = ITaskDataValues> {
+export interface ITaskManager<T = ITaskDataInput> {
     run: (definition: ITaskDefinition, task: ITaskData<T>) => Promise<IResponseResult>;
 }

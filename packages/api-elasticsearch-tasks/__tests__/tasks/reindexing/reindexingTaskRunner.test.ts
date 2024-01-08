@@ -45,7 +45,7 @@ describe("reindexing task runner", () => {
                 webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
                 locale: "en-US",
-                values: {
+                input: {
                     keys: {
                         PK: "my-pk",
                         SK: "my-sk"

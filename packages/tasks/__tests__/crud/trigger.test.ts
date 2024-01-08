@@ -44,7 +44,7 @@ describe("trigger crud", () => {
             name: "A test of triggering task",
             definitionId: "myCustomTaskNumber1",
             executionName: "",
-            values: {
+            input: {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
             },

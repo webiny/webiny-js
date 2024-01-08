@@ -27,7 +27,7 @@ const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
         createdBy: entry.createdBy,
         name: entry.values.name,
         definitionId: entry.values.definitionId,
-        values: entry.values.values,
+        input: entry.values.input,
         taskStatus: entry.values.taskStatus,
         executionName: entry.values.executionName || "",
         eventResponse: entry.values.eventResponse,
@@ -77,18 +77,18 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         };
     };
 
-    const createTask = async (values: ITaskCreateData<any>) => {
-        const definition = context.tasks.getDefinition(values.definitionId);
+    const createTask = async (data: ITaskCreateData<any>) => {
+        const definition = context.tasks.getDefinition(data.definitionId);
         if (!definition) {
             throw new WebinyError(`There is no task definition.`, "TASK_DEFINITION_ERROR", {
-                id: values.definitionId
+                id: data.definitionId
             });
         }
 
         const entry = await context.security.withoutAuthorization(async () => {
             const model = await getModel();
             return await context.cms.createEntry(model, {
-                ...values,
+                ...data,
                 log: [],
                 taskStatus: TaskDataStatus.PENDING
             });
@@ -96,11 +96,11 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToTask(entry as unknown as CmsEntry<ITaskData>);
     };
 
-    const updateTask = async (id: string, values: ITaskUpdateData) => {
+    const updateTask = async (id: string, data: ITaskUpdateData) => {
         const entry = await context.security.withoutAuthorization(async () => {
             const model = await getModel();
             return await context.cms.updateEntry(model, id, {
-                ...values,
+                ...data,
                 savedOn: new Date().toISOString()
             });
         });

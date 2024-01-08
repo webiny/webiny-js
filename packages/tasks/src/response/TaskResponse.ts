@@ -8,7 +8,7 @@ import {
     ITaskResponseDoneResult,
     ITaskResponseErrorResult
 } from "./abstractions";
-import { ITaskDataValues } from "~/types";
+import { ITaskDataInput } from "~/types";
 
 /**
  * There are options to send:
@@ -40,18 +40,18 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public continue<T = ITaskDataValues>(
-        values: T,
+    public continue<T = ITaskDataInput>(
+        input: T,
         options?: ITaskResponseContinueOptions
     ): ITaskResponseContinueResult {
         const wait = getWaitingTime(options);
         if (!wait || wait < 1) {
             return this.response.continue({
-                values
+                input
             });
         }
         return this.response.continue({
-            values,
+            input,
             wait
         });
     }

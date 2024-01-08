@@ -53,11 +53,11 @@ const modelPlugin = createCmsModel({
             label: "Execution Name"
         },
         {
-            id: "values",
-            fieldId: "values",
-            storageId: "object@values",
+            id: "input",
+            fieldId: "input",
+            storageId: "object@input",
             type: "json",
-            label: "Values"
+            label: "Input"
         },
         {
             id: "taskStatus",

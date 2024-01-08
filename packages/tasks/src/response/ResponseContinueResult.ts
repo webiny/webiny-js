@@ -1,14 +1,14 @@
-import { ITaskDataValues, TaskResponseStatus } from "~/types";
+import { ITaskDataInput, TaskResponseStatus } from "~/types";
 import { IResponseContinueResult } from "./abstractions";
 
-export class ResponseContinueResult<T = ITaskDataValues> implements IResponseContinueResult<T> {
+export class ResponseContinueResult<T = ITaskDataInput> implements IResponseContinueResult<T> {
     public readonly message?: string | undefined;
     public readonly webinyTaskId: string;
     public readonly webinyTaskDefinitionId: string;
     public readonly tenant: string;
     public readonly locale: string;
     public readonly status: TaskResponseStatus.CONTINUE = TaskResponseStatus.CONTINUE;
-    public readonly values: T;
+    public readonly input: T;
     public readonly wait?: number;
 
     public constructor(params: Omit<IResponseContinueResult<T>, "status">) {
@@ -17,7 +17,7 @@ export class ResponseContinueResult<T = ITaskDataValues> implements IResponseCon
         this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;
         this.tenant = params.tenant;
         this.locale = params.locale;
-        this.values = params.values;
+        this.input = params.input;
         this.wait = params.wait;
     }
 }

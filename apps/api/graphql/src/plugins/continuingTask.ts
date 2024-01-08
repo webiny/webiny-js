@@ -34,9 +34,9 @@ export const createContinuingTask = () => {
         description:
             "This is a mock task which will continue to run until it reaches the defined run limit.",
         async run(params) {
-            const { response, isAborted, values } = params;
-            const run = values.run || 0;
-            const maxRuns = getMaxRuns(values.maxRuns);
+            const { response, isAborted, input } = params;
+            const run = input.run || 0;
+            const maxRuns = getMaxRuns(input.maxRuns);
             if (run >= maxRuns) {
                 return response.done("Got to the run limit.");
             }
@@ -48,10 +48,10 @@ export const createContinuingTask = () => {
 
             return response.continue(
                 {
-                    ...(values || {}),
+                    ...(input || {}),
                     run: run + 1
                 },
-                getOptions(values)
+                getOptions(input)
             );
         }
     });

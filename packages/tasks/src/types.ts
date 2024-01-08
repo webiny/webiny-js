@@ -18,14 +18,14 @@ export interface ITaskConfig {
     readonly eventBusName: string;
 }
 
-export interface ITaskDataValues {
+export interface ITaskDataInput {
     [key: string]: any;
 }
 
-export interface ITaskDataLog<T = ITaskDataValues> {
+export interface ITaskDataLog<T = ITaskDataInput> {
     message: string;
     createdOn: string;
-    values?: T;
+    input?: T;
     error?: IResponseError;
 }
 
@@ -49,7 +49,7 @@ export interface ITaskData<T = any> {
     taskStatus: TaskDataStatus;
     definitionId: string;
     executionName: string;
-    values: T;
+    input: T;
     createdOn: string;
     savedOn: string;
     createdBy: ITaskIdentity;
@@ -72,15 +72,15 @@ export type IDeleteTaskResponse = boolean;
 
 export type IListTaskParams = CmsEntryListParams;
 
-export interface ITaskCreateData<T = ITaskDataValues> {
+export interface ITaskCreateData<T = ITaskDataInput> {
     definitionId: string;
     name: string;
-    values: T;
+    input: T;
 }
 
-export interface ITaskUpdateData<T = ITaskDataValues> {
+export interface ITaskUpdateData<T = ITaskDataInput> {
     name?: string;
-    values?: T;
+    input?: T;
     taskStatus?: TaskDataStatus;
     executionName?: string;
     log?: ITaskDataLog[];
@@ -90,21 +90,21 @@ export interface ITaskUpdateData<T = ITaskDataValues> {
 }
 
 export interface OnTaskBeforeCreateTopicParams {
-    values: ITaskCreateData;
+    input: ITaskCreateData;
 }
 
 export interface OnTaskAfterCreateTopicParams {
-    values: ITaskCreateData;
+    input: ITaskCreateData;
     task: ITaskData;
 }
 
 export interface OnTaskBeforeUpdateTopicParams {
-    values: ITaskUpdateData;
+    input: ITaskUpdateData;
     original: ITaskData;
 }
 
 export interface OnTaskAfterUpdateTopicParams {
-    values: ITaskUpdateData;
+    input: ITaskUpdateData;
     task: ITaskData;
 }
 
@@ -142,11 +142,11 @@ export interface ITasksContextConfigObject {
 }
 
 export interface ITasksContextDefinitionObject {
-    getDefinition: <T = ITaskDataValues>(id: string) => ITaskDefinition<Context, T> | null;
+    getDefinition: <T = ITaskDataInput>(id: string) => ITaskDefinition<Context, T> | null;
     listDefinitions: () => ITaskDefinition[];
 }
 
-export interface ITaskTriggerParams<T = ITaskDataValues> {
+export interface ITaskTriggerParams<T = ITaskDataInput> {
     definition: string;
     name?: string;
     input?: T;
@@ -158,8 +158,8 @@ export interface ITaskAbortParams {
 }
 
 export interface ITasksContextTriggerObject {
-    trigger: <T = ITaskDataValues>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
-    abort: <T = ITaskDataValues>(params: ITaskAbortParams) => Promise<ITaskData<T>>;
+    trigger: <T = ITaskDataInput>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
+    abort: <T = ITaskDataInput>(params: ITaskAbortParams) => Promise<ITaskData<T>>;
 }
 
 export interface ITasksContextObject
@@ -177,18 +177,18 @@ export interface ITaskRunParams<C extends Context, I = any> {
     response: ITaskResponse;
     isCloseToTimeout: () => boolean;
     isAborted: () => boolean;
-    values: I;
+    input: I;
     store: ITaskManagerStore;
 }
 
 export interface ITaskSuccessParams<C extends Context, I = any> {
     context: C;
-    values: I;
+    input: I;
 }
 
 export interface ITaskErrorParams<C extends Context, I = any> {
     context: C;
-    values: I;
+    input: I;
 }
 
 export enum TaskResponseStatus {
@@ -213,12 +213,12 @@ export type ITaskDefinitionField = Pick<
     | "settings"
 >;
 
-export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataValues> {
+export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataInput> {
     context: C;
-    values: I;
+    input: I;
 }
 
-export interface ITaskDefinition<C extends Context = Context, I = ITaskDataValues> {
+export interface ITaskDefinition<C extends Context = Context, I = ITaskDataInput> {
     /**
      * ID of the task must be unique in the system.
      * It should be in camelCase format, for example: "myCustomTask".
@@ -240,9 +240,7 @@ export interface ITaskDefinition<C extends Context = Context, I = ITaskDataValue
      * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
      */
-    onBeforeTrigger?: <T = ITaskDataValues>(
-        params: ITaskBeforeTriggerParams<C, T>
-    ) => Promise<void>;
+    onBeforeTrigger?: <T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>) => Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      */

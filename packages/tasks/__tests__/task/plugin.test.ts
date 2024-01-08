@@ -53,14 +53,12 @@ describe("task plugin", () => {
         const task: ITaskDefinition<Context, MyInput> = {
             id: "myCustomTask",
             title: "A custom task defined via object",
-            run: async ({ response, isCloseToTimeout, values }) => {
+            run: async ({ response, isCloseToTimeout, input }) => {
                 try {
                     if (isCloseToTimeout()) {
                         return response.continue({
-                            values: {
-                                ...values,
-                                page: values.page + 1
-                            }
+                            ...input,
+                            page: input.page + 1
                         });
                     }
 
@@ -95,11 +93,11 @@ describe("task plugin", () => {
         const task = createTaskDefinition<Context, MyTask>({
             id: "myCustomTask",
             title: "A custom task defined via method",
-            run: async ({ response, isCloseToTimeout, values }) => {
+            run: async ({ response, isCloseToTimeout, input }) => {
                 try {
                     if (isCloseToTimeout()) {
                         return response.continue({
-                            values
+                            ...input
                         });
                     }
                     return response.done();
