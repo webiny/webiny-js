@@ -7,8 +7,9 @@ import { useNavigateFolder } from "@webiny/app-aco";
 
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
+import { usePermission } from "~/admin/hooks";
 
-import { RowIcon, RowText, RowTitle } from "./Cells.styled";
+import { LinkTitle, RowIcon, RowText, RowTitle } from "./Cells.styled";
 
 import { FolderTableItem } from "@webiny/app-aco/types";
 import { EntryTableItem } from "~/types";
@@ -33,20 +34,39 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
     );
 };
 
-interface EntryCellNameProps {
+interface EntryCellRowTitleProps {
     entry: EntryTableItem;
 }
 
-export const EntryCellName = ({ entry }: EntryCellNameProps) => {
-    const { onEditEntry } = useContentEntriesList();
-
+const EntryCellRowTitle = ({ entry }: EntryCellRowTitleProps) => {
     return (
-        <RowTitle onClick={() => onEditEntry(entry)}>
+        <RowTitle>
             <RowIcon>
                 <File />
             </RowIcon>
             <RowText use={"subtitle2"}>{entry.meta.title}</RowText>
         </RowTitle>
+    );
+};
+
+interface EntryCellNameProps {
+    entry: EntryTableItem;
+}
+
+export const EntryCellName = ({ entry }: EntryCellNameProps) => {
+    const { getEntryEditUrl } = useContentEntriesList();
+    const { canEdit } = usePermission();
+
+    const entryEditUrl = getEntryEditUrl(entry);
+
+    if (!canEdit(entry, "cms.contentEntry")) {
+        return <EntryCellRowTitle entry={entry} />;
+    }
+
+    return (
+        <LinkTitle to={entryEditUrl}>
+            <EntryCellRowTitle entry={entry} />
+        </LinkTitle>
     );
 };
 

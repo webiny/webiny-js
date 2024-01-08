@@ -31,7 +31,7 @@ export class ColumnMapper {
             enableHiding: column.hideable,
             enableResizing: column.resizable,
             enableSorting: column.sortable,
-            cell: (row: T) => cellRenderer(row, column.cell)
+            cell: column.cell ? (row: T) => cellRenderer(row, column.cell) : undefined
         };
     }
 }

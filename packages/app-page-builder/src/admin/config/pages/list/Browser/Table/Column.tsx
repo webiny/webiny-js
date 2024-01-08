@@ -7,7 +7,9 @@ const { Table } = AcoConfig;
 
 export { ColumnConfig };
 
-const BaseColumn: React.FC<React.ComponentProps<typeof AcoConfig.Table.Column>> = props => {
+type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
+
+const BaseColumn = (props: ColumnProps) => {
     return (
         <CompositionScope name={"pb.page"}>
             <AcoConfig>
