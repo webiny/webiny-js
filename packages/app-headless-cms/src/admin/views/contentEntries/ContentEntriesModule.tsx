@@ -9,11 +9,17 @@ import {
 } from "~/admin/components/ContentEntries/BulkActions";
 import { FilterByStatus } from "~/admin/components/ContentEntries/Filters";
 import {
-    DeleteEntry,
+    DeleteEntry as DeleteEntryMenuItem,
     SaveAndPublishButton,
     SaveContentButton
 } from "~/admin/components/ContentEntryForm/Header";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+import {
+    ChangeEntryStatus,
+    DeleteEntry,
+    EditEntry,
+    MoveEntry
+} from "~/admin/components/ContentEntries/Table/Actions";
 import {
     CellActions,
     CellAuthor,
@@ -38,6 +44,10 @@ export const ContentEntriesModule = () => {
                 <Browser.FolderAction name={"edit"} element={<EditFolder />} />
                 <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.EntryAction name={"edit"} element={<EditEntry />} />
+                <Browser.EntryAction name={"status"} element={<ChangeEntryStatus />} />
+                <Browser.EntryAction name={"move"} element={<MoveEntry />} />
+                <Browser.EntryAction name={"delete"} element={<DeleteEntry />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}
@@ -86,7 +96,7 @@ export const ContentEntriesModule = () => {
             <ContentEntryEditorConfig>
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
-                <Actions.MenuItemAction name={"delete"} element={<DeleteEntry />} />
+                <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
             </ContentEntryEditorConfig>
         </>
     );

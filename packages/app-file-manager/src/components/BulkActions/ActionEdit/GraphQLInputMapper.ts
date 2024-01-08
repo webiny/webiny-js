@@ -24,9 +24,8 @@ export class GraphQLInputMapper {
                         return;
                     }
 
-                    if (data && data[field]) {
-                        update[field] = [...data[field], ...value[field]];
-                    }
+                    const oldData = (data && data[field]) ?? [];
+                    update[field] = [...oldData, ...value[field]];
 
                     break;
                 default:

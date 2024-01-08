@@ -132,6 +132,8 @@ jobs:
         run: yarn --immutable
       - name: Build packages (full)
         run: yarn build
+      - name: Check types for Cypress tests
+        run: yarn cy:ts
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

@@ -15,7 +15,12 @@ import {
     CellCreated,
     CellModified,
     CellName,
-    CellStatus
+    CellStatus,
+    ChangePageStatus,
+    DeletePage,
+    EditPage,
+    MovePage,
+    PreviewPage
 } from "~/admin/components/Table/Table";
 
 const { Browser } = PageListConfig;
@@ -31,6 +36,11 @@ export const PagesModule = () => {
             <Browser.FolderAction name={"edit"} element={<EditFolder />} />
             <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
             <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+            <Browser.PageAction name={"edit"} element={<EditPage />} />
+            <Browser.PageAction name={"preview"} element={<PreviewPage />} />
+            <Browser.PageAction name={"status"} element={<ChangePageStatus />} />
+            <Browser.PageAction name={"move"} element={<MovePage />} />
+            <Browser.PageAction name={"delete"} element={<DeletePage />} />
             <Browser.Table.Column
                 name={"title"}
                 header={"Name"}
