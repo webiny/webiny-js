@@ -30,6 +30,10 @@ export const FileManagerRendererModule = () => {
                 <Browser.FolderAction name={"edit"} element={<EditFolder />} />
                 <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.FileAction name={"copy"} element={<CopyFile />} />
+                <Browser.FileAction name={"edit"} element={<EditFile />} />
+                <Browser.FileAction name={"move"} element={<MoveFile />} />
+                <Browser.FileAction name={"delete"} element={<DeleteFile />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}
