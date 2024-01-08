@@ -1,5 +1,8 @@
-const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
-global.fetch = require("node-fetch");
+import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
+import fetch from "node-fetch";
+
+// @ts-expect-error
+global.fetch = fetch;
 
 const AWS_COGNITO = {
     USER_POOL_ID: Cypress.env("AWS_COGNITO_USER_POOL_ID"),
@@ -11,7 +14,7 @@ const userPool = new AmazonCognitoIdentity.CognitoUserPool({
     ClientId: AWS_COGNITO.CLIENT_ID
 });
 
-export default ({ username, password }) => {
+export default ({ username, password }: { username: string; password: string }) => {
     const userData = {
         Username: username,
         Pool: userPool
