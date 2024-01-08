@@ -6,7 +6,9 @@ const { Record } = AcoConfig;
 
 export { RecordActionConfig as FileActionConfig };
 
-export const FileAction: React.FC<React.ComponentProps<typeof AcoConfig.Record.Action>> = props => {
+type FileActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
+
+export const FileAction = (props: FileActionProps) => {
     return (
         <CompositionScope name={"fm"}>
             <AcoConfig>

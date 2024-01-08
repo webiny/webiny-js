@@ -6,7 +6,9 @@ const { Record } = AcoConfig;
 
 export { RecordActionConfig as PageActionConfig };
 
-export const PageAction: React.FC<React.ComponentProps<typeof AcoConfig.Record.Action>> = props => {
+type PageActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
+
+export const PageAction = (props: PageActionProps) => {
     return (
         <CompositionScope name={"pb.page"}>
             <AcoConfig>
