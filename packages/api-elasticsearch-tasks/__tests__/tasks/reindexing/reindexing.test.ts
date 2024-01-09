@@ -44,6 +44,7 @@ describe("reindexing", () => {
         const { context, task, event } = await createContextTaskAndEvent(handler);
 
         const result = await handler.handle(event);
+        expect(result).toBeInstanceOf(ResponseDoneResult);
         expect(result).toEqual(
             new ResponseDoneResult({
                 webinyTaskId: task.id,
@@ -63,20 +64,21 @@ describe("reindexing", () => {
                 settings: {}
             },
             executionName: "someExecutionName",
-            savedOn: expect.stringMatching(/^20/),
-            startedOn: expect.stringMatching(/^20/),
-            finishedOn: expect.stringMatching(/^20/),
+            savedOn: expect.toBeDateString(),
+            startedOn: expect.toBeDateString(),
+            finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
-            log: [
-                {
-                    message: "Task started.",
-                    createdOn: expect.stringMatching(/^20/)
-                },
-                {
-                    createdOn: expect.stringMatching(/^20/),
-                    message: "No more items to process - no last evaluated keys."
-                }
-            ]
+            iterations: 1
+            // log: [
+            //     {
+            //         message: "Task started.",
+            //         createdOn: expect.toBeDateString()
+            //     },
+            //     {
+            //         createdOn: expect.toBeDateString(),
+            //         message: "No more items to process - no last evaluated keys."
+            //     }
+            // ]
         });
     });
 
@@ -104,21 +106,22 @@ describe("reindexing", () => {
         expect(updatedTask).toEqual({
             ...task,
             executionName: "someExecutionName",
-            savedOn: expect.stringMatching(/^20/),
-            startedOn: expect.stringMatching(/^20/),
+            savedOn: expect.toBeDateString(),
+            startedOn: expect.toBeDateString(),
             finishedOn: undefined,
             taskStatus: TaskDataStatus.RUNNING,
-            log: [
-                {
-                    message: "Task started.",
-                    createdOn: expect.stringMatching(/^20/)
-                },
-                {
-                    createdOn: expect.stringMatching(/^20/),
-                    message: "Task continuing.",
-                    input: {}
-                }
-            ]
+            iterations: 1
+            // log: [
+            //     {
+            //         message: "Task started.",
+            //         createdOn: expect.toBeDateString()
+            //     },
+            //     {
+            //         createdOn: expect.toBeDateString(),
+            //         message: "Task continuing.",
+            //         input: {}
+            //     }
+            // ]
         });
         /**
          * Should end the task when there are no more items to process.
@@ -144,25 +147,26 @@ describe("reindexing", () => {
                 settings: {}
             },
             executionName: "someExecutionName",
-            savedOn: expect.stringMatching(/^20/),
-            startedOn: expect.stringMatching(/^20/),
-            finishedOn: expect.stringMatching(/^20/),
+            savedOn: expect.toBeDateString(),
+            startedOn: expect.toBeDateString(),
+            finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
-            log: [
-                {
-                    message: "Task started.",
-                    createdOn: expect.stringMatching(/^20/)
-                },
-                {
-                    createdOn: expect.stringMatching(/^20/),
-                    message: "Task continuing.",
-                    input: {}
-                },
-                {
-                    createdOn: expect.stringMatching(/^20/),
-                    message: "No more items to process - no last evaluated keys."
-                }
-            ]
+            iterations: 2
+            // log: [
+            //     {
+            //         message: "Task started.",
+            //         createdOn: expect.toBeDateString()
+            //     },
+            //     {
+            //         createdOn: expect.toBeDateString(),
+            //         message: "Task continuing.",
+            //         input: {}
+            //     },
+            //     {
+            //         createdOn: expect.toBeDateString(),
+            //         message: "No more items to process - no last evaluated keys."
+            //     }
+            // ]
         });
     });
 });
