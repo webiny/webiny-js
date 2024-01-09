@@ -39,6 +39,17 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     }
 };
 
-export const createDdbEntryEntity = (table: Table<string, string, string>) => {
+export interface FileEntry {
+    id: string;
+    tenant: string;
+    locale: string;
+    values: {
+        "text@key": string;
+        "number@size": number;
+        "string@type": string;
+    };
+}
+
+export const createFileEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "CmsEntries", ddbAttributes);
 };

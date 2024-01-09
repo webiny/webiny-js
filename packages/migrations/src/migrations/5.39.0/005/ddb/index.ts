@@ -8,8 +8,10 @@ import {
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { S3 } from "@webiny/aws-sdk/client-s3";
-import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
-import { createDdbEntryEntity } from "../entities/createEntryEntity";
+import { QueryAllParams } from "@webiny/db-dynamodb";
+import { ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
+import { createFileEntity, FileEntry } from "../utils/createFileEntity";
+import { FileMetadata } from "../utils/FileMetadata";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -18,14 +20,14 @@ const isGroupMigrationCompleted = (
 };
 
 export class FileManager_5_39_0_005 implements DataMigration {
-    private readonly fileEntity: ReturnType<typeof createDdbEntryEntity>;
+    private readonly fileEntity: ReturnType<typeof createFileEntity>;
     private readonly table: Table<string, string, string>;
     private readonly bucket: string;
-    private s3: S3;
+    private readonly s3: S3;
 
     constructor(table: Table<string, string, string>) {
         this.table = table;
-        this.fileEntity = createDdbEntryEntity(table);
+        this.fileEntity = createFileEntity(table);
         this.s3 = new S3({ region: process.env.AWS_REGION });
         this.bucket = String(process.env.S3_BUCKET);
     }
@@ -45,20 +47,17 @@ export class FileManager_5_39_0_005 implements DataMigration {
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                const latestFile = await queryOne({
-                    entity: this.fileEntity,
-                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fmFile#L`,
-                    options: {
-                        index: "GSI1",
-                        gt: " "
-                    }
-                });
+                const latestFile = await queryOne<FileEntry>(
+                    this.getFileQuery(tenantId, localeCode)
+                );
 
                 if (!latestFile) {
                     return false;
                 }
 
-                const hasMetadata = await this.fileHasMetadata(latestFile);
+                const fileMetadata = new FileMetadata(this.s3, this.bucket, latestFile);
+
+                const hasMetadata = await fileMetadata.exists();
 
                 if (!hasMetadata) {
                     shouldExecute = true;
@@ -89,55 +88,31 @@ export class FileManager_5_39_0_005 implements DataMigration {
                     return true;
                 }
 
-                await ddbQueryAllWithCallback<PbPageBlock>(
-                    {
-                        entity: this.oldPageBlockEntity,
-                        partitionKey: `T#${tenantId}#L#${localeCode}#PB#B`,
-                        options: {
-                            gt: status || " "
-                        }
-                    },
-                    async oldBlocks => {
+                await ddbQueryAllWithCallback<FileEntry>(
+                    this.getFileQuery(tenantId, localeCode, { gt: status || " ", limit: 1000 }),
+                    async files => {
                         batch++;
 
                         logger.info(
-                            `Processing batch #${batch} in group ${groupId} (${oldBlocks.length} blocks).`
+                            `Processing batch #${batch} in group ${groupId} (${files.length} files).`
                         );
 
-                        const items = await Promise.all(
-                            oldBlocks.map(async oldBlock => {
-                                const newPageBlock = {
-                                    ...oldBlock,
-                                    PK: `T#${tenantId}#L#${localeCode}#PB#BLOCK#${oldBlock.id}`,
-                                    SK: "A",
-                                    GSI1_PK: `T#${tenantId}#L#${localeCode}#PB#BLOCKS`,
-                                    // We need the ability to filter by category slug, and `id` is for uniqueness.
-                                    GSI1_SK: `${oldBlock.blockCategory}#${oldBlock.id}`,
-                                    content: await compressContent(oldBlock.content)
-                                };
-
-                                // We no longer have a `preview`.
-                                delete newPageBlock["preview"];
-
-                                return this.newPageBlockEntity.putBatch(newPageBlock);
-                            })
-                        );
-
-                        const execute = () => {
-                            return batchWriteAll({ table: this.newPageBlockEntity.table, items });
-                        };
-
-                        await executeWithRetry(execute, {
-                            onFailedAttempt: error => {
-                                logger.error(
-                                    `"batchWriteAll" attempt #${error.attemptNumber} failed.`
-                                );
-                                logger.error(error.message);
-                            }
+                        const writers = files.map(file => {
+                            const writeMetadata = this.createMetadataWriter(file);
+                            return executeWithRetry(writeMetadata, {
+                                onFailedAttempt: error => {
+                                    logger.error(
+                                        `"batchWriteAll" attempt #${error.attemptNumber} failed.`
+                                    );
+                                    logger.error(error.message);
+                                }
+                            });
                         });
 
+                        await Promise.all(writers);
+
                         // Update checkpoint after every batch
-                        migrationStatus[groupId] = oldBlocks[oldBlocks.length - 1]?.id;
+                        migrationStatus[groupId] = files[files.length - 1]?.id;
 
                         // Check if we should store checkpoint and exit.
                         if (context.runningOutOfTime()) {
@@ -160,17 +135,25 @@ export class FileManager_5_39_0_005 implements DataMigration {
         });
     }
 
-    private async fileHasMetadata(fileEntry: Record<string, any>): Promise<boolean> {
-        const fileKey = fileEntry.values["text@key"] as string;
-        const metadataKey = `${fileKey}.metadata`;
+    private getFileQuery(
+        tenantId: string,
+        localeCode: string,
+        options: QueryAllParams["options"] = {}
+    ) {
+        return {
+            entity: this.fileEntity,
+            partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fmFile#L`,
+            options: {
+                index: "GSI1",
+                gt: " ",
+                ...options
+            }
+        };
+    }
 
-        try {
-            await this.s3.headObject({ Bucket: this.bucket, Key: metadataKey });
-            return true;
-        } catch (error) {
-            console.log(JSON.stringify(error, null, 2));
-            return false;
-        }
+    private createMetadataWriter(fileEntry: FileEntry) {
+        const fileMetadata = new FileMetadata(this.s3, this.bucket, fileEntry);
+        return () => fileMetadata.create();
     }
 }
 
