@@ -288,7 +288,15 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
 
-            await this.createFormStats(result);
+            try {
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteForm(result.id);
+
+                throw ex;
+            }
 
             return result;
         },
@@ -537,7 +545,15 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
 
-            await this.createFormStats(result);
+            try {
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form revision and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteFormRevision(result.id);
+
+                throw ex;
+            }
 
             return result;
         },

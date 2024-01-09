@@ -3,7 +3,7 @@ import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { parseIdentifier } from "@webiny/utils";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 
 import {
     FbFormStats,
@@ -17,10 +17,16 @@ import {
     OnFormStatsAfterDelete
 } from "~/types";
 
-const getFormStatsId = (id: string) => {
-    const { id: formId, version } = parseIdentifier(id);
+const getFormStatsId = (formRevisionId: string) => {
+    const { id: formId, version } = parseIdentifier(formRevisionId);
 
-    return `${formId}-${version}-stats`;
+    if (version === null) {
+        throw new WebinyError("Wrong form revision id value", "GET_FORM_STATS_ID_ERROR", {
+            id: formRevisionId
+        });
+    }
+
+    return `${formId}-${zeroPad(version)}-stats`;
 };
 
 interface CreateFormStatsCrudParams {
@@ -122,12 +128,6 @@ export const createFormStatsCrud = (params: CreateFormStatsCrudParams): FormStat
         async createFormStats(this: FormBuilder, form) {
             const id = getFormStatsId(form.id);
 
-            if (!id) {
-                throw new WebinyError("Wrong form id value", "FORM_STATS_FORM_ID_ERROR", {
-                    id: form.id
-                });
-            }
-
             const formStats: FbFormStats = {
                 id,
                 formId: form.formId,
@@ -162,8 +162,8 @@ export const createFormStatsCrud = (params: CreateFormStatsCrudParams): FormStat
                 );
             }
         },
-        async updateFormStats(this: FormBuilder, formId, input) {
-            const original = await this.getFormStats(formId);
+        async updateFormStats(this: FormBuilder, formRevisionId, input) {
+            const original = await this.getFormStats(formRevisionId);
 
             if (!original) {
                 throw new NotFoundError("Form stats not found.");

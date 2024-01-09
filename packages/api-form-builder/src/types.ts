@@ -811,13 +811,13 @@ export interface OnFormStatsAfterDelete {
 
 export interface FormStatsCRUD {
     getFormStats(formRevisionId: string): Promise<FbFormStats | null>;
-    getFormOverallStats(formId: string): Promise<Omit<FbFormStats, "id" | "formVersion"> | null>;
+    getFormOverallStats(id: string): Promise<Omit<FbFormStats, "id" | "formVersion"> | null>;
     createFormStats(form: FbForm): Promise<FbFormStats>;
     updateFormStats(
-        formId: string,
+        formRevisionId: string,
         input: { views?: number; submissions?: number }
     ): Promise<FbFormStats>;
-    deleteFormStats(ids: string): Promise<void>;
+    deleteFormStats(formId: string): Promise<void>;
     /**
      * Lifecycle events
      */
