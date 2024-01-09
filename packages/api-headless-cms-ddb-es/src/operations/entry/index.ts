@@ -1265,8 +1265,7 @@ export const createEntriesStorageOperations = (
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         /**
-                         * 🚫 Deprecated meta fields below.
-                         * Will be fully removed in one of the next releases.
+                         * 🔀 Alias meta fields below.
                          */
                         savedOn: entry.savedOn,
                         publishedOn: entry.publishedOn,

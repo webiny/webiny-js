@@ -101,8 +101,7 @@ const createSystemFields = (): ModelFields => {
         },
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         savedOn: {
             type: "date",

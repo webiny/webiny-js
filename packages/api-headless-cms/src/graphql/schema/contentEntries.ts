@@ -41,8 +41,7 @@ interface CmsEntryRecord {
     image?: string | null;
 
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
     createdBy: CmsIdentity;
     modifiedBy?: CmsIdentity | null;
@@ -98,8 +97,7 @@ const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord 
         image: getEntryImage(model, entry),
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         createdBy: entry.createdBy,
         modifiedBy: entry.modifiedBy,

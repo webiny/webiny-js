@@ -25,8 +25,7 @@ export const renderSortEnum: RenderSortEnum = ({
         `id_DESC`,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         "savedOn_ASC",
         "savedOn_DESC",

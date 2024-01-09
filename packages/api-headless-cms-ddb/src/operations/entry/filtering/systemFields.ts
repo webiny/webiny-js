@@ -48,8 +48,7 @@ export const createSystemFields = (): Field[] => {
             label: "Entry ID"
         },
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         {
             id: "createdOn",

@@ -143,8 +143,7 @@ export const createEntryData = async ({
         locale: locale.code,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         createdOn: getDate(rawInput.createdOn, currentDateTime),
         savedOn: getDate(rawInput.savedOn, currentDateTime),

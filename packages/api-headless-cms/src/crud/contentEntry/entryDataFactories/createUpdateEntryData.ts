@@ -87,8 +87,7 @@ export const createUpdateEntryData = async ({
         ...originalEntry,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         savedOn: getDate(rawInput.savedOn, new Date()),
         createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),

@@ -1465,8 +1465,7 @@ export interface CmsEntry<T = CmsEntryValues> {
     id: string;
 
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
 
     /**
@@ -1913,8 +1912,7 @@ export interface CmsEntryListWhere {
     entryId_not_in?: string[];
 
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
 
     /**
@@ -2337,8 +2335,7 @@ export interface CreateCmsEntryInput {
     status?: CmsEntryStatus;
 
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
     createdOn?: Date | string;
     savedOn?: Date | string;
@@ -2389,8 +2386,7 @@ export interface CreateCmsEntryOptionsInput {
  */
 export interface CreateFromCmsEntryInput {
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
     createdOn?: Date;
     savedOn?: Date;
@@ -2437,8 +2433,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  */
 export interface UpdateCmsEntryInput {
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
+     * 🔀 Alias meta fields below.
      */
     createdOn?: Date | string | null;
     savedOn?: Date | string | null;

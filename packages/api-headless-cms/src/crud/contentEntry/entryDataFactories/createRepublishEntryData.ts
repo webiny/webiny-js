@@ -34,8 +34,7 @@ export const createRepublishEntryData = async ({
         status: STATUS_PUBLISHED,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
         publishedOn: getDate(originalEntry.publishedOn, currentDateTime),
         savedOn: getDate(originalEntry.savedOn, currentDateTime),

@@ -37,8 +37,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         "entryId_not_in: [String!]",
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * 🔀 Alias meta fields below.
          */
 
         // Deprecated. Use `revisionCreatedBy` instead.
