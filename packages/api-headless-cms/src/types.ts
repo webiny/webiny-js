@@ -165,6 +165,7 @@ export type CmsModelFieldType =
     | "file"
     | "long-text"
     | "number"
+    | "json"
     | "object"
     | "ref"
     | "rich-text"
@@ -647,7 +648,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      * fieldType: "myField"
      * ```
      */
-    fieldType: string;
+    fieldType: CmsModelFieldType;
     /**
      * Is the field searchable via the GraphQL?
      *

@@ -1,8 +1,6 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-
-// @ts-expect-error
 import { getLayerArn } from "@webiny/aws-layers";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 

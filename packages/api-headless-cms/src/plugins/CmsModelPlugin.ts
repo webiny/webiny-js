@@ -43,7 +43,7 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
 
 export interface CmsApiModel
     extends Omit<
-        CmsModel,
+        CmsModelPluginModel,
         "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
     > {
     isPrivate?: never;
@@ -60,7 +60,7 @@ export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidat
 
 interface CmsPrivateModel
     extends Omit<
-        CmsModel,
+        CmsModelPluginModel,
         "isPrivate" | "singularApiName" | "pluralApiName" | "fields" | "isPlugin"
     > {
     noValidate?: never;
@@ -77,7 +77,8 @@ export interface CmsPrivateModelFull extends Omit<CmsPrivateModel, "fields" | "n
 
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
 
-interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
+export interface CmsModelPluginModel
+    extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
     locale?: string;
     tenant?: string;
 }
@@ -88,7 +89,7 @@ interface CmsModelPluginOptions {
 
 export class CmsModelPlugin extends Plugin {
     public static override readonly type: string = "cms-content-model";
-    public readonly contentModel: CmsModel;
+    public readonly contentModel: CmsModelPluginModel;
 
     private readonly options: CmsModelPluginOptions;
 
@@ -98,7 +99,7 @@ export class CmsModelPlugin extends Plugin {
         this.contentModel = this.buildModel(contentModel);
     }
 
-    private buildModel(input: CmsModelInput): CmsModel {
+    private buildModel(input: CmsModelInput): CmsModelPluginModel {
         const isPrivate = input.isPrivate || false;
         const singularApiName = input.singularApiName
             ? createApiName(input.singularApiName)
@@ -122,7 +123,7 @@ export class CmsModelPlugin extends Plugin {
             };
         }
 
-        const model: CmsModel = {
+        const model: CmsModelPluginModel = {
             ...input,
             isPlugin: true,
             isPrivate,
@@ -269,7 +270,7 @@ export class CmsModelPlugin extends Plugin {
         return fields;
     }
 
-    private validateLayout(model: CmsModel): void {
+    private validateLayout(model: CmsModelPluginModel): void {
         /**
          * Only skip validation if option.validateLayout was set as false, explicitly.
          */

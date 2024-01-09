@@ -1,19 +1,20 @@
 import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
-    ApiGateway,
     ApiApwScheduler,
+    ApiBackgroundTask,
     ApiCloudfront,
     ApiFileManager,
+    ApiGateway,
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
     CoreOutput,
-    VpcConfig,
-    CreateCorePulumiAppParams
+    CreateCorePulumiAppParams,
+    VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
+import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -238,6 +239,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 applyCustomDomain(cloudfront, domains);
             }
 
+            const backgroundTask = app.addModule(ApiBackgroundTask);
+
             app.addOutputs({
                 region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
@@ -250,7 +253,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
-                graphqlLambdaName: graphql.functions.graphql.output.name
+                graphqlLambdaName: graphql.functions.graphql.output.name,
+                backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn
             });
 
             app.addHandler(() => {
@@ -277,7 +282,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apiGateway,
                 cloudfront,
                 apwScheduler,
-                migration
+                migration,
+                backgroundTask
             };
         }
     });
