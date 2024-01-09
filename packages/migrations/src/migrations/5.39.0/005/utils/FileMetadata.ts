@@ -6,6 +6,7 @@ export class FileMetadata {
     private fileEntry: FileEntry;
     private readonly bucket: string;
     private readonly metadataKey: string;
+    private attempt = 0;
 
     constructor(s3: S3, bucket: string, fileEntry: FileEntry) {
         this.bucket = bucket;
@@ -26,13 +27,22 @@ export class FileMetadata {
         };
 
         try {
+            this.attempt++;
+            console.log(
+                `Attempt #${this.attempt}: create metadata file at ${this.metadataKey}`,
+                JSON.stringify(metadata, null, 2)
+            );
             await this.s3.putObject({
                 Bucket: this.bucket,
                 Key: this.metadataKey,
                 Body: JSON.stringify(metadata, null, 2)
             });
+            console.log(`Attempt #${this.attempt} succeeded! Created ${this.metadataKey}.`);
         } catch (error) {
-            console.log(JSON.stringify(error, null, 2));
+            console.log(
+                `ERROR #${this.attempt} for ${this.metadataKey}`,
+                JSON.stringify(error, null, 2)
+            );
         }
     }
 
@@ -41,7 +51,7 @@ export class FileMetadata {
             await this.s3.headObject({ Bucket: this.bucket, Key: this.metadataKey });
             return true;
         } catch (error) {
-            console.log(JSON.stringify(error, null, 2));
+            console.log("ERROR: couldn't check for metadata", JSON.stringify(error, null, 2));
             return false;
         }
     }
