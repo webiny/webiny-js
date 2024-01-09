@@ -86,6 +86,21 @@ export const createTriggerTasksCrud = (
             if (!task) {
                 throw new NotFoundError(`Task "${params.id}" was not found!`);
             }
+            /**
+             * We should only be able to abort a task which is pending or running
+             */
+            if (
+                [TaskDataStatus.PENDING, TaskDataStatus.RUNNING].includes(task.taskStatus) === false
+            ) {
+                throw new WebinyError(
+                    `Cannot abort a task that is not pending or running!`,
+                    "TASK_ABORT_ERROR",
+                    {
+                        id: params.id,
+                        status: task.taskStatus
+                    }
+                );
+            }
             let taskLog: ITaskLog | null = null;
             try {
                 taskLog = await context.tasks.getLatestLog(task.id);
