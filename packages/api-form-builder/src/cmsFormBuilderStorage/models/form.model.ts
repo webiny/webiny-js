@@ -238,39 +238,6 @@ const settingsReCaptchaEnabledField = () => {
     });
 };
 
-const settingsReCaptchaSettingsEnabledField = () => {
-    return createModelField({
-        label: "Enabled",
-        type: "boolean"
-    });
-};
-
-const settingsReCaptchaSettingsSecretKeyField = () => {
-    return createModelField({
-        label: "Secret Key",
-        fieldId: "secretKey",
-        type: "text"
-    });
-};
-
-const settingsReCaptchaSettingsSiteKeyField = () => {
-    return createModelField({
-        label: "Site Key",
-        fieldId: "siteKey",
-        type: "text"
-    });
-};
-
-const settingsReCaptchaSettingsField = (fields: CmsModelField[]) => {
-    return createModelField({
-        label: "Settings",
-        type: "object",
-        settings: {
-            fields
-        }
-    });
-};
-
 const settingsReCaptchaErrorMessageField = () => {
     return createModelField({
         label: "ErrorMessage",
@@ -407,15 +374,7 @@ const SETTINGS_FIELDS: CmsModelField[] = [
         settingsTermsOfServiceMessageMessageField(),
         settingsTermsOfServiceMessageErrorMessageField()
     ]),
-    settingsReCaptchaField([
-        settingsReCaptchaEnabledField(),
-        settingsReCaptchaSettingsField([
-            settingsReCaptchaSettingsEnabledField(),
-            settingsReCaptchaSettingsSecretKeyField(),
-            settingsReCaptchaSettingsSiteKeyField()
-        ]),
-        settingsReCaptchaErrorMessageField()
-    ])
+    settingsReCaptchaField([settingsReCaptchaEnabledField(), settingsReCaptchaErrorMessageField()])
 ];
 
 export const FIELD_FIELDS = [
