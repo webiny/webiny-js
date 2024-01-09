@@ -7,6 +7,7 @@ import { Response } from "~/response";
 import { TaskControl } from "./TaskControl";
 import { TaskEventValidation } from "./TaskEventValidation";
 import { IResponseResult } from "~/response/abstractions";
+import { getObjectProperties } from "~/runner/utils/getObjectProperties";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -65,7 +66,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             event = this.validation.validate(input);
         } catch (ex) {
             return response.error({
-                error: ex
+                error: getObjectProperties(ex)
             });
         }
 
@@ -75,7 +76,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             return await control.run(event);
         } catch (ex) {
             return response.error({
-                error: ex
+                error: getObjectProperties(ex)
             });
         }
     }

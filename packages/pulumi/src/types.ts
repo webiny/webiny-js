@@ -29,9 +29,7 @@ export interface CreatePulumiAppParams<TResources extends Record<string, unknown
 }
 
 export interface ProgramDecorator<TApp, TResources> {
-    (program: PulumiProgram<TApp, TResources>, app: TApp): ReturnType<
-        PulumiProgram<TResources>
-    >;
+    (program: PulumiProgram<TApp, TResources>, app: TApp): ReturnType<PulumiProgram<TResources>>;
 }
 
 export interface PulumiApp<TResources = Record<string, unknown>> {
@@ -42,7 +40,9 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
 
     paths: { absolute: string; relative: string; workspace: string };
     name: string;
-    decorateProgram: <T>(decorator: ProgramDecorator<PulumiApp<TResources> & T, TResources>) => void;
+    decorateProgram: <T>(
+        decorator: ProgramDecorator<PulumiApp<TResources> & T, TResources>
+    ) => void;
     program: PulumiProgram;
     resources: TResources;
     params: {

@@ -18,6 +18,7 @@ import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthenticat
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { Context } from "~tests/types";
 import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
+import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -141,6 +142,17 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             return invoke({
                 body: {
                     query: createListTasksQuery(),
+                    variables
+                }
+            });
+        },
+        /**
+         * Logs
+         */
+        listTaskLogsQuery: (variables: Record<string, any> = {}) => {
+            return invoke({
+                body: {
+                    query: createListTaskLogsQuery(),
                     variables
                 }
             });

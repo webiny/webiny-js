@@ -14,8 +14,12 @@ import {
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
-import { withServiceManifest } from "~/utils/withServiceManifest";
+import {
+    addDomainsUrlsOutputs,
+    tagResources,
+    withCommonLambdaEnvVariables,
+    withServiceManifest
+} from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 

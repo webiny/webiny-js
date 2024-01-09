@@ -21,7 +21,7 @@ export class S3OutputStrategy implements AssetOutputStrategy {
     }
 
     async output(asset: Asset): Promise<AssetReply> {
-        if (await asset.getSize() > MAX_RETURN_CONTENT_LENGTH) {
+        if ((await asset.getSize()) > MAX_RETURN_CONTENT_LENGTH) {
             return new S3RedirectAssetReply(
                 await this.getPresignedUrl(asset),
                 this.presignedUrlTtl

@@ -22,11 +22,44 @@ export interface ITaskDataInput {
     [key: string]: any;
 }
 
-export interface ITaskDataLog<T = ITaskDataInput> {
+export enum ITaskLogItemType {
+    INFO = "info",
+    ERROR = "error"
+}
+
+export interface ITaskLogItemData {
+    [key: string]: any;
+}
+
+export interface ITaskLogItemBase {
     message: string;
     createdOn: string;
-    input?: T;
+    type: ITaskLogItemType;
+    data?: ITaskLogItemData;
+}
+
+export interface ITaskLogItemInfo extends ITaskLogItemBase {
+    type: ITaskLogItemType.INFO;
+}
+
+export interface ITaskLogItemError extends ITaskLogItemBase {
+    type: ITaskLogItemType.ERROR;
     error?: IResponseError;
+}
+
+export type ITaskLogItem = ITaskLogItemInfo | ITaskLogItemError;
+
+export interface ITaskLog {
+    /**
+     * ID without the revision number (for example: #0001).
+     */
+    id: string;
+    createdOn: string;
+    createdBy: ITaskIdentity;
+    executionName: string;
+    task: string;
+    iteration: number;
+    items: ITaskLogItem[];
 }
 
 export enum TaskDataStatus {
@@ -44,6 +77,9 @@ export interface ITaskIdentity {
 }
 
 export interface ITaskData<T = any> {
+    /**
+     * ID without the revision number (for example: #0001).
+     */
     id: string;
     name: string;
     taskStatus: TaskDataStatus;
@@ -56,7 +92,7 @@ export interface ITaskData<T = any> {
     startedOn?: string;
     finishedOn?: string;
     eventResponse: EventBridgeClientSendResponse | undefined;
-    log: ITaskDataLog[];
+    iterations: number;
 }
 
 export type IGetTaskResponse<T = any> = ITaskData<T> | null;
@@ -66,11 +102,17 @@ export interface IListTasksResponse<T = any> {
     meta: CmsEntryMeta;
 }
 
+export interface IListTaskLogsResponse {
+    items: ITaskLog[];
+    meta: CmsEntryMeta;
+}
+
 export type ICreateTaskResponse<T = any> = ITaskData<T>;
 export type IUpdateTaskResponse<T = any> = ITaskData<T>;
 export type IDeleteTaskResponse = boolean;
 
-export type IListTaskParams = CmsEntryListParams;
+export type IListTaskParams = Omit<CmsEntryListParams, "fields">;
+export type IListTaskLogParams = Omit<CmsEntryListParams, "fields">;
 
 export interface ITaskCreateData<T = ITaskDataInput> {
     definitionId: string;
@@ -83,10 +125,10 @@ export interface ITaskUpdateData<T = ITaskDataInput> {
     input?: T;
     taskStatus?: TaskDataStatus;
     executionName?: string;
-    log?: ITaskDataLog[];
     startedOn?: string;
     finishedOn?: string;
     eventResponse?: Record<string, any>;
+    iterations?: number;
 }
 
 export interface OnTaskBeforeCreateTopicParams {
@@ -116,8 +158,24 @@ export interface OnTaskAfterDeleteTopicParams {
     task: ITaskData;
 }
 
+export interface ITaskLogCreateInput {
+    executionName: string;
+    iteration: number;
+}
+
+export interface ITaskLogUpdateInput {
+    items: ITaskLogItem[];
+}
+
 export interface ITasksContextCrudObject {
-    getModel: () => Promise<CmsModel>;
+    /**
+     * Models
+     */
+    getTaskModel: () => Promise<CmsModel>;
+    getLogModel: () => Promise<CmsModel>;
+    /**
+     * Tasks
+     */
     getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T> | null>;
     listTasks: <T = any>(params?: IListTaskParams) => Promise<IListTasksResponse<T>>;
     createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
@@ -126,6 +184,14 @@ export interface ITasksContextCrudObject {
         data: Partial<ITaskUpdateData<T>>
     ) => Promise<IUpdateTaskResponse<T>>;
     deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
+    /**
+     * Logs
+     */
+    createLog: (task: Pick<ITaskData, "id">, data: ITaskLogCreateInput) => Promise<ITaskLog>;
+    updateLog: (id: string, data: ITaskLogUpdateInput) => Promise<ITaskLog>;
+    getLog: (id: string) => Promise<ITaskLog | null>;
+    getLatestLog: (taskId: string) => Promise<ITaskLog>;
+    listLogs: (params: IListTaskLogParams) => Promise<IListTaskLogsResponse>;
     /**
      * Lifecycle events.
      */

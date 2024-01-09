@@ -101,8 +101,8 @@ describe("store crud", () => {
                 someValue: true,
                 someOtherValue: 123
             },
+            iterations: 0,
             createdBy: createMockIdentity(),
-            log: [],
             startedOn: undefined,
             finishedOn: undefined,
             eventResponse: undefined,
@@ -142,8 +142,8 @@ describe("store crud", () => {
                 someOtherValue: 123,
                 addedNewValue: "yes!"
             },
+            iterations: 0,
             createdBy: createMockIdentity(),
-            log: [],
             startedOn: undefined,
             finishedOn: undefined,
             eventResponse: undefined,

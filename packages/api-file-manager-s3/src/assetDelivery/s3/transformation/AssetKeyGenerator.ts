@@ -15,6 +15,6 @@ export class AssetKeyGenerator {
         return this.utils.getImageKey({ key: this.asset.getKey() });
     }
     getTransformedImageKey(transformations: Record<string, any>) {
-        return this.utils.getImageKey({ key: this.asset.getKey(), transformations })
+        return this.utils.getImageKey({ key: this.asset.getKey(), transformations });
     }
 }

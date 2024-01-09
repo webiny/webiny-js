@@ -1,12 +1,14 @@
 import WebinyError from "@webiny/error";
 import {
     Context,
+    ITaskAbortParams,
     ITaskConfig,
     ITaskCreateData,
     ITaskData,
     ITaskDataInput,
+    ITaskLog,
+    ITaskLogItemType,
     ITasksContextTriggerObject,
-    ITaskAbortParams,
     ITaskTriggerParams,
     TaskDataStatus
 } from "~/types";
@@ -75,7 +77,6 @@ export const createTriggerTasksCrud = (
                 await context.tasks.deleteTask(task.id);
                 throw ex;
             }
-
             return await context.tasks.updateTask(task.id, {
                 eventResponse: event
             });
@@ -83,18 +84,48 @@ export const createTriggerTasksCrud = (
         abort: async (params: ITaskAbortParams): Promise<ITaskData> => {
             const task = await context.tasks.getTask(params.id);
             if (!task) {
-                throw new NotFoundError();
+                throw new NotFoundError(`Task "${params.id}" was not found!`);
+            }
+            /**
+             * We should only be able to abort a task which is pending or running
+             */
+            if (
+                [TaskDataStatus.PENDING, TaskDataStatus.RUNNING].includes(task.taskStatus) === false
+            ) {
+                throw new WebinyError(
+                    `Cannot abort a task that is not pending or running!`,
+                    "TASK_ABORT_ERROR",
+                    {
+                        id: params.id,
+                        status: task.taskStatus
+                    }
+                );
+            }
+            let taskLog: ITaskLog | null = null;
+            try {
+                taskLog = await context.tasks.getLatestLog(task.id);
+            } catch (ex) {}
+            if (!taskLog) {
+                taskLog = await context.tasks.createLog(task, {
+                    iteration: 1,
+                    executionName: task.executionName
+                });
             }
             try {
-                return await context.tasks.updateTask(task.id, {
-                    taskStatus: TaskDataStatus.ABORTED,
-                    log: task.log.concat([
+                const updatedTask = await context.tasks.updateTask(task.id, {
+                    taskStatus: TaskDataStatus.ABORTED
+                });
+                await context.tasks.updateLog(taskLog.id, {
+                    items: taskLog.items.concat([
                         {
                             message: params.message || "Task aborted.",
+                            type: ITaskLogItemType.INFO,
                             createdOn: new Date().toISOString()
                         }
                     ])
                 });
+
+                return updatedTask;
             } catch (ex) {
                 throw new WebinyError(`Could not abort the task!`, "TASK_ABORT_ERROR", {
                     id: params.id,

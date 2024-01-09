@@ -40,7 +40,7 @@ describe("trigger crud", () => {
         });
 
         expect(result).toEqual({
-            id: expect.any(String),
+            id: expect.toBeString(),
             name: "A test of triggering task",
             definitionId: "myCustomTaskNumber1",
             executionName: "",
@@ -48,13 +48,13 @@ describe("trigger crud", () => {
                 myAnotherCustomValue: "myAnotherCustomValue",
                 myCustomValue: "myCustomValue"
             },
+            iterations: 0,
             taskStatus: TaskDataStatus.PENDING,
             createdBy: createMockIdentity(),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),
             startedOn: undefined,
             finishedOn: undefined,
-            log: [],
             eventResponse: expect.any(Object)
         });
     });

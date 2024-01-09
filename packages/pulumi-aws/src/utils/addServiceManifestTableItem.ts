@@ -19,7 +19,6 @@ export const addServiceManifestTableItem = (
     table: TableDefinition,
     manifest: ServiceManifest
 ) => {
-
     table.rangeKey.apply(res => {
         new aws.dynamodb.TableItem(manifest.name, {
             tableName: table.tableName,
