@@ -203,12 +203,12 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             id: entry.entryId,
 
             // We're safe to use entry-level meta fields because we don't use revisions with files.
-            createdBy: entry.entryCreatedBy,
+            createdBy: entry.entryCreatedBy ?? entry.createdBy,
             modifiedBy: entry.entryModifiedBy || null,
-            savedBy: entry.entrySavedBy,
-            createdOn: entry.entryCreatedOn,
+            savedBy: entry.entrySavedBy ?? entry.createdBy,
+            createdOn: entry.entryCreatedOn ?? entry.createdOn,
             modifiedOn: entry.entryModifiedOn || null,
-            savedOn: entry.entrySavedOn,
+            savedOn: entry.entrySavedOn ?? entry.createdOn,
 
             locale: entry.locale,
             tenant: entry.tenant,

@@ -3,7 +3,7 @@ import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
 import { S3RedirectAssetReply } from "~/assetDelivery/s3/S3RedirectAssetReply";
 import { S3StreamAssetReply } from "~/assetDelivery/s3/S3StreamAssetReply";
 
-const MAX_RETURN_CONTENT_LENGTH = 5242880; // 5MB
+const MAX_RETURN_CONTENT_LENGTH = 4915200; // ~4.8 MB
 
 /**
  * This strategy outputs an asset taking into account the size of the asset contents.

@@ -13,31 +13,28 @@ export class FileMetadata {
         this.s3 = s3;
         this.fileEntry = fileEntry;
 
-        const fileKey = ("/" + fileEntry.values["text@key"]) as string;
+        const fileKey = fileEntry.values["text@key"];
         this.metadataKey = `${fileKey}.metadata`;
     }
 
     async create() {
         const metadata = {
-            id: this.fileEntry.id,
+            id: this.fileEntry.entryId,
             tenant: this.fileEntry.tenant,
             locale: this.fileEntry.locale,
             size: this.fileEntry.values["number@size"],
-            contentType: this.fileEntry.values["string@type"]
+            contentType: this.fileEntry.values["text@type"]
         };
 
         try {
             this.attempt++;
-            console.log(
-                `Attempt #${this.attempt}: create metadata file at ${this.metadataKey}`,
-                JSON.stringify(metadata, null, 2)
-            );
+            console.log(`Attempt #${this.attempt}: create metadata file at ${this.metadataKey}`);
             await this.s3.putObject({
                 Bucket: this.bucket,
                 Key: this.metadataKey,
                 Body: JSON.stringify(metadata, null, 2)
             });
-            console.log(`Attempt #${this.attempt} succeeded! Created ${this.metadataKey}.`);
+            console.log(`Attempt #${this.attempt} succeeded! Created ${this.metadataKey}`);
         } catch (error) {
             console.log(
                 `ERROR #${this.attempt} for ${this.metadataKey}`,
@@ -51,7 +48,12 @@ export class FileMetadata {
             await this.s3.headObject({ Bucket: this.bucket, Key: this.metadataKey });
             return true;
         } catch (error) {
+            if (error.name === "NotFound") {
+                return false;
+            }
+
             console.log("ERROR: couldn't check for metadata", JSON.stringify(error, null, 2));
+
             return false;
         }
     }

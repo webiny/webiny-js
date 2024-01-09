@@ -41,12 +41,13 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
 
 export interface FileEntry {
     id: string;
+    entryId: string;
     tenant: string;
     locale: string;
     values: {
         "text@key": string;
         "number@size": number;
-        "string@type": string;
+        "text@type": string;
     };
 }
 
