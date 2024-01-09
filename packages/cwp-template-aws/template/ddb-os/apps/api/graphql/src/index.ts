@@ -23,7 +23,7 @@ import elasticsearchClientContext, {
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
-import fileManagerS3 from "@webiny/api-file-manager-s3";
+import fileManagerS3, { createAssetDelivery } from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
@@ -82,6 +82,7 @@ export const handler = createHandler({
             })
         }),
         createFileManagerGraphQL(),
+        createAssetDelivery({ documentClient }),
         fileManagerS3(),
         prerenderingServicePlugins({
             eventBus: String(process.env.EVENT_BUS)

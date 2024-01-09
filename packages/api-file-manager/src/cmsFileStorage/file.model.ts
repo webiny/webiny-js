@@ -84,10 +84,43 @@ const metaField = () => {
     });
 };
 
+const accessControlTypeField = () => {
+    return createModelField({
+        label: "Type",
+        type: "text",
+        predefinedValues: {
+            enabled: true,
+            values: [
+                {
+                    label: "Public",
+                    value: "public",
+                    selected: true
+                },
+                {
+                    label: "Private",
+                    value: "private-authenticated"
+                }
+            ]
+        }
+    });
+};
+
+const accessControlField = () => {
+    return createModelField({
+        label: "Access Control",
+        type: "object",
+        tags: ["$bulk-edit"],
+        settings: {
+            fields: [accessControlTypeField()]
+        }
+    });
+};
+
 const tagsField = () => {
     return createModelField({
         label: "Tags",
         type: "text",
+        tags: ["$bulk-edit"],
         multipleValues: true,
         validation: [required()]
     });
@@ -102,56 +135,60 @@ const aliasesField = () => {
     });
 };
 
+const locationField = () => {
+    return createModelField({
+        type: "object",
+        label: "Location",
+        fieldId: "location",
+        settings: {
+            fields: [
+                createModelField({
+                    type: "text",
+                    fieldId: "folderId",
+                    label: "Folder ID",
+                    settings: {
+                        path: "location.folderId"
+                    }
+                })
+            ]
+        }
+    });
+};
+
 export const FILE_MODEL_ID = "fmFile";
 
-export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
+interface CreateFileModelDefinitionParams {
+    contentModelGroup: CmsModelGroup;
+    withPrivateFiles: boolean;
+}
+
+export const createFileModelDefinition = (
+    params: CreateFileModelDefinitionParams
+): CmsPrivateModelFull => {
+    const fields = [
+        locationField(),
+        nameField(),
+        keyField(),
+        typeField(),
+        sizeField(),
+        metaField(),
+        tagsField(),
+        aliasesField()
+    ];
+
+    if (params.withPrivateFiles) {
+        fields.push(accessControlField());
+    }
+
     return {
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
-        layout: [
-            ["location"],
-            ["name"],
-            ["key"],
-            ["type"],
-            ["size"],
-            ["meta"],
-            ["tags"],
-            ["aliases"]
-        ],
-        fields: [
-            {
-                id: "location",
-                type: "object",
-                storageId: "object@location",
-                label: "Location",
-                fieldId: "location",
-                settings: {
-                    fields: [
-                        {
-                            id: "folderId",
-                            type: "text",
-                            fieldId: "folderId",
-                            label: "Folder ID",
-                            storageId: "text@folderId",
-                            settings: {
-                                path: "location.folderId"
-                            }
-                        }
-                    ]
-                }
-            },
-            nameField(),
-            keyField(),
-            typeField(),
-            sizeField(),
-            metaField(),
-            tagsField(),
-            aliasesField()
-        ],
+        layout: [],
+        fields,
         description: "File Manager - File content model",
         isPrivate: true,
-        group,
+        group: params.contentModelGroup,
         noValidate: true
     };
 };

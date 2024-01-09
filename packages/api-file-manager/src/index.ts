@@ -2,9 +2,12 @@ import { ContextPlugin } from "@webiny/api";
 import { FileManagerConfig } from "~/createFileManager";
 import { FileManagerContext } from "~/types";
 import { FileManagerContextSetup } from "./FileManagerContextSetup";
+import { setupAssetDelivery, AssetDeliveryParams } from "./delivery/setupAssetDelivery";
 import { createGraphQLSchemaPlugin } from "./graphql";
 
+export * from "./modelModifier/CmsModelModifier";
 export * from "./plugins";
+export * from "./delivery";
 
 export const createFileManagerContext = ({
     storageOperations
@@ -23,4 +26,6 @@ export const createFileManagerGraphQL = () => {
     return createGraphQLSchemaPlugin();
 };
 
-export * from "./modelModifier/CmsModelModifier";
+export const createAssetDelivery = (config: AssetDeliveryParams) => {
+    return setupAssetDelivery(config);
+};

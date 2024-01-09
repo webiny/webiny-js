@@ -14,8 +14,8 @@ export interface ResourceHandler {
 export type PulumiAppParamCallback<T> = (app: PulumiApp) => T | undefined;
 export type PulumiAppParam<T> = T | PulumiAppParamCallback<T>;
 
-export type PulumiProgram<TResources = Record<string, any>> = (
-    app: PulumiApp
+export type PulumiProgram<TApp = PulumiApp, TResources = Record<string, any>> = (
+    app: TApp
 ) => TResources | Promise<TResources>;
 
 export type CreateConfig = Record<string, any>;
@@ -28,6 +28,10 @@ export interface CreatePulumiAppParams<TResources extends Record<string, unknown
     program(app: PulumiApp): TResources | Promise<TResources>;
 }
 
+export interface ProgramDecorator<TApp, TResources> {
+    (program: PulumiProgram<TApp, TResources>, app: TApp): ReturnType<PulumiProgram<TResources>>;
+}
+
 export interface PulumiApp<TResources = Record<string, unknown>> {
     resourceHandlers: ResourceHandler[];
     handlers: (() => void | Promise<void>)[];
@@ -36,7 +40,10 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
 
     paths: { absolute: string; relative: string; workspace: string };
     name: string;
-    program: PulumiProgram<TResources>;
+    decorateProgram: <T>(
+        decorator: ProgramDecorator<PulumiApp<TResources> & T, TResources>
+    ) => void;
+    program: PulumiProgram;
     resources: TResources;
     params: {
         create: CreateConfig;

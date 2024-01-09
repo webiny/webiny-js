@@ -14,7 +14,12 @@ import {
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
+import {
+    addDomainsUrlsOutputs,
+    tagResources,
+    withCommonLambdaEnvVariables,
+    withServiceManifest
+} from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -72,7 +77,7 @@ export interface CreateApiPulumiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
-    const app = createPulumiApp({
+    const baseApp = createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
@@ -151,12 +156,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName
-                }
-            });
-
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
 
@@ -198,6 +197,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
             });
 
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
+
             const apiGateway = app.addModule(ApiGateway, {
                 "graphql-post": {
                     path: "/graphql",
@@ -211,6 +216,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 },
                 "files-any": {
                     path: "/files/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
+                },
+                "private-any": {
+                    path: "/private/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
@@ -288,5 +298,18 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         }
     });
 
-    return withCommonLambdaEnvVariables(app);
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+
+    app.addHandler(() => {
+        app.addServiceManifest({
+            name: "api",
+            manifest: {
+                cloudfront: {
+                    distributionId: baseApp.resources.cloudfront.output.id
+                }
+            }
+        });
+    });
+
+    return app;
 };
