@@ -132,10 +132,12 @@ describe("GraphQLInputMapper", () => {
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.OVERRIDE,
                     value: {
-                        field1: null
+                        extensions: {
+                            field1: null
+                        }
                     }
                 }
             ]
@@ -144,7 +146,10 @@ describe("GraphQLInputMapper", () => {
         const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "old-field-1"
+            ...data,
+            extensions: {
+                field1: "old-field-1"
+            }
         });
     });
 
@@ -159,10 +164,12 @@ describe("GraphQLInputMapper", () => {
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.APPEND,
                     value: {
-                        field1: null
+                        extensions: {
+                            field1: null
+                        }
                     }
                 }
             ]
@@ -189,10 +196,12 @@ describe("GraphQLInputMapper", () => {
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.APPEND,
                     value: {
-                        field1: "any-string"
+                        extensions: {
+                            field1: "any-string"
+                        }
                     }
                 }
             ]
@@ -201,7 +210,10 @@ describe("GraphQLInputMapper", () => {
         const output = GraphQLInputMapper.applyOperations(data, batch);
 
         expect(output).toEqual({
-            field1: "old-field-1"
+            ...data,
+            extensions: {
+                field1: "old-field-1"
+            }
         });
     });
 
@@ -211,10 +223,12 @@ describe("GraphQLInputMapper", () => {
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.APPEND,
                     value: {
-                        field1: ["new-field1-1", "new-field1-2"]
+                        extensions: {
+                            field1: ["new-field1-1", "new-field1-2"]
+                        }
                     }
                 }
             ]
@@ -241,10 +255,12 @@ describe("GraphQLInputMapper", () => {
         const batch: BatchDTO = {
             operations: [
                 {
-                    field: "field1",
+                    field: "extensions.field1",
                     operator: OperatorType.APPEND,
                     value: {
-                        field1: ["new-field1-1", "new-field1-2"]
+                        extensions: {
+                            field1: ["new-field1-1", "new-field1-2"]
+                        }
                     }
                 }
             ]
@@ -274,7 +290,9 @@ describe("GraphQLInputMapper", () => {
                     field: "field1",
                     operator: "ANY-OPERATION",
                     value: {
-                        field1: "new-field1"
+                        extensions: {
+                            field1: "new-field1"
+                        }
                     }
                 }
             ]
