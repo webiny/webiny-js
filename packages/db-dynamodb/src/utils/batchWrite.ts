@@ -68,7 +68,6 @@ export const batchWriteAll = async (
         console.log("No table provided.");
         return [];
     } else if (collection.length === 0) {
-        console.log("No items to write.");
         return [];
     }
 
