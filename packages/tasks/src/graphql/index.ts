@@ -1,7 +1,14 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum";
 import { ContextPlugin } from "@webiny/handler";
-import { Context, IListTaskParams, ITaskDefinition } from "~/types";
+import {
+    Context,
+    IListTaskLogParams,
+    IListTaskParams,
+    ITaskData,
+    ITaskDefinition,
+    ITaskLog
+} from "~/types";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
 import { emptyResolver, resolve, resolveList } from "./utils";
@@ -42,7 +49,8 @@ export const createGraphQL = () => {
             return;
         }
 
-        const model = await context.tasks.getModel();
+        const taskModel = await context.tasks.getTaskModel();
+        const logModel = await context.tasks.getLogModel();
 
         const models = await context.security.withoutAuthorization(async () => {
             return (await context.cms.listModels()).filter(model => {
@@ -56,32 +64,55 @@ export const createGraphQL = () => {
         });
         const fieldTypePlugins = createFieldTypePluginRecords(context.plugins);
 
-        const fields = renderFields({
+        const taskFields = renderFields({
             models,
-            model,
-            fields: model.fields,
+            model: taskModel,
+            fields: taskModel.fields,
             type: "manage",
             fieldTypePlugins
         });
 
-        const listFilterFieldsRender = renderListFilterFields({
-            model,
-            fields: model.fields,
+        const logFields = renderFields({
+            models,
+            model: logModel,
+            fields: logModel.fields.filter(field => field.fieldId !== "task"),
+            type: "manage",
+            fieldTypePlugins
+        });
+
+        const listTasksFilterFieldsRender = renderListFilterFields({
+            model: taskModel,
+            fields: taskModel.fields,
             type: "manage",
             fieldTypePlugins,
             excludeFields: ["entryId"]
         });
 
-        const sortEnumRender = renderSortEnum({
-            model,
-            fields: model.fields,
+        const listLogsFilterFieldsRender = renderListFilterFields({
+            model: logModel,
+            fields: logModel.fields,
+            type: "manage",
+            fieldTypePlugins,
+            excludeFields: ["entryId"]
+        });
+
+        const sortTasksEnumRender = renderSortEnum({
+            model: taskModel,
+            fields: taskModel.fields,
+            fieldTypePlugins,
+            sorterPlugins: []
+        });
+
+        const sortLogsEnumRender = renderSortEnum({
+            model: logModel,
+            fields: logModel.fields,
             fieldTypePlugins,
             sorterPlugins: []
         });
 
         const taskDefinitions = context.tasks.listDefinitions();
 
-        const plugin = new GraphQLSchemaPlugin({
+        const plugin = new GraphQLSchemaPlugin<Context>({
             typeDefs: /* GraphQL */ `
                 type WebinyBackgroundTaskError {
                     message: String
@@ -89,13 +120,21 @@ export const createGraphQL = () => {
                     data: JSON
                     stack: String
                 }
+                
+                ${taskFields.map(f => f.typeDefs).join("\n")}
+                ${logFields.map(f => f.typeDefs).join("\n")}
 
                 type WebinyBackgroundTask {
                     id: String!
                     createdOn: DateTime!
                     savedOn: DateTime
                     createdBy: WebinyBackgroundTaskIdentity!
-                    ${fields.map(f => f.fields).join("\n")}
+                    logs(
+                        where: WebinyBackgroundTaskLogListWhereInput
+                        limit: Number
+                        sort: [WebinyBackgroundTaskLogListSorter!]
+                    ): [WebinyBackgroundTaskLog!]!
+                    ${taskFields.map(f => f.fields).join("\n")}
                 }
 
                 type WebinyBackgroundTaskResponse {
@@ -111,6 +150,20 @@ export const createGraphQL = () => {
 
                 type WebinyBackgroundTaskListResponse {
                     data: [WebinyBackgroundTask!]
+                    meta: WebinyBackgroundTaskMeta
+                    error: WebinyBackgroundTaskError
+                }
+                
+                type WebinyBackgroundTaskLog {
+                    id: String!
+                    createdOn: DateTime!
+                    createdBy: WebinyBackgroundTaskIdentity!
+                    task: WebinyBackgroundTask!
+                    ${logFields.map(f => f.fields).join("\n")}
+                }
+                
+                type WebinyBackgroundTaskLogListResponse {
+                    data: [WebinyBackgroundTaskLog!]
                     meta: WebinyBackgroundTaskMeta
                     error: WebinyBackgroundTaskError
                 }
@@ -144,13 +197,19 @@ export const createGraphQL = () => {
                 }
 
                 input WebinyBackgroundTaskListWhereInput {
-                    ${listFilterFieldsRender}
-                    AND: [WebinyBackgroundTaskListWhereInput!]
-                    OR: [WebinyBackgroundTaskListWhereInput!]
+                    ${listTasksFilterFieldsRender}
+                }
+                
+                input WebinyBackgroundTaskLogListWhereInput {
+                    ${listLogsFilterFieldsRender}
                 }
 
                 enum WebinyBackgroundTaskListSorter {
-                    ${sortEnumRender}
+                    ${sortTasksEnumRender}
+                }
+                
+                enum WebinyBackgroundTaskLogListSorter {
+                    ${sortLogsEnumRender}
                 }
 
                 type WebinyBackgroundTaskQuery {
@@ -161,7 +220,7 @@ export const createGraphQL = () => {
                     _empty: String
                 }
 
-                    enum WebinyBackgroundTaskDefinitionEnum {
+                enum WebinyBackgroundTaskDefinitionEnum {
                     ${createWebinyBackgroundTaskDefinitionEnum(taskDefinitions)}
                 }
 
@@ -183,6 +242,14 @@ export const createGraphQL = () => {
                         search: String
                     ): WebinyBackgroundTaskListResponse!
                     listDefinitions: WebinyBackgroundTaskListDefinitionsResponse!
+                    
+                    listLogs(
+                        where: WebinyBackgroundTaskLogListWhereInput
+                        sort: [WebinyBackgroundTaskLogListSorter!]
+                        limit: Int
+                        after: String
+                        search: String
+                    ): WebinyBackgroundTaskLogListResponse!
                 }
 
                 extend type WebinyBackgroundTaskMutation {
@@ -203,7 +270,7 @@ export const createGraphQL = () => {
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
                     // @ts-expect-error
-                    getTask: async (_, args: IGetTaskQueryParams, context: Context) => {
+                    getTask: async (_, args: IGetTaskQueryParams, context) => {
                         return resolve(async () => {
                             await checkPermissions(context, {
                                 rwd: "r"
@@ -211,7 +278,7 @@ export const createGraphQL = () => {
                             return await context.tasks.getTask(args.id);
                         });
                     },
-                    listTasks: async (_, args: IListTaskParams, context: Context) => {
+                    listTasks: async (_, args: IListTaskParams, context) => {
                         return resolveList(async () => {
                             await checkPermissions(context, {
                                 rwd: "r"
@@ -219,12 +286,20 @@ export const createGraphQL = () => {
                             return await context.tasks.listTasks(args);
                         });
                     },
-                    listDefinitions: async (_, __, context: Context) => {
+                    listDefinitions: async (_, __, context) => {
                         return resolve(async () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
                             return context.tasks.listDefinitions();
+                        });
+                    },
+                    listLogs: async (_, args: IListTaskLogParams, context) => {
+                        return resolveList(async () => {
+                            await checkPermissions(context, {
+                                rwd: "r"
+                            });
+                            return await context.tasks.listLogs(args);
                         });
                     }
                 },
@@ -233,7 +308,7 @@ export const createGraphQL = () => {
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
                     // @ts-expect-error
-                    abortTask: async (_, args: IAbortTaskMutationParams, context: Context) => {
+                    abortTask: async (_, args: IAbortTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
@@ -245,7 +320,7 @@ export const createGraphQL = () => {
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
                     // @ts-expect-error
-                    triggerTask: async (_, args: ITriggerTaskMutationParams, context: Context) => {
+                    triggerTask: async (_, args: ITriggerTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
@@ -257,13 +332,35 @@ export const createGraphQL = () => {
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
                     // @ts-expect-error
-                    deleteTask: async (_, args: IDeleteTaskMutationParams, context: Context) => {
+                    deleteTask: async (_, args: IDeleteTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "d"
                         });
                         return resolve(async () => {
                             return await context.tasks.deleteTask(args.id);
                         });
+                    }
+                },
+                /**
+                 * Custom resolvers for fields
+                 */
+                WebinyBackgroundTask: {
+                    logs: async (parent: ITaskData, args: IListTaskLogParams, context) => {
+                        const { items } = await context.tasks.listLogs({
+                            sort: ["createdBy_ASC"],
+                            limit: 10000,
+                            ...args,
+                            where: {
+                                ...args?.where,
+                                task: parent.id
+                            }
+                        });
+                        return items;
+                    }
+                },
+                WebinyBackgroundTaskLog: {
+                    task: async (parent: ITaskLog, _, context) => {
+                        return await context.tasks.getTask(parent.task);
                     }
                 }
             }

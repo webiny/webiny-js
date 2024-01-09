@@ -1,4 +1,11 @@
-import { ITaskData, ITaskDataLog, ITaskDataInput, ITaskUpdateData, TaskDataStatus } from "~/types";
+import {
+    IResponseError,
+    ITaskData,
+    ITaskDataInput,
+    ITaskLogItemData,
+    ITaskUpdateData,
+    TaskDataStatus
+} from "~/types";
 
 export type ITaskManagerStoreUpdateTaskValues<T extends ITaskDataInput = ITaskDataInput> = T;
 
@@ -21,6 +28,17 @@ export type ITaskManagerStoreUpdateTaskParam<T extends ITaskDataInput = ITaskDat
     | ITaskManagerStoreUpdateTaskParamCb<T>
     | Partial<ITaskManagerStoreUpdateTask<T>>;
 
+export interface ITaskManagerStoreInfoLog {
+    message: string;
+    data?: ITaskLogItemData;
+}
+
+export interface ITaskManagerStoreErrorLog {
+    message: string;
+    data?: ITaskLogItemData;
+    error: IResponseError;
+}
+
 export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
     setTask: (task: ITaskData<T>) => void;
     getTask: () => ITaskData<T>;
@@ -37,5 +55,6 @@ export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
      */
     updateInput: (params: ITaskManagerStoreUpdateTaskInputParam<T>) => Promise<void>;
     getInput: () => T;
-    addLog: (log: Omit<ITaskDataLog, "createdOn">) => Promise<void>;
+    addInfoLog: (log: ITaskManagerStoreInfoLog) => Promise<void>;
+    addErrorLog: (log: ITaskManagerStoreErrorLog) => Promise<void>;
 }

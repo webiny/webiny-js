@@ -63,7 +63,8 @@ describe("graphql - tasks", () => {
                                 createdBy: createMockIdentity(),
                                 createdOn: expect.any(String),
                                 savedOn: expect.any(String),
-                                eventResponse: null
+                                eventResponse: null,
+                                logs: []
                             },
                             {
                                 name: "My Custom Task #2",
@@ -79,7 +80,8 @@ describe("graphql - tasks", () => {
                                 createdBy: createMockIdentity(),
                                 createdOn: expect.any(String),
                                 savedOn: expect.any(String),
-                                eventResponse: null
+                                eventResponse: null,
+                                logs: []
                             },
                             {
                                 name: "My Custom Task #1",
@@ -95,7 +97,8 @@ describe("graphql - tasks", () => {
                                 createdBy: createMockIdentity(),
                                 createdOn: expect.any(String),
                                 savedOn: expect.any(String),
-                                eventResponse: null
+                                eventResponse: null,
+                                logs: []
                             }
                         ],
                         meta: {

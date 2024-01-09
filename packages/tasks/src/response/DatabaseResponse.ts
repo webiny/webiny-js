@@ -39,16 +39,12 @@ export class DatabaseResponse implements IResponseAsync {
     public async done(params: IResponseDoneParams): Promise<IResponseDoneResult> {
         let message = params.message;
         try {
-            const task = this.store.getTask();
             await this.store.updateTask({
                 taskStatus: TaskDataStatus.SUCCESS,
-                finishedOn: new Date().toISOString(),
-                log: task.log.concat([
-                    {
-                        message: message || "Task done.",
-                        createdOn: new Date().toISOString()
-                    }
-                ])
+                finishedOn: new Date().toISOString()
+            });
+            await this.store.addInfoLog({
+                message: message || "Task done."
             });
         } catch (ex) {
             message = `Task done, but failed to update task log. (${ex.message || "unknown"})`;
@@ -76,14 +72,11 @@ export class DatabaseResponse implements IResponseAsync {
                     ...task.input,
                     ...params.input
                 },
-                taskStatus: TaskDataStatus.RUNNING,
-                log: task.log.concat([
-                    {
-                        message: "Task continuing.",
-                        createdOn: new Date().toISOString(),
-                        input: params.input
-                    }
-                ])
+                taskStatus: TaskDataStatus.RUNNING
+            });
+            await this.store.addInfoLog({
+                message: "Task continuing.",
+                data: params.input
             });
         } catch (ex) {
             /**
@@ -119,17 +112,18 @@ export class DatabaseResponse implements IResponseAsync {
 
     public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
         try {
-            const task = this.store.getTask();
             await this.store.updateTask({
                 taskStatus: TaskDataStatus.FAILED,
-                finishedOn: new Date().toISOString(),
-                log: task.log.concat([
-                    {
-                        message: params.error.message,
-                        createdOn: new Date().toISOString(),
-                        input: this.store.getInput()
-                    }
-                ])
+                finishedOn: new Date().toISOString()
+            });
+            await this.store.addErrorLog({
+                message: params.error.message,
+                data: this.store.getInput(),
+                error: {
+                    code: params.error.code,
+                    message: params.error.message,
+                    data: params.error.data
+                }
             });
         } catch (ex) {
             return this.response.error({

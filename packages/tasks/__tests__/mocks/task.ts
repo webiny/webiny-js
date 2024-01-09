@@ -26,13 +26,13 @@ export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
         definitionId: MOCK_TASK_DEFINITION_ID,
         input: {},
         name: "A custom task defined via method",
-        log: [],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
         taskStatus: TaskDataStatus.PENDING,
         createdBy: createMockIdentity(),
         eventResponse: createMockTaskEventResponse(),
         executionName: "",
+        iterations: 0,
         ...task
     };
 };

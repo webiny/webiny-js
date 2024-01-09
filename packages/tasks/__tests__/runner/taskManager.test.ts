@@ -12,6 +12,7 @@ import { createMockTask } from "~tests/mocks/task";
 import { createMockTaskDefinition } from "~tests/mocks/definition";
 import { createMockTaskResponse } from "~tests/mocks/taskResponse";
 import { createMockTaskManagerStore } from "~tests/mocks/store";
+import { createMockTaskLog } from "~tests/mocks/taskLog";
 
 const mockTaskInputValues = {
     someInputValue: 1
@@ -21,6 +22,7 @@ describe("task manager", () => {
     const task = createMockTask({
         input: mockTaskInputValues
     });
+    const taskLog = createMockTaskLog(task);
 
     const taskDefinition = createMockTaskDefinition();
 
@@ -66,7 +68,8 @@ describe("task manager", () => {
             createMockTaskResponse(response),
             createMockTaskManagerStore({
                 context,
-                task
+                task,
+                taskLog
             })
         );
 
@@ -104,7 +107,8 @@ describe("task manager", () => {
             createMockTaskResponse(response),
             createMockTaskManagerStore({
                 context,
-                task
+                task,
+                taskLog
             })
         );
         const result = await manager.run(definition);
@@ -152,7 +156,8 @@ describe("task manager", () => {
             createMockTaskResponse(response),
             createMockTaskManagerStore({
                 context,
-                task
+                task,
+                taskLog
             })
         );
         const result = await manager.run(definition);
@@ -165,14 +170,9 @@ describe("task manager", () => {
                     id: "myCustomTaskDataId",
                     data: {
                         ...task,
+                        iterations: 1,
                         executionName: "executionNameMock",
                         taskStatus: "running",
-                        log: [
-                            {
-                                message: "Task started.",
-                                createdOn: expect.any(String)
-                            }
-                        ],
                         startedOn: expect.stringMatching(/^20/)
                     }
                 },

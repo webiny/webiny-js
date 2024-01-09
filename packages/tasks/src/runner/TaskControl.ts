@@ -1,10 +1,12 @@
 import { ITaskEvent } from "~/handler/types";
-import { Context, ITaskData, ITaskDataInput, TaskDataStatus } from "~/types";
+import { Context, ITaskData, ITaskDataInput, ITaskLog, TaskDataStatus } from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
 import { IResponse, IResponseErrorResult, IResponseResult } from "~/response/abstractions";
 import { DatabaseResponse, TaskResponse } from "~/response";
 import { TaskManagerStore } from "./TaskManagerStore";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { getObjectProperties } from "~/runner/utils/getObjectProperties";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
@@ -28,8 +30,18 @@ export class TaskControl implements ITaskControl {
         let task: ITaskData<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-        } catch (ex: unknown) {
-            return ex as IResponseErrorResult;
+        } catch (ex) {
+            return getObjectProperties<IResponseErrorResult>(ex);
+        }
+        /**
+         * As this as a run of the task, we need to create a new log entry.
+         */
+
+        let taskLog: ITaskLog;
+        try {
+            taskLog = await this.getTaskLog(task);
+        } catch (ex) {
+            return getObjectProperties<IResponseErrorResult>(ex);
         }
         /**
          * Make sure that task does not run if it is aborted.
@@ -40,7 +52,7 @@ export class TaskControl implements ITaskControl {
         }
 
         const taskResponse = new TaskResponse(this.response);
-        const store = new TaskManagerStore(this.context, task);
+        const store = new TaskManagerStore(this.context, task, taskLog);
 
         const manager = new TaskManager(
             this.runner,
@@ -106,5 +118,40 @@ export class TaskControl implements ITaskControl {
                 code: "TASK_NOT_FOUND"
             }
         });
+    }
+
+    private async getTaskLog(task: ITaskData): Promise<ITaskLog> {
+        let taskLog: ITaskLog | null = null;
+        /**
+         * First we are trying to get existing latest log.
+         */
+        try {
+            taskLog = await this.context.tasks.getLatestLog(task.id);
+        } catch (ex) {
+            /**
+             * If error is not the NotFoundError, we need to throw it.
+             */
+            if (ex instanceof NotFoundError === false) {
+                throw this.response.error({
+                    error: getObjectProperties(ex)
+                });
+            }
+            /**
+             * Otherwise just continue and create a new log.
+             */
+        }
+
+        const currentIteration = taskLog?.iteration || 0;
+
+        try {
+            return await this.context.tasks.createLog(task, {
+                executionName: this.response.event.executionName,
+                iteration: currentIteration + 1
+            });
+        } catch (ex) {
+            throw this.response.error({
+                error: getObjectProperties(ex)
+            });
+        }
     }
 }

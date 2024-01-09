@@ -1,20 +1,24 @@
 import {
     ITaskData,
-    ITaskDataLog,
     ITaskDataInput,
+    ITaskLog,
+    ITaskLogItemType,
+    ITaskManagerStoreInfoLog,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types";
 import {
     ITaskManagerStore,
-    ITaskManagerStoreUpdateTaskParam,
-    ITaskManagerStoreUpdateTaskInputParam
+    ITaskManagerStoreErrorLog,
+    ITaskManagerStoreUpdateTaskInputParam,
+    ITaskManagerStoreUpdateTaskParam
 } from "./abstractions";
 /**
  * Package deep-equal does not have types.
  */
 // @ts-expect-error
 import deepEqual from "deep-equal";
+import { getObjectProperties } from "~/runner/utils/getObjectProperties";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -30,16 +34,18 @@ const getInput = <T extends ITaskDataInput = ITaskDataInput>(
 };
 
 export interface TaskManagerStoreContext {
-    tasks: Pick<ITasksContextObject, "updateTask">;
+    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
 }
 
 export class TaskManagerStore implements ITaskManagerStore {
     private readonly context: TaskManagerStoreContext;
     private task: ITaskData;
+    private taskLog: ITaskLog;
 
-    public constructor(context: TaskManagerStoreContext, task: ITaskData) {
+    public constructor(context: TaskManagerStoreContext, task: ITaskData, log: ITaskLog) {
         this.context = context;
         this.task = task;
+        this.taskLog = log;
     }
 
     public getStatus(): TaskDataStatus {
@@ -88,11 +94,26 @@ export class TaskManagerStore implements ITaskManagerStore {
         return this.task.input as T;
     }
 
-    public async addLog(log: Omit<ITaskDataLog, "createdOn">): Promise<void> {
-        this.task = await this.context.tasks.updateTask(this.task.id, {
-            log: this.task.log.concat([
+    public async addInfoLog(log: ITaskManagerStoreInfoLog): Promise<void> {
+        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+            items: this.taskLog.items.concat([
                 {
-                    ...log,
+                    message: log.message,
+                    data: log.data,
+                    type: ITaskLogItemType.INFO,
+                    createdOn: new Date().toISOString()
+                }
+            ])
+        });
+    }
+
+    public async addErrorLog(log: ITaskManagerStoreErrorLog): Promise<void> {
+        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+            items: this.taskLog.items.concat([
+                {
+                    message: log.message,
+                    error: getObjectProperties(log.error),
+                    type: ITaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }
             ])

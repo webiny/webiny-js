@@ -1,7 +1,9 @@
 import { CmsGroup, createCmsGroup, createCmsModel } from "@webiny/api-headless-cms";
-import { TaskDataStatus } from "~/types";
+import { ITaskLogItemType, TaskDataStatus } from "~/types";
+import { CmsModelGroup } from "@webiny/api-headless-cms/types";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
+export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
 
 const group: CmsGroup = {
     id: "webinyTaskGroup",
@@ -11,13 +13,159 @@ const group: CmsGroup = {
     icon: "",
     description: ""
 };
-const modelPlugin = createCmsModel({
+
+const getModelGroup = (input: Pick<CmsGroup, "id" | "name">): CmsModelGroup => {
+    return {
+        id: input.id,
+        name: input.name
+    };
+};
+
+const taskLogModelPlugin = createCmsModel({
+    modelId: WEBINY_TASK_LOG_MODEL_ID,
+    isPrivate: true,
+    noValidate: true,
+    description: "",
+    name: "Webiny Task Log",
+    titleFieldId: "id",
+    group: getModelGroup(group),
+    layout: [],
+    fields: [
+        {
+            id: "executionName",
+            fieldId: "executionName",
+            storageId: "text@executionName",
+            type: "text",
+            label: "Execution Name",
+            validation: [
+                {
+                    name: "required",
+                    message: "Execution Name is required."
+                }
+            ]
+        },
+        {
+            id: "task",
+            fieldId: "task",
+            storageId: "text@task",
+            type: "text",
+            label: "Task",
+            validation: [
+                {
+                    name: "required",
+                    message: "Task is required."
+                }
+            ]
+        },
+        {
+            id: "iteration",
+            fieldId: "iteration",
+            storageId: "number@iteration",
+            type: "number",
+            label: "Iteration",
+            validation: [
+                {
+                    name: "required",
+                    message: "Iteration is required."
+                }
+            ]
+        },
+        {
+            id: "items",
+            fieldId: "items",
+            storageId: "object@items",
+            type: "object",
+            label: "Items",
+            multipleValues: true,
+            validation: [
+                {
+                    name: "required",
+                    message: "Items is required."
+                }
+            ],
+            settings: {
+                fields: [
+                    {
+                        id: "message",
+                        fieldId: "message",
+                        storageId: "text@message",
+                        type: "text",
+                        label: "Message",
+                        validation: [
+                            {
+                                name: "required",
+                                message: "Message is required."
+                            }
+                        ]
+                    },
+                    {
+                        id: "createdOn",
+                        fieldId: "createdOn",
+                        storageId: "datetime@createdOn",
+                        type: "datetime",
+                        label: "Created On",
+                        validation: [
+                            {
+                                name: "required",
+                                message: "Created On is required."
+                            }
+                        ]
+                    },
+                    {
+                        id: "type",
+                        fieldId: "type",
+                        storageId: "text@type",
+                        type: "text",
+                        label: "Type",
+                        predefinedValues: {
+                            enabled: true,
+                            values: [
+                                {
+                                    value: ITaskLogItemType.INFO,
+                                    label: "Info"
+                                },
+                                {
+                                    value: ITaskLogItemType.ERROR,
+                                    label: "Error"
+                                }
+                            ]
+                        },
+                        validation: [
+                            {
+                                name: "required",
+                                message: "Type is required."
+                            }
+                        ]
+                    },
+                    {
+                        id: "data",
+                        fieldId: "data",
+                        storageId: "object@data",
+                        type: "json",
+                        label: "Data"
+                    },
+                    {
+                        id: "error",
+                        fieldId: "error",
+                        storageId: "object@error",
+                        type: "json",
+                        label: "Error"
+                    }
+                ]
+            }
+        }
+    ]
+});
+
+const taskModelPlugin = createCmsModel({
     modelId: WEBINY_TASK_MODEL_ID,
     isPrivate: true,
     noValidate: true,
     description: "",
     name: "Webiny Task",
     titleFieldId: "name",
+    layout: [],
+    group: getModelGroup(group),
     fields: [
         {
             id: "name",
@@ -51,6 +199,13 @@ const modelPlugin = createCmsModel({
             storageId: "text@executionName",
             type: "text",
             label: "Execution Name"
+        },
+        {
+            id: "iterations",
+            fieldId: "iterations",
+            storageId: "number@iterations",
+            type: "number",
+            label: "Iterations"
         },
         {
             id: "input",
@@ -105,29 +260,17 @@ const modelPlugin = createCmsModel({
             label: "Finished On"
         },
         {
-            id: "log",
-            fieldId: "log",
-            storageId: "object@log",
-            type: "json",
-            label: "Log",
-            multipleValues: true
-        },
-        {
             id: "eventResponse",
             fieldId: "eventResponse",
             storageId: "object@eventResponse",
             type: "json",
             label: "Event Response"
         }
-    ],
-    layout: [],
-    group: {
-        id: "webinyTaskGroup",
-        name: "Webiny Task Group"
-    }
+    ]
 });
-export const model = modelPlugin.contentModel;
+export const taskModel = taskModelPlugin.contentModel;
+export const taskLogModel = taskLogModelPlugin.contentModel;
 
 export const createTaskModel = () => {
-    return [createCmsGroup(group), modelPlugin];
+    return [createCmsGroup(group), taskModelPlugin, taskLogModelPlugin];
 };

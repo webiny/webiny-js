@@ -13,7 +13,7 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { ITaskManagerStore } from "~/runner/abstractions";
-import { getErrorProperties } from "~/runner/utils/getErrorProperties";
+import { getObjectProperties } from "~/runner/utils/getObjectProperties";
 
 export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
@@ -49,22 +49,35 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
         //
         else if (this.store.getStatus() === TaskDataStatus.PENDING) {
             try {
+                await this.store.updateTask({
+                    taskStatus: TaskDataStatus.RUNNING,
+                    startedOn: new Date().toISOString(),
+                    executionName: this.response.event.executionName,
+                    iterations: 1
+                });
+                await this.store.addInfoLog({
+                    message: "Task started."
+                });
+            } catch (ex) {
+                return this.response.error({
+                    error: getObjectProperties(ex)
+                });
+            }
+        }
+        /**
+         * Always update the task iteration.
+         */
+        //
+        else {
+            try {
                 await this.store.updateTask(task => {
                     return {
-                        taskStatus: TaskDataStatus.RUNNING,
-                        startedOn: new Date().toISOString(),
-                        executionName: this.response.event.executionName,
-                        log: task.log.concat([
-                            {
-                                message: "Task started.",
-                                createdOn: new Date().toISOString()
-                            }
-                        ])
+                        iterations: task.iterations + 1
                     };
                 });
             } catch (ex) {
                 return this.response.error({
-                    error: ex
+                    error: getObjectProperties(ex)
                 });
             }
         }
@@ -87,7 +100,7 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             });
         } catch (ex) {
             return this.response.error({
-                error: getErrorProperties(ex)
+                error: getObjectProperties(ex)
             });
         }
 

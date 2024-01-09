@@ -24,6 +24,24 @@ export const createListTasksQuery = () => {
                         startedOn
                         finishedOn
                         input
+                        logs {
+                            id
+                            createdOn
+                            createdBy {
+                                id
+                                displayName
+                                type
+                            }
+                            executionName
+                            iteration
+                            items {
+                                message
+                                createdOn
+                                type
+                                data
+                                error
+                            }
+                        }
                     }
                     meta {
                         cursor
