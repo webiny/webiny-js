@@ -7,13 +7,13 @@ const bugFields = `
     createdOn
     modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName
         type
     }
-    firstPublishedOn
-    lastPublishedOn
     meta {
         title
         modelId
