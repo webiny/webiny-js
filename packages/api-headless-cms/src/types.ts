@@ -2266,32 +2266,32 @@ export interface CreateCmsEntryInput {
     status?: CmsEntryStatus;
 
     /**
-     * Revision-level meta fields. 👇
-     */
-    revisionCreatedOn?: Date | string;
-    revisionSavedOn?: Date | string;
-    revisionModifiedOn?: Date | string;
-    revisionCreatedBy?: CmsIdentity;
-    revisionModifiedBy?: CmsIdentity;
-    revisionSavedBy?: CmsIdentity;
-    revisionFirstPublishedOn?: Date | string;
-    revisionLastPublishedOn?: Date | string;
-    revisionFirstPublishedBy?: CmsIdentity;
-    revisionLastPublishedBy?: CmsIdentity;
-
-    /**
      * Entry-level meta fields. 👇
      */
     createdOn?: Date | string;
+    modifiedOn?: Date | string | null;
     savedOn?: Date | string;
-    modifiedOn?: Date | string;
     createdBy?: CmsIdentity;
-    modifiedBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity;
     firstPublishedOn?: Date | string;
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string;
+    revisionModifiedOn?: Date | string | null;
+    revisionSavedOn?: Date | string;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity;
+    revisionFirstPublishedOn?: Date | string;
+    revisionLastPublishedOn?: Date | string;
+    revisionFirstPublishedBy?: CmsIdentity;
+    revisionLastPublishedBy?: CmsIdentity;
 
     wbyAco_location?: {
         folderId?: string | null;
