@@ -160,6 +160,7 @@ const expectedRawValue = {
         }
     ],
     settingsStorageId: {
+        optionsStorageId: [{}, {}],
         snippetStorageId: [
             {
                 tag: "p",
