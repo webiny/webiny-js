@@ -357,20 +357,20 @@ export const createCustomAppsSchemaSnapshot = () => {
           id_DESC
           createdOn_ASC
           createdOn_DESC
-          savedOn_ASC
-          savedOn_DESC
           modifiedOn_ASC
           modifiedOn_DESC
+          savedOn_ASC
+          savedOn_DESC
           firstPublishedOn_ASC
           firstPublishedOn_DESC
           lastPublishedOn_ASC
           lastPublishedOn_DESC
           revisionCreatedOn_ASC
           revisionCreatedOn_DESC
-          revisionSavedOn_ASC
-          revisionSavedOn_DESC
           revisionModifiedOn_ASC
           revisionModifiedOn_DESC
+          revisionSavedOn_ASC
+          revisionSavedOn_DESC
           revisionFirstPublishedOn_ASC
           revisionFirstPublishedOn_DESC
           revisionLastPublishedOn_ASC
