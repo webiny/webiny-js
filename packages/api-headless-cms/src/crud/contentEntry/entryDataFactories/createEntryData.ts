@@ -143,22 +143,22 @@ export const createEntryData = async ({
          * Entry-level meta fields. 👇
          */
         createdOn: getDate(rawInput.createdOn, currentDateTime),
-        savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, null),
+        savedOn: getDate(rawInput.savedOn, currentDateTime),
         createdBy: getIdentity(rawInput.createdBy, currentIdentity),
-        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, null),
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         ...entryLevelPublishingMetaFields,
 
         /**
          * Revision-level meta fields. 👇
          */
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
+        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         ...revisionLevelPublishingMetaFields,
 
         version,
