@@ -7,13 +7,13 @@ const fields = `
     createdOn
     modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName
         type
     }
-    firstPublishedOn
-    lastPublishedOn
     meta {
         title
         modelId
@@ -41,12 +41,12 @@ const errorFields = `
 const createWrapMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation CreateWrap($data: ${model.singularApiName}Input!) {
-            createWrap: create${model.singularApiName}(data: $data) {
-                data {
-                    ${fields}
-                }
-                ${errorFields}
-            }
+        createWrap: create${model.singularApiName}(data: $data) {
+        data {
+        ${fields}
+        }
+        ${errorFields}
+        }
         }
     `;
 };
@@ -55,11 +55,11 @@ const publishWrapMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation PublishWrap($revision: ID!) {
             publishWrap: publish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${fields}
-                }
-                ${errorFields}
+            data {
+                ${fields}
             }
+            ${errorFields}
+        }
         }
     `;
 };

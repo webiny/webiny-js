@@ -17,18 +17,16 @@ export const errorFields = /* GraphQL */ `
 export const fields = /* GraphQL */ `{
     id
     entryId
-
     createdOn
     modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
     savedBy ${identityFields}
     firstPublishedBy ${identityFields}
     lastPublishedBy ${identityFields}
-    firstPublishedOn
-    lastPublishedOn
-    
     revisionCreatedOn
     revisionModifiedOn
     revisionSavedOn
