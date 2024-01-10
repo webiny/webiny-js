@@ -56,16 +56,16 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             /**
              * Entry-level meta fields. 👇
              */
-            entryCreatedOn: { type: "string" },
-            entrySavedOn: { type: "string" },
-            entryModifiedOn: { type: "string" },
-            entryFirstPublishedOn: { type: "string" },
-            entryLastPublishedOn: { type: "string" },
-            entryCreatedBy: { type: "map" },
-            entrySavedBy: { type: "map" },
-            entryModifiedBy: { type: "map" },
-            entryFirstPublishedBy: { type: "map" },
-            entryLastPublishedBy: { type: "map" },
+            createdOn: { type: "string" },
+            savedOn: { type: "string" },
+            modifiedOn: { type: "string" },
+            firstPublishedOn: { type: "string" },
+            lastPublishedOn: { type: "string" },
+            createdBy: { type: "map" },
+            savedBy: { type: "map" },
+            modifiedBy: { type: "map" },
+            firstPublishedBy: { type: "map" },
+            lastPublishedBy: { type: "map" },
 
             modelId: {
                 type: "string"

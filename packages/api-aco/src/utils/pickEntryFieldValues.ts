@@ -6,12 +6,12 @@ export const baseFields = [
     "id",
 
     // On/by fields are mapped to entry-level fields (we use ":" to signal that).
-    "entryCreatedOn:createdOn",
-    "entryModifiedOn:modifiedOn",
-    "entrySavedOn:savedOn",
-    "entryCreatedBy:createdBy",
-    "entryModifiedBy:modifiedBy",
-    "entrySavedBy:savedBy"
+    "createdOn",
+    "modifiedOn",
+    "savedOn",
+    "createdBy",
+    "modifiedBy",
+    "savedBy"
 ];
 
 const pickBaseEntryFieldValues = (entry: CmsEntry) => {
