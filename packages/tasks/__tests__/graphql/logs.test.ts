@@ -62,7 +62,7 @@ describe("graphql - logs", () => {
         });
 
         const log2Item = {
-            message: "someMessage",
+            message: "Log 2 item message",
             type: ITaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
@@ -71,7 +71,7 @@ describe("graphql - logs", () => {
         });
 
         const log3Item = {
-            message: "someMessage #2",
+            message: "log 3 item message",
             type: ITaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
@@ -81,14 +81,14 @@ describe("graphql - logs", () => {
         });
 
         const log4Item = {
-            message: "someMessage",
+            message: "log 4 item message",
             type: ITaskLogItemType.ERROR,
             createdOn: new Date().toISOString(),
             error: {
-                message: "someErrorMessage",
-                code: "SOME_ERROR_CODE",
+                message: "log 4 item error message",
+                code: "log4ItemErrorCode",
                 data: {
-                    someData: "someData"
+                    someData: "log4data"
                 }
             }
         };
