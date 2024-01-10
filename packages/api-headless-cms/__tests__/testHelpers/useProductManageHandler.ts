@@ -8,13 +8,13 @@ const productFields = `
     createdOn
     modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName
         type
     }
-    firstPublishedOn
-    lastPublishedOn
     meta {
         title
         modelId
