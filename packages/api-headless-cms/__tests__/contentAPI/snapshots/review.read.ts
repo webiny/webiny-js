@@ -17,7 +17,6 @@ export default /* GraphQL */ `
         savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-
         revisionCreatedOn: DateTime!
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime!
@@ -51,7 +50,6 @@ export default /* GraphQL */ `
         entryId_not: String
         entryId_in: [String!]
         entryId_not_in: [String!]
-
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
@@ -107,7 +105,6 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -197,16 +194,6 @@ export default /* GraphQL */ `
     enum ReviewApiModelListSorter {
         id_ASC
         id_DESC
-        revisionCreatedOn_ASC
-        revisionCreatedOn_DESC
-        revisionModifiedOn_ASC
-        revisionModifiedOn_DESC
-        revisionSavedOn_ASC
-        revisionSavedOn_DESC
-        revisionFirstPublishedOn_ASC
-        revisionFirstPublishedOn_DESC
-        revisionLastPublishedOn_ASC
-        revisionLastPublishedOn_DESC
         createdOn_ASC
         createdOn_DESC
         modifiedOn_ASC
@@ -217,6 +204,16 @@ export default /* GraphQL */ `
         firstPublishedOn_DESC
         lastPublishedOn_ASC
         lastPublishedOn_DESC
+        revisionCreatedOn_ASC
+        revisionCreatedOn_DESC
+        revisionModifiedOn_ASC
+        revisionModifiedOn_DESC
+        revisionSavedOn_ASC
+        revisionSavedOn_DESC
+        revisionFirstPublishedOn_ASC
+        revisionFirstPublishedOn_DESC
+        revisionLastPublishedOn_ASC
+        revisionLastPublishedOn_DESC
         text_ASC
         text_DESC
         rating_ASC

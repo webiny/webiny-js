@@ -82,6 +82,7 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
@@ -89,6 +90,7 @@ describe("predefined values", () => {
                             type: "admin"
                         },
                         lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
@@ -256,6 +258,7 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
@@ -263,6 +266,7 @@ describe("predefined values", () => {
                             type: "admin"
                         },
                         lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
@@ -306,6 +310,7 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
@@ -313,6 +318,7 @@ describe("predefined values", () => {
                             type: "admin"
                         },
                         lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
@@ -358,6 +364,7 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
@@ -365,6 +372,7 @@ describe("predefined values", () => {
                             type: "admin"
                         },
                         lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
@@ -435,6 +443,7 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
@@ -442,6 +451,7 @@ describe("predefined values", () => {
                             type: "admin"
                         },
                         lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",

@@ -61,7 +61,7 @@ import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { pickEntryMetaFields } from "~/constants";
+import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants";
 import {
     createEntryData,
     createEntryRevisionFromData,
@@ -958,9 +958,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * fields. The values are taken from the latest revision we're about to delete. The update of the
              * new latest revision is performed within storage operations.
              */
-            const pickedEntryLevelMetaFields = pickEntryMetaFields(entryToDelete, field => {
-                return field.startsWith("entry");
-            });
+            const pickedEntryLevelMetaFields = pickEntryMetaFields(
+                entryToDelete,
+                isEntryLevelEntryMetaField
+            );
 
             updatedEntryToSetAsLatest = {
                 ...entryToSetAsLatest,
@@ -1127,7 +1128,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entry
         });
     };
-    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id, options) => {
+    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
         await entriesPermissions.ensure({ pw: "p" });
         await modelsPermissions.ensureCanAccessModel({
             model
@@ -1162,7 +1163,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const { entry } = await createPublishEntryData({
             context,
             model,
-            options,
             originalEntry,
             latestEntry,
             getIdentity: getSecurityIdentity
@@ -1562,9 +1562,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async publishEntry(model, id, options) {
+        async publishEntry(model, id) {
             return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
-                return publishEntry(model, id, options);
+                return publishEntry(model, id);
             });
         },
         async unpublishEntry(model, id) {

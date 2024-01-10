@@ -1,11 +1,10 @@
-import { CmsContext, CmsEntry, CmsModel, CmsPublishEntryOptions } from "~/types";
+import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 
 type CreatePublishEntryDataParams = {
     model: CmsModel;
-    options?: CmsPublishEntryOptions;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     originalEntry: CmsEntry;

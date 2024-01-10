@@ -98,8 +98,11 @@ describe("storage transform for complex entries", () => {
                         id: expect.any(String),
                         entryId: expect.any(String),
                         createdOn: expect.any(String),
+                        modifiedOn: null,
                         savedOn: expect.any(String),
                         createdBy: expect.any(Object),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         ...product,
                         category: categoryAsRef(),
                         variant: {

@@ -192,7 +192,9 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...applePublished,
-                        savedOn: expect.stringMatching(/^20/)
+                        modifiedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
+                        savedOn: expect.toBeDateString()
                     },
                     error: null
                 }
@@ -208,7 +210,9 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...bananaPublished,
-                        savedOn: expect.stringMatching(/^20/)
+                        modifiedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
+                        savedOn: expect.toBeDateString()
                     },
                     error: null
                 }
@@ -224,7 +228,9 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...orangePublished,
-                        savedOn: expect.stringMatching(/^20/)
+                        modifiedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
+                        savedOn: expect.toBeDateString()
                     },
                     error: null
                 }

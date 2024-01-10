@@ -161,7 +161,7 @@ describe("refField", () => {
         });
 
         const publishedReview = publishResponse.data.publishReview.data;
-        const lastPublishedOn = publishedReview;
+        const { firstPublishedOn, modifiedOn, lastPublishedOn } = publishedReview;
 
         const [manageGetResponse] = await manageGetReview({
             revision: review.id
@@ -183,6 +183,8 @@ describe("refField", () => {
                         text: "review text",
                         rating: 5,
                         lastPublishedOn,
+                        firstPublishedOn,
+                        modifiedOn,
                         meta: {
                             locked: true,
                             modelId: "review",
@@ -233,6 +235,8 @@ describe("refField", () => {
                                 type: "admin"
                             },
                             lastPublishedOn,
+                            firstPublishedOn,
+                            modifiedOn,
                             meta: {
                                 locked: true,
                                 modelId: "review",

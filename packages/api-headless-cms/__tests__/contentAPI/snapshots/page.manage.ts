@@ -16,15 +16,14 @@ export default /* GraphQL */ `
         savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-
         revisionCreatedOn: DateTime!
-        revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
+        revisionSavedOn: DateTime!
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentity!
-        revisionSavedBy: CmsIdentity!
         revisionModifiedBy: CmsIdentity
+        revisionSavedBy: CmsIdentity!
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
 
@@ -365,7 +364,6 @@ export default /* GraphQL */ `
         savedBy: CmsIdentityInput
         firstPublishedBy: CmsIdentityInput
         lastPublishedBy: CmsIdentityInput
-
         revisionCreatedOn: DateTime
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime

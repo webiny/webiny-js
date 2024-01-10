@@ -40,33 +40,6 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             },
 
             /**
-             * 🔀 Alias meta fields below.
-             */
-            createdBy: {
-                type: "map"
-            },
-            ownedBy: {
-                type: "map"
-            },
-            modifiedBy: {
-                type: "map"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
-            publishedOn: {
-                type: "string"
-            },
-
-            /**
-             * 🆕 New meta fields below.
-             * Users are encouraged to use these instead of the deprecated ones above.
-             */
-
-            /**
              * Revision-level meta fields. 👇
              */
             revisionCreatedOn: { type: "string" },

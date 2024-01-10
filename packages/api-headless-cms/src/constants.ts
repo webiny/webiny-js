@@ -4,18 +4,6 @@ export const ROOT_FOLDER = "root";
 
 // Content entries - xOn and xBy meta fields.
 export const ENTRY_META_FIELDS = [
-    // Revision-level meta fields.
-    "revisionCreatedOn",
-    "revisionModifiedOn",
-    "revisionSavedOn",
-    "revisionFirstPublishedOn",
-    "revisionLastPublishedOn",
-    "revisionCreatedBy",
-    "revisionModifiedBy",
-    "revisionSavedBy",
-    "revisionFirstPublishedBy",
-    "revisionLastPublishedBy",
-
     // Entry-level meta fields.
     "createdOn",
     "modifiedOn",
@@ -26,7 +14,19 @@ export const ENTRY_META_FIELDS = [
     "modifiedBy",
     "savedBy",
     "firstPublishedBy",
-    "lastPublishedBy"
+    "lastPublishedBy",
+
+    // Revision-level meta fields.
+    "revisionCreatedOn",
+    "revisionModifiedOn",
+    "revisionSavedOn",
+    "revisionFirstPublishedOn",
+    "revisionLastPublishedOn",
+    "revisionCreatedBy",
+    "revisionModifiedBy",
+    "revisionSavedBy",
+    "revisionFirstPublishedBy",
+    "revisionLastPublishedBy"
 ] as const;
 
 export type EntryMetaFieldName = (typeof ENTRY_META_FIELDS)[number];
@@ -58,7 +58,7 @@ export interface RecordWithEntryMetaFields {
 
 export const pickEntryMetaFields = (
     object: Partial<RecordWithEntryMetaFields>,
-    filter?: (fieldName: string) => boolean
+    filter?: (fieldName: EntryMetaFieldName | string) => boolean
 ) => {
     const pickedEntryMetaFields: Partial<RecordWithEntryMetaFields> = {};
     for (const entryMetaFieldName of ENTRY_META_FIELDS) {
@@ -77,7 +77,8 @@ export const pickEntryMetaFields = (
 
 export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only modifiedX and publishedX fields are nullable.
-    return fieldName.includes("Modified") || fieldName.includes("Published");
+    const lcFieldName = fieldName.toLowerCase();
+    return lcFieldName.includes("modified") || lcFieldName.includes("published");
 };
 
 export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
@@ -88,4 +89,18 @@ export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
 export const isIdentityEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("By");
+};
+
+export const isRevisionEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) &&
+        fieldName.startsWith("revision")
+    );
+};
+
+export const isEntryLevelEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) &&
+        !fieldName.startsWith("revision")
+    );
 };

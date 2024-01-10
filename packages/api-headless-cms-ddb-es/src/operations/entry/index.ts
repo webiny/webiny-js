@@ -46,7 +46,10 @@ import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
-import { pickEntryMetaFields } from "@webiny/api-headless-cms/constants";
+import {
+    isEntryLevelEntryMetaField,
+    pickEntryMetaFields
+} from "@webiny/api-headless-cms/constants";
 
 interface ElasticsearchDbRecord {
     index: string;
@@ -434,9 +437,10 @@ export const createEntriesStorageOperations = (
                  * If not updating latest revision, we still want to update the latest revision's
                  * entry-level meta fields to match the current revision's entry-level meta fields.
                  */
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
-                    return field.startsWith("entry");
-                });
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
 
                 const updatedLatestStorageEntry = {
                     ...latestStorageEntry,
@@ -1264,16 +1268,6 @@ export const createEntriesStorageOperations = (
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
-                        /**
-                         * 🔀 Alias meta fields below.
-                         */
-                        savedOn: entry.savedOn,
-                        publishedOn: entry.publishedOn,
-
-                        /**
-                         * 🆕 New meta fields below.
-                         * Users are encouraged to use these instead of the deprecated ones above.
-                         */
                         ...updatedMetaFields
                     }
                 });
@@ -1287,9 +1281,10 @@ export const createEntriesStorageOperations = (
                     })
                 );
             } else {
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
-                    return field.startsWith("entry");
-                });
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
 
                 const updatedLatestStorageEntry = {
                     ...latestStorageEntry,

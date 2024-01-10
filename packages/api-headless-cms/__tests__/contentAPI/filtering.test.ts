@@ -543,10 +543,10 @@ describe("filtering", () => {
         const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
         const carManufacturerCategoryId = createCarManufacturerResponse.data.createCategory.data.id;
 
-        await categoryManager.publishCategory({
+        const revs = await categoryManager.publishCategory({
             revision: fruitCategoryId
         });
-        await categoryManager.publishCategory({
+        const revs2 = await categoryManager.publishCategory({
             revision: carManufacturerCategoryId
         });
 
@@ -680,7 +680,9 @@ describe("filtering", () => {
                 publishProduct: {
                     data: {
                         ...bananaProductUnpublished,
-                        lastPublishedOn: expect.any(String),
+                        modifiedOn: expect.toBeDateString(),
+                        firstPublishedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
                         meta: {
                             ...bananaProductUnpublished.meta,
                             locked: true,

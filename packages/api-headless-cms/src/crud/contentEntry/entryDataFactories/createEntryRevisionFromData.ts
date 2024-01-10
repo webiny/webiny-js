@@ -80,20 +80,6 @@ export const createEntryRevisionFromData = async ({
         version: nextVersion,
 
         /**
-         * Revision-level meta fields. 👇
-         */
-        revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-        revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-        revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
-        revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
-        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-        revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-        revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
-        revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null),
-
-        /**
          * Entry-level meta fields. 👇
          */
         createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
@@ -109,6 +95,20 @@ export const createEntryRevisionFromData = async ({
             latestStorageEntry.firstPublishedBy
         ),
         lastPublishedBy: getIdentity(rawInput.lastPublishedBy, latestStorageEntry.lastPublishedBy),
+
+        /**
+         * Revision-level meta fields. 👇
+         */
+        revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
+        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
+        revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
+        revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
+        revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
+        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+        revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+        revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
+        revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null),
 
         locked: false,
         status: STATUS_DRAFT,

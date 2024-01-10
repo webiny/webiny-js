@@ -737,15 +737,17 @@ describe("fieldValidations", () => {
                         id: expect.any(String),
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
+                        savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: expect.stringMatching(/^20/),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
-                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "fruit",
@@ -790,12 +792,15 @@ describe("fieldValidations", () => {
                         id: apple.id,
                         entryId: apple.entryId,
                         createdOn: apple.createdOn,
+                        modifiedOn: null,
+                        savedOn: apple.savedOn,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: apple.savedOn,
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
                         meta: {

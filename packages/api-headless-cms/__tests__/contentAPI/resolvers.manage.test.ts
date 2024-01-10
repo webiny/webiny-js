@@ -1064,7 +1064,10 @@ describe("MANAGE - Resolvers", () => {
                         createdBy: expect.any(Object),
                         meta: expect.any(Object),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         availableOn: "2020-12-25",
                         color: "white",
                         inStock: true,
@@ -1203,6 +1206,13 @@ describe("MANAGE - Resolvers", () => {
                 publishCategory: {
                     data: {
                         ...createdWebinyCategory,
+                        modifiedBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        modifiedOn: expect.any(String),
+                        firstPublishedOn: expect.any(String),
                         lastPublishedOn: expect.any(String),
                         meta: {
                             ...createdWebinyCategory.meta,
@@ -1241,6 +1251,7 @@ describe("MANAGE - Resolvers", () => {
                     createCategoryFrom: {
                         data: {
                             ...webiny,
+                            modifiedOn: expect.stringMatching(/^20/),
                             lastPublishedOn: expect.stringMatching(/^20/),
                             meta: {
                                 ...webiny.meta,
@@ -1272,6 +1283,7 @@ describe("MANAGE - Resolvers", () => {
                     publishCategory: {
                         data: {
                             ...createdCategory,
+                            modifiedOn: expect.any(String),
                             lastPublishedOn: expect.any(String),
                             meta: {
                                 ...createdCategory.meta,

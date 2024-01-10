@@ -348,6 +348,7 @@ export const createContentEntriesSchema = ({
                 entryId: String!
                 model: CmsModelMeta!
                 status: String!
+                published: CmsPublishedContentEntry
                 title: String!
                 description: String
                 image: String

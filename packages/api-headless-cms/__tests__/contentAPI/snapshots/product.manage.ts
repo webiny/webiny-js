@@ -16,7 +16,6 @@ export default /* GraphQL */ `
         savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-
         revisionCreatedOn: DateTime!
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime!
@@ -193,7 +192,6 @@ export default /* GraphQL */ `
         savedBy: CmsIdentityInput
         firstPublishedBy: CmsIdentityInput
         lastPublishedBy: CmsIdentityInput
-
         revisionCreatedOn: DateTime
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime
@@ -243,7 +241,6 @@ export default /* GraphQL */ `
         entryId_not: String
         entryId_in: [String!]
         entryId_not_in: [String!]
-
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
@@ -299,7 +296,6 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -355,7 +351,6 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_not: ID
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
-
         status: String
         status_not: String
         status_in: [String!]

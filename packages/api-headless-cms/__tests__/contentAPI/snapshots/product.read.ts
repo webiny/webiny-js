@@ -7,16 +7,6 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        revisionCreatedOn: DateTime!
-        revisionModifiedOn: DateTime
-        revisionSavedOn: DateTime!
-        revisionFirstPublishedOn: DateTime
-        revisionLastPublishedOn: DateTime
-        revisionCreatedBy: CmsIdentity!
-        revisionModifiedBy: CmsIdentity
-        revisionSavedBy: CmsIdentity!
-        revisionFirstPublishedBy: CmsIdentity
-        revisionLastPublishedBy: CmsIdentity
         createdOn: DateTime!
         modifiedOn: DateTime
         savedOn: DateTime!
@@ -27,6 +17,16 @@ export default /* GraphQL */ `
         savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
+        revisionCreatedOn: DateTime!
+        revisionModifiedOn: DateTime
+        revisionSavedOn: DateTime!
+        revisionFirstPublishedOn: DateTime
+        revisionLastPublishedOn: DateTime
+        revisionCreatedBy: CmsIdentity!
+        revisionModifiedBy: CmsIdentity
+        revisionSavedBy: CmsIdentity!
+        revisionFirstPublishedBy: CmsIdentity
+        revisionLastPublishedBy: CmsIdentity
 
         title: String
         category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
@@ -154,7 +154,6 @@ export default /* GraphQL */ `
         entryId_not: String
         entryId_in: [String!]
         entryId_not_in: [String!]
-
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
@@ -210,7 +209,6 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime

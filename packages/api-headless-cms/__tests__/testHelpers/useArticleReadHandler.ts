@@ -6,7 +6,10 @@ const fields = `
     id
     entryId
     createdOn
+    modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName

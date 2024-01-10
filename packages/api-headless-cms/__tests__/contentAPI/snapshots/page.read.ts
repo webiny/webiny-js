@@ -8,24 +8,23 @@ export default /* GraphQL */ `
         modelId: String!
 
         createdOn: DateTime!
-        savedOn: DateTime!
         modifiedOn: DateTime
+        savedOn: DateTime!
         firstPublishedOn: DateTime
         lastPublishedOn: DateTime
         createdBy: CmsIdentity!
-        savedBy: CmsIdentity!
         modifiedBy: CmsIdentity
+        savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-
         revisionCreatedOn: DateTime!
-        revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
+        revisionSavedOn: DateTime!
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentity!
-        revisionSavedBy: CmsIdentity!
         revisionModifiedBy: CmsIdentity
+        revisionSavedBy: CmsIdentity!
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
 
@@ -195,7 +194,6 @@ export default /* GraphQL */ `
         entryId_not: String
         entryId_in: [String!]
         entryId_not_in: [String!]
-
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
@@ -251,7 +249,6 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -317,8 +314,8 @@ export default /* GraphQL */ `
         id_DESC
         createdOn_ASC
         createdOn_DESC
-        modifiedOn_DESC
         modifiedOn_ASC
+        modifiedOn_DESC
         savedOn_ASC
         savedOn_DESC
         firstPublishedOn_ASC

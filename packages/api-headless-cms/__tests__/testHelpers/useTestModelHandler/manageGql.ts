@@ -163,7 +163,7 @@ export const DELETE_TEST_ENTRIES = /* GraphQL */ `
 
 export const PUBLISH_TEST_ENTRY = /* GraphQL */ `
     mutation PublishTestEntry($revision: ID!) {
-        publishTestEntry: publishTestEntry(revision: $revision, options: $options) {
+        publishTestEntry: publishTestEntry(revision: $revision) {
             data ${fields}
             error ${errorFields}
         }

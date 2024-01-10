@@ -99,6 +99,11 @@ describe("Content Entry Meta Field", () => {
                 type: "admin",
                 displayName: "admin"
             },
+            savedBy: {
+                id: "admin",
+                type: "admin",
+                displayName: "admin"
+            },
             modelId: model.modelId,
             locale: model.locale,
             tenant: model.tenant,

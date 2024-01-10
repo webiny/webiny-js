@@ -152,7 +152,10 @@ describe("richTextField", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        createdOn: expect.stringMatching(/^20/),
+                        createdOn: expect.toBeDateString(),
+                        modifiedOn: null,
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
@@ -174,7 +177,6 @@ describe("richTextField", () => {
                         inStock: null,
                         itemsInStock: null,
                         variant: null,
-                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "product",
@@ -212,8 +214,11 @@ describe("richTextField", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        createdOn: expect.stringMatching(/^20/),
-                        savedOn: expect.stringMatching(/^20/),
+                        createdOn: expect.toBeDateString(),
+                        modifiedOn: expect.toBeDateString(),
+                        savedOn: expect.toBeDateString(),
+                        firstPublishedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
                         title: "Potato",
                         image: "file.jpg",
                         price: 100,
@@ -310,7 +315,11 @@ describe("richTextField", () => {
         expect(createProductResponse).toEqual({
             data: {
                 createProduct: {
-                    data: expectedCreatedProduct,
+                    data: {
+                        ...expectedCreatedProduct,
+                        modifiedOn: null,
+                        firstPublishedOn: null
+                    },
                     error: null
                 }
             }
@@ -333,7 +342,9 @@ describe("richTextField", () => {
                 updateProduct: {
                     data: {
                         ...expectedCreatedProduct,
-                        richText: richTextMock
+                        richText: richTextMock,
+                        firstPublishedOn: null,
+                        modifiedOn: expect.toBeDateString()
                     },
                     error: null
                 }

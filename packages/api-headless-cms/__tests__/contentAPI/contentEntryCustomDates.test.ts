@@ -15,6 +15,7 @@ describe("content entry custom dates", () => {
 
     it("should populate entry with custom dates", async () => {
         const createValues = {
+            status: "published",
             createdOn: "1997-01-01T00:00:00.000Z",
             savedOn: "1998-01-01T00:00:00.000Z",
             lastPublishedOn: "1999-01-01T00:00:00.000Z"
