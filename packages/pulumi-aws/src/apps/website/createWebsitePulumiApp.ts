@@ -8,6 +8,7 @@ import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
 import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
+import { withServiceManifest } from "~/utils/withServiceManifest";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
@@ -305,5 +306,5 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
         }
     });
 
-    return withCommonLambdaEnvVariables(app);
+    return withServiceManifest(withCommonLambdaEnvVariables(app));
 };
