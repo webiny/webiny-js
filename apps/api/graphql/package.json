@@ -12,6 +12,7 @@
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-background-tasks-ddb": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-file-manager-ddb": "0.0.0",
     "@webiny/api-file-manager-s3": "0.0.0",
@@ -43,7 +44,8 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/handler-logs": "0.0.0",
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/tasks": "0.0.0"
   },
   "devDependencies": {
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",

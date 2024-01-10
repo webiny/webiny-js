@@ -7,14 +7,21 @@ module.exports = ({ path, esm }) => {
                     targets: {
                         node: "18"
                     },
-                    modules: esm ? false : "auto"
+                    modules: esm ? false : "auto",
+                    exclude: [
+                        "transform-typeof-symbol",
+                        "@babel/plugin-proposal-optional-chaining",
+                        "@babel/plugin-proposal-nullish-coalescing-operator",
+                        "@babel/plugin-proposal-class-properties",
+                        "@babel/plugin-transform-async-to-generator",
+                        "@babel/plugin-transform-regenerator",
+                        "@babel/plugin-proposal-dynamic-import"
+                    ]
                 }
             ],
             "@babel/preset-typescript"
         ],
         plugins: [
-            ["@babel/plugin-proposal-class-properties"],
-            ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],
             [
                 "@babel/plugin-transform-runtime",
                 {
@@ -22,7 +29,6 @@ module.exports = ({ path, esm }) => {
                     version: require("@babel/runtime/package.json").version
                 }
             ],
-            ["babel-plugin-dynamic-import-node"],
             [
                 "babel-plugin-module-resolver",
                 {
