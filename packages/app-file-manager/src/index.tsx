@@ -9,3 +9,4 @@ export {
     FileManagerViewConfig,
     useFileManagerViewConfig
 } from "./modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
+export { FileManagerProvider } from "./modules/FileManagerRenderer/FileManagerView";

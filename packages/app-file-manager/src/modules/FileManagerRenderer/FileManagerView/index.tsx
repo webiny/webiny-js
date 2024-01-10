@@ -46,9 +46,41 @@ const imagesAccept = [
     "image/svg+xml"
 ];
 
+interface FileManagerProviderProps
+    extends Omit<FileManagerViewProviderProps, "accept" | "children"> {
+    children: React.ReactNode;
+    images?: boolean;
+    accept?: string[];
+}
+
+export function FileManagerProvider({
+    children,
+    images,
+    accept,
+    ...props
+}: FileManagerProviderProps) {
+    const mimeTypes = images ? accept || imagesAccept : accept || [];
+
+    return (
+        <CompositionScope name={"fm"}>
+            <FoldersProvider type={FM_ACO_APP}>
+                <NavigateFolderProvider>
+                    <DialogsProvider>
+                        <AcoWithConfig>
+                            <FileManagerViewProvider {...props} accept={mimeTypes}>
+                                <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
+                            </FileManagerViewProvider>
+                        </AcoWithConfig>
+                    </DialogsProvider>
+                </NavigateFolderProvider>
+            </FoldersProvider>
+        </CompositionScope>
+    );
+}
+
 export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer, () => {
     return function FileManagerRenderer(props) {
-        const { onChange, images, accept, ...forwardProps } = props;
+        const { onChange, ...forwardProps } = props;
 
         const handleFileOnChange = (value?: FileItem[] | FileItem) => {
             if (!onChange || !value || (Array.isArray(value) && !value.length)) {
@@ -64,33 +96,17 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
             (onChange as FileManagerOnChange<FileManagerFileItem>)(formatFileItem(value));
         };
 
-        const viewProps: FileManagerViewProviderProps = {
+        const viewProps: Omit<FileManagerProviderProps, "children"> = {
             ...forwardProps,
-            /**
-             * TODO @pavel - verify that this is correct
-             */
             onUploadCompletion:
                 forwardProps.onUploadCompletion as FileManagerViewProviderProps["onUploadCompletion"],
-            onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
-            accept: images ? accept || imagesAccept : accept || []
+            onChange: typeof onChange === "function" ? handleFileOnChange : undefined
         };
 
         return (
-            <CompositionScope name={"fm"}>
-                <FoldersProvider type={FM_ACO_APP}>
-                    <NavigateFolderProvider>
-                        <DialogsProvider>
-                            <FileManagerViewProvider {...viewProps}>
-                                <FileManagerViewWithConfig>
-                                    <AcoWithConfig>
-                                        <FileManagerView />
-                                    </AcoWithConfig>
-                                </FileManagerViewWithConfig>
-                            </FileManagerViewProvider>
-                        </DialogsProvider>
-                    </NavigateFolderProvider>
-                </FoldersProvider>
-            </CompositionScope>
+            <FileManagerProvider {...viewProps}>
+                <FileManagerView />
+            </FileManagerProvider>
         );
     };
 });
