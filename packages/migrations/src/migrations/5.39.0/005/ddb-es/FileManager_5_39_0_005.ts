@@ -5,6 +5,7 @@ import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import {
     DataMigration,
     DataMigrationContext,
+    ElasticsearchClientSymbol,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { S3 } from "@webiny/aws-sdk/client-s3";
@@ -205,4 +206,7 @@ export class FileManager_5_39_0_005 implements DataMigration {
     }
 }
 
-makeInjectable(FileManager_5_39_0_005, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(FileManager_5_39_0_005, [
+    inject(PrimaryDynamoTableSymbol),
+    inject(ElasticsearchClientSymbol)
+]);
