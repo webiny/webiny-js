@@ -41,7 +41,7 @@ describe("content entry custom identities", () => {
             data: {
                 createCategory: {
                     data: {
-                        createdBy: manager.identity,
+                        revisionCreatedBy: manager.identity,
                         modifiedBy: null,
                         createdBy: manager.identity
                     },
@@ -54,7 +54,8 @@ describe("content entry custom identities", () => {
             data: {
                 title: "Category Custom Identity",
                 slug: "category-custom-identity",
-                createdBy: mockIdentityTwo,
+                createdBy: mockIdentityOne,
+                revisionCreatedBy: mockIdentityTwo,
                 modifiedBy: mockIdentityThree
             }
         });
@@ -63,8 +64,9 @@ describe("content entry custom identities", () => {
             data: {
                 createCategory: {
                     data: {
-                        createdBy: mockIdentityTwo,
+                        revisionCreatedBy: mockIdentityTwo,
                         modifiedBy: mockIdentityThree,
+                        createdBy: mockIdentityOne
                     },
                     error: null
                 }
@@ -84,7 +86,8 @@ describe("content entry custom identities", () => {
         const [createRevisionCustomIdentityResponse] = await manager.createCategoryFrom({
             revision: id,
             data: {
-                createdBy: mockIdentityTwo,
+                createdBy: mockIdentityOne,
+                revisionCreatedBy: mockIdentityTwo,
                 modifiedBy: mockIdentityThree
             }
         });
@@ -92,8 +95,9 @@ describe("content entry custom identities", () => {
             data: {
                 createCategoryFrom: {
                     data: {
-                        createdBy: mockIdentityTwo,
+                        revisionCreatedBy: mockIdentityTwo,
                         modifiedBy: mockIdentityThree,
+                        createdBy: mockIdentityOne
                     },
                     error: null
                 }
@@ -113,8 +117,8 @@ describe("content entry custom identities", () => {
         const [updateCustomIdentityResponse] = await manager.updateCategory({
             revision: id,
             data: {
-                ownedBy: mockIdentityOne,
-                createdBy: mockIdentityTwo,
+                createdBy: mockIdentityOne,
+                revisionCreatedBy: mockIdentityTwo,
                 modifiedBy: mockIdentityThree
             }
         });
@@ -122,9 +126,9 @@ describe("content entry custom identities", () => {
             data: {
                 updateCategory: {
                     data: {
-                        createdBy: mockIdentityTwo,
+                        revisionCreatedBy: mockIdentityTwo,
                         modifiedBy: mockIdentityThree,
-                        ownedBy: mockIdentityOne
+                        createdBy: mockIdentityOne
                     },
                     error: null
                 }

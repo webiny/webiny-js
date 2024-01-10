@@ -192,7 +192,6 @@ describe("latest entries", function () {
                         entryId: expect.any(String),
                         createdOn: expect.any(String),
                         createdBy: expect.any(Object),
-                        ownedBy: expect.any(Object),
                         savedOn: expect.any(String),
                         category: null,
                         meta: {
@@ -240,7 +239,6 @@ describe("latest entries", function () {
                             entryId: article.entryId,
                             createdOn: article.createdOn,
                             createdBy: article.createdBy,
-                            ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
                             category: null,
                             title,
@@ -341,7 +339,6 @@ describe("latest entries", function () {
                             entryId: article.entryId,
                             createdOn: article.createdOn,
                             createdBy: article.createdBy,
-                            ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
                             category: null,
                             title,
