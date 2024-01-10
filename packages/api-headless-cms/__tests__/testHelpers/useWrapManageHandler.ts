@@ -5,18 +5,20 @@ import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 const fields = `
     id
     createdOn
+    modifiedOn
+    savedOn
     createdBy {
         id
         displayName
         type
     }
-    savedOn
+    firstPublishedOn
+    lastPublishedOn
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
     }
     # user defined fields

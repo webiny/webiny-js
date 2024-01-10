@@ -680,10 +680,10 @@ describe("filtering", () => {
                 publishProduct: {
                     data: {
                         ...bananaProductUnpublished,
+                        lastPublishedOn: expect.any(String),
                         meta: {
                             ...bananaProductUnpublished.meta,
                             locked: true,
-                            publishedOn: expect.any(String),
                             status: "published"
                         },
                         savedOn: expect.any(String)

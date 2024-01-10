@@ -194,12 +194,12 @@ describe("latest entries", function () {
                         createdBy: expect.any(Object),
                         savedOn: expect.any(String),
                         category: null,
+                        lastPublishedOn: null,
                         meta: {
                             title,
                             modelId: articleModel.modelId,
                             version: 1,
                             locked: false,
-                            publishedOn: null,
                             status: "draft",
                             revisions: [
                                 {
@@ -290,12 +290,12 @@ describe("latest entries", function () {
                         createdOn: expect.any(String),
                         createdBy: expect.any(Object),
                         savedOn: expect.any(String),
+                        lastPublishedOn: expect.stringMatching(/^20/),
                         meta: {
                             title: "Fruit 2",
                             modelId: categoryModel.modelId,
                             version: 2,
                             locked: true,
-                            publishedOn: expect.stringMatching(/^20/),
                             status: "published",
                             revisions: [
                                 {

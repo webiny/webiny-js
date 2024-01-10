@@ -174,10 +174,10 @@ describe("richTextField", () => {
                         inStock: null,
                         itemsInStock: null,
                         variant: null,
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "product",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -289,10 +289,10 @@ describe("richTextField", () => {
             inStock: null,
             itemsInStock: null,
             variant: null,
+            lastPublishedOn: null,
             meta: {
                 locked: false,
                 modelId: "product",
-                publishedOn: null,
                 revisions: [
                     {
                         id: expect.any(String),

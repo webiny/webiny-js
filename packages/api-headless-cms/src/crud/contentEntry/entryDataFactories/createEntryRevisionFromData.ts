@@ -99,14 +99,8 @@ export const createEntryRevisionFromData = async ({
         createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-        firstPublishedOn: getDate(
-            rawInput.firstPublishedOn,
-            latestStorageEntry.firstPublishedOn
-        ),
-        lastPublishedOn: getDate(
-            rawInput.lastPublishedOn,
-            latestStorageEntry.lastPublishedOn
-        ),
+        firstPublishedOn: getDate(rawInput.firstPublishedOn, latestStorageEntry.firstPublishedOn),
+        lastPublishedOn: getDate(rawInput.lastPublishedOn, latestStorageEntry.lastPublishedOn),
         createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy),
         savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
@@ -114,10 +108,7 @@ export const createEntryRevisionFromData = async ({
             rawInput.firstPublishedBy,
             latestStorageEntry.firstPublishedBy
         ),
-        lastPublishedBy: getIdentity(
-            rawInput.lastPublishedBy,
-            latestStorageEntry.lastPublishedBy
-        ),
+        lastPublishedBy: getIdentity(rawInput.lastPublishedBy, latestStorageEntry.lastPublishedBy),
 
         locked: false,
         status: STATUS_DRAFT,

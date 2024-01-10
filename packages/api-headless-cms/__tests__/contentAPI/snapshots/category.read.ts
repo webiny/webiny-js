@@ -17,7 +17,7 @@ export default /* GraphQL */ `
         savedBy: CmsIdentity!
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-        
+
         revisionCreatedOn: DateTime!
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime!
@@ -105,7 +105,7 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-        
+
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime

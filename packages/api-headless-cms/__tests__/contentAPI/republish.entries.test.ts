@@ -158,7 +158,7 @@ describe("Republish entries", () => {
                     id: "admin",
                     type: "admin",
                     displayName: "Admin"
-                },
+                }
             },
             input
         };

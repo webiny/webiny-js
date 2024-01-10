@@ -62,7 +62,7 @@ export const createPublishEntryData = async ({
         revisionSavedBy: currentIdentity,
         revisionModifiedBy: currentIdentity,
         revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-        revisionLastPublishedBy: currentIdentity,
+        revisionLastPublishedBy: currentIdentity
     };
 
     return { entry };

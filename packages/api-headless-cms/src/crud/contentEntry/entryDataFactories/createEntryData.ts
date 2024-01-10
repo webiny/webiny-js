@@ -104,10 +104,7 @@ export const createEntryData = async ({
 
     let entryLevelPublishingMetaFields: Pick<
         CmsEntry,
-        | "firstPublishedOn"
-        | "lastPublishedOn"
-        | "firstPublishedBy"
-        | "lastPublishedBy"
+        "firstPublishedOn" | "lastPublishedOn" | "firstPublishedBy" | "lastPublishedBy"
     > = {
         firstPublishedOn: null,
         lastPublishedOn: null,

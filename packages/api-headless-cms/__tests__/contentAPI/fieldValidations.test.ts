@@ -745,10 +745,10 @@ describe("fieldValidations", () => {
                         savedOn: expect.stringMatching(/^20/),
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "fruit",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -801,7 +801,6 @@ describe("fieldValidations", () => {
                         meta: {
                             locked: false,
                             modelId: "fruit",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: apple.id,

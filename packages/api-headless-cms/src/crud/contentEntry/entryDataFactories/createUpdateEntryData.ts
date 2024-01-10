@@ -120,25 +120,13 @@ export const createUpdateEntryData = async ({
         createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-        firstPublishedOn: getDate(
-            rawInput.firstPublishedOn,
-            originalEntry.firstPublishedOn
-        ),
-        lastPublishedOn: getDate(
-            rawInput.lastPublishedOn,
-            originalEntry.lastPublishedOn
-        ),
+        firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
+        lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
         createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
         savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
-        firstPublishedBy: getIdentity(
-            rawInput.firstPublishedBy,
-            originalEntry.firstPublishedBy
-        ),
-        lastPublishedBy: getIdentity(
-            rawInput.lastPublishedBy,
-            originalEntry.lastPublishedBy
-        ),
+        firstPublishedBy: getIdentity(rawInput.firstPublishedBy, originalEntry.firstPublishedBy),
+        lastPublishedBy: getIdentity(rawInput.lastPublishedBy, originalEntry.lastPublishedBy),
 
         values,
         meta,

@@ -36,8 +36,7 @@ export const createUnpublishEntryData = async ({
         revisionSavedOn: currentDateTime,
         revisionModifiedOn: currentDateTime,
         revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-
+        revisionModifiedBy: currentIdentity
     };
 
     return { entry };
