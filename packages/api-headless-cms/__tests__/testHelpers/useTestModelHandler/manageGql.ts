@@ -17,32 +17,28 @@ export const errorFields = /* GraphQL */ `
 export const fields = /* GraphQL */ `{
     id
     entryId
+
     createdOn
+    modifiedOn
+    savedOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
-    ownedBy ${identityFields}
-    savedOn
-
+    savedBy ${identityFields}
+    firstPublishedBy ${identityFields}
+    lastPublishedBy ${identityFields}
+    firstPublishedOn
+    lastPublishedOn
+    
     revisionCreatedOn
-    revisionSavedOn
     revisionModifiedOn
+    revisionSavedOn
     revisionFirstPublishedOn
     revisionLastPublishedOn
     revisionCreatedBy ${identityFields}
-    revisionSavedBy ${identityFields}
     revisionModifiedBy ${identityFields}
+    revisionSavedBy ${identityFields}
     revisionFirstPublishedBy ${identityFields}
     revisionLastPublishedBy ${identityFields}
-    entryCreatedOn
-    entrySavedOn
-    entryModifiedOn
-    entryCreatedBy ${identityFields}
-    entrySavedBy ${identityFields}
-    entryModifiedBy ${identityFields}
-    entryFirstPublishedBy ${identityFields}
-    entryLastPublishedBy ${identityFields}
-    entryFirstPublishedOn
-    entryLastPublishedOn
 
     meta {
         title

@@ -1465,49 +1465,6 @@ export interface CmsEntry<T = CmsEntryValues> {
     id: string;
 
     /**
-     * 🔀 Alias meta fields below.
-     */
-
-    /**
-     * @deprecated Use `revisionCreatedBy` or `entryCreatedBy` instead.
-     * CreatedBy object reference.
-     */
-    createdBy: CmsIdentity;
-    /**
-     * @deprecated Use `entryCreatedBy` instead.
-     * OwnedBy object reference. Can be different from CreatedBy.
-     */
-    ownedBy: CmsIdentity;
-    /**
-     * @deprecated Use `revisionModifiedBy` or `entryModifiedBy` instead.
-     * ModifiedBy object reference. Last person who modified the entry.
-     */
-    modifiedBy?: CmsIdentity | null;
-    /**
-     * @deprecated Use `revisionCreatedOn` or `entryCreatedOn` instead.
-     * A string of Date.toISOString() type.
-     * Populated on creation.
-     */
-    createdOn: string;
-    /**
-     * @deprecated Use `revisionSavedOn` or `entrySavedOn` instead.
-     * A string of Date.toISOString() type.
-     * Populated every time entry is saved.
-     */
-    savedOn: string;
-    /**
-     * @deprecated Use `entryLastPublishedOn` or `entryFirstPublishedOn` instead.
-     * A string of Date.toISOString() type - if published.
-     * Populated when entry is published.
-     */
-    publishedOn?: string | null;
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
-
-    /**
      * Revision-level meta fields. 👇
      */
 
@@ -1554,50 +1511,46 @@ export interface CmsEntry<T = CmsEntryValues> {
     revisionLastPublishedBy: CmsIdentity | null;
 
     /**
-     * Entry-level meta fields. 👇
+     * An ISO 8601 date/time string.
      */
-
+    createdOn: string;
     /**
      * An ISO 8601 date/time string.
      */
-    entryCreatedOn: string;
+    savedOn: string;
     /**
      * An ISO 8601 date/time string.
      */
-    entrySavedOn: string;
+    modifiedOn: string | null;
     /**
      * An ISO 8601 date/time string.
      */
-    entryModifiedOn: string | null;
+    firstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
      */
-    entryFirstPublishedOn: string | null;
-    /**
-     * An ISO 8601 date/time string.
-     */
-    entryLastPublishedOn: string | null;
+    lastPublishedOn: string | null;
 
     /**
      * Identity that last created the entry.
      */
-    entryCreatedBy: CmsIdentity;
+    createdBy: CmsIdentity;
     /**
      * Identity that last saved the entry.
      */
-    entrySavedBy: CmsIdentity;
+    savedBy: CmsIdentity;
     /**
      * Identity that last modified the entry.
      */
-    entryModifiedBy: CmsIdentity | null;
+    modifiedBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
-    entryFirstPublishedBy: CmsIdentity | null;
+    firstPublishedBy: CmsIdentity | null;
     /**
      * Identity that last published the entry.
      */
-    entryLastPublishedBy: CmsIdentity | null;
+    lastPublishedBy: CmsIdentity | null;
 
     /**
      * Model ID of the definition for the entry.
@@ -1912,34 +1865,6 @@ export interface CmsEntryListWhere {
     entryId_not_in?: string[];
 
     /**
-     * 🔀 Alias meta fields below.
-     */
-
-    /**
-     * Contains the owner of the entry. An "owner" is the identity who originally created the entry.
-     * Subsequent revisions can be created by other identities, and those will be stored in `createdBy`,
-     * but the `owner` is always the original author of the entry.
-     *
-     * Can be sent via the API or set internal if user can see only their own entries.
-     */
-    ownedBy?: string;
-    ownedBy_not?: string;
-    ownedBy_in?: string[];
-    ownedBy_not_in?: string[];
-    /**
-     * Who created the entry?
-     */
-    createdBy?: string;
-    createdBy_not?: string;
-    createdBy_in?: string[];
-    createdBy_not_in?: string[];
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
-
-    /**
      * Revision-level meta fields. 👇
      */
     revisionCreatedBy?: string;
@@ -1970,25 +1895,30 @@ export interface CmsEntryListWhere {
     /**
      * Entry-level meta fields. 👇
      */
-    entryCreatedBy?: string;
-    entryCreatedBy_not?: string;
-    entryCreatedBy_in?: string[];
-    entryCreatedBy_not_in?: string[];
+    createdBy?: string;
+    createdBy_not?: string;
+    createdBy_in?: string[];
+    createdBy_not_in?: string[];
 
-    entryModifiedBy?: string;
-    entryModifiedBy_not?: string;
-    entryModifiedBy_in?: string[];
-    entryModifiedBy_not_in?: string[];
+    modifiedBy?: string;
+    modifiedBy_not?: string;
+    modifiedBy_in?: string[];
+    modifiedBy_not_in?: string[];
 
-    entrySavedBy?: string;
-    entrySavedBy_not?: string;
-    entrySavedBy_in?: string[];
-    entrySavedBy_not_in?: string[];
+    savedBy?: string;
+    savedBy_not?: string;
+    savedBy_in?: string[];
+    savedBy_not_in?: string[];
 
-    entryFirstPublishedBy?: string;
-    entryFirstPublishedBy_not?: string;
-    entryFirstPublishedBy_in?: string[];
-    entryFirstPublishedBy_not_in?: string[];
+    firstPublishedBy?: string;
+    firstPublishedBy_not?: string;
+    firstPublishedBy_in?: string[];
+    firstPublishedBy_not_in?: string[];
+
+    lastPublishedBy?: string;
+    lastPublishedBy_not?: string;
+    lastPublishedBy_in?: string[];
+    lastPublishedBy_not_in?: string[];
 
     /**
      * Version of the entry.
@@ -2335,39 +2265,32 @@ export interface CreateCmsEntryInput {
     status?: CmsEntryStatus;
 
     /**
-     * 🔀 Alias meta fields below.
-     */
-    createdOn?: Date | string;
-    savedOn?: Date | string;
-    publishedOn?: Date | string;
-    createdBy?: CmsIdentity | null;
-    modifiedBy?: CmsIdentity | null;
-    ownedBy?: CmsIdentity | null;
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
-
-    /**
      * Revision-level meta fields. 👇
      */
     revisionCreatedOn?: Date | string;
     revisionSavedOn?: Date | string;
-    revisionModifiedOn?: Date | string | null;
+    revisionModifiedOn?: Date | string;
     revisionCreatedBy?: CmsIdentity;
-    revisionModifiedBy?: CmsIdentity | null;
+    revisionModifiedBy?: CmsIdentity;
     revisionSavedBy?: CmsIdentity;
+    revisionFirstPublishedOn?: Date | string;
+    revisionLastPublishedOn?: Date | string;
+    revisionFirstPublishedBy?: CmsIdentity;
+    revisionLastPublishedBy?: CmsIdentity;
 
     /**
      * Entry-level meta fields. 👇
      */
-    entryCreatedOn?: Date | string;
-    entrySavedOn?: Date | string;
-    entryModifiedOn?: Date | string | null;
-    entryCreatedBy?: CmsIdentity;
-    entryModifiedBy?: CmsIdentity | null;
-    entrySavedBy?: CmsIdentity;
+    createdOn?: Date | string;
+    savedOn?: Date | string;
+    modifiedOn?: Date | string;
+    createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
+    savedBy?: CmsIdentity;
+    firstPublishedOn?: Date | string;
+    lastPublishedOn?: Date | string;
+    firstPublishedBy?: CmsIdentity;
+    lastPublishedBy?: CmsIdentity;
 
     wbyAco_location?: {
         folderId?: string | null;
@@ -2386,21 +2309,6 @@ export interface CreateCmsEntryOptionsInput {
  */
 export interface CreateFromCmsEntryInput {
     /**
-     * 🔀 Alias meta fields below.
-     */
-    createdOn?: Date;
-    savedOn?: Date;
-    publishedOn?: Date;
-    createdBy?: CmsIdentity;
-    modifiedBy?: CmsIdentity;
-    ownedBy?: CmsIdentity;
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
-
-    /**
      * Revision-level meta fields. 👇
      */
     revisionCreatedOn?: Date;
@@ -2409,16 +2317,24 @@ export interface CreateFromCmsEntryInput {
     revisionCreatedBy?: CmsIdentity;
     revisionModifiedBy?: CmsIdentity;
     revisionSavedBy?: CmsIdentity;
+    revisionFirstPublishedOn?: Date | string;
+    revisionLastPublishedOn?: Date | string;
+    revisionFirstPublishedBy?: CmsIdentity;
+    revisionLastPublishedBy?: CmsIdentity;
 
     /**
      * Entry-level meta fields. 👇
      */
-    entryCreatedOn?: Date;
-    entrySavedOn?: Date;
-    entryModifiedOn?: Date;
-    entryCreatedBy?: CmsIdentity;
-    entryModifiedBy?: CmsIdentity;
-    entrySavedBy?: CmsIdentity;
+    createdOn?: Date;
+    savedOn?: Date;
+    modifiedOn?: Date;
+    createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
+    savedBy?: CmsIdentity;
+    firstPublishedOn?: Date | string;
+    lastPublishedOn?: Date | string;
+    firstPublishedBy?: CmsIdentity;
+    lastPublishedBy?: CmsIdentity;
 
     [key: string]: any;
 }
@@ -2433,30 +2349,15 @@ export interface CreateRevisionCmsEntryOptionsInput {
  */
 export interface UpdateCmsEntryInput {
     /**
-     * 🔀 Alias meta fields below.
-     */
-    createdOn?: Date | string | null;
-    savedOn?: Date | string | null;
-    publishedOn?: Date | string | null;
-    createdBy?: CmsIdentity | null;
-    modifiedBy?: CmsIdentity | null;
-    ownedBy?: CmsIdentity;
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
-
-    /**
      * Revision-level meta fields. 👇
      */
     revisionCreatedOn?: Date | string | null;
-    revisionSavedOn?: Date | string | null;
     revisionModifiedOn?: Date | string | null;
+    revisionSavedOn?: Date | string | null;
     revisionFirstPublishedOn?: Date | string | null;
     revisionLastPublishedOn?: Date | string | null;
-    revisionCreatedBy?: CmsIdentity | null;
     revisionModifiedBy?: CmsIdentity | null;
+    revisionCreatedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity | null;
     revisionFirstPublishedBy?: CmsIdentity | null;
     revisionLastPublishedBy?: CmsIdentity | null;
@@ -2464,16 +2365,16 @@ export interface UpdateCmsEntryInput {
     /**
      * Entry-level meta fields. 👇
      */
-    entryCreatedOn?: Date | string | null;
-    entrySavedOn?: Date | string | null;
-    entryModifiedOn?: Date | string | null;
-    entryFirstPublishedOn?: Date | string | null;
-    entryLastPublishedOn?: Date | string | null;
-    entryCreatedBy?: CmsIdentity | null;
-    entryModifiedBy?: CmsIdentity | null;
-    entrySavedBy?: CmsIdentity | null;
-    entryFirstPublishedBy?: CmsIdentity | null;
-    entryLastPublishedBy?: CmsIdentity | null;
+    createdOn?: Date | string | null;
+    modifiedOn?: Date | string | null;
+    savedOn?: Date | string | null;
+    firstPublishedOn?: Date | string | null;
+    lastPublishedOn?: Date | string | null;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
+    savedBy?: CmsIdentity | null;
+    firstPublishedBy?: CmsIdentity | null;
+    lastPublishedBy?: CmsIdentity | null;
 
     wbyAco_location?: {
         folderId?: string | null;

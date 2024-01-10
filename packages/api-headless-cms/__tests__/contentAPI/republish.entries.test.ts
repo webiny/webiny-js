@@ -159,11 +159,6 @@ describe("Republish entries", () => {
                     type: "admin",
                     displayName: "Admin"
                 },
-                ownedBy: {
-                    id: "admin",
-                    type: "admin",
-                    displayName: "Admin"
-                }
             },
             input
         };

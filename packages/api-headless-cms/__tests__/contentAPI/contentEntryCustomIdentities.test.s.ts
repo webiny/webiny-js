@@ -43,7 +43,7 @@ describe("content entry custom identities", () => {
                     data: {
                         createdBy: manager.identity,
                         modifiedBy: null,
-                        ownedBy: manager.identity
+                        createdBy: manager.identity
                     },
                     error: null
                 }
@@ -54,7 +54,6 @@ describe("content entry custom identities", () => {
             data: {
                 title: "Category Custom Identity",
                 slug: "category-custom-identity",
-                ownedBy: mockIdentityOne,
                 createdBy: mockIdentityTwo,
                 modifiedBy: mockIdentityThree
             }
@@ -66,7 +65,6 @@ describe("content entry custom identities", () => {
                     data: {
                         createdBy: mockIdentityTwo,
                         modifiedBy: mockIdentityThree,
-                        ownedBy: mockIdentityOne
                     },
                     error: null
                 }
@@ -86,7 +84,6 @@ describe("content entry custom identities", () => {
         const [createRevisionCustomIdentityResponse] = await manager.createCategoryFrom({
             revision: id,
             data: {
-                ownedBy: mockIdentityOne,
                 createdBy: mockIdentityTwo,
                 modifiedBy: mockIdentityThree
             }
@@ -97,7 +94,6 @@ describe("content entry custom identities", () => {
                     data: {
                         createdBy: mockIdentityTwo,
                         modifiedBy: mockIdentityThree,
-                        ownedBy: mockIdentityOne
                     },
                     error: null
                 }

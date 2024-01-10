@@ -94,7 +94,6 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
         createdOn: item.createdOn,
         savedOn: item.savedOn,
         createdBy: item.createdBy,
-        ownedBy: item.ownedBy,
         title: item.title,
         body: item.body,
         categories: category

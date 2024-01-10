@@ -402,7 +402,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.entryCreatedBy = getSecurityIdentity().id;
+            where.createdBy = getSecurityIdentity().id;
         }
 
         /**
@@ -578,7 +578,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await entriesPermissions.ensure({ owns: originalEntry.entryCreatedBy });
+        await entriesPermissions.ensure({ owns: originalEntry.createdBy });
 
         const { entry, input } = await createEntryRevisionFromData({
             sourceId,
@@ -1046,7 +1046,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const items = (
             await filterAsync(entries, async entry => {
-                return entriesPermissions.ensure({ owns: entry.entryCreatedBy }, { throw: false });
+                return entriesPermissions.ensure({ owns: entry.createdBy }, { throw: false });
             })
         ).map(entry => entry.id);
 
@@ -1118,7 +1118,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await entriesPermissions.ensure({ owns: storageEntry.entryCreatedBy });
+        await entriesPermissions.ensure({ owns: storageEntry.createdBy });
 
         const entry = await entryFromStorageTransform(context, model, storageEntry);
 
@@ -1300,7 +1300,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
         if (await entriesPermissions.canAccessOnlyOwnRecords()) {
-            where.entryCreatedBy = getSecurityIdentity().id;
+            where.createdBy = getSecurityIdentity().id;
         }
 
         /**

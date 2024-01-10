@@ -16,7 +16,6 @@ const categoryFields = `
     createdOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
-    ownedBy ${identityFields}
     savedOn
    
     meta {

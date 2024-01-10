@@ -6,27 +6,27 @@ export const ROOT_FOLDER = "root";
 export const ENTRY_META_FIELDS = [
     // Revision-level meta fields.
     "revisionCreatedOn",
-    "revisionSavedOn",
     "revisionModifiedOn",
+    "revisionSavedOn",
     "revisionFirstPublishedOn",
     "revisionLastPublishedOn",
     "revisionCreatedBy",
-    "revisionSavedBy",
     "revisionModifiedBy",
+    "revisionSavedBy",
     "revisionFirstPublishedBy",
     "revisionLastPublishedBy",
 
     // Entry-level meta fields.
-    "entryCreatedOn",
-    "entrySavedOn",
-    "entryModifiedOn",
-    "entryFirstPublishedOn",
-    "entryLastPublishedOn",
-    "entryCreatedBy",
-    "entrySavedBy",
-    "entryModifiedBy",
-    "entryFirstPublishedBy",
-    "entryLastPublishedBy"
+    "createdOn",
+    "modifiedOn",
+    "savedOn",
+    "firstPublishedOn",
+    "lastPublishedOn",
+    "createdBy",
+    "modifiedBy",
+    "savedBy",
+    "firstPublishedBy",
+    "lastPublishedBy"
 ] as const;
 
 export type EntryMetaFieldName = (typeof ENTRY_META_FIELDS)[number];
@@ -44,16 +44,16 @@ export interface RecordWithEntryMetaFields {
     revisionLastPublishedBy: CmsIdentity | null;
 
     // Entry-level meta fields.
-    entryCreatedOn: string;
-    entrySavedOn: string;
-    entryModifiedOn: string | null;
-    entryFirstPublishedOn: string | null;
-    entryLastPublishedOn: string | null;
-    entryCreatedBy: CmsIdentity;
-    entrySavedBy: CmsIdentity;
-    entryModifiedBy: CmsIdentity | null;
-    entryFirstPublishedBy: CmsIdentity | null;
-    entryLastPublishedBy: CmsIdentity | null;
+    createdOn: string;
+    savedOn: string;
+    modifiedOn: string | null;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
+    createdBy: CmsIdentity;
+    savedBy: CmsIdentity;
+    modifiedBy: CmsIdentity | null;
+    firstPublishedBy: CmsIdentity | null;
+    lastPublishedBy: CmsIdentity | null;
 }
 
 export const pickEntryMetaFields = (

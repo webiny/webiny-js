@@ -99,11 +99,6 @@ describe("Content Entry Meta Field", () => {
                 type: "admin",
                 displayName: "admin"
             },
-            ownedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "admin"
-            },
             modelId: model.modelId,
             locale: model.locale,
             tenant: model.tenant,

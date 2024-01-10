@@ -24,18 +24,6 @@ export const renderSortEnum: RenderSortEnum = ({
         `id_ASC`,
         `id_DESC`,
 
-        /**
-         * 🔀 Alias meta fields below.
-         */
-        "savedOn_ASC",
-        "savedOn_DESC",
-        "createdOn_ASC",
-        "createdOn_DESC",
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
         ...ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField)
             .map(field => [`${field}_ASC`, `${field}_DESC`])
             .flat()

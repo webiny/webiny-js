@@ -12,11 +12,6 @@ const fields = `
         displayName
         type
     }
-    ownedBy {
-        id
-        displayName
-        type
-    }
     meta {
         title
         modelId

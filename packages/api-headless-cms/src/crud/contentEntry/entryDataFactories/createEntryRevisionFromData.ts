@@ -80,21 +80,6 @@ export const createEntryRevisionFromData = async ({
         version: nextVersion,
 
         /**
-         * 🔀 Alias meta fields below.
-         */
-        savedOn: getDate(rawInput.savedOn, currentDateTime),
-        createdOn: getDate(rawInput.createdOn, currentDateTime),
-        publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-        createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-        modifiedBy: getIdentity(rawInput.modifiedBy, null),
-        ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
-
-        /**
          * Revision-level meta fields. 👇
          */
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
@@ -111,27 +96,27 @@ export const createEntryRevisionFromData = async ({
         /**
          * Entry-level meta fields. 👇
          */
-        entryCreatedOn: getDate(rawInput.entryCreatedOn, latestStorageEntry.entryCreatedOn),
-        entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-        entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
-        entryFirstPublishedOn: getDate(
-            rawInput.entryFirstPublishedOn,
-            latestStorageEntry.entryFirstPublishedOn
+        createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
+        savedOn: getDate(rawInput.savedOn, currentDateTime),
+        modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
+        firstPublishedOn: getDate(
+            rawInput.firstPublishedOn,
+            latestStorageEntry.firstPublishedOn
         ),
-        entryLastPublishedOn: getDate(
-            rawInput.entryLastPublishedOn,
-            latestStorageEntry.entryLastPublishedOn
+        lastPublishedOn: getDate(
+            rawInput.lastPublishedOn,
+            latestStorageEntry.lastPublishedOn
         ),
-        entryCreatedBy: getIdentity(rawInput.entryCreatedBy, latestStorageEntry.entryCreatedBy),
-        entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-        entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
-        entryFirstPublishedBy: getIdentity(
-            rawInput.entryFirstPublishedBy,
-            latestStorageEntry.entryFirstPublishedBy
+        createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy),
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
+        firstPublishedBy: getIdentity(
+            rawInput.firstPublishedBy,
+            latestStorageEntry.firstPublishedBy
         ),
-        entryLastPublishedBy: getIdentity(
-            rawInput.entryLastPublishedBy,
-            latestStorageEntry.entryLastPublishedBy
+        lastPublishedBy: getIdentity(
+            rawInput.lastPublishedBy,
+            latestStorageEntry.lastPublishedBy
         ),
 
         locked: false,
