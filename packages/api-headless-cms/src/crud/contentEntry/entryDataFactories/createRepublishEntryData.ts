@@ -1,5 +1,4 @@
 import { CmsContext, CmsEntry, CmsModel } from "~/types";
-import { getDate } from "~/utils/date";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";

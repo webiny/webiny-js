@@ -543,10 +543,10 @@ describe("filtering", () => {
         const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
         const carManufacturerCategoryId = createCarManufacturerResponse.data.createCategory.data.id;
 
-        const revs = await categoryManager.publishCategory({
+        await categoryManager.publishCategory({
             revision: fruitCategoryId
         });
-        const revs2 = await categoryManager.publishCategory({
+        await categoryManager.publishCategory({
             revision: carManufacturerCategoryId
         });
 
