@@ -241,7 +241,7 @@ const settingsReCaptchaEnabledField = () => {
 const settingsReCaptchaErrorMessageField = () => {
     return createModelField({
         label: "ErrorMessage",
-        type: "json"
+        type: "text"
     });
 };
 
