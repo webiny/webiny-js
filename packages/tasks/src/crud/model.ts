@@ -238,6 +238,10 @@ const taskModelPlugin = createCmsModel({
                     {
                         value: TaskDataStatus.SUCCESS,
                         label: "Success"
+                    },
+                    {
+                        value: TaskDataStatus.ABORTED,
+                        label: "Aborted"
                     }
                 ]
             },
