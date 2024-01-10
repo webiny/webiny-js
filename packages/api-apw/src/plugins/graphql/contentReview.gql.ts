@@ -261,7 +261,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 }
 
                 // In case a page was returned, let's read the `publishedOn` field.
-                if ('publishedOn' in content) {
+                if ("publishedOn" in content) {
                     return content.publishedOn;
                 }
 
