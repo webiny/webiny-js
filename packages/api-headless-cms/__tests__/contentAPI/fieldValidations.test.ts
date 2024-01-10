@@ -739,13 +739,13 @@ describe("fieldValidations", () => {
                         createdOn: expect.stringMatching(/^20/),
                         modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        firstPublishedOn: null,
-                        lastPublishedOn: null,
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
                         meta: {
@@ -794,13 +794,13 @@ describe("fieldValidations", () => {
                         createdOn: apple.createdOn,
                         modifiedOn: null,
                         savedOn: apple.savedOn,
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        firstPublishedOn: null,
-                        lastPublishedOn: null,
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
                         meta: {

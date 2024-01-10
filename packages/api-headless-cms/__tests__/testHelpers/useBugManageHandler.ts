@@ -4,7 +4,7 @@ import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
 const bugFields = `
     id
-     createdOn
+    createdOn
     modifiedOn
     savedOn
     createdBy {

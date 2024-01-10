@@ -16,12 +16,11 @@ const categoryFields = `
     createdOn
     modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
     savedBy ${identityFields}
-    firstPublishedOn
-    lastPublishedOn
-   
     meta {
         title
         modelId
