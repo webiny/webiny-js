@@ -2408,20 +2408,6 @@ export interface CmsDeleteEntryOptions {
 }
 
 /**
- * @category CmsEntry
- */
-export interface CmsPublishEntryOptions {
-    /**
-     * By default, updatePublishedOn is "true". User can set it to "false" to skip the publishedOn field update.
-     */
-    updatePublishedOn?: boolean;
-    /**
-     * By default, updateSavedOn is "true". User can set it to "false" to skip the publishedOn field update.
-     */
-    updateSavedOn?: boolean;
-}
-
-/**
  * @category Context
  * @category CmsEntry
  */
@@ -2547,11 +2533,7 @@ export interface CmsEntryContext {
     /**
      * Publish entry.
      */
-    publishEntry: (
-        model: CmsModel,
-        id: string,
-        options?: CmsPublishEntryOptions
-    ) => Promise<CmsEntry>;
+    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */

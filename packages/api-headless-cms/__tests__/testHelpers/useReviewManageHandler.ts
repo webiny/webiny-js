@@ -6,18 +6,20 @@ const reviewFields = `
     id
     entryId
     createdOn
+    modifiedOn
+    savedOn
     createdBy {
         id
         displayName
         type
     }
-    savedOn
+    firstPublishedOn
+    lastPublishedOn
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
         revisions {
             id

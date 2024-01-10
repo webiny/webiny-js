@@ -45,7 +45,6 @@ export const fields = /* GraphQL */ `{
         modelId
         version
         locked
-        publishedOn
         status
 
         revisions {
@@ -163,7 +162,7 @@ export const DELETE_TEST_ENTRIES = /* GraphQL */ `
 `;
 
 export const PUBLISH_TEST_ENTRY = /* GraphQL */ `
-    mutation PublishTestEntry($revision: ID!, $options: CmsPublishEntryOptionsInput) {
+    mutation PublishTestEntry($revision: ID!) {
         publishTestEntry: publishTestEntry(revision: $revision, options: $options) {
             data ${fields}
             error ${errorFields}

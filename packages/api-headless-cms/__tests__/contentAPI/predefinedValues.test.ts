@@ -88,10 +88,10 @@ describe("predefined values", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "A hard debuggable bug",
                             version: 1
@@ -262,10 +262,10 @@ describe("predefined values", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "Critical bug!",
                             version: 1
@@ -312,10 +312,10 @@ describe("predefined values", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -364,10 +364,10 @@ describe("predefined values", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -441,10 +441,10 @@ describe("predefined values", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1

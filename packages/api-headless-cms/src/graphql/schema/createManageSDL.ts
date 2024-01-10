@@ -95,7 +95,6 @@ export const createManageSDL: CreateManageSDL = ({
             modelId: String
             version: Int
             locked: Boolean
-            publishedOn: DateTime
             
             status: String
             """
@@ -199,7 +198,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
+            publish${singularName}(revision: ID!): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

@@ -107,7 +107,7 @@ export default /* GraphQL */ `
         lastPublishedBy_not: ID
         lastPublishedBy_in: [ID!]
         lastPublishedBy_not_in: [ID!]
-        
+
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
