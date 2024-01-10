@@ -901,6 +901,10 @@ const createBaseEntry = (values: Record<string, any>): CmsEntry => {
     return {
         id: "someEntryId#0001",
         entryId: "someEntryId",
+        createdOn: "2022-09-01T12:00:00Z",
+        savedOn: "2022-09-01T12:00:00Z",
+        firstPublishedOn: null,
+        lastPublishedOn: null,
         revisionCreatedBy: {
             id: "id",
             type: "admin",
@@ -911,10 +915,6 @@ const createBaseEntry = (values: Record<string, any>): CmsEntry => {
             type: "admin",
             displayName: "Admin User"
         },
-        createdOn: "2022-09-01T12:00:00Z",
-        savedOn: "2022-09-01T12:00:00Z",
-        firstPublishedOn: null,
-        lastPublishedOn: null,
         modelId: "test",
         locale: "en-US",
         tenant: "root",
