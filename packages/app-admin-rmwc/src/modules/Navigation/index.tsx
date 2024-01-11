@@ -60,7 +60,7 @@ interface NavigationProviderProps {
     children?: React.ReactNode;
 }
 
-const NavigationProvider = (Component: React.ComponentType) => {
+const NavigationProvider = (Component: React.ComponentType<NavigationProviderProps>) => {
     return function NavigationProvider(props: NavigationProviderProps) {
         const [visible, setVisible] = useState(false);
 

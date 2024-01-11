@@ -17,7 +17,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { LIST_TEAMS, DELETE_TEAM } from "./graphql";
+import { LIST_TEAMS, DELETE_TEAM, ListTeamsResponse } from "./graphql";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -62,17 +62,17 @@ export const TeamsDataList = () => {
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const { data: listResponse, loading: listLoading } = useQuery(LIST_TEAMS);
+    const { data: listResponse, loading: listLoading } = useQuery<ListTeamsResponse>(LIST_TEAMS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_TEAM, {
         refetchQueries: [{ query: LIST_TEAMS }]
     });
 
-    const data = listLoading && !listResponse ? [] : listResponse.security.teams.data;
+    const data = listLoading && !listResponse ? [] : listResponse?.security.teams.data || [];
     const id = new URLSearchParams(location.search).get("id");
 
     const filterTeam = useCallback(
-        ({ name, slug, description }) => {
+        ({ name, slug, description }: Team) => {
             return (
                 name.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
@@ -83,7 +83,7 @@ export const TeamsDataList = () => {
     );
 
     const sortTeams = useCallback(
-        teams => {
+        (teams: Team[]) => {
             if (!sort) {
                 return teams;
             }
@@ -94,7 +94,7 @@ export const TeamsDataList = () => {
     );
 
     const deleteItem = useCallback(
-        item => {
+        (item: Team) => {
             showConfirmation(async () => {
                 const { data } = await deleteIt({
                     variables: item

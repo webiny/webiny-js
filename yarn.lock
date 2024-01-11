@@ -8609,15 +8609,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/dom@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@material/dom@npm:5.1.0"
-  dependencies:
-    tslib: ^1.9.3
-  checksum: 298a53bf47a9236402a94beb483c652ffb0345bd2c192420a52f2549882144e9ba5cbb2fb48cfb5c5ff64078cc73b6c5e82b7b0d74e58c89d0b70878c91742f4
-  languageName: node
-  linkType: hard
-
 "@material/drawer@npm:^14.0.0":
   version: 14.0.0
   resolution: "@material/drawer@npm:14.0.0"
@@ -10474,24 +10465,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/base@npm:7.0.3, @rmwc/base@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/base@npm:7.0.3"
-  dependencies:
-    "@material/dom": ^5.1.0
-    "@rmwc/types": ^7.0.3
-    "@types/classnames": ^2.3.1
-    classnames: ^2.3.1
-    hyperform: ^0.11.0
-    mutation-observer: ^1.0.3
-    tslib: ^2.3.0
-  peerDependencies:
-    react: ">=16.8.x"
-    react-dom: ">=16.8.x"
-  checksum: 9d1f67c22d1ffec75a70bf89aad5576eaeeb3f99f3c4ae8c24ff219537c7efc946efcfa304629c12c9b977497a605f6053566f4d5f6245763385e9db473c2f72
-  languageName: node
-  linkType: hard
-
 "@rmwc/button@npm:14.0.4":
   version: 14.0.4
   resolution: "@rmwc/button@npm:14.0.4"
@@ -10769,19 +10742,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/provider@npm:7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/provider@npm:7.0.3"
-  dependencies:
-    "@rmwc/base": ^7.0.3
-    "@rmwc/types": ^7.0.3
-  peerDependencies:
-    react: ">=16.8.x"
-    react-dom: ">=16.8.x"
-  checksum: 2a65146ae86e8b7e982cf43895a0ce6339bcf08e9a2ed5347483fdf9d5b57e58ca238efe8646590d697fba60a1369b2f83d507eba996367be8397139dc5ddeb0
-  languageName: node
-  linkType: hard
-
 "@rmwc/radio@npm:14.0.4":
   version: 14.0.4
   resolution: "@rmwc/radio@npm:14.0.4"
@@ -10955,13 +10915,6 @@ __metadata:
   version: 14.0.4
   resolution: "@rmwc/types@npm:14.0.4"
   checksum: b6206ec737d72d646c318cbd55b91a578ec974dc0769dc5c4c59037f91c37072ae93f8d54ee173acccf4ca30e2a57fc6f0f493d3efa47b587898a71ac48f19c1
-  languageName: node
-  linkType: hard
-
-"@rmwc/types@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/types@npm:7.0.3"
-  checksum: c8ebf7d80d0f6f360a4f6eecfe1e30bb0a3b94d2305045b88832c2c03b0dc475b3394d65ddcd4b1018a3ecb82dad2db166bed845450bd65bf1a03d1a837d3fcf
   languageName: node
   linkType: hard
 
@@ -13277,15 +13230,6 @@ __metadata:
   version: 1.0.0
   resolution: "@types/center-align@npm:1.0.0"
   checksum: 1295a25c4c09dfac48868ab56a99eac42bf05f42e3be67ee17f31f29b8d30c302176d4b32b9d08cba6e97920afabf43a34e57bcfb9cb0ce7d44228cc1e5a2bdc
-  languageName: node
-  linkType: hard
-
-"@types/classnames@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@types/classnames@npm:2.3.1"
-  dependencies:
-    classnames: "*"
-  checksum: 09a17ea08fcb83380921efdfdac94cfa162f87025cae0bf6f4ba508c2fa5f436459ce7612905a3f968fdddb68c03b8e6ff08e762ed2d0c110c5c4fceb244dc55
   languageName: node
   linkType: hard
 
@@ -16489,8 +16433,8 @@ __metadata:
     "@babel/runtime": ^7.22.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.12.1
-    "@rmwc/base": 7.0.3
-    "@rmwc/provider": 7.0.3
+    "@rmwc/base": 14.0.4
+    "@rmwc/provider": 14.0.4
     "@types/react": 18.2.45
     "@types/react-helmet": ^6.1.5
     "@webiny/app": 0.0.0
@@ -23021,7 +22965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:*, classnames@npm:^2.2.6, classnames@npm:^2.3.1":
+"classnames@npm:^2.2.6, classnames@npm:^2.3.1":
   version: 2.3.2
   resolution: "classnames@npm:2.3.2"
   checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
@@ -45277,7 +45221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
   version: 2.5.0
   resolution: "tslib@npm:2.5.0"
   checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1

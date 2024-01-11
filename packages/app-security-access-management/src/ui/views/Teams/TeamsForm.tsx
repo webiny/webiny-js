@@ -23,6 +23,7 @@ import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { GroupsMultiAutoComplete } from "~/components/GroupsMultiAutocomplete";
+import { Team } from "~/types";
 
 const t = i18n.ns("app-security/admin/teams/form");
 
@@ -69,15 +70,15 @@ export const TeamsForm = () => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            const isUpdate = data.createdOn;
+        async (formData: Team) => {
+            const isUpdate = formData.createdOn;
             const [operation, args] = isUpdate
                 ? [
                       update,
                       {
                           variables: {
-                              id: data.id,
-                              data: pick(data, ["name", "description", "groups"])
+                              id: formData.id,
+                              data: pick(formData, ["name", "description", "groups"])
                           }
                       }
                   ]
@@ -85,7 +86,7 @@ export const TeamsForm = () => {
                       create,
                       {
                           variables: {
-                              data: pick(data, ["name", "slug", "description", "groups"])
+                              data: pick(formData, ["name", "slug", "description", "groups"])
                           }
                       }
                   ];
