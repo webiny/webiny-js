@@ -42,7 +42,11 @@ export const BatchEditorDialog = observer((props: BatchEditorDialogProps) => {
     const ref = useRef<FormAPI | null>(null);
 
     return (
-        <DialogContainer open={props.vm.isOpen} onClose={props.onClose}>
+        <DialogContainer
+            open={props.vm.isOpen}
+            onClose={props.onClose}
+            preventOutsideDismiss={true}
+        >
             {props.vm.isOpen ? (
                 <>
                     <DialogTitle>{"Edit items"}</DialogTitle>
