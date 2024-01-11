@@ -95,9 +95,8 @@ module.exports.command = () => ({
                     } catch (e) {
                         if (debug) {
                             context.debug(
-                                `Could not use the provided ${context.debug.hl(
-                                    patFromParams
-                                )} PAT because of the following error:`
+                                `Could not use the provided %s PAT because of the following error:`,
+                                patFromParams
                             );
                             console.debug(e);
                         }
@@ -118,7 +117,7 @@ module.exports.command = () => ({
                     )}&ref=cli`;
                     const openUrl = `${getWcpAppUrl()}/login/cli?${queryParams}`;
 
-                    debug && context.debug(`Opening ${context.debug.hl(openUrl)}...`);
+                    debug && context.debug(`Opening %s...`, openUrl);
                     await open(openUrl);
 
                     const graphql = {

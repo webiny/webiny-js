@@ -29,11 +29,7 @@ module.exports = createPulumiCommand({
         }
 
         if (!stackExists) {
-            context.error(
-                `Project application ${context.error.hl(folder)} (${context.error.hl(
-                    env
-                )} environment) does not exist.`
-            );
+            context.error(`Project application %s (%s} environment) does not exist.`, folder, env);
             return;
         }
 
@@ -58,8 +54,7 @@ module.exports = createPulumiCommand({
 
         console.log();
 
-        const duration = getDuration();
-        context.success(`Done! Destroy finished in ${context.success.hl(duration + "s")}.`);
+        context.success(`Done! Destroy finished in %s.`, getDuration());
 
         await processHooks("hook-after-destroy", hooksParams);
     }
