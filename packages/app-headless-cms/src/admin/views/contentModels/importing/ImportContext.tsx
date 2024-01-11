@@ -297,7 +297,6 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                 }),
                 validated: true
             };
-            console.log(JSON.parse(JSON.stringify({ prev, next })));
             return next;
         });
     }, [state.data, setState]);
