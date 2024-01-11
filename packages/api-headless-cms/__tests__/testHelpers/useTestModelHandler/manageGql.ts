@@ -18,38 +18,31 @@ export const fields = /* GraphQL */ `{
     id
     entryId
     createdOn
+    modifiedOn
+    savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
-    ownedBy ${identityFields}
-    savedOn
-
+    savedBy ${identityFields}
+    firstPublishedBy ${identityFields}
+    lastPublishedBy ${identityFields}
     revisionCreatedOn
-    revisionSavedOn
     revisionModifiedOn
+    revisionSavedOn
     revisionFirstPublishedOn
     revisionLastPublishedOn
     revisionCreatedBy ${identityFields}
-    revisionSavedBy ${identityFields}
     revisionModifiedBy ${identityFields}
+    revisionSavedBy ${identityFields}
     revisionFirstPublishedBy ${identityFields}
     revisionLastPublishedBy ${identityFields}
-    entryCreatedOn
-    entrySavedOn
-    entryModifiedOn
-    entryCreatedBy ${identityFields}
-    entrySavedBy ${identityFields}
-    entryModifiedBy ${identityFields}
-    entryFirstPublishedBy ${identityFields}
-    entryLastPublishedBy ${identityFields}
-    entryFirstPublishedOn
-    entryLastPublishedOn
 
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
 
         revisions {
@@ -167,8 +160,8 @@ export const DELETE_TEST_ENTRIES = /* GraphQL */ `
 `;
 
 export const PUBLISH_TEST_ENTRY = /* GraphQL */ `
-    mutation PublishTestEntry($revision: ID!, $options: CmsPublishEntryOptionsInput) {
-        publishTestEntry: publishTestEntry(revision: $revision, options: $options) {
+    mutation PublishTestEntry($revision: ID!) {
+        publishTestEntry: publishTestEntry(revision: $revision) {
             data ${fields}
             error ${errorFields}
         }

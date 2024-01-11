@@ -2,10 +2,10 @@ import { createField, CreateFieldInput } from "./fields";
 
 export const createDateTimeField = (params: Partial<CreateFieldInput> = {}) => {
     return createField({
-        id: "lastPublishedOn",
+        id: "xyzPublishedOn",
         type: "datetime",
-        fieldId: "lastPublishedOn",
-        label: "Last published on",
+        fieldId: "xyzPublishedOn",
+        label: "Xyz published on",
         settings: {
             type: "dateTimeWithTimezone"
         },
