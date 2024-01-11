@@ -54,7 +54,7 @@ interface DynamoDbElasticsearchRecord {
     data: string;
 }
 
-export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
@@ -325,7 +325,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_002, [
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_001, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

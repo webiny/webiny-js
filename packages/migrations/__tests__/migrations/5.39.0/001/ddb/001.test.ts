@@ -7,9 +7,9 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { CmsEntriesInitNewMetaFields_5_39_0_002 } from "~/migrations/5.39.0/002/ddb";
-import { ddbPrimaryTableData } from "./002.ddbPrimaryTableData";
-import { ddbPrimaryTableDataMigrated } from "./migrated/002.ddbPrimaryTableData";
+import { CmsEntriesInitNewMetaFields_5_39_0_001 } from "~/migrations/5.39.0/001/ddb";
+import { ddbPrimaryTableData } from "./001.ddbPrimaryTableData";
+import { ddbPrimaryTableDataMigrated } from "./migrated/001.ddbPrimaryTableData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -22,7 +22,7 @@ describe("5.39.0-002", () => {
     it("should not run if no entries without new meta fields were found", async () => {
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
         });
 
         const { data, error } = await handler();
@@ -40,7 +40,7 @@ describe("5.39.0-002", () => {
 
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
         });
         const { data, error } = await handler();
 
@@ -68,7 +68,7 @@ describe("5.39.0-002", () => {
 
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_002]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
         });
 
         // Should run the migration
