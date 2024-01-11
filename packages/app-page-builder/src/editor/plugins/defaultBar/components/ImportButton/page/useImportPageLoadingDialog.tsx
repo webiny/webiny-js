@@ -10,7 +10,8 @@ import ProgressBar from "../ProgressBar";
 import { LoadingDialog } from "../styledComponents";
 import {
     GET_PAGE_IMPORT_EXPORT_TASK,
-    LIST_PAGE_IMPORT_EXPORT_SUB_TASKS
+    LIST_PAGE_IMPORT_EXPORT_SUB_TASKS,
+    GetPageImportExportSubTaskResponse
 } from "~/admin/graphql/pageImportExport.gql";
 import { ImportExportTaskStatus } from "~/types";
 
@@ -37,9 +38,9 @@ interface ImportPageLoadingDialogContentProps {
 const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogContentProps) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Record<string, string> | null>(null);
 
-    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
+    const { data } = useQuery<GetPageImportExportSubTaskResponse>(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
@@ -56,8 +57,8 @@ const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogConte
         }
     });
 
-    const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
+    const pollExportPageTaskStatus = useCallback((response: GetPageImportExportSubTaskResponse) => {
+        const { error, data } = response.pageBuilder.getImportExportTask || {};
         if (error) {
             return showSnackbar(error.message);
         }

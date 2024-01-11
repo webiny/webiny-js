@@ -50,12 +50,12 @@ const BorderSettings = ({
     );
 
     const updateColor = useCallback(
-        value => getUpdateValue(`${displayMode}.color`)(value),
+        (value: string) => getUpdateValue(`${displayMode}.color`)(value),
         [getUpdateValue, displayMode]
     );
 
     const updateColorPreview = useCallback(
-        value => getUpdatePreview(`${displayMode}.color`)(value),
+        (value: string) => getUpdatePreview(`${displayMode}.color`)(value),
         [getUpdatePreview, displayMode]
     );
 

@@ -59,7 +59,7 @@ const PageTemplates = () => {
         refetchQueries: [{ query: LIST_PAGE_TEMPLATES }]
     });
 
-    const handleDeleteTemplateClick = useCallback(item => {
+    const handleDeleteTemplateClick = useCallback((item: PbPageTemplate) => {
         showConfirmation(async () => {
             const response = await deleteIt({
                 variables: { id: item.id }

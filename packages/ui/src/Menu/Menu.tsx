@@ -17,14 +17,16 @@ const style = {
     })
 };
 
-// Property "children" of "MenuProps" have type like this because "children" can be passed as a function.
-type MenuPropsChildren =
-    | React.ReactNode
-    | (({ closeMenu }: { closeMenu: () => void }) => React.ReactNode);
+export type MenuChildrenFunctionProps = {
+    closeMenu: () => void;
+};
 
 export type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: MenuPropsChildren;
+    children: React.ReactNode;
+
+    // Custom render function for MenuItem content, prioritized over 'children'.
+    render?: (props: MenuChildrenFunctionProps) => React.ReactNode;
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;
@@ -97,16 +99,14 @@ class Menu extends React.Component<MenuProps, MenuState> {
     };
 
     private readonly renderCustomContent = () => {
-        const { children } = this.props;
+        const { children, render } = this.props;
         return (
             <MenuSurface
                 open={this.state.menuIsOpen}
                 onClose={this.closeMenu}
                 renderToPortal={this.props.renderToPortal}
             >
-                {typeof children === "function"
-                    ? children({ closeMenu: this.closeMenu })
-                    : children}
+                {typeof render === "function" ? render({ closeMenu: this.closeMenu }) : children}
             </MenuSurface>
         );
     };
