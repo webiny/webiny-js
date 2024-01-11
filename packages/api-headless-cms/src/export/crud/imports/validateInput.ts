@@ -25,6 +25,10 @@ interface InvalidResponse {
     error?: string;
 }
 
+interface InputGroup extends Pick<CmsGroup, "id" | "slug"> {
+    target: string;
+}
+
 export const validateInput = async (params: Params): Promise<ValidResponse | InvalidResponse> => {
     const { groups, models, data } = params;
 
@@ -33,19 +37,28 @@ export const validateInput = async (params: Params): Promise<ValidResponse | Inv
         input: data.groups
     });
 
-    const ids = validatedGroups
-        .map(data => {
+    const inputGroups = validatedGroups.reduce<InputGroup[]>(
+        (collection, data) => {
             if (!data.group?.id) {
-                return null;
+                return collection;
             }
+            collection.push({
+                id: data.group.id,
+                target: data.target || data.group.id,
+                slug: data.group.slug
+            });
+            return collection;
+        },
+        groups.map(g => {
             return {
-                id: data.group?.id
+                id: g.id,
+                target: g.id,
+                slug: g.slug
             };
         })
-        .filter(Boolean) as Pick<CmsGroup, "id">[];
-
+    );
     const validatedModels = await validateModels({
-        groups: groups.map(g => ({ id: g.id })).concat(ids),
+        groups: inputGroups,
         models,
         input: data.models
     });
