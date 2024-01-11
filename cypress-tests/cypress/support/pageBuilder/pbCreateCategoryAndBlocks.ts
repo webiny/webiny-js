@@ -3,6 +3,7 @@ import { gqlClient } from "../utils";
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
     blockNames: string[];
+    headerText?: string;
 }
 
 declare global {
@@ -15,6 +16,37 @@ declare global {
         }
     }
 }
+
+const blockData = (headerText?: string) => ({
+    type: "heading",
+    data: {
+        text: {
+            desktop: {
+                type: "heading",
+                alignment: "left",
+                tag: "h1"
+            },
+            data: {
+                text: `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${headerText}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"heading-element\",\"version\":1,\"tag\":\"h1\",\"styles\":[{\"styleId\":\"heading1\",\"type\":\"typography\"}]}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`
+            }
+        },
+        settings: {
+            margin: {
+                desktop: {
+                    all: "0px"
+                }
+            },
+            padding: {
+                desktop: {
+                    all: "0px"
+                }
+            }
+        }
+    },
+    elements: [],
+    path: ["WoVi5gTm84", "2rYVcjPC07"],
+    id: "YQNWzGUybC"
+});
 
 const CREATE_BLOCK_CATEGORY_MUTATION = /* GraphQL */ `
     mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
@@ -67,7 +99,7 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }) => {
+Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, headerText }) => {
     cy.login().then(user => {
         const createCategoryPromise = gqlClient
             .request({
@@ -93,7 +125,7 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }
                                     id: "xyz",
                                     type: "block",
                                     data: {},
-                                    elements: []
+                                    elements: headerText ? [blockData(headerText)] : []
                                 }
                             }
                         },
