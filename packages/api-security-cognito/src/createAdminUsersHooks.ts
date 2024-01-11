@@ -13,12 +13,11 @@ export const createAdminUsersHooks = () => {
 
         // After a new user is created, link him to a tenant via the assigned group.
         adminUsers.onUserAfterCreate.subscribe(async ({ user }) => {
-            console.log("onUserAfterCreate", user);
-            /**
-             * TODO @ts-refactor @pavel
-             * Are we continuing if there is no tenant?
-             */
             const tenant = getTenant();
+
+            if (!tenant) {
+                return;
+            }
 
             const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
 
@@ -43,10 +42,6 @@ export const createAdminUsersHooks = () => {
 
             await security.createTenantLinks([
                 {
-                    /**
-                     * Check few lines up.
-                     */
-                    // @ts-expect-error
                     tenant,
                     // IMPORTANT!
                     // Use the `id` that was assigned in the user creation process.
@@ -65,6 +60,10 @@ export const createAdminUsersHooks = () => {
         // On user update, if the group was changed, update the tenant link.
         adminUsers.onUserAfterUpdate.subscribe(async ({ updatedUser, originalUser }) => {
             const tenant = getTenant();
+
+            if (!tenant) {
+                return;
+            }
 
             // If group/team hasn't changed, we don't need to do anything.
             const groupChanged = updatedUser.group !== originalUser.group;
@@ -111,11 +110,6 @@ export const createAdminUsersHooks = () => {
 
             await security.updateTenantLinks([
                 {
-                    /**
-                     * TODO @ts-refactor @pavel
-                     * Same as in afterCreate method
-                     */
-                    // @ts-expect-error
                     tenant,
                     identity: updatedUser.id,
 
@@ -130,26 +124,16 @@ export const createAdminUsersHooks = () => {
 
         // On user delete, delete its tenant link.
         adminUsers.onUserAfterDelete.subscribe(async ({ user }) => {
-            /**
-             * TODO @ts-refactor @pavel
-             * Are we continuing if there is no tenant?
-             */
             const tenant = getTenant();
+
+            if (!tenant) {
+                return;
+            }
 
             await security.deleteTenantLinks([
                 {
-                    /**
-                     * TODO @ts-refactor @pavel
-                     * Same as in afterCreate method
-                     */
-                    // @ts-expect-error
                     tenant,
-                    identity: user.id,
-
-                    // With 5.37.0, these tenant links not only contain group-related permissions,
-                    // but teams-related too. The `type=group` hasn't been changed, just so the
-                    // data migrations are easier.
-                    type: "group"
+                    identity: user.id
                 }
             ]);
         });
