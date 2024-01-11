@@ -36,7 +36,7 @@ const getPayloadProperty = (
     prop: string,
     defaults: Record<string, any> = {}
 ): Record<string, any> => {
-    if (typeof payload === "object") {
+    if (payload && typeof payload === "object") {
         const value = payload[prop] ? payload[prop] : {};
 
         return {

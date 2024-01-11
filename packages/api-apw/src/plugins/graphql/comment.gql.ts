@@ -103,11 +103,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             ${dateTimeWhereFields}
             ${identityWhereFields}
             
-            ownedBy: String @deprecated(reason: "Use 'createdBy'.")
-            ownedBy_not: String @deprecated(reason: "Use 'createdBy_not'.")
-            ownedBy_in: [String!] @deprecated(reason: "Use 'createdBy_in'.")
-            ownedBy_not_in: [String!] @deprecated(reason: "Use 'createdBy_not_in'.")
-            
             changeRequest: ApwRefFieldWhereInput
         }
 

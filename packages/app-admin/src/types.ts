@@ -108,6 +108,9 @@ export interface FileItem {
         width?: number;
         height?: number;
     };
+    accessControl?: {
+        type: "public" | "private-authenticated";
+    };
     extensions?: Record<string, any>;
 }
 

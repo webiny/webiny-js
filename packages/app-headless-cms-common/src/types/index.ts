@@ -344,38 +344,15 @@ export type CmsEditorContentEntry = CmsContentEntry;
 export interface CmsContentEntry {
     id: string;
     modelId: string;
-    createdOn: string;
-    createdBy: CmsIdentity;
     savedOn: string;
-    savedBy: CmsIdentity;
-    modifiedOn: string;
-    modifiedBy: CmsIdentity;
-    entryCreatedOn: string;
-    entrySavedOn: string;
-    entryModifiedOn: string;
-    entryFirstPublishedOn: string;
-    entryLastPublishedOn: string;
-    entryCreatedBy: CmsIdentity;
-    entrySavedBy: CmsIdentity;
-    entryModifiedBy: CmsIdentity;
-    entryFirstPublishedBy: CmsIdentity;
-    entryLastPublishedBy: CmsIdentity;
-    revisionCreatedOn: string;
-    revisionSavedOn: string;
-    revisionModifiedOn: string;
-    revisionFirstPublishedOn: string;
-    revisionLastPublishedOn: string;
-    revisionCreatedBy: CmsIdentity;
-    revisionSavedBy: CmsIdentity;
-    revisionModifiedBy: CmsIdentity;
-    revisionFirstPublishedBy: CmsIdentity;
-    revisionLastPublishedBy: CmsIdentity;
+    createdBy: CmsIdentity;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
         image?: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
@@ -385,13 +362,14 @@ export interface CmsContentEntry {
 
 export interface CmsContentEntryRevision {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     createdBy: CmsIdentity;
     wbyAco_location: Location;
     meta: {
         title: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;

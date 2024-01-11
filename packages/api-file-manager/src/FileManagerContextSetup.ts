@@ -83,8 +83,10 @@ export class FileManagerContextSetup {
             return;
         }
 
+        const withPrivateFiles = this.context.wcp.canUsePrivateFiles();
+
         // This registers code plugins (model group, models)
-        const { groupPlugin, fileModelDefinition } = createFileManagerPlugins();
+        const { groupPlugin, fileModelDefinition } = createFileManagerPlugins({ withPrivateFiles });
 
         const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
             CmsModelModifierPlugin.type

@@ -16,7 +16,6 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
         title
         description
         image
-        publishedOn
         version
         locked
         status
@@ -27,79 +26,15 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     id
     entryId
     savedOn
-    savedBy {
-        id
-        type
-        displayName
-    }
     createdOn
-    createdBy {
-        id
-        type
-        displayName
-    }
-    modifiedOn
-    modifiedBy {
-        id
-        type
-        displayName
-    }
-    entryCreatedOn
-    entrySavedOn
-    entryModifiedOn
-    entryFirstPublishedOn
-    entryLastPublishedOn
-    entryCreatedBy {
-        id
-        type
-        displayName
-    }
-    entrySavedBy {
-        id
-        type
-        displayName
-    }
-    entryModifiedBy {
-        id
-        type
-        displayName
-    }
-    entryFirstPublishedBy {
-        id
-        type
-        displayName
-    }
-    entryLastPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionCreatedOn
-    revisionSavedOn
-    revisionModifiedOn
-    revisionFirstPublishedOn
-    revisionLastPublishedOn
+    firstPublishedOn
+    lastPublishedOn
     revisionCreatedBy {
         id
         type
         displayName
     }
-    revisionSavedBy {
-        id
-        type
-        displayName
-    }
-    revisionModifiedBy {
-        id
-        type
-        displayName
-    }
-    revisionFirstPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionLastPublishedBy {
+    createdBy {
         id
         type
         displayName

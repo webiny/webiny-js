@@ -10,6 +10,13 @@ export const ApiCloudfront = createAppModule({
     config(app: PulumiApp) {
         const gateway = app.getModule(ApiGateway);
 
+        const cookies = {
+            forward: "whitelist",
+            whitelistedNames: ["wby-id-token"]
+        };
+
+        const forwardHeaders = ["Origin", "Accept", "Accept-Language"];
+
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
@@ -21,10 +28,8 @@ export const ApiCloudfront = createAppModule({
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
-                        cookies: {
-                            forward: "none"
-                        },
-                        headers: ["Accept", "Accept-Language"],
+                        cookies,
+                        headers: forwardHeaders,
                         queryString: true
                     },
                     // MinTTL <= DefaultTTL <= MaxTTL
@@ -59,21 +64,13 @@ export const ApiCloudfront = createAppModule({
                         targetOriginId: gateway.api.output.name
                     },
                     {
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                        allowedMethods: ["HEAD", "GET", "OPTIONS"],
+                        cachedMethods: ["HEAD", "GET", "OPTIONS"],
                         forwardedValues: {
                             cookies: {
                                 forward: "none"
                             },
-                            headers: ["Accept", "Accept-Language"],
+                            headers: forwardHeaders,
                             queryString: true
                         },
                         // MinTTL <= DefaultTTL <= MaxTTL
@@ -81,6 +78,22 @@ export const ApiCloudfront = createAppModule({
                         defaultTtl: 0,
                         maxTtl: 2592000,
                         pathPattern: "/files/*",
+                        viewerProtocolPolicy: "allow-all",
+                        targetOriginId: gateway.api.output.name
+                    },
+                    {
+                        allowedMethods: ["HEAD", "GET", "OPTIONS"],
+                        cachedMethods: ["HEAD", "GET", "OPTIONS"],
+                        forwardedValues: {
+                            cookies: cookies,
+                            headers: forwardHeaders,
+                            queryString: true
+                        },
+                        // MinTTL <= DefaultTTL <= MaxTTL
+                        minTtl: 0,
+                        defaultTtl: 0,
+                        maxTtl: 2592000,
+                        pathPattern: "/private/*",
                         viewerProtocolPolicy: "allow-all",
                         targetOriginId: gateway.api.output.name
                     }

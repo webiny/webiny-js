@@ -259,7 +259,14 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 if (!content) {
                     return null;
                 }
-                return content.publishedOn;
+
+                // In case a page was returned, let's read the `publishedOn` field.
+                if ("publishedOn" in content) {
+                    return content.publishedOn;
+                }
+
+                // In case a CMS entry was returned, let's read the entry-level `lastPublishedOn` field.
+                return content.lastPublishedOn;
             },
             publishedBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
                 const id = parent.publishedBy;

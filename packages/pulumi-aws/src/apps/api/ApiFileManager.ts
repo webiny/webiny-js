@@ -1,13 +1,11 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-
-// @ts-expect-error
 import { getLayerArn } from "@webiny/aws-layers";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { CoreOutput, VpcConfig } from "../common";
+import { ApiGraphql, CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId } from "~/apps/awsUtils";
 import { LAMBDA_RUNTIME } from "~/constants";
 
@@ -21,37 +19,13 @@ export const ApiFileManager = createAppModule({
     name: "ApiFileManager",
     config(app: PulumiApp, config: ApiFileManagerConfig) {
         const core = app.getModule(CoreOutput);
+        const graphql = app.getModule(ApiGraphql);
         const accountId = getAwsAccountId(app);
 
         const policy = createFileManagerLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "fm-lambda-role",
             policy: policy.output
-        });
-
-        const transform = app.addResource(aws.lambda.Function, {
-            name: "fm-image-transformer",
-            config: {
-                handler: "handler.handler",
-                timeout: 30,
-                runtime: LAMBDA_RUNTIME,
-                memorySize: 1600,
-                role: role.output.arn,
-                description: "Performs image optimization, resizing, etc.",
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "fileManager/transform/build")
-                    )
-                }),
-                layers: [getLayerArn("sharp")],
-                environment: {
-                    variables: getCommonLambdaEnvVariables().apply(value => ({
-                        ...value,
-                        S3_BUCKET: core.fileManagerBucketId
-                    }))
-                },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
-            }
         });
 
         const manage = app.addResource(aws.lambda.Function, {
@@ -78,29 +52,24 @@ export const ApiFileManager = createAppModule({
             }
         });
 
+        const baseConfig = graphql.functions.graphql.config.clone();
+
         const download = app.addResource(aws.lambda.Function, {
             name: "fm-download",
             config: {
-                role: role.output.arn,
-                runtime: LAMBDA_RUNTIME,
-                handler: "handler.handler",
-                timeout: 30,
-                memorySize: 512,
+                ...baseConfig,
+                memorySize: 1600,
                 description: "Serves previously uploaded files.",
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "fileManager/download/build")
-                    )
-                }),
+                layers: [getLayerArn("sharp")],
                 environment: {
-                    variables: getCommonLambdaEnvVariables().apply(value => ({
-                        ...value,
-                        S3_BUCKET: core.fileManagerBucketId,
-                        IMAGE_TRANSFORMER_FUNCTION: transform.output.arn,
-                        ...config.env
-                    }))
-                },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+                    variables: graphql.functions.graphql.output.environment.apply(env => {
+                        return {
+                            WEBINY_FUNCTION_TYPE: "asset-delivery",
+                            ...env?.variables,
+                            ...config.env
+                        };
+                    })
+                }
             }
         });
 
@@ -135,7 +104,6 @@ export const ApiFileManager = createAppModule({
         });
 
         const functions = {
-            transform,
             manage,
             download
         };
