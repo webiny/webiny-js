@@ -40,33 +40,6 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     locale: {
         type: "string"
     },
-    /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
-     */
-    createdBy: {
-        type: "map"
-    },
-    ownedBy: {
-        type: "map"
-    },
-    modifiedBy: {
-        type: "map"
-    },
-    createdOn: {
-        type: "string"
-    },
-    savedOn: {
-        type: "string"
-    },
-    publishedOn: {
-        type: "string"
-    },
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
 
     /**
      * Revision-level meta fields. 👇
@@ -85,16 +58,20 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     /**
      * Entry-level meta fields. 👇
      */
-    entryCreatedOn: { type: "string" },
-    entrySavedOn: { type: "string" },
-    entryModifiedOn: { type: "string" },
-    entryFirstPublishedOn: { type: "string" },
-    entryLastPublishedOn: { type: "string" },
-    entryCreatedBy: { type: "map" },
-    entrySavedBy: { type: "map" },
-    entryModifiedBy: { type: "map" },
-    entryFirstPublishedBy: { type: "map" },
-    entryLastPublishedBy: { type: "map" },
+    createdOn: { type: "string" },
+    savedOn: { type: "string" },
+    modifiedOn: { type: "string" },
+    firstPublishedOn: { type: "string" },
+    lastPublishedOn: { type: "string" },
+    createdBy: { type: "map" },
+    savedBy: { type: "map" },
+    modifiedBy: { type: "map" },
+    firstPublishedBy: { type: "map" },
+    lastPublishedBy: { type: "map" },
+
+    // Deprecated fields.
+    ownedBy: { type: "map" },
+    publishedOn: { type: "string" },
 
     version: {
         type: "number"

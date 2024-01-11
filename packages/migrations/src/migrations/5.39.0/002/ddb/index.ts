@@ -115,12 +115,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                     }
 
                     // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
-                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                    const oldestCreatedOn = await getOldestRevisionCreatedOn({
                         entry: item,
                         entryEntity: this.entryEntity
                     });
 
-                    assignNewMetaFields(item, { entryCreatedOn });
+                    assignNewMetaFields(item, { createdOn: oldestCreatedOn });
 
                     items.push(this.entryEntity.putBatch(item));
                 }

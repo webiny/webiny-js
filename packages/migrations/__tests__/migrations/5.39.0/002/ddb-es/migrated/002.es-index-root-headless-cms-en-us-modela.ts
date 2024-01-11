@@ -8,34 +8,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:42.180Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:42.180Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "658c24aa6607be00087f1169",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:42.180Z",
+        firstPublishedOn: null,
         id: "658c24aa6607be00087f1169#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -44,6 +30,7 @@ export const headlessCmsModelAMigrated = [
         locked: false,
         modelId: "modelA",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -76,6 +63,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:42.180Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:42.180Z",
         status: "draft",
         tenant: "root",
@@ -95,34 +87,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:33.775Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:33.775Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:34.175Z",
+        firstPublishedOn: "2023-12-27T13:20:34.175Z",
         id: "658c24a16607be00087f1168#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:34.175Z",
         latest: true,
         locale: "en-US",
         location: {
@@ -131,6 +109,7 @@ export const headlessCmsModelAMigrated = [
         locked: true,
         modelId: "modelA",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -164,6 +143,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:34.175Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:34.175Z",
         status: "published",
         tenant: "root",
@@ -183,40 +167,28 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:33.775Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:33.775Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:34.175Z",
+        firstPublishedOn: "2023-12-27T13:20:34.175Z",
         id: "658c24a16607be00087f1168#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:34.175Z",
         locale: "en-US",
         location: {
             folderId: "root"
         },
         locked: true,
         modelId: "modelA",
+        modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -251,6 +223,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:34.175Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:34.175Z",
         status: "published",
         tenant: "root",
@@ -270,34 +247,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:25.235Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:25.235Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:25.701Z",
+        firstPublishedOn: "2023-12-27T13:20:25.701Z",
         id: "658c24996607be00087f1167#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:25.701Z",
         latest: true,
         locale: "en-US",
         location: {
@@ -306,6 +269,7 @@ export const headlessCmsModelAMigrated = [
         locked: true,
         modelId: "modelA",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -339,6 +303,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:25.701Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:25.701Z",
         status: "published",
         tenant: "root",
@@ -358,40 +327,28 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:25.235Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:25.235Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:25.701Z",
+        firstPublishedOn: "2023-12-27T13:20:25.701Z",
         id: "658c24996607be00087f1167#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:25.701Z",
         locale: "en-US",
         location: {
             folderId: "root"
         },
         locked: true,
         modelId: "modelA",
+        modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -426,6 +383,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:25.701Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:25.701Z",
         status: "published",
         tenant: "root",
@@ -445,34 +407,20 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:11.821Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:11.821Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:12.775Z",
+        firstPublishedOn: "2023-12-27T13:20:12.775Z",
         id: "658c248b6607be00087f1166#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:12.775Z",
         latest: true,
         locale: "en-US",
         location: {
@@ -481,6 +429,7 @@ export const headlessCmsModelAMigrated = [
         locked: true,
         modelId: "modelA",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -514,6 +463,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:12.775Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:12.775Z",
         status: "published",
         tenant: "root",
@@ -533,40 +487,28 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:20:11.821Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:11.821Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:12.775Z",
+        firstPublishedOn: "2023-12-27T13:20:12.775Z",
         id: "658c248b6607be00087f1166#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:12.775Z",
         locale: "en-US",
         location: {
             folderId: "root"
         },
         locked: true,
         modelId: "modelA",
+        modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -601,6 +543,11 @@ export const headlessCmsModelAMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:12.775Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:12.775Z",
         status: "published",
         tenant: "root",

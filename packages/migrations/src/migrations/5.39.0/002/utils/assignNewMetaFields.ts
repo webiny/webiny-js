@@ -25,24 +25,24 @@ export const assignNewMetaFields = (entry: CmsEntry, extraOverrides: Partial<Cms
             revisionLastPublishedBy: entry.modifiedBy || entry.createdBy,
 
             // Entry-level meta fields.
-            entryCreatedOn: entry.createdOn,
+            createdOn: entry.createdOn,
 
             // `modifiedOn` does not exist, that's why we're using `savedOn`.
             // We only use it if there's a `modifiedBy` set.
-            entryModifiedOn: entry.modifiedBy ? entry.savedOn : null,
+            modifiedOn: entry.modifiedBy ? entry.savedOn : null,
 
-            entrySavedOn: entry.savedOn,
-            entryCreatedBy: entry.ownedBy,
-            entryModifiedBy: entry.modifiedBy || null,
-            entrySavedBy: entry.modifiedBy || entry.createdBy,
-
-            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            entryFirstPublishedOn: entry.publishedOn || null,
-            entryFirstPublishedBy: entry.modifiedBy || entry.createdBy,
+            savedOn: entry.savedOn,
+            createdBy: entry.ownedBy,
+            modifiedBy: entry.modifiedBy || null,
+            savedBy: entry.modifiedBy || entry.createdBy,
 
             // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            entryLastPublishedOn: entry.publishedOn || null,
-            entryLastPublishedBy: entry.modifiedBy || entry.createdBy
+            firstPublishedOn: entry.publishedOn || null,
+            firstPublishedBy: entry.modifiedBy || entry.createdBy,
+
+            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
+            lastPublishedOn: entry.publishedOn || null,
+            lastPublishedBy: entry.modifiedBy || entry.createdBy
         },
         extraOverrides
     );

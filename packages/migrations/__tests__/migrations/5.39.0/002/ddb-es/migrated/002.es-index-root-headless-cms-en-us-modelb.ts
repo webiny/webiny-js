@@ -8,38 +8,20 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:22:57.094Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:57.094Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "658c2531adbc1700090e1ad2",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T13:23:15.536Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:23:15.536Z",
+        firstPublishedOn: null,
         id: "658c2531adbc1700090e1ad2#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -53,6 +35,7 @@ export const headlessCmsModelBMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T13:23:15.536Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -91,6 +74,11 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:23:15.536Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:23:15.536Z",
         status: "draft",
         tenant: "root",
@@ -110,34 +98,20 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:22:44.672Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:44.672Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
         entryId: "658c2524adbc1700090e1ad1",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:22:46.091Z",
+        firstPublishedOn: "2023-12-27T13:22:46.091Z",
         id: "658c2524adbc1700090e1ad1#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:22:46.091Z",
         latest: true,
         locale: "en-US",
         location: {
@@ -146,6 +120,7 @@ export const headlessCmsModelBMigrated = [
         locked: true,
         modelId: "modelB",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -179,6 +154,11 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:22:46.091Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:22:46.091Z",
         status: "published",
         tenant: "root",
@@ -198,40 +178,28 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T13:22:44.672Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:44.672Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
         entryId: "658c2524adbc1700090e1ad1",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:22:46.091Z",
+        firstPublishedOn: "2023-12-27T13:22:46.091Z",
         id: "658c2524adbc1700090e1ad1#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:22:46.091Z",
         locale: "en-US",
         location: {
             folderId: "root"
         },
         locked: true,
         modelId: "modelB",
+        modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -266,6 +234,11 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:22:46.091Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:22:46.091Z",
         status: "published",
         tenant: "root",

@@ -190,12 +190,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                     }
 
                     // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
-                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                    const oldestCreatedOn = await getOldestRevisionCreatedOn({
                         entry: item,
                         entryEntity: this.ddbEntryEntity
                     });
 
-                    assignNewMetaFields(item, { entryCreatedOn });
+                    assignNewMetaFields(item, { createdOn: oldestCreatedOn });
 
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));
 
@@ -245,12 +245,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                     }
 
                     // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
-                    const entryCreatedOn = await getOldestRevisionCreatedOn({
+                    const oldestCreatedOn = await getOldestRevisionCreatedOn({
                         entry: { ...decompressedData, PK: esRecord.PK },
                         entryEntity: this.ddbEntryEntity
                     });
 
-                    assignNewMetaFields(decompressedData, { entryCreatedOn });
+                    assignNewMetaFields(decompressedData, { createdOn: oldestCreatedOn });
 
                     const compressedData = await getCompressedData(decompressedData);
 

@@ -8,34 +8,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602282e07a77e60008f70d63",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602282e07a77e60008f70d63#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -44,6 +30,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -79,6 +66,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -109,34 +101,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814bef4a940008b3ba28",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814bef4a940008b3ba28#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -145,6 +123,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -180,6 +159,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -209,34 +193,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814bef4a940008b3ba27",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814bef4a940008b3ba27#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -245,6 +215,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -280,6 +251,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -309,34 +285,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814bef4a940008b3ba26",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814bef4a940008b3ba26#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -345,6 +307,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -380,6 +343,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -409,34 +377,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814b7a77e60008f70d62",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814b7a77e60008f70d62#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -445,6 +399,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -480,6 +435,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -509,34 +469,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814b0df4b000088735bc",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814b0df4b000088735bc#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -545,6 +491,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -580,6 +527,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -609,34 +561,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814a0df4b000088735bb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814a0df4b000088735bb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -645,6 +583,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -680,6 +619,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -710,34 +654,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228148fa244d0008c47c7a",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228148fa244d0008c47c7a#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -746,6 +676,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -781,6 +712,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -810,34 +746,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228148fa244d0008c47c79",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228148fa244d0008c47c79#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -846,6 +768,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -881,6 +804,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -910,34 +838,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228148f98841000981c724",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228148f98841000981c724#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -946,6 +860,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -981,6 +896,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1010,34 +930,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228148f98841000981c723",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228148f98841000981c723#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1046,6 +952,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1081,6 +988,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1110,34 +1022,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814891bd1300087bd24c",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814891bd1300087bd24c#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1146,6 +1044,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1181,6 +1080,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1211,34 +1115,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602281486ed41f0008bc2dad",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602281486ed41f0008bc2dad#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1247,6 +1137,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1282,6 +1173,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1312,34 +1208,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602281486ed41f0008bc2dac",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602281486ed41f0008bc2dac#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1348,6 +1230,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1383,6 +1266,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1412,34 +1300,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602281486ed41f0008bc2dab",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602281486ed41f0008bc2dab#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1448,6 +1322,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1483,6 +1358,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1513,34 +1393,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602281486639200009fd35ec",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602281486639200009fd35ec#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1549,6 +1415,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1584,6 +1451,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1614,34 +1486,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "602281486639200009fd35eb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "602281486639200009fd35eb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1650,6 +1508,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1685,6 +1544,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1715,34 +1579,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "6022814851197600081724ae",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "6022814851197600081724ae#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1751,6 +1601,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1786,6 +1637,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1815,34 +1671,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228145f98841000981c721",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228145f98841000981c721#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1851,6 +1693,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1886,6 +1729,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1915,34 +1763,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228145f98841000981c720",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228145f98841000981c720#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -1951,6 +1785,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -1986,6 +1821,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2015,34 +1855,20 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:42:58.754Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "60228145f98841000981c71f",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: null,
-        entryModifiedOn: null,
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
+        firstPublishedOn: null,
         id: "60228145f98841000981c71f#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -2051,6 +1877,7 @@ export const headlessCmsFmFileMigrated = [
         locked: false,
         modelId: "fmFile",
         modifiedBy: null,
+        modifiedOn: null,
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -2086,6 +1913,11 @@ export const headlessCmsFmFileMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",

@@ -8,38 +8,20 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:43:00.024Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:43:00.024Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "wby-aco-658c1bd3c39bb10008431b5c",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T12:43:00.024Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:43:00.024Z",
+        firstPublishedOn: null,
         id: "wby-aco-658c1bd3c39bb10008431b5c#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -53,6 +35,7 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T12:43:00.024Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -94,6 +77,11 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:43:00.024Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:43:00.024Z",
         status: "draft",
         tenant: "root",
@@ -135,38 +123,20 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         createdOn: "2023-12-27T12:43:00.006Z",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:43:00.006Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: null,
         entryId: "wby-aco-658c1bd3c39bb10008431b5b",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: null,
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T12:43:00.006Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:43:00.006Z",
+        firstPublishedOn: null,
         id: "wby-aco-658c1bd3c39bb10008431b5b#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: null,
         latest: true,
         locale: "en-US",
         location: {
@@ -180,6 +150,7 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T12:43:00.006Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -221,6 +192,11 @@ export const headlessCmsAcoSearchRecordPbPageMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:43:00.006Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:43:00.006Z",
         status: "draft",
         tenant: "root",

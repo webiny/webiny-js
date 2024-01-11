@@ -115,36 +115,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:43:00.024Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:43:00.024Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "wby-aco-658c1bd3c39bb10008431b5c",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T12:43:00.024Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:43:00.024Z",
         id: "wby-aco-658c1bd3c39bb10008431b5c#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -158,6 +140,7 @@ export const ddbPrimaryTableDataMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T12:43:00.024Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -191,6 +174,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:43:00.024Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:43:00.024Z",
         status: "draft",
         tenant: "root",
@@ -472,30 +460,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba27",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba27#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -530,6 +506,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -562,30 +543,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba27",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba27#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -620,6 +589,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -894,30 +868,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c721",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c721#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -952,6 +914,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -984,30 +951,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c721",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c721#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1042,6 +997,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1147,30 +1107,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814b7a77e60008f70d62",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814b7a77e60008f70d62#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1205,6 +1153,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1237,30 +1190,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814b7a77e60008f70d62",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814b7a77e60008f70d62#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1295,6 +1236,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1327,30 +1273,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602282e07a77e60008f70d63",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602282e07a77e60008f70d63#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1385,6 +1319,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1418,30 +1357,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602282e07a77e60008f70d63",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602282e07a77e60008f70d63#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1476,6 +1403,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1564,32 +1496,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:25.235Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:25.235Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:25.701Z",
+        firstPublishedOn: "2023-12-27T13:20:25.701Z",
         id: "658c24996607be00087f1167#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:25.701Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1627,6 +1547,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:25.701Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:25.701Z",
         status: "published",
         tenant: "root",
@@ -1652,32 +1577,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:25.235Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:25.235Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:25.701Z",
         entryId: "658c24996607be00087f1167",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:25.701Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:25.701Z",
+        firstPublishedOn: "2023-12-27T13:20:25.701Z",
         id: "658c24996607be00087f1167#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:25.701Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1715,6 +1628,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:25.701Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:25.701Z",
         status: "published",
         tenant: "root",
@@ -1740,30 +1658,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c720",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c720#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1798,6 +1704,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1830,30 +1741,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c720",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c720#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1888,6 +1787,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -1920,30 +1824,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dab",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dab#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1978,6 +1870,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2011,30 +1908,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dab",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dab#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2069,6 +1954,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2191,36 +2081,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:43:00.006Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:43:00.006Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "wby-aco-658c1bd3c39bb10008431b5b",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T12:43:00.006Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:43:00.006Z",
         id: "wby-aco-658c1bd3c39bb10008431b5b#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2234,6 +2106,7 @@ export const ddbPrimaryTableDataMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T12:43:00.006Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -2267,6 +2140,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:43:00.006Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:43:00.006Z",
         status: "draft",
         tenant: "root",
@@ -2523,30 +2401,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba26",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba26#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2581,6 +2447,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2613,30 +2484,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba26",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba26#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2671,6 +2530,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2747,30 +2611,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814851197600081724ae",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814851197600081724ae#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2805,6 +2657,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2837,30 +2694,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814851197600081724ae",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814851197600081724ae#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -2895,6 +2740,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -2950,30 +2800,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814a0df4b000088735bb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814a0df4b000088735bb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3008,6 +2846,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3041,30 +2884,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814a0df4b000088735bb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814a0df4b000088735bb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3099,6 +2930,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3209,32 +3045,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:11.821Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:11.821Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:12.775Z",
+        firstPublishedOn: "2023-12-27T13:20:12.775Z",
         id: "658c248b6607be00087f1166#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:12.775Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3272,6 +3096,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:12.775Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:12.775Z",
         status: "published",
         tenant: "root",
@@ -3297,32 +3126,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:11.821Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:11.821Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:12.775Z",
         entryId: "658c248b6607be00087f1166",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:12.775Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:12.775Z",
+        firstPublishedOn: "2023-12-27T13:20:12.775Z",
         id: "658c248b6607be00087f1166#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:12.775Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3360,6 +3177,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:12.775Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:12.775Z",
         status: "published",
         tenant: "root",
@@ -3385,30 +3207,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148f98841000981c723",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148f98841000981c723#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3443,6 +3253,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3475,30 +3290,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148f98841000981c723",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148f98841000981c723#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3533,6 +3336,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3565,30 +3373,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486639200009fd35eb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486639200009fd35eb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3623,6 +3419,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3656,30 +3457,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486639200009fd35eb",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486639200009fd35eb#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3714,6 +3503,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3747,30 +3541,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814891bd1300087bd24c",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814891bd1300087bd24c#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3805,6 +3587,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3838,30 +3625,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814891bd1300087bd24c",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814891bd1300087bd24c#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3896,6 +3671,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -3929,30 +3709,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c71f",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c71f#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -3987,6 +3755,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4019,30 +3792,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228145f98841000981c71f",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228145f98841000981c71f#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4077,6 +3838,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4109,30 +3875,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486639200009fd35ec",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486639200009fd35ec#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4167,6 +3921,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4200,30 +3959,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486639200009fd35ec",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486639200009fd35ec#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4258,6 +4005,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4346,32 +4098,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:22:44.672Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:44.672Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
         entryId: "658c2524adbc1700090e1ad1",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:22:46.091Z",
+        firstPublishedOn: "2023-12-27T13:22:46.091Z",
         id: "658c2524adbc1700090e1ad1#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:22:46.091Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4409,6 +4149,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:22:46.091Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:22:46.091Z",
         status: "published",
         tenant: "root",
@@ -4434,32 +4179,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:22:44.672Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:44.672Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:22:46.091Z",
         entryId: "658c2524adbc1700090e1ad1",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:22:46.091Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:22:46.091Z",
+        firstPublishedOn: "2023-12-27T13:22:46.091Z",
         id: "658c2524adbc1700090e1ad1#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:22:46.091Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4497,6 +4230,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:22:46.091Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:22:46.091Z",
         status: "published",
         tenant: "root",
@@ -4522,30 +4260,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148fa244d0008c47c79",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148fa244d0008c47c79#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4580,6 +4306,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4612,30 +4343,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148fa244d0008c47c79",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148fa244d0008c47c79#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4670,6 +4389,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4702,30 +4426,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148f98841000981c724",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148f98841000981c724#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4760,6 +4472,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -4792,30 +4509,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148f98841000981c724",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148f98841000981c724#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -4850,6 +4555,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -5059,32 +4769,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:33.775Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:33.775Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:34.175Z",
+        firstPublishedOn: "2023-12-27T13:20:34.175Z",
         id: "658c24a16607be00087f1168#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:34.175Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5122,6 +4820,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:34.175Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:34.175Z",
         status: "published",
         tenant: "root",
@@ -5147,32 +4850,20 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:33.775Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:33.775Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryFirstPublishedOn: "2023-12-27T13:20:34.175Z",
         entryId: "658c24a16607be00087f1168",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryLastPublishedOn: "2023-12-27T13:20:34.175Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:34.175Z",
+        firstPublishedOn: "2023-12-27T13:20:34.175Z",
         id: "658c24a16607be00087f1168#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
+        lastPublishedOn: "2023-12-27T13:20:34.175Z",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5210,6 +4901,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:34.175Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:34.175Z",
         status: "published",
         tenant: "root",
@@ -5235,30 +4931,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148fa244d0008c47c7a",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148fa244d0008c47c7a#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5293,6 +4977,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -5325,30 +5014,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "60228148fa244d0008c47c7a",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "60228148fa244d0008c47c7a#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5383,6 +5060,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -5467,30 +5149,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814b0df4b000088735bc",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814b0df4b000088735bc#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5525,6 +5195,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -5557,30 +5232,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814b0df4b000088735bc",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814b0df4b000088735bc#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5615,6 +5278,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -5661,30 +5329,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:42.180Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:42.180Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "658c24aa6607be00087f1169",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:42.180Z",
         id: "658c24aa6607be00087f1169#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5719,6 +5375,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:42.180Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:42.180Z",
         status: "draft",
         tenant: "root",
@@ -5744,30 +5405,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:20:42.180Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:20:42.180Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "658c24aa6607be00087f1169",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:20:42.180Z",
         id: "658c24aa6607be00087f1169#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5802,6 +5451,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:20:42.180Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:20:42.180Z",
         status: "draft",
         tenant: "root",
@@ -5885,36 +5539,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T13:22:57.094Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T13:22:57.094Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "658c2531adbc1700090e1ad2",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entryModifiedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryModifiedOn: "2023-12-27T13:23:15.536Z",
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T13:23:15.536Z",
         id: "658c2531adbc1700090e1ad2#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -5928,6 +5564,7 @@ export const ddbPrimaryTableDataMigrated = [
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
+        modifiedOn: "2023-12-27T13:23:15.536Z",
         ownedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
@@ -5961,6 +5598,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T13:23:15.536Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T13:23:15.536Z",
         status: "draft",
         tenant: "root",
@@ -5987,30 +5629,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dad",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dad#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6045,6 +5675,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -6078,30 +5713,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dad",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dad#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6136,6 +5759,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -6185,30 +5813,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba28",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba28#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6243,6 +5859,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -6275,30 +5896,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "6022814bef4a940008b3ba28",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "6022814bef4a940008b3ba28#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6333,6 +5942,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -6365,30 +5979,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dac",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dac#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6423,6 +6025,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
@@ -6455,30 +6062,18 @@ export const ddbPrimaryTableDataMigrated = [
         },
         createdOn: "2023-12-27T12:42:58.754Z",
         entity: "CmsEntries",
-        entryCreatedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entryCreatedOn: "2023-12-27T12:42:58.754Z",
-        entryFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
         entryId: "602281486ed41f0008bc2dac",
-        entryLastPublishedBy: {
+        firstPublishedBy: {
             displayName: "ad min",
             id: "658c1b73c39bb10008431b44",
             type: "admin"
         },
-        entrySavedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
-        entrySavedOn: "2023-12-27T12:42:58.754Z",
         id: "602281486ed41f0008bc2dac#0001",
+        lastPublishedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         locale: "en-US",
         location: {
             folderId: "root"
@@ -6513,6 +6108,11 @@ export const ddbPrimaryTableDataMigrated = [
             type: "admin"
         },
         revisionSavedOn: "2023-12-27T12:42:58.754Z",
+        savedBy: {
+            displayName: "ad min",
+            id: "658c1b73c39bb10008431b44",
+            type: "admin"
+        },
         savedOn: "2023-12-27T12:42:58.754Z",
         status: "draft",
         tenant: "root",
