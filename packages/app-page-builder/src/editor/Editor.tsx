@@ -25,7 +25,7 @@ export interface EditorProps {
 
 export const Editor = ({ stateInitializerFactory }: EditorProps) => {
     const initializeState = useCallback(
-        snapshot => {
+        (snapshot: MutableSnapshot) => {
             const { content, recoilInitializer } = stateInitializerFactory();
 
             /* Here we initialize elementsAtom and rootElement if it exists. */
@@ -42,6 +42,8 @@ export const Editor = ({ stateInitializerFactory }: EditorProps) => {
     );
 
     return (
+        // 'children' prop missing from DndProvider types before react-dnd v14.0.5.
+        // @ts-expect-error
         <DndProvider backend={HTML5Backend}>
             <RecoilRoot initializeState={initializeState}>
                 <EditorProvider>

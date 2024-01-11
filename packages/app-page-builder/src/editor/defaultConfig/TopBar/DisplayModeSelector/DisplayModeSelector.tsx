@@ -4,8 +4,10 @@ import classNames from "classnames";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { DisplayMode } from "~/types";
-import { useDisplayMode } from "~/editor";
+import { PbEditorResponsiveModePlugin, DisplayMode } from "~/types";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { useUI } from "~/editor/hooks/useUI";
+import { useDisplayMode } from "~/editor/recoil/modules";
 
 const classes = {
     wrapper: css({

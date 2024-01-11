@@ -118,7 +118,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: PbCategory) => {
             const isUpdate = loadedCategory.slug;
             const data = pick(formData, ["slug", "name", "url", "layout"]);
 
@@ -208,7 +208,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
                                     <Input
-                                        disabled={data.createdOn}
+                                        disabled={Boolean(data.createdOn)}
                                         label={t`Slug`}
                                         data-testid="pb.category.new.form.slug"
                                     />
@@ -223,7 +223,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                                     ]}
                                 >
                                     <Input
-                                        disabled={data.id}
+                                        disabled={Boolean(data.slug)}
                                         label={t`URL`}
                                         data-testid="pb.category.new.form.url"
                                     />
