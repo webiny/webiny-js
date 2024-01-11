@@ -35,9 +35,9 @@ export const DateComponent = ({
             locale ||
             (navigator.language && navigator.language.startsWith("en")
                 ? navigator.language
-                : "en-GB");
+                : "en-US");
 
-        return dateObject.toLocaleDateString(localeCode, options);
+        return new Intl.DateTimeFormat(localeCode, options).format(dateObject);
     }, [date, locale, options]);
 
     return <>{formatDate}</>;
