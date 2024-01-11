@@ -1,6 +1,14 @@
 import { CmsEntry } from "../types";
 
+const isPublished = (entry: CmsEntry) => {
+    return entry.status === "published";
+};
+
 export const assignNewMetaFields = (entry: CmsEntry, extraOverrides: Partial<CmsEntry> = {}) => {
+    const firstLastPublishedOn = isPublished(entry) ? entry.publishedOn : null;
+    // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
+    const firstLastPublishedBy = isPublished(entry) ? entry.modifiedBy || entry.createdBy : null;
+
     Object.assign(
         entry,
         {
@@ -16,13 +24,11 @@ export const assignNewMetaFields = (entry: CmsEntry, extraOverrides: Partial<Cms
             revisionModifiedBy: entry.modifiedBy || null,
             revisionSavedBy: entry.modifiedBy || entry.createdBy,
 
-            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            revisionFirstPublishedOn: entry.publishedOn || null,
-            revisionFirstPublishedBy: entry.modifiedBy || entry.createdBy,
+            revisionFirstPublishedOn: firstLastPublishedOn,
+            revisionFirstPublishedBy: firstLastPublishedBy,
 
-            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            revisionLastPublishedOn: entry.publishedOn || null,
-            revisionLastPublishedBy: entry.modifiedBy || entry.createdBy,
+            revisionLastPublishedOn: firstLastPublishedOn,
+            revisionLastPublishedBy: firstLastPublishedBy,
 
             // Entry-level meta fields.
             createdOn: entry.createdOn,
@@ -36,13 +42,11 @@ export const assignNewMetaFields = (entry: CmsEntry, extraOverrides: Partial<Cms
             modifiedBy: entry.modifiedBy || null,
             savedBy: entry.modifiedBy || entry.createdBy,
 
-            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            firstPublishedOn: entry.publishedOn || null,
-            firstPublishedBy: entry.modifiedBy || entry.createdBy,
+            firstPublishedOn: firstLastPublishedOn,
+            firstPublishedBy: firstLastPublishedBy,
 
-            // We don't have `publishedBy`, that's why we're relying on `modifiedBy` or `createdBy`.
-            lastPublishedOn: entry.publishedOn || null,
-            lastPublishedBy: entry.modifiedBy || entry.createdBy
+            lastPublishedOn: firstLastPublishedOn,
+            lastPublishedBy: firstLastPublishedBy
         },
         extraOverrides
     );

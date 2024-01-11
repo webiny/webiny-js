@@ -20,29 +20,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814891bd1300087bd24c",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814891bd1300087bd24c#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -75,28 +53,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -181,29 +137,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814891bd1300087bd24c",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814891bd1300087bd24c#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -236,28 +170,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -342,29 +254,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148f98841000981c724",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148f98841000981c724#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -397,28 +287,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -503,29 +371,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148f98841000981c724",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148f98841000981c724#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -558,28 +404,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -1105,29 +929,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dab",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dab#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -1160,28 +962,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -1266,29 +1046,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dab",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dab#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -1321,28 +1079,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -1868,29 +1604,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dad",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dad#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -1923,28 +1637,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -2029,29 +1721,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dad",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dad#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -2084,28 +1754,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -2190,29 +1838,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c721",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c721#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -2245,28 +1871,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -2351,29 +1955,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c721",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c721#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -2406,28 +1988,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -2512,29 +2072,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:44.910Z",
         entity: "CmsEntries",
         entryId: "wby-aco-658c1b88bb44780008384722",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "wby-aco-658c1b88bb44780008384722#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -2580,28 +2118,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:44.910Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -2729,29 +2245,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:44.910Z",
         entity: "CmsEntries",
         entryId: "wby-aco-658c1b88bb44780008384722",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "wby-aco-658c1b88bb44780008384722#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -2797,28 +2291,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:44.910Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -2946,29 +2418,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602282e07a77e60008f70d63",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602282e07a77e60008f70d63#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3001,28 +2451,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -3107,29 +2535,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602282e07a77e60008f70d63",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602282e07a77e60008f70d63#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3162,28 +2568,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -3268,29 +2652,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T13:20:51.541Z",
         entity: "CmsEntries",
         entryId: "658c24b387b17d00085b6ee6",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "658c24b387b17d00085b6ee6#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3323,28 +2685,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T13:20:51.541Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -3410,29 +2750,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T13:20:51.541Z",
         entity: "CmsEntries",
         entryId: "658c24b387b17d00085b6ee6",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "658c24b387b17d00085b6ee6#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3465,28 +2783,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T13:20:51.541Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -3552,29 +2848,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T13:22:21.968Z",
         entity: "CmsEntries",
         entryId: "658c250d72719000081998d5",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "658c250d72719000081998d5#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3620,28 +2894,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T13:22:21.968Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -3722,29 +2974,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T13:22:21.968Z",
         entity: "CmsEntries",
         entryId: "658c250d72719000081998d5",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "658c250d72719000081998d5#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3790,28 +3020,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T13:22:21.968Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -3892,29 +3100,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148f98841000981c723",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148f98841000981c723#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -3947,28 +3133,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4053,29 +3217,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148f98841000981c723",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148f98841000981c723#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4108,28 +3250,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4214,29 +3334,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba26",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba26#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4269,28 +3367,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4375,29 +3451,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba26",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba26#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4430,28 +3484,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4536,29 +3568,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c720",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c720#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4591,28 +3601,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4697,29 +3685,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c720",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c720#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4752,28 +3718,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -4858,29 +3802,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba27",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba27#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -4913,28 +3835,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -5019,29 +3919,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba27",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba27#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -5074,28 +3952,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -5180,29 +4036,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814a0df4b000088735bb",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814a0df4b000088735bb#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -5235,28 +4069,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -5341,29 +4153,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814a0df4b000088735bb",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814a0df4b000088735bb#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -5396,28 +4186,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -5502,29 +4270,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814b0df4b000088735bc",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814b0df4b000088735bc#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -5557,28 +4303,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -5663,29 +4387,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814b0df4b000088735bc",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814b0df4b000088735bc#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -5718,28 +4420,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -6265,29 +4945,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba28",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba28#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -6320,28 +4978,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -6426,29 +5062,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814bef4a940008b3ba28",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814bef4a940008b3ba28#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -6481,28 +5095,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -6587,29 +5179,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:44.944Z",
         entity: "CmsEntries",
         entryId: "wby-aco-658c1b88bb44780008384724",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "wby-aco-658c1b88bb44780008384724#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -6655,28 +5225,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:44.944Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -6804,29 +5352,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:44.944Z",
         entity: "CmsEntries",
         entryId: "wby-aco-658c1b88bb44780008384724",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "wby-aco-658c1b88bb44780008384724#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -6872,28 +5398,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:44.944Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionModifiedBy: {
             displayName: {
                 S: "ad min"
@@ -7021,29 +5525,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814b7a77e60008f70d62",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814b7a77e60008f70d62#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7076,28 +5558,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7182,29 +5642,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814b7a77e60008f70d62",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814b7a77e60008f70d62#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7237,28 +5675,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7343,29 +5759,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dac",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dac#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7398,28 +5792,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7504,29 +5876,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486ed41f0008bc2dac",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486ed41f0008bc2dac#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7559,28 +5909,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7665,29 +5993,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814851197600081724ae",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814851197600081724ae#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7720,28 +6026,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7826,29 +6110,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "6022814851197600081724ae",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "6022814851197600081724ae#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -7881,28 +6143,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -7987,29 +6227,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c71f",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c71f#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8042,28 +6260,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -8148,29 +6344,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228145f98841000981c71f",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228145f98841000981c71f#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8203,28 +6377,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -8309,29 +6461,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486639200009fd35ec",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486639200009fd35ec#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8364,28 +6494,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -8470,29 +6578,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486639200009fd35ec",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486639200009fd35ec#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8525,28 +6611,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -8631,29 +6695,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148fa244d0008c47c79",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148fa244d0008c47c79#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8686,28 +6728,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -8792,29 +6812,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148fa244d0008c47c79",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148fa244d0008c47c79#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -8847,28 +6845,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -9394,29 +7370,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148fa244d0008c47c7a",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148fa244d0008c47c7a#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -9449,28 +7403,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -9555,29 +7487,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "60228148fa244d0008c47c7a",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "60228148fa244d0008c47c7a#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -9610,28 +7520,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -9716,29 +7604,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486639200009fd35eb",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486639200009fd35eb#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -9771,28 +7637,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"
@@ -9877,29 +7721,7 @@ export const ddbPrimaryTableDataMigrated = [
         createdOn: "2023-12-27T12:41:43.820Z",
         entity: "CmsEntries",
         entryId: "602281486639200009fd35eb",
-        firstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         id: "602281486639200009fd35eb#0001",
-        lastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         locale: "en-US",
         location: {
             folderId: {
@@ -9932,28 +7754,6 @@ export const ddbPrimaryTableDataMigrated = [
             }
         },
         revisionCreatedOn: "2023-12-27T12:41:43.820Z",
-        revisionFirstPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
-        revisionLastPublishedBy: {
-            displayName: {
-                S: "ad min"
-            },
-            id: {
-                S: "658c1b5fbb4478000838470b"
-            },
-            type: {
-                S: "admin"
-            }
-        },
         revisionSavedBy: {
             displayName: {
                 S: "ad min"

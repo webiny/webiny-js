@@ -9,18 +9,10 @@ export const headlessCmsModelBMigrated = [
         },
         createdOn: "2023-12-27T13:22:57.094Z",
         entryId: "658c2531adbc1700090e1ad2",
-        firstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
+        firstPublishedBy: null,
         firstPublishedOn: null,
         id: "658c2531adbc1700090e1ad2#0001",
-        lastPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
+        lastPublishedBy: null,
         lastPublishedOn: null,
         latest: true,
         locale: "en-US",
@@ -50,17 +42,9 @@ export const headlessCmsModelBMigrated = [
             type: "admin"
         },
         revisionCreatedOn: "2023-12-27T13:22:57.094Z",
-        revisionFirstPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
+        revisionFirstPublishedBy: null,
         revisionFirstPublishedOn: null,
-        revisionLastPublishedBy: {
-            displayName: "ad min",
-            id: "658c1b73c39bb10008431b44",
-            type: "admin"
-        },
+        revisionLastPublishedBy: null,
         revisionLastPublishedOn: null,
         revisionModifiedBy: {
             displayName: "ad min",
