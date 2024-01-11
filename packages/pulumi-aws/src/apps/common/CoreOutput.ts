@@ -26,6 +26,7 @@ export const CoreOutput = createAppModule({
                 cognitoUserPoolArn: output["cognitoUserPoolArn"] as string,
                 cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"] as string,
                 cognitoAppClientId: output["cognitoAppClientId"] as string,
+                eventBusName: output["eventBusName"] as string,
                 eventBusArn: output["eventBusArn"] as string,
                 // These outputs are optional, since VPC is not always enabled.
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"] as string[] | undefined,

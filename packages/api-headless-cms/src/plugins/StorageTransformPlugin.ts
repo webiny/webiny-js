@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { CmsModel, CmsModelField } from "~/types";
+import { CmsModel, CmsModelField, CmsModelFieldType } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 
 export interface ToStorageParams<T, F extends CmsModelField> {
@@ -20,7 +20,7 @@ export interface FromStorageParams<T, F extends CmsModelField> {
 
 export interface StorageTransformPluginParams<T, R, F extends CmsModelField> {
     name?: string;
-    fieldType: string;
+    fieldType: CmsModelFieldType;
     toStorage: (params: ToStorageParams<T, F>) => Promise<R>;
     fromStorage: (params: FromStorageParams<R, F>) => Promise<T>;
 }

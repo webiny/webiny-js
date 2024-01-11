@@ -1,26 +1,35 @@
 import { AsyncLocalStorage } from "async_hooks";
 import minimatch from "minimatch";
+import { createTopic } from "@webiny/pubsub";
+import { AaclPermission } from "@webiny/api-wcp/types";
+import { Identity } from "@webiny/api-authentication/types";
 import { createAuthentication } from "@webiny/api-authentication/createAuthentication";
-import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./types";
+import {
+    Authorizer,
+    Security,
+    SecurityPermission,
+    SecurityConfig,
+    AuthenticationToken
+} from "./types";
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
 import { createTeamsMethods } from "~/createSecurity/createTeamsMethods";
 import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
-import { createTopic } from "@webiny/pubsub";
-import { AaclPermission } from "@webiny/api-wcp/types";
 
 export interface GetTenant {
     (): string | undefined;
 }
 
-const asyncLocalStorage = new AsyncLocalStorage<boolean>();
+const authorizationLocalStorage = new AsyncLocalStorage<boolean>();
+const identityLocalStorage = new AsyncLocalStorage<Identity | undefined>();
 
 export const createSecurity = async (config: SecurityConfig): Promise<Security> => {
     const authentication = createAuthentication();
     const authorizers: Authorizer[] = [];
 
+    let authenticationToken: AuthenticationToken | undefined;
     let permissions: SecurityPermission[];
     let permissionsLoader: Promise<SecurityPermission[]>;
 
@@ -56,6 +65,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     return {
         ...authentication,
         config,
+        async authenticate(token: string): Promise<void> {
+            await authentication.authenticate(token);
+            if (authentication.getIdentity()) {
+                authenticationToken = token;
+            }
+        },
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
         onAfterLogin: createTopic("security.onAfterLogin"),
@@ -69,15 +84,30 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         getAuthorizers() {
             return authorizers;
         },
+        getIdentity<TIdentity extends Identity = Identity>(): TIdentity {
+            const localIdentity = identityLocalStorage.getStore();
+
+            if (localIdentity) {
+                return localIdentity as TIdentity;
+            }
+
+            return authentication.getIdentity();
+        },
         setIdentity(this: Security, identity) {
             authentication.setIdentity(identity);
             this.onIdentity.publish({ identity });
         },
         isAuthorizationEnabled: () => {
-            return asyncLocalStorage.getStore() ?? true;
+            return authorizationLocalStorage.getStore() ?? true;
         },
-        async withoutAuthorization<T = any>(this: Security, cb: () => Promise<T>): Promise<T> {
-            return await asyncLocalStorage.run(false, cb);
+        getToken(): AuthenticationToken | undefined {
+            return authenticationToken;
+        },
+        withoutAuthorization<T = any>(this: Security, cb: () => Promise<T>): Promise<T> {
+            return authorizationLocalStorage.run(false, cb);
+        },
+        withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T> {
+            return identityLocalStorage.run(identity, cb);
         },
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             this: Security,

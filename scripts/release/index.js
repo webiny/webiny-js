@@ -6,7 +6,7 @@ const { getReleaseType } = require("./releaseTypes");
 yargs.version(false);
 
 async function runRelease() {
-    const { type, tag, gitReset, version, createGithubRelease, printVersion } = yargs.argv;
+    const { type, tag, gitReset = true, version, createGithubRelease, printVersion } = yargs.argv;
 
     console.log({ type, tag, gitReset, version });
     if (!type) {
@@ -26,9 +26,7 @@ async function runRelease() {
         release.setVersion(version);
     }
 
-    if (gitReset) {
-        release.setResetAllChanges(gitReset);
-    }
+    release.setResetAllChanges(Boolean(gitReset));
 
     if (createGithubRelease) {
         release.setCreateGithubRelease(createGithubRelease);

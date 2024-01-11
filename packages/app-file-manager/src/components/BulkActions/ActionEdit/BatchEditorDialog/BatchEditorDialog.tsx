@@ -25,6 +25,8 @@ export const BatchEditorDialog = observer((props: BatchEditorDialogProps) => {
         return new BatchEditorDialogPresenter();
     }, []);
 
+    const ref = useRef<FormAPI | null>(null);
+
     useEffect(() => {
         presenter.load(props.batch, props.fields);
     }, [props.batch, props.fields]);
@@ -34,12 +36,14 @@ export const BatchEditorDialog = observer((props: BatchEditorDialogProps) => {
     };
 
     const onApply = () => {
-        presenter.onApply(batch => {
-            props.onApply(batch);
+        ref.current?.validate().then(isValid => {
+            if (isValid) {
+                presenter.onApply(batch => {
+                    props.onApply(batch);
+                });
+            }
         });
     };
-
-    const ref = useRef<FormAPI | null>(null);
 
     return (
         <DialogContainer

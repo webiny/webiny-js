@@ -19,7 +19,7 @@ interface I18NLocaleDataCreatedBy {
 
 export interface I18NLocaleData extends I18NLocale {
     createdOn: string;
-    createdBy: I18NLocaleDataCreatedBy;
+    createdBy: I18NLocaleDataCreatedBy | null;
     tenant: string;
     webinyVersion: string;
 }
