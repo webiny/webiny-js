@@ -21,6 +21,8 @@ interface Props extends FormComponentProps {
 
     // For testing purposes.
     "data-testid"?: string;
+
+    children?: React.ReactNode;
 }
 
 /**

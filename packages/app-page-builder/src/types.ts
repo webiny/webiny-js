@@ -732,7 +732,7 @@ export enum DisplayMode {
 export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
-        displayMode: string;
+        displayMode: DisplayMode;
         toolTip: {
             title: string;
             subTitle: string;
@@ -878,6 +878,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdOn: string;
     createdBy: PbIdentity;
 }
 
@@ -1008,6 +1009,10 @@ export interface PageBuilderFormDataSettings {
 }
 
 export interface PageBuilderSecurityPermission extends SecurityPermission {
+    accessLevel?: string;
+    settingsAccessLevel?: string;
+    templateUnlink?: boolean;
+    blockUnlink?: boolean;
     own?: boolean;
     rwd?: string;
     pw?: string | boolean;
