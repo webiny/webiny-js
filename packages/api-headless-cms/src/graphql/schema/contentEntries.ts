@@ -41,43 +41,32 @@ interface CmsEntryRecord {
     image?: string | null;
 
     /**
-     * 🚫 Deprecated meta fields below.
-     * Will be fully removed in one of the next releases.
-     */
-    createdBy: CmsIdentity;
-    modifiedBy?: CmsIdentity | null;
-
-    /**
-     * We can use the number since it is an internal field.
-     * Created via Date.parse() method.
+     * Entry-level meta fields. 👇
      */
     createdOn: Date;
+    modifiedOn: Date | null;
     savedOn: Date;
-
-    /**
-     * 🆕 New meta fields below.
-     * Users are encouraged to use these instead of the deprecated ones above.
-     */
+    createdBy: CmsIdentity;
+    modifiedBy: CmsIdentity | null;
+    savedBy: CmsIdentity;
+    firstPublishedOn: Date | null;
+    lastPublishedOn: Date | null;
+    firstPublishedBy: CmsIdentity | null;
+    lastPublishedBy: CmsIdentity | null;
 
     /**
      * Revision-level meta fields. 👇
      */
-    revisionCreatedOn?: Date | string;
-    revisionSavedOn?: Date | string;
-    revisionModifiedOn?: Date | string | null;
-    revisionCreatedBy?: CmsIdentity;
-    revisionModifiedBy?: CmsIdentity | null;
-    revisionSavedBy?: CmsIdentity;
-
-    /**
-     * Entry-level meta fields. 👇
-     */
-    entryCreatedOn?: Date | string;
-    entrySavedOn?: Date | string;
-    entryModifiedOn?: Date | string | null;
-    entryCreatedBy?: CmsIdentity;
-    entryModifiedBy?: CmsIdentity | null;
-    entrySavedBy?: CmsIdentity;
+    revisionCreatedOn: Date;
+    revisionModifiedOn: Date | null;
+    revisionSavedOn: Date;
+    revisionCreatedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity | null;
+    revisionSavedBy: CmsIdentity;
+    revisionFirstPublishedOn: Date | null;
+    revisionLastPublishedOn: Date | null;
+    revisionFirstPublishedBy: CmsIdentity | null;
+    revisionLastPublishedBy: CmsIdentity | null;
 
     wbyAco_location?: {
         folderId?: string | null;
@@ -98,18 +87,18 @@ const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord 
         image: getEntryImage(model, entry),
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * Entry-level meta fields. 👇
          */
-        createdBy: entry.createdBy,
-        modifiedBy: entry.modifiedBy,
         createdOn: createDate(entry.createdOn)!,
+        modifiedOn: createDate(entry.modifiedOn),
         savedOn: createDate(entry.savedOn)!,
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
+        createdBy: entry.createdBy,
+        savedBy: entry.savedBy,
+        modifiedBy: entry.modifiedBy,
+        firstPublishedOn: createDate(entry.firstPublishedOn),
+        lastPublishedOn: createDate(entry.lastPublishedOn),
+        firstPublishedBy: entry.firstPublishedBy,
+        lastPublishedBy: entry.lastPublishedBy,
 
         /**
          * Revision-level meta fields. 👇
@@ -120,16 +109,10 @@ const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord 
         revisionCreatedBy: entry.revisionCreatedBy,
         revisionModifiedBy: entry.revisionModifiedBy,
         revisionSavedBy: entry.revisionSavedBy,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entryCreatedOn: createDate(entry.revisionCreatedOn)!,
-        entrySavedOn: createDate(entry.revisionSavedOn)!,
-        entryModifiedOn: createDate(entry.revisionModifiedOn),
-        entryCreatedBy: entry.entryCreatedBy,
-        entryModifiedBy: entry.entryModifiedBy,
-        entrySavedBy: entry.entrySavedBy,
+        revisionFirstPublishedOn: createDate(entry.revisionFirstPublishedOn),
+        revisionLastPublishedOn: createDate(entry.revisionLastPublishedOn),
+        revisionFirstPublishedBy: entry.revisionFirstPublishedBy,
+        revisionLastPublishedBy: entry.revisionLastPublishedBy,
 
         wbyAco_location: {
             folderId: entry.location?.folderId || null
@@ -337,15 +320,6 @@ export const createContentEntriesSchema = ({
         return plugin;
     }
 
-    const deprecatedOnByMetaFields = [
-        `createdBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
-        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy'.")`,
-        `modifiedBy: CmsIdentity @deprecated(reason: "Use 'entryModifiedBy'.")`,
-        `published: CmsPublishedContentEntry`,
-        `createdOn: DateTime! @deprecated(reason: "Use 'entryCreatedOn'.")`,
-        `savedOn: DateTime! @deprecated(reason: "Use 'entrySavedOn'.")`
-    ].join("\n");
-
     const onByMetaFields = ENTRY_META_FIELDS.map(field => {
         const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
@@ -374,11 +348,11 @@ export const createContentEntriesSchema = ({
                 entryId: String!
                 model: CmsModelMeta!
                 status: String!
+                published: CmsPublishedContentEntry
                 title: String!
                 description: String
                 image: String
                 
-                ${deprecatedOnByMetaFields}
                 ${onByMetaFields}
             
                 wbyAco_location: WbyAcoLocation

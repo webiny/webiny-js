@@ -23,10 +23,12 @@ export const createUnpublishEntryData = async ({
         status: STATUS_UNPUBLISHED,
 
         /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         * We want to update savedX and modifiedX fields on both revision and entry levels.
+         * Entry-level meta fields. 👇
          */
+        savedOn: currentDateTime,
+        modifiedOn: currentDateTime,
+        savedBy: currentIdentity,
+        modifiedBy: currentIdentity,
 
         /**
          * Revision-level meta fields. 👇
@@ -34,15 +36,7 @@ export const createUnpublishEntryData = async ({
         revisionSavedOn: currentDateTime,
         revisionModifiedOn: currentDateTime,
         revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entrySavedOn: currentDateTime,
-        entryModifiedOn: currentDateTime,
-        entrySavedBy: currentIdentity,
-        entryModifiedBy: currentIdentity
+        revisionModifiedBy: currentIdentity
     };
 
     return { entry };
