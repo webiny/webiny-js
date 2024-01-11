@@ -29,7 +29,7 @@ export const DateComponent = ({
          *  Determine the final locale:
          *  - use the prop `locale` if provided.
          *  - try to guess the navigator language, use it only if it's a subset of `en`locale, since the admin is not localized.
-         *  - use `en-GB`as default.
+         *  - use `en-US`as default.
          */
         const localeCode =
             locale ||
