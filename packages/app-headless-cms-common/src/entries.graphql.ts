@@ -16,7 +16,6 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
         title
         description
         image
-        publishedOn
         version
         locked
         status
@@ -28,12 +27,14 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     entryId
     savedOn
     createdOn
-    createdBy {
+    firstPublishedOn
+    lastPublishedOn
+    revisionCreatedBy {
         id
         type
         displayName
     }
-    ownedBy {
+    createdBy {
         id
         type
         displayName

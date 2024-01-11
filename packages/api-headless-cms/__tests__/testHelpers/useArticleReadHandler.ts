@@ -6,13 +6,11 @@ const fields = `
     id
     entryId
     createdOn
+    modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
-        id
-        displayName
-        type
-    }
-    ownedBy {
         id
         displayName
         type

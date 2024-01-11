@@ -343,15 +343,16 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
     createdBy: CmsIdentity;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
         image?: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
@@ -361,8 +362,10 @@ export interface CmsContentEntry {
 
 export interface CmsContentEntryRevision {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     createdBy: CmsIdentity;
     revisionCreatedOn: string;
     revisionSavedOn: string;
@@ -377,7 +380,6 @@ export interface CmsContentEntryRevision {
     wbyAco_location: Location;
     meta: {
         title: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
