@@ -8,7 +8,7 @@ interface TenancyProviderHOCProps {
     children: React.ReactNode;
 }
 
-const TenancyProviderHOC = (Component: React.ComponentType) => {
+const TenancyProviderHOC = (Component: React.ComponentType<TenancyProviderHOCProps>) => {
     return function TenancyProvider({ children }: TenancyProviderHOCProps) {
         return (
             <ContextProvider>
