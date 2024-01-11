@@ -21,12 +21,12 @@ export interface DraggableProps {
     children: DraggableChildrenFunction;
     beginDrag(props: DraggableProps, monitor: DragSourceMonitor): any;
     endDrag(item: any, monitor: DragSourceMonitor): void;
-    target: string[];
+    target?: string[];
     enabled: boolean;
 }
 
 export interface DraggableItem extends DragObjectWithType {
-    target: string[];
+    target?: string[];
 }
 
 const Draggable = (props: DraggableProps) => {

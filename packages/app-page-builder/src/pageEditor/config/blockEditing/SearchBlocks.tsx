@@ -8,6 +8,7 @@ import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/S
 import { ScrollList, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+import { GenericFormData } from "@webiny/form";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import {
     SimpleForm,
@@ -138,7 +139,7 @@ const SearchBar = () => {
     }, []);
 
     const addBlockToContent = useCallback(
-        plugin => {
+        (plugin: PbEditorBlockPlugin) => {
             const blockToAdd = plugin.tags.includes("saved")
                 ? createBlockReference(plugin.name)
                 : createBlockElements(plugin.name);
@@ -165,7 +166,7 @@ const SearchBar = () => {
     }, []);
 
     const getCategoryBlocksCount = useCallback(
-        category => {
+        (category: string) => {
             if (category === "all") {
                 return allBlocks.length;
             }
@@ -195,7 +196,7 @@ const SearchBar = () => {
     }, []);
 
     const updateBlock = useCallback(
-        async ({ title: name, blockCategory }) => {
+        async ({ title: name, blockCategory }: GenericFormData) => {
             if (!editingBlock || !editingBlock.id) {
                 return;
             }

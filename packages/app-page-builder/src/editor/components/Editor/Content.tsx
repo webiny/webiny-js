@@ -9,7 +9,8 @@ import {
     uiAtom,
     setPagePreviewDimensionMutation,
     rootElementAtom,
-    elementsAtom
+    elementsAtom,
+    PagePreviewDimension
 } from "~/editor/recoil/modules";
 import { EditorContent } from "~/editor";
 
@@ -88,7 +89,7 @@ const Content = () => {
     const pagePreviewRef = useRef<HTMLDivElement>(null);
 
     const setPagePreviewDimension = useCallback(
-        pagePreviewDimension => {
+        (pagePreviewDimension: PagePreviewDimension) => {
             setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
         },
         [uiAtom]
