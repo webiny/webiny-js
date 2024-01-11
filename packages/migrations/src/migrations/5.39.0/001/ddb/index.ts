@@ -32,7 +32,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-002";
+        return "5.39.0-001";
     }
 
     getDescription() {

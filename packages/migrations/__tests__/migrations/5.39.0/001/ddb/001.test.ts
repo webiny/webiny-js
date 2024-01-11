@@ -14,7 +14,7 @@ import { ddbPrimaryTableDataMigrated } from "./migrated/001.ddbPrimaryTableData"
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.39.0-002", () => {
+describe("5.39.0-001", () => {
     const table = getPrimaryDynamoDbTable();
 
     logTestNameBeforeEachTest();
