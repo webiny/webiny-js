@@ -38,6 +38,36 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         type
         displayName
     }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy {
+        id
+        type
+        displayName
+    }
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
+        id
+        type
+        displayName
+    }
     wbyAco_location {
         folderId
     }

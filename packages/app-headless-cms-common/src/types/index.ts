@@ -364,6 +364,16 @@ export interface CmsContentEntryRevision {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string;
+    revisionFirstPublishedOn: string;
+    revisionLastPublishedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity;
+    revisionFirstPublishedBy: CmsIdentity;
+    revisionLastPublishedBy: CmsIdentity;
     wbyAco_location: Location;
     meta: {
         title: string;
