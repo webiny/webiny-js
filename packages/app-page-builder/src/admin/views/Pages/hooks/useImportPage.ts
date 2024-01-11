@@ -8,6 +8,7 @@ import {
 } from "~/admin/graphql/pageImportExport.gql";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
 import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageLoadingDialog";
+import { PbCategory } from "~/types";
 
 interface UseImportPageParams {
     setLoading: () => void;
@@ -28,7 +29,11 @@ const useImportPage = ({
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl, folderId) => {
+    const importPageMutation = useCallback(async (
+        { slug: category }: PbCategory,
+        zipFileUrl: string,
+        folderId: string | undefined
+    ) => {
         try {
             setLoading();
             const response = await importPage({
@@ -68,7 +73,7 @@ const useImportPage = ({
     }, []);
 
     const showDialog = useCallback(
-        category => {
+        (category: PbCategory) => {
             showImportPageDialog(async url => {
                 await importPageMutation(category, url, folderId);
             });

@@ -61,12 +61,14 @@ const DividerRenderer = makeDecoratable("DividerRenderer", () => {
     return <StyledDivider />;
 });
 
-type EditorBar = DecoratableComponent & {
-    LeftSection: DecoratableComponent;
-    CenterSection: DecoratableComponent;
-    RightSection: DecoratableComponent;
-    BackButton: DecoratableComponent;
-    Divider: DecoratableComponent;
+type DecoratableComponentWithChildren = DecoratableComponent<React.PropsWithChildren<unknown>>;
+
+type EditorBar = DecoratableComponentWithChildren & {
+    LeftSection: DecoratableComponentWithChildren;
+    CenterSection: DecoratableComponentWithChildren;
+    RightSection: DecoratableComponentWithChildren;
+    BackButton: DecoratableComponentWithChildren;
+    Divider: DecoratableComponentWithChildren;
 };
 
 const ComposableEditorBar = makeDecoratable("EditorBar", () => {
