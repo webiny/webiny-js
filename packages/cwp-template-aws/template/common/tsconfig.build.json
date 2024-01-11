@@ -1,53 +1,7 @@
 {
+  "extends": "@webiny/project-utils/configs/tsconfig.build.json",
   "compilerOptions": {
-    "target": "es6",
-    "allowJs": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
-    "module": "esnext",
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "esModuleInterop": true,
-    "declaration": true,
-    "composite": true,
-    "noEmit": false,
-    "jsx": "preserve",
-    "emitDeclarationOnly": true,
-    "baseUrl": ".",
-    "paths": {},
-    "typeRoots": ["node_modules/@types", "./types"],
-    "noUnusedParameters": false,
-    "noUnusedLocals": false,
-    "noImplicitUseStrict": false,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": false,
-    "noStrictGenericChecks": false,
-    "noFallthroughCasesInSwitch": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitOverride": true,
-    "strict": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "suppressImplicitAnyIndexErrors": false,
-    "suppressExcessPropertyErrors": false,
-    "keyofStringsOnly": false,
-    "experimentalDecorators": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    /**
-     * If you set to true there would need to be A LOT of error handling changes.
-     * https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables
-     */
-    "useUnknownInCatchVariables": false,
-    /**
-     * Setting to true will start producing TS errors that are inside libraries we use.
-     * https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes
-     */
-    "exactOptionalPropertyTypes": false
+    "typeRoots": ["node_modules/@types", "./types"]
   },
   "exclude": ["node_modules", "dist", "**jest**", "**resources.js"]
 }
