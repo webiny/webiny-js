@@ -8,10 +8,7 @@ module.exports = createPulumiCommand({
         const { env, folder, debug, variant } = inputs;
 
         if (env) {
-            debug &&
-                context.debug(
-                    `Environment provided - selecting ${context.debug.hl(env)} Pulumi stack.`
-                );
+            debug && context.debug(`Environment provided - selecting %s Pulumi stack.`, env);
 
             let stackExists = true;
             try {
@@ -43,12 +40,11 @@ module.exports = createPulumiCommand({
         }
 
         if (debug) {
-            const pulumiCommand = `${context.debug.hl("pulumi " + command.join(" "))}`;
             debug &&
                 context.debug(
-                    `Running the following command in ${context.debug.hl(
-                        folder
-                    )} folder: ${pulumiCommand}`
+                    `Running the following command in %s folder: %s`,
+                    folder,
+                    "pulumi " + command.join(" ")
                 );
         }
 

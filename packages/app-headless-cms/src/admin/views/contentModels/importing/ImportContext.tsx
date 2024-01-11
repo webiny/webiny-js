@@ -3,6 +3,9 @@ import { useApolloClient } from "~/admin/hooks";
 import {
     IMPORT_STRUCTURE,
     ImportStructureResponse,
+    ImportStructureVariables,
+    ImportStructureVariablesGroup,
+    ImportStructureVariablesModel,
     VALIDATE_IMPORT_STRUCTURE,
     ValidateImportStructureResponse
 } from "~/admin/views/contentModels/importing/graphql";
@@ -140,11 +143,16 @@ const createSelected = (params: CreateSelectedParams): Selected => {
     return selected;
 };
 
-const getDataToImport = (state: State) => {
+interface DataToImportResult {
+    groups: ImportStructureVariablesGroup[];
+    models: ImportStructureVariablesModel[];
+}
+
+const getDataToImport = (state: State): DataToImportResult => {
     const selected = Array.from(state.selected.keys());
 
-    const groups: Map<string, CmsGroup> = new Map();
-    const models: Map<string, CmsModel> = new Map();
+    const groups: Map<string, ImportStructureVariablesGroup> = new Map();
+    const models: Map<string, ImportStructureVariablesModel> = new Map();
     const noAction = [ImportAction.CODE, ImportAction.NONE];
 
     for (const id of selected) {
@@ -156,21 +164,28 @@ const getDataToImport = (state: State) => {
         ) {
             continue;
         }
+        const validatedGroup = state.groups?.find(group => group.id === validatedModel.group);
+        if (!validatedGroup?.action || validatedGroup.error) {
+            continue;
+        }
 
         const model = state.data?.models?.find(model => model.modelId === id);
         if (!model) {
             continue;
         }
-        models.set(id, model);
+        models.set(id, {
+            ...model,
+            layout: model.layout || [],
+            titleFieldId: model.titleFieldId || "id",
+            descriptionFieldId: model.descriptionFieldId || "",
+            imageFieldId: model.imageFieldId || "",
+            group: validatedModel.group
+        });
 
-        const validatedGroup = state.groups?.find(group => group.id === validatedModel.group);
-        if (
-            !validatedGroup?.action ||
-            validatedGroup.error ||
-            noAction.includes(validatedGroup.action)
-        ) {
+        if (noAction.includes(validatedGroup.action)) {
             continue;
         }
+
         const group = state.data?.groups?.find(group => group.id === validatedModel.group);
         if (!group) {
             continue;
@@ -259,7 +274,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
             return;
         }
         setState(prev => {
-            return {
+            const next = {
                 ...prev,
                 loading: false,
                 groups: data.groups.map(group => {
@@ -282,6 +297,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                 }),
                 validated: true
             };
+            return next;
         });
     }, [state.data, setState]);
 
@@ -310,7 +326,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
 
         let result: FetchResult<ImportStructureResponse> | undefined;
         try {
-            result = await client.mutate<ImportStructureResponse>({
+            result = await client.mutate<ImportStructureResponse, ImportStructureVariables>({
                 mutation: IMPORT_STRUCTURE,
                 variables: {
                     data: dataToImport

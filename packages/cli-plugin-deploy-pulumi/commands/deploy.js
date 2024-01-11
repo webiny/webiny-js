@@ -106,9 +106,9 @@ module.exports = (params, context) => {
 
             const duration = getDuration();
             if (inputs.preview) {
-                context.success(`Done! Preview finished in ${context.success.hl(duration)}.`);
+                context.success(`Done! Preview finished in %s.`, duration);
             } else {
-                context.success(`Done! Deploy finished in ${context.success.hl(duration)}.`);
+                context.success(`Done! Deploy finished in %s.`, duration);
             }
 
             console.log();
