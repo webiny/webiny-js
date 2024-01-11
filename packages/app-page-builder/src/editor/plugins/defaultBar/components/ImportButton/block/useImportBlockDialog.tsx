@@ -43,7 +43,7 @@ export const ImportBlockDialogContent = ({ onFileLink }: ImportBlockDialogConten
     const [showLink, setShowLink] = useState<boolean>(false);
 
     const setDialogStyles = useCallback(
-        style => {
+        (style: React.CSSProperties) => {
             ui.setState(state => dotProp.set(state, "dialog.options.style", style));
         },
         [ui]

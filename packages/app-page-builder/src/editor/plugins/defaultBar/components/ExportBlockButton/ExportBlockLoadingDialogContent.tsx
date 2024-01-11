@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import get from "lodash/get";
 import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
-import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
+import {
+    GET_PAGE_IMPORT_EXPORT_TASK,
+    GetPageImportExportSubTaskResponse
+} from "~/admin/graphql/pageImportExport.gql";
 import { LoadingDialog } from "~/editor/plugins/defaultBar/components/ImportButton/styledComponents";
 import ProgressBar from "~/editor/plugins/defaultBar/components/ImportButton/ProgressBar";
 import useExportBlockDialog from "./useExportBlockDialog";
@@ -31,11 +33,11 @@ interface ExportBlockLoadingDialogContent {
 
 const ExportBlockLoadingDialogContent = ({ taskId }: ExportBlockLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Record<string, string> | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportBlockContentDialog } = useExportBlockDialog();
 
-    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
+    const { data } = useQuery<GetPageImportExportSubTaskResponse>(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
@@ -45,25 +47,28 @@ const ExportBlockLoadingDialogContent = ({ taskId }: ExportBlockLoadingDialogCon
         notifyOnNetworkStatusChange: true
     });
 
-    const pollExportBlockTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
-        if (error) {
-            showSnackbar(error.message);
-            return;
-        }
+    const pollExportBlockTaskStatus = useCallback(
+        (response: GetPageImportExportSubTaskResponse) => {
+            const { error, data } = response.pageBuilder.getImportExportTask || {};
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
 
-        // Handler failed task
-        if (data && data.status === "failed") {
-            setCompleted(true);
-            showSnackbar("Error: Failed to export blocks!");
-            setError(data.error);
-        }
+            // Handler failed task
+            if (data && data.status === "failed") {
+                setCompleted(true);
+                showSnackbar("Error: Failed to export blocks!");
+                setError(data.error);
+            }
 
-        if (data && data.status === "completed") {
-            setCompleted(true);
-            showExportBlockContentDialog({ exportUrl: data.data.url });
-        }
-    }, []);
+            if (data && data.status === "completed") {
+                setCompleted(true);
+                showExportBlockContentDialog({ exportUrl: data.data.url });
+            }
+        },
+        []
+    );
 
     useEffect(() => {
         if (!data) {
@@ -72,10 +77,10 @@ const ExportBlockLoadingDialogContent = ({ taskId }: ExportBlockLoadingDialogCon
         pollExportBlockTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+    const { status, stats } = data?.pageBuilder.getImportExportTask.data || {
         status: ImportExportTaskStatus.PENDING,
         stats: null
-    });
+    };
 
     return (
         <LoadingDialog.Wrapper>

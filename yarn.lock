@@ -17319,7 +17319,7 @@ __metadata:
     react-sortable-tree: ^2.6.0
     react-transition-group: ^4.3.0
     react-virtualized: ^9.21.0
-    recoil: ^0.1.2
+    recoil: ^0.7.7
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12
@@ -29971,6 +29971,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hamt_plus@npm:1.0.2":
+  version: 1.0.2
+  resolution: "hamt_plus@npm:1.0.2"
+  checksum: af26ea32db03009019cc83dfa9411521a2fa16079443de1a502c9be46d8b3c975acda8ed93fc5750ef08d3186d35901e2d8cfe717dd54bea67b358601fa74e4c
+  languageName: node
+  linkType: hard
+
 "handle-thing@npm:^2.0.0":
   version: 2.0.1
   resolution: "handle-thing@npm:2.0.1"
@@ -41234,6 +41241,22 @@ __metadata:
     react-native:
       optional: true
   checksum: 6a17e9430cf07188ae5245db4252de41cb14c0ebdc9e359f6634394e0486ee577440ce4d16cbd63e7b006514664123065a86bc7b206cd05c1dfd440816eb8937
+  languageName: node
+  linkType: hard
+
+"recoil@npm:^0.7.7":
+  version: 0.7.7
+  resolution: "recoil@npm:0.7.7"
+  dependencies:
+    hamt_plus: 1.0.2
+  peerDependencies:
+    react: ">=16.13.1"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 65edecbcb8d2cde89bfd61ec679c200483472a6cd343c33e4e9142b6ce524fb17d1fecc2bfd8c392926aaa8178c81457f165b32abce2a9662f51f98822c0a9cc
   languageName: node
   linkType: hard
 

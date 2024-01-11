@@ -78,7 +78,7 @@ const TemplateSettingsModal = () => {
         );
     };
 
-    const onSubmit = useCallback(formData => {
+    const onSubmit = useCallback((formData: Partial<PageTemplate>) => {
         updateTemplate(formData);
         onClose();
     }, []);

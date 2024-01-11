@@ -41,7 +41,7 @@ const selectStyle = css({
 
 interface SelectProps {
     value?: string;
-    onChange?: (value: any) => void;
+    onChange?: (value: string) => void;
     // One or more <option> or <optgroup> elements.
     children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
     className?: string;
@@ -61,7 +61,6 @@ const SelectField = ({
     return (
         <React.Fragment>
             <select
-                placeholder={placeholder}
                 className={classNames(selectStyle, className)}
                 value={value}
                 onChange={({ target: { value } }) => {

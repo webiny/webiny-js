@@ -77,7 +77,7 @@
     "react-sortable-tree": "^2.6.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.0",
-    "recoil": "^0.1.2",
+    "recoil": "^0.7.7",
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "swiper": "^9.3.2",

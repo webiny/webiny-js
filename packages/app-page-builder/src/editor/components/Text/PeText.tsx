@@ -39,7 +39,7 @@ const PeText = makeComposable<TextElementProps>(
         const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
         const onChange = useCallback(
-            value => {
+            (value: string) => {
                 getUpdateValue(DATA_NAMESPACE)(value);
             },
             [getUpdateValue]

@@ -74,6 +74,19 @@ export const EXPORT_PAGES = gql`
     }
 `;
 
+export interface GetPageImportExportSubTaskResponse {
+    pageBuilder: {
+        getImportExportTask: {
+            data: PageBuilderImportExportSubTask;
+            error?: {
+                message: string;
+                code: string;
+                data: Record<string, any>;
+            };
+        };
+    };
+}
+
 export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
     query PbGetPageImportExportTask($id: ID!) {
         pageBuilder {

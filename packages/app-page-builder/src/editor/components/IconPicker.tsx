@@ -6,7 +6,7 @@ import { Grid } from "react-virtualized";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
-import { Menu } from "@webiny/ui/Menu";
+import { Menu, MenuChildrenFunctionProps } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "~/types";
 import classNames from "classnames";
@@ -186,9 +186,8 @@ const IconPicker = ({
     const gridWidth = useInSidebar ? 300 : 640;
 
     const onFilterChange = useCallback(
-        (value, cb) => {
+        (value: string) => {
             setFilter(value.trim());
-            cb();
         },
         [filter]
     );
@@ -236,7 +235,7 @@ const IconPicker = ({
     }, [filter, selectedIconPrefix, selectedIconName]);
 
     const renderCell = useCallback(
-        ({ closeMenu }): RenderCellCallable => {
+        ({ closeMenu }: MenuChildrenFunctionProps): RenderCellCallable => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
                 const item = icons[rowIndex * columnCount + columnIndex];
                 if (!item) {
@@ -272,7 +271,11 @@ const IconPicker = ({
     );
 
     const renderGrid = useCallback(
-        ({ closeMenu }) => {
+        ({ closeMenu }: MenuChildrenFunctionProps) => {
+            if (useInSidebar && !mustRenderGrid) {
+                return;
+            }
+
             return (
                 <>
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
@@ -299,7 +302,7 @@ const IconPicker = ({
                 </>
             );
         },
-        [icons]
+        [useInSidebar, mustRenderGrid, icons]
     );
 
     if (useInSidebar) {
@@ -314,9 +317,8 @@ const IconPicker = ({
                             <IconPickerIcon />
                         </div>
                     }
-                >
-                    {mustRenderGrid && renderGrid}
-                </Menu>
+                    render={renderGrid}
+                />
                 <div
                     className={classNames("button", "iconContainer", {
                         disabled: disableRemoveIcon
@@ -336,9 +338,8 @@ const IconPicker = ({
                     <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
                 </div>
             }
-        >
-            {renderGrid}
-        </Menu>
+            render={renderGrid}
+        />
     );
 };
 

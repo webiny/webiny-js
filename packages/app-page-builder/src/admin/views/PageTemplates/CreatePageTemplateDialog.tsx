@@ -33,15 +33,15 @@ const slugValidator: Validator = (value: string) => {
 
 type CreatePageTemplateDialogProps = {
     onClose: () => void;
-    onSubmit: (formData: Pick<PbPageTemplate, "title" | "slug" | "description">) => void;
+    onSubmit: (formData: Pick<PbPageTemplate, "title" | "slug" | "description">) => Promise<void>;
 };
 
 const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
     const [loading, setLoading] = useState(false);
     const submitForm = useCallback(
-        async data => {
+        async (formData: PbPageTemplate) => {
             setLoading(true);
-            await onSubmit(data);
+            await onSubmit(formData);
             setLoading(false);
         },
         [onSubmit]

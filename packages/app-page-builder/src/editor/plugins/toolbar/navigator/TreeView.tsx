@@ -94,7 +94,7 @@ const TreeViewItem = ({ element, level, children, index }: TreeViewItemProps) =>
     }, [activeElement, elementId]);
 
     const onMouseOver = useCallback(
-        (ev): void => {
+        (ev: React.MouseEvent): void => {
             if (!element || element.type === "document") {
                 return;
             }

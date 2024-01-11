@@ -69,7 +69,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     });
 
     const filterData = useCallback(
-        ({ slug, name, url }) => {
+        ({ slug, name, url }: PbCategory) => {
             return (
                 slug.toLowerCase().includes(filter) ||
                 name.toLowerCase().includes(filter) ||
@@ -80,7 +80,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     );
 
     const sortData = useCallback(
-        categories => {
+        (categories: PbCategory[]) => {
             if (!sort) {
                 return categories;
             }
@@ -96,7 +96,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     const slug = new URLSearchParams(location.search).get("slug");
 
     const deleteItem = useCallback(
-        item => {
+        (item: PbCategory) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item

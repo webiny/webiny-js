@@ -24,7 +24,11 @@ const style = {
     }
 };
 
-class Item extends React.Component {
+interface ItemProps {
+    children?: React.ReactNode;
+}
+
+class Item extends React.Component<ItemProps> {
     public override render() {
         return (
             <li style={style.liItem} {...this.props}>
