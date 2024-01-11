@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, SyntheticEvent } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import classnames from "classnames";
-import { ChromePicker, ColorState } from "react-color";
+import { ChromePicker, ColorState, RGBColor } from "react-color";
+import { OnChangeHandler } from "react-color/lib/components/common/ColorWrap";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
-import { OnChangeHandler } from "react-color/lib/components/common/ColorWrap";
 
 const ColorPickerStyle = styled("div")({
     position: "relative",
@@ -123,7 +123,7 @@ export const LexicalColorPicker = ({
     const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");
     let themeColor = false;
 
-    const getColorValue = useCallback(rgb => {
+    const getColorValue = useCallback((rgb: RGBColor) => {
         return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
     }, []);
 
@@ -149,7 +149,7 @@ export const LexicalColorPicker = ({
         [onChangeComplete]
     );
 
-    const togglePicker = useCallback(e => {
+    const togglePicker = useCallback((e: SyntheticEvent) => {
         e.stopPropagation();
         setShowPicker(!showPicker);
     }, []);

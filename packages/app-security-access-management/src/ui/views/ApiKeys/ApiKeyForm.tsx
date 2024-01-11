@@ -87,8 +87,8 @@ export const ApiKeyForm = () => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            if (!data.permissions || !data.permissions.length) {
+        async (formData: ApiKey) => {
+            if (!formData.permissions || !formData.permissions.length) {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
                     dismissesOnAction: true,
@@ -97,10 +97,10 @@ export const ApiKeyForm = () => {
                 return;
             }
 
-            const isUpdate = data.createdOn;
+            const isUpdate = formData.createdOn;
             const [operation, args] = isUpdate
-                ? [update, { variables: { id: data.id, data: pickDataForAPI(data) } }]
-                : [create, { variables: { data: pickDataForAPI(data) } }];
+                ? [update, { variables: { id: formData.id, data: pickDataForAPI(formData) } }]
+                : [create, { variables: { data: pickDataForAPI(formData) } }];
 
             const response = await operation(args);
 
@@ -117,7 +117,7 @@ export const ApiKeyForm = () => {
         [id]
     );
 
-    const data: ApiKey[] = get(getQuery, "data.security.apiKey.data", {});
+    const data: ApiKey = get(getQuery, "data.security.apiKey.data", {});
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content" selected view.
