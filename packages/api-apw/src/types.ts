@@ -961,8 +961,6 @@ export interface OnWorkflowAfterDeleteTopicParams {
     workflow: ApwWorkflow;
 }
 
-export type WorkflowModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
-
 /**
  * Headless CMS
  */
