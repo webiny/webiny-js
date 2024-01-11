@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse } from "@webiny/app-headless-cms-common/types";
+import { CmsErrorResponse, CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { ImportAction, ValidatedCmsGroup, ValidatedCmsModel } from "./types";
 
 const ERROR = /* GraphQL */ `
@@ -52,6 +52,37 @@ export const VALIDATE_IMPORT_STRUCTURE = gql`
     }
 `;
 
+export interface ImportStructureVariablesGroup {
+    id: string;
+    name: string;
+    slug?: string;
+    description?: string;
+    icon: string;
+}
+
+export interface ImportStructureVariablesModel {
+    name: string;
+    singularApiName: string;
+    pluralApiName: string;
+    modelId: string;
+    group: string;
+    icon?: string;
+    description?: string;
+    layout: string[][];
+    fields: CmsModelField[];
+    titleFieldId: string;
+    descriptionFieldId?: string;
+    imageFieldId?: string;
+    tags?: string[];
+}
+
+export interface ImportStructureVariables {
+    data: {
+        groups: ImportStructureVariablesGroup[];
+        models: ImportStructureVariablesModel[];
+    };
+}
+
 export interface ImportStructureResponseDataGroup {
     group: {
         id: string;
@@ -79,6 +110,7 @@ export interface ImportStructureResponseData {
     models: ImportStructureResponseDataModel[];
     message: string;
 }
+
 export interface ImportStructureResponse {
     importStructure: {
         data: ImportStructureResponseData | null;
