@@ -154,6 +154,7 @@ describe("richTextField", () => {
                         entryId: expect.any(String),
                         createdOn: expect.toBeDateString(),
                         modifiedOn: null,
+                        savedOn: expect.toBeDateString(),
                         firstPublishedOn: null,
                         lastPublishedOn: null,
                         createdBy: {
@@ -161,7 +162,6 @@ describe("richTextField", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: expect.toBeDateString(),
                         title: "Potato",
                         price: 100,
                         image: "file.jpg",
@@ -341,7 +341,6 @@ describe("richTextField", () => {
                     data: {
                         ...expectedCreatedProduct,
                         richText: richTextMock,
-                        firstPublishedOn: null,
                         modifiedOn: expect.toBeDateString()
                     },
                     error: null
