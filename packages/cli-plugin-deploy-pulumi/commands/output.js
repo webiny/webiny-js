@@ -40,10 +40,6 @@ module.exports = createPulumiCommand({
             return console.log(JSON.stringify(null));
         }
 
-        context.error(
-            `Project application ${context.error.hl(folder)} (${context.error.hl(
-                env
-            )} environment) does not exist.`
-        );
+        context.error(`Project application %s (%s environment) does not exist.`, folder, env);
     }
 });
