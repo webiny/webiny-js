@@ -49,7 +49,7 @@ export const PageBuilderPermissions = ({ value, onChange }: PageBuilderPermissio
     }, []);
 
     const onFormChange = useCallback(
-        formData => {
+        (formData: PageBuilderSecurityPermission) => {
             let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `pb*` permission objects, it's easier to build new ones from scratch.

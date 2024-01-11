@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
-import get from "lodash/get";
+import {
+    GET_PAGE_IMPORT_EXPORT_TASK,
+    GetPageImportExportSubTaskResponse
+} from "~/admin/graphql/pageImportExport.gql";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { LoadingDialog } from "../ImportButton/styledComponents";
@@ -31,11 +33,11 @@ interface ExportPageLoadingDialogContent {
 
 const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Record<string, string> | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportPageContentDialog } = useExportPageDialog();
 
-    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
+    const { data } = useQuery<GetPageImportExportSubTaskResponse>(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
@@ -45,8 +47,8 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
         notifyOnNetworkStatusChange: true
     });
 
-    const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
+    const pollExportPageTaskStatus = useCallback((response: GetPageImportExportSubTaskResponse) => {
+        const { error, data } = response.pageBuilder.getImportExportTask || {};
         if (error) {
             showSnackbar(error.message);
             return;
@@ -74,10 +76,10 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+    const { status, stats } = data?.pageBuilder.getImportExportTask.data || {
         status: ImportExportTaskStatus.PENDING,
         stats: null
-    });
+    };
 
     return (
         <LoadingDialog.Wrapper>

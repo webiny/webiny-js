@@ -9,6 +9,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import { FileManagerFileItem } from "@webiny/app-admin";
 import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
@@ -85,11 +86,11 @@ const BackgroundSettings = ({ options, defaultAccordionValue }: SettingsPropsTyp
     };
 
     const setImage = useCallback(
-        value => getUpdateValue(`${displayMode}.image.file`)(value),
+        (value: FileManagerFileItem | null) => getUpdateValue(`${displayMode}.image.file`)(value),
         [getUpdateValue, displayMode]
     );
     const setScaling = useCallback(
-        value => getUpdateValue(`${displayMode}.image.scaling`)(value),
+        (value: string) => getUpdateValue(`${displayMode}.image.scaling`)(value),
         [getUpdateValue, displayMode]
     );
     const setPosition = useCallback(

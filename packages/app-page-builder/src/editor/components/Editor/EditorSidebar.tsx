@@ -53,7 +53,7 @@ export const EditorSidebar = React.memo(() => {
         return store.get(LOCAL_STORAGE_KEY, sidebar.activeTabIndex);
     }, []);
 
-    const setActiveTabIndex = useCallback(index => {
+    const setActiveTabIndex = useCallback((index: number) => {
         setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
         store.set(LOCAL_STORAGE_KEY, index);
     }, []);
