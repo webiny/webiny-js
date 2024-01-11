@@ -194,17 +194,17 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
 
         // Revision 1: entry meta fields should be populated with old values.
         expect(rev1AfterPublish2).toMatchObject({
-            revisionFirstPublishedOn: expect.toBeDateString(),
-            revisionLastPublishedOn: expect.toBeDateString(),
+            revisionFirstPublishedOn: rev1AfterPublish1.revisionFirstPublishedOn,
+            revisionLastPublishedOn: rev1AfterPublish1.revisionLastPublishedOn,
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            firstPublishedOn: expect.toBeDateString(),
-            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedOn: rev1AfterPublish1.firstPublishedOn,
+            lastPublishedOn: rev1AfterPublish1.lastPublishedOn,
             firstPublishedBy: identityB,
             lastPublishedBy: identityB
         });
 
-        // Nothing should happen to revision 1 and its entry-level meta fields.
+        // Nothing should happen to revision 1 and its meta fields.
         expect(pickEntryMetaFields(rev1AfterPublish1)).toEqual(
             pickEntryMetaFields(rev1AfterPublish2)
         );

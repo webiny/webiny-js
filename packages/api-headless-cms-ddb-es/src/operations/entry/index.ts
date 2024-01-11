@@ -1209,7 +1209,6 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...previouslyPublishedEntry,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    savedOn: entry.savedOn,
                     TYPE: createRecordType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
