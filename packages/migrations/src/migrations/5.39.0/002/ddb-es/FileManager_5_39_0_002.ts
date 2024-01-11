@@ -26,7 +26,7 @@ const isGroupMigrationCompleted = (
     return typeof status === "boolean";
 };
 
-export class FileManager_5_39_0_005 implements DataMigration {
+export class FileManager_5_39_0_002 implements DataMigration {
     private readonly elasticsearchClient: Client;
     private readonly bucket: string;
     private readonly s3: S3;
@@ -40,7 +40,7 @@ export class FileManager_5_39_0_005 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-005";
+        return "5.39.0-002";
     }
 
     getDescription() {
@@ -206,7 +206,7 @@ export class FileManager_5_39_0_005 implements DataMigration {
     }
 }
 
-makeInjectable(FileManager_5_39_0_005, [
+makeInjectable(FileManager_5_39_0_002, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)
 ]);
