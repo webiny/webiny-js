@@ -94,7 +94,7 @@ export const OmniSearch = () => {
         setFilter("");
     }, []);
 
-    const onFilter = useCallback(searchString => {
+    const onFilter = useCallback((searchString: string) => {
         setFilter(searchString);
         focusItemAtIndex(0);
     }, []);

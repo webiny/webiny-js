@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { ApiKey } from "~/types";
 
 const fields = `
     id
@@ -8,6 +9,14 @@ const fields = `
     permissions
     createdOn
 `;
+
+export interface ListApiKeysResponse {
+    security: {
+        apiKeys: {
+            data: ApiKey[];
+        };
+    };
+}
 
 export const LIST_API_KEYS = gql`
     query ListApiKeys {

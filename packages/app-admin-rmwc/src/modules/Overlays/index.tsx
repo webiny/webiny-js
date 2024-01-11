@@ -15,7 +15,7 @@ interface OverlaysProps {
  * any other views that are constructed by developers. We need these 2 containers to always be
  * present, even if there is no <Layout> mounted.
  */
-const OverlaysHOC = (Component: React.ComponentType) => {
+const OverlaysHOC = (Component: React.ComponentType<OverlaysProps>) => {
     return function Overlays({ children }: OverlaysProps) {
         return (
             <Component>
