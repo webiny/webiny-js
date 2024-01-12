@@ -189,7 +189,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                         });
                     }
 
-                    // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
+                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                     const oldestCreatedOn = await getOldestRevisionCreatedOn({
                         entry: item,
                         entryEntity: this.ddbEntryEntity
@@ -244,7 +244,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                         }
                     }
 
-                    // Get the lowest revision's `createdOn` value. We use that to set the `entryCreatedOn` value.
+                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                     const oldestCreatedOn = await getOldestRevisionCreatedOn({
                         entry: { ...decompressedData, PK: esRecord.PK },
                         entryEntity: this.ddbEntryEntity
