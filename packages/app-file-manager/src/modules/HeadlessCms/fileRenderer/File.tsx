@@ -52,11 +52,11 @@ const File = (props: FileProps) => {
     const styles = props.styles || defaultStyles;
     const validation = props.validation || defaultValidation;
 
-    const isImage = useCallback(url => {
+    const isImage = useCallback((url: string) => {
         return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
-    const getImageSrc = useCallback(url => {
+    const getImageSrc = useCallback((url?: string) => {
         if (url && isImage(url)) {
             return url;
         }
