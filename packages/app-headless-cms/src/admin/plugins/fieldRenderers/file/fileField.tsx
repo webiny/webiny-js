@@ -1,10 +1,11 @@
 import React from "react";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { FileManager } from "@webiny/app-admin/components";
 import File from "./File";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
+import { EditFileUsingUrl } from "./EditFileUsingUrl/EditFileUsingUrl";
 
 const ImageFieldWrapper = styled("div")({
     background: "var(--mdc-theme-on-background)",
@@ -40,7 +41,7 @@ const InnerImageFieldWrapper = styled("div")({
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-file",
     renderer: {
@@ -55,42 +56,50 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             const imagesOnly = field.settings && field.settings.imagesOnly;
             return (
-                <ImageFieldWrapper>
-                    <Label>
-                        <Typography use="body1">{field.label}</Typography>
-                    </Label>
-                    <Bind>
-                        {bind => {
-                            const { value, onChange } = bind;
+                <EditFileUsingUrl>
+                    {({ editFile }) => (
+                        <ImageFieldWrapper>
+                            <Label>
+                                <Typography use="body1">{field.label}</Typography>
+                            </Label>
 
-                            return (
-                                <InnerImageFieldWrapper>
-                                    <FileManager
-                                        images={imagesOnly}
-                                        render={({ showFileManager }) => {
-                                            const selectFile = () => {
-                                                showFileManager(file => onChange(file.src));
-                                            };
-                                            return (
-                                                <EditFileUsingUrl url={value}>
-                                                    <File
-                                                        {...bind}
-                                                        url={value}
-                                                        onRemove={() => onChange(null)}
-                                                        showFileManager={selectFile}
-                                                        placeholder={field.placeholderText}
-                                                        description={field.helpText}
-                                                        data-testid={`fr.input.filefield.${field.label}`}
-                                                    />
-                                                </EditFileUsingUrl>
-                                            );
-                                        }}
-                                    />
-                                </InnerImageFieldWrapper>
-                            );
-                        }}
-                    </Bind>
-                </ImageFieldWrapper>
+                            <Bind>
+                                {bind => {
+                                    const { value, onChange } = bind;
+
+                                    return (
+                                        <InnerImageFieldWrapper>
+                                            <FileManager
+                                                images={imagesOnly}
+                                                render={({ showFileManager }) => {
+                                                    const selectFile = () => {
+                                                        showFileManager(file => onChange(file.src));
+                                                    };
+                                                    return (
+                                                        <div>
+                                                            <button onClick={() => editFile(value)}>
+                                                                Edit
+                                                            </button>
+                                                            <File
+                                                                {...bind}
+                                                                url={value}
+                                                                onRemove={() => onChange(null)}
+                                                                showFileManager={selectFile}
+                                                                placeholder={field.placeholderText}
+                                                                description={field.helpText}
+                                                                data-testid={`fr.input.filefield.${field.label}`}
+                                                            />
+                                                        </div>
+                                                    );
+                                                }}
+                                            />
+                                        </InnerImageFieldWrapper>
+                                    );
+                                }}
+                            </Bind>
+                        </ImageFieldWrapper>
+                    )}
+                </EditFileUsingUrl>
             );
         }
     }

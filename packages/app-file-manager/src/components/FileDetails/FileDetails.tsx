@@ -64,7 +64,7 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const fileModel = useFileModel();
-    const { updateFile } = useFileManagerView();
+    const { updateFile,  } = useFileManagerView();
     const { close } = useFileDetails();
     const { fileDetails } = useFileManagerViewConfig();
 
