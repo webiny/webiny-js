@@ -16,10 +16,12 @@ const find = (target: Record<string, any>, input: string[]): any[] | undefined =
 
     if (!path) {
         return undefined;
-    } else if (target[path] === undefined) {
+    }
+
+    const value = target[path];
+    if (value === undefined || value === null) {
         return undefined;
     }
-    const value = target[path];
     if (paths.length === 0) {
         return value;
     } else if (Array.isArray(value)) {
