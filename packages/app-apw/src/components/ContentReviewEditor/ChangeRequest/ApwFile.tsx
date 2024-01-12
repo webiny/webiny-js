@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { Image } from "@webiny/app/components";
 import { ApwMediaFile } from "~/types";
@@ -37,7 +37,7 @@ export const ApwFile = (props: ApwFileProps) => {
 
     const removeImage = () => onChange(null);
 
-    const isImage = React.useCallback(url => {
+    const isImage = useCallback((url: string) => {
         return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
@@ -77,7 +77,7 @@ const commentFilePreviewProps = {
 export const CommentFile = (props: CommentFileProps) => {
     const { value } = props;
 
-    const isImage = React.useCallback(url => {
+    const isImage = useCallback((url: string) => {
         return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
