@@ -1,7 +1,7 @@
 import React from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { observer } from "mobx-react-lite";
-import { css } from "emotion";
+import styled from "@emotion/styled";
 
 import { ButtonSecondary } from "@webiny/ui/Button";
 
@@ -13,16 +13,20 @@ import { IconPickerConfig } from "../config";
 import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "./graphql";
 import { Icon } from "../types";
 
-const addButtonStyle = css`
+const StyledImage = styled("img")`
+    vertical-align: middle;
+`;
+
+const AddButton = styled(ButtonSecondary)`
     &.mdc-button {
         height: 40px;
     }
 `;
 
 const CustomIcon = () => {
-    const { icon } = useIcon<Icon>();
+    const { icon, size } = useIcon<Icon>();
 
-    return <img width={32} height={32} src={icon.value} alt={icon.name} />;
+    return <StyledImage width={size} height={size} src={icon.value} alt={icon.name} />;
 };
 
 interface IconFilePickerProps {
@@ -41,14 +45,13 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
             accept={["image/svg+xml"]}
         >
             {({ showFileManager }) => (
-                <ButtonSecondary
-                    className={addButtonStyle}
+                <AddButton
                     onClick={() => {
                         showFileManager();
                     }}
                 >
                     Browse
-                </ButtonSecondary>
+                </AddButton>
             )}
         </FileManager>
     );

@@ -11,17 +11,21 @@ import { useIconPicker } from "../IconPickerPresenterProvider";
 import { IconPickerConfig } from "../config";
 import { Icon } from "../types";
 
+const StyledSvg = styled("svg")`
+    vertical-align: middle;
+`;
+
 interface SimpleIcon extends Icon {
     color: string;
 }
 
 const IconSvg = () => {
-    const { icon } = useIcon<SimpleIcon>();
+    const { icon, size } = useIcon<SimpleIcon>();
 
     return (
-        <svg
-            width={32}
-            height={32}
+        <StyledSvg
+            width={size}
+            height={size}
             viewBox={`0 0 ${icon.width || 512} 512`}
             color={icon?.color || "inherit"}
             dangerouslySetInnerHTML={{ __html: icon.value }}
@@ -37,7 +41,9 @@ interface IconColorPickerProps {
 const IconColorPicker = ({ color, onChange }: IconColorPickerProps) => {
     return (
         <DelayedOnChange value={color} onChange={onChange}>
-            {({ value, onChange }) => <ColorPicker value={value} onChange={onChange} />}
+            {({ value, onChange }) => (
+                <ColorPicker align="right" value={value} onChange={onChange} />
+            )}
         </DelayedOnChange>
     );
 };

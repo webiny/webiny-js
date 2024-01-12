@@ -20,6 +20,7 @@ export interface IconPickerPresenterInterface {
         iconTypes: IconType[];
         selectedIcon: Icon | null;
         filter: string;
+        size?: string;
     };
 }
 
@@ -29,9 +30,11 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
     private filter = "";
     private activeTab = 0;
     private isMenuOpened = false;
+    private size: string | undefined;
 
-    constructor(repository: IconRepository) {
+    constructor(repository: IconRepository, size?: string) {
         this.repository = repository;
+        this.size = size;
         makeAutoObservable(this);
     }
 
@@ -50,7 +53,8 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
             iconTypes: this.repository.getIconTypes(),
             // `toJS` will unwrap an observable into a POJO. This will make it simple to use in child components.
             selectedIcon: toJS(this.selectedIcon),
-            filter: this.filter
+            filter: this.filter,
+            size: this.size
         };
     }
 
@@ -71,7 +75,7 @@ export class IconPickerPresenter implements IconPickerPresenterInterface {
         this.activeTab = index;
     }
 
-    setIcon(icon: Icon) {
+    setIcon(icon: Icon | null) {
         this.selectedIcon = icon;
     }
 

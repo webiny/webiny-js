@@ -12,8 +12,8 @@ const IconPicker = (props: IconPickerProps) => {
     const repository = iconRepositoryFactory.getRepository(iconTypes, iconPackProviders);
 
     const presenter = useMemo(() => {
-        return new IconPickerPresenter(repository);
-    }, [repository]);
+        return new IconPickerPresenter(repository, props.size);
+    }, [repository, props.size]);
 
     useEffect(() => {
         presenter.load(props.value);
@@ -23,12 +23,17 @@ const IconPicker = (props: IconPickerProps) => {
 };
 
 interface IconRendererWithProviderProps {
-    icon: Icon;
+    icon?: Icon;
+    size?: number;
 }
 
-const IconRendererWithProvider = ({ icon }: IconRendererWithProviderProps) => {
+const IconRendererWithProvider = ({ icon, ...props }: IconRendererWithProviderProps) => {
+    if (!icon) {
+        return null;
+    }
+
     return (
-        <IconProvider icon={icon}>
+        <IconProvider icon={icon} {...props}>
             <IconRenderer />
         </IconProvider>
     );

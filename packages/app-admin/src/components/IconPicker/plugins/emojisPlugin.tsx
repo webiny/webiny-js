@@ -13,12 +13,13 @@ import { Icon } from "../types";
 
 const SKIN_TONES = ["", "\u{1f3fb}", "\u{1f3fc}", "\u{1f3fd}", "\u{1f3fe}", "\u{1f3ff}"];
 
-const EmojiStyled = styled.div`
+const EmojiStyled = styled.div<{ size: number }>`
+    display: inline-block;
+    width: ${({ size }) => `${size}px`};
+    height: ${({ size }) => `${size}px`};
+    font-size: ${({ size }) => `${(size * 4) / 5}px`};
+    line-height: ${({ size }) => `${size}px`};
     color: black;
-    width: 32px;
-    height: 32px;
-    font-size: 26px;
-    line-height: 32px;
 `;
 
 const SkinToneSelectWrapper = styled.div`
@@ -48,9 +49,13 @@ interface Emoji extends Icon {
 }
 
 const Emoji = () => {
-    const { icon } = useIcon<Emoji>();
+    const { icon, size } = useIcon<Emoji>();
 
-    return <EmojiStyled>{icon.skinTone ? icon.value + icon.skinTone : icon.value}</EmojiStyled>;
+    return (
+        <EmojiStyled size={size}>
+            {icon.skinTone ? icon.value + icon.skinTone : icon.value}
+        </EmojiStyled>
+    );
 };
 
 interface SkinToneSelectProps {
