@@ -107,10 +107,6 @@ interface RenderCellParams {
     closeMenu: () => void;
 }
 
-interface RenderGridParams {
-    closeMenu: () => void;
-}
-
 export const IconPicker = ({
     value,
     onChange,
