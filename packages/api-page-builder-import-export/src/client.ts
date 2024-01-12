@@ -13,31 +13,19 @@ export async function invokeHandlerClient<TParams>({
     payload,
     description
 }: InvokeHandlerClientParams<TParams>) {
-    /*
-     * Prepare "invocationArgs", we're hacking our wat here.
-     * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
-     */
     const { request } = context;
-
     const tenantId = context.tenancy.getCurrentTenant().id;
-
-    const headers = {
-        ...request.headers,
-        ["x-tenant"]: request.headers["x-tenant"] || tenantId
-    };
-    delete headers["content-length"];
-    const invocationArgs = {
-        httpMethod: request.method,
-        body: request.body,
-        headers,
-        cookies: request.cookies
-    };
+  
     // Invoke handler
     await context.handlerClient.invoke<TParams & any>({
         name: name,
         payload: {
             ...payload,
-            ...invocationArgs
+            httpMethod: request.method,
+            headers: {
+                ["x-i18n-locale"]: request.headers["x-i18n-locale"],
+                ["x-tenant"]: request.headers["x-tenant"] || tenantId
+            }
         },
         await: false,
         description
