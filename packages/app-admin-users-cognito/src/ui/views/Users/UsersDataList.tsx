@@ -53,6 +53,10 @@ const SORTERS = [
     }
 ];
 
+interface FilterUsersCallable {
+    (user: Pick<UserItem, "email" | "firstName" | "lastName">): boolean;
+}
+
 const UsersDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
@@ -63,7 +67,7 @@ const UsersDataList = () => {
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const filterUsers = useCallback(
+    const filterUsers = useCallback<FilterUsersCallable>(
         ({ email, firstName, lastName }) => {
             return (
                 email.toLowerCase().includes(filter) ||
@@ -75,7 +79,7 @@ const UsersDataList = () => {
     );
 
     const sortUsers = useCallback(
-        users => {
+        (users: UserItem[]) => {
             if (!sort) {
                 return users;
             }
@@ -97,7 +101,7 @@ const UsersDataList = () => {
     const id = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
-        item => {
+        (item: Pick<UserItem, "id" | "email">) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item
