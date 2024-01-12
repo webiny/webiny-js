@@ -28,6 +28,10 @@ export interface AdminUsersPermissionsProps {
     onChange: (value: SecurityPermission[]) => void;
 }
 
+interface OnFormChangeCallable {
+    (data: SecurityPermission): void;
+}
+
 export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissionsProps) => {
     const { getPermission } = useSecurity();
 
@@ -36,7 +40,7 @@ export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissions
         return !getPermission<AaclPermission>("aacl", true);
     }, []);
 
-    const onFormChange = useCallback(
+    const onFormChange = useCallback<OnFormChangeCallable>(
         data => {
             let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
