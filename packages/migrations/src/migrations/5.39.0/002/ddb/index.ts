@@ -12,6 +12,7 @@ import { createDdbEntryEntity } from "../entities/createEntryEntity";
 import { assignNewMetaFields } from "../utils/assignNewMetaFields";
 import { isMigratedEntry } from "../utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
+import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/002/utils/getFirstLastPublishedOn";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -115,12 +116,20 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
                     }
 
                     // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const oldestCreatedOn = await getOldestRevisionCreatedOn({
+                    const createdOn = await getOldestRevisionCreatedOn({
                         entry: item,
                         entryEntity: this.entryEntity
                     });
 
-                    assignNewMetaFields(item, { createdOn: oldestCreatedOn });
+                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                        entry: item,
+                        entryEntity: this.entryEntity
+                    });
+
+                    assignNewMetaFields(item, {
+                        createdOn,
+                        ...firstLastPublishedOnByFields
+                    });
 
                     items.push(this.entryEntity.putBatch(item));
                 }
