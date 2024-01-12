@@ -19,7 +19,7 @@ const isGroupMigrationCompleted = (
     return typeof status === "boolean";
 };
 
-export class FileManager_5_39_0_005 implements DataMigration {
+export class FileManager_5_39_0_002 implements DataMigration {
     private readonly fileEntity: ReturnType<typeof createFileEntity>;
     private readonly table: Table<string, string, string>;
     private readonly bucket: string;
@@ -33,7 +33,7 @@ export class FileManager_5_39_0_005 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-005";
+        return "5.39.0-002";
     }
 
     getDescription() {
@@ -154,4 +154,4 @@ export class FileManager_5_39_0_005 implements DataMigration {
     }
 }
 
-makeInjectable(FileManager_5_39_0_005, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(FileManager_5_39_0_002, [inject(PrimaryDynamoTableSymbol)]);
