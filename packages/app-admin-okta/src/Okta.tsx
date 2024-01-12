@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import get from "lodash/get";
@@ -12,6 +12,7 @@ import gql from "graphql-tag";
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
     rootAppClientId: string;
+    children: React.ReactNode;
 }
 
 const GET_CLIENT_ID = gql`
@@ -22,11 +23,7 @@ const GET_CLIENT_ID = gql`
     }
 `;
 
-const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
-    oktaFactory,
-    rootAppClientId,
-    children
-}) => {
+const AppClientIdLoader = ({ oktaFactory, rootAppClientId, children }: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
@@ -107,10 +104,6 @@ export interface OktaProps {
 }
 
 export const Okta = (props: OktaProps) => {
-    /**
-     * TODO @ts-refactor
-     * Figure correct type for Compose.component
-     */
     return (
         <Fragment>
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
