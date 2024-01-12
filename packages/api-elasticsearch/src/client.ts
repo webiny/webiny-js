@@ -16,6 +16,8 @@ const createClientKey = (options: ElasticsearchClientOptions) => {
     return hash.digest("hex");
 };
 
+export { Client, ClientOptions };
+
 export const createElasticsearchClient = (options: ElasticsearchClientOptions): Client => {
     const key = createClientKey(options);
     const existing = clients.get(key);

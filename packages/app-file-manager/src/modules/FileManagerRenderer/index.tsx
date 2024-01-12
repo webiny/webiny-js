@@ -1,20 +1,23 @@
 import React from "react";
+import { Wcp } from "@webiny/app-admin";
+import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/index";
 import { FileManagerRenderer } from "./FileManagerView";
 import { FilterByType } from "./filters/FilterByType";
 import { ActionDelete, ActionEdit, ActionMove } from "~/components/BulkActions";
-import { Name } from "~/components/FileDetails/components/Name";
-import { Tags } from "~/components/FileDetails/components/Tags";
-import { Aliases } from "~/components/FileDetails/components/Aliases";
+import { Name, Tags, Aliases, AccessControl } from "~/components/fields";
 import {
     CellActions,
     CellAuthor,
     CellModified,
     CellName,
     CellSize,
-    CellType
+    CellType,
+    CopyFile,
+    DeleteFile,
+    EditFile,
+    MoveFile
 } from "~/components/Table";
-import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 
 const { Browser, FileDetails } = FileManagerConfig;
 
@@ -31,6 +34,10 @@ export const FileManagerRendererModule = () => {
                 <Browser.FolderAction name={"edit"} element={<EditFolder />} />
                 <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.FileAction name={"copy"} element={<CopyFile />} />
+                <Browser.FileAction name={"edit"} element={<EditFile />} />
+                <Browser.FileAction name={"move"} element={<MoveFile />} />
+                <Browser.FileAction name={"delete"} element={<DeleteFile />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}
@@ -64,9 +71,19 @@ export const FileManagerRendererModule = () => {
                 />
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
+                <Browser.BulkEditField name={"tags"} element={<Tags />} />
                 <FileDetails.Field name={"aliases"} element={<Aliases />} />
+                <Wcp.CanUsePrivateFiles>
+                    <FileDetails.Field
+                        name={"accessControl"}
+                        element={<AccessControl defaultValue={"public"} />}
+                    />
+                    <Browser.BulkEditField
+                        name={"accessControl"}
+                        element={<AccessControl placeholder={"Select privacy settings"} />}
+                    />
+                </Wcp.CanUsePrivateFiles>
                 <FileDetails.GroupFields value={false} />
-                <FileDetails.Width value={"1000px"} />
             </FileManagerConfig>
         </>
     );

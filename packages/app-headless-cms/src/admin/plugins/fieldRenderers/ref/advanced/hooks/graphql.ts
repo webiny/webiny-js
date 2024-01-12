@@ -116,12 +116,12 @@ export const createSearchQuery = (model: CmsModel) => {
                 entryId
                 savedOn
                 createdOn
-                createdBy {
+                revisionCreatedBy {
                     id
                     type
                     displayName
                 }
-                ownedBy {
+                createdBy {
                     id
                     type
                     displayName

@@ -1,8 +1,11 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
-// import { modelFactory } from "~/cmsFileStorage/modelFactory";
 import { createFileModelDefinition } from "~/cmsFileStorage/file.model";
 
-export const createFileManagerPlugins = () => {
+interface CreateFileManagerPluginsParams {
+    withPrivateFiles: boolean;
+}
+
+export const createFileManagerPlugins = (params: CreateFileManagerPluginsParams) => {
     const groupId = "contentModelGroup_fm";
 
     const groupPlugin = new CmsGroupPlugin({
@@ -14,15 +17,11 @@ export const createFileManagerPlugins = () => {
         isPrivate: true
     });
 
-    // const models = modelDefinitions.map(modelDefinition => {
-    //     return modelFactory({
-    //         group: cmsGroupPlugin.contentModelGroup,
-    //         modelDefinition
-    //     });
-    // });
-
     return {
         groupPlugin,
-        fileModelDefinition: createFileModelDefinition(groupPlugin.contentModelGroup)
+        fileModelDefinition: createFileModelDefinition({
+            contentModelGroup: groupPlugin.contentModelGroup,
+            withPrivateFiles: params.withPrivateFiles
+        })
     };
 };

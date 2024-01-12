@@ -4,29 +4,29 @@ export const ROOT_FOLDER = "root";
 
 // Content entries - xOn and xBy meta fields.
 export const ENTRY_META_FIELDS = [
+    // Entry-level meta fields.
+    "createdOn",
+    "modifiedOn",
+    "savedOn",
+    "firstPublishedOn",
+    "lastPublishedOn",
+    "createdBy",
+    "modifiedBy",
+    "savedBy",
+    "firstPublishedBy",
+    "lastPublishedBy",
+
     // Revision-level meta fields.
     "revisionCreatedOn",
-    "revisionSavedOn",
     "revisionModifiedOn",
+    "revisionSavedOn",
     "revisionFirstPublishedOn",
     "revisionLastPublishedOn",
     "revisionCreatedBy",
-    "revisionSavedBy",
     "revisionModifiedBy",
+    "revisionSavedBy",
     "revisionFirstPublishedBy",
-    "revisionLastPublishedBy",
-
-    // Entry-level meta fields.
-    "entryCreatedOn",
-    "entrySavedOn",
-    "entryModifiedOn",
-    "entryFirstPublishedOn",
-    "entryLastPublishedOn",
-    "entryCreatedBy",
-    "entrySavedBy",
-    "entryModifiedBy",
-    "entryFirstPublishedBy",
-    "entryLastPublishedBy"
+    "revisionLastPublishedBy"
 ] as const;
 
 export type EntryMetaFieldName = (typeof ENTRY_META_FIELDS)[number];
@@ -44,21 +44,21 @@ export interface RecordWithEntryMetaFields {
     revisionLastPublishedBy: CmsIdentity | null;
 
     // Entry-level meta fields.
-    entryCreatedOn: string;
-    entrySavedOn: string;
-    entryModifiedOn: string | null;
-    entryFirstPublishedOn: string | null;
-    entryLastPublishedOn: string | null;
-    entryCreatedBy: CmsIdentity;
-    entrySavedBy: CmsIdentity;
-    entryModifiedBy: CmsIdentity | null;
-    entryFirstPublishedBy: CmsIdentity | null;
-    entryLastPublishedBy: CmsIdentity | null;
+    createdOn: string;
+    savedOn: string;
+    modifiedOn: string | null;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
+    createdBy: CmsIdentity;
+    savedBy: CmsIdentity;
+    modifiedBy: CmsIdentity | null;
+    firstPublishedBy: CmsIdentity | null;
+    lastPublishedBy: CmsIdentity | null;
 }
 
 export const pickEntryMetaFields = (
     object: Partial<RecordWithEntryMetaFields>,
-    filter?: (fieldName: string) => boolean
+    filter?: (fieldName: EntryMetaFieldName | string) => boolean
 ) => {
     const pickedEntryMetaFields: Partial<RecordWithEntryMetaFields> = {};
     for (const entryMetaFieldName of ENTRY_META_FIELDS) {
@@ -77,7 +77,8 @@ export const pickEntryMetaFields = (
 
 export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only modifiedX and publishedX fields are nullable.
-    return fieldName.includes("Modified") || fieldName.includes("Published");
+    const lcFieldName = fieldName.toLowerCase();
+    return lcFieldName.includes("modified") || lcFieldName.includes("published");
 };
 
 export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
@@ -88,4 +89,18 @@ export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
 export const isIdentityEntryMetaField = (fieldName: EntryMetaFieldName) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("By");
+};
+
+export const isRevisionEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) &&
+        fieldName.startsWith("revision")
+    );
+};
+
+export const isEntryLevelEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) &&
+        !fieldName.startsWith("revision")
+    );
 };

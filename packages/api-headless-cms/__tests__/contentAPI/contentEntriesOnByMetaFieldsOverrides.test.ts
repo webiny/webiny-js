@@ -24,10 +24,10 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
                 revisionLastPublishedOn: testDate,
                 revisionFirstPublishedBy: identityB,
                 revisionLastPublishedBy: identityB,
-                entryFirstPublishedOn: testDate,
-                entryLastPublishedOn: testDate,
-                entryFirstPublishedBy: identityB,
-                entryLastPublishedBy: identityB
+                firstPublishedOn: testDate,
+                lastPublishedOn: testDate,
+                firstPublishedBy: identityB,
+                lastPublishedBy: identityB
             }
         });
 
@@ -35,16 +35,15 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             createdOn: expect.toBeDateString(),
             createdBy: identityA,
             modifiedBy: null,
-            ownedBy: identityA,
             savedOn: expect.toBeDateString(),
             revisionFirstPublishedOn: testDate,
             revisionLastPublishedOn: testDate,
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: testDate,
-            entryLastPublishedOn: testDate,
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB
+            firstPublishedOn: testDate,
+            lastPublishedOn: testDate,
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
     });
 });

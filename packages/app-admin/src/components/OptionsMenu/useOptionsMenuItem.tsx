@@ -1,8 +1,10 @@
 import React from "react";
 import { OptionsMenuItem } from "./OptionsMenuItem";
+import { OptionsMenuLink } from "./OptionsMenuLink";
 
 export interface OptionsMenuItemProviderContext {
     OptionsMenuItem: typeof OptionsMenuItem;
+    OptionsMenuLink: typeof OptionsMenuLink;
 }
 
 const OptionsMenuItemContext = React.createContext<OptionsMenuItemProviderContext | undefined>(
@@ -15,7 +17,7 @@ interface OptionsMenuItemProviderProps {
 
 export const OptionsMenuItemProvider = ({ children }: OptionsMenuItemProviderProps) => {
     return (
-        <OptionsMenuItemContext.Provider value={{ OptionsMenuItem }}>
+        <OptionsMenuItemContext.Provider value={{ OptionsMenuItem, OptionsMenuLink }}>
             {children}
         </OptionsMenuItemContext.Provider>
     );
