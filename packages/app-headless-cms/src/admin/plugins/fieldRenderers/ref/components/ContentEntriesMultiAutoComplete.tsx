@@ -51,7 +51,7 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
     }
 
     const refEntryOnChange = useCallback(
-        value => {
+        (value: OptionItem) => {
             /**
              * Append new selected entry at the end of existing entries.
              */

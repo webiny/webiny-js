@@ -6,20 +6,21 @@ import { i18n } from "@webiny/app/i18n";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import {
     DataList,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemTextSecondary,
-    ListItemMeta,
-    ListActions,
     DataListModalOverlay,
-    DataListModalOverlayAction
+    DataListModalOverlayAction,
+    List,
+    ListActions,
+    ListItem,
+    ListItemMeta,
+    ListItemText,
+    ListItemTextSecondary
 } from "@webiny/ui/List";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery, useApolloClient } from "../../hooks";
+import { useApolloClient, useQuery } from "../../hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import * as GQL from "./graphql";
+import { CmsGroupWithModels, ListCmsGroupsQueryResponse } from "./graphql";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
@@ -29,7 +30,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { deserializeSorters } from "../utils";
 import usePermission from "../../hooks/usePermission";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ListCmsGroupsQueryResponse, CmsGroupWithModels } from "./graphql";
+import { CmsGroup } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
@@ -73,7 +74,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const { canDelete } = usePermission();
 
     const filterData = useCallback(
-        ({ name }) => {
+        ({ name }: Pick<CmsGroup, "name">) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
@@ -96,7 +97,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const groupId = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
-        group => {
+        (group: Pick<CmsGroup, "id" | "name">) => {
             showConfirmation(async () => {
                 const response = await client.mutate({
                     mutation: GQL.DELETE_CONTENT_MODEL_GROUP,

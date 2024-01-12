@@ -128,7 +128,7 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
 
     const debouncedSearch = useRef<number | null>(null);
 
-    const onInput = useCallback(ev => {
+    const onInput = useCallback((ev: React.BaseSyntheticEvent) => {
         const value = (String(ev.target.value) || "").trim();
         if (debouncedSearch.current) {
             clearTimeout(debouncedSearch.current);

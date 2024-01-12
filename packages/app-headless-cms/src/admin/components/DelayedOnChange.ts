@@ -10,10 +10,10 @@ import noop from "lodash/noop";
  * The logic behind this component is to serve as a middleware between Form and Input/Textarea, and only notify form of a change when
  * a user stops typing for given period of time (400ms by default).
  */
-interface OnChangeCbCallable {
+export interface OnChangeCbCallable {
     (value: string): void;
 }
-interface OnChangeCallable {
+export interface OnChangeCallable {
     (value: string, cb?: OnChangeCbCallable): void;
 }
 interface ChildrenParams {
