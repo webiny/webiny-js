@@ -12,7 +12,7 @@ import { createDdbEntryEntity } from "../entities/createEntryEntity";
 import { assignNewMetaFields } from "../utils/assignNewMetaFields";
 import { isMigratedEntry } from "../utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
-import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/002/utils/getFirstLastPublishedOn";
+import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -25,7 +25,7 @@ interface FolderSubmissionsDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
 }
 
-export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
 
     constructor(table: Table<string, string, string>) {
@@ -33,7 +33,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-002";
+        return "5.39.0-001";
     }
 
     getDescription() {
@@ -166,4 +166,4 @@ export class CmsEntriesInitNewMetaFields_5_39_0_002 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_002, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_001, [inject(PrimaryDynamoTableSymbol)]);
