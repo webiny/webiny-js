@@ -33,7 +33,7 @@ export const AuditLogsPermissions = ({ value, onChange }: PageBuilderPermissions
     }, []);
 
     const onFormChange = useCallback(
-        formData => {
+        (formData: SecurityPermission) => {
             let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `al*` permission objects, it's easier to build new ones from scratch.
