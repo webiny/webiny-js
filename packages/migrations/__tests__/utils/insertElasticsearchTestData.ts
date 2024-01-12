@@ -9,34 +9,39 @@ export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
 >(
     elasticsearch: ElasticsearchClient,
-    table: Table<string, string, string>,
+    dynamoToEsTable: Table<string, string, string>,
     getIndexName: (item: TItem) => string
 ) => {
-    const records: TItem[] = await Promise.all(
-        (
-            await scanTable(table)
-        ).map(async record => {
-            const result = await getDecompressedData(record.data);
+    const scannedDynamoToEsTable = await scanTable(dynamoToEsTable);
 
+    // This can potentially contain both CMS and non-CMS records.
+    const allDynamoToEsTableRecords = await Promise.all(
+        scannedDynamoToEsTable.map(async record => {
+            const decompressedData = await getDecompressedData(record.data);
             return {
-                ...result,
-                PK: record.PK || result.PK,
-                SK: record.SK || result.SK
+                PK: record.PK,
+                SK: record.SK,
+                index: record.index,
+                decompressedData: decompressedData
             };
         })
     );
 
-    if (!records?.length) {
+    // Non-CMS records would not have been decompressed, so we need to filter them out.
+    const cmsRecords = allDynamoToEsTableRecords.filter(record => record.decompressedData);
+
+    if (!cmsRecords?.length) {
         return;
     }
     const operations = [];
 
     const indexes = new Set<string>();
 
-    for (const record of records) {
-        const index = getIndexName(record);
+    for (const record of cmsRecords) {
+        const index = getIndexName(record.decompressedData);
 
-        const id = record.PK && record.SK ? `${record.PK}:${record.SK}` : record.id;
+        const id =
+            record.PK && record.SK ? `${record.PK}:${record.SK}` : record.decompressedData.id;
         operations.push(
             {
                 index: {
@@ -44,7 +49,7 @@ export const transferDynamoDbToElasticsearch = async <
                     _index: index
                 }
             },
-            record
+            record.decompressedData
         );
         indexes.add(index);
         elasticsearch.indices.registerIndex(index);
@@ -92,7 +97,7 @@ export const transferDynamoDbToElasticsearch = async <
         });
     }
     await elasticsearch.indices.refreshAll();
-    return records;
+    return cmsRecords;
 };
 
 export const insertElasticsearchTestData = async <
