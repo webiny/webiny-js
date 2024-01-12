@@ -217,6 +217,7 @@ export const createWorkflowModelDefinition = ({
          * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
          */
         modelId: WORKFLOW_MODEL_ID,
+        titleFieldId: "title",
         fields: [
             titleField(),
             stepsField([

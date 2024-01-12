@@ -149,6 +149,7 @@ export const createFilterModelDefinition = () => {
     return createPrivateModelDefinition({
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
+        titleFieldId: "name",
         fields: [
             name(),
             description(),
