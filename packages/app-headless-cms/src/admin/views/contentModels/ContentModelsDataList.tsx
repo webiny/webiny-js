@@ -178,7 +178,7 @@ const ContentModelsDataList = ({
         history.push("/cms/content-models/" + contentModel.modelId);
     };
 
-    const viewContentEntries = useCallback(contentModel => {
+    const viewContentEntries = useCallback((contentModel: Pick<CmsModel, "modelId">) => {
         return () => history.push("/cms/content-entries/" + contentModel.modelId);
     }, []);
 
