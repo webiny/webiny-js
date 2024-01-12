@@ -6,9 +6,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.052Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814891bd1300087bd24c",
@@ -22,9 +22,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -53,9 +53,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.052Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814891bd1300087bd24c",
@@ -69,9 +69,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -100,9 +100,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.193Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148f98841000981c724",
@@ -116,9 +116,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -145,9 +145,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.192Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148f98841000981c724",
@@ -161,9 +161,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -190,9 +190,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:39.646Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:39.091Z",
         entryId: "658c246b87b17d00085b6ee4",
@@ -206,9 +206,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:39.628Z",
         savedOn: "2023-12-27T13:19:39.628Z",
@@ -234,9 +234,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:39.646Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:39.091Z",
         entryId: "658c246b87b17d00085b6ee4",
@@ -250,9 +250,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:39.628Z",
         savedOn: "2023-12-27T13:19:39.628Z",
@@ -278,9 +278,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:39.645Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:39.091Z",
         entryId: "658c246b87b17d00085b6ee4",
@@ -294,9 +294,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:39.628Z",
         savedOn: "2023-12-27T13:19:39.628Z",
@@ -322,9 +322,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.254Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dab",
@@ -338,9 +338,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -369,9 +369,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.253Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dab",
@@ -385,9 +385,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -416,9 +416,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:22:13.069Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:22:12.150Z",
         entryId: "658c250472719000081998d4",
@@ -432,9 +432,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelB",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:22:13.017Z",
         savedOn: "2023-12-27T13:22:13.017Z",
@@ -460,9 +460,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:22:13.069Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:22:12.150Z",
         entryId: "658c250472719000081998d4",
@@ -476,9 +476,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelB",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:22:13.017Z",
         savedOn: "2023-12-27T13:22:13.017Z",
@@ -504,9 +504,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:22:13.069Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:22:12.150Z",
         entryId: "658c250472719000081998d4",
@@ -520,9 +520,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelB",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:22:13.017Z",
         savedOn: "2023-12-27T13:22:13.017Z",
@@ -548,9 +548,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.114Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dad",
@@ -564,9 +564,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -595,9 +595,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.114Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dad",
@@ -611,9 +611,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -642,9 +642,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.273Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c721",
@@ -658,9 +658,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -689,9 +689,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.273Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c721",
@@ -705,9 +705,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -736,9 +736,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:45.894Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:44.910Z",
         entryId: "wby-aco-658c1b88bb44780008384722",
@@ -751,14 +751,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "acoSearchRecord-pbpage",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:44.910Z",
@@ -773,7 +773,7 @@ export const ddbPrimaryTableData = [
                         M: {
                             "text@displayName": { S: "ad min" },
                             "text@type": { S: "admin" },
-                            "text@id": { S: "658c1b5fbb4478000838470b" }
+                            "text@id": "658c1b5fbb4478000838470b"
                         }
                     },
                     "text@id": { S: "658c1b88bb44780008384722#0001" },
@@ -804,9 +804,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:45.894Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:44.910Z",
         entryId: "wby-aco-658c1b88bb44780008384722",
@@ -819,14 +819,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "acoSearchRecord-pbpage",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:44.910Z",
@@ -841,7 +841,7 @@ export const ddbPrimaryTableData = [
                         M: {
                             "text@displayName": { S: "ad min" },
                             "text@type": { S: "admin" },
-                            "text@id": { S: "658c1b5fbb4478000838470b" }
+                            "text@id": "658c1b5fbb4478000838470b"
                         }
                     },
                     "text@id": { S: "658c1b88bb44780008384722#0001" },
@@ -872,9 +872,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.011Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602282e07a77e60008f70d63",
@@ -888,9 +888,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -919,9 +919,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:43.975Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602282e07a77e60008f70d63",
@@ -935,9 +935,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -966,9 +966,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:20:51.579Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:20:51.541Z",
         entryId: "658c24b387b17d00085b6ee6",
@@ -982,9 +982,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T13:20:51.541Z",
@@ -1010,9 +1010,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:20:51.579Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:20:51.541Z",
         entryId: "658c24b387b17d00085b6ee6",
@@ -1026,9 +1026,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T13:20:51.541Z",
@@ -1054,9 +1054,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:23:06.008Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:22:21.968Z",
         entryId: "658c250d72719000081998d5",
@@ -1069,14 +1069,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "modelB",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T13:23:05.991Z",
@@ -1105,9 +1105,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:23:05.993Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:22:21.968Z",
         entryId: "658c250d72719000081998d5",
@@ -1120,14 +1120,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "modelB",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T13:23:05.991Z",
@@ -1156,9 +1156,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.055Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148f98841000981c723",
@@ -1172,9 +1172,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1203,9 +1203,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.055Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148f98841000981c723",
@@ -1219,9 +1219,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1250,9 +1250,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.074Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba26",
@@ -1266,9 +1266,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1297,9 +1297,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.074Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba26",
@@ -1313,9 +1313,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1344,9 +1344,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.172Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c720",
@@ -1360,9 +1360,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1391,9 +1391,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.172Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c720",
@@ -1407,9 +1407,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1438,9 +1438,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.071Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba27",
@@ -1454,9 +1454,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1485,9 +1485,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.058Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba27",
@@ -1501,9 +1501,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1532,9 +1532,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.032Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814a0df4b000088735bb",
@@ -1548,9 +1548,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1579,9 +1579,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.031Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814a0df4b000088735bb",
@@ -1595,9 +1595,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1626,9 +1626,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:43.972Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814b0df4b000088735bc",
@@ -1642,9 +1642,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1673,9 +1673,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:43.971Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814b0df4b000088735bc",
@@ -1689,9 +1689,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1720,9 +1720,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:56.465Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:56.020Z",
         entryId: "658c247c87b17d00085b6ee5",
@@ -1736,9 +1736,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:56.449Z",
         savedOn: "2023-12-27T13:19:56.449Z",
@@ -1764,9 +1764,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:56.465Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:56.020Z",
         entryId: "658c247c87b17d00085b6ee5",
@@ -1780,9 +1780,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:56.449Z",
         savedOn: "2023-12-27T13:19:56.449Z",
@@ -1808,9 +1808,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:56.464Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:56.020Z",
         entryId: "658c247c87b17d00085b6ee5",
@@ -1824,9 +1824,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:56.449Z",
         savedOn: "2023-12-27T13:19:56.449Z",
@@ -1852,9 +1852,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.094Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba28",
@@ -1868,9 +1868,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1899,9 +1899,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.094Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814bef4a940008b3ba28",
@@ -1915,9 +1915,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -1946,9 +1946,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:45.959Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:44.944Z",
         entryId: "wby-aco-658c1b88bb44780008384724",
@@ -1961,14 +1961,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "acoSearchRecord-pbpage",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:44.944Z",
@@ -1983,7 +1983,7 @@ export const ddbPrimaryTableData = [
                         M: {
                             "text@displayName": { S: "ad min" },
                             "text@type": { S: "admin" },
-                            "text@id": { S: "658c1b5fbb4478000838470b" }
+                            "text@id": "658c1b5fbb4478000838470b"
                         }
                     },
                     "text@id": { S: "658c1b88bb44780008384724#0001" },
@@ -2014,9 +2014,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:45.952Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:44.944Z",
         entryId: "wby-aco-658c1b88bb44780008384724",
@@ -2029,14 +2029,14 @@ export const ddbPrimaryTableData = [
         meta: {},
         modelId: "acoSearchRecord-pbpage",
         modifiedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:44.944Z",
@@ -2051,7 +2051,7 @@ export const ddbPrimaryTableData = [
                         M: {
                             "text@displayName": { S: "ad min" },
                             "text@type": { S: "admin" },
-                            "text@id": { S: "658c1b5fbb4478000838470b" }
+                            "text@id": "658c1b5fbb4478000838470b"
                         }
                     },
                     "text@id": { S: "658c1b88bb44780008384724#0001" },
@@ -2082,9 +2082,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:43.951Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814b7a77e60008f70d62",
@@ -2098,9 +2098,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2129,9 +2129,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:43.935Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814b7a77e60008f70d62",
@@ -2145,9 +2145,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2176,9 +2176,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.233Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dac",
@@ -2192,9 +2192,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2223,9 +2223,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.233Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486ed41f0008bc2dac",
@@ -2239,9 +2239,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2270,9 +2270,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.177Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814851197600081724ae",
@@ -2286,9 +2286,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2317,9 +2317,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.177Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "6022814851197600081724ae",
@@ -2333,9 +2333,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2364,9 +2364,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.293Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c71f",
@@ -2380,9 +2380,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2411,9 +2411,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.293Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228145f98841000981c71f",
@@ -2427,9 +2427,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2458,9 +2458,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.133Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486639200009fd35ec",
@@ -2474,9 +2474,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2505,9 +2505,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.133Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486639200009fd35ec",
@@ -2521,9 +2521,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2552,9 +2552,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.153Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148fa244d0008c47c79",
@@ -2568,9 +2568,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2599,9 +2599,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.152Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148fa244d0008c47c79",
@@ -2615,9 +2615,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2646,9 +2646,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:26.027Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:25.062Z",
         entryId: "658c245d87b17d00085b6ee3",
@@ -2662,9 +2662,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:26.001Z",
         savedOn: "2023-12-27T13:19:26.001Z",
@@ -2690,9 +2690,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:26.027Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:25.062Z",
         entryId: "658c245d87b17d00085b6ee3",
@@ -2706,9 +2706,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:26.001Z",
         savedOn: "2023-12-27T13:19:26.001Z",
@@ -2734,9 +2734,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T13:19:26.027Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T13:19:25.062Z",
         entryId: "658c245d87b17d00085b6ee3",
@@ -2750,9 +2750,9 @@ export const ddbPrimaryTableData = [
         modelId: "modelA",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "2023-12-27T13:19:26.001Z",
         savedOn: "2023-12-27T13:19:26.001Z",
@@ -2778,9 +2778,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.314Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148fa244d0008c47c7a",
@@ -2794,9 +2794,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2825,9 +2825,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.313Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "60228148fa244d0008c47c7a",
@@ -2841,9 +2841,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2872,9 +2872,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.117Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486639200009fd35eb",
@@ -2888,9 +2888,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
@@ -2919,9 +2919,9 @@ export const ddbPrimaryTableData = [
         _et: "CmsEntries",
         _md: "2023-12-27T12:41:44.117Z",
         createdBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         createdOn: "2023-12-27T12:41:43.820Z",
         entryId: "602281486639200009fd35eb",
@@ -2935,9 +2935,9 @@ export const ddbPrimaryTableData = [
         modelId: "fmFile",
         modifiedBy: "",
         ownedBy: {
-            type: { S: "admin" },
-            displayName: { S: "ad min" },
-            id: { S: "658c1b5fbb4478000838470b" }
+            type: "admin",
+            displayName: "ad min",
+            id: "658c1b5fbb4478000838470b"
         },
         publishedOn: "",
         savedOn: "2023-12-27T12:41:43.820Z",
