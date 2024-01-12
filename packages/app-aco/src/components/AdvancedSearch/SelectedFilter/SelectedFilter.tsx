@@ -16,7 +16,8 @@ export const SelectedFilter = (props: SelectedFilterProps) => {
             <Chip
                 label={props.filter.name}
                 icon={<EditIcon />}
-                onTrailingIconInteraction={props.onDelete}
+                onRemove={props.onDelete}
+                trailingIconRemovesChip={true}
                 onInteraction={props.onEdit}
                 trailingIcon={<CloseIcon />}
             />

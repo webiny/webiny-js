@@ -6,7 +6,7 @@ interface FoldersApiProviderHOCProps {
     children: React.ReactNode;
 }
 
-const FoldersApiProviderHOC = (Component: React.ComponentType) => {
+const FoldersApiProviderHOC = (Component: React.ComponentType<React.PropsWithChildren>) => {
     return function FoldersApiProviderHOC({ children }: FoldersApiProviderHOCProps) {
         return (
             <FoldersApiProvider>

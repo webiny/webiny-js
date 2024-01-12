@@ -66,7 +66,7 @@ export const NavigateFolderWithRouterProvider = ({
      * Navigate back to list, considering the latest visited folder.
      */
     const navigateToLatestFolder = useCallback(
-        folderId => {
+        (folderId: string) => {
             /**
              * We need to check if the stored folderId is the same as the current one, in this case we skip the navigation.
              */
