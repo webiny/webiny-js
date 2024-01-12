@@ -1,19 +1,19 @@
-import { useCallback, useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useNavigate } from "@webiny/react-router";
 import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useCurrentApp } from "./useLocationSearch";
 import {
-    GET_WORKFLOW_QUERY,
     CREATE_WORKFLOW_MUTATION,
-    LIST_WORKFLOWS_QUERY,
-    UPDATE_WORKFLOW_MUTATION,
-    GetWorkflowQueryResponse,
-    GetWorkflowQueryVariables,
     CreateWorkflowMutationResponse,
     CreateWorkflowMutationVariables,
+    GET_WORKFLOW_QUERY,
+    GetWorkflowQueryResponse,
+    GetWorkflowQueryVariables,
+    LIST_WORKFLOWS_QUERY,
+    UPDATE_WORKFLOW_MUTATION,
     UpdateWorkflowMutationResponse,
     UpdateWorkflowMutationVariables
 } from "~/graphql/workflow.gql";
@@ -75,7 +75,7 @@ interface UsePublishingWorkflowFormHookValue {
     showEmptyView: boolean;
     createPublishingWorkflow: CreatePublishingWorkflowCallable;
     cancelEditing: () => void;
-    onSubmit: (formData: any) => Promise<void>;
+    onSubmit: (formData: ApwWorkflow) => Promise<void>;
     isDirty: boolean;
     setIsDirty: (value: boolean) => void;
 }
@@ -144,7 +144,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
     const loading = [getQuery, createMutation, updateMutation].some(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: ApwWorkflow) => {
             /**
              * Add "app" variable.
              */
