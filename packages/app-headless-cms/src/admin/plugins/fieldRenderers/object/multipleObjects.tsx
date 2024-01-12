@@ -41,8 +41,8 @@ const Actions = ({ setHighlightIndex, bind, index }: ActionsProps) => {
     const { moveValueDown, moveValueUp } = bind.field;
 
     const onDown = useCallback(
-        e => {
-            e.stopPropagation();
+        (ev: React.BaseSyntheticEvent) => {
+            ev.stopPropagation();
             moveValueDown(index);
             setHighlightIndex(map => ({
                 ...map,
@@ -53,8 +53,8 @@ const Actions = ({ setHighlightIndex, bind, index }: ActionsProps) => {
     );
 
     const onUp = useCallback(
-        e => {
-            e.stopPropagation();
+        (ev: React.BaseSyntheticEvent) => {
+            ev.stopPropagation();
             moveValueUp(index);
             setHighlightIndex(map => ({
                 ...map,

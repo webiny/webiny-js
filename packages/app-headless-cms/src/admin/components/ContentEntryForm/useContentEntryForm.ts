@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react"
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { makeDecoratable, useSnackbar } from "@webiny/app-admin";
-import { FormOnSubmit } from "@webiny/form";
+import { FormAPI, FormOnSubmit } from "@webiny/form";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
@@ -77,7 +77,7 @@ export const useContentEntryForm = makeDecoratable(
         );
 
         const goToRevision = useCallback(
-            id => {
+            (id: string) => {
                 const fId = query.get("folderId");
                 const folderId = fId ? `&folderId=${encodeURIComponent(fId)}` : "";
                 history.push(
@@ -184,7 +184,7 @@ export const useContentEntryForm = makeDecoratable(
         );
 
         const updateContent = useCallback(
-            async (revision, data, form) => {
+            async (revision: string, data: CmsContentEntry, form: FormAPI<CmsContentEntry>) => {
                 setLoading(true);
                 const response = await updateMutation({
                     variables: {
@@ -271,8 +271,8 @@ export const useContentEntryForm = makeDecoratable(
         const onSubmit: FormOnSubmit<CmsContentEntry> = async (data, form) => {
             const fieldsIds = model.fields.map(item => item.fieldId);
             const formData = pick(data, [...fieldsIds]);
-
-            const gqlData = prepareFormData(formData, model.fields);
+            
+            const gqlData = prepareFormData<CmsContentEntry>(formData, model.fields);
 
             if (!entry.id) {
                 return createContent(gqlData as CmsContentEntry, form);
