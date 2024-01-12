@@ -42,7 +42,7 @@ export const LexicalText = ({ elementId, tag: customTag }: TextElementProps) => 
     }, [activeElement?.id, elementId]);
 
     const onChange = useCallback(
-        value => {
+        (value: string) => {
             getUpdateValue(DATA_NAMESPACE)(value);
         },
         [getUpdateValue]
