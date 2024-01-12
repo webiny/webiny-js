@@ -21,9 +21,12 @@ export type MenuChildrenFunctionProps = {
     closeMenu: () => void;
 };
 
+export interface RenderableMenuChildren {
+    (props: MenuChildrenFunctionProps): React.ReactElement;
+}
 export type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: React.ReactNode;
+    children: React.ReactNode | RenderableMenuChildren;
 
     // Custom render function for MenuItem content, prioritized over 'children'.
     render?: (props: MenuChildrenFunctionProps) => React.ReactNode;
