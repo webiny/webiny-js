@@ -15,7 +15,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             name: String!
             slug: String
             description: String
-            icon: String!
+            icon: JSON!
         }
 
         input CmsImportStructureModelInput {
@@ -24,7 +24,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             pluralApiName: String!
             modelId: String!
             group: String!
-            icon: String
+            icon: JSON
             description: String
             layout: [[ID!]!]!
             fields: [CmsContentModelFieldInput!]!

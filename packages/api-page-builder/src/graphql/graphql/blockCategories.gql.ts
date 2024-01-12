@@ -20,14 +20,14 @@ export const createBlockCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => 
                     createdBy: PbCreatedBy
                     name: String
                     slug: String
-                    icon: String
+                    icon: JSON
                     description: String
                 }
 
                 input PbBlockCategoryInput {
                     name: String!
                     slug: String!
-                    icon: String!
+                    icon: JSON!
                     description: String!
                 }
 

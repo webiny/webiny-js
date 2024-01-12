@@ -27,7 +27,13 @@ export const createBlockCategoryCreateValidation = () => {
                 }
             ),
         name: zod.string().min(1).max(100),
-        icon: zod.string().max(255),
+        icon: zod
+            .object({
+                type: zod.string().max(255),
+                name: zod.string().max(255),
+                value: zod.string()
+            })
+            .passthrough(),
         description: zod.string().min(1).max(100)
     });
 };
@@ -36,7 +42,13 @@ export const createBlockCategoryUpdateValidation = () => {
     return zod
         .object({
             name: zod.string().min(1).max(100),
-            icon: zod.string().max(255),
+            icon: zod
+                .object({
+                    type: zod.string().max(255),
+                    name: zod.string().max(255),
+                    value: zod.string()
+                })
+                .passthrough(),
             description: zod.string().min(1).max(100)
         })
         .partial();
