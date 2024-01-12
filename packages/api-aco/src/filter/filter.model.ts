@@ -155,7 +155,6 @@ export const createFilterModelDefinition = () => {
             namespace(),
             operation(),
             groups([operation(), filters([field(), condition(), value()])])
-        ],
-        noValidate: true
+        ]
     });
 };

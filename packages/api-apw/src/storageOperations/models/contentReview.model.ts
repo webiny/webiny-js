@@ -313,7 +313,6 @@ export const createContentReviewModelDefinition = ({
             ]),
             latestCommentId(),
             workflowIdField()
-        ],
-        noValidate: true
+        ]
     });
 };

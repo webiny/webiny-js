@@ -72,8 +72,7 @@ export const createSettingsModel = () => {
                 createTextField({
                     label: "Reply-To"
                 })
-            ],
-            noValidate: true
+            ]
         })
     );
 };

@@ -71,6 +71,7 @@ interface CmsPrivateModel
         | "description"
     > {
     noValidate?: never;
+    titleFieldId?: string;
     singularApiName?: never;
     pluralApiName?: never;
     isPrivate: true;
@@ -336,11 +337,12 @@ export const createCmsModel = (
 };
 
 export const createPrivateModelDefinition = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
+    input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
 ): CmsPrivateModelFull => {
     return {
         ...input,
         isPrivate: true,
+        noValidate: true,
         group: {
             id: "private",
             name: "Private Models"

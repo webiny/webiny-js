@@ -102,6 +102,7 @@ export const createSearchModelDefinition = (params?: CreateSearchModelDefinition
     return createPrivateModelDefinition({
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
+        titleFieldId: "title",
         fields: [
             typeField(),
             titleField(),
@@ -109,7 +110,6 @@ export const createSearchModelDefinition = (params?: CreateSearchModelDefinition
             locationField([locationFolderIdField()]),
             dataField(params?.fields),
             tagsField()
-        ],
-        noValidate: true
+        ]
     });
 };

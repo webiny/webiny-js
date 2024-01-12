@@ -52,7 +52,6 @@ export const createCommentModelDefinition = ({ modelId }: CreateCommentModelDefi
     return createPrivateModelDefinition({
         name: "APW - Comment",
         modelId: COMMENT_MODEL_ID,
-        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
-        noValidate: true
+        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
     });
 };

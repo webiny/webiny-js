@@ -235,7 +235,6 @@ export const createWorkflowModelDefinition = ({
                 ])
             ]),
             applicationField()
-        ],
-        noValidate: true
+        ]
     });
 };
