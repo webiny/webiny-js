@@ -13,6 +13,7 @@ import { NotAuthorizedError } from "./components";
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
     rootAppClientId: string;
+    children: React.ReactNode;
     onError?: Config["onError"];
 }
 
@@ -24,12 +25,12 @@ const GET_CLIENT_ID = gql`
     }
 `;
 
-const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
+const AppClientIdLoader = ({
     oktaFactory,
     rootAppClientId,
     onError,
     children
-}) => {
+}: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
@@ -127,10 +128,6 @@ export interface OktaProps {
 }
 
 export const Okta = (props: OktaProps) => {
-    /**
-     * TODO @ts-refactor
-     * Figure correct type for Compose.component
-     */
     return (
         <Fragment>
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
