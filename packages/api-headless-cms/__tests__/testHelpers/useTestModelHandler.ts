@@ -71,7 +71,11 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     data: {
                         name: groupId,
                         slug: groupId,
-                        icon: "ico/ico",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: groupId
                     }
                 });

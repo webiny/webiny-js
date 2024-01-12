@@ -59,7 +59,11 @@ describe("content model test", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });
@@ -130,7 +134,11 @@ describe("content model test", () => {
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
                 group: contentModelGroup.id,
-                icon: "fa/fas"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
 
@@ -157,7 +165,11 @@ describe("content model test", () => {
                             name: contentModelGroup.name,
                             slug: contentModelGroup.slug
                         },
-                        icon: "fa/fas"
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        }
                     },
                     error: null
                 }
@@ -211,7 +223,11 @@ describe("content model test", () => {
                 description: "changed description",
                 fields: [],
                 layout: [],
-                icon: "fa/updated"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
 
@@ -220,7 +236,11 @@ describe("content model test", () => {
             name: "changed name",
             description: "changed description",
             savedOn: expect.stringMatching(/^20/),
-            icon: "fa/updated"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         expect(changedUpdateResponse).toEqual({
@@ -1386,7 +1406,11 @@ describe("content model test", () => {
                 id: "a-custom-group-id",
                 name: "My Group With ID",
                 description: "A group with ID",
-                icon: "fa/fas"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
 

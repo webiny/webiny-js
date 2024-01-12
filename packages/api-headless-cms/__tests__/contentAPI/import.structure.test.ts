@@ -40,7 +40,11 @@ describe("import cms structure", () => {
             id: "group-1",
             name: "Group 1",
             slug: "group-1",
-            icon: "fas/star",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             description: "Group 1 description"
         };
 
@@ -78,13 +82,21 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
         const group2 = {
             id: "",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
@@ -140,14 +152,22 @@ describe("import cms structure", () => {
                     id: "group-1-original",
                     slug: "group-1",
                     name: "Group 1 Original",
-                    icon: "fa/fas",
+                    icon: {
+                        type: "emoji",
+                        name: "thumbs_up",
+                        value: "👍"
+                    },
                     description: ""
                 }),
                 createCmsGroup({
                     id: "group-2",
                     slug: "group-2-original",
                     name: "Group 2 Original",
-                    icon: "fa/fas",
+                    icon: {
+                        type: "emoji",
+                        name: "thumbs_up",
+                        value: "👍"
+                    },
                     description: ""
                 })
             ]
@@ -157,19 +177,31 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
         const group2 = {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
         const group3 = {
             id: "group-3",
             slug: "group-3",
             name: "Group 3",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
@@ -230,13 +262,21 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
         const group2 = {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
@@ -281,7 +321,11 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         const model = {
@@ -375,7 +419,11 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
 
         const model = {

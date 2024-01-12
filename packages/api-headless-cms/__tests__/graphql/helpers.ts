@@ -8,7 +8,11 @@ const createGroup = async (handler: any): Promise<CmsGroup> => {
             name: "Test Group",
             slug: "testGroup",
             description: "",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         }
     });
     const error = response.data?.createContentModelGroup?.error;

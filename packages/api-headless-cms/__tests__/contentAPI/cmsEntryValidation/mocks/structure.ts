@@ -23,7 +23,11 @@ export const createValidationStructure = (input: Partial<Omit<CmsModel, "group">
         name: "Validation structure",
         slug: "validationstructuregroup",
         description: "Validation structure group description",
-        icon: "fas/star"
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        }
     });
     const group = cmsGroupPlugin.contentModelGroup;
     const model = createModel({

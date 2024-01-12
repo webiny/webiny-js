@@ -17,28 +17,44 @@ context("Page Builder - Blocks", () => {
     const blockCategoryData1 = {
         name: nanoid(10).toLowerCase(),
         slug: nanoid(10).toLowerCase(),
-        icon: "icon-name",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         description: nanoid(10).toLowerCase()
     };
 
     const blockCategoryData2 = {
         name: nanoid(10).toLowerCase(),
         slug: nanoid(10).toLowerCase(),
-        icon: "icon-name",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         description: nanoid(10).toLowerCase()
     };
 
     const blockCategoryData3 = {
         name: nanoid(10).toLowerCase(),
         slug: nanoid(10).toLowerCase(),
-        icon: "icon-name",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         description: nanoid(10).toLowerCase()
     };
 
     const blockCategoryData4 = {
         name: nanoid(10).toLowerCase(),
         slug: nanoid(10).toLowerCase(),
-        icon: "icon-name",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         description: nanoid(10).toLowerCase()
     };
 

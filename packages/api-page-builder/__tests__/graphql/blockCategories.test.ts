@@ -36,7 +36,7 @@ describe("Block Categories CRUD Test", () => {
             let data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name`,
-                icon: `${prefix}icon`,
+                icon: { type: `emoji`, name: `${prefix}icon`, value: `👍` },
                 description: `${prefix}description`
             };
 
@@ -75,7 +75,7 @@ describe("Block Categories CRUD Test", () => {
             data = {
                 slug: data.slug, // Slug cannot be changed.
                 name: data.name + "-UPDATED",
-                icon: data.icon + "-UPDATED",
+                icon: { ...data.icon, name: data.icon.name + "-UPDATED" },
                 description: data.description + "-UPDATED"
             };
 
@@ -106,7 +106,11 @@ describe("Block Categories CRUD Test", () => {
                             {
                                 slug: "block-category-one-slug",
                                 name: "block-category-one-name-UPDATED",
-                                icon: "block-category-one-icon-UPDATED",
+                                icon: {
+                                    type: "emoji",
+                                    name: "block-category-one-icon-UPDATED",
+                                    value: "👍"
+                                },
                                 description: "block-category-one-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
@@ -114,7 +118,11 @@ describe("Block Categories CRUD Test", () => {
                             {
                                 slug: "block-category-two-slug",
                                 name: "block-category-two-name-UPDATED",
-                                icon: "block-category-two-icon-UPDATED",
+                                icon: {
+                                    type: "emoji",
+                                    name: "block-category-two-icon-UPDATED",
+                                    value: "👍"
+                                },
                                 description: "block-category-two-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
@@ -122,7 +130,11 @@ describe("Block Categories CRUD Test", () => {
                             {
                                 slug: "block-category-three-slug",
                                 name: "block-category-three-name-UPDATED",
-                                icon: "block-category-three-icon-UPDATED",
+                                icon: {
+                                    type: "emoji",
+                                    name: "block-category-three-icon-UPDATED",
+                                    value: "👍"
+                                },
                                 description: "block-category-three-description-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
@@ -140,7 +152,11 @@ describe("Block Categories CRUD Test", () => {
             const data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name-UPDATED`,
-                icon: `${prefix}icon-UPDATED`,
+                icon: {
+                    type: `emoji`,
+                    name: `${prefix}icon-UPDATED`,
+                    value: `👍`
+                },
                 description: `${prefix}description-UPDATED`
             };
 
@@ -180,7 +196,11 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 slug: ``,
                 name: `empty-slug-category-name`,
-                icon: `empty-slug-category-icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `empty-slug-category-icon`,
+                    value: `👍`
+                },
                 description: `empty-slug-category-description`
             }
         });
@@ -214,7 +234,11 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 slug: `invalid--slug--category`,
                 name: `invalid--slug--category--name`,
-                icon: `invalid--slug--category--icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `invalid--slug--category--icon`,
+                    value: `👍`
+                },
                 description: `invalid--slug--category--description`
             }
         });
@@ -267,7 +291,11 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 slug: ``,
                 name: `empty-slug-category-name`,
-                icon: `empty-slug-category-icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `empty-slug-category-icon`,
+                    value: `👍`
+                },
                 description: `empty-slug-category-description`
             }
         });
@@ -289,7 +317,11 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 slug: `delete-block-cat`,
                 name: `name`,
-                icon: `icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `icon`,
+                    value: `👍`
+                },
                 description: `description`
             }
         });
@@ -402,7 +434,11 @@ describe("Block Categories CRUD Test", () => {
                     createdBy: defaultIdentity,
                     slug: `delete-block-cat`,
                     name: `name`,
-                    icon: `icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `icon`,
+                        value: `👍`
+                    },
                     description: `description`
                 },
                 error: null

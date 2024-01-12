@@ -29,7 +29,11 @@ describe("benchmark points", () => {
         const data = {
             name: "My group",
             slug: "my-group",
-            icon: "fas/star",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             description: "My group description"
         };
         const [result] = await createContentModelGroupMutation({

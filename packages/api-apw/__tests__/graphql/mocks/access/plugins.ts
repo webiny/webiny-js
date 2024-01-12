@@ -5,7 +5,11 @@ export const accessTestGroup = createCmsGroup({
     slug: "accessTestGroup",
     name: "Access Test Group",
     description: "",
-    icon: "fa/fas"
+    icon: {
+        type: "emoji",
+        name: "thumbs_up",
+        value: "👍"
+    }
 });
 
 export const accessTestModel = createCmsModel({

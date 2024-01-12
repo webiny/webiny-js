@@ -62,7 +62,11 @@ describe("Page blocks Security Test", () => {
             data: {
                 slug: `block-category`,
                 name: `block-category-name`,
-                icon: `block-category-icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `block-category-icon`,
+                    value: `👍`
+                },
                 description: `block-category-description`
             }
         });
@@ -277,7 +281,11 @@ describe("Page blocks Security Test", () => {
             data: {
                 slug: `block-category`,
                 name: `block-category-name`,
-                icon: `block-category-icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `block-category-icon`,
+                    value: `👍`
+                },
                 description: `block-category-description`
             }
         });
@@ -363,7 +371,11 @@ describe("Page blocks Security Test", () => {
                 data: {
                     slug: `block-category`,
                     name: `block-category-name`,
-                    icon: `block-category-icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `block-category-icon`,
+                        value: `👍`
+                    },
                     description: `block-category-description`
                 }
             });
@@ -392,7 +404,11 @@ describe("Page blocks Security Test", () => {
             data: {
                 slug: `block-category`,
                 name: `block-category-name`,
-                icon: `block-category-icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `block-category-icon`,
+                    value: `👍`
+                },
                 description: `block-category-description`
             }
         });
@@ -509,7 +525,11 @@ describe("Page blocks Security Test", () => {
                 data: {
                     slug: `block-category`,
                     name: `block-category-name`,
-                    icon: `block-category-icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `block-category-icon`,
+                        value: `👍`
+                    },
                     description: `block-category-description`
                 }
             });
@@ -568,7 +588,11 @@ describe("Page blocks Security Test", () => {
                 data: {
                     slug: `block-category`,
                     name: `block-category-name`,
-                    icon: `block-category-icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `block-category-icon`,
+                        value: `👍`
+                    },
                     description: `block-category-description`
                 }
             });
@@ -613,7 +637,11 @@ describe("Page blocks Security Test", () => {
                 data: {
                     slug: `block-category`,
                     name: `block-category-name`,
-                    icon: `block-category-icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `block-category-icon`,
+                        value: `👍`
+                    },
                     description: `block-category-description`
                 }
             });
@@ -651,7 +679,11 @@ describe("Page blocks Security Test", () => {
                 data: {
                     slug: `block-category`,
                     name: `block-category-name`,
-                    icon: `block-category-icon`,
+                    icon: {
+                        type: `emoji`,
+                        name: `block-category-icon`,
+                        value: `👍`
+                    },
                     description: `block-category-description`
                 }
             });

@@ -10,13 +10,21 @@ interface JsonResult {
 
 const groups: Omit<CmsGroup, "id">[] = [
     {
-        icon: "fas/star",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         slug: "group-1",
         name: "Group 1",
         description: "Group 1 description"
     },
     {
-        icon: "fas/star",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         slug: "group-2",
         name: "Group 2",
         description: "Group 2 description"
@@ -86,7 +94,11 @@ describe("export cms structure", () => {
                     titleFieldId: model.titleFieldId,
                     pluralApiName: model.pluralApiName,
                     singularApiName: model.singularApiName,
-                    icon: model.icon || "fa/fas",
+                    icon: model.icon || {
+                        type: "emoji",
+                        name: "thumbs_up",
+                        value: "👍"
+                    },
                     description: model.description || ""
                 }
             });

@@ -1,4 +1,4 @@
-import { CmsGroup } from "~/types";
+import { CmsGroup, Icon } from "~/types";
 import models from "../contentAPI/mocks/contentModels";
 import { useGraphQLHandler } from "./useGraphQLHandler";
 import { CmsModel } from "../types";
@@ -89,7 +89,7 @@ export interface SetupContentModelGroupGqlVars {
     data: {
         name: string;
         slug: string;
-        icon: string;
+        icon: Icon;
         description: string;
     };
 }
@@ -103,7 +103,11 @@ export const setupContentModelGroup = async (
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         };
