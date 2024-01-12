@@ -66,8 +66,6 @@ export const RuleButtonDescription = styled.div`
     }
 `;
 
-export const ConditionSetupWrapper = styled.div``;
-
 export const StyledAddRuleButton = styled(ButtonSecondary)`
     width: 150px;
 `;

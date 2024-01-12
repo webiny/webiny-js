@@ -3,7 +3,6 @@ import React from "react";
 import { BindComponent } from "@webiny/form/types";
 
 import { RuleConditions, AddCondition } from "../RulesConditions";
-import { ConditionSetupWrapper } from "~/admin/components/FormEditor/Tabs/EditTab/Styled";
 import { FbFormRule, FbFormModelField } from "~/types";
 import { RuleActionSelect } from "../RuleActionSelect";
 
@@ -29,7 +28,7 @@ export const Rule = ({ ruleIndex, bind: Bind, fields, rules }: RuleProps) => {
                     ) : (
                         <>
                             {rule.conditions.map((condition, conditionIndex) => (
-                                <ConditionSetupWrapper key={condition.id}>
+                                <div key={condition.id}>
                                     <RuleConditions
                                         rule={rule}
                                         condition={condition}
@@ -38,7 +37,7 @@ export const Rule = ({ ruleIndex, bind: Bind, fields, rules }: RuleProps) => {
                                         rules={rules}
                                         onChange={onChange}
                                     />
-                                </ConditionSetupWrapper>
+                                </div>
                             ))}
                             <RuleActionSelect rule={rule} onChange={onChange} />
                         </>

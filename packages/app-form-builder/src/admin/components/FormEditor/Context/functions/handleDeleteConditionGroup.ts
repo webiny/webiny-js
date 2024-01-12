@@ -9,10 +9,8 @@ interface DeleteConditionGroupParams {
     conditionGroup: FbFormModelField;
     conditionGroupFields: FbFormModelField[];
 }
-/*
-    When we delete condition group we also need to delete fields inside of it,
-    because those fields belong directly (they are being stored in the setting of the condition group) to the condition group and not the step.
-*/
+// When we delete condition group we also need to delete fields inside of it,
+// because those fields belong directly (they are being stored in the setting of the condition group) to the condition group and not the step.
 export default (params: DeleteConditionGroupParams) => {
     const { data, formStep, stepFields, conditionGroup, conditionGroupFields } = params;
 
