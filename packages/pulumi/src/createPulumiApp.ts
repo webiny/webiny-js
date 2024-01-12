@@ -14,9 +14,11 @@ import {
 } from "./PulumiAppResource";
 import {
     CreatePulumiAppParams,
+    ProgramDecorator,
     PulumiApp,
     PulumiAppParam,
     PulumiAppParamCallback,
+    PulumiProgram,
     ResourceHandler
 } from "~/types";
 import { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource";
@@ -42,6 +44,8 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         appRelativePath
     );
 
+    const programDecorators: ProgramDecorator<any, any>[] = [];
+
     const app: PulumiApp<TResources> = {
         resourceHandlers: [],
         handlers: [],
@@ -60,11 +64,21 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
             create: params.config || {},
             run: {}
         },
+        decorateProgram: cb => {
+            programDecorators.push(cb);
+        },
 
         async run(config) {
             app.params.run = config;
 
-            Object.assign(app.resources, await app.program(app));
+            const programOutput = programDecorators.reduce<PulumiProgram<PulumiApp<TResources>>>(
+                (program, decorator) => {
+                    return app => decorator(program, app);
+                },
+                (input: PulumiApp<any>) => app.program(input)
+            );
+
+            Object.assign(app.resources, await programOutput(app));
 
             for (const handler of app.handlers) {
                 await handler();

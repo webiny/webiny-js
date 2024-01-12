@@ -39,11 +39,15 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const Div: React.FC = ({ children }) => {
+interface DivProps {
+    children: React.ReactNode;
+}
+
+const Div = ({ children }: DivProps) => {
     return <div>{children}</div>;
 };
 
-const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
+const Revision = ({ revision, page }: RevisionProps) => {
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 

@@ -23,11 +23,13 @@ export function useFileManagerViewConfig() {
             browser: {
                 ...browser,
                 bulkActions: [...(browser.bulkActions || [])],
+                bulkEditFields: [...(browser.bulkEditFields || [])],
                 filterByTags: browser.filterByTags ?? false,
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]
             },
             fileDetails: {
+                groupFields: config.fileDetails?.groupFields ?? false,
                 width: config.fileDetails?.width ?? "1000px",
                 fields: config.fileDetails?.fields ?? []
             }

@@ -1,7 +1,11 @@
 import React from "react";
 import { IconButton } from "~/Button";
 
-export const AccordionItemActions: React.FC = ({ children }) => {
+interface AccordionItemActionsProps {
+    children: React.ReactNode;
+}
+
+export const AccordionItemActions = ({ children }: AccordionItemActionsProps) => {
     return <>{children}</>;
 };
 

@@ -4,7 +4,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { LoginContent, LogoWrapper, Wrapper, InnerContent } from "./StyledComponents";
 import { makeComposable } from "@webiny/app-serverless-cms";
 
-export const LoginLayout: React.FC = makeComposable("LoginLayout", ({ children }) => (
+export const LoginLayout = makeComposable("LoginLayout", ({ children }) => (
     <Wrapper>
         <LogoWrapper>
             <Logo />

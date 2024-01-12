@@ -24,7 +24,7 @@ interface RichTextEditorProviderProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ children }) => {
+export const RichTextEditorProvider = ({ children }: RichTextEditorProviderProps) => {
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);

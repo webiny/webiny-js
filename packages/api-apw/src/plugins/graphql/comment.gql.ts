@@ -2,15 +2,46 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ApwCommentListParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
-    typeDefs: /* GraphQL */ `
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    typeDefs: () => {
+        const metaFieldsBaseNames = ["created", "modified", "saved"];
+
+        const dateTimeWhereFields = metaFieldsBaseNames
+            .map(name => {
+                return `
+                ${name}On: DateTime
+                ${name}On_gt: DateTime
+                ${name}On_gte: DateTime
+                ${name}On_lt: DateTime
+                ${name}On_lte: DateTime
+                ${name}On_between: [DateTime!]
+                ${name}On_not_between: [DateTime!]
+            `;
+            })
+            .join("\n");
+
+        const identityWhereFields = metaFieldsBaseNames
+            .map(name => {
+                return `
+                ${name}By: ID
+                ${name}By_not: ID
+                ${name}By_in: [ID!]
+                ${name}By_not_in: [ID!]
+            `;
+            })
+            .join("\n");
+
+        return [
+            `
         type ApwCommentListItem {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # Comment specific fields
             body: JSON
             changeRequest: ID
@@ -27,9 +58,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwComment {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # Comment specific fields
             body: JSON
             changeRequest: ID
@@ -49,10 +80,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         enum ApwListCommentsSort {
             id_ASC
             id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
+            
+            ${dateTimeFieldsSorters}
         }
 
         input ApwCreateCommentInput {
@@ -70,28 +99,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id_not: ID
             id_in: [ID!]
             id_not_in: [ID!]
-            createdOn: DateTime
-            createdOn_gt: DateTime
-            createdOn_gte: DateTime
-            createdOn_lt: DateTime
-            createdOn_lte: DateTime
-            createdOn_between: [DateTime!]
-            createdOn_not_between: [DateTime!]
-            savedOn: DateTime
-            savedOn_gt: DateTime
-            savedOn_gte: DateTime
-            savedOn_lt: DateTime
-            savedOn_lte: DateTime
-            savedOn_between: [DateTime!]
-            savedOn_not_between: [DateTime!]
-            createdBy: String
-            createdBy_not: String
-            createdBy_in: [String!]
-            createdBy_not_in: [String!]
-            ownedBy: String
-            ownedBy_not: String
-            ownedBy_in: [String!]
-            ownedBy_not_in: [String!]
+            
+            ${dateTimeWhereFields}
+            ${identityWhereFields}
+            
             changeRequest: ApwRefFieldWhereInput
         }
 
@@ -113,7 +124,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
             deleteComment(id: ID!): ApwDeleteCommentResponse
         }
-    `,
+    `
+        ];
+    },
     resolvers: {
         ApwQuery: {
             getComment: async (_, args: any, context) => {

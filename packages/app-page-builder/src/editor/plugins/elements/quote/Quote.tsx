@@ -9,7 +9,7 @@ interface QuoteProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const Quote: React.FC<QuoteProps> = props => {
+const Quote = (props: QuoteProps) => {
     const { element, ...rest } = props;
     return <PeQuote element={element as Element} {...rest} />;
 };

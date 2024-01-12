@@ -25,14 +25,14 @@ export const PageElementsContext = createContext<PageElementsContextValue>(
     null as unknown as PageElementsContextValue
 );
 
-export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
+export const PageElementsProvider = ({
     children,
     theme,
     renderers = {},
     modifiers,
     beforeRenderer = null,
     afterRenderer = null
-}) => {
+}: PageElementsProviderProps) => {
     // Attributes-related callbacks.
     const getElementAttributes = useCallback<GetElementAttributes>(
         element => {

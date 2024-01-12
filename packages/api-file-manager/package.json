@@ -28,11 +28,11 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
-    "@webiny/handler-client": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/pubsub": "0.0.0",
+    "@webiny/tasks": "0.0.0",
     "@webiny/validation": "0.0.0",
     "lodash": "^4.17.11",
     "object-hash": "^2.1.1"

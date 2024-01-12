@@ -15,16 +15,17 @@ export async function invokeHandlerClient<TParams>({
 }: InvokeHandlerClientParams<TParams>) {
     const { request } = context;
     const tenantId = context.tenancy.getCurrentTenant().id;
-
+  
+    // Invoke handler
     await context.handlerClient.invoke<TParams & any>({
         name: name,
         payload: {
             ...payload,
+            httpMethod: request.method,
             headers: {
                 ["x-i18n-locale"]: request.headers["x-i18n-locale"],
                 ["x-tenant"]: request.headers["x-tenant"] || tenantId
-            },
-            httpMethod: request.method
+            }
         },
         await: false,
         description

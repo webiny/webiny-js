@@ -13,7 +13,7 @@ interface ContentPermissionsProps {
     value: I18NSecurityPermission[];
     onChange: (value: I18NSecurityPermission[]) => void;
 }
-export const ContentPermissions: React.FC<ContentPermissionsProps> = ({ value, onChange }) => {
+export const ContentPermissions = ({ value, onChange }: ContentPermissionsProps) => {
     const { getLocales } = useI18N();
 
     const onFormChange = useCallback((formData: I18NSecurityPermission) => {

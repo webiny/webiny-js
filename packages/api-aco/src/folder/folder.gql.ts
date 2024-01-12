@@ -40,9 +40,12 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
 
             type: String!
             parentId: ID
-            savedOn: DateTime
             createdOn: DateTime
+            modifiedOn: DateTime
+            savedOn: DateTime
             createdBy: AcoUser
+            modifiedBy: AcoUser
+            savedBy: AcoUser
         }
 
         input FolderCreateInput {

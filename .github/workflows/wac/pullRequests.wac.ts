@@ -211,12 +211,17 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Build packages (full)",
                     run: "yarn build"
+                },
+                {
+                    name: "Check types for Cypress tests",
+                    run: "yarn cy:ts"
                 }
             ]
         }),
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
         jestTestsDdbEs: createJestTestsJob("ddb-es"),
+        jestTestsDdbOs: createJestTestsJob("ddb-os"),
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",

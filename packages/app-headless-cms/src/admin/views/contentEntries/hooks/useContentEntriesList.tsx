@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry } from "~/types";
+import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, createSort } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
-import { ListMeta } from "@webiny/app-aco/types";
 import {
-    isRecordEntry,
-    transformCmsContentEntriesToRecordEntries,
-    transformFolderItemsToFolderEntries
-} from "~/utils/acoRecordTransform";
-import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
-import { TableProps } from "~/admin/components/ContentEntries/Table";
+    useAcoList,
+    createSort,
+    useNavigateFolder,
+    createRecordsData,
+    createFoldersData
+} from "@webiny/app-aco";
+import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
+import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -24,7 +24,8 @@ interface UpdateSearchCallable {
 }
 
 export interface ContentEntriesListProviderContext {
-    folders: FolderEntry[];
+    folders: FolderTableItem[];
+    getEntryEditUrl: (item: EntryTableItem) => string;
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
@@ -32,8 +33,8 @@ export interface ContentEntriesListProviderContext {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    onSelectRow: TableProps["onSelectRow"];
-    records: RecordEntry[];
+    onSelectRow: (rows: TableItem[] | []) => void;
+    records: EntryTableItem[];
     search: string;
     selected: CmsContentEntry[];
     setSearch: (value: string) => void;
@@ -56,6 +57,7 @@ interface ContentEntriesListProviderProps {
 export const ContentEntriesListProvider = ({ children }: ContentEntriesListProviderProps) => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
+    const { currentFolderId } = useNavigateFolder();
 
     const {
         folders: initialFolders,
@@ -117,20 +119,35 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         updateSearch({ search, query });
     }, [search]);
 
-    const onSelectRow: TableProps["onSelectRow"] = rows => {
-        const recordEntries = rows.filter(isRecordEntry) as RecordEntry[];
-        const cmsContentEntries = recordEntries.map(record => record.original);
+    const onSelectRow: ContentEntriesListProviderContext["onSelectRow"] = rows => {
+        const items = rows.filter(item => item.$type === "RECORD");
+
+        const cmsContentEntries = items
+            .map(item => omit(item, ["$type", "$selectable"]))
+            .map(item => item as unknown as CmsContentEntry);
+
         setSelected(cmsContentEntries);
     };
 
+    const getEntryEditUrl = useCallback(
+        (entry: EntryTableItem): string => {
+            const folderPath = currentFolderId
+                ? `&folderId=${encodeURIComponent(currentFolderId)}`
+                : "";
+
+            const idPath = encodeURIComponent(entry.id);
+
+            return `${baseUrl}?id=${idPath}${folderPath}`;
+        },
+        [baseUrl, currentFolderId]
+    );
+
     const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(
-            initialRecords as unknown as CmsContentEntry[]
-        );
+        return createRecordsData(initialRecords);
     }, [initialRecords]);
 
     const folders = useMemo(() => {
-        return transformFolderItemsToFolderEntries(initialFolders);
+        return createFoldersData(initialFolders);
     }, [initialFolders]);
 
     useEffect(() => {
@@ -146,6 +163,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const context: ContentEntriesListProviderContext = {
         folders,
+        getEntryEditUrl,
         isListLoading,
         isListLoadingMore,
         isSearch,

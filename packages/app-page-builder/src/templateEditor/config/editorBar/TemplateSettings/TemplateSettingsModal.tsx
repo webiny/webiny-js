@@ -32,7 +32,7 @@ const narrowDialog = css`
     }
 `;
 
-const TemplateSettingsModal: React.FC = () => {
+const TemplateSettingsModal = () => {
     const handler = useEventActionHandler();
     const [template] = useTemplate();
     const [, setState] = useRecoilState(templateSettingsStateAtom);

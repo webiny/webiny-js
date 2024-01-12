@@ -225,7 +225,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: React.FC;
+    Label: React.ComponentType;
     getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
     contentModel: CmsModel;
 }
@@ -343,15 +343,16 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
     createdBy: CmsIdentity;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
         image?: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
@@ -361,20 +362,21 @@ export interface CmsContentEntry {
 
 export interface CmsContentEntryRevision {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     createdBy: CmsIdentity;
     wbyAco_location: Location;
     meta: {
         title: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
     };
 }
 
-export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.ComponentType<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -533,7 +535,7 @@ interface BindComponentProps<T = any, F = any>
     children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent<T = any, F = any> = React.FC<BindComponentProps<T, F>> & {
+export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
     parentName?: string;
 };
 

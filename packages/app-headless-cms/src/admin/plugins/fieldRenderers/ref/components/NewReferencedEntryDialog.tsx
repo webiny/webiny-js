@@ -69,7 +69,7 @@ interface EntryFormProps {
     onCreate: (entry: CmsContentEntry) => void;
 }
 
-const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
+const EntryForm = ({ onCreate }: EntryFormProps) => {
     const { setFormRef, contentModel } = useContentEntry();
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
 
@@ -101,7 +101,7 @@ const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
     );
 };
 
-const DialogSaveButton: React.VFC = () => {
+const DialogSaveButton = () => {
     const { form } = useContentEntry();
 
     const onClick = useCallback(
@@ -116,17 +116,17 @@ const DialogSaveButton: React.VFC = () => {
     return <ButtonPrimary onClick={onClick}>{t`Create Entry`}</ButtonPrimary>;
 };
 
-interface Props {
+interface NewReferencedEntryDialogProps {
     model: Pick<CmsModel, "modelId">;
     onClose: () => void;
     onChange: (entry: any) => void;
 }
 
-export const NewReferencedEntryDialog: React.VFC<Props> = ({
+export const NewReferencedEntryDialog = ({
     model: baseModel,
     onClose,
     onChange
-}) => {
+}: NewReferencedEntryDialogProps) => {
     const { apolloClient } = useCms();
     const [model, setModel] = useState<CmsModel | undefined>(undefined);
 

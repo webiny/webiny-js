@@ -6,6 +6,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
@@ -14,6 +15,7 @@ interface RenderListFilterFieldsParams {
     fieldTypePlugins: CmsFieldTypePlugins;
     excludeFields?: string[];
 }
+
 interface RenderListFilterFields {
     (params: RenderListFilterFieldsParams): string;
 }
@@ -33,36 +35,29 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         "entryId_not: String",
         "entryId_in: [String!]",
         "entryId_not_in: [String!]",
-        "createdOn: DateTime",
-        "createdOn_gt: DateTime",
-        "createdOn_gte: DateTime",
-        "createdOn_lt: DateTime",
-        "createdOn_lte: DateTime",
-        "createdOn_between: [DateTime!]",
-        "createdOn_not_between: [DateTime!]",
-        "savedOn: DateTime",
-        "savedOn_gt: DateTime",
-        "savedOn_gte: DateTime",
-        "savedOn_lt: DateTime",
-        "savedOn_lte: DateTime",
-        "savedOn_between: [DateTime!]",
-        "savedOn_not_between: [DateTime!]",
-        "publishedOn: DateTime",
-        "publishedOn_gt: DateTime",
-        "publishedOn_gte: DateTime",
-        "publishedOn_lt: DateTime",
-        "publishedOn_lte: DateTime",
-        "publishedOn_between: [DateTime!]",
-        "publishedOn_not_between: [DateTime!]",
-        "createdBy: String",
-        "createdBy_not: String",
-        "createdBy_in: [String!]",
-        "createdBy_not_in: [String!]",
-        "ownedBy: String",
-        "ownedBy_not: String",
-        "ownedBy_in: [String!]",
-        "ownedBy_not_in: [String!]"
+
+        ...ENTRY_META_FIELDS.map(field => {
+            if (isDateTimeEntryMetaField(field)) {
+                return [
+                    `${field}: DateTime`,
+                    `${field}_gt: DateTime`,
+                    `${field}_gte: DateTime`,
+                    `${field}_lt: DateTime`,
+                    `${field}_lte: DateTime`,
+                    `${field}_between: [DateTime!]`,
+                    `${field}_not_between: [DateTime!]`
+                ];
+            }
+
+            return [
+                `${field}: ID`,
+                `${field}_not: ID`,
+                `${field}_in: [ID!]`,
+                `${field}_not_in: [ID!]`
+            ];
+        }).flat()
     ];
+
     /**
      * We can find different statuses only in the manage API endpoint.
      */

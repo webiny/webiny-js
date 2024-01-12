@@ -3,19 +3,21 @@ import { sendEvent } from "@webiny/telemetry/react";
 
 let eventSent = false;
 
-export const createTelemetryProvider =
-    () =>
-    (Component: React.FC): React.FC => {
-        return function TelemetryProvider({ children }) {
-            useEffect(() => {
-                if (eventSent) {
-                    return;
-                }
+interface TelemetryProviderProps {
+    children: React.ReactNode;
+}
 
-                eventSent = true;
-                sendEvent("app-start");
-            }, []);
+export const createTelemetryProvider = () => (Component: React.ComponentType) => {
+    return function TelemetryProvider({ children }: TelemetryProviderProps) {
+        useEffect(() => {
+            if (eventSent) {
+                return;
+            }
 
-            return <Component>{children}</Component>;
-        };
+            eventSent = true;
+            sendEvent("app-start");
+        }, []);
+
+        return <Component>{children}</Component>;
     };
+};

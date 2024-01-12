@@ -25,7 +25,7 @@ export interface AcoListContextData<T> {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    records: SearchRecordItem<T>[];
+    records: T[];
     selected: T[];
     setFilters: (data: Record<string, any>) => void;
     setListSort: (state: ListSearchRecordsSort) => void;
@@ -105,7 +105,7 @@ export interface AcoListProviderProps {
     titleFieldId: string | null;
 }
 
-export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...props }) => {
+export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) => {
     const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();

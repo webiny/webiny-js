@@ -12,7 +12,11 @@ import { CompositionScope } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
-const Loader: React.FC = ({ children, ...props }) => (
+interface LoaderProps {
+    children: React.ReactNode;
+}
+
+const Loader = ({ children, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>

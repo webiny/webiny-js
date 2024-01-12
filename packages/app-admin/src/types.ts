@@ -49,7 +49,7 @@ export type AdminFileManagerFileTypePlugin = Plugin & {
     types: string[];
     render(params: AdminFileManagerFileTypePluginRenderParams): React.ReactNode;
     fileDetails?: {
-        actions: Array<React.FC | React.Component>;
+        actions: Array<React.ComponentType | React.Component>;
     };
 };
 
@@ -98,6 +98,9 @@ export interface FileItem {
         private?: boolean;
         width?: number;
         height?: number;
+    };
+    accessControl?: {
+        type: "public" | "private-authenticated";
     };
     extensions?: Record<string, any>;
 }

@@ -21,12 +21,12 @@ interface ReCapchaSettingsDialogProps {
     reCaptchaSettings: any;
 }
 
-const ReCaptchaSettingsDialog: React.FC<ReCapchaSettingsDialogProps> = ({
+const ReCaptchaSettingsDialog = ({
     open,
     onClose,
     reCaptchaSettings,
     onSubmit
-}) => {
+}: ReCapchaSettingsDialogProps) => {
     const [loading, setLoading] = React.useState(false);
     const { setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();

@@ -56,6 +56,7 @@ const baseSchema = new GraphQLSchemaPlugin({
         input AcoSort {
             id: AcoSortDirection
             createdOn: AcoSortDirection
+            modifiedOn: AcoSortDirection
             savedOn: AcoSortDirection
             title: AcoSortDirection
         }

@@ -30,7 +30,7 @@ const styles = {
     })
 };
 
-const NotFoundHOC = (): React.FC => {
+const NotFoundHOC = () => {
     return function NotFound() {
         return (
             <ContentWrapper>
@@ -52,6 +52,6 @@ const NotFoundHOC = (): React.FC => {
     };
 };
 
-export const NotFound: React.FC = () => {
+export const NotFound = () => {
     return <Compose component={NotFoundSpec} with={NotFoundHOC} />;
 };

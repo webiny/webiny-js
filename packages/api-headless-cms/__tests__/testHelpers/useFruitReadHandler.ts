@@ -6,12 +6,15 @@ const fruitFields = `
     id
     entryId
     createdOn
+    modifiedOn
+    savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName
         type
     }
-    savedOn
     # user defined fields
     name
     numbers

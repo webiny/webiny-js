@@ -58,11 +58,7 @@ export interface DateTimeWithTimezoneProps {
     trailingIcon?: any;
     field: CmsModelField;
 }
-export const DateTimeWithTimezone: React.FC<DateTimeWithTimezoneProps> = ({
-    bind,
-    trailingIcon,
-    field
-}) => {
+export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWithTimezoneProps) => {
     const defaultTimeZone = getCurrentTimeZone() || DEFAULT_TIMEZONE;
 
     // "2020-05-18T09:00+10:00"

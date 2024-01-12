@@ -47,7 +47,7 @@ export interface GroupsFormProps {
     [key: string]: any;
 }
 
-export const GroupsForm: React.FC<GroupsFormProps> = () => {
+export const GroupsForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newGroup = new URLSearchParams(location.search).get("new") === "true";

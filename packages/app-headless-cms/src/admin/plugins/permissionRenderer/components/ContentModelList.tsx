@@ -25,7 +25,7 @@ interface ContentModelListProps {
     onChange: OnChangeCallable;
     getValue: GetValueCallable;
 }
-const ContentModelList: React.FC<ContentModelListProps> = ({ items, onChange, getValue }) => {
+const ContentModelList = ({ items, onChange, getValue }: ContentModelListProps) => {
     const list: [string, GroupItem[]][] = Object.entries(
         groupBy(
             items.map((item): GroupItem => {

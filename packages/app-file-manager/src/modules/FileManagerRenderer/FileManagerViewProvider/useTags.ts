@@ -29,8 +29,12 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
         [scope, own, identity]
     );
 
-    const setTags = useCallback(tags => {
-        setSortedTags(state => sortTags([...state, ...tags]));
+    const setTags = useCallback((tags: FileTag[]) => {
+        setSortedTags(state => {
+            const uniqueTags = tags.filter(tag => !state.some(t => t.tag === tag.tag));
+
+            return sortTags([...state, ...uniqueTags]);
+        });
     }, []);
 
     const where = useMemo(() => getTagsInitialParams({ scope, own }), [getTagsInitialParams]);
@@ -48,7 +52,9 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
             return;
         }
 
-        setTags(tagsModifier(tags.map(tag => ({ tag, count: 1 }))));
+        const newTags = tagsModifier(tags.map(tag => ({ tag, count: 1 })));
+
+        setTags(newTags);
 
         fileManager.listTags({ where, refetch: true });
     };

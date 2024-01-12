@@ -1,6 +1,7 @@
 import { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface RenderSortEnumParams {
     model: CmsModel;
@@ -8,6 +9,7 @@ interface RenderSortEnumParams {
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins?: CmsGraphQLSchemaSorterPlugin[];
 }
+
 interface RenderSortEnum {
     (params: RenderSortEnumParams): string;
 }
@@ -21,10 +23,10 @@ export const renderSortEnum: RenderSortEnum = ({
     let sorters: string[] = [
         `id_ASC`,
         `id_DESC`,
-        "savedOn_ASC",
-        "savedOn_DESC",
-        "createdOn_ASC",
-        "createdOn_DESC"
+
+        ...ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField)
+            .map(field => [`${field}_ASC`, `${field}_DESC`])
+            .flat()
     ];
 
     for (const field of fields) {

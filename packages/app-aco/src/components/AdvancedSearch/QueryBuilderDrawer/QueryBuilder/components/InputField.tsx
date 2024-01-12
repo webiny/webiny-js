@@ -9,7 +9,7 @@ interface InputFieldProps {
     name: string;
 }
 
-export const InputField: React.VFC<InputFieldProps> = ({ field, name }) => {
+export const InputField = ({ field, name }: InputFieldProps) => {
     if (!field) {
         return null;
     }

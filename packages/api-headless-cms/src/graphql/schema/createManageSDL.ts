@@ -5,6 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
@@ -60,20 +61,30 @@ export const createManageSDL: CreateManageSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
-    const inputGraphQLFields = inputFields.map(f => f.fields).join("\n");
-    /**
-     * TODO check for 5.38.0
-     */
-    return /* GraphQL */ `
+    const inputGqlFields = inputFields.map(f => f.fields).join("\n");
+
+    const onByMetaInputGqlFields = ENTRY_META_FIELDS.map(field => {
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentityInput";
+
+        return `${field}: ${fieldType}`;
+    }).join("\n");
+
+    const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
+        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
+
+        return `${field}: ${fieldType}${isNullable}`;
+    }).join("\n");
+
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    return `
         """${model.description || singularName}"""
         type ${singularName} {
             id: ID!
             entryId: String!
-            createdOn: DateTime!
-            savedOn: DateTime!
-            createdBy: CmsIdentity!
-            ownedBy: CmsIdentity!
-            modifiedBy: CmsIdentity
+            
+            ${onByMetaGqlFields}
+            
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
             # Advanced Content Organization - make required in 5.38.0
@@ -84,7 +95,7 @@ export const createManageSDL: CreateManageSDL = ({
             modelId: String
             version: Int
             locked: Boolean
-            publishedOn: DateTime
+            
             status: String
             """
             CAUTION: this field is resolved by making an extra query to DB.
@@ -106,18 +117,18 @@ export const createManageSDL: CreateManageSDL = ({
         
         input ${singularName}Input {
             id: ID
-            # User can override the entry dates
-            createdOn: DateTime
-            savedOn: DateTime
-            publishedOn: DateTime
-            # User can override the entry related user identities
-            createdBy: CmsIdentityInput
-            modifiedBy: CmsIdentityInput
-            ownedBy: CmsIdentityInput
+            
+            # Set status of the entry.
+            status: String
+            
+            ${onByMetaInputGqlFields}
+            
             wbyAco_location: WbyAcoLocationInput
-            ${inputGraphQLFields}
+            
+            ${inputGqlFields}
+            
         }
-
+        
         input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
         }
@@ -187,7 +198,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
+            publish${singularName}(revision: ID!): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

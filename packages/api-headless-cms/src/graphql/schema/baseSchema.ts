@@ -22,7 +22,7 @@ const createSkipValidatorEnum = (plugins: PluginsContainer) => {
     }
     return /* GraphQL */ `
         enum SkipValidatorEnum {
-            ${validators.join("\n")}
+        ${validators.join("\n")}
         }
     `;
 };
@@ -103,13 +103,6 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
 
             input UpdateCmsEntryOptionsInput {
                 skipValidators: [SkipValidatorEnum!]
-            }
-
-            input CmsPublishEntryOptionsInput {
-                # By default, updatePublishedOn is true. User can set it to false to skip the publishedOn field update.
-                updatePublishedOn: Boolean
-                # By default, updateSavedOn is true. User can set it to false to skip the publishedOn field update.
-                updateSavedOn: Boolean
             }
 
             input CmsIdentityInput {

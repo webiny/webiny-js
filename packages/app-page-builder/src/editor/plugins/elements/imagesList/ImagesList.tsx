@@ -8,7 +8,7 @@ interface ImagesListProps {
     element: PbEditorElement;
 }
 
-const ImagesList: React.FC<ImagesListProps> = props => {
+const ImagesList = (props: ImagesListProps) => {
     const { element, ...rest } = props;
     return <PeImagesList element={element as Element} {...rest} />;
 };
