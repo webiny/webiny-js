@@ -104,21 +104,18 @@ export const createEntryData = async ({
 
     let entryLevelPublishingMetaFields: Pick<
         CmsEntry,
-        | "entryFirstPublishedOn"
-        | "entryLastPublishedOn"
-        | "entryFirstPublishedBy"
-        | "entryLastPublishedBy"
+        "firstPublishedOn" | "lastPublishedOn" | "firstPublishedBy" | "lastPublishedBy"
     > = {
-        entryFirstPublishedOn: null,
-        entryLastPublishedOn: null,
-        entryFirstPublishedBy: null,
-        entryLastPublishedBy: null
+        firstPublishedOn: null,
+        lastPublishedOn: null,
+        firstPublishedBy: null,
+        lastPublishedBy: null
     };
 
     if (status === STATUS_PUBLISHED) {
         revisionLevelPublishingMetaFields = {
             revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
-            revisionLastPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
+            revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, currentDateTime),
             revisionFirstPublishedBy: getIdentity(
                 rawInput.revisionFirstPublishedBy,
                 currentIdentity
@@ -127,10 +124,10 @@ export const createEntryData = async ({
         };
 
         entryLevelPublishingMetaFields = {
-            entryFirstPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
-            entryLastPublishedOn: getDate(rawInput.entryFirstPublishedOn, currentDateTime),
-            entryFirstPublishedBy: getIdentity(rawInput.entryFirstPublishedBy, currentIdentity),
-            entryLastPublishedBy: getIdentity(rawInput.entryLastPublishedBy, currentIdentity)
+            firstPublishedOn: getDate(rawInput.firstPublishedOn, currentDateTime),
+            lastPublishedOn: getDate(rawInput.lastPublishedOn, currentDateTime),
+            firstPublishedBy: getIdentity(rawInput.firstPublishedBy, currentIdentity),
+            lastPublishedBy: getIdentity(rawInput.lastPublishedBy, currentIdentity)
         };
     }
 
@@ -143,42 +140,26 @@ export const createEntryData = async ({
         locale: locale.code,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * Entry-level meta fields. 👇
          */
         createdOn: getDate(rawInput.createdOn, currentDateTime),
+        modifiedOn: getDate(rawInput.modifiedOn, null),
         savedOn: getDate(rawInput.savedOn, currentDateTime),
-        publishedOn: getDate(rawInput.publishedOn),
         createdBy: getIdentity(rawInput.createdBy, currentIdentity),
-        ownedBy: getIdentity(rawInput.ownedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, null),
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        ...entryLevelPublishingMetaFields,
 
         /**
          * Revision-level meta fields. 👇
          */
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
+        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         ...revisionLevelPublishingMetaFields,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entryCreatedOn: getDate(rawInput.entryCreatedOn, currentDateTime),
-        entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-        entryModifiedOn: getDate(rawInput.entryModifiedOn, null),
-        entryCreatedBy: getIdentity(rawInput.entryCreatedBy, currentIdentity),
-        entrySavedBy: getIdentity(rawInput.entrySavedBy, currentIdentity),
-        entryModifiedBy: getIdentity(rawInput.entryModifiedBy, null),
-        ...entryLevelPublishingMetaFields,
 
         version,
         status,
