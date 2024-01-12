@@ -64,6 +64,7 @@ export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";
 export const createReviewerModelDefinition = () => {
     return createPrivateModelDefinition({
         name: "APW - Reviewer",
+        titleFieldId: "displayName",
         modelId: REVIEWER_MODEL_ID,
         fields: [idField(), displayNameField(), typeField(), emailField()]
     });

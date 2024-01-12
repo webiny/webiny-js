@@ -48,6 +48,7 @@ export const createChangeRequestModelDefinition = () => {
     return createPrivateModelDefinition({
         name: "APW - Change Request",
         modelId: CHANGE_REQUEST_MODEL_ID,
+        titleFieldId: "title",
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
     });
 };

@@ -285,6 +285,7 @@ export const createContentReviewModelDefinition = ({
     return createPrivateModelDefinition({
         name: "APW - Content Review",
         modelId: CONTENT_REVIEW_MODEL_ID,
+        titleFieldId: "content",
         fields: [
             titleField(),
             contentField([
