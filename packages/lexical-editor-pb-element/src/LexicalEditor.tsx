@@ -4,6 +4,7 @@ import { LexicalValue } from "@webiny/lexical-editor/types";
 import { isHeadingTag } from "~/utils/isHeadingTag";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import { assignStyles } from "@webiny/app-page-builder-elements/utils";
+import { StylesObject } from "@webiny/theme/types";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
@@ -21,7 +22,7 @@ export const LexicalEditor = ({ tag, value, onChange, ...rest }: LexicalEditorPr
     const isHeading = useMemo(() => isHeadingTag(tag), [tag]);
 
     const themeStylesTransformer = useCallback(
-        styles => {
+        (styles: StylesObject) => {
             return assignStyles({
                 breakpoints: theme.breakpoints,
                 styles
