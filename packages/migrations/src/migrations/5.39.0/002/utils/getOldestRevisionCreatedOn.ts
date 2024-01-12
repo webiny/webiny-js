@@ -30,7 +30,7 @@ export const getOldestRevisionCreatedOn = async (params: GetOldestRevisionCreate
 
         const oldestRevision = result.Items?.[0];
         if (oldestRevision) {
-            cachedEntryCreatedOn[entry.id] = oldestRevision.createdOn;
+            cachedEntryCreatedOn[entry.PK] = oldestRevision.createdOn;
         }
     }
 
