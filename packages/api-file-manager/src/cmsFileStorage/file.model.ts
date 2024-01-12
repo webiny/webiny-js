@@ -179,7 +179,6 @@ export const createFileModelDefinition = (params: CreateFileModelDefinitionParam
     return createPrivateModelDefinition({
         name: "FmFile",
         modelId: FILE_MODEL_ID,
-        fields,
-        noValidate: true
+        fields
     });
 };

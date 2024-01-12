@@ -119,7 +119,6 @@ export const createFolderModelDefinition = () => {
     return createPrivateModelDefinition({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
-        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()],
-        noValidate: true
+        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()]
     });
 };

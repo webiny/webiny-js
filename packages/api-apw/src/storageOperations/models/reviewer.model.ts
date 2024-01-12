@@ -65,7 +65,6 @@ export const createReviewerModelDefinition = () => {
     return createPrivateModelDefinition({
         name: "APW - Reviewer",
         modelId: REVIEWER_MODEL_ID,
-        fields: [idField(), displayNameField(), typeField(), emailField()],
-        noValidate: true
+        fields: [idField(), displayNameField(), typeField(), emailField()]
     });
 };
