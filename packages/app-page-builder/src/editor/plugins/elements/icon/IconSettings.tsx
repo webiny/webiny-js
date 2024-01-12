@@ -3,11 +3,11 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
-import IconPicker from "../../../components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { ICON_PICKER_SIZE } from "@webiny/app-admin/components/IconPicker/types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
-import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { updateIconElement } from "../utils/iconUtils";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
@@ -36,21 +36,13 @@ const IconSettings = ({
     ) as PbEditorElement;
     const { data: { icon = {} } = {} } = element;
 
-    const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
+    const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: "data.icon",
         postModifyElement: updateIconElement
     });
 
-    const updateIcon = useCallback(value => getUpdateValue("id")(value?.id), [getUpdateValue]);
-    const updateColor = useCallback(
-        (value: string) => getUpdateValue("color")(value),
-        [getUpdateValue]
-    );
-    const updateColorPreview = useCallback(
-        (value: string) => getUpdatePreview("color")(value),
-        [getUpdatePreview]
-    );
+    const updateIcon = useCallback(value => getUpdateValue("value")(value), [getUpdateValue]);
     const updateWidth = useCallback(
         (value: string) => getUpdateValue("width")(value),
         [getUpdateValue]
@@ -59,20 +51,15 @@ const IconSettings = ({
     return (
         <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>
             <>
-                <Wrapper containerClassName={classes.grid} label={"Icon"}>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Icon"}
+                    rightCellClassName={classes.rightCellStyle}
+                >
                     <IconPicker
-                        value={icon.id}
+                        size={ICON_PICKER_SIZE.SMALL}
+                        value={icon.value}
                         onChange={updateIcon}
-                        removable={false}
-                        useInSidebar={true}
-                    />
-                </Wrapper>
-
-                <Wrapper containerClassName={classes.grid} label={"Color"}>
-                    <BaseColorPicker
-                        value={icon.color}
-                        updateValue={updateColor}
-                        updatePreview={updateColorPreview}
                     />
                 </Wrapper>
                 <Wrapper

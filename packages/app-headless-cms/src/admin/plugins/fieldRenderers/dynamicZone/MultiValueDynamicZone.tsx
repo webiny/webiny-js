@@ -2,12 +2,12 @@ import React from "react";
 import styled from "@emotion/styled";
 import cloneDeep from "lodash/cloneDeep";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as CloneIcon } from "@material-design-icons/svg/outlined/library_add.svg";
 import { ReactComponent as ArrowUpIcon } from "@material-design-icons/svg/round/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@material-design-icons/svg/round/expand_more.svg";
 import { AddTemplateButton, AddTemplateIcon } from "./AddTemplate";
-import { TemplateIcon } from "./TemplateIcon";
 import { useModelField } from "~/admin/hooks";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import {
@@ -68,7 +68,7 @@ const TemplateValueForm = ({
         <AccordionItem
             title={template.name}
             description={template.description}
-            icon={<TemplateIcon icon={template.icon} />}
+            icon={<IconPicker.Icon icon={template.icon} />}
             actions={
                 <AccordionItem.Actions>
                     <AccordionItem.Action

@@ -4,9 +4,9 @@ import { css } from "emotion";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
-import IconPickerComponent from "../../../components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { ICON_PICKER_SIZE } from "@webiny/app-admin/components/IconPicker/types";
 import Accordion from "../../elementSettings/components/Accordion";
-import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import { ContentWrapper } from "../../elementSettings/components/StyledComponents";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
@@ -46,6 +46,9 @@ const classes = {
                 width: "100%"
             }
         }
+    }),
+    rightCellStyle: css({
+        justifySelf: "end"
     })
 };
 
@@ -76,15 +79,7 @@ const ButtonSettings = ({
     });
 
     const updateType = useCallback(value => getUpdateValue("type")(value), [getUpdateValue]);
-    const updateIcon = useCallback(value => getUpdateValue("icon.id")(value?.id), [getUpdateValue]);
-    const updateIconColor = useCallback(
-        (value: string) => getUpdateValue("icon.color")(value),
-        [getUpdateValue]
-    );
-    const updateIconColorPreview = useCallback(
-        (value: string) => getUpdatePreview("icon.color")(value),
-        [getUpdatePreview]
-    );
+    const updateIcon = useCallback(value => getUpdateValue("icon.value")(value), [getUpdateValue]);
     const updateIconWidth = useCallback(
         (value: string) => getUpdateValue("icon.width")(value),
         [getUpdateValue]
@@ -93,7 +88,6 @@ const ButtonSettings = ({
         (value: string) => getUpdateValue("icon.position")(value),
         [getUpdateValue]
     );
-    const removeIcon = useCallback(() => getUpdateValue("icon")({ id: null }), [getUpdateValue]);
     const updateButtonText = useCallback(
         (event: React.FocusEvent<HTMLInputElement>) =>
             getUpdateValue("buttonText")(event.target.value),
@@ -116,21 +110,16 @@ const ButtonSettings = ({
                         ))}
                     </SelectField>
                 </Wrapper>
-                <Wrapper label={"Icon"} containerClassName={classes.gridClass}>
-                    <IconPickerComponent
-                        handlerClassName={"icon-picker-handler"}
-                        value={icon?.id}
+                <Wrapper
+                    label={"Icon"}
+                    containerClassName={classes.gridClass}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <IconPicker
+                        size={ICON_PICKER_SIZE.SMALL}
+                        value={icon?.value}
                         onChange={updateIcon}
-                        removeIcon={removeIcon}
-                        useInSidebar={true}
-                    />
-                </Wrapper>
-                <Wrapper label={"Icon color"} containerClassName={classes.gridClass}>
-                    <BaseColorPicker
-                        handlerClassName={"color-picker-handler"}
-                        value={icon?.color}
-                        updateValue={updateIconColor}
-                        updatePreview={updateIconColorPreview}
+                        removable
                     />
                 </Wrapper>
                 <Wrapper

@@ -209,7 +209,10 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="icon" validators={validation.create("required")}>
-                                    <IconPicker />
+                                    <IconPicker
+                                        label={t`Category icon`}
+                                        description={t`Icon that will be displayed in the page builder.`}
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>

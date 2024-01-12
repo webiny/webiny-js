@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { useVariable } from "~/hooks/useVariable";
-import IconPicker from "~/editor/components/IconPicker";
-import { getSvg } from "~/editor/plugins/elements/utils/iconUtils";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { ICON_PICKER_SIZE } from "@webiny/app-admin/components/IconPicker/types";
 
 const Wrapper = styled.div`
     & > div {
@@ -20,11 +20,11 @@ const IconVariableInput = ({ variableId }: IconVariableInputProps) => {
     return (
         <Wrapper>
             <IconPicker
+                size={ICON_PICKER_SIZE.SMALL}
                 value={value.id}
                 onChange={value => {
-                    onChange({ id: value.id, svg: getSvg(value.id) }, true);
+                    onChange(value, true);
                 }}
-                useInSidebar
             />
         </Wrapper>
     );

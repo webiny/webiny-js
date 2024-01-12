@@ -28,8 +28,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { CmsEditorContentModel, CmsModel } from "~/types";
 import usePermission from "~/admin/hooks/usePermission";
 import styled from "@emotion/styled";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { OptionsMenu } from "./OptionsMenu";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
@@ -87,26 +86,8 @@ const Icon = styled("div")({
     width: "24px",
     height: "24px",
     marginRight: "15px",
-    flex: "0 0 24px",
-    svg: {
-        color: "var(--mdc-theme-text-icon-on-light)",
-        width: "100%",
-        height: "auto",
-        maxWidth: 24,
-        maxHeight: 24
-    }
+    flex: "0 0 24px"
 });
-
-interface IconProps {
-    model: Pick<CmsModel, "icon">;
-}
-
-const DisplayIcon = ({ model }: IconProps) => {
-    if (!model.icon) {
-        return null;
-    }
-    return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
-};
 
 const ContentModelsDataList = ({
     canCreate,
@@ -272,7 +253,7 @@ const ContentModelsDataList = ({
                         return (
                             <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
                                 <Icon>
-                                    <DisplayIcon model={contentModel} />
+                                    <IconPicker.Icon icon={contentModel.icon} size={24} />
                                 </Icon>
                                 <UIL.ListItemText>
                                     {contentModel.name}

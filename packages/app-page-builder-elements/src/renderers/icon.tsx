@@ -1,6 +1,7 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 
 export type IconRenderer = ReturnType<typeof createIcon>;
 
@@ -10,20 +11,14 @@ export interface Props {
 
 export const createIcon = () => {
     return createRenderer((props: Props) => {
-        const { getElement, theme } = useRenderer();
+        const { getElement } = useRenderer();
 
         const element = getElement();
 
-        let color = element.data.icon.color;
-        if (theme.styles.colors?.[color]) {
-            color = theme.styles.colors?.[color];
+        if (props.svg) {
+            <div dangerouslySetInnerHTML={{ __html: props?.svg }} />;
         }
 
-        return (
-            <div
-                style={{ color }}
-                dangerouslySetInnerHTML={{ __html: props?.svg || element.data.icon.svg }}
-            />
-        );
+        return <IconPicker.Icon icon={element.data.icon?.value} size={element.data.icon?.width} />;
     });
 };

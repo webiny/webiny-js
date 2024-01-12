@@ -3,7 +3,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outline
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { AddTemplateButton } from "./AddTemplate";
-import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import {
     BindComponentRenderProp,
     CmsDynamicZoneTemplate,
@@ -50,7 +50,7 @@ export const SingleValueDynamicZone = ({
                     <AccordionItem
                         title={template.name}
                         description={template.description}
-                        icon={<TemplateIcon icon={template.icon} />}
+                        icon={<IconPicker.Icon icon={template.icon} />}
                         open={true}
                         interactive={false}
                         actions={

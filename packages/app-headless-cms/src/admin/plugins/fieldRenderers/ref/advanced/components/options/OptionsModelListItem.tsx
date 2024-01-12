@@ -1,8 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { CmsModel } from "~/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 
 const Title = styled("div")({
     width: "100%",
@@ -47,26 +46,8 @@ const Icon = styled("div")({
     width: "24px",
     height: "24px",
     marginRight: "15px",
-    flex: "0 0 24px",
-    svg: {
-        color: "var(--mdc-theme-text-icon-on-light)",
-        width: "100%",
-        height: "auto",
-        maxWidth: 24,
-        maxHeight: 24
-    }
+    flex: "0 0 24px"
 });
-
-interface IconProps {
-    model: Pick<CmsModel, "icon">;
-}
-
-const DisplayIcon = ({ model }: IconProps) => {
-    if (!model.icon) {
-        return null;
-    }
-    return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
-};
 
 interface OptionsModelListItemProps {
     model: Pick<CmsModel, "modelId" | "name" | "description" | "icon">;
@@ -83,7 +64,7 @@ export const OptionsModelListItem = ({
     return (
         <Container onClick={onClick}>
             <Icon>
-                <DisplayIcon model={model} />
+                <IconPicker.Icon icon={model.icon} />
             </Icon>
             <Content>
                 <Title className={model.description && "hasDescription"}>{model.name}</Title>

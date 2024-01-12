@@ -17,6 +17,7 @@ import {
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
 import { DragObjectWithType } from "react-dnd";
+import { Icon } from "@webiny/app-admin/components/IconPicker/types";
 
 export * from "./validation";
 export * from "./model";
@@ -328,7 +329,7 @@ export interface CmsDynamicZoneTemplate {
     name: string;
     gqlTypeName: string;
     description: string;
-    icon: string;
+    icon: Icon;
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidator[];
