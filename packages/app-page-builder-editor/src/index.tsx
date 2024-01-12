@@ -1,9 +1,9 @@
 import React from "react";
 import { RecoilRoot } from "recoil";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";
-import { EditorRenderer, EditorProps } from "@webiny/app-page-builder";
+import { EditorProps, EditorRenderer } from "@webiny/app-page-builder";
 import { EditorState } from "./contexts/EditorState";
-import { rootElementAtom, pageAtom, elementsAtom, PageAtomType } from "./state";
+import { elementsAtom, pageAtom, PageAtomType, rootElementAtom } from "./state";
 import { flattenElements } from "./helpers";
 import RecoilExternal from "./components/RecoilExternal";
 import { Editor as EditorComponent } from "./components/Editor";
@@ -19,28 +19,34 @@ const EditorHOC: HigherOrderComponent<EditorProps> = () => {
     return function Editor({ page, revisions }) {
         return (
             <EditorProvider>
-                <RecoilRoot
-                    initializeState={({ set }) => {
-                        /* Here we initialize elementsAtom and rootElement if it exists */
-                        set(rootElementAtom, page.content.id);
+                {
+                    /**
+                     * Recoil users old version of React which has children defined by default.
+                     */
+                    // @ts-expect-error
+                    <RecoilRoot
+                        initializeState={({ set }) => {
+                            /* Here we initialize elementsAtom and rootElement if it exists */
+                            set(rootElementAtom, page.content.id);
 
-                        // Type casting here because we know that data from API will always have a `content` object.
-                        const elements = flattenElements(page.content as PbEditorElement);
-                        Object.keys(elements).forEach(key => {
-                            set(elementsAtom(key), elements[key]);
-                        });
+                            // Type casting here because we know that data from API will always have a `content` object.
+                            const elements = flattenElements(page.content as PbEditorElement);
+                            Object.keys(elements).forEach(key => {
+                                set(elementsAtom(key), elements[key]);
+                            });
 
-                        // Unsetting the `content` object because content is reconstructed from a flat structure on each
-                        // save; thus, we don't need to store this massive object into our state.
-                        // @ts-expect-error
-                        const pageData: PageAtomType = omit(page, ["content"]);
-                        set(pageAtom, pageData);
-                    }}
-                >
-                    <RecoilExternal />
-                    <EditorState />
-                    <EditorComponent page={page} revisions={revisions} />
-                </RecoilRoot>
+                            // Unsetting the `content` object because content is reconstructed from a flat structure on each
+                            // save; thus, we don't need to store this massive object into our state.
+                            // @ts-expect-error
+                            const pageData: PageAtomType = omit(page, ["content"]);
+                            set(pageAtom, pageData);
+                        }}
+                    >
+                        <RecoilExternal />
+                        <EditorState />
+                        <EditorComponent page={page} revisions={revisions} />
+                    </RecoilRoot>
+                }
             </EditorProvider>
         );
     };
