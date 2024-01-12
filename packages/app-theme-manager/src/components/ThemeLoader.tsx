@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { useCurrentTheme } from "~/hooks/useCurrentTheme";
 import { ThemeSource } from "~/types";
@@ -6,13 +6,15 @@ import { useTheme } from "@webiny/app-theme";
 
 export interface ThemeLoaderProps {
     themes: ThemeSource[];
+    children?: React.ReactNode;
 }
 
 interface LoadThemeProps {
     theme: ThemeSource;
+    children: React.ReactNode;
 }
 
-const LoadTheme: FC<LoadThemeProps> = ({ theme, children }) => {
+const LoadTheme = ({ theme, children }: LoadThemeProps) => {
     const [loaded, setLoaded] = useState(false);
     const { loadThemeFromPlugins } = useTheme();
 
@@ -27,7 +29,7 @@ const LoadTheme: FC<LoadThemeProps> = ({ theme, children }) => {
     return loaded ? <Fragment>{children}</Fragment> : null;
 };
 
-export const ThemeLoader: FC<ThemeLoaderProps> = ({ themes, children }) => {
+export const ThemeLoader = ({ themes, children }: ThemeLoaderProps) => {
     const themeName = useCurrentTheme();
 
     const theme = themes.find(th => th.name === themeName);
