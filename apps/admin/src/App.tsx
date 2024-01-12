@@ -23,8 +23,7 @@ const file: FileItem = {
     type: "image/jpeg",
     size: 11026,
     meta: {
-        private: false,
-        originalKey: "6464cb3925c8e70008ac8c69/icon7.svg"
+        private: false
     },
     tags: [],
     aliases: [],

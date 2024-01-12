@@ -72,15 +72,17 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                                 showFileManager(file => onChange(file.src));
                                             };
                                             return (
-                                                <File
-                                                    {...bind}
-                                                    url={value}
-                                                    onRemove={() => onChange(null)}
-                                                    showFileManager={selectFile}
-                                                    placeholder={field.placeholderText}
-                                                    description={field.helpText}
-                                                    data-testid={`fr.input.filefield.${field.label}`}
-                                                />
+                                                <EditFileUsingUrl url={value}>
+                                                    <File
+                                                        {...bind}
+                                                        url={value}
+                                                        onRemove={() => onChange(null)}
+                                                        showFileManager={selectFile}
+                                                        placeholder={field.placeholderText}
+                                                        description={field.helpText}
+                                                        data-testid={`fr.input.filefield.${field.label}`}
+                                                    />
+                                                </EditFileUsingUrl>
                                             );
                                         }}
                                     />
