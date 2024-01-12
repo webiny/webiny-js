@@ -22,9 +22,14 @@ interface FbFormStep {
     rules: FbFormRule[];
 }
 
+export type FbFormRuleAction = {
+    type: string;
+    value: string;
+};
+
 export type FbFormRule = {
-    action: string;
-    chain: string;
+    action: FbFormRuleAction;
+    matchAll: boolean;
     id: string;
     title: string;
     conditions: FbFormCondition[];

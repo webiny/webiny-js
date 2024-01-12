@@ -3,8 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../lexical-editor/tsconfig.build.json" },
-    { "path": "../theme/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../theme/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -146,9 +146,14 @@ export type ElementStylesModifier = (args: {
 
 export type LinkComponent = React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;
 
+export type FbFormRuleAction = {
+    type: string;
+    value: string;
+};
+
 export type FbFormRule = {
-    action: string;
-    chain: string;
+    action: FbFormRuleAction;
+    matchAll: boolean;
     id: string;
     title: string;
     conditions: FbFormCondition[];

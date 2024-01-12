@@ -1,6 +1,6 @@
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -9,7 +9,8 @@ import {
     onFormMounted,
     reCaptchaEnabled,
     termsOfServiceEnabled,
-    getNextStepIndex
+    getNextStepIndex,
+    onFormDataChange
 } from "./functions";
 
 import { checkIfConditionsMet } from "./functions/getNextStepIndex";
@@ -48,7 +49,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
-    const [formState, setFormState] = useState<any>();
+    const [formState, setFormState] = useState<Record<string, any>>({});
 
     const [layoutRenderKey, setLayoutRenderKey] = useState<string>(new Date().getTime().toString());
     const resetLayoutRenderKey = useCallback(() => {
@@ -75,13 +76,17 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const [modifiedSteps, setModifiedSteps] = useState(data.steps);
 
+    // This variable will trigger update of "modifiedSteps",
+    // when we modify rules of the step.
+    const shouldUpdateModifiedSteps = onFormDataChange(data);
+
     // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
     // so it won't trigger an error when we trying to view the step that we have deleted,
     // we will simply change currentStep to the first step.
     useEffect(() => {
         setCurrentStepIndex(0);
         setModifiedSteps(data.steps);
-    }, [data.steps.length, data.fields.length]);
+    }, [data.steps.length, data.fields.length, shouldUpdateModifiedSteps]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
@@ -133,17 +138,17 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
         const currentStep = resolvedSteps[stepIndex];
 
-        const nextStepIndex = getNextStepIndex({
+        const action = getNextStepIndex({
             formData,
             rules: currentStep.rules
         });
 
-        if (nextStepIndex === "submit") {
+        if (action.type === "submit") {
             setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
-        } else if (nextStepIndex !== "") {
+        } else if (action.type === "goToStep") {
             setModifiedSteps([
                 ...modifiedSteps.slice(0, stepIndex + 1),
-                ...steps.slice(+nextStepIndex)
+                ...steps.slice(+action.value)
             ]);
         } else {
             setModifiedSteps([
@@ -172,7 +177,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                     if (field.settings?.rules.length) {
                         field.settings.rules.forEach((rule: FbFormRule) => {
                             if (checkIfConditionsMet({ formData: formState, rule })) {
-                                if (rule.action === "show") {
+                                if (rule.action.value === "show") {
                                     fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
                                 } else {
                                     fieldLayout.splice(fieldIndex, field.settings.layout.length, [

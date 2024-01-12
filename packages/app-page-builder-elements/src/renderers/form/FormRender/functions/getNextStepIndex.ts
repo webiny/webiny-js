@@ -1,5 +1,4 @@
-import { validation } from "@webiny/validation";
-
+import * as validators from "~/validators";
 import { FbFormCondition, FbFormRule } from "~/types";
 
 interface Props {
@@ -12,7 +11,7 @@ const includesValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    return fieldValue.includes(filterValue);
+    return validators.includes(fieldValue, filterValue);
 };
 
 const startsWithValidator = (filterValue: string, fieldValue: string) => {
@@ -20,14 +19,7 @@ const startsWithValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    // Need to use try catch block because without it validation will throw and error,
-    // so user won't be able to interact with page.
-    // Same applies to all validation methods below.
-    try {
-        return validation.validateSync(fieldValue, `starts:${filterValue}`);
-    } catch {
-        return;
-    }
+    return validators.startsWith(fieldValue, filterValue);
 };
 
 const endsWithValidator = (filterValue: string, fieldValue: string) => {
@@ -35,11 +27,7 @@ const endsWithValidator = (filterValue: string, fieldValue: string) => {
         return;
     }
 
-    try {
-        return validation.validateSync(fieldValue, `ends:${filterValue}`);
-    } catch {
-        return;
-    }
+    return validators.endsWith(fieldValue, filterValue);
 };
 
 const isValidator = (filterValue: string, fieldValue: string | string[]) => {
@@ -47,16 +35,7 @@ const isValidator = (filterValue: string, fieldValue: string | string[]) => {
         return;
     }
 
-    try {
-        // This is check for checkboxes.
-        if (typeof fieldValue === "object") {
-            return fieldValue.includes(filterValue);
-        } else {
-            return validation.validateSync(fieldValue, `eq:${filterValue}`);
-        }
-    } catch {
-        return;
-    }
+    return validators.is(fieldValue, filterValue);
 };
 
 const gtValidator = ({
@@ -72,14 +51,10 @@ const gtValidator = ({
         return;
     }
 
-    try {
-        if (!equal) {
-            return validation.validateSync(fieldValue, `gt:${filterValue}`);
-        } else {
-            return validation.validateSync(fieldValue, `gte:${filterValue}`);
-        }
-    } catch {
-        return;
+    if (!equal) {
+        return validators.gt(fieldValue, filterValue);
+    } else {
+        return validators.gt(fieldValue, filterValue, true);
     }
 };
 
@@ -96,14 +71,10 @@ const ltValidator = ({
         return;
     }
 
-    try {
-        if (!equal) {
-            return validation.validateSync(fieldValue, `lt:${filterValue}`);
-        } else {
-            return validation.validateSync(fieldValue, `lte:${filterValue}`);
-        }
-    } catch {
-        return;
+    if (!equal) {
+        return validators.lt(fieldValue, filterValue);
+    } else {
+        return validators.lt(fieldValue, filterValue, true);
     }
 };
 
@@ -120,17 +91,10 @@ const timeGtValidator = ({
         return;
     }
 
-    try {
-        if (!equal) {
-            return validation.validateSync(Date.parse(fieldValue), `gt:${Date.parse(filterValue)}`);
-        } else {
-            return validation.validateSync(
-                Date.parse(fieldValue),
-                `gte:${Date.parse(filterValue)}`
-            );
-        }
-    } catch {
-        return;
+    if (!equal) {
+        return validators.gt(Date.parse(fieldValue), Date.parse(filterValue));
+    } else {
+        return validators.gt(Date.parse(fieldValue), Date.parse(filterValue), true);
     }
 };
 
@@ -147,17 +111,10 @@ const timeLtValidator = ({
         return;
     }
 
-    try {
-        if (!equal) {
-            return validation.validateSync(Date.parse(fieldValue), `lt:${Date.parse(filterValue)}`);
-        } else {
-            return validation.validateSync(
-                Date.parse(fieldValue),
-                `lte:${Date.parse(filterValue)}`
-            );
-        }
-    } catch {
-        return;
+    if (!equal) {
+        return validators.lt(Date.parse(fieldValue), Date.parse(filterValue));
+    } else {
+        return validators.lt(Date.parse(fieldValue), Date.parse(filterValue), true);
     }
 };
 
@@ -205,7 +162,7 @@ const checkCondition = (condition: FbFormCondition, fieldValue: string) => {
 };
 
 export const checkIfConditionsMet = ({ formData, rule }: Props) => {
-    if (rule.chain === "matchAll") {
+    if (rule.matchAll) {
         let isValid = true;
 
         rule.conditions.forEach(condition => {
@@ -236,13 +193,16 @@ interface GetNextStepIndexProps {
 }
 
 export default ({ formData, rules }: GetNextStepIndexProps) => {
-    let nextStepIndex = "";
+    let action = {
+        type: "",
+        value: ""
+    };
     rules.forEach(rule => {
         if (checkIfConditionsMet({ formData, rule })) {
-            nextStepIndex = rule.action;
+            action = rule.action;
             return;
         }
     });
 
-    return nextStepIndex;
+    return action;
 };

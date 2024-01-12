@@ -80,7 +80,7 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
     return (
         <Draggable key={`step-field-${fieldIndex}`} beginDrag={fieldBeginDragParams}>
             {({ drag }) => (
-                <FieldContainer ref={drag}>
+                <FieldContainer ref={drag} noPadding={field.name === "conditionGroup"}>
                     <Vertical
                         onDrop={onFieldVerticalZoneDrop}
                         isVisible={item =>

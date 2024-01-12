@@ -51,9 +51,14 @@ export interface FormDataStep {
     index: number;
 }
 
+export type FbFormRuleAction = {
+    type: string;
+    value: string;
+};
+
 export interface FormRule {
-    action: string;
-    chain: string;
+    action: FbFormRuleAction;
+    matchAll: boolean;
     id: string;
     title: string;
     conditions: FormCondition[];

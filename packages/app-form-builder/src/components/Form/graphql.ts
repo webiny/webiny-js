@@ -30,8 +30,11 @@ export const DATA_FIELDS = `
         layout
         rules {
             title
-            action
-            chain
+            action {
+                type
+                value
+            }
+            matchAll
             id
             conditions {
                 id

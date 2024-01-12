@@ -34,9 +34,9 @@ const ConditionalGroupField = (props: FieldProps) => {
     const { getField } = useFormEditor();
 
     const getFields = () => {
-        return (conditionGroupField?.settings?.layout || []).map((row: any) => {
+        return (conditionGroupField?.settings?.layout || []).map((row: string[]) => {
             return row
-                .map((id: any) => {
+                .map((id: string) => {
                     return getField({
                         _id: id
                     });
@@ -45,10 +45,8 @@ const ConditionalGroupField = (props: FieldProps) => {
         });
     };
 
-    const fields = getFields().map((fields: any) =>
-        fields
-            .filter((field: any) => field._id !== conditionGroupField._id)
-            .filter((field: any) => field.length !== 0)
+    const fields = getFields().map((fields: FbFormModelField[]) =>
+        fields.filter((field: FbFormModelField) => field._id !== conditionGroupField._id)
     ) as FbFormModelField[][];
 
     return (

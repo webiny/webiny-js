@@ -19,9 +19,7 @@
     "@emotion/styled": "^11.10.6",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/theme": "0.0.0",
-    "@webiny/validation": "0.0.0",
-    "facepaint": "^1.2.1",
-    "lodash": "^4.17.21"
+    "facepaint": "^1.2.1"
   },
   "peerDependencies": {
     "@editorjs/editorjs": "^2.20.1",

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Select } from "@webiny/ui/Select";
 import styled from "@emotion/styled";
+import { FbFormRule } from "~/types";
 
 const RuleAction = styled("div")`
     display: flex;
@@ -21,25 +22,35 @@ const RuleAction = styled("div")`
 `;
 
 const ActionSelect = styled(Select)`
-    margin-left: 35px;
     margin-right: 15px;
-    width: 250px;
 `;
 
 interface Props {
-    value: string;
-    onChange: (value: string) => void;
+    rule: FbFormRule;
+    onChange: (params: FbFormRule) => void;
 }
 
-export const RuleActionSelect: React.FC<Props> = ({ value, onChange }) => {
+export const RuleActionSelect = ({ rule, onChange }: Props) => {
+    const onChangeAction = useCallback(
+        (value: string) => {
+            return onChange({
+                ...rule,
+                action: {
+                    type: "",
+                    value
+                }
+            });
+        },
+        [rule.action.value, onChange]
+    );
+
     return (
         <RuleAction>
-            <span>Then</span>
             <ActionSelect
                 label="Select rule action"
                 placeholder="Select rule action"
-                value={value}
-                onChange={onChange}
+                value={rule.action.value}
+                onChange={onChangeAction}
             >
                 <option value={"show"}>Show fields</option>
                 <option value={"hide"}>Hide fields</option>

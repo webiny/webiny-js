@@ -4,7 +4,7 @@ import { AccordionItem } from "@webiny/ui/Accordion";
 import { Select } from "@webiny/ui/Select";
 
 import {
-    StyledAccordion,
+    AccordionWithShadow,
     DefaultBehaviourWrapper
 } from "~/admin/components/FormEditor/Tabs/EditTab/Styled";
 
@@ -26,7 +26,7 @@ const defaultBehaviour = [
 
 export const SelectDefaultBehaviour: React.FC<Props> = ({ defaultBehaviourValue, onChange }) => {
     return (
-        <StyledAccordion>
+        <AccordionWithShadow>
             <AccordionItem title="Default behaviour" open={true}>
                 <DefaultBehaviourWrapper>
                     <span>By default if no rule is met</span>
@@ -44,6 +44,6 @@ export const SelectDefaultBehaviour: React.FC<Props> = ({ defaultBehaviourValue,
                     </Select>
                 </DefaultBehaviourWrapper>
             </AccordionItem>
-        </StyledAccordion>
+        </AccordionWithShadow>
     );
 };

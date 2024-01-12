@@ -34,11 +34,20 @@ export interface FormRenderProps {
     loading: boolean;
 }
 
+type FormRedirectTrigger = {
+    redirect: {
+        url: string;
+    };
+};
+
 const FormRender = (props: FormRenderProps) => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
     const [formState, setFormState] = useState<any>();
+    const [formRedirectTrigger, setFormRedirectTrigger] = useState<FormRedirectTrigger | null>(
+        null
+    );
 
     // We need to add index to every step so we can properly,
     // add or remove step from array of steps based on step rules.
@@ -128,23 +137,33 @@ const FormRender = (props: FormRenderProps) => {
     const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
         const currentStep = resolvedSteps[stepIndex];
 
-        const nextStepIndex = getNextStepIndex({
+        const action = getNextStepIndex({
             formData,
             rules: currentStep.rules
         });
 
-        if (nextStepIndex === "submit") {
+        if (action.type === "submitAndRedirect") {
             setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
-        } else if (nextStepIndex !== "") {
-            setModifiedSteps([
-                ...modifiedSteps.slice(0, stepIndex + 1),
-                ...steps.slice(+nextStepIndex)
-            ]);
+            setFormRedirectTrigger({
+                redirect: {
+                    url: action.value
+                }
+            });
         } else {
-            setModifiedSteps([
-                ...modifiedSteps.slice(0, stepIndex + 1),
-                ...steps.slice(currentStep.index + 1)
-            ]);
+            setFormRedirectTrigger(null);
+            if (action.type === "submit") {
+                setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+            } else if (action.type === "goToStep") {
+                setModifiedSteps([
+                    ...modifiedSteps.slice(0, stepIndex + 1),
+                    ...steps.slice(+action.value)
+                ]);
+            } else {
+                setModifiedSteps([
+                    ...modifiedSteps.slice(0, stepIndex + 1),
+                    ...steps.slice(currentStep.index + 1)
+                ]);
+            }
         }
     };
 
@@ -166,7 +185,7 @@ const FormRender = (props: FormRenderProps) => {
                 if (field.settings.rules !== undefined) {
                     field.settings?.rules.forEach((rule: FormRule) => {
                         if (checkIfConditionsMet({ formData: formState, rule })) {
-                            if (rule.action === "show") {
+                            if (rule.action.value === "show") {
                                 fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
                             } else {
                                 fieldLayout.splice(fieldIndex, field.settings.layout.length, [
@@ -241,7 +260,6 @@ const FormRender = (props: FormRenderProps) => {
         });
         return { ...values, ...overrides };
     };
-
     const submit = async (
         formSubmissionFieldValues: FormSubmissionFieldValues
     ): Promise<FormSubmissionResponse> => {
@@ -264,6 +282,13 @@ const FormRender = (props: FormRenderProps) => {
                     code: "TOS_NOT_ACCEPTED",
                     message: settings.termsOfServiceMessage.errorMessage
                 }
+            };
+        }
+
+        if (formRedirectTrigger) {
+            props.formData.triggers = {
+                ...props.formData.triggers,
+                ...formRedirectTrigger
             };
         }
 

@@ -11,32 +11,33 @@ import { updateRuleConditions } from "./updateRuleConditions";
 
 const SelectFieldWrapper = styled.div`
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 15px 0;
     & > span {
         font-size: 22px;
     }
 `;
 
-const CondtionsWrapper = styled.div`
-    display: flex;
-    margin-left: 20px;
+const FieldSelect = styled(Select)`
+    flex-basis: 35%;
 `;
 
 const SelectCondition = styled(Select)`
-    margin-right: 15px;
-    margin-left: 63px;
-    width: 250px;
+    flex-basis: 20%;
 `;
 
 const ConditionValue = styled.div`
-    width: 397px;
+    flex-basis: 35%;
 `;
 
-const FieldSelect = styled(Select)`
-    margin-left: 70px;
+const ConditionsChain = styled.div`
+    text-align: center;
+    font-size: 12px;
+    margin-top: 10px;
 `;
 
-interface Params {
+export interface RuleConditionProps {
     condition: FbFormCondition;
     rule: FbFormRule;
     fields: (FbFormModelField | null)[];
@@ -45,7 +46,7 @@ interface Params {
     onDelete: () => void;
 }
 
-export const RuleCondition: React.FC<Params> = params => {
+export const RuleCondition = (params: RuleConditionProps) => {
     const { condition, rule, fields, conditionIndex, onChange, onDelete } = params;
     const fieldType = fields.find(field => field?.fieldId === condition.fieldName)?.type || "";
 
@@ -66,10 +67,9 @@ export const RuleCondition: React.FC<Params> = params => {
     return (
         <>
             <SelectFieldWrapper>
-                <span>If</span>
                 <FieldSelect
-                    label="Select Field"
-                    placeholder="Select Field"
+                    label="Field"
+                    placeholder="Field"
                     value={condition.fieldName}
                     onChange={value => handleOnChange("fieldName", value)}
                 >
@@ -79,36 +79,33 @@ export const RuleCondition: React.FC<Params> = params => {
                         </option>
                     ))}
                 </FieldSelect>
+                <SelectCondition
+                    label="Condition"
+                    placeholder="Condition"
+                    value={condition.filterType}
+                    onChange={value => handleOnChange("filterType", value)}
+                >
+                    {fieldConditionOptions
+                        .find(filter => filter.type === fieldType)
+                        ?.options.map((option, index) => (
+                            <option key={index} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                </SelectCondition>
+                {/* This field depends on selected field type */}
+                <ConditionValue>
+                    {renderConditionValueController({
+                        condition,
+                        fields,
+                        handleOnChange
+                    })}
+                </ConditionValue>
                 <IconButton icon={<DeleteIcon onClick={onDelete} />} />
             </SelectFieldWrapper>
-            {!condition.fieldName ? (
-                <></>
-            ) : (
-                <CondtionsWrapper>
-                    <SelectCondition
-                        label="Select Condtion"
-                        placeholder="Select Condtion"
-                        value={condition.filterType}
-                        onChange={value => handleOnChange("filterType", value)}
-                    >
-                        {fieldConditionOptions
-                            .find(filter => filter.type === fieldType)
-                            ?.options.map((option, index) => (
-                                <option key={index} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                    </SelectCondition>
-                    {/* This field depends on selected field type */}
-                    <ConditionValue>
-                        {renderConditionValueController({
-                            condition,
-                            fields,
-                            handleOnChange
-                        })}
-                    </ConditionValue>
-                </CondtionsWrapper>
-            )}
+            <ConditionsChain>
+                {rule.conditions.length > 1 ? (rule.matchAll ? "AND" : "OR") : null}
+            </ConditionsChain>
         </>
     );
 };

@@ -62,11 +62,16 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
             input FbFormRuleInput {
                 title: String
-                action: String
-                chain: String
+                action: FbFormRuleActionInput
+                matchAll: Boolean
                 id: String
                 conditions: [FbFormConditionInput]
                 isValid: Boolean
+            }
+
+            input FbFormRuleActionInput {
+                type: String
+                value: String
             }
 
             input FbFormConditionInput {
@@ -101,11 +106,16 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
             type FbFormRuleType {
                 title: String
-                action: String
-                chain: String
+                action: FbFormRuleActionType
+                matchAll: Boolean
                 id: String
                 conditions: [FbFormConditionType]
                 isValid: Boolean
+            }
+
+            type FbFormRuleActionType {
+                type: String
+                value: String
             }
 
             type FbFormConditionType {

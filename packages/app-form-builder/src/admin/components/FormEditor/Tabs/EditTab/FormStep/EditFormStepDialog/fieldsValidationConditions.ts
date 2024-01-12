@@ -96,5 +96,9 @@ export const ruleActionOptions = [
     {
         value: "submit",
         label: "Submit"
+    },
+    {
+        value: "submitAndRedirect",
+        label: "Submit & Redirect"
     }
 ];

@@ -4,8 +4,16 @@ import { ButtonSecondary } from "@webiny/ui/Button";
 import { Select } from "@webiny/ui/Select";
 
 export const StyledAccordion = styled(Accordion)<{ margingap?: string }>`
-    background: var(--mdc-theme-background);
+    background: white;
     box-shadow: none;
+    & > ul {
+        padding: 0 0 0 0 !important;
+    }
+    ${props => `margin-top: ${props.margingap}`}
+`;
+
+export const AccordionWithShadow = styled(Accordion)<{ margingap?: string }>`
+    background: ${props => props.theme.styles.colors["color6"]};
     & > ul {
         padding: 0 0 0 0 !important;
     }
@@ -60,13 +68,15 @@ export const RuleButtonDescription = styled.div`
 
 export const ConditionSetupWrapper = styled.div``;
 
-export const AddRuleButton = styled(ButtonSecondary)`
+export const StyledAddRuleButton = styled(ButtonSecondary)`
     width: 150px;
 `;
 
-export const AddConditionButton = styled(ButtonSecondary)`
-    border: none;
-    margin: 10px 0 10px 80px;
+export const AddConditionButton = styled("div")`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 0;
 `;
 
@@ -142,22 +152,22 @@ export const ConditionGroupContainer = styled.div({
     }
 });
 
-export const FieldContainer = styled.div({
-    position: "relative",
-    flex: "1 100%",
-    backgroundColor: "var(--mdc-theme-background)",
-    padding: "0 15px",
-    margin: 10,
-    borderRadius: 2,
-    border: "1px solid var(--mdc-theme-on-background)",
-    transition: "box-shadow 225ms",
-    color: "var(--mdc-theme-on-surface)",
-    cursor: "grab",
-    "&:hover": {
-        boxShadow:
-            "var(--mdc-theme-on-background) 1px 1px 1px, var(--mdc-theme-on-background) 1px 1px 2px"
+export const FieldContainer = styled.div<{ noPadding?: boolean }>`
+    padding: ${props => (props.noPadding ? "0" : "0 15px")};
+    position: relative;
+    flex: 1 100%;
+    background-color: var(--mdc-theme-background);
+    margin: 10px;
+    border-radius: 2px;
+    border: 1px solid var(--mdc-theme-on-background);
+    transition: box-shadow 225ms;
+    color: var(--mdc-theme-on-surface);
+    cursor: grab;
+    & :hover {
+        box-shadow: var(--mdc-theme-on-background) 1px 1px 1px,
+            var(--mdc-theme-on-background) 1px 1px 2px;
     }
-});
+`;
 
 export const RowHandle = styled.div({
     width: 30,

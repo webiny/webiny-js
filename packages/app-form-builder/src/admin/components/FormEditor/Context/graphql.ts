@@ -84,8 +84,11 @@ export const GET_FORM = gql`
                         layout
                         rules {
                             title
-                            action
-                            chain
+                            action {
+                                type
+                                value
+                            }
+                            matchAll
                             id
                             conditions {
                                 id
@@ -139,8 +142,11 @@ export const UPDATE_REVISION = gql`
                         layout
                         rules {
                             title
-                            action
-                            chain
+                            action {
+                                type
+                                value
+                            }
+                            matchAll
                             id
                             conditions {
                                 id

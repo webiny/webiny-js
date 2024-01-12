@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Select } from "@webiny/ui/Select";
 import styled from "@emotion/styled";
 import { ruleActionOptions } from "./fieldsValidationConditions";
-import { FbFormStep, FbFormRule } from "~/types";
+import { FbFormStep, FbFormRule, FbFormRuleAction } from "~/types";
+import { Input } from "@webiny/ui/Input";
 
 const RuleAction = styled("div")`
     display: flex;
@@ -23,7 +24,6 @@ const RuleAction = styled("div")`
 `;
 
 const ActionSelect = styled(Select)`
-    margin-left: 35px;
     margin-right: 15px;
     width: 250px;
 `;
@@ -37,28 +37,39 @@ interface Props {
     steps: FbFormStep[];
     currentStep: FbFormStep;
     ruleIndex: number;
-    onChangeAction: (value: string) => void;
+    onChange: (action: FbFormRuleAction) => void;
 }
 
-export const RuleActionSelect: React.FC<Props> = ({ rule, steps, currentStep, onChangeAction }) => {
-    const defaultActionValue = rule.action === "submit" ? "submit" : "goToStep";
-    const [ruleAction, setRuleAction] = useState<string>(defaultActionValue);
+export const SelectRuleAction = ({ rule, steps, currentStep, onChange }: Props) => {
+    const [ruleAction, setRuleAction] = useState<string>(rule.action.type);
 
     // We can only select steps that are below current step.
     const availableSteps = steps.slice(steps.findIndex(step => step.id === currentStep.id) + 1);
 
     useEffect(() => {
         if (ruleAction === "submit") {
-            onChangeAction("submit");
+            onChange({
+                type: "submit",
+                value: ""
+            });
         }
     }, [ruleAction]);
 
+    const onChangeAction = useCallback(
+        (actionValue: string) => {
+            return onChange({
+                type: ruleAction,
+                value: actionValue
+            });
+        },
+        [ruleAction, rule.action.value]
+    );
+
     return (
         <RuleAction>
-            <span>Then</span>
             <ActionSelect
-                label="Select rule action"
-                placeholder="Select rule action"
+                label="Rule action"
+                placeholder="Rule action"
                 value={ruleAction}
                 onChange={val => setRuleAction(val)}
             >
@@ -70,9 +81,9 @@ export const RuleActionSelect: React.FC<Props> = ({ rule, steps, currentStep, on
             </ActionSelect>
             {ruleAction === "goToStep" && (
                 <ActionOptionSelect
-                    label="Select Step"
-                    placeholder="Select Step"
-                    value={rule.action}
+                    label="Step"
+                    placeholder="Step"
+                    value={rule.action.value}
                     onChange={onChangeAction}
                 >
                     {availableSteps.map((step, index) => (
@@ -81,6 +92,14 @@ export const RuleActionSelect: React.FC<Props> = ({ rule, steps, currentStep, on
                         </option>
                     ))}
                 </ActionOptionSelect>
+            )}
+            {ruleAction === "submitAndRedirect" && (
+                <Input
+                    label={"Enter URL"}
+                    placeholder={"Enter URL"}
+                    value={rule.action.value}
+                    onChange={onChangeAction}
+                />
             )}
         </RuleAction>
     );

@@ -28,8 +28,11 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
                         layout
                         rules {
                             title
-                            action
-                            chain
+                            action {
+                                type
+                                value
+                            }
+                            matchAll
                             id
                             conditions {
                                 id

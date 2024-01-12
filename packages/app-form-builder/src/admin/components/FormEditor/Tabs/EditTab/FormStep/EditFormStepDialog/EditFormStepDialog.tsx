@@ -8,7 +8,7 @@ import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 
-import { RulesTab } from "./RulesTab";
+import { RulesTab } from "./RulesTab/RulesTab";
 
 import { FbFormModel, FbFormStep, FbFormRule } from "~/types";
 import { UpdateStepParams } from "~/admin/components/FormEditor/Context/useFormEditorFactory";
@@ -18,7 +18,8 @@ const EditStepDialog = styled(BaseDialog)`
     color: #fff;
     font-weight: 600;
     & .mdc-dialog__surface {
-        width: 875px;
+        width: 975px;
+        max-width: 975px;
     }
 `;
 
