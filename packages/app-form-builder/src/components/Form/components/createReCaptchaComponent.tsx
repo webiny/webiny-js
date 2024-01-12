@@ -35,11 +35,11 @@ const createReCaptchaComponent = ({
         if (typeof props.children === "function") {
             return props.children({
                 errorMessage: settings.reCaptcha.errorMessage
-            });
+            }) as React.ReactElement;
         }
 
         if (props.children) {
-            return props.children;
+            return props.children as React.ReactElement;
         }
 
         return (
