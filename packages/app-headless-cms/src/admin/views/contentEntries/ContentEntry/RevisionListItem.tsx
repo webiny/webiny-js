@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+import { Date } from "@webiny/ui/DateTime";
 import {
     ListItem,
     ListItemText,
@@ -21,7 +21,7 @@ import { ReactComponent as AddIcon } from "~/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
-import { CmsContentEntry } from "~/types";
+import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
 import usePermission from "~/admin/hooks/usePermission";
@@ -66,7 +66,7 @@ const getIcon = (rev: CmsContentEntry) => {
 };
 
 interface RevisionListItemProps {
-    revision: CmsContentEntry;
+    revision: CmsContentEntryRevision;
 }
 
 const RevisionListItem = ({ revision }: RevisionListItemProps) => {
@@ -101,8 +101,9 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
             <ListItemText>
                 <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                 <ListItemTextSecondary>
-                    {t`Last modified {time} (#{version})`({
-                        time: <TimeAgo datetime={revision.savedOn} />,
+                    {t`Last modified by {author} on {time} (#{version})`({
+                        author: revision.revisionCreatedBy.displayName,
+                        time: <Date date={revision.revisionCreatedOn} />,
                         version: revision.meta.version
                     })}
                 </ListItemTextSecondary>
