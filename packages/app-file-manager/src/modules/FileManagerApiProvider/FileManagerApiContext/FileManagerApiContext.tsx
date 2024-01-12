@@ -216,7 +216,14 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data: omit(data, ["createdOn", "savedOn", "createdBy"])
+                data: omit(data, [
+                    "createdOn",
+                    "createdBy",
+                    "savedOn",
+                    "savedBy",
+                    "modifiedOn",
+                    "modifiedBy"
+                ])
             }
         });
     };
