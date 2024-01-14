@@ -1,9 +1,8 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Menu CRUD", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const menuName = nanoid(10);
-    const menuSlug = nanoid(10);
+    const menuName = generateAlphaLowerCaseId(10);
+    const menuSlug = generateAlphaLowerCaseId(10);
 
     const menuNameEdit = "Testing Menu123";
     const menuDescEdit = "This is an edited description.";

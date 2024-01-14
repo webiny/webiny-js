@@ -1,11 +1,10 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Template Visibility", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const pageTemplateData1 = {
-        title: nanoid(6),
-        slug: nanoid(6),
-        description: nanoid(6),
+        title: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"

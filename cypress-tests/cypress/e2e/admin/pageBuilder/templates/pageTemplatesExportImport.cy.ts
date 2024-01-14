@@ -1,40 +1,39 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Template Export&Import", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     let url = "";
-    const titleString1 = nanoid(6);
-    const titleString2 = nanoid(6);
-    const titleString3 = nanoid(6);
+    const titleString1 = generateAlphaLowerCaseId(10);
+    const titleString2 = generateAlphaLowerCaseId(10);
+    const titleString3 = generateAlphaLowerCaseId(10);
     const titleString4 = "!#$%&/()=?*";
     const pageTemplateData1 = {
         title: titleString1,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData2 = {
         title: titleString2,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData3 = {
         title: titleString3,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData4 = {
         title: titleString4,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"

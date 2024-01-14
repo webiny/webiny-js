@@ -1,25 +1,21 @@
-import { customAlphabet } from "nanoid";
-
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 context("Page Builder - Blocks", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllBlocks();
         cy.pbDeleteAllBlockCategories();
         cy.pbDeleteAllTemplates();
     });
-
-    // Data used for creating multiple block categories.
     const blockName = ["Block1Name"];
     const headerTitle = "Header test";
     const headerTitleUpdate = "Edited Header Text";
     const templateData = "tester";
 
     const blockCategoryData = {
-        name: nanoid(10).toLowerCase(),
-        slug: nanoid(10).toLowerCase(),
+        name: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
         icon: "icon-name",
-        description: nanoid(10).toLowerCase()
+        description: generateAlphaLowerCaseId(10)
     };
 
     it("Should be able to programatically create and assert a block exists with a proper heading", () => {
@@ -28,6 +24,7 @@ context("Page Builder - Blocks", () => {
             blockNames: blockName,
             headerText: headerTitle
         });
+
         cy.visit("/page-builder/page-blocks");
         // Asserts the programatically created block contains the correct data.
         cy.contains(blockCategoryData.name).click();
