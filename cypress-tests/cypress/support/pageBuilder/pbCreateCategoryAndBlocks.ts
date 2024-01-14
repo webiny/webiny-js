@@ -3,8 +3,13 @@ import { gqlClient } from "../utils";
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
     blockNames: string[];
-    headerText?: string;
+    block?: Block;
 }
+
+type Block = {
+    type: string;
+    text: string;
+};
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -17,9 +22,8 @@ declare global {
     }
 }
 
-const blockData = (headerText?: string) => ({
-    type: "heading",
-    data: {
+const createHeadingBlock = (blockText: string) => {
+    return {
         text: {
             desktop: {
                 type: "heading",
@@ -27,7 +31,7 @@ const blockData = (headerText?: string) => ({
                 tag: "h1"
             },
             data: {
-                text: `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${headerText}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"heading-element\",\"version\":1,\"tag\":\"h1\",\"styles\":[{\"styleId\":\"heading1\",\"type\":\"typography\"}]}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`
+                text: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"${blockText}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h1","styles":[{"styleId":"heading1","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`
             }
         },
         settings: {
@@ -42,11 +46,18 @@ const blockData = (headerText?: string) => ({
                 }
             }
         }
-    },
-    elements: [],
-    path: ["WoVi5gTm84", "2rYVcjPC07"],
-    id: "YQNWzGUybC"
-});
+    };
+};
+
+const blockData = (blockText: string, blockType: string) => {
+    switch (blockType) {
+        case "heading":
+            return {
+                type: "heading",
+                data: createHeadingBlock(blockText)
+            };
+    }
+};
 
 const CREATE_BLOCK_CATEGORY_MUTATION = /* GraphQL */ `
     mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
@@ -99,7 +110,7 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, headerText }) => {
+Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, block }) => {
     cy.login().then(user => {
         const createCategoryPromise = gqlClient
             .request({
@@ -125,7 +136,7 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, 
                                     id: "xyz",
                                     type: "block",
                                     data: {},
-                                    elements: headerText ? [blockData(headerText)] : []
+                                    elements: block ? [blockData(block.text, block.type)] : []
                                 }
                             }
                         },

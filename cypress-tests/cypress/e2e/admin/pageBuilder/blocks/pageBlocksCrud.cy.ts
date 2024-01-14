@@ -1,8 +1,8 @@
 import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Blocks", () => {
-    const blockCategoryName = generateAlphaLowerCaseId(10); // Generate a random 10-character lowercase string
-    const blockCategorySlug = generateAlphaLowerCaseId(10); // Generate another random 10-character lowercase string
+    const blockCategoryName = generateAlphaLowerCaseId(10);
+    const blockCategorySlug = generateAlphaLowerCaseId(10);
 
     beforeEach(() => {
         cy.login();

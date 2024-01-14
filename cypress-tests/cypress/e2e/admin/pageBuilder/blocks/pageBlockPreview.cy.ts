@@ -22,7 +22,10 @@ context("Page Builder - Blocks", () => {
         cy.pbCreateCategoryAndBlocks({
             blockCategory: blockCategoryData,
             blockNames: blockName,
-            headerText: headerTitle
+            block: {
+                type: "heading",
+                text: headerTitle
+            }
         });
 
         cy.visit("/page-builder/page-blocks");
@@ -34,7 +37,7 @@ context("Page Builder - Blocks", () => {
         // Edits the current header for headerTitleUpdate.
         cy.findByTestId("pb-blocks-list-block-edit-btn").click();
         cy.get('pb-block:contains("Header test")').click();
-        cy.get('[contenteditable="true"]').clear().type(headerTitleUpdate);
+        cy.get('[contenteditable="true"]').clear().type(headerTitleUpdate).click();
         cy.contains("Save Changes").click();
 
         // Asserts the newly edited header/block contains the right information.
