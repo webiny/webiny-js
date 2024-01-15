@@ -1,12 +1,13 @@
 import {
+    CmsIdentity,
     CmsModel,
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
 
+export { CmsIdentity } from "@webiny/app-headless-cms-common/types";
 export * from "~/graphql/records/types";
 export * from "~/table.types";
-
 export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 
 export interface FolderPermission {
@@ -34,21 +35,12 @@ export interface FolderItem {
     canManageContent: boolean;
     type: string;
     parentId: string | null;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
+    createdBy: CmsIdentity;
     createdOn: string;
-    savedBy: {
-        id: string;
-        displayName: string;
-    };
+    savedBy: CmsIdentity;
     savedOn: string;
-    modifiedBy: {
-        id: string;
-        displayName: string;
-    };
-    modifiedOn: string;
+    modifiedBy: CmsIdentity | null;
+    modifiedOn: string | null;
 }
 
 export type GenericSearchData = {

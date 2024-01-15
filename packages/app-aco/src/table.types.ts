@@ -1,4 +1,4 @@
-import { FolderItem, GenericSearchData, Location } from "~/types";
+import { CmsIdentity, FolderItem, GenericSearchData, Location } from "~/types";
 
 export interface SearchRecordItem<TData extends GenericSearchData = GenericSearchData> {
     id: string;
@@ -9,20 +9,11 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     data: TData;
     tags: string[];
     createdOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
+    createdBy: CmsIdentity;
     savedOn: string;
-    savedBy: {
-        id: string;
-        displayName: string;
-    };
-    modifiedOn: string;
-    modifiedBy: {
-        id: string;
-        displayName: string;
-    };
+    savedBy: CmsIdentity;
+    modifiedOn: string | null;
+    modifiedBy: CmsIdentity | null;
 }
 
 export type MovableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;

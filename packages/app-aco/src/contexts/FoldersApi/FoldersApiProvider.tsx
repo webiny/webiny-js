@@ -80,7 +80,8 @@ const rootFolder: FolderItem = {
     createdOn: "",
     createdBy: {
         id: "",
-        displayName: ""
+        displayName: "",
+        type: ""
     },
     hasNonInheritedPermissions: false,
     canManagePermissions: true,
@@ -89,13 +90,11 @@ const rootFolder: FolderItem = {
     savedOn: "",
     savedBy: {
         id: "",
-        displayName: ""
+        displayName: "",
+        type: ""
     },
-    modifiedOn: "",
-    modifiedBy: {
-        id: "",
-        displayName: ""
-    },
+    modifiedOn: null,
+    modifiedBy: null,
     type: "$ROOT"
 };
 
