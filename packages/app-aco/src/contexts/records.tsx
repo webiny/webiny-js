@@ -1,6 +1,7 @@
 import React, { ReactNode, useMemo, useState } from "react";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
+import lodashMerge from "lodash/merge";
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 import {
     createCreateRecord,
@@ -148,22 +149,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             },
             updateRecordInCache: (record: any) => {
                 const { id: recordId } = parseIdentifier(record.id);
-                const index = records.findIndex(item => {
-                    const { id: itemId } = parseIdentifier(item.id);
-                    return itemId === recordId;
-                });
-                if (index === -1) {
-                    return;
-                }
+
                 setRecords(prev => {
-                    const next = [...prev];
+                    const index = prev.findIndex(item => {
+                        const { id: itemId } = parseIdentifier(item.id);
+                        return itemId === recordId;
+                    });
 
-                    next[index] = {
-                        ...prev[index],
-                        ...record
-                    };
-
-                    return next;
+                    if (index >= 0) {
+                        const next = [...prev];
+                        next[index] = lodashMerge({}, prev[index], record);
+                        return next;
+                    }
+                    return [record, ...prev];
                 });
             },
             removeRecordFromCache: (id: string) => {
