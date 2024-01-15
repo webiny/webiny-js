@@ -293,10 +293,6 @@ export interface CmsModelFieldWithParent extends CmsModelField {
     parent?: CmsModelFieldWithParent | null;
 }
 
-export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
-    parent?: CmsModelDynamicZoneFieldWithParent | null;
-}
-
 /**
  * A definition for dateTime field to show possible type of the field in settings.
  */
