@@ -66,8 +66,10 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             resolvers: {
                 AdminUserIdentity: {
                     async profile(identity, _, context) {
-                        const adminUser = await context.adminUsers.getUser({
-                            where: { id: identity.id }
+                        const adminUser = await context.security.withoutAuthorization(async () => {
+                            return context.adminUsers.getUser({
+                                where: { id: identity.id }
+                            });
                         });
 
                         if (adminUser) {
@@ -78,17 +80,19 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                         // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                         const tenant = context.tenancy.getCurrentTenant();
 
-                        return await context.adminUsers.getUser({
-                            where: {
-                                id: identity.id,
-                                /**
-                                 * TODO @ts-refactor @pavel
-                                 * What happens if tenant has no parent?
-                                 * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
-                                 */
-                                // @ts-expect-error
-                                tenant: tenant.parent
-                            }
+                        return context.security.withoutAuthorization(async () => {
+                            return context.adminUsers.getUser({
+                                where: {
+                                    id: identity.id,
+                                    /**
+                                     * TODO @ts-refactor @pavel
+                                     * What happens if tenant has no parent?
+                                     * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
+                                     */
+                                    // @ts-expect-error
+                                    tenant: tenant.parent
+                                }
+                            });
                         });
                     },
                     __isTypeOf(obj: SecurityIdentity) {
