@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+import { Date } from "@webiny/ui/DateTime";
 import {
     ListItem,
     ListItemText,
@@ -101,8 +101,9 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
             <ListItemText>
                 <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                 <ListItemTextSecondary>
-                    {t`Last modified {time} (#{version})`({
-                        time: <TimeAgo datetime={revision.savedOn} />,
+                    {t`Last modified by {author} on {time} (#{version})`({
+                        author: revision.revisionCreatedBy.displayName,
+                        time: <Date date={revision.revisionCreatedOn} />,
                         version: revision.meta.version
                     })}
                 </ListItemTextSecondary>

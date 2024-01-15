@@ -18,6 +18,7 @@ import { MultiStepForms_5_38_0_001 } from "~/migrations/5.38.0/001/ddb";
 import { MultiStepForms_5_38_0_002 } from "~/migrations/5.38.0/002/ddb";
 import { PageBlocks_5_38_0_003 } from "~/migrations/5.38.0/003/ddb";
 // 5.39.0
+import { CmsEntriesInitNewMetaFields_5_39_0_002 } from "~/migrations/5.39.0/002/ddb";
 import { FileManager_5_39_0_005 } from "~/migrations/5.39.0/005/ddb";
 
 export const migrations = () => {
@@ -37,6 +38,7 @@ export const migrations = () => {
         MultiStepForms_5_38_0_001,
         MultiStepForms_5_38_0_002,
         PageBlocks_5_38_0_003,
+        CmsEntriesInitNewMetaFields_5_39_0_002,
         FileManager_5_39_0_005
     ];
 };
