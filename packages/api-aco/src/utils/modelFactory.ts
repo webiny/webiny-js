@@ -1,8 +1,6 @@
 import { CmsModelPlugin, CmsPrivateModelFull, createCmsModel } from "@webiny/api-headless-cms";
-import { CmsGroup } from "@webiny/api-headless-cms/types";
 
 interface Params {
-    group: Pick<CmsGroup, "id" | "name">;
     /**
      * Locale and tenant do not need to be defined.
      * In that case model is not bound to any locale or tenant.
@@ -10,17 +8,15 @@ interface Params {
      */
     locale?: string;
     tenant?: string;
-    modelDefinition: Omit<CmsPrivateModelFull, "noValidate" | "group">;
+    modelDefinition: CmsPrivateModelFull;
 }
 
 export const modelFactory = (params: Params): CmsModelPlugin => {
-    const { group, locale, tenant, modelDefinition } = params;
+    const { locale, tenant, modelDefinition } = params;
 
     return createCmsModel({
-        group,
         locale,
         tenant,
-        ...modelDefinition,
-        noValidate: true
+        ...modelDefinition
     });
 };

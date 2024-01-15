@@ -1,5 +1,5 @@
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 import { createModelField } from "./utils";
-import { WorkflowModelDefinition } from "~/types";
 
 const bodyField = () =>
     createModelField({
@@ -44,20 +44,11 @@ const stepField = () =>
 
 export const CHANGE_REQUEST_MODEL_ID = "apwChangeRequestModelDefinition";
 
-export const createChangeRequestModelDefinition = (): WorkflowModelDefinition => {
-    return {
+export const createChangeRequestModelDefinition = () => {
+    return createPrivateModelDefinition({
         name: "APW - Change Request",
         modelId: CHANGE_REQUEST_MODEL_ID,
         titleFieldId: "title",
-        layout: [
-            ["changeRequest_body"],
-            ["changeRequest_title"],
-            ["changeRequest_resolved"],
-            ["changeRequest_media"],
-            ["changeRequest_step"]
-        ],
-        fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()],
-        description: "",
-        isPrivate: true
-    };
+        fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
+    });
 };

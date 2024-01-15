@@ -1,6 +1,6 @@
-import { createCmsModel, CmsGroupPlugin } from "@webiny/api-headless-cms";
-import { CmsModelField, CmsModelFieldValidation } from "@webiny/api-headless-cms/types";
 import lodashCamelCase from "lodash/camelCase";
+import { createCmsModel, createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { CmsModelField, CmsModelFieldValidation } from "@webiny/api-headless-cms/types";
 
 export const SETTINGS_MODEL_ID = "mailerSettings";
 
@@ -44,42 +44,35 @@ const createNumberField = (params: Omit<CreateFieldParams, "type">) => {
     });
 };
 
-export const createSettingsModel = (group: CmsGroupPlugin) => {
-    return createCmsModel({
-        modelId: SETTINGS_MODEL_ID,
-        name: "Mailer Settings",
-        group: {
-            id: group.contentModelGroup.id,
-            name: group.contentModelGroup.name
-        },
-        fields: [
-            createTextField({
-                label: "Host",
-                required: true
-            }),
-            createNumberField({
-                label: "Port"
-            }),
-            createTextField({
-                label: "User",
-                required: true
-            }),
-            createTextField({
-                label: "Password",
-                required: true
-            }),
-            createTextField({
-                label: "From",
-                required: true
-            }),
-            createTextField({
-                label: "Reply-To"
-            })
-        ],
-        layout: [["host", "port", "user", "password", "from", "replyTo"]],
-        description: "Mailer Settings",
-        titleFieldId: "",
-        isPrivate: true,
-        noValidate: true
-    });
+export const createSettingsModel = () => {
+    return createCmsModel(
+        createPrivateModelDefinition({
+            name: "Mailer Settings",
+            modelId: SETTINGS_MODEL_ID,
+            fields: [
+                createTextField({
+                    label: "Host",
+                    required: true
+                }),
+                createNumberField({
+                    label: "Port"
+                }),
+                createTextField({
+                    label: "User",
+                    required: true
+                }),
+                createTextField({
+                    label: "Password",
+                    required: true
+                }),
+                createTextField({
+                    label: "From",
+                    required: true
+                }),
+                createTextField({
+                    label: "Reply-To"
+                })
+            ]
+        })
+    );
 };

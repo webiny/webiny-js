@@ -1,5 +1,5 @@
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 import { createModelField } from "./utils";
-import { WorkflowModelDefinition } from "~/types";
 
 const commentBody = () =>
     createModelField({
@@ -48,16 +48,11 @@ interface CreateCommentModelDefinitionParams {
 
 export const COMMENT_MODEL_ID = "apwCommentModelDefinition";
 
-export const createCommentModelDefinition = ({
-    modelId
-}: CreateCommentModelDefinitionParams): WorkflowModelDefinition => {
-    return {
+export const createCommentModelDefinition = ({ modelId }: CreateCommentModelDefinitionParams) => {
+    return createPrivateModelDefinition({
         name: "APW - Comment",
         modelId: COMMENT_MODEL_ID,
         titleFieldId: "step",
-        layout: [["comment_body"], ["comment_changeRequest"], ["comment_step"], ["comment_media"]],
-        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
-        description: "",
-        isPrivate: true
-    };
+        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
+    });
 };
