@@ -1,11 +1,11 @@
 import { TaskManagerStore } from "@webiny/tasks/runner/TaskManagerStore";
-import { Context, ITaskData } from "@webiny/tasks/types";
+import { Context, ITask } from "@webiny/tasks/types";
 import { createTaskMock } from "~tests/mocks/task";
 import { createContextMock } from "~tests/mocks/context";
 
 interface Params {
     context?: Context;
-    task?: ITaskData;
+    task?: ITask;
 }
 export const createTaskManagerStoreMock = (params?: Params) => {
     const context = params?.context || createContextMock();
