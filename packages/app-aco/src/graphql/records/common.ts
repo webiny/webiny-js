@@ -13,7 +13,15 @@ interface CreateFieldsListParams {
     fields: AcoModelField[];
 }
 
-const defaultFields = ["id", "createdOn", "savedOn", "createdBy {id type displayName}"];
+const defaultFields = [
+    "id",
+    "createdOn",
+    "savedOn",
+    "modifiedOn",
+    "createdBy {id type displayName}",
+    "savedBy {id type displayName}",
+    "modifiedBy {id type displayName}"
+];
 
 const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => {
     const fieldPlugins: Record<string, any> = plugins

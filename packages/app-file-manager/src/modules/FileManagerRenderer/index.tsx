@@ -9,6 +9,7 @@ import { Name, Tags, Aliases, AccessControl } from "~/components/fields";
 import {
     CellActions,
     CellAuthor,
+    CellCreated,
     CellModified,
     CellName,
     CellSize,
@@ -54,6 +55,12 @@ export const FileManagerRendererModule = () => {
                     sortable={true}
                 />
                 <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
+                <Browser.Table.Column
+                    name={"createdOn"}
+                    header={"Created"}
+                    cell={<CellCreated />}
+                    sortable={true}
+                />
                 <Browser.Table.Column
                     name={"savedOn"}
                     header={"Modified"}

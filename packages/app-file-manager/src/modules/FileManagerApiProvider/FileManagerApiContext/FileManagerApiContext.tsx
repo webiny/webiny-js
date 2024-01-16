@@ -84,8 +84,17 @@ const getModelFields = (model: ReturnType<typeof useFileModel>) => {
         __typename
         id
         createdOn
-        savedOn
         createdBy {
+            id
+            displayName
+        }
+        savedOn
+        savedBy {
+            id
+            displayName
+        }
+        modifiedOn
+        modifiedBy {
             id
             displayName
         }
@@ -207,7 +216,14 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data: omit(data, ["createdOn", "savedOn", "createdBy"])
+                data: omit(data, [
+                    "createdOn",
+                    "createdBy",
+                    "savedOn",
+                    "savedBy",
+                    "modifiedOn",
+                    "modifiedBy"
+                ])
             }
         });
     };
