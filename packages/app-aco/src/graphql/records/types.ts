@@ -120,5 +120,8 @@ export interface CreateSearchRecordResponse {
 }
 
 export interface CreateSearchRecordVariables {
-    data: Omit<SearchRecordItem, "id" | "createdOn" | "createdBy" | "savedOn">;
+    data: Omit<
+        SearchRecordItem,
+        "id" | "createdOn" | "savedOn" | "modifiedOn" | "createdBy" | "savedBy" | "modifiedBy"
+    >;
 }
