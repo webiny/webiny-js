@@ -1,13 +1,13 @@
 import { gqlClient } from "../utils";
-
+import { createHeadingBlock } from "./pbCreateCategoryAndBlocks/createHeadingBlock";
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
     blockNames: string[];
-    block?: Block;
+    content?: Content;
 }
 
-type Block = {
-    type: string;
+type Content = {
+    type: "heading";
     text: string;
 };
 
@@ -22,40 +22,17 @@ declare global {
     }
 }
 
-const createHeadingBlock = (blockText: string) => {
-    return {
-        text: {
-            desktop: {
-                type: "heading",
-                alignment: "left",
-                tag: "h1"
-            },
-            data: {
-                text: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"${blockText}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"heading-element","version":1,"tag":"h1","styles":[{"styleId":"heading1","type":"typography"}]}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`
-            }
-        },
-        settings: {
-            margin: {
-                desktop: {
-                    all: "0px"
-                }
-            },
-            padding: {
-                desktop: {
-                    all: "0px"
-                }
-            }
-        }
-    };
-};
-
-const blockData = (blockText: string, blockType: string) => {
-    switch (blockType) {
+const contentData = (contentText: string, contentType: string) => {
+    switch (contentType) {
         case "heading":
             return {
-                type: "heading",
-                data: createHeadingBlock(blockText)
+                type: "block",
+                data: {},
+                elements: [createHeadingBlock(contentText)]
             };
+
+        default:
+            return {};
     }
 };
 
@@ -110,7 +87,7 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, block }) => {
+Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, content }) => {
     cy.login().then(user => {
         const createCategoryPromise = gqlClient
             .request({
@@ -129,15 +106,11 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, 
                     gqlClient.request({
                         query: CRATE_BLOCK_MUTATION,
                         variables: {
+                            id: "xyz",
                             data: {
                                 name: blockName,
                                 blockCategory: categorySlug,
-                                content: {
-                                    id: "xyz",
-                                    type: "block",
-                                    data: {},
-                                    elements: block ? [blockData(block.text, block.type)] : []
-                                }
+                                content: content ? contentData(content.text, content.type) : {}
                             }
                         },
                         authToken: user.idToken.jwtToken

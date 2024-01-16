@@ -30,7 +30,7 @@ import "./pageBuilder/pbDeleteAllBlockCategories";
 import "./pageBuilder/pbListBlockCategories";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
-import "./login/visitWebsite";
+import "./visitWebsite";
 import "./headlessCms/cmsCreateContentModel";
 import "./headlessCms/cmsUpdateContentModel";
 import "./headlessCms/cmsDeleteContentModel";

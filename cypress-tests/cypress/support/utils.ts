@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
-import { customAlphabet } from "nanoid";
 import { getSuperAdminUser, User } from "./login";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 const DEFAULT_TENANT_ID = "root";
 
@@ -107,5 +107,5 @@ export const createGqlQuery = <TReturn, TVariables = Record<string, never>>(
 };
 
 export const generateId = () => {
-    return customAlphabet("abcdefghijklmnopqrstuvwxyz", 10)();
+    return generateAlphaLowerCaseId(10);
 };

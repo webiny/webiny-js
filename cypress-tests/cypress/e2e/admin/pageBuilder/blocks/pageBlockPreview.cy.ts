@@ -22,7 +22,7 @@ context("Page Builder - Blocks", () => {
         cy.pbCreateCategoryAndBlocks({
             blockCategory: blockCategoryData,
             blockNames: blockName,
-            block: {
+            content: {
                 type: "heading",
                 text: headerTitle
             }
