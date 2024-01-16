@@ -8,6 +8,7 @@ import {
     ImportExportTaskStorageOperations,
     ImportExportTaskStorageOperationsListParams
 } from "~/types";
+import { Context as TasksContext } from "@webiny/tasks/types";
 
 export interface ExportPagesParams {
     ids?: string[];
@@ -251,7 +252,7 @@ export type ImportExportTaskCrud = {
     ): Promise<ImportExportTask>;
 };
 
-export interface PbImportExportContext extends PbContext {
+export interface PbImportExportContext extends TasksContext, PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
         blocks: BlocksImportExportCrud;
