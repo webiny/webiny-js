@@ -251,6 +251,20 @@ Resources:
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
 
+
+              # AWS Step Functions
+              - Effect: Allow
+                Action:
+                - states:CreateStateMachine
+                - states:DeleteStateMachine
+                - states:DescribeStateMachine
+                - states:ListTagsForResource
+                - states:TagResource
+                - states:UntagResource
+                - states:ListStateMachines
+                - states:UpdateStateMachine
+                Resource: arn:aws:states:*:*:stateMachine:wby-*
+
               # AWS Lambda
               - Effect: Allow
                 Action:
