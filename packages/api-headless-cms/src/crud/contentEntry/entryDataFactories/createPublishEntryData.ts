@@ -1,11 +1,10 @@
-import { CmsContext, CmsEntry, CmsModel, CmsPublishEntryOptions } from "~/types";
+import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 
 type CreatePublishEntryDataParams = {
     model: CmsModel;
-    options?: CmsPublishEntryOptions;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     originalEntry: CmsEntry;
@@ -14,7 +13,6 @@ type CreatePublishEntryDataParams = {
 
 export const createPublishEntryData = async ({
     model,
-    options,
     context,
     getIdentity: getSecurityIdentity,
     originalEntry,
@@ -32,39 +30,24 @@ export const createPublishEntryData = async ({
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 
-    /**
-     * The existing functionality is to set the publishedOn date to the current date.
-     * Users can now choose to skip updating the publishedOn date - unless it is not set.
-     *
-     * Same logic goes for the savedOn date.
-     */
-    const { updatePublishedOn = true, updateSavedOn = true } = options || {};
-    let publishedOn = originalEntry.publishedOn;
-    if (updatePublishedOn || !publishedOn) {
-        publishedOn = currentDateTime;
-    }
-
-    let savedOn = originalEntry.savedOn;
-    if (updateSavedOn || !savedOn) {
-        savedOn = currentDateTime;
-    }
-
     const entry: CmsEntry = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
         locked: true,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * Entry-level meta fields. 👇
          */
-        savedOn,
-        publishedOn,
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
+        createdOn: latestEntry.createdOn,
+        modifiedOn: currentDateTime,
+        savedOn: currentDateTime,
+        firstPublishedOn: latestEntry.firstPublishedOn || currentDateTime,
+        lastPublishedOn: currentDateTime,
+        createdBy: latestEntry.createdBy,
+        modifiedBy: currentIdentity,
+        savedBy: currentIdentity,
+        firstPublishedBy: latestEntry.firstPublishedBy || currentIdentity,
+        lastPublishedBy: currentIdentity,
 
         /**
          * Revision-level meta fields. 👇
@@ -78,21 +61,7 @@ export const createPublishEntryData = async ({
         revisionSavedBy: currentIdentity,
         revisionModifiedBy: currentIdentity,
         revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-        revisionLastPublishedBy: currentIdentity,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entryCreatedOn: latestEntry.entryCreatedOn,
-        entrySavedOn: currentDateTime,
-        entryModifiedOn: currentDateTime,
-        entryFirstPublishedOn: latestEntry.entryFirstPublishedOn || currentDateTime,
-        entryLastPublishedOn: currentDateTime,
-        entryCreatedBy: latestEntry.entryCreatedBy,
-        entrySavedBy: currentIdentity,
-        entryModifiedBy: currentIdentity,
-        entryFirstPublishedBy: latestEntry.entryFirstPublishedBy || currentIdentity,
-        entryLastPublishedBy: currentIdentity
+        revisionLastPublishedBy: currentIdentity
     };
 
     return { entry };

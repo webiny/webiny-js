@@ -6,18 +6,20 @@ const productFields = `
     id
     entryId
     createdOn
+    modifiedOn
+    savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         displayName
         type
     }
-    savedOn
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
         revisions {
             id

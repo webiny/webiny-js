@@ -37,7 +37,9 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
             ref={formRef}
             data={props.vm.data}
             onChange={props.onChange}
-            onSubmit={props.onSubmit}
+            onSubmit={data => {
+                console.log("data", data);
+            }}
             invalidFields={props.vm.invalidFields}
         >
             {() => (

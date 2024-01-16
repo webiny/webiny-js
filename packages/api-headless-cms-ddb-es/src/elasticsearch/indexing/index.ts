@@ -4,6 +4,7 @@ import defaultFieldIndexing from "./defaultFieldIndexing";
 import dateTimeIndexing from "./dateTimeIndexing";
 import numberIndexing from "./numberIndexing";
 import objectIndexing from "./objectIndexing";
+import { createJsonIndexing } from "./jsonIndexing";
 
 export default () => [
     dateTimeIndexing(),
@@ -11,5 +12,6 @@ export default () => [
     longTextIndexing(),
     defaultFieldIndexing(),
     numberIndexing(),
-    objectIndexing()
+    objectIndexing(),
+    createJsonIndexing()
 ];

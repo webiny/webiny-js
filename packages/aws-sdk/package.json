@@ -16,6 +16,7 @@
     "@aws-sdk/client-iam": "^3.425.0",
     "@aws-sdk/client-lambda": "^3.425.0",
     "@aws-sdk/client-s3": "^3.425.0",
+    "@aws-sdk/client-sfn": "^3.425.0",
     "@aws-sdk/client-sqs": "^3.425.0",
     "@aws-sdk/client-sts": "^3.425.0",
     "@aws-sdk/credential-providers": "^3.425.0",

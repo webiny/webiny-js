@@ -12,9 +12,15 @@ import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco"
 import {
     CellActions,
     CellAuthor,
+    CellCreated,
     CellModified,
     CellName,
-    CellStatus
+    CellStatus,
+    ChangePageStatus,
+    DeletePage,
+    EditPage,
+    MovePage,
+    PreviewPage
 } from "~/admin/components/Table/Table";
 
 const { Browser } = PageListConfig;
@@ -30,6 +36,11 @@ export const PagesModule = () => {
             <Browser.FolderAction name={"edit"} element={<EditFolder />} />
             <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
             <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+            <Browser.PageAction name={"edit"} element={<EditPage />} />
+            <Browser.PageAction name={"preview"} element={<PreviewPage />} />
+            <Browser.PageAction name={"status"} element={<ChangePageStatus />} />
+            <Browser.PageAction name={"move"} element={<MovePage />} />
+            <Browser.PageAction name={"delete"} element={<DeletePage />} />
             <Browser.Table.Column
                 name={"title"}
                 header={"Name"}
@@ -38,7 +49,13 @@ export const PagesModule = () => {
                 size={300}
                 sortable={true}
             />
-            <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column
+                name={"createdOn"}
+                header={"Created"}
+                cell={<CellCreated />}
+                sortable={true}
+            />
             <Browser.Table.Column
                 name={"savedOn"}
                 header={"Modified"}

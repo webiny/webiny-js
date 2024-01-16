@@ -87,27 +87,11 @@ export const createUpdateEntryData = async ({
         ...originalEntry,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
-         */
-        savedOn: getDate(rawInput.savedOn, new Date()),
-        createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
-        publishedOn: getDate(rawInput.publishedOn, originalEntry.publishedOn),
-        createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-        modifiedBy: getIdentity(rawInput.modifiedBy, getSecurityIdentity()),
-        ownedBy: getIdentity(rawInput.ownedBy, originalEntry.ownedBy),
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
-
-        /**
          * Revision-level meta fields. 👇
          */
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, originalEntry.revisionCreatedOn),
-        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
+        revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionFirstPublishedOn: getDate(
             rawInput.revisionFirstPublishedOn,
             originalEntry.revisionFirstPublishedOn
@@ -117,8 +101,8 @@ export const createUpdateEntryData = async ({
             originalEntry.revisionLastPublishedOn
         ),
         revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, originalEntry.revisionCreatedBy),
+        revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, currentIdentity),
         revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-        revisionModifiedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         revisionFirstPublishedBy: getIdentity(
             rawInput.revisionFirstPublishedBy,
             originalEntry.revisionFirstPublishedBy
@@ -133,28 +117,16 @@ export const createUpdateEntryData = async ({
          * If required, within storage operations, these entry-level updates
          * will be propagated to the latest revision too.
          */
-        entryCreatedOn: getDate(rawInput.entryCreatedOn, originalEntry.entryCreatedOn),
-        entrySavedOn: getDate(rawInput.entrySavedOn, currentDateTime),
-        entryModifiedOn: getDate(rawInput.entryModifiedOn, currentDateTime),
-        entryFirstPublishedOn: getDate(
-            rawInput.entryFirstPublishedOn,
-            originalEntry.entryFirstPublishedOn
-        ),
-        entryLastPublishedOn: getDate(
-            rawInput.entryLastPublishedOn,
-            originalEntry.entryLastPublishedOn
-        ),
-        entryCreatedBy: getIdentity(rawInput.entryCreatedBy, originalEntry.entryCreatedBy),
-        entrySavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
-        entryModifiedBy: getIdentity(rawInput.entryModifiedBy, currentIdentity),
-        entryFirstPublishedBy: getIdentity(
-            rawInput.entryFirstPublishedBy,
-            originalEntry.entryFirstPublishedBy
-        ),
-        entryLastPublishedBy: getIdentity(
-            rawInput.entryLastPublishedBy,
-            originalEntry.entryLastPublishedBy
-        ),
+        createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
+        savedOn: getDate(rawInput.savedOn, currentDateTime),
+        modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
+        firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
+        lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
+        createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
+        firstPublishedBy: getIdentity(rawInput.firstPublishedBy, originalEntry.firstPublishedBy),
+        lastPublishedBy: getIdentity(rawInput.lastPublishedBy, originalEntry.lastPublishedBy),
 
         values,
         meta,

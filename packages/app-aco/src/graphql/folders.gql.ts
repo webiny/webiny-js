@@ -25,8 +25,17 @@ const DATA_FIELD = /* GraphQL */ `
         parentId
         type
         savedOn
+        savedBy {
+            id
+            displayName
+        }
         createdOn
         createdBy {
+            id
+            displayName
+        }
+        modifiedOn
+        modifiedBy {
             id
             displayName
         }

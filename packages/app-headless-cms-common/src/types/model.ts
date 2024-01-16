@@ -65,7 +65,7 @@ export interface CmsGroup {
     id: string;
     name: string;
     slug: string;
-    icon?: string;
+    icon: string;
     description?: string;
     contentModels: CmsModel[];
     createdBy: CmsIdentity;

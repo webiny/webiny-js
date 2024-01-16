@@ -114,14 +114,17 @@ Resources:
                   - arn:aws:apigateway:*::/apis/*/routes/*
 
               # Amazon Cognito
+              # With Amazon Cognito, we've run into an issue where Pulumi is not applying tags to the
+              # user pool. It seems we'll need to upgrade to Pulumi 6 in order to resolve this, but for
+              # now, we'll just allow the user to create a user pool without any tags condition.
+              # See https://github.com/pulumi/pulumi-aws/issues/2533 for more details.
               - Effect: Allow
                 Action:
                   - cognito-idp:CreateUserPool
                   - cognito-idp:TagResource
+                # Only wildcard can be used here.
+                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncognitouserpools.html
                 Resource: "*"
-                Condition:
-                  "Null":
-                    "aws:RequestTag/WbyProjectName": "false"
 
               # Amazon Cognito
               - Effect: Allow
@@ -143,10 +146,10 @@ Resources:
                   - cognito-idp:DescribeUserPoolClient
                   - cognito-idp:GetUserPoolMfaConfig
                   - cognito-idp:UntagResource
+                # If the last part of the resource ARN was the user pool name, we could've put a prefix
+                # at least (for example `wby-*`). But, since it's the user pool ID, we can't do that.
+                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncognitouserpools.html#amazoncognitouserpools-userpool
                 Resource: arn:aws:cognito-idp:*:*:userpool/*
-                Condition:
-                  "Null":
-                    "aws:ResourceTag/WbyProjectName": "false"
 
               # Amazon DynamoDB
               - Effect: Allow
@@ -247,6 +250,20 @@ Resources:
                 Resource:
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
+
+
+              # AWS Step Functions
+              - Effect: Allow
+                Action:
+                - states:CreateStateMachine
+                - states:DeleteStateMachine
+                - states:DescribeStateMachine
+                - states:ListTagsForResource
+                - states:TagResource
+                - states:UntagResource
+                - states:ListStateMachines
+                - states:UpdateStateMachine
+                Resource: arn:aws:states:*:*:stateMachine:wby-*
 
               # AWS Lambda
               - Effect: Allow

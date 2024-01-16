@@ -14,7 +14,6 @@ import {
 } from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
 import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
-import { usePermission } from "~/admin/hooks";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -26,6 +25,7 @@ interface UpdateSearchCallable {
 
 export interface ContentEntriesListProviderContext {
     folders: FolderTableItem[];
+    getEntryEditUrl: (item: EntryTableItem) => string;
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
@@ -34,7 +34,6 @@ export interface ContentEntriesListProviderContext {
     listTitle?: string;
     meta: ListMeta;
     onSelectRow: (rows: TableItem[] | []) => void;
-    onEditEntry: (item: EntryTableItem) => void;
     records: EntryTableItem[];
     search: string;
     selected: CmsContentEntry[];
@@ -59,7 +58,6 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
     const { currentFolderId } = useNavigateFolder();
-    const { canEdit } = usePermission();
 
     const {
         folders: initialFolders,
@@ -131,21 +129,17 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         setSelected(cmsContentEntries);
     };
 
-    const onEditEntry = useCallback(
-        (entry: EntryTableItem) => {
-            if (!canEdit(entry, "cms.contentEntry")) {
-                return;
-            }
-
+    const getEntryEditUrl = useCallback(
+        (entry: EntryTableItem): string => {
             const folderPath = currentFolderId
                 ? `&folderId=${encodeURIComponent(currentFolderId)}`
                 : "";
 
             const idPath = encodeURIComponent(entry.id);
 
-            history.push(`${baseUrl}?id=${idPath}${folderPath}`);
+            return `${baseUrl}?id=${idPath}${folderPath}`;
         },
-        [canEdit, baseUrl, currentFolderId]
+        [baseUrl, currentFolderId]
     );
 
     const records = useMemo(() => {
@@ -169,6 +163,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const context: ContentEntriesListProviderContext = {
         folders,
+        getEntryEditUrl,
         isListLoading,
         isListLoadingMore,
         isSearch,
@@ -176,7 +171,6 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         listMoreRecords,
         meta,
         onSelectRow,
-        onEditEntry,
         records,
         search,
         selected,

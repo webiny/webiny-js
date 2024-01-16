@@ -10,16 +10,18 @@ const addArrayResult = (target: any[], result: any[]): void => {
  * A recursive function which goes through given input paths and returns the value in it.
  * In case a path is an array, it goes through the array of those values to get values further down the path line.
  */
-const find = (target: Record<string, any>, input: string[]): any[] | undefined => {
+const find = (target: Record<string, any> | undefined, input: string[]): any[] | undefined => {
     const paths = [...input];
     const path = paths.shift();
 
     if (!path) {
         return undefined;
-    } else if (target[path] === undefined) {
+    }
+
+    const value = target?.[path];
+    if (value === undefined) {
         return undefined;
     }
-    const value = target[path];
     if (paths.length === 0) {
         return value;
     } else if (Array.isArray(value)) {

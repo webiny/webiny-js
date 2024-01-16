@@ -1,6 +1,7 @@
 export * from "./useHandler";
 export * from "./getPrimaryDynamoDbTable";
 export * from "./insertDynamoDbTestData";
+export * from "./importElasticsearchTestData";
 export * from "./createDdbMigrationHandler";
 export * from "./createDdbEsMigrationHandler";
 export * from "./assertNotError";
