@@ -7,8 +7,17 @@ export const getFileGraphQLSelection = (model: ReturnType<typeof useFileModel>) 
         __typename
         id
         createdOn
-        savedOn
         createdBy {
+            id
+            displayName
+        }
+        savedOn
+        savedBy {
+            id
+            displayName
+        }
+        modifiedOn
+        modifiedBy {
             id
             displayName
         }

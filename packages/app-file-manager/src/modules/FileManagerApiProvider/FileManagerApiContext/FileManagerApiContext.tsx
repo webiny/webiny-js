@@ -197,7 +197,8 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
                     "savedOn",
                     "savedBy",
                     "modifiedOn",
-                    "modifiedBy", "src"
+                    "modifiedBy",
+                    "src"
                 ])
             }
         });
