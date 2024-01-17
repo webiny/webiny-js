@@ -43,9 +43,8 @@ export const createGraphQLSchemaPlugin = () => {
                     plugins: fieldPlugins
                 });
 
-                context.plugins.register([...plugins, graphQlPlugin]);
+                context.plugins.register([...plugins, graphQlPlugin, getFileByUrl()]);
             });
-        }),
-        getFileByUrl()
+        })
     ];
 };
