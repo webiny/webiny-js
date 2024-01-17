@@ -17,15 +17,18 @@ const DeletePage = (props: DeletePageProps) => {
     const { canDelete:pagesCanDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page, onDelete });
 
+    const folderId = page.wbyAco_location?.folderId;
 
-    console.log('wwww',page);
-    // const canDelete = useMemo(() => {
-    //     return pagesCanDelete(page.createdBy.id) && flp.canManageContent(folderId);
-    // }, [flp, folderId]);
+    const canDelete = useMemo(() => {
+        return pagesCanDelete(page.createdBy?.id) && flp.canManageContent(folderId);
+    }, [flp, folderId]);
 
+    if (!canDelete) {
+        return null;
+    }
 
     return (
-        <Tooltip content={"Delete Page"} placement={"top"}>
+        <Tooltip content={"Delete "} placement={"top"}>
             <IconButton
                 icon={<DeleteIcon />}
                 onClick={openDialogDeletePage}
