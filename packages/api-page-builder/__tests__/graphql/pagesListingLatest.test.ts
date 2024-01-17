@@ -829,7 +829,8 @@ describe("listing latest pages", () => {
                 }),
             ([res]: any) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
             {
-                name: "list pages title for seo search"
+                name: "list pages title for seo search",
+                debounce: 1000
             }
         );
 
