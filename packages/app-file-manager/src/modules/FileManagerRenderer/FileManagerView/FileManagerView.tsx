@@ -71,6 +71,7 @@ const FileManagerView = () => {
     const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const [drawerLoading, setDrawerLoading] = useState<string | null>(null);
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(view.uploadFile),
@@ -83,11 +84,13 @@ const FileManagerView = () => {
     useEffect(() => {
         const fetchFileDetails = async () => {
             if (view.showingFileDetails) {
+                setDrawerLoading("Loading file details...");
                 const file = await view.getFile(view.showingFileDetails);
                 setCurrentFile(file);
             } else {
                 setCurrentFile(undefined);
             }
+            setDrawerLoading(null);
         };
 
         // call the function
@@ -257,6 +260,18 @@ const FileManagerView = () => {
         showCreateFolderDialog({ currentParentId: view.folderId });
     }, [view.folderId]);
 
+    const updateFile = useCallback(
+        async (data: FileItem) => {
+            const { id, ...fileData } = data;
+            setDrawerLoading("Saving file changes...");
+            await view.updateFile(id, fileData);
+            setDrawerLoading(null);
+            showSnackbar("File updated successfully!");
+            view.hideFileDetails();
+        },
+        [view.updateFile]
+    );
+
     return (
         <>
             <Files
@@ -308,10 +323,11 @@ const FileManagerView = () => {
                     >
                         <>
                             <FileDetails
-                                loading={view.loadingFileDetails}
+                                loading={drawerLoading}
                                 file={currentFile}
                                 open={Boolean(view.showingFileDetails)}
                                 onClose={view.hideFileDetails}
+                                onSave={updateFile}
                             />
                             <LeftSidebar
                                 currentFolder={view.folderId}

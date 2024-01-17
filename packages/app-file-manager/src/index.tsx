@@ -2,11 +2,14 @@ export * from "./hooks/useFile";
 export * from "./hooks/useFileDetails";
 export * from "./hooks/useFileModel";
 export * from "./hooks/useMoveFileToFolder";
-export { useFileManagerApi } from "./modules/FileManagerApiProvider/FileManagerApiContext";
+export {
+    useFileManagerApi,
+    getFileGraphQLSelection
+} from "./modules/FileManagerApiProvider/FileManagerApiContext";
 export { useFileManagerView } from "./modules/FileManagerRenderer/FileManagerViewProvider";
 export * from "./FileManagerFileTypePlugin";
 export {
     FileManagerViewConfig,
     useFileManagerViewConfig
 } from "./modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
-export { FileManagerProvider } from "./modules/FileManagerRenderer/FileManagerView";
+export { EditFileUsingUrl } from "./components/EditFileUsingUrl";

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Image } from "@webiny/app/components";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { createRenderImagePreview, imagePlugins } from "./utils";
-import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
+import fileIcon from "@material-design-icons/svg/round/insert_drive_file.svg";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const imagePreviewProps = {
@@ -36,6 +36,7 @@ const defaultValidation: ValidationStatus = {
 export interface FileProps {
     url: string;
     onRemove: () => void;
+    onEdit?: () => void;
     placeholder?: string;
     styles?: Record<string, any>;
     showFileManager?: () => void;
@@ -46,7 +47,7 @@ export interface FileProps {
     description?: string;
 }
 const File = (props: FileProps) => {
-    const { url, onRemove, placeholder, showFileManager, description } = props;
+    const { url, onRemove, onEdit, placeholder, showFileManager, description } = props;
 
     const styles = props.styles || defaultStyles;
     const validation = props.validation || defaultValidation;
@@ -88,6 +89,7 @@ const File = (props: FileProps) => {
                     showFileManager();
                 }}
                 removeImage={onRemove}
+                editImage={onEdit}
                 placeholder={placeholder}
                 containerStyle={{ height: "auto" }}
             />

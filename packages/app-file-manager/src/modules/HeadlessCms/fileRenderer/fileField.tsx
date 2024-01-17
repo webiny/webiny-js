@@ -1,11 +1,11 @@
 import React from "react";
-import { CmsModelFieldRendererPlugin } from "~/types";
+import styled from "@emotion/styled";
+import { CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { FileManager } from "@webiny/app-admin/components";
-import File from "./File";
-import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
-import { EditFileUsingUrl } from "./EditFileUsingUrl/EditFileUsingUrl";
+import File from "./File";
+import { EditFileUsingUrl } from "~/components/EditFileUsingUrl";
 
 const ImageFieldWrapper = styled("div")({
     background: "var(--mdc-theme-on-background)",
@@ -41,7 +41,7 @@ const InnerImageFieldWrapper = styled("div")({
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-const plugin: CmsModelFieldRendererPlugin = {
+export const singleFile: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-file",
     renderer: {
@@ -76,20 +76,16 @@ const plugin: CmsModelFieldRendererPlugin = {
                                                         showFileManager(file => onChange(file.src));
                                                     };
                                                     return (
-                                                        <div>
-                                                            <button onClick={() => editFile(value)}>
-                                                                Edit
-                                                            </button>
-                                                            <File
-                                                                {...bind}
-                                                                url={value}
-                                                                onRemove={() => onChange(null)}
-                                                                showFileManager={selectFile}
-                                                                placeholder={field.placeholderText}
-                                                                description={field.helpText}
-                                                                data-testid={`fr.input.filefield.${field.label}`}
-                                                            />
-                                                        </div>
+                                                        <File
+                                                            {...bind}
+                                                            url={value}
+                                                            onEdit={() => editFile(value)}
+                                                            onRemove={() => onChange(null)}
+                                                            showFileManager={selectFile}
+                                                            placeholder={field.placeholderText}
+                                                            description={field.helpText}
+                                                            data-testid={`fr.input.filefield.${field.label}`}
+                                                        />
                                                     );
                                                 }}
                                             />
@@ -104,5 +100,3 @@ const plugin: CmsModelFieldRendererPlugin = {
         }
     }
 };
-
-export default plugin;

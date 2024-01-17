@@ -8,6 +8,7 @@ const Horizontal = styled.div`
 
 const Grow = styled.div<{ flex: number }>`
     flex: ${({ flex }) => flex};
+    overflow-y: scroll;
     :last-of-type {
         border-left: 1px solid var(--mdc-theme-on-background);
     }
