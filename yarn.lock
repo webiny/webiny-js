@@ -6086,6 +6086,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dnd-kit/accessibility@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@dnd-kit/accessibility@npm:3.1.0"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: fcb88c961e2f4c226ab575bc4a13712419884bb0f60761befcaa23bcb6c9939dc2cac6633416f2a07baee9a8830350c6df444039332408cdaaf27cad17c6b64b
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/core@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@dnd-kit/core@npm:6.1.0"
+  dependencies:
+    "@dnd-kit/accessibility": ^3.1.0
+    "@dnd-kit/utilities": ^3.2.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 3b8f46d2f4d2723abad4721c7bc4d1df2c4f6f26ce54673243666212cfa6f34f33e3255b53144a847da469dc736c966c19e4c45330f967ce8c01f8f878ec7f5b
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/sortable@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@dnd-kit/sortable@npm:8.0.0"
+  dependencies:
+    "@dnd-kit/utilities": ^3.2.2
+    tslib: ^2.0.0
+  peerDependencies:
+    "@dnd-kit/core": ^6.1.0
+    react: ">=16.8.0"
+  checksum: 26589fd23c18d930a949489b232a7345c0bee4abb6be91d3673232bc79085f13cb5d82087c2068edbc51cbdd3d47c2fe386bada92dc7f2d0dcde13d6be379daa
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/utilities@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@dnd-kit/utilities@npm:3.2.2"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 8a5015c2faa52760ab82a64287b2ac6a3d798867a1bca5ccbc1178560dbd9a1f9f1a21faea80f590ba1a4277c3eb7e7c4d3b4a39f1f32171bf6bc8174b370547
+  languageName: node
+  linkType: hard
+
 "@editorjs/delimiter@npm:^1.2.0":
   version: 1.3.0
   resolution: "@editorjs/delimiter@npm:1.3.0"
@@ -16777,6 +16826,9 @@ __metadata:
     "@babel/preset-react": ^7.22.5
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
+    "@dnd-kit/core": ^6.1.0
+    "@dnd-kit/sortable": ^8.0.0
+    "@dnd-kit/utilities": ^3.2.2
     "@editorjs/editorjs": ^2.20.1
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -16820,7 +16872,6 @@ __metadata:
     react-dom: 18.2.0
     react-google-recaptcha: ^1.1.0
     react-hotkeyz: ^1.0.4
-    react-sortable-hoc: ^1.9.1
     rimraf: ^3.0.2
     shortid: ^2.2.14
     ttypescript: ^1.5.12
@@ -39394,7 +39445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.5.9, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.8, prop-types@npm:^15.5.9, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -40759,21 +40810,6 @@ __metadata:
   peerDependencies:
     react: ^15.0.0 || ^16.0.0 || ^17.x || ^18.x
   checksum: 6d0f199cd916b0ebda8057f150fa8441753729132ad61ead111b31415b09f2d8134f6feda61244ecfa413448c0ce3748fb9611d6dbe96fa2e8c60461e18c3ac2
-  languageName: node
-  linkType: hard
-
-"react-sortable-hoc@npm:^1.9.1":
-  version: 1.11.0
-  resolution: "react-sortable-hoc@npm:1.11.0"
-  dependencies:
-    "@babel/runtime": ^7.2.0
-    invariant: ^2.2.4
-    prop-types: ^15.5.7
-  peerDependencies:
-    prop-types: ^15.5.7
-    react: ^0.14.0 || ^15.0.0 || ^16.0.0
-    react-dom: ^0.14.0 || ^15.0.0 || ^16.0.0
-  checksum: 0e700baa10272a32b4281fafe5d1f86b82fa0af7d4f193e07bcc2764109b1682d3ecf8b917d8656e1fe04be944f0e597be74c9c93591340da044172283c9e130
   languageName: node
   linkType: hard
 
