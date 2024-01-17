@@ -4,12 +4,21 @@ import { FileItem } from "@webiny/app-admin/types";
 
 const fileMock: FileItem = {
     id: "12345678",
-    createdOn: new Date().toISOString(),
-    savedOn: new Date().toISOString(),
     location: {
         folderId: "root"
     },
+    createdOn: new Date().toISOString(),
     createdBy: {
+        id: "123",
+        displayName: "123"
+    },
+    savedOn: new Date().toISOString(),
+    savedBy: {
+        id: "123",
+        displayName: "123"
+    },
+    modifiedOn: new Date().toISOString(),
+    modifiedBy: {
         id: "123",
         displayName: "123"
     },

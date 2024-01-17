@@ -46,6 +46,16 @@ So, you've made some changes, and now you'd like to see the `create-webiny-proje
 
 The following steps show how to do it.
 
+#### 0. TLDR
+
+1. `yarn verdaccio:start`
+2. `npm config set registry http://localhost:4873`
+3. `yarn release --type=verdaccio`
+
+Once the release is done:
+
+4. `npx create-webiny-project@local-npm my-test-project --tag local-npm --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'`
+
 #### 1. Start Verdaccio
 
 Start by running the `yarn verdaccio:start` command, which will, as the script name itself suggests, spin up Verdaccio

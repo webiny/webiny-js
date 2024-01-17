@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import omit from "lodash/omit";
 import { useApolloClient } from "@apollo/react-hooks";
 import WebinyError from "@webiny/error";
 import { useSecurity } from "@webiny/app-security";
@@ -29,7 +30,6 @@ import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
 import { useFileModel } from "~/hooks/useFileModel";
-import omit from "lodash/omit";
 import { getFileGraphQLSelection } from "./getFileGraphQLSelection";
 
 export interface ListTagsResponseItem {
@@ -191,7 +191,14 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data: omit(data, ["createdOn", "savedOn", "createdBy", "src"])
+                data: omit(data, [
+                    "createdOn",
+                    "createdBy",
+                    "savedOn",
+                    "savedBy",
+                    "modifiedOn",
+                    "modifiedBy", "src"
+                ])
             }
         });
     };

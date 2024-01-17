@@ -25,16 +25,92 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     id
     entryId
-    savedOn
     createdOn
+    savedOn
+    modifiedOn
     firstPublishedOn
     lastPublishedOn
+    createdBy {
+        id
+        type
+        displayName
+    }
+    savedBy {
+        id
+        type
+        displayName
+    }
+    modifiedBy {
+        id
+        type
+        displayName
+    }
+    firstPublishedBy {
+        id
+        type
+        displayName
+    }
+    lastPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
     revisionCreatedBy {
         id
         type
         displayName
     }
-    createdBy {
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy {
+        id
+        type
+        displayName
+    }
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
         id
         type
         displayName
