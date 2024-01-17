@@ -49,7 +49,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     content: JSON
                     revisions: [PbPageRevision]
                 }
-                
+
                 type PbPageRevision {
                     id: ID
                     pid: ID

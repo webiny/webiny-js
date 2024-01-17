@@ -9,7 +9,7 @@ import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisio
 import { PbPageData } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
 import { usePagesPermissions } from "~/hooks/permissions";
-import {useFolders} from "@webiny/app-aco";
+import { useFolders } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 

@@ -1,6 +1,6 @@
-import React, {useMemo} from "react";
+import React, { useMemo } from "react";
 import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import {AcoConfig, useFolders} from "@webiny/app-aco";
+import { AcoConfig, useFolders } from "@webiny/app-aco";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useMovePageToFolder } from "~/admin/views/Pages/hooks/useMovePageToFolder";
 

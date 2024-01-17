@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
-import {useFolders, useRecords} from "@webiny/app-aco";
+import { useFolders, useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";

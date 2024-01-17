@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import {useFolders, useRecords} from "@webiny/app-aco";
+import { useFolders, useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
@@ -25,7 +25,9 @@ export const ActionDelete = observer(() => {
 
     const canDeleteAll = useMemo(() => {
         return worker.items.every(item => {
-            return canDelete(item.data.createdBy.id) && flp.canManageContent(item.location?.folderId);
+            return (
+                canDelete(item.data.createdBy.id) && flp.canManageContent(item.location?.folderId)
+            );
         });
     }, [worker.items]);
 
