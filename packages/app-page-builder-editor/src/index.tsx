@@ -27,9 +27,6 @@ const EditorHOC: HigherOrderComponent<EditorProps> = () => {
         return (
             <EditorProvider>
                 {
-                    /**
-                     * Recoil users old version of React which has children defined by default.
-                     */
                     <RecoilRoot
                         initializeState={({ set }) => {
                             /* Here we initialize elementsAtom and rootElement if it exists */
