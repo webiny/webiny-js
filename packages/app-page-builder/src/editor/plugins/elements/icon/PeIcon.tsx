@@ -12,8 +12,9 @@ interface Props {
 const PeIcon = (props: Props) => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
-    if (variableValue?.svg) {
-        return <Icon {...props} svg={variableValue.svg} />;
+
+    if (variableValue?.markup) {
+        return <Icon {...props} markup={variableValue.markup} />;
     }
 
     return <Icon {...props} />;

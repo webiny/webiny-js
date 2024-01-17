@@ -47,7 +47,7 @@ export const IconPickerComponent = observer(
             if (onChange && selectedIcon && !isEqual(selectedIcon, value)) {
                 onChange(selectedIcon);
             }
-        }, [selectedIcon]);
+        }, [JSON.stringify(selectedIcon)]);
 
         const setActiveTab = (index: number) => presenter.setActiveTab(index);
 

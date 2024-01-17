@@ -10,11 +10,19 @@ export default {
                 id: element.id,
                 type: "icon",
                 label: "Icon",
-                value: element.data?.icon?.value
+                // We also store `element?.data.icon?.width` to render
+                // correctly sized icon markup on icon variable change.
+                value: {
+                    ...(element.data?.icon?.value || {}),
+                    markupWidth: element?.data.icon?.width
+                }
             }
         ];
     },
     getVariableValue({ element }) {
-        return element.data?.icon?.value;
+        return {
+            ...(element.data?.icon?.value || {}),
+            markupWidth: element?.data.icon?.width
+        };
     }
 } as PbBlockEditorCreateVariablePlugin;

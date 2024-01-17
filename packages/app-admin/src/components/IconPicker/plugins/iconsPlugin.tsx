@@ -11,9 +11,12 @@ import { useIconPicker } from "../IconPickerPresenterProvider";
 import { IconPickerConfig } from "../config";
 import { Icon } from "../types";
 
-const StyledSvg = styled("svg")`
-    vertical-align: middle;
-`;
+/**
+ * NOTE: Avoid using `@emotion/styled` in icon renderer components across all plugins.
+ * This is crucial for serializing component rendering into a string value as plain HTML,
+ * which is necessary for usage in the website application. Please use inline styles here
+ * to ensure proper serialization.
+ */
 
 interface SimpleIcon extends Icon {
     color: string;
@@ -23,12 +26,15 @@ const IconSvg = () => {
     const { icon, size } = useIcon<SimpleIcon>();
 
     return (
-        <StyledSvg
+        <svg
             width={size}
             height={size}
             viewBox={`0 0 ${icon.width || 512} 512`}
             color={icon?.color || "inherit"}
             dangerouslySetInnerHTML={{ __html: icon.value }}
+            style={{
+                verticalAlign: "middle"
+            }}
         />
     );
 };

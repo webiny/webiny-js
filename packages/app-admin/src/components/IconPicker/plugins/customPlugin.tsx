@@ -13,20 +13,33 @@ import { IconPickerConfig } from "../config";
 import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "./graphql";
 import { Icon } from "../types";
 
-const StyledImage = styled("img")`
-    vertical-align: middle;
-`;
-
 const AddButton = styled(ButtonSecondary)`
     &.mdc-button {
         height: 40px;
     }
 `;
 
+/**
+ * NOTE: Avoid using `@emotion/styled` in icon renderer components across all plugins.
+ * This is crucial for serializing component rendering into a string value as plain HTML,
+ * which is necessary for usage in the website application. Please use inline styles here
+ * to ensure proper serialization.
+ */
+
 const CustomIcon = () => {
     const { icon, size } = useIcon<Icon>();
 
-    return <StyledImage width={size} height={size} src={icon.value} alt={icon.name} />;
+    return (
+        <img
+            width={size}
+            height={size}
+            src={icon.value}
+            alt={icon.name}
+            style={{
+                verticalAlign: "middle"
+            }}
+        />
+    );
 };
 
 interface IconFilePickerProps {

@@ -7,7 +7,6 @@ import {
     BindComponentRenderProp as BaseBindComponentRenderProp,
     FormAPI
 } from "@webiny/form";
-import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import { SecurityPermission } from "@webiny/app-security/types";
 import {
     CmsModelFieldValidator,
@@ -403,26 +402,6 @@ export interface CmsEditorFormSettingsPlugin extends Plugin {
         form: FormAPI;
         formData: any;
     }): React.ReactNode;
-}
-
-export interface CmsIcon {
-    /**
-     * [ pack, icon ], ex: ["fab", "cog"]
-     */
-    id: [IconPrefix, IconName];
-    /**
-     * Icon name
-     */
-    name: string;
-    /**
-     * SVG element
-     */
-    svg: ReactElement;
-}
-
-export interface CmsIconsPlugin extends Plugin {
-    type: "cms-icons";
-    getIcons(): CmsIcon[];
 }
 
 /**
