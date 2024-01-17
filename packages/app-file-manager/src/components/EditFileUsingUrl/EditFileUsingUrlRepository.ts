@@ -11,7 +11,6 @@ export interface IUpdateFile {
 }
 
 export class EditFileUsingUrlRepository {
-    private cache: Map<string, FileItem> = new Map();
     private readonly loading: Loading;
     private getFileByUrlGateway: IGetFileByUrl;
     private updateFileGateway: IUpdateFile;
@@ -29,20 +28,16 @@ export class EditFileUsingUrlRepository {
     }
 
     async loadFileByUrl(url: string) {
-        if (this.cache.has(url)) {
-            return this.cache.get(url) as FileItem;
-        }
-
         this.loading.startLoading(LOADING_STATE.GET_FILE);
         try {
             const file = await this.getFileByUrlGateway.execute(url);
             this.loading.stopLoadingWithSuccess();
-            this.cache.set(url, file);
+            return file;
         } catch (err) {
             this.loading.stopLoadingWithError(err.message);
         }
 
-        return this.cache.get(url) as FileItem;
+        return undefined;
     }
 
     async updateFile(input: FileItem) {
@@ -51,22 +46,8 @@ export class EditFileUsingUrlRepository {
             const { id, ...data } = input;
             await this.updateFileGateway.execute(id, data);
             this.loading.stopLoadingWithSuccess();
-            const cacheKey = this.findCacheKey(id);
-            if (cacheKey) {
-                this.cache.set(cacheKey, input);
-            }
         } catch (err) {
             this.loading.stopLoadingWithError(err.message);
         }
-    }
-
-    private findCacheKey(id: string) {
-        const entries = this.cache.entries();
-        for (const [cacheKey, file] of entries) {
-            if (file.id === id) {
-                return cacheKey;
-            }
-        }
-        return undefined;
     }
 }
