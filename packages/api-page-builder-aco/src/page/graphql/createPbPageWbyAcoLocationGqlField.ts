@@ -2,7 +2,6 @@ import { PbAcoContext } from "~/types";
 import { Page } from "@webiny/api-page-builder/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 
-console.log("da");
 export const createPbPageWbyAcoLocationGqlField = (context: PbAcoContext) => {
     context.plugins.register(
         new GraphQLSchemaPlugin<PbAcoContext>({
