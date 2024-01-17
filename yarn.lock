@@ -17170,7 +17170,7 @@ __metadata:
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
     react-dom: 18.2.0
-    recoil: ^0.1.2
+    recoil: ^0.7.7
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -41207,20 +41207,6 @@ __metadata:
   dependencies:
     resolve: ^1.1.6
   checksum: fe76bf9c21875ac16e235defedd7cbd34f333c02a92546142b7911a0f7c7059d2e16f441fe6fb9ae203f459c05a31b2bcf26202896d89e390eda7514d5d2702b
-  languageName: node
-  linkType: hard
-
-"recoil@npm:^0.1.2":
-  version: 0.1.3
-  resolution: "recoil@npm:0.1.3"
-  peerDependencies:
-    react: ">=16.13.1"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 6a17e9430cf07188ae5245db4252de41cb14c0ebdc9e359f6634394e0486ee577440ce4d16cbd63e7b006514664123065a86bc7b206cd05c1dfd440816eb8937
   languageName: node
   linkType: hard
 
