@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import { useRecords } from "@webiny/app-aco";
+import {useFolders, useRecords} from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
@@ -9,6 +9,8 @@ import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
     const { canDelete } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
+
     const { deletePage, client } = useAdminPageBuilder();
     const { removeRecordFromCache } = useRecords();
 
@@ -22,7 +24,9 @@ export const ActionDelete = observer(() => {
     }, [worker.items.length]);
 
     const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => canDelete(item.data.createdBy.id));
+        return worker.items.every(item => {
+            return canDelete(item.data.createdBy.id) && flp.canManageContent(item.location?.folderId);
+        });
     }, [worker.items]);
 
     const openDeletePagesDialog = () =>

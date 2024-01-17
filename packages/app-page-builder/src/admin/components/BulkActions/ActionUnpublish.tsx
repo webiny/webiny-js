@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { observer } from "mobx-react-lite";
-import { useRecords } from "@webiny/app-aco";
+import { useFolders, useRecords } from "@webiny/app-aco";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePagesPermissions } from "~/hooks/permissions";
@@ -9,6 +9,7 @@ import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionUnpublish = observer(() => {
     const { canUnpublish } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
     const { unpublishPage, client } = useAdminPageBuilder();
     const { getRecord } = useRecords();
 
@@ -16,6 +17,12 @@ export const ActionUnpublish = observer(() => {
     const { IconButton } = useButtons();
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
+
+    const canUnpublishAll = useMemo(() => {
+        return worker.items.every(item => {
+            return canUnpublish() && flp.canManageContent(item.location?.folderId);
+        });
+    }, [worker.items]);
 
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
@@ -68,7 +75,7 @@ export const ActionUnpublish = observer(() => {
             }
         });
 
-    if (!canUnpublish()) {
+    if (!canUnpublishAll) {
         console.log("You don't have permissions to unpublish pages.");
         return null;
     }

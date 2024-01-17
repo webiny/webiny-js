@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
-import { useRecords } from "@webiny/app-aco";
+import {useFolders, useRecords} from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
@@ -11,11 +11,18 @@ export const ActionPublish = observer(() => {
     const { canPublish } = usePagesPermissions();
     const { publishPage, client } = useAdminPageBuilder();
     const { getRecord } = useRecords();
+    const { folderLevelPermissions: flp } = useFolders();
 
     const { useWorker, useButtons, useDialog } = PageListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
+
+    const canPublishAll = useMemo(() => {
+        return worker.items.every(item => {
+            return canPublish() && flp.canManageContent(item.location?.folderId);
+        });
+    }, [worker.items]);
 
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
@@ -68,7 +75,7 @@ export const ActionPublish = observer(() => {
             }
         });
 
-    if (!canPublish()) {
+    if (!canPublishAll) {
         console.log("You don't have permissions to publish pages.");
         return null;
     }

@@ -27,6 +27,7 @@ import { PbPageData, PbPageRevision } from "~/types";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { PublishPageMenuOption } from "./PublishPageMenuOption";
 import { PageRevisionListItemGraphic } from "./PageRevisionListItemGraphic";
+import { useFolders } from "@webiny/app-aco";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -63,6 +64,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
     );
 
     const { canUnpublish, canDelete } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
@@ -98,33 +100,37 @@ const Revision = ({ revision, page }: RevisionProps) => {
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
                         >
-                            <MenuItem onClick={createRevision}>
-                                <ListItemGraphic>
-                                    <Icon icon={<AddIcon />} />
-                                </ListItemGraphic>
-                                New from current
-                            </MenuItem>
-                            {!revision.locked && (
-                                <MenuItem onClick={editRevision}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<EditIcon />} />
-                                    </ListItemGraphic>
-                                    Edit
-                                </MenuItem>
-                            )}
+                            {flp.canManageContent(page.wbyAco_location?.folderId) && (
+                                <>
+                                    <MenuItem onClick={createRevision}>
+                                        <ListItemGraphic>
+                                            <Icon icon={<AddIcon />} />
+                                        </ListItemGraphic>
+                                        New from current
+                                    </MenuItem>
+                                    {!revision.locked && (
+                                        <MenuItem onClick={editRevision}>
+                                            <ListItemGraphic>
+                                                <Icon icon={<EditIcon />} />
+                                            </ListItemGraphic>
+                                            Edit
+                                        </MenuItem>
+                                    )}
 
-                            <PublishPageMenuOption
-                                revision={revision}
-                                publishRevision={publishRevision}
-                            />
+                                    <PublishPageMenuOption
+                                        revision={revision}
+                                        publishRevision={publishRevision}
+                                    />
 
-                            {revision.status === "published" && canUnpublish() && (
-                                <MenuItem onClick={() => unpublishRevision(revision)}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<UnpublishIcon />} />
-                                    </ListItemGraphic>
-                                    Unpublish
-                                </MenuItem>
+                                    {revision.status === "published" && canUnpublish() && (
+                                        <MenuItem onClick={() => unpublishRevision(revision)}>
+                                            <ListItemGraphic>
+                                                <Icon icon={<UnpublishIcon />} />
+                                            </ListItemGraphic>
+                                            Unpublish
+                                        </MenuItem>
+                                    )}
+                                </>
                             )}
 
                             <MenuItem onClick={handlePreviewClick}>
@@ -134,17 +140,18 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 {previewButtonLabel}
                             </MenuItem>
 
-                            {canDelete(page?.createdBy?.id) && (
-                                <Div>
-                                    <MenuDivider />
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                        <ListItemGraphic>
-                                            <Icon icon={<DeleteIcon />} />
-                                        </ListItemGraphic>
-                                        Delete Revision
-                                    </MenuItem>
-                                </Div>
-                            )}
+                            {canDelete(page?.createdBy?.id) &&
+                                flp.canManageContent(page.wbyAco_location?.folderId) && (
+                                    <Div>
+                                        <MenuDivider />
+                                        <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                            <ListItemGraphic>
+                                                <Icon icon={<DeleteIcon />} />
+                                            </ListItemGraphic>
+                                            Delete Revision
+                                        </MenuItem>
+                                    </Div>
+                                )}
                         </Menu>
                     </ListItemMeta>
                 </ListItem>

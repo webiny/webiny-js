@@ -9,6 +9,7 @@ import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisio
 import { PbPageData } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
 import { usePagesPermissions } from "~/hooks/permissions";
+import {useFolders} from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
@@ -18,6 +19,7 @@ export interface PublishRevisionProps {
 
 const PublishRevision = (props: PublishRevisionProps) => {
     const { canPublish, canUnpublish, hasPermissions } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
     const { page } = props;
 
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
@@ -46,7 +48,8 @@ const PublishRevision = (props: PublishRevisionProps) => {
         )
     });
 
-    if (!hasPermissions()) {
+    const folderId = page.wbyAco_location?.folderId;
+    if (!hasPermissions() || !flp.canManageContent(folderId)) {
         return null;
     }
 
