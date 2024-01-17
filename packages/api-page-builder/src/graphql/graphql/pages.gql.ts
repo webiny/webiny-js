@@ -48,8 +48,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     settings: PbPageSettings
                     content: JSON
                     revisions: [PbPageRevision]
+                    wbyAco_location: WbyAcoLocation
                 }
-
+                
                 type PbPageRevision {
                     id: ID
                     pid: ID

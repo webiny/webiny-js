@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useMemo} from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData } from "~/types";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
+import {useFolders} from "@webiny/app-aco";
 
 interface DeletePageProps {
     page: PbPageData;
@@ -12,12 +13,16 @@ interface DeletePageProps {
 }
 const DeletePage = (props: DeletePageProps) => {
     const { page, onDelete } = props;
-    const { canDelete } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
+    const { canDelete:pagesCanDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page, onDelete });
 
-    if (!canDelete(page?.createdBy?.id)) {
-        return null;
-    }
+
+    console.log('wwww',page);
+    // const canDelete = useMemo(() => {
+    //     return pagesCanDelete(page.createdBy.id) && flp.canManageContent(folderId);
+    // }, [flp, folderId]);
+
 
     return (
         <Tooltip content={"Delete Page"} placement={"top"}>
