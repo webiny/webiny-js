@@ -16077,7 +16077,6 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@types/facepaint": ^1.2.2
     "@types/react": 17.0.39
-    "@webiny/app-admin": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0

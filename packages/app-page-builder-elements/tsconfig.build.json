@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../theme/tsconfig.build.json" }
   ],
