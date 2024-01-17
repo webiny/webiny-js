@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ReactComponent as Publish } from "@material-design-icons/svg/outlined/publish.svg";
 import { ReactComponent as Unpublish } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { AcoConfig, useFolders } from "@webiny/app-aco";
