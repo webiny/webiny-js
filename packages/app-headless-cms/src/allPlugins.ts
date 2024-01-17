@@ -5,7 +5,6 @@ import richTextField from "~/admin/plugins/fields/richText";
 import numberField from "~/admin/plugins/fields/number";
 import booleanField from "~/admin/plugins/fields/boolean";
 import dateTimeField from "~/admin/plugins/fields/dateTime";
-import fileField from "~/admin/plugins/fields/file";
 import refField from "~/admin/plugins/fields/ref";
 import objectField from "~/admin/plugins/fields/object";
 
@@ -16,7 +15,6 @@ import { createLegacyRichTextInput } from "~/admin/plugins/fieldRenderers/richTe
 import { createLexicalInput } from "~/admin/plugins/fieldRenderers/lexicalText";
 import booleanFieldRenderer from "~/admin/plugins/fieldRenderers/boolean";
 import dateTimeFieldRenderer from "~/admin/plugins/fieldRenderers/dateTime";
-import fileFieldRenderer from "~/admin/plugins/fieldRenderers/file";
 import radioButtonsFieldRenderer from "~/admin/plugins/fieldRenderers/radioButtons";
 import selectFieldRenderer from "~/admin/plugins/fieldRenderers/select";
 import checkboxesFieldRenderer from "~/admin/plugins/fieldRenderers/checkboxes";
@@ -52,7 +50,6 @@ export default [
     numberField,
     booleanField,
     dateTimeField,
-    fileField,
     createLexicalInput(),
     refField,
     numberFieldRenderer,
@@ -61,7 +58,6 @@ export default [
     createLegacyRichTextInput(),
     booleanFieldRenderer,
     dateTimeFieldRenderer,
-    fileFieldRenderer,
     radioButtonsFieldRenderer,
     selectFieldRenderer,
     checkboxesFieldRenderer,

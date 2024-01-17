@@ -10,7 +10,6 @@ export interface State {
     limit: number;
     listSort?: ListFilesSort;
     listTable: boolean;
-    loadingFileDetails: boolean;
     searchLabel: string;
     searchQuery: string;
     selected: FileItem[];
@@ -45,7 +44,6 @@ export const initializeState = (): State => {
         limit: 50,
         listSort: [],
         listTable: false,
-        loadingFileDetails: false,
         searchLabel: "",
         searchQuery: "",
         selected: [],
