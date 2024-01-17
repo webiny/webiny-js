@@ -1,9 +1,15 @@
 import React from "react";
 import { RecoilRoot } from "recoil";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";
-import { EditorProps, EditorRenderer } from "@webiny/app-page-builder";
+import { EditorRenderer } from "@webiny/app-page-builder";
 import { EditorState } from "./contexts/EditorState";
-import { elementsAtom, pageAtom, PageAtomType, rootElementAtom } from "./state";
+import {
+    elementsAtom,
+    pageAtom,
+    PageWithContent,
+    RevisionsAtomType,
+    rootElementAtom
+} from "./state";
 import { flattenElements } from "./helpers";
 import RecoilExternal from "./components/RecoilExternal";
 import { Editor as EditorComponent } from "./components/Editor";
@@ -11,19 +17,16 @@ import { EditorProvider } from "~/contexts/Editor";
 import { PbEditorElement } from "~/types";
 import omit from "lodash/omit";
 
+interface EditorProps {
+    page: PageWithContent;
+    revisions: RevisionsAtomType;
+}
+
 const EditorHOC: HigherOrderComponent<EditorProps> = () => {
-    /**
-     * TODO @pavel fix types
-     */
-    // @ts-expect-error
     return function Editor({ page, revisions }) {
         return (
             <EditorProvider>
                 {
-                    /**
-                     * Recoil users old version of React which has children defined by default.
-                     */
-                    // @ts-expect-error
                     <RecoilRoot
                         initializeState={({ set }) => {
                             /* Here we initialize elementsAtom and rootElement if it exists */
