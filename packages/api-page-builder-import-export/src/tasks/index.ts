@@ -1,5 +1,5 @@
-import { createExportPagesControllerTask, createImportPagesTask } from "./pages";
+import { createPagesTasks } from "./pages";
 
 export const createTasks = () => {
-    return [createExportPagesControllerTask(), createImportPagesTask()];
+    return [createPagesTasks()];
 };
