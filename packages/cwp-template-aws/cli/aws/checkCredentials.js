@@ -12,6 +12,9 @@ module.exports = {
         const config = sts.config;
         const region = await config.region();
 
+        // With AWS-SDK v3, we can no longer read the loaded profile. We try to read if from env var instead.
+        const profile = process.env.AWS_PROFILE || "default";
+
         try {
             await sts.getCallerIdentity({});
         } catch (err) {
@@ -44,7 +47,7 @@ module.exports = {
         // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
         process.env.AWS_REGION = region;
 
-        const { profile, accessKeyId } = await config.credentials();
+        const { accessKeyId } = await config.credentials();
 
         if (profile) {
             context.info(`Using profile ${green(profile)} in ${green(region)} region.`);
