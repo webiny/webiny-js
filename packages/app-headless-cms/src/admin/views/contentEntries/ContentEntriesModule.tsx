@@ -54,7 +54,7 @@ export const ContentEntriesModule = () => {
                     cell={<CellName />}
                     sortable={true}
                     hideable={false}
-                    size={300}
+                    size={200}
                     className={"cms-aco-list-title"}
                 />
                 <Browser.Table.Column

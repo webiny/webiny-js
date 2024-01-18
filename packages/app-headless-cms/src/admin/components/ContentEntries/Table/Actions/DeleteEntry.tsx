@@ -1,13 +1,13 @@
 import React from "react";
 import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useDeleteEntry, useEntry, usePermission } from "~/admin/hooks";
 
 export const DeleteEntry = () => {
     const { entry } = useEntry();
     const { canDelete } = usePermission();
     const { openDialogDeleteEntry } = useDeleteEntry({ entry });
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;

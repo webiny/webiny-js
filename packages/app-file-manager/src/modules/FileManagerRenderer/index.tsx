@@ -45,7 +45,7 @@ export const FileManagerRendererModule = () => {
                     cell={<CellName />}
                     sortable={true}
                     hideable={false}
-                    size={300}
+                    size={200}
                 />
                 <Browser.Table.Column name={"type"} header={"Type"} cell={<CellType />} />
                 <Browser.Table.Column
