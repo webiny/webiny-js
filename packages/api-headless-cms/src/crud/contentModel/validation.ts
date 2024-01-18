@@ -29,7 +29,8 @@ const icon = zod
         value: zod.string()
     })
     .passthrough()
-    .optional();
+    .optional()
+    .nullish();
 
 const fieldSchema = zod.object({
     id: shortString,
