@@ -1,3 +1,4 @@
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { FILTER_MODEL_ID } from "./filter.model";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
@@ -5,6 +6,7 @@ import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import { AcoFilterStorageOperations, Filter } from "./filter.types";
+import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
@@ -57,7 +59,7 @@ export const createFilterOperations = (
                 const original = await cms.getEntryById(model, id);
 
                 const input = {
-                    ...original,
+                    ...omit(original, ENTRY_META_FIELDS),
                     ...data
                 };
 
