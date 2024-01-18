@@ -20,12 +20,8 @@ export const createExportPagesCombineZippedPagesTask = () => {
                 "~/export/pages/ExportPagesCombineZippedPages"
             );
 
-            try {
-                const exportPagesCombineZippedPages = new ExportPagesCombineZippedPages();
-                return await exportPagesCombineZippedPages.execute(params);
-            } catch (ex) {
-                return response.error(ex);
-            }
+            const exportPagesCombineZippedPages = new ExportPagesCombineZippedPages();
+            return await exportPagesCombineZippedPages.execute(params);
         }
     });
 };

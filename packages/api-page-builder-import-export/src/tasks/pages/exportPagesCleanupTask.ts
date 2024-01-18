@@ -18,12 +18,8 @@ export const createExportPagesCleanupTask = () => {
 
             const { ExportPagesCleanup } = await import("~/export/pages/ExportPagesCleanup");
 
-            try {
-                const exportPagesCleanup = new ExportPagesCleanup();
-                return await exportPagesCleanup.execute(param);
-            } catch (ex) {
-                return response.error(ex);
-            }
+            const exportPagesCleanup = new ExportPagesCleanup();
+            return await exportPagesCleanup.execute(param);
         }
     });
 };

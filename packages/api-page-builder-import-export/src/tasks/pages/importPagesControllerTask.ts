@@ -8,15 +8,16 @@ export const createImportPagesControllerTask = () => {
         title: "Page Builder - Import Pages",
         description: "Import pages from the Page Builder.",
         run: async params => {
-            const { response } = params;
-
+            const { response, isAborted } = params;
+            /**
+             * We always need to check task status.
+             */
+            if (isAborted()) {
+                return response.aborted();
+            }
             const { importPages } = await import("~/import/pages");
 
-            try {
-                return await importPages(params);
-            } catch (ex) {
-                return response.error(ex);
-            }
+            return await importPages(params);
         }
     });
 };

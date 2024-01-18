@@ -9,6 +9,6 @@ export class ExportPagesZipPages {
             return response.aborted();
         }
         const zipPages = new ZipPages();
-        return zipPages.execute(params);
+        return await zipPages.execute(params);
     }
 }

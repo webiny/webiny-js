@@ -26,12 +26,8 @@ export const createExportPagesZipPagesTask = () => {
 
             const { ExportPagesZipPages } = await import("~/export/pages/ExportPagesZipPages");
 
-            try {
-                const exportPagesZipPages = new ExportPagesZipPages();
-                return await exportPagesZipPages.execute(params);
-            } catch (ex) {
-                return response.error(ex);
-            }
+            const exportPagesZipPages = new ExportPagesZipPages();
+            return await exportPagesZipPages.execute(params);
         }
     });
 };

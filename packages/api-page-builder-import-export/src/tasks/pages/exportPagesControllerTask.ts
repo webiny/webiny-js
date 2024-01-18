@@ -18,12 +18,8 @@ export const createExportPagesControllerTask = () => {
 
             const { ExportPagesController } = await import("~/export/pages/ExportPagesController");
 
-            try {
-                const exportPagesController = new ExportPagesController();
-                return await exportPagesController.execute(params);
-            } catch (ex) {
-                return response.error(ex);
-            }
+            const exportPagesController = new ExportPagesController();
+            return await exportPagesController.execute(params);
         },
         onDone: async ({ context, task }) => {
             await context.tasks.trigger({
