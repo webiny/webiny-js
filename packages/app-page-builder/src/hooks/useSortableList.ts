@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { DraggableItem } from "~/editor/components/Draggable";
+import { CollectedProps } from "~/types";
 
 export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
     const newArray = [...arr];
@@ -28,19 +29,12 @@ interface UseSortableListArgs {
     endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
-export const useSortableList = ({
-    index,
-    move,
-    id,
-    type,
-    beginDrag,
-    endDrag
-}: UseSortableListArgs) => {
+export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSortableListArgs) => {
     const ref = useRef<HTMLDivElement>(null);
     const [dropItemAbove, setDropItemAbove] = useState(false);
     const isDraggingDownwardsRef = useRef<boolean>(false);
 
-    const [dropData, drop] = useDrop({
+    const [dropData, drop] = useDrop<DragItem, unknown, CollectedProps>({
         accept: type,
         collect(monitor) {
             return {
@@ -111,16 +105,16 @@ export const useSortableList = ({
     });
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type, target: [type], id, index, dragInNavigator: true } as DraggableItem,
-        collect: monitor => ({
-            isDragging: monitor.isDragging()
-        }),
-        begin(monitor) {
+        type,
+        item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
         },
-        end(item, monitor) {
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
+        end(item: any, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }

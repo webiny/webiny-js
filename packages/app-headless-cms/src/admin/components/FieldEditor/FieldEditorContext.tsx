@@ -58,8 +58,8 @@ interface InsertFieldCallable {
 interface MoveFieldCallable {
     (params: MoveFieldParams): void;
 }
-interface OnEndDragCallable {
-    (item: DragSource, monitor: DragSourceMonitor): void;
+interface OnEndDragCallable<DragObject = unknown, DropResult = unknown> {
+    (item: DragSource, monitor: DragSourceMonitor<DragObject, DropResult>): void;
 }
 interface MoveRowCallable {
     (source: number, destination: number): void;
@@ -102,6 +102,10 @@ export interface FieldEditorContext {
 interface FieldEditorProviderProps extends FieldEditorProps {
     children: React.ReactElement;
 }
+
+type DropResult = {
+    dropTarget: string | null;
+};
 
 export const FieldEditorContext = React.createContext<FieldEditorContext | undefined>(undefined);
 /**
@@ -231,15 +235,18 @@ export const FieldEditorProvider = ({
         return null;
     }, []);
 
-    const onEndDrag: OnEndDragCallable = ({ type, field, fields }, monitor) => {
+    const onEndDrag: OnEndDragCallable<unknown, DropResult> = (
+        { type, field, fields },
+        monitor
+    ) => {
         if (!monitor.didDrop()) {
             return;
         }
 
         // Check if we dropped outside of the source fieldset, and if yes, remove the field from the original parent.
-        const { dropTarget } = monitor.getDropResult();
+        const monitorResult = monitor.getDropResult();
         const parentId = parent ? parent.fieldId : null;
-        if (dropTarget === parentId) {
+        if (monitorResult?.dropTarget === parentId) {
             return;
         }
 
