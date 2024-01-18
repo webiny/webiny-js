@@ -176,11 +176,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             return fileInState;
         }
 
-        setState(state => ({
-            ...state,
-            loadingFileDetails: true
-        }));
-
         const file = await fileManager.getFile(id);
 
         if (!file) {
@@ -206,11 +201,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
                 ];
             });
         }
-
-        setState(state => ({
-            ...state,
-            loadingFileDetails: false
-        }));
 
         return file;
     };
