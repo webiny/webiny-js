@@ -10,6 +10,7 @@ module.exports = {
         // Check if AWS credentials are configured
         const sts = new STS();
         const config = sts.config;
+        const region = await config.region();
 
         try {
             await sts.getCallerIdentity({});
@@ -27,7 +28,7 @@ module.exports = {
             process.exit(1);
         }
 
-        if (!config.region) {
+        if (!region) {
             console.log();
             context.error("You must define an AWS Region to deploy to!");
             context.info(
@@ -39,8 +40,6 @@ module.exports = {
             console.log();
             process.exit(1);
         }
-
-        const region = await config.region();
 
         // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
         process.env.AWS_REGION = region;
