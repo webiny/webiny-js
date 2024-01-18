@@ -27,7 +27,7 @@ export class PageExporter {
 
         const fileIds = [...files, ...pageSettingsImages].map(imageFile => imageFile.id);
         // Get file data for all images
-        const imageFilesData = [];
+        const imageFilesData: File[] = [];
         if (fileIds.length > 0) {
             const [filesData] = await this.fileManager.listFiles({ where: { id_in: fileIds } });
             imageFilesData.push(...filesData);

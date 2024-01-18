@@ -1,14 +1,22 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
-import { IExportPagesZipPagesInput, PageExportTask } from "~/export/pages/types";
+import {
+    IExportPagesZipPagesInput,
+    IExportPagesZipPagesOutput,
+    PageExportTask
+} from "~/export/pages/types";
 import { PbImportExportContext } from "~/graphql/types";
 
 export const createExportPagesZipPagesTask = () => {
-    return createPrivateTaskDefinition<PbImportExportContext, IExportPagesZipPagesInput>({
+    return createPrivateTaskDefinition<
+        PbImportExportContext,
+        IExportPagesZipPagesInput,
+        IExportPagesZipPagesOutput
+    >({
         id: PageExportTask.ZipPages,
         title: "Page Builder - Zip Pages",
         description: "Export pages from the Page Builder - zip pages.",
         run: async params => {
-            const { response, isAborted, isCloseToTimeout, input } = params;
+            const { response, isAborted } = params;
             /**
              * We always need to check task status.
              */
@@ -16,10 +24,11 @@ export const createExportPagesZipPagesTask = () => {
                 return response.aborted();
             }
 
-            const { exportPagesZipPages } = await import("~/export/pages/zipPages");
+            const { ExportPagesZipPages } = await import("~/export/pages/ExportPagesZipPages");
 
             try {
-                return await exportPagesZipPages(params);
+                const exportPagesZipPages = new ExportPagesZipPages();
+                return await exportPagesZipPages.execute(params);
             } catch (ex) {
                 return response.error(ex);
             }

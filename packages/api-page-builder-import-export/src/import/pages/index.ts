@@ -5,5 +5,6 @@ import { PbImportExportContext } from "~/graphql/types";
 export const importPages = async (
     params: ITaskRunParams<PbImportExportContext, IImportPagesInput>
 ): Promise<ITaskResponseResult> => {
-    return {} as ITaskResponseResult;
+    const { response } = params;
+    return response.done();
 };

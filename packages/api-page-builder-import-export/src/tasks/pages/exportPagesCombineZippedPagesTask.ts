@@ -8,7 +8,7 @@ export const createExportPagesCombineZippedPagesTask = () => {
         title: "Page Builder - Combine Zipped Pages",
         description: "Export pages from the Page Builder - combine zipped pages.",
         run: async params => {
-            const { response, isAborted, isCloseToTimeout, input } = params;
+            const { response, isAborted } = params;
             /**
              * We always need to check task status.
              */
@@ -16,12 +16,13 @@ export const createExportPagesCombineZippedPagesTask = () => {
                 return response.aborted();
             }
 
-            const { exportPagesCombineZippedPages } = await import(
-                "~/export/pages/combineZippedPages"
+            const { ExportPagesCombineZippedPages } = await import(
+                "~/export/pages/ExportPagesCombineZippedPages"
             );
 
             try {
-                return await exportPagesCombineZippedPages(params);
+                const exportPagesCombineZippedPages = new ExportPagesCombineZippedPages();
+                return await exportPagesCombineZippedPages.execute(params);
             } catch (ex) {
                 return response.error(ex);
             }
