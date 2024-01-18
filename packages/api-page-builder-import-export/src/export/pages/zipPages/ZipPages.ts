@@ -73,6 +73,9 @@ export class ZipPages {
             }
         }
 
-        return response.continue(dataManager.getInput());
+        return response.done("Task done.", {
+            done: dataManager.getDone(),
+            failed: dataManager.getFailed()
+        });
     }
 }
