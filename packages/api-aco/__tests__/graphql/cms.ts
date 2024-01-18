@@ -8,6 +8,17 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const DATA_FIELD = /* GraphQL */ `
+    {
+        id
+        entryId
+        title
+        wbyAco_location {
+            folderId
+        }
+    }
+`;
+
 export const CREATE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
@@ -39,14 +50,7 @@ export const CREATE_ENTRY = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation Create${Entry}($data: ${Entry}Input!) {
             create${Entry}: create${Entry}(data: $data) {
-            data {
-                id
-                entryId
-                title
-                wbyAco_location {
-                    folderId
-                }
-            }
+            data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }
         }
@@ -59,13 +63,7 @@ export const UPDATE_ENTRY = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation Update${Entry}($revision: ID!, $data: ${Entry}Input!) {
             update${Entry}: update${Entry}(revision: $revision, data: $data) {
-            data {
-                id
-                title
-                wbyAco_location {
-                    folderId
-                }
-            }
+            data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }
         }
@@ -97,13 +95,7 @@ export const LIST_ENTRIES = (model: CmsModel) => {
         $after: String
         ) {
             list${Entries}: list${Entries}(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                id
-                title
-                wbyAco_location {
-                    folderId
-                }
-            }
+            data ${DATA_FIELD}
             meta {
                 cursor
                 hasMoreItems
@@ -121,13 +113,7 @@ export const GET_ENTRY = (model: CmsModel) => {
     return /* GraphQL */ `
         query Get${Entry}($revision: ID!) {
             get${Entry}: get${Entry}(revision: $revision) {
-            data {
-                id
-                title
-                wbyAco_location {
-                    folderId
-                }
-            }
+            data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }
         }
