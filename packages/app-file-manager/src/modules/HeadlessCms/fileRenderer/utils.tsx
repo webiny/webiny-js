@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { ReactComponent as FileIcon } from "../../fields/icons/round_insert_drive_file-24px.svg";
+import { ReactComponent as FileIcon } from "@material-design-icons/svg/round/insert_drive_file.svg";
 
 export const imagePlugins = [".jpg", ".jpeg", ".gif", ".png", ".svg", ".webp"];
 

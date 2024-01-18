@@ -1,12 +1,13 @@
 import { createBaseSchema } from "~/graphql/baseSchema";
 import { ContextPlugin } from "@webiny/api";
-import { FileManagerContext } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
-import { createFilesSchema } from "~/graphql/filesSchema";
-import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { createFilesSchema } from "~/graphql/filesSchema";
+import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
+import { getFileByUrl } from "~/graphql/getFileByUrl";
+import { FileManagerContext } from "~/types";
 
 export const createGraphQLSchemaPlugin = () => {
     return [
@@ -42,7 +43,7 @@ export const createGraphQLSchemaPlugin = () => {
                     plugins: fieldPlugins
                 });
 
-                context.plugins.register([...plugins, graphQlPlugin]);
+                context.plugins.register([...plugins, graphQlPlugin, getFileByUrl()]);
             });
         })
     ];
