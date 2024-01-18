@@ -6,8 +6,12 @@ export const createPbPageWbyAcoLocationGqlField = (context: PbAcoContext) => {
     context.plugins.register(
         new GraphQLSchemaPlugin<PbAcoContext>({
             typeDefs: /* GraphQL */ `
+                type WbyPbAcoLocation {
+                    folderId: String
+                }
+
                 extend type PbPage {
-                    wbyAco_location: WbyAcoLocation
+                    wbyAco_location: WbyPbAcoLocation
                 }
             `,
             resolvers: {
