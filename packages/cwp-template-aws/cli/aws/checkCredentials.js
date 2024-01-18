@@ -9,11 +9,6 @@ module.exports = {
 
         // Check if AWS credentials are configured
         const sts = new STS();
-        const config = sts.config;
-        const region = await config.region();
-
-        // With AWS-SDK v3, we can no longer read the loaded profile. We try to read if from env var instead.
-        const profile = process.env.AWS_PROFILE || "default";
 
         try {
             await sts.getCallerIdentity({});
@@ -30,6 +25,9 @@ module.exports = {
             console.log();
             process.exit(1);
         }
+
+        const config = sts.config;
+        const region = await config.region();
 
         if (!region) {
             console.log();
@@ -48,6 +46,10 @@ module.exports = {
         process.env.AWS_REGION = region;
 
         const { accessKeyId } = await config.credentials();
+
+        // With AWS-SDK v3, we can't no longer read the loaded profile.
+        // So, we try to read it from environment variables instead.
+        const profile = process.env.AWS_PROFILE || "default";
 
         if (profile) {
             context.info(`Using profile ${green(profile)} in ${green(region)} region.`);
