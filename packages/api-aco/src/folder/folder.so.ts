@@ -137,6 +137,10 @@ export const createFolderOperations = (
                 });
 
                 const input = {
+                    /**
+                     *  We are omitting the standard entry meta fields:
+                     *  we don't want to override them with the ones coming from the `original` entry.
+                     */
                     ...omit(original, ENTRY_META_FIELDS),
                     ...data
                 };
