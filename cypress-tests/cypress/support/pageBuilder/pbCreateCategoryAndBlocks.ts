@@ -1,15 +1,16 @@
 import { gqlClient } from "../utils";
 import { createHeadingBlock } from "./pbCreateCategoryAndBlocks/createHeadingBlock";
+
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
     blockNames: string[];
     content?: Content;
 }
 
-type Content = {
+interface Content {
     type: "heading";
     text: string;
-};
+}
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -25,11 +26,7 @@ declare global {
 const contentData = (contentText: string, contentType: string) => {
     switch (contentType) {
         case "heading":
-            return {
-                type: "block",
-                data: {},
-                elements: [createHeadingBlock(contentText)]
-            };
+            return createHeadingBlock(contentText);
 
         default:
             return {};

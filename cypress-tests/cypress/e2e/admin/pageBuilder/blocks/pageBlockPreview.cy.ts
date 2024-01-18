@@ -1,5 +1,6 @@
 import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
-context("Page Builder - Blocks", () => {
+
+context("Page Builder - Block Preview", () => {
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllBlocks();
@@ -29,8 +30,13 @@ context("Page Builder - Blocks", () => {
         });
 
         cy.visit("/page-builder/page-blocks");
+
         // Asserts the programatically created block contains the correct data.
-        cy.contains(blockCategoryData.name).click();
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("li")
+                .first()
+                .within(() => cy.contains(blockCategoryData.name).should("exist").click());
+        });
         cy.contains(blockName[0]).should("exist");
         cy.contains(headerTitle).should("exist");
 
