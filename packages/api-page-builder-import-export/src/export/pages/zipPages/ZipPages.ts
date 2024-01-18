@@ -1,8 +1,8 @@
-import { IExportPagesZipPagesInput, IExportPagesZipPagesTaskParams } from "~/export/pages/types";
-import { ITaskManagerStore, ITaskResponseResult } from "@webiny/tasks";
+import { ITaskResponseResult } from "@webiny/tasks";
+import { IExportPagesZipPagesTaskParams } from "~/export/pages/types";
 import { PageExporter } from "~/export/process/exporters/PageExporter";
-import { PbImportExportContext } from "~/graphql/types";
 import { ZipPagesDataManager } from "./ZipPagesDataManager";
+import { getPageFactory } from "./getPageFactory";
 
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 
@@ -11,33 +11,6 @@ export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
  */
 const CLOSE_TO_TIMEOUT_SECONDS = 300;
 
-const getPageFactory = (
-    context: PbImportExportContext,
-    store: ITaskManagerStore<IExportPagesZipPagesInput>
-) => {
-    return async (pageId: string, published?: boolean) => {
-        try {
-            if (published) {
-                return await context.pageBuilder.getPublishedPageById({
-                    id: pageId
-                });
-            }
-            return await context.pageBuilder.getPage(pageId);
-        } catch (ex) {
-            const message = `There is no${published ? " published" : ""} page with ID ${pageId}.`;
-            try {
-                await store.addErrorLog({
-                    message,
-                    error: ex
-                });
-            } catch {
-                console.error(`Failed to add error log: "${message}"`);
-            }
-            return null;
-        }
-    };
-};
-
 export class ZipPages {
     public async execute(params: IExportPagesZipPagesTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
@@ -45,16 +18,17 @@ export class ZipPages {
         const dataManager = new ZipPagesDataManager(input);
         if (dataManager.hasMore() === false) {
             return response.done("Task done.", {
-                done: input.done || {},
-                failed: input.failed || []
+                done: dataManager.getDone(),
+                failed: dataManager.getFailed()
             });
         }
 
         const getPage = getPageFactory(context, store);
         /**
          * We will go page by page and zip them.
+         * We are using the input.queue here because we are removing page from the ZipPagesDataManager queue as it is processed.
+         *
          */
-
         for (const pageId of input.queue) {
             /**
              * Check for a possibility that the task was aborted.
@@ -82,18 +56,18 @@ export class ZipPages {
                 const pageExporter = new PageExporter(context.fileManager);
                 const pageDataZip = await pageExporter.execute(page, exportPageDataKey);
                 if (!pageDataZip?.Key) {
-                    const message = `Failed to export page "${pageId}" into a zip file.`;
-                    throw new Error(message);
+                    throw new Error(`Failed to export page "${pageId}" into a zip file.`);
                 }
                 dataManager.addDone(pageId, pageDataZip.Key);
             } catch (ex) {
+                const message = ex.message || `Failed to export page "${pageId}" into a zip file.`;
                 try {
                     await store.addErrorLog({
-                        message: ex.message || `Failed to export page "${pageId}" into a zip file.`,
+                        message,
                         error: ex
                     });
                 } catch {
-                    console.error(`Failed to add error log: "${ex.message}"`);
+                    console.error(`Failed to add error log: "${message}"`);
                 }
                 dataManager.addFailed(pageId);
             }

@@ -1,15 +1,17 @@
-import { IExportPagesZipPagesInput } from "~/export/pages/types";
+import { IExportPagesZipPagesDone, IExportPagesZipPagesInput } from "~/export/pages/types";
 
 export class ZipPagesDataManager {
     private readonly input: IExportPagesZipPagesInput;
     private readonly queue: Set<string>;
-    private readonly done: Record<string, string>;
+    private readonly done: IExportPagesZipPagesDone;
     private readonly failed: Set<string>;
 
     public constructor(input: IExportPagesZipPagesInput) {
         this.input = input;
         this.queue = new Set(input.queue);
-        this.done = structuredClone(input.done || {});
+        this.done = {
+            ...input.done
+        };
         this.failed = new Set(input.failed || []);
     }
 
@@ -27,6 +29,14 @@ export class ZipPagesDataManager {
         this.queue.delete(pageId);
         this.failed.add(pageId);
         delete this.done[pageId];
+    }
+
+    public getFailed() {
+        return Array.from(this.failed);
+    }
+
+    public getDone() {
+        return this.done;
     }
 
     public getInput(): IExportPagesZipPagesInput {

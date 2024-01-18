@@ -29,14 +29,17 @@ export type IExportPagesControllerTaskParams = ITaskRunParams<
 /**
  * Zip Pages
  */
+export interface IExportPagesZipPagesDone {
+    [pageId: string]: string;
+}
 export interface IExportPagesZipPagesInput {
     queue: string[];
-    done?: Record<string, string>;
+    done?: IExportPagesZipPagesDone;
     failed?: string[];
 }
 
 export interface IExportPagesZipPagesOutput extends ITaskResponseDoneResultOutput {
-    done: Record<string, string>;
+    done: IExportPagesZipPagesDone;
     failed: string[];
 }
 
