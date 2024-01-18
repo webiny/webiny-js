@@ -1,7 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
-
-export type FolderModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 
 const titleField = () =>
     createModelField({
@@ -117,15 +115,11 @@ const permissionsField = () =>
 
 export const FOLDER_MODEL_ID = "acoFolder";
 
-export const createFolderModelDefinition = (): FolderModelDefinition => {
-    return {
+export const createFolderModelDefinition = () => {
+    return createPrivateModelDefinition({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
         titleFieldId: "title",
-        layout: [["title"], ["slug"], ["type"], ["parentId"], ["permissions"]],
-
-        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()],
-        description: "ACO - Folder content model",
-        isPrivate: true
-    };
+        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()]
+    });
 };

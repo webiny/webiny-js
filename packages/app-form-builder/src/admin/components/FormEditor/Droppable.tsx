@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
-import { FieldLayoutPositionType, Container, DropTargetType } from "~/types";
+import { ConnectDropTarget, useDrop } from "react-dnd";
+import { FieldLayoutPositionType, Container, DropTargetType, DragObjectWithType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -9,7 +9,7 @@ export type DroppableChildrenFunction = (params: {
     drop: ConnectDropTarget;
 }) => React.ReactElement;
 
-export type DroppableDragObject = DragObjectWithType;
+export type DroppableDragObject = any;
 
 export interface DroppableDropResult {
     // TODO @ts-refactor delete and go up the tree

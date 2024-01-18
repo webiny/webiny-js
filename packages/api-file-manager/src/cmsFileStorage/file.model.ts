@@ -1,6 +1,5 @@
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 import { createModelField } from "./createModelField";
-import { CmsModelGroup } from "@webiny/api-headless-cms/types";
 
 const required = () => {
     return {
@@ -158,13 +157,10 @@ const locationField = () => {
 export const FILE_MODEL_ID = "fmFile";
 
 interface CreateFileModelDefinitionParams {
-    contentModelGroup: CmsModelGroup;
     withPrivateFiles: boolean;
 }
 
-export const createFileModelDefinition = (
-    params: CreateFileModelDefinitionParams
-): CmsPrivateModelFull => {
+export const createFileModelDefinition = (params: CreateFileModelDefinitionParams) => {
     const fields = [
         locationField(),
         nameField(),
@@ -180,15 +176,10 @@ export const createFileModelDefinition = (
         fields.push(accessControlField());
     }
 
-    return {
+    return createPrivateModelDefinition({
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
-        layout: [],
-        fields,
-        description: "File Manager - File content model",
-        isPrivate: true,
-        group: params.contentModelGroup,
-        noValidate: true
-    };
+        fields
+    });
 };

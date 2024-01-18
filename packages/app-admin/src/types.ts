@@ -86,8 +86,17 @@ export interface FileItem {
     tags: string[];
     aliases: string[];
     createdOn: string;
-    savedOn: string;
     createdBy: {
+        id: string;
+        displayName: string;
+    };
+    savedOn: string;
+    savedBy: {
+        id: string;
+        displayName: string;
+    };
+    modifiedOn: string;
+    modifiedBy: {
         id: string;
         displayName: string;
     };

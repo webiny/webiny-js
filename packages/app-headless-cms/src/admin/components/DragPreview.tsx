@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDragLayer } from "react-dnd";
-import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
-import { DragSourceMonitorImpl } from "react-dnd/lib/common/DragSourceMonitorImpl";
+import { useDragLayer, DragSourceMonitor } from "react-dnd";
 
 let subscribedToOffsetChange = false;
 
@@ -30,7 +28,7 @@ const DragPreview = () => {
         /**
          * We must cast because TS is complaining. We know that casting as DragSourceMonitorImpl is ok.
          */
-        const monitor = initialMonitor as unknown as DragSourceMonitorImpl;
+        const monitor = initialMonitor as unknown as any;
         if (!subscribedToOffsetChange) {
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;

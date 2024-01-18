@@ -62,19 +62,12 @@ interface UseSortableListArgs {
     endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
-export const useSortableList = ({
-    index,
-    move,
-    id,
-    type,
-    beginDrag,
-    endDrag
-}: UseSortableListArgs) => {
+export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSortableListArgs) => {
     const ref = useRef<HTMLDivElement>(null);
     const [dropItemAbove, setDropItemAbove] = useState(false);
     const isDraggingDownwardsRef = useRef<boolean>(false);
 
-    const [dropData, drop] = useDrop({
+    const [dropData, drop] = useDrop<any, any, any>({
         accept: BLOCK,
         collect(monitor) {
             return {
@@ -148,16 +141,16 @@ export const useSortableList = ({
     });
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type, target: [BLOCK], id, index, dragInNavigator: true } as DraggableItem,
-        collect: monitor => ({
-            isDragging: monitor.isDragging()
-        }),
-        begin(monitor) {
+        type,
+        item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
         },
-        end(item, monitor) {
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
+        end(item: any, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }

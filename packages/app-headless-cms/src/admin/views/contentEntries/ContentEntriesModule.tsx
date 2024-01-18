@@ -23,6 +23,7 @@ import {
 import {
     CellActions,
     CellAuthor,
+    CellCreated,
     CellModified,
     CellName,
     CellStatus
@@ -61,6 +62,13 @@ export const ContentEntriesModule = () => {
                     header={"Author"}
                     cell={<CellAuthor />}
                     className={"cms-aco-list-createdBy"}
+                />
+                <Browser.Table.Column
+                    name={"createdOn"}
+                    header={"Created"}
+                    cell={<CellCreated />}
+                    sortable={true}
+                    className={"cms-aco-list-createdOn"}
                 />
                 <Browser.Table.Column
                     name={"savedOn"}

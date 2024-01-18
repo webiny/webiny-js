@@ -16,7 +16,11 @@ import {
 } from "./validation";
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
-import { DragObjectWithType } from "react-dnd";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export * from "./validation";
 export * from "./model";
@@ -344,10 +348,26 @@ export type CmsEditorContentEntry = CmsContentEntry;
 export interface CmsContentEntry {
     id: string;
     modelId: string;
-    savedOn: string;
+    createdOn: string;
     createdBy: CmsIdentity;
+    savedOn: string;
+    savedBy: CmsIdentity;
+    modifiedOn: string | null;
+    modifiedBy: CmsIdentity | null;
     firstPublishedOn: string | null;
+    firstPublishedBy: CmsIdentity | null;
     lastPublishedOn: string | null;
+    lastPublishedBy: CmsIdentity | null;
+    revisionCreatedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedOn: string;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedOn: string | null;
+    revisionModifiedBy: CmsIdentity | null;
+    revisionFirstPublishedOn: string | null;
+    revisionFirstPublishedBy: CmsIdentity | null;
+    revisionLastPublishedOn: string | null;
+    revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
     meta: {
         title: string;
@@ -367,6 +387,16 @@ export interface CmsContentEntryRevision {
     firstPublishedOn: string | null;
     lastPublishedOn: string | null;
     createdBy: CmsIdentity;
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string;
+    revisionFirstPublishedOn: string;
+    revisionLastPublishedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity;
+    revisionFirstPublishedBy: CmsIdentity;
+    revisionLastPublishedBy: CmsIdentity;
     wbyAco_location: Location;
     meta: {
         title: string;

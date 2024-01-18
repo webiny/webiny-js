@@ -59,7 +59,7 @@ interface MoveFieldCallable {
     (params: MoveFieldParams): void;
 }
 interface OnEndDragCallable {
-    (item: DragSource, monitor: DragSourceMonitor): void;
+    (item: DragSource, monitor: DragSourceMonitor<any, any>): void;
 }
 interface MoveRowCallable {
     (source: number, destination: number): void;

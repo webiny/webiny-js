@@ -36,7 +36,7 @@ export interface DroppableProps {
 const DroppableComponent = (props: DroppableProps) => {
     const { children, onDrop, isVisible = () => true } = props;
 
-    const [{ item, isOver }, drop] = useDrop({
+    const [{ item, isOver }, drop] = useDrop<any, any, any>({
         accept: "element",
         collect: monitor => ({
             isOver: monitor.isOver() && monitor.isOver({ shallow: true }),

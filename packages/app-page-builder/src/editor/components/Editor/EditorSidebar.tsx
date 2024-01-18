@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import store from "store";
 import { makeComposable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
@@ -12,6 +13,8 @@ import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
 import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
+
+const LOCAL_STORAGE_KEY = "webiny_pb_editor_active_tab";
 
 const rightSideBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)",
@@ -46,8 +49,13 @@ export const EditorSidebar = React.memo(() => {
     const [element] = useActiveElement();
     const [sidebar, setSidebar] = useElementSidebar();
 
+    const getActiveTabIndex = useCallback(() => {
+        return store.get(LOCAL_STORAGE_KEY, sidebar.activeTabIndex);
+    }, []);
+
     const setActiveTabIndex = useCallback((index: number) => {
         setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
+        store.set(LOCAL_STORAGE_KEY, index);
     }, []);
 
     const unhighlightElementTab = useCallback(() => {
@@ -62,7 +70,7 @@ export const EditorSidebar = React.memo(() => {
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
+            <Tabs value={getActiveTabIndex()} updateValue={setActiveTabIndex}>
                 <EditorSidebarTab label={"Style"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
