@@ -41,6 +41,7 @@ export const CREATE_ENTRY = (model: CmsModel) => {
             create${Entry}: create${Entry}(data: $data) {
             data {
                 id
+                entryId
                 title
                 wbyAco_location {
                     folderId
