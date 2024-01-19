@@ -1,13 +1,5 @@
 import { createGqlQuery, GqlResponse } from "../utils";
 
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace Cypress {
-        interface Chainable {
-            pbUpdatePageBlock(id: string, data: any): Promise<any>;
-        }
-    }
-}
 const UPDATE_PAGE_BLOCK = /* GraphQL */ `
     mutation UpdatePageBlock($id: ID!, $data: PbUpdatePageBlockInput!) {
         pageBuilder {
@@ -34,17 +26,17 @@ const UPDATE_PAGE_BLOCK = /* GraphQL */ `
     }
 `;
 
-export const pbUpdatePageBlock = createGqlQuery<GqlResponse<null>, { id: string }>(
-    UPDATE_PAGE_BLOCK
-);
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            pbDeletePage: typeof pbUpdatePageBlock;
+            pbUpdatePageBlock: typeof pbUpdatePageBlock;
         }
     }
 }
+
+export const pbUpdatePageBlock = createGqlQuery<GqlResponse<null>, { id: string }>(
+    UPDATE_PAGE_BLOCK
+);
 
 Cypress.Commands.add("pbUpdatePageBlock", pbUpdatePageBlock);
