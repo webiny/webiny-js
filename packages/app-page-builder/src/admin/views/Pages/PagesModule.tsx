@@ -7,7 +7,7 @@ import {
     ActionMove,
     ActionPublish,
     ActionUnpublish
-} from "~/admin/components/BulkActions";
+} from "./BulkActions";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     CellActions,

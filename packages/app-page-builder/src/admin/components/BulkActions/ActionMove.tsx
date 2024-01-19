@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { useRecords, useMoveToFolderDialog, useNavigateFolder, useFolders } from "@webiny/app-aco";
+import { useMoveToFolderDialog, useNavigateFolder, useRecords } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
@@ -16,17 +16,10 @@ export const ActionMove = observer(() => {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
-    const { folderLevelPermissions: flp } = useFolders();
 
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
     }, [worker.items.length]);
-
-    const canMoveAll = useMemo(() => {
-        return worker.items.every(item => {
-            return flp.canManageContent(item.location?.folderId);
-        });
-    }, [worker.items]);
 
     const openWorkerDialog = useCallback(
         (folder: FolderItem) => {
@@ -68,10 +61,6 @@ export const ActionMove = observer(() => {
         },
         [pagesLabel]
     );
-
-    if (!canMoveAll) {
-        return null;
-    }
 
     const openMovePagesDialog = () =>
         showMoveDialog({

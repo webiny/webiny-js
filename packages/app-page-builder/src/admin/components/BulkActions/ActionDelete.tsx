@@ -1,16 +1,12 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import { useFolders, useRecords } from "@webiny/app-aco";
+import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
-    const { canDelete } = usePagesPermissions();
-    const { folderLevelPermissions: flp } = useFolders();
-
     const { deletePage, client } = useAdminPageBuilder();
     const { removeRecordFromCache } = useRecords();
 
@@ -22,14 +18,6 @@ export const ActionDelete = observer(() => {
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
     }, [worker.items.length]);
-
-    const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => {
-            return (
-                canDelete(item.data.createdBy.id) && flp.canManageContent(item.location?.folderId)
-            );
-        });
-    }, [worker.items]);
 
     const openDeletePagesDialog = () =>
         showConfirmationDialog({
@@ -84,11 +72,6 @@ export const ActionDelete = observer(() => {
                 });
             }
         });
-
-    if (!canDeleteAll) {
-        console.log("You don't have permissions to delete pages.");
-        return null;
-    }
 
     return (
         <IconButton
