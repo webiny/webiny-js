@@ -35,7 +35,7 @@ declare global {
     }
 }
 
-export const pbUpdatePageBlock = createGqlQuery<GqlResponse<null>, { id: string }>(
+export const pbUpdatePageBlock = createGqlQuery<GqlResponse<null>, { id: string; data: object }>(
     UPDATE_PAGE_BLOCK
 );
 
