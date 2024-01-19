@@ -17,7 +17,7 @@ export const createExportPagesCombineZippedPagesTask = () => {
             }
 
             const { ExportPagesCombineZippedPages } = await import(
-                "~/export/pages/ExportPagesCombineZippedPages"
+                /* webpackChunkName: "PageExportTaskCombineZippedPages" */ "~/export/pages/ExportPagesCombineZippedPages"
             );
 
             const exportPagesCombineZippedPages = new ExportPagesCombineZippedPages();

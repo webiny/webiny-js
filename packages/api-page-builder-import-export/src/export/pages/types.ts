@@ -52,7 +52,7 @@ export type IExportPagesZipPagesTaskParams = ITaskRunParams<
 /**
  * Combine Zipped Pages
  */
-export type IExportPagesCombineZippedPagesInput = Record<string, boolean>;
+export type IExportPagesCombineZippedPagesInput = {};
 
 export type IExportPagesCombineZippedPagesTaskParams = ITaskRunParams<
     PbImportExportContext,

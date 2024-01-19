@@ -16,7 +16,9 @@ export const createExportPagesControllerTask = () => {
                 return response.aborted();
             }
 
-            const { ExportPagesController } = await import("~/export/pages/ExportPagesController");
+            const { ExportPagesController } = await import(
+                /* webpackChunkName: "PageExportTaskController" */ "~/export/pages/ExportPagesController"
+            );
 
             const exportPagesController = new ExportPagesController();
             return await exportPagesController.execute(params);

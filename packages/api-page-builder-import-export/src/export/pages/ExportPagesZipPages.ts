@@ -1,5 +1,6 @@
 import { IExportPagesZipPagesTaskParams } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
+import { ZipPages } from "./zipPages/ZipPages";
 
 export class ExportPagesZipPages {
     public async execute(params: IExportPagesZipPagesTaskParams): Promise<ITaskResponseResult> {
@@ -7,7 +8,6 @@ export class ExportPagesZipPages {
         if (isAborted()) {
             return response.aborted();
         }
-        const { ZipPages } = await import("./zipPages/ZipPages");
 
         const zipPages = new ZipPages();
         return await zipPages.execute(params);

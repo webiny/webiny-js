@@ -24,7 +24,9 @@ export const createExportPagesZipPagesTask = () => {
                 return response.aborted();
             }
 
-            const { ExportPagesZipPages } = await import("~/export/pages/ExportPagesZipPages");
+            const { ExportPagesZipPages } = await import(
+                /* webpackChunkName: "PageExportTaskZipPages" */ "~/export/pages/ExportPagesZipPages"
+            );
 
             const exportPagesZipPages = new ExportPagesZipPages();
             return await exportPagesZipPages.execute(params);

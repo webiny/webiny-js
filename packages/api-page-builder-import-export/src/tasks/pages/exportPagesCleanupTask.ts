@@ -16,7 +16,9 @@ export const createExportPagesCleanupTask = () => {
                 return response.aborted();
             }
 
-            const { ExportPagesCleanup } = await import("~/export/pages/ExportPagesCleanup");
+            const { ExportPagesCleanup } = await import(
+                /* webpackChunkName: "PageExportTaskCleanup" */ "~/export/pages/ExportPagesCleanup"
+            );
 
             const exportPagesCleanup = new ExportPagesCleanup();
             return await exportPagesCleanup.execute(param);

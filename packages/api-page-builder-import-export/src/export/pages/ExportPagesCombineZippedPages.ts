@@ -1,5 +1,6 @@
 import { IExportPagesCombineZippedPagesTaskParams } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
+import { CombineZippedPages } from "./combineZippedPages/CombineZippedPages";
 
 export class ExportPagesCombineZippedPages {
     public async execute(
@@ -10,7 +11,6 @@ export class ExportPagesCombineZippedPages {
             return response.aborted();
         }
 
-        const { CombineZippedPages } = await import("./combineZippedPages/CombineZippedPages");
         const combineZippedPages = new CombineZippedPages();
         return combineZippedPages.execute(params);
     }
