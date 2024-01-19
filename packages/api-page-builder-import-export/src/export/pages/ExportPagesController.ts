@@ -1,8 +1,3 @@
-import {
-    CreateZipPagesTasks,
-    ProcessCombineZippedPagesTask,
-    ProcessZipPagesTasks
-} from "./controller";
 import { IExportPagesControllerTaskParams } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
 
@@ -14,6 +9,7 @@ export class ExportPagesController {
          * After they are done, we can create a new task which will zip all zipped pages.
          */
         if (input.processing && !input.combining) {
+            const { ProcessZipPagesTasks } = await import("./controller/ProcessZipPagesTasks");
             const processZipPagesTasks = new ProcessZipPagesTasks();
             return await processZipPagesTasks.execute(params);
         }
@@ -22,12 +18,16 @@ export class ExportPagesController {
          */
         //
         else if (input.combining) {
+            const { ProcessCombineZippedPagesTask } = await import(
+                "./controller/ProcessCombineZippedPagesTask"
+            );
             const processCombineZippedPagesTask = new ProcessCombineZippedPagesTask();
             return await processCombineZippedPagesTask.execute(params);
         }
         /**
          * On the first run of the task, we need to create subtasks for zipping pages in batches.
          */
+        const { CreateZipPagesTasks } = await import("./controller/CreateZipPagesTasks");
         const createZipPagesTasks = new CreateZipPagesTasks();
         return await createZipPagesTasks.execute(params);
     }

@@ -55,7 +55,7 @@ export class ZipPages {
                 const exportPageDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${page.pid}`;
                 const pageExporter = new PageExporter(context.fileManager);
                 const pageDataZip = await pageExporter.execute(page, exportPageDataKey);
-                if (!pageDataZip?.Key) {
+                if (!pageDataZip.Key) {
                     throw new Error(`Failed to export page "${pageId}" into a zip file.`);
                 }
                 dataManager.addDone(pageId, pageDataZip.Key);

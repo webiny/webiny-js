@@ -1,7 +1,7 @@
 import { IExportPagesControllerTaskParams } from "../types";
 import { ITaskResponseResult } from "@webiny/tasks";
 
-const COMBINE_ZIPPED_PAGES_WAIT_TIME = 30;
+export const COMBINE_ZIPPED_PAGES_WAIT_TIME = 30;
 
 export class ProcessCombineZippedPagesTask {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {

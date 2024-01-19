@@ -1,12 +1,16 @@
 import { IListTaskParams, IListTasksResponse, ITaskResponseResult } from "@webiny/tasks";
 import { IExportPagesControllerTaskParams, PageExportTask } from "../types";
+import { COMBINE_ZIPPED_PAGES_WAIT_TIME } from "~/export/pages/controller/ProcessCombineZippedPagesTask";
 
 export const ZIP_PAGES_WAIT_TIME = 30;
 
 export class ProcessZipPagesTasks {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
-        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
+        const { response, input, isAborted, isCloseToTimeout, context, store, trigger } = params;
 
+        /**
+         * TODO: implement subtasks and subtask management into the base tasks package.
+         */
         let result: IListTasksResponse;
         const listTasksParams: IListTaskParams = {
             where: {
@@ -36,18 +40,23 @@ export class ProcessZipPagesTasks {
                         seconds: ZIP_PAGES_WAIT_TIME
                     }
                 );
-            } else if (!meta.hasMoreItems) {
-                const combineZippedPagesTask = await context.tasks.trigger({
-                    parent: store.getTask(),
-                    definition: PageExportTask.CombineZippedPages
-                });
-                return response.continue({
-                    ...input,
-                    processing: false,
-                    combining: combineZippedPagesTask.id
-                });
             }
         }
-        return response.done("Subtasks done.");
+        /**
+         * If all subtasks (Zip Pages) are done, we can continue with the next subtask (Combine Zipped Pages).
+         */
+        const combineZippedPagesTask = await trigger({
+            definition: PageExportTask.CombineZippedPages
+        });
+        return response.continue(
+            {
+                ...input,
+                processing: false,
+                combining: combineZippedPagesTask.id
+            },
+            {
+                seconds: COMBINE_ZIPPED_PAGES_WAIT_TIME
+            }
+        );
     }
 }

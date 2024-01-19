@@ -5,8 +5,13 @@ export class ExportPagesCombineZippedPages {
     public async execute(
         params: IExportPagesCombineZippedPagesTaskParams
     ): Promise<ITaskResponseResult> {
-        const { response } = params;
+        const { isAborted, response } = params;
+        if (isAborted()) {
+            return response.aborted();
+        }
 
-        return response.done();
+        const { CombineZippedPages } = await import("./combineZippedPages/CombineZippedPages");
+        const combineZippedPages = new CombineZippedPages();
+        return combineZippedPages.execute(params);
     }
 }
