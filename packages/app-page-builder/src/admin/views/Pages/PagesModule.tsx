@@ -46,7 +46,7 @@ export const PagesModule = () => {
                 header={"Name"}
                 cell={<CellName />}
                 hideable={false}
-                size={300}
+                size={200}
                 sortable={true}
             />
             <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />

@@ -8,7 +8,7 @@ export { RecordActionConfig as FileActionConfig };
 
 type FileActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
-export const FileAction = (props: FileActionProps) => {
+const BaseFileAction = (props: FileActionProps) => {
     return (
         <CompositionScope name={"fm"}>
             <AcoConfig>
@@ -17,3 +17,8 @@ export const FileAction = (props: FileActionProps) => {
         </CompositionScope>
     );
 };
+
+export const FileAction = Object.assign(BaseFileAction, {
+    OptionsMenuItem: Record.Action.OptionsMenuItem,
+    OptionsMenuLink: Record.Action.OptionsMenuLink
+});

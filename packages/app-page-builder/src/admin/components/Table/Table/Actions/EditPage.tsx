@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useCreatePageFrom } from "~/admin/views/Pages/hooks/useCreatePageFrom";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
@@ -9,7 +9,7 @@ import { usePagesPermissions } from "~/hooks/permissions";
 export const EditPage = () => {
     const { page } = usePage();
     const { canUpdate } = usePagesPermissions();
-    const { OptionsMenuItem, OptionsMenuLink } = AcoConfig.Record.Action;
+    const { OptionsMenuItem, OptionsMenuLink } = PageListConfig.Browser.PageAction;
     const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
     const { createPageForm, loading } = useCreatePageFrom({
         page,
