@@ -17,6 +17,7 @@ import {
 import { createFieldConverters } from "~/fieldConverters";
 import { createExportGraphQL } from "~/export";
 import { createStorageTransform } from "~/storage";
+import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -31,7 +32,8 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
         ...baseCreateGraphQL(params),
-        createExportGraphQL()
+        createExportGraphQL(),
+        createLexicalHTMLRenderer()
     ];
 };
 
