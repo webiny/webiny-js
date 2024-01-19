@@ -1,9 +1,17 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
-import { IExportPagesCombineZippedPagesInput, PageExportTask } from "~/export/pages/types";
+import {
+    IExportPagesCombineZippedPagesInput,
+    IExportPagesCombineZippedPagesOutput,
+    PageExportTask
+} from "~/export/pages/types";
 import { PbImportExportContext } from "~/graphql/types";
 
 export const createExportPagesCombineZippedPagesTask = () => {
-    return createPrivateTaskDefinition<PbImportExportContext, IExportPagesCombineZippedPagesInput>({
+    return createPrivateTaskDefinition<
+        PbImportExportContext,
+        IExportPagesCombineZippedPagesInput,
+        IExportPagesCombineZippedPagesOutput
+    >({
         id: PageExportTask.CombineZippedPages,
         title: "Page Builder - Export Pages - Combine Zipped Pages",
         description: "Export pages from the Page Builder - combine zipped pages.",

@@ -55,9 +55,15 @@ export interface IExportPagesCombineZippedPagesInput {
     after?: string | null;
 }
 
+export interface IExportPagesCombineZippedPagesOutput extends ITaskResponseDoneResultOutput {
+    key: string;
+    url: string;
+}
+
 export type IExportPagesCombineZippedPagesTaskParams = ITaskRunParams<
     PbImportExportContext,
-    IExportPagesCombineZippedPagesInput
+    IExportPagesCombineZippedPagesInput,
+    IExportPagesCombineZippedPagesOutput
 >;
 
 /**
