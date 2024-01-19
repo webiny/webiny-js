@@ -1,5 +1,5 @@
-import { createTheme } from "@webiny/app-theme";
 import { CSSObject } from "@emotion/react";
+import { createImplementation, AbstractTheme } from "../webiny-plugins";
 
 // Breakpoints (desktop, tablet, mobile).
 export const breakpoints = {
@@ -140,52 +140,60 @@ const buttons = (overrides: CSSObject) => ({
     }
 });
 
-// Theme object.
-export default createTheme({
-    breakpoints,
-    styles: {
-        colors,
-        typography,
-        elements: {
-            document: {
-                a: { color: colors.color1 },
-                b: { fontWeight: "bold" },
-                i: { fontStyle: "italic" },
-                myCustomElement: {
-                    background: colors.color1,
-                    border: `1px solid ${colors.color1}`,
-                    borderRadius: 4,
-                    color: colors.color6
-                }
-            },
-            button: {
-                default: buttons({ background: colors.color5, color: colors.color3 }),
-                primary: buttons({ background: colors.color1, color: colors.color6 }),
-                secondary: buttons({ background: colors.color2, color: colors.color6 }),
-                outlinePrimary: buttons({
-                    border: `2px solid ${colors.color1}`,
-                    color: colors.color1
-                }),
-                outlineSecondary: buttons({
-                    border: `2px solid ${colors.color2}`,
-                    color: colors.color2
-                }),
-                simple: buttons({
-                    color: colors.color1,
-                    "&:hover": { transform: "translateY(-1px)" }
-                })
-            }
-        },
-        global: `@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet"');`
+class DarkTheme extends AbstractTheme {
+    public readonly name = "Dark";
+    public readonly id = "dark-1";
+    private api: Api;
+
+    constructor(api: Api) {
+        super();
+        this.api = api;
     }
-});
 
-//<link rel="preconnect" href="https://fonts.googleapis.com">
-//<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-//<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet">
+    async getTheme() {
+        return {
+            breakpoints,
+            styles: {
+                colors,
+                typography,
+                elements: {
+                    document: {
+                        a: { color: colors.color1 },
+                        b: { fontWeight: "bold" },
+                        i: { fontStyle: "italic" },
+                        myCustomElement: {
+                            background: colors.color1,
+                            border: `1px solid ${colors.color1}`,
+                            borderRadius: 4,
+                            color: colors.color6
+                        }
+                    },
+                    button: {
+                        default: buttons({ background: colors.color5, color: colors.color3 }),
+                        primary: buttons({ background: colors.color1, color: colors.color6 }),
+                        secondary: buttons({ background: colors.color2, color: colors.color6 }),
+                        outlinePrimary: buttons({
+                            border: `2px solid ${colors.color1}`,
+                            color: colors.color1
+                        }),
+                        outlineSecondary: buttons({
+                            border: `2px solid ${colors.color2}`,
+                            color: colors.color2
+                        }),
+                        simple: buttons({
+                            color: colors.color1,
+                            "&:hover": { transform: "translateY(-1px)" }
+                        })
+                    }
+                },
+                global: `@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet"');`
+            }
+        };
+    },
 
-// const str = `<link rel="preconnect" href="https://fonts.googleapis.com">
-// <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-// <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet">`
-// undefined
-// new DOMParser().parseFromString(str, "text/html");
+    typoById() {
+
+    }
+}
+
+export default createImplementation(DarkTheme, [Api]);

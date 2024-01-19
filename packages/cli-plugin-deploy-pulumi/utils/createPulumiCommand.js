@@ -44,23 +44,23 @@ const createPulumiCommand = ({ name, command }) => {
             return (new Date() - start) / 1000 + "s";
         };
 
-        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
-        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
-            const plugin = createAppWorkspacePlugins[i];
-            await plugin.hook({
-                projectApplication: {
-                    name: inputs.folder
-                }
-            });
-        }
-
         const projectApplication = getProjectApplication({ name: inputs.folder });
+
         // Check if there are any plugins that need to be registered. This needs to happen
         // always, no matter the value of `createProjectApplicationWorkspaceParam` parameter.
         if (projectApplication.config.plugins) {
             context.plugins.register(projectApplication.config.plugins);
         }
 
+        console.log('ajmoo')
+        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
+        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
+            const plugin = createAppWorkspacePlugins[i];
+            await plugin.hook({ projectApplication });
+        }
+
+        console.log('stopa')
+        process.exit();
         await login(projectApplication);
 
         const pulumi = await getPulumi({ projectApplication });

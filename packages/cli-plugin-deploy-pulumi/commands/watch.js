@@ -46,20 +46,16 @@ module.exports = async (inputs, context) => {
             inputs.folder = appAliases[inputs.folder];
         }
 
-        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
-        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
-            const plugin = createAppWorkspacePlugins[i];
-            await plugin.hook({
-                projectApplication: {
-                    name: inputs.folder
-                }
-            });
-        }
-
         // Get project application metadata. Will throw an error if invalid folder specified.
         projectApplication = getProjectApplication({
             name: inputs.folder
         });
+
+        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
+        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
+            const plugin = createAppWorkspacePlugins[i];
+            await plugin.hook({ projectApplication });
+        }
 
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);

@@ -24,3 +24,5 @@ export const createTheme = (theme: BaseTheme): Theme => {
         }
     } as Theme;
 };
+
+tema.typography.headings.stylesById

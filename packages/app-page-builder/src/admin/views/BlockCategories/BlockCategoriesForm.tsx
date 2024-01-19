@@ -186,7 +186,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
-                <SimpleForm>
+                <SimpleForm data-testid={'testid-xyz'} >
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name || t`New block category`} />
                     <SimpleFormContent>
@@ -239,6 +239,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
+                                    data-testid={"asd"}
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}

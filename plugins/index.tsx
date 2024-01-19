@@ -1,5 +1,7 @@
 import React from "react";
-import { Website, Api, Theme } from "./webiny-plugins";
+import { Website, Api, Theme, Pb, Fb } from "./webiny-plugins";
+// import StaticLayout from "./layouts/pages/Static";
+// import DefaultFormLayout from "./layouts/forms/DefaultFormLayout";
 
 // Real code (the above is not visible to users).
 export default () => {
@@ -8,7 +10,13 @@ export default () => {
             <Theme name={"light"} path={'./themes/light'} />
             <Theme name={"dark"} path={'./themes/dark'} />
             <Website.PublicAsset name="sitemap" path={"./public/sitemap.xml"} />
-            <Api.Context name="log-version" path={"./api/logVersion"} />
+
+            {/*<Pb.PageLayout name={"static"} title={"Static page"} component={StaticLayout} />*/}
+            {/*<Fb.FormLayout name={"default"} title={"Default form layout"} component={DefaultFormLayout} />*/}
+
+            {/*<Api.Context name="log-version" path={"./api/logVersion"} />*/}
+
+            {/*<Cognito/>*/}
 
             {/*<Website.OverrideOriginRequestLambda path={"./originRequestLambda"} />*/}
             {/*<FormBuilder.FormLayout*/}

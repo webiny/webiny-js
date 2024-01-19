@@ -123,19 +123,13 @@ context("File Manager - Update file details", () => {
     ];
 
     beforeEach(() => {
-        cy.login();
-        cy.visit("/");
-        // Open drawer
-        cy.findByTestId("apps-menu").click();
-        // Open "File Manage" view
-        cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
-
-        // Check if there are existing file and delete them
+        // Check if there are existing files and delete them
         cy.fmListFiles({}).then(files => {
             for (let i = 0; i < files.length; i++) {
                 deleteFile();
             }
         });
+
         // Add files
         files.forEach(({ fileName, type }) => {
             cy.findByTestId("fm-list-wrapper").dropFile(fileName, type);
