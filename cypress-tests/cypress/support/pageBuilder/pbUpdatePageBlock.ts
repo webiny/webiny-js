@@ -1,4 +1,4 @@
-import { gqlClient } from "../utils";
+import { createGqlQuery, GqlResponse } from "../utils";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -34,26 +34,17 @@ const UPDATE_PAGE_BLOCK = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbUpdatePageBlock", (id, data) => {
-    return cy.login().then(user => {
-        return gqlClient
-            .request({
-                query: UPDATE_PAGE_BLOCK,
-                variables: {
-                    id,
-                    data: {
-                        blockCategory: data.slug,
-                        name: data.name,
-                        content: {
-                            id: "xyz",
-                            type: "block",
-                            data: {},
-                            elements: [data.content.elements]
-                        }
-                    }
-                },
-                authToken: user.idToken.jwtToken
-            })
-            .then(response => response.pageBuilder.pageTemplate);
-    });
-});
+export const pbUpdatePageBlock = createGqlQuery<GqlResponse<null>, { id: string }>(
+    UPDATE_PAGE_BLOCK
+);
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            pbDeletePage: typeof pbUpdatePageBlock;
+        }
+    }
+}
+
+Cypress.Commands.add("pbUpdatePageBlock", pbUpdatePageBlock);
