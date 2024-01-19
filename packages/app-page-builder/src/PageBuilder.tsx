@@ -18,7 +18,8 @@ import { PagesModule } from "~/admin/views/Pages/PagesModule";
 
 export type { EditorProps };
 export { EditorRenderer };
-export { PageListConfig, usePageListConfig } from "~/admin/config/pages";
+export * from "~/admin/config/pages";
+export * from "~/admin/views/Pages/hooks";
 
 const PageBuilderProviderPlugin = createProviderPlugin(Component => {
     return function PageBuilderProvider({ children }) {
