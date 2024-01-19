@@ -133,7 +133,7 @@ export default /* GraphQL */ `
 
     type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
-        objectBody: JSON
+        objectBody(format: String): JSON
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
 
