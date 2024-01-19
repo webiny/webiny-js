@@ -1,7 +1,7 @@
 import React from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { observer } from "mobx-react-lite";
-import { css } from "emotion";
+import styled from "@emotion/styled";
 
 import { ButtonSecondary } from "@webiny/ui/Button";
 
@@ -13,16 +13,33 @@ import { IconPickerConfig } from "../config";
 import { ListCustomIconsQueryResponse, LIST_CUSTOM_ICONS } from "./graphql";
 import { Icon } from "../types";
 
-const addButtonStyle = css`
+const AddButton = styled(ButtonSecondary)`
     &.mdc-button {
         height: 40px;
     }
 `;
 
-const CustomIcon = () => {
-    const { icon } = useIcon<Icon>();
+/**
+ * NOTE: Avoid using `@emotion/styled` in icon renderer components across all plugins.
+ * This is crucial for serializing component rendering into a string value as plain HTML,
+ * which is necessary for usage in the website application. Please use inline styles here
+ * to ensure proper serialization.
+ */
 
-    return <img width={32} height={32} src={icon.value} alt={icon.name} />;
+const CustomIcon = () => {
+    const { icon, size } = useIcon<Icon>();
+
+    return (
+        <img
+            width={size}
+            height={size}
+            src={icon.value}
+            alt={icon.name}
+            style={{
+                verticalAlign: "middle"
+            }}
+        />
+    );
 };
 
 interface IconFilePickerProps {
@@ -41,14 +58,13 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
             accept={["image/svg+xml"]}
         >
             {({ showFileManager }) => (
-                <ButtonSecondary
-                    className={addButtonStyle}
+                <AddButton
                     onClick={() => {
                         showFileManager();
                     }}
                 >
                     Browse
-                </ButtonSecondary>
+                </AddButton>
             )}
         </FileManager>
     );

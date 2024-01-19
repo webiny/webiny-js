@@ -10,7 +10,11 @@ export const createFileManagerPlugins = () => {
         slug: "fileManager",
         name: "File Manager",
         description: "Group for File Manager models",
-        icon: "fas/folder",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         isPrivate: true
     });
 

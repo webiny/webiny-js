@@ -16,7 +16,14 @@ describe("Headless CMS - Content Entries", () => {
         before(() => {
             return cy
                 .cmsCreateContentModelGroup({
-                    data: { name: uniqid("Group-"), icon: "fas/star" }
+                    data: {
+                        name: uniqid("Group-"),
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        }
+                    }
                 })
                 .then(data => {
                     group = data;

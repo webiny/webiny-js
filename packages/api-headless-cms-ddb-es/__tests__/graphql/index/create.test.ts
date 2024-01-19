@@ -9,7 +9,11 @@ const setupGroup = async (context: CmsContext) => {
     return context.cms.createGroup({
         name: "Test Group",
         description: "Test Group Description",
-        icon: "fa/fas",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         slug: "test-group"
     });
 };

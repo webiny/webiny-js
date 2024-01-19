@@ -5,6 +5,7 @@ import {
     CmsModelFieldRendererPlugin
 } from "~/types/index";
 import { CmsIdentity } from "~/types/shared";
+import { Icon } from "@webiny/app-admin/components/IconPicker/types";
 
 /**
  * @deprecated Use `CmsModelField` instead.
@@ -65,7 +66,7 @@ export interface CmsGroup {
     id: string;
     name: string;
     slug: string;
-    icon?: string;
+    icon?: Icon;
     description?: string;
     contentModels: CmsModel[];
     createdBy: CmsIdentity;
@@ -83,7 +84,7 @@ export interface CmsModel {
     layout?: CmsEditorFieldsLayout;
     fields: CmsModelField[];
     lockedFields: CmsModelField[];
-    icon: string;
+    icon: Icon;
     name: string;
     modelId: string;
     singularApiName: string;

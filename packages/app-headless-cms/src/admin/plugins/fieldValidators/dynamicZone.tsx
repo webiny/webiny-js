@@ -1,5 +1,5 @@
 import React from "react";
-import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { Bind } from "@webiny/form";
 import {
@@ -34,27 +34,21 @@ function TemplateValidationSettings() {
             {({ value: templates }) => {
                 return (
                     <>
-                        {templates.map((template, index) => {
-                            const icon = template.icon
-                                ? (template.icon.split("/") as FontAwesomeIconProps["icon"])
-                                : undefined;
-
-                            return (
-                                <AccordionItem
-                                    key={template.id}
-                                    title={template.name}
-                                    description={template.description}
-                                    icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
-                                >
-                                    <ValidatorsList
-                                        name={`settings.templates.${index}.validation`}
-                                        validators={validators.map(
-                                            v => new CmsModelFieldValidatorConfigAdapter(field, v)
-                                        )}
-                                    />
-                                </AccordionItem>
-                            );
-                        })}
+                        {templates.map((template, index) => (
+                            <AccordionItem
+                                key={template.id}
+                                title={template.name}
+                                description={template.description}
+                                icon={<IconPicker.Icon icon={template.icon} />}
+                            >
+                                <ValidatorsList
+                                    name={`settings.templates.${index}.validation`}
+                                    validators={validators.map(
+                                        v => new CmsModelFieldValidatorConfigAdapter(field, v)
+                                    )}
+                                />
+                            </AccordionItem>
+                        ))}
                     </>
                 );
             }}

@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { CmsDynamicZoneTemplate } from "~/types";
 import { ButtonSecondary } from "@webiny/ui/Button";
-import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 
 const CardContainer = styled.div`
     display: flex;
@@ -16,7 +16,8 @@ const CardContainer = styled.div`
 `;
 
 const CardIcon = styled.div`
-    text-align: center;
+    display: flex;
+    justify-content: center;
     padding: 25px;
     font-size: 1.5rem;
     background-color: var(--mdc-theme-background);
@@ -56,7 +57,7 @@ export const TemplateCard = ({ template, onTemplate }: TemplateCardProps) => {
     return (
         <CardContainer>
             <CardIcon>
-                <TemplateIcon icon={template.icon} />
+                <IconPicker.Icon icon={template.icon} />
             </CardIcon>
             <CardBody>
                 <CardTitle tag={"p"} use={"subtitle2"}>

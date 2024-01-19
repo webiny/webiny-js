@@ -40,7 +40,7 @@ export const createGroupEntity = (params: CreateGroupEntityParams): Entity<any> 
                 type: "string"
             },
             icon: {
-                type: "string"
+                type: "map"
             },
 
             createdBy: {

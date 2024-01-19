@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { usePageElements } from "~/hooks/usePageElements";
 import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
 import { ClassNames } from "@emotion/react";
@@ -85,7 +84,12 @@ export interface ButtonElementData {
         newTab: boolean;
         href: string;
     };
-    icon: { position: string; color: string; svg: string; width: string };
+    icon: {
+        value: {
+            markup: string;
+        };
+        position: string;
+    };
     action: {
         actionType: "link" | "scrollToElement" | "onClickHandler";
         newTab: boolean;
@@ -106,10 +110,10 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
     return createRenderer<Props>(
         props => {
-            const { getStyles } = usePageElements();
             const { getElement } = useRenderer();
             const element = getElement<ButtonElementData>();
-            const { link, icon } = element.data;
+            const { link } = element.data;
+            const { value: icon, position = "left" } = element.data.icon || {};
 
             const buttonText = props.buttonText || element.data.buttonText;
             const action = props.action?.href ? props.action : element.data.action;
@@ -119,30 +123,17 @@ export const createButton = (params: CreateButtonParams = {}) => {
             let StyledButtonBody = ButtonBody,
                 StyledButtonIcon;
 
-            if (icon && icon.svg) {
-                const { position = "left", color } = icon;
-
+            if (icon && icon.markup) {
                 StyledButtonBody = styled(StyledButtonBody)({
                     display: "flex",
                     ...ICON_POSITION_FLEX_DIRECTION[position]
                 }) as (props: ButtonBodyProps) => JSX.Element;
 
-                StyledButtonIcon = styled(ButtonIcon)(
-                    {
-                        width: icon.width,
-                        ...ICON_POSITION_MARGIN[position]
-                    },
-                    getStyles(theme => {
-                        const themeColor = theme.styles.colors?.[color];
-                        return {
-                            color: themeColor || color
-                        };
-                    })
-                );
+                StyledButtonIcon = styled(ButtonIcon)(ICON_POSITION_MARGIN[position]);
 
                 buttonInnerContent = (
                     <>
-                        <StyledButtonIcon svg={icon.svg} className={`button-icon-${position}`} />
+                        <StyledButtonIcon svg={icon.markup} className={`button-icon-${position}`} />
                         {buttonInnerContent}
                     </>
                 );

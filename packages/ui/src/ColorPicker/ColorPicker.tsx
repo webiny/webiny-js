@@ -1,6 +1,7 @@
 import React from "react";
 import { SketchPicker, ColorResult } from "react-color";
 import { css } from "emotion";
+import styled from "@emotion/styled";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
 import classNames from "classnames";
@@ -22,11 +23,6 @@ const classes = {
         display: "inline-block",
         cursor: "pointer"
     }),
-    // @ts-expect-error
-    popover: css({
-        position: "absolute",
-        zIndex: "2"
-    }),
     classNames: css({
         position: "fixed",
         top: "0px",
@@ -39,6 +35,12 @@ const classes = {
         pointerEvents: "none"
     })
 };
+
+const Popover = styled.div<{ align?: string }>`
+    position: absolute;
+    z-index: 2;
+    right: ${({ align }) => (align === "right" ? "10px" : "auto")};
+`;
 
 interface ColorPickerState {
     showColorPicker: boolean;
@@ -53,6 +55,9 @@ interface ColorPickerProps extends FormComponentProps {
 
     // Description beneath the color picker.
     description?: string;
+
+    // Popover alignment (default is `left`).
+    align?: "left" | "right";
 }
 
 /**
@@ -96,7 +101,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
     };
 
     public override render() {
-        const { value, label, disable, description, validation } = this.props;
+        const { value, label, disable, description, validation, align } = this.props;
 
         let backgroundColorStyle = {};
         if (value) {
@@ -125,10 +130,10 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
                         <div className={classes.color} style={backgroundColorStyle} />
                     </div>
                     {this.state.showColorPicker ? (
-                        <div className={classes.popover}>
+                        <Popover align={align}>
                             <div className={classes.classNames} onClick={this.handleClose} />
                             <SketchPicker color={value || ""} onChange={this.handleChange} />
-                        </div>
+                        </Popover>
                     ) : null}
                 </div>
 

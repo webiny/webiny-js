@@ -28,7 +28,11 @@ describe("latest entries", function () {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });

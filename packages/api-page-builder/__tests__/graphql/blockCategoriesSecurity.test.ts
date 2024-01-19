@@ -1,18 +1,23 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { Icon } from "~/types";
 
 class Mock {
     public slug: string;
     public name: string;
-    public icon: string;
+    public icon: Icon;
     public description: string;
 
     constructor(prefix = "") {
         this.slug = `${prefix}slug`;
         this.name = `${prefix}name`;
-        this.icon = `${prefix}icon`;
-        this.description = `${prefix}description`;
+        (this.icon = {
+            type: `emoji`,
+            name: `${prefix}icon`,
+            value: `👍`
+        }),
+            (this.description = `${prefix}description`);
     }
 }
 
@@ -122,7 +127,11 @@ describe("Block Categories Security Test", () => {
                                     createdOn: /^20/,
                                     slug: "list-block-categories-one-slug",
                                     name: "list-block-categories-one-name",
-                                    icon: "list-block-categories-one-icon",
+                                    icon: {
+                                        type: "emoji",
+                                        name: "list-block-categories-one-icon",
+                                        value: "👍"
+                                    },
                                     description: "list-block-categories-one-description"
                                 },
                                 {
@@ -130,7 +139,11 @@ describe("Block Categories Security Test", () => {
                                     createdOn: /^20/,
                                     slug: "list-block-categories-two-slug",
                                     name: "list-block-categories-two-name",
-                                    icon: "list-block-categories-two-icon",
+                                    icon: {
+                                        type: "emoji",
+                                        name: "list-block-categories-two-icon",
+                                        value: "👍"
+                                    },
                                     description: "list-block-categories-two-description"
                                 },
                                 {
@@ -138,7 +151,11 @@ describe("Block Categories Security Test", () => {
                                     createdOn: /^20/,
                                     slug: "list-block-categories-three-slug",
                                     name: "list-block-categories-three-name",
-                                    icon: "list-block-categories-three-icon",
+                                    icon: {
+                                        type: "emoji",
+                                        name: "list-block-categories-three-icon",
+                                        value: "👍"
+                                    },
                                     description: "list-block-categories-three-description"
                                 },
                                 {
@@ -146,7 +163,11 @@ describe("Block Categories Security Test", () => {
                                     createdOn: /^20/,
                                     slug: "list-block-categories-four-slug",
                                     name: "list-block-categories-four-name",
-                                    icon: "list-block-categories-four-icon",
+                                    icon: {
+                                        type: "emoji",
+                                        name: "list-block-categories-four-icon",
+                                        value: "👍"
+                                    },
                                     description: "list-block-categories-four-description"
                                 }
                             ],
@@ -173,7 +194,11 @@ describe("Block Categories Security Test", () => {
                                 createdOn: /^20/,
                                 slug: "list-block-categories-one-slug",
                                 name: "list-block-categories-one-name",
-                                icon: "list-block-categories-one-icon",
+                                icon: {
+                                    type: "emoji",
+                                    name: "list-block-categories-one-icon",
+                                    value: "👍"
+                                },
                                 description: "list-block-categories-one-description"
                             },
                             {
@@ -181,7 +206,11 @@ describe("Block Categories Security Test", () => {
                                 createdOn: /^20/,
                                 slug: "list-block-categories-two-slug",
                                 name: "list-block-categories-two-name",
-                                icon: "list-block-categories-two-icon",
+                                icon: {
+                                    type: "emoji",
+                                    name: "list-block-categories-two-icon",
+                                    value: "👍"
+                                },
                                 description: "list-block-categories-two-description"
                             }
                         ],
@@ -207,7 +236,11 @@ describe("Block Categories Security Test", () => {
                                 createdOn: /^20/,
                                 slug: "list-block-categories-three-slug",
                                 name: "list-block-categories-three-name",
-                                icon: "list-block-categories-three-icon",
+                                icon: {
+                                    type: "emoji",
+                                    name: "list-block-categories-three-icon",
+                                    value: "👍"
+                                },
                                 description: "list-block-categories-three-description"
                             },
                             {
@@ -215,7 +248,11 @@ describe("Block Categories Security Test", () => {
                                 createdOn: /^20/,
                                 slug: "list-block-categories-four-slug",
                                 name: "list-block-categories-four-name",
-                                icon: "list-block-categories-four-icon",
+                                icon: {
+                                    type: "emoji",
+                                    name: "list-block-categories-four-icon",
+                                    value: "👍"
+                                },
                                 description: "list-block-categories-four-description"
                             }
                         ],

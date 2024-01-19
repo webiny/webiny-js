@@ -1,5 +1,9 @@
-import { css } from "emotion";
 import styled from "@emotion/styled";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
+
+import { ButtonSecondary } from "@webiny/ui/Button";
+
+import { ICON_PICKER_SIZE } from "./types";
 
 export const IconPickerWrapper = styled.div`
     .mdc-menu-surface {
@@ -7,17 +11,19 @@ export const IconPickerWrapper = styled.div`
     }
 `;
 
-export const iconPickerLabel = css`
+export const IconPickerLabel = styled.div`
     margin-bottom: 5px;
     margin-left: 2px;
+    color: ${props => props.theme.styles.colors.color3};
 `;
 
 export const IconPickerInput = styled.div`
     background-color: ${props => props.theme.styles.colors.color5};
     border-bottom: 1px solid ${props => props.theme.styles.colors.color3};
+    color: ${props => props.theme.styles.colors.color3};
     padding: 8px;
     height: 32px;
-    width: fit-content;
+    width: 32px;
     cursor: pointer;
     :hover {
         border-bottom: 1px solid ${props => props.theme.styles.colors.color3};
@@ -30,6 +36,7 @@ export const MenuHeader = styled.div`
     justify-content: space-between;
     text-transform: uppercase;
     padding: 12px;
+    height: 28px;
     border-bottom: 1px solid ${props => props.theme.styles.colors.color5};
     color: ${props => props.theme.styles.colors.color4};
 
@@ -39,10 +46,9 @@ export const MenuHeader = styled.div`
     }
 `;
 
-export const MenuContent = styled.div`
+export const MenuContent = styled.div<{ size?: string }>`
     position: relative;
-    width: 364px;
-    height: 524px;
+    width: ${({ size }) => (size === ICON_PICKER_SIZE.SMALL ? "279px" : "364px")};
 `;
 
 export const Row = styled.div`
@@ -72,8 +78,8 @@ export const CategoryLabel = styled.div`
     color: ${props => props.theme.styles.colors.color4};
 `;
 
-export const TabContentWrapper = styled.div`
-    width: 340px;
+export const TabContentWrapper = styled.div<{ size?: string }>`
+    width: ${({ size }) => (size === ICON_PICKER_SIZE.SMALL ? "255px" : "340px")};
     padding: 12px;
 `;
 
@@ -110,6 +116,12 @@ export const InputsWrapper = styled.div`
     }
 `;
 
-export const placeholderIcon = css`
+export const PlaceholderIcon = styled(SearchIcon)`
     fill: #00000040;
+`;
+
+export const RemoveButton = styled(ButtonSecondary)`
+    &.mdc-button {
+        height: 28px;
+    }
 `;

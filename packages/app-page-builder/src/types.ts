@@ -4,7 +4,7 @@ import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
-import { IconName, IconPrefix, IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Icon } from "@webiny/app-admin/components/IconPicker/types";
 import { FormAPI, FormOnSubmit, FormSetValue, GenericFormData } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
@@ -118,10 +118,8 @@ export interface PbElementDataImageType {
 }
 
 export interface PbElementDataIconType {
-    id?: IconProp;
+    value?: Icon;
     width?: number;
-    color?: string;
-    svg?: string;
     position?: string;
 }
 
@@ -602,26 +600,6 @@ export interface PbEditorPageQueryFieldsPlugin extends Plugin {
     fields: string;
 }
 
-export type PbIcon = {
-    /**
-     * [ pack, icon ], ex: ["fab", "cog"]
-     */
-    id: [IconPrefix, IconName];
-    /**
-     * Icon name
-     */
-    name: string;
-    /**
-     * SVG element
-     */
-    svg: ReactElement;
-};
-
-export type PbIconsPlugin = Plugin & {
-    type: "pb-icons";
-    getIcons(): PbIcon[];
-};
-
 export type PbEditorToolbarTopPlugin = Plugin & {
     type: "pb-editor-toolbar-top";
     renderAction(): ReactElement;
@@ -869,7 +847,7 @@ export interface PbMenu {
 export interface PbBlockCategory {
     name: string;
     slug: string;
-    icon: string;
+    icon: Icon;
     description: string;
     createdOn: string;
     createdBy: PbIdentity;

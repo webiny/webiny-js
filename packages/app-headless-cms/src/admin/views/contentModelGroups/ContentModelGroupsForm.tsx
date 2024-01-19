@@ -16,7 +16,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { IconPicker } from "~/admin/components/IconPicker";
+import { IconPicker, defaultIcon } from "@webiny/app-admin/components/IconPicker";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
@@ -193,7 +193,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
     }
 
     return (
-        <Form onSubmit={onSubmit} data={data || { icon: "fas/star" }}>
+        <Form onSubmit={onSubmit} data={data || {}}>
             {({ data, form, Bind }: FormRenderPropParams<CmsGroup>) => (
                 <SimpleForm data-testid={"pb-content-model-groups-form"}>
                     <SimpleFormHeader title={data.name ? data.name : t`New content model group`} />
@@ -210,7 +210,11 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                             </Cell>
 
                             <Cell span={12}>
-                                <Bind name="icon" validators={validation.create("required")}>
+                                <Bind
+                                    name="icon"
+                                    validators={validation.create("required")}
+                                    defaultValue={defaultIcon}
+                                >
                                     <IconPicker
                                         label={t`Group icon`}
                                         description={t`Icon that will be displayed in the main menu.`}

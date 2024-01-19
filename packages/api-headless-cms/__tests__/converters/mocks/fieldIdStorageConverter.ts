@@ -484,7 +484,11 @@ const createModelFields = (): CmsModelField[] => {
                         layout: [["dzText", "dzObject", "dzObjectArray"]],
                         name: "DZ Text",
                         gqlTypeName: "DzTextObjectArray",
-                        icon: "fas/flag",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "",
                         id: "dzTemplateArray1",
                         fields: [
@@ -535,7 +539,11 @@ const createModelFields = (): CmsModelField[] => {
                         layout: [["dzText", "dzObject", "dzObjectArray"]],
                         name: "DZ Text",
                         gqlTypeName: "DzTextObject",
-                        icon: "fas/flag",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "",
                         id: "dzTemplateObject1",
                         fields: [

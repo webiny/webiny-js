@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { set } from "dot-prop-immutable";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { ReactComponent as ArrowUpIcon } from "@material-design-icons/svg/round/expand_less.svg";
@@ -91,13 +90,11 @@ export const DynamicZoneTemplate = ({
         });
     }, callbackDeps);
 
-    const icon = template.icon ? (template.icon.split("/") as IconProp) : undefined;
-
     return (
         <AccordionItem
             title={template.name}
             description={template.description}
-            icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
+            icon={<IconPicker.Icon icon={template.icon} />}
             open={open}
             actions={
                 <AccordionItem.Actions>

@@ -90,7 +90,11 @@ export async function importBlock({
                 name: "Imported Blocks",
                 slug: "imported-blocks",
                 description: "Imported blocks",
-                icon: "fas/star"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             });
         }
 

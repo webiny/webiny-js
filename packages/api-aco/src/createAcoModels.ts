@@ -16,7 +16,11 @@ export const createAcoModels = (context: CmsContext) => {
         slug: "aco",
         name: "ACO",
         description: "Group for Advanced Content Organisation and Search",
-        icon: "fas/folder",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         isPrivate: true
     });
 

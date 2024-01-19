@@ -25,7 +25,11 @@ const createContentModelGroupData = ({
         name: `${prefix}name${append}`,
         slug: toSlug(`${prefix}slug`),
         description: `${prefix}description${append}`,
-        icon: `${prefix}icon${append}`
+        icon: {
+            type: `emoji`,
+            name: `${prefix}icon${append}`,
+            value: `👍`
+        }
     };
 };
 
@@ -200,7 +204,11 @@ describe("Cms Group crud test", () => {
             id: "nonExistingIdUpdate",
             data: {
                 name: "test",
-                icon: "test"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
         expect(response).toEqual({
@@ -241,7 +249,11 @@ describe("Cms Group crud test", () => {
                 name: "",
                 slug: "slug",
                 description: `description`,
-                icon: `icon`
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
         expect(nameResponse).toEqual({
@@ -260,32 +272,6 @@ describe("Cms Group crud test", () => {
                 }
             }
         });
-
-        const [iconResponse] = await createContentModelGroupMutation({
-            data: {
-                name: "name",
-                slug: "slug",
-                description: `description`,
-                icon: ""
-            }
-        });
-
-        expect(iconResponse).toEqual({
-            data: {
-                createContentModelGroup: {
-                    data: null,
-                    error: {
-                        message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: {
-                            invalidFields: {
-                                icon: expect.any(Object)
-                            }
-                        }
-                    }
-                }
-            }
-        });
     });
 
     test("error when trying to create a new content model group with no name or slug", async () => {
@@ -293,7 +279,11 @@ describe("Cms Group crud test", () => {
             data: {
                 name: "",
                 description: "description",
-                icon: ""
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
         expect(response).toEqual({
@@ -305,8 +295,7 @@ describe("Cms Group crud test", () => {
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
                         data: {
                             invalidFields: {
-                                name: expect.any(Object),
-                                icon: expect.any(Object)
+                                name: expect.any(Object)
                             }
                         }
                     }
@@ -320,7 +309,11 @@ describe("Cms Group crud test", () => {
             data: {
                 name: "content model group",
                 description: "description",
-                icon: "icon"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
 
@@ -329,7 +322,11 @@ describe("Cms Group crud test", () => {
                 name: "content model group",
                 slug: "content-model-group",
                 description: "description",
-                icon: "icon"
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
             }
         });
 
@@ -395,7 +392,11 @@ describe("Cms Group crud test", () => {
             id: "a-custom-group-id",
             name: "My Group With ID",
             description: "A group with ID",
-            icon: "fa/fas"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         };
         const [response] = await createContentModelGroupMutation({
             data

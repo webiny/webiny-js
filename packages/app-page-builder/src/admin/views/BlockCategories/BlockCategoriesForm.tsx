@@ -12,7 +12,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { IconPicker, defaultIcon } from "@webiny/app-admin/components/IconPicker";
 import { validation } from "@webiny/validation";
 import { blockCategorySlugValidator, blockCategoryDescriptionValidator } from "./validators";
 import {
@@ -208,8 +208,15 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="icon" validators={validation.create("required")}>
-                                    <IconPicker />
+                                <Bind
+                                    name="icon"
+                                    validators={validation.create("required")}
+                                    defaultValue={defaultIcon}
+                                >
+                                    <IconPicker
+                                        label={t`Category icon`}
+                                        description={t`Icon that will be displayed in the page builder.`}
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>

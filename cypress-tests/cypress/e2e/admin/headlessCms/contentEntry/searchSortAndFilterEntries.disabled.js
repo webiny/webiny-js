@@ -66,7 +66,14 @@ context("Search, Sort and Filter Content Entries", () => {
     // Runs once before all tests in the block
     before(() => {
         cy.cmsCreateContentModelGroup({
-            data: { name: uniqid("Group-"), icon: "fas/star" }
+            data: {
+                name: uniqid("Group-"),
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
+            }
         }).then(group => {
             createdGroup = group;
             cy.cmsCreateContentModel({

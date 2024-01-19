@@ -29,7 +29,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
-import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
 import { PbBlockCategory } from "~/types";
@@ -238,7 +238,7 @@ const BlocksByCategoriesDataList = ({
                                     }
                                 >
                                     <ListItemGraphic>
-                                        <Icon category={item} />
+                                        <IconPicker.Icon icon={item.icon} />
                                     </ListItemGraphic>
                                     <ListItemText>
                                         {item.name}
@@ -276,7 +276,7 @@ const BlocksByCategoriesDataList = ({
                                         onClick={() => onCreatePageBlock(item.slug)}
                                     >
                                         <ListItemGraphic>
-                                            <Icon category={item} />
+                                            <IconPicker.Icon icon={item.icon} />
                                         </ListItemGraphic>
                                         <ListItemText>
                                             <ListItemTextPrimary>{item.name}</ListItemTextPrimary>

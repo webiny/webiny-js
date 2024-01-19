@@ -20,13 +20,13 @@ import {
 } from "./IconPicker.styles";
 import { useIconPicker } from "./IconPickerPresenterProvider";
 import { useIconType } from "./config/IconType";
-import { Icon, IconPickerGridRow } from "./types";
+import { Icon, IconPickerGridRow, ICON_PICKER_SIZE } from "./types";
 
 const COLUMN_COUNT = 8;
 
 export const IconPickerTabRenderer = makeComposable("IconPickerTabRenderer");
 
-const getRows = (icons: Icon[]) => {
+const getRows = (icons: Icon[], size?: string) => {
     // Group the icons by their category.
     const groupedObjects = groupBy(icons, "category");
     const rows: IconPickerGridRow[] = [];
@@ -42,7 +42,10 @@ const getRows = (icons: Icon[]) => {
 
             // Split the icons in this category into groups of COLUMN_COUNT and add them as rows.
             while (rowIcons.length) {
-                rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
+                rows.push({
+                    type: "icons",
+                    icons: rowIcons.splice(0, size === ICON_PICKER_SIZE.SMALL ? 6 : COLUMN_COUNT)
+                });
             }
         }
     }
@@ -56,7 +59,10 @@ const getRows = (icons: Icon[]) => {
 
         // Split these icons into groups of COLUMN_COUNT and add them as rows.
         while (rowIcons.length) {
-            rows.push({ type: "icons", icons: rowIcons.splice(0, COLUMN_COUNT) });
+            rows.push({
+                type: "icons",
+                icons: rowIcons.splice(0, size === ICON_PICKER_SIZE.SMALL ? 6 : COLUMN_COUNT)
+            });
         }
     }
 
@@ -66,7 +72,7 @@ const getRows = (icons: Icon[]) => {
 const useIconTypeRows = (type: string) => {
     const presenter = useIconPicker();
     const icons = presenter.vm.icons.filter(icon => icon.type === type);
-    const rows = getRows(icons);
+    const rows = getRows(icons, presenter.vm.size);
 
     return {
         isEmpty: rows.length === 0,
@@ -137,10 +143,11 @@ export const IconPickerTab = ({
     const { type } = useIconType();
     const { isEmpty, rowCount, rows } = useIconTypeRows(type);
     const presenter = useIconPicker();
+    const size = presenter.vm.size;
 
     return (
         <Tab label={label}>
-            <TabContentWrapper>
+            <TabContentWrapper size={size}>
                 <InputsWrapper>
                     <DelayedOnChange
                         value={presenter.vm.filter}
@@ -172,10 +179,10 @@ export const IconPickerTab = ({
                                     {...props}
                                 />
                             )}
-                            height={400}
+                            height={size === ICON_PICKER_SIZE.SMALL ? 250 : 320}
                             rowCount={rowCount}
                             rowHeight={40}
-                            width={340}
+                            width={size === ICON_PICKER_SIZE.SMALL ? 255 : 340}
                         />
                     )}
                 </ListWrapper>

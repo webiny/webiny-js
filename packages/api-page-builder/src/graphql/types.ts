@@ -7,6 +7,7 @@ import { FlushEvent, QueueAddJob, RenderEvent } from "@webiny/api-prerendering-s
 import { Context as BaseContext } from "@webiny/handler/types";
 
 import {
+    Icon,
     BlockCategory,
     Category,
     DefaultSettings,
@@ -648,7 +649,7 @@ export interface SystemCrud {
 export interface PbBlockCategoryInput {
     name: string;
     slug: string;
-    icon: string;
+    icon: Icon;
     description: string;
 }
 

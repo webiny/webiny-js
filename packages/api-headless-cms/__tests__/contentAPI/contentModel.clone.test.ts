@@ -59,7 +59,11 @@ describe("content model - cloning", () => {
             data: {
                 name: "Default group",
                 slug: "default-group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });
@@ -69,7 +73,11 @@ describe("content model - cloning", () => {
             data: {
                 name: "Clone group",
                 slug: "clone-group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });
@@ -366,7 +374,11 @@ describe("content model - cloning", () => {
             data: {
                 name: "Default group DE",
                 slug: "default-group-de",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description DE"
             }
         });

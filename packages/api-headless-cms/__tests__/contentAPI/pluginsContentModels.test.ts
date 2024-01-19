@@ -175,7 +175,11 @@ describe("content model plugins", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });
@@ -185,7 +189,11 @@ describe("content model plugins", () => {
                     data: {
                         name: "Group",
                         slug: "group",
-                        icon: "ico/ico",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "description"
                     },
                     error: null
@@ -638,7 +646,11 @@ describe("content model plugins", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         }).then(([response]) => response.data.createContentModelGroup.data);

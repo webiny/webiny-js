@@ -2,6 +2,13 @@ import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
 
 export * from "./graphql/types";
 
+export type Icon = {
+    type: "icon" | "emoji" | "custom" | string;
+    name: string;
+    value: string;
+    [key: string]: any;
+};
+
 /**
  * @category RecordModel
  */
@@ -698,7 +705,7 @@ export interface PageBuilderStorageOperations {
 export interface BlockCategory {
     name: string;
     slug: string;
-    icon: string;
+    icon: Icon;
     description: string;
     createdOn: string;
     createdBy: CreatedBy;

@@ -8,7 +8,11 @@ const privateGroup = new CmsGroupPlugin({
     isPrivate: true,
     name: "Private Group",
     slug: "private-group",
-    icon: "pri/pri",
+    icon: {
+        type: "emoji",
+        name: "thumbs_up",
+        value: "👍"
+    },
     description: "Private group description",
     id: "privateGroupId123456789"
 });
@@ -59,7 +63,11 @@ describe("Private Groups and Models", function () {
             name: "Blog",
             slug: "blog",
             description: "Blog group description",
-            icon: "def/def"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         });
     };
     const createShopGroup = () => {
@@ -67,7 +75,11 @@ describe("Private Groups and Models", function () {
             name: "Shop",
             slug: "shop",
             description: "Shop group description",
-            icon: "def/def"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         });
     };
 

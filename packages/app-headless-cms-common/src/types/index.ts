@@ -7,7 +7,6 @@ import {
     BindComponentRenderProp as BaseBindComponentRenderProp,
     FormAPI
 } from "@webiny/form";
-import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import { SecurityPermission } from "@webiny/app-security/types";
 import {
     CmsModelFieldValidator,
@@ -17,6 +16,7 @@ import {
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
 import { DragObjectWithType } from "react-dnd";
+import { Icon } from "@webiny/app-admin/components/IconPicker/types";
 
 export * from "./validation";
 export * from "./model";
@@ -328,7 +328,7 @@ export interface CmsDynamicZoneTemplate {
     name: string;
     gqlTypeName: string;
     description: string;
-    icon: string;
+    icon: Icon;
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidator[];
@@ -402,26 +402,6 @@ export interface CmsEditorFormSettingsPlugin extends Plugin {
         form: FormAPI;
         formData: any;
     }): React.ReactNode;
-}
-
-export interface CmsIcon {
-    /**
-     * [ pack, icon ], ex: ["fab", "cog"]
-     */
-    id: [IconPrefix, IconName];
-    /**
-     * Icon name
-     */
-    name: string;
-    /**
-     * SVG element
-     */
-    svg: ReactElement;
-}
-
-export interface CmsIconsPlugin extends Plugin {
-    type: "cms-icons";
-    getIcons(): CmsIcon[];
 }
 
 /**

@@ -1,15 +1,15 @@
-import React, { useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
-import IconPicker from "../../../components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { ICON_PICKER_SIZE } from "@webiny/app-admin/components/IconPicker/types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
-import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
-import { updateIconElement } from "../utils/iconUtils";
+import { replaceFullIconObject } from "../utils/iconUtils";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 
 const classes = {
@@ -36,43 +36,45 @@ const IconSettings = ({
     ) as PbEditorElement;
     const { data: { icon = {} } = {} } = element;
 
-    const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
+    const { getUpdateValue } = useUpdateHandlers({
         element,
-        dataNamespace: "data.icon",
-        postModifyElement: updateIconElement
+        dataNamespace: "data",
+        postModifyElement: replaceFullIconObject
     });
 
-    const updateIcon = useCallback(value => getUpdateValue("id")(value?.id), [getUpdateValue]);
-    const updateColor = useCallback(
-        (value: string) => getUpdateValue("color")(value),
-        [getUpdateValue]
-    );
-    const updateColorPreview = useCallback(
-        (value: string) => getUpdatePreview("color")(value),
-        [getUpdatePreview]
-    );
-    const updateWidth = useCallback(
-        (value: string) => getUpdateValue("width")(value),
-        [getUpdateValue]
-    );
+    const iconRef = useRef<HTMLDivElement>(null);
+    const [iconValue, setIconValue] = useState(icon.value);
+    const [iconWidth, setIconWidth] = useState(icon.width);
+
+    useEffect(() => {
+        setIconValue(icon.value);
+        setIconWidth(icon.width);
+    }, [element.id]);
+
+    useEffect(() => {
+        if (!iconRef.current) {
+            return;
+        }
+
+        const markup = iconRef.current.innerHTML;
+
+        if (icon.value?.markup !== markup) {
+            getUpdateValue("icon")({ value: { ...iconValue, markup }, width: iconWidth });
+        }
+    }, [iconValue, iconWidth]);
 
     return (
         <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>
             <>
-                <Wrapper containerClassName={classes.grid} label={"Icon"}>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Icon"}
+                    rightCellClassName={classes.rightCellStyle}
+                >
                     <IconPicker
-                        value={icon.id}
-                        onChange={updateIcon}
-                        removable={false}
-                        useInSidebar={true}
-                    />
-                </Wrapper>
-
-                <Wrapper containerClassName={classes.grid} label={"Color"}>
-                    <BaseColorPicker
-                        value={icon.color}
-                        updateValue={updateColor}
-                        updatePreview={updateColorPreview}
+                        size={ICON_PICKER_SIZE.SMALL}
+                        value={iconValue}
+                        onChange={setIconValue}
                     />
                 </Wrapper>
                 <Wrapper
@@ -84,11 +86,17 @@ const IconSettings = ({
                 >
                     <InputField
                         className={classes.widthInputStyle}
-                        value={icon.width}
-                        onChange={updateWidth}
+                        value={iconWidth}
+                        onChange={value => {
+                            setIconWidth(value === "" ? undefined : Number(value));
+                        }}
                         placeholder="50"
                     />
                 </Wrapper>
+                {/* Renders IconPicker.Icon for accessing its HTML without displaying it. */}
+                <div style={{ display: "none" }} ref={iconRef}>
+                    <IconPicker.Icon icon={iconValue} size={iconWidth} />
+                </div>
             </>
         </Accordion>
     );
