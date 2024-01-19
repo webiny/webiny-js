@@ -100,7 +100,7 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                         if (multipleBuilds) {
                             stats.success++;
                             const duration = (new Date() - start) / 1000 + "s";
-                            context.success(`%s (%s)`, current.name, duration);
+                            context.success(`${current.name} (%s)`, duration);
                         }
 
                         return resolve({
