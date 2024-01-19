@@ -5,7 +5,7 @@ import { PbImportExportContext } from "~/graphql/types";
 export const createExportPagesCombineZippedPagesTask = () => {
     return createPrivateTaskDefinition<PbImportExportContext, IExportPagesCombineZippedPagesInput>({
         id: PageExportTask.CombineZippedPages,
-        title: "Page Builder - Combine Zipped Pages",
+        title: "Page Builder - Export Pages - Combine Zipped Pages",
         description: "Export pages from the Page Builder - combine zipped pages.",
         run: async params => {
             const { response, isAborted } = params;

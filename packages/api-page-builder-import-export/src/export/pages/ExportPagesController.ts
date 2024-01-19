@@ -11,7 +11,7 @@ export class ExportPagesController {
          * In case subtasks for zipping pages are already created, we need to wait for them to finish.
          * After they are done, we can create a new task which will zip all zipped pages.
          */
-        if (input.processing && !input.combining) {
+        if (input.zippingPages && !input.combiningZips) {
             const processZipPagesTasks = new ProcessZipPagesTasks();
             return await processZipPagesTasks.execute(params);
         }
@@ -19,7 +19,7 @@ export class ExportPagesController {
          * In case of combining zipped pages, we need to check if task is done and mark the controller task as done.
          */
         //
-        else if (input.combining) {
+        else if (input.combiningZips) {
             const processCombineZippedPagesTask = new ProcessCombineZippedPagesTask();
             return await processCombineZippedPagesTask.execute(params);
         }

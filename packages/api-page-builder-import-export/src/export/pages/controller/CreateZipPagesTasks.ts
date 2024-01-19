@@ -1,4 +1,4 @@
-import { ListMeta, Page } from "@webiny/api-page-builder/types";
+import { ListMeta, ListPagesParams, Page } from "@webiny/api-page-builder/types";
 import { ZIP_PAGES_WAIT_TIME } from "./ProcessZipPagesTasks";
 import {
     IExportPagesControllerTaskParams,
@@ -16,10 +16,9 @@ export class CreateZipPagesTasks {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
-        const listPagesParams = {
+        const listPagesParams: ListPagesParams = {
             where: input.where,
             after: input.after,
-            sort: input.sort,
             limit: input.limit && input.limit > 0 ? input.limit : PAGES_IN_BATCH
         };
         let currentBatch = input.currentBatch || 1;
@@ -28,29 +27,27 @@ export class CreateZipPagesTasks {
             if (isAborted()) {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
-                return response.continue(listPagesParams);
+                return response.continue({
+                    ...listPagesParams,
+                    currentBatch
+                });
             }
             const [pages, meta] = result;
 
-            if (isAborted()) {
-                return response.aborted();
-            }
-
             listPagesParams.after = meta.cursor;
-            if (pages.length === 0 || !meta.hasMoreItems || !meta.cursor) {
-                /**
-                 * In case current batch is 1, we can return done, because there are no pages to export.
-                 */
-                if (currentBatch === 1) {
-                    return response.done("No pages to export.");
-                }
-                /**
-                 * No more pages to load and create subtasks, we can wait and continue the task.
-                 */
+            /**
+             * If no pages are returned there are two options:
+             * * mark task as done because there are no pages at all
+             * * continue with the control task, but in zippingPages mode
+             */
+            if (meta.totalCount === 0) {
+                return response.done("No pages to export.");
+            } else if (pages.length === 0) {
                 return response.continue(
                     {
                         ...listPagesParams,
-                        processing: true
+                        currentBatch,
+                        zippingPages: true
                     },
                     {
                         seconds: ZIP_PAGES_WAIT_TIME
@@ -59,25 +56,45 @@ export class CreateZipPagesTasks {
             }
 
             const queue = pages.map(page => page.id);
-
+            /**
+             * Trigger a task for each of the loaded pages batch.
+             */
             await context.tasks.trigger<IExportPagesZipPagesInput>({
-                name: `Export Pages - Zip Pages Batch #${currentBatch}`,
+                name: `Page Builder - Export Pages - Zip Pages #${currentBatch}`,
                 parent: store.getTask(),
                 definition: PageExportTask.ZipPages,
                 input: {
                     queue
                 }
             });
-            currentBatch++;
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue({
-                    ...listPagesParams,
-                    currentBatch
-                });
+            /**
+             * If there are no more pages to load, we can continue the controller task in a zippingPages mode, with some delay.
+             */
+            if (!meta.hasMoreItems || !meta.cursor) {
+                return response.continue(
+                    {
+                        ...listPagesParams,
+                        currentBatch,
+                        zippingPages: true
+                    },
+                    {
+                        seconds: ZIP_PAGES_WAIT_TIME
+                    }
+                );
             }
+            currentBatch++;
         }
-        return response.done("Task done.");
+        /**
+         * Should not be possible to exit the loop without returning a response, but let's have a continue response here just in case.
+         */
+        return response.continue(
+            {
+                ...listPagesParams,
+                currentBatch
+            },
+            {
+                seconds: ZIP_PAGES_WAIT_TIME
+            }
+        );
     }
 }

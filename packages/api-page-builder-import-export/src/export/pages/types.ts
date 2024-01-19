@@ -14,11 +14,10 @@ export enum PageExportTask {
 export interface IExportPagesControllerInput {
     where?: Record<string, any>;
     after?: string | null;
-    sort?: string[];
     limit?: number;
     currentBatch?: number;
-    processing?: boolean;
-    combining?: string;
+    zippingPages?: boolean;
+    combiningZips?: string;
 }
 
 export type IExportPagesControllerTaskParams = ITaskRunParams<
@@ -52,7 +51,9 @@ export type IExportPagesZipPagesTaskParams = ITaskRunParams<
 /**
  * Combine Zipped Pages
  */
-export type IExportPagesCombineZippedPagesInput = {};
+export interface IExportPagesCombineZippedPagesInput {
+    after?: string | null;
+}
 
 export type IExportPagesCombineZippedPagesTaskParams = ITaskRunParams<
     PbImportExportContext,

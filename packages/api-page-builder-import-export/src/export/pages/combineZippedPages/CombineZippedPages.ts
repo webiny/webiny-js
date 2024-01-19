@@ -11,7 +11,7 @@ export class CombineZippedPages {
     public async execute(
         params: IExportPagesCombineZippedPagesTaskParams
     ): Promise<ITaskResponseResult> {
-        const { response, context, store, isCloseToTimeout, isAborted } = params;
+        const { response, context, store, isCloseToTimeout, isAborted, input } = params;
 
         /**
          * We need to get all the subtasks of the PageExportTask.ZipPages type, so we can get all the zip files and combine them into one.
@@ -28,7 +28,7 @@ export class CombineZippedPages {
                 parent: parentId,
                 definitionId: PageExportTask.ZipPages
             },
-            after: undefined,
+            after: input.after,
             limit: 100
         };
 
@@ -40,8 +40,16 @@ export class CombineZippedPages {
         while ((result = await context.tasks.listTasks(listSubtasksParams))) {
             if (isAborted()) {
                 return response.aborted();
+            } else if (isCloseToTimeout()) {
+                return response.continue({
+                    ...input,
+                    after: listSubtasksParams.after
+                });
             }
             const { items, meta } = result;
+            if (meta.totalCount === 0) {
+                return response.done("Task done. No subtasks which zipped the pages.");
+            }
             for (const item of items) {
                 if (!item.output?.done) {
                     continue;
@@ -56,9 +64,12 @@ export class CombineZippedPages {
         /**
          * When we have all the pages IDs and their zip files, we can continue to combine the zip files into one.
          */
-        const pages = Object.keys(done);
-        const files = Object.values(done);
+        // const pages = Object.keys(done);
+        // const files = Object.values(done);
 
-        return response.continue({});
+        return response.continue({
+            ...input,
+            after: listSubtasksParams.after
+        });
     }
 }

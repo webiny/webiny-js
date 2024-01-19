@@ -1,11 +1,12 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { createTaskDefinition } from "@webiny/tasks";
 import { PbImportExportContext } from "~/graphql/types";
 import { IExportPagesControllerInput, PageExportTask } from "~/export/pages/types";
 
 export const createExportPagesControllerTask = () => {
-    return createPrivateTaskDefinition<PbImportExportContext, IExportPagesControllerInput>({
+    // TODO make the task private with createPrivateTaskDefinition
+    return createTaskDefinition<PbImportExportContext, IExportPagesControllerInput>({
         id: PageExportTask.Controller,
-        title: "Page Builder - Export Pages",
+        title: "Page Builder - Export Pages - Controller",
         description: "Export pages from the Page Builder - controller.",
         run: async params => {
             const { response, isAborted } = params;

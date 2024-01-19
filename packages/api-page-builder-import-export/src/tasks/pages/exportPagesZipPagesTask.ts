@@ -13,7 +13,7 @@ export const createExportPagesZipPagesTask = () => {
         IExportPagesZipPagesOutput
     >({
         id: PageExportTask.ZipPages,
-        title: "Page Builder - Zip Pages",
+        title: "Page Builder - Export Pages - Zip Pages",
         description: "Export pages from the Page Builder - zip pages.",
         run: async params => {
             const { response, isAborted } = params;

@@ -1,4 +1,4 @@
-import { IListTaskParams, IListTasksResponse, ITaskResponseResult } from "@webiny/tasks";
+import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
 import { IExportPagesControllerTaskParams, PageExportTask } from "../types";
 import { COMBINE_ZIPPED_PAGES_WAIT_TIME } from "~/export/pages/controller/ProcessCombineZippedPagesTask";
 
@@ -8,39 +8,36 @@ export class ProcessZipPagesTasks {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store, trigger } = params;
 
+        if (isAborted()) {
+            return response.aborted();
+        } else if (isCloseToTimeout()) {
+            return response.continue({
+                ...input
+            });
+        }
         /**
          * TODO: implement subtasks and subtask management into the base tasks package.
          */
-        let result: IListTasksResponse;
-        const listTasksParams: IListTaskParams = {
+        const result = await context.tasks.listTasks({
             where: {
-                parent: store.getTask().id
+                parent: store.getTask().id,
+                definitionId: PageExportTask.ZipPages,
+                taskStatus: TaskDataStatus.RUNNING
             },
-            limit: 100,
-            after: undefined
-        };
-        while ((result = await context.tasks.listTasks(listTasksParams))) {
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue(input);
-            }
-            const { items, meta } = result;
-            if (items.length === 0) {
-                return response.done("No subtasks to verify.");
-            }
-            listTasksParams.after = meta.cursor;
-            const unfinished = items.some(item => item.taskStatus === "running");
-            if (unfinished) {
-                return response.continue(
-                    {
-                        ...input
-                    },
-                    {
-                        seconds: ZIP_PAGES_WAIT_TIME
-                    }
-                );
-            }
+            limit: 1
+        });
+        /**
+         * Do we still need to wait until all subtasks (Zip Pages) are done?
+         */
+        if (result.items.length > 0) {
+            return response.continue(
+                {
+                    ...input
+                },
+                {
+                    seconds: ZIP_PAGES_WAIT_TIME
+                }
+            );
         }
         /**
          * If all subtasks (Zip Pages) are done, we can continue with the next subtask (Combine Zipped Pages).
@@ -51,8 +48,8 @@ export class ProcessZipPagesTasks {
         return response.continue(
             {
                 ...input,
-                processing: false,
-                combining: combineZippedPagesTask.id
+                zippingPages: false,
+                combiningZips: combineZippedPagesTask.id
             },
             {
                 seconds: COMBINE_ZIPPED_PAGES_WAIT_TIME

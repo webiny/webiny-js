@@ -9,10 +9,10 @@ export class ProcessCombineZippedPagesTask {
         /**
          * We can safely case as string, because we know that we are passing the ID of the zipping task.
          */
-        const task = await context.tasks.getTask(input.combining as string);
+        const task = await context.tasks.getTask(input.combiningZips as string);
         if (!task) {
             return response.error({
-                message: `Cannot find task with ID "${input.combining}".`,
+                message: `Cannot find task with ID "${input.combiningZips}".`,
                 code: "TASK_NOT_FOUND"
             });
         } else if (task.taskStatus === "running" || task.taskStatus === "pending") {
