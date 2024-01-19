@@ -144,13 +144,17 @@ export class CmsModelPlugin extends Plugin {
 
             return {
                 ...modelPlugin,
-                ...input
+                ...input,
+                pluralApiName,
+                singularApiName
             };
         }
 
         const model: CmsModelPluginModel = {
             ...modelPlugin,
             ...input,
+            pluralApiName,
+            singularApiName,
             fields: this.buildFields(input, input.fields)
         };
         this.validateLayout(model);
