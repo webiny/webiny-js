@@ -1,3 +1,4 @@
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
@@ -5,6 +6,7 @@ import { AcoSearchRecordStorageOperations, SearchRecord } from "./record.types";
 import { CmsModel, UpdateCmsEntryInput } from "@webiny/api-headless-cms/types";
 import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
+import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants";
 
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
@@ -97,7 +99,11 @@ export const createSearchRecordOperations = (
                 const original = await this.getRecord(model, { id });
 
                 const input = {
-                    ...original,
+                    /**
+                     *  We are omitting the standard entry meta fields:
+                     *  we don't want to override them with the ones coming from the `original` entry.
+                     */
+                    ...omit(original, ENTRY_META_FIELDS),
                     ...data
                 };
 

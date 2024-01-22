@@ -11,7 +11,7 @@ export interface EntryActionProps extends React.ComponentProps<typeof AcoConfig.
     modelIds?: string[];
 }
 
-export const EntryAction = ({ modelIds = [], ...props }: EntryActionProps) => {
+const BaseEntryAction = ({ modelIds = [], ...props }: EntryActionProps) => {
     const { model } = useModel();
 
     if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
@@ -26,3 +26,8 @@ export const EntryAction = ({ modelIds = [], ...props }: EntryActionProps) => {
         </CompositionScope>
     );
 };
+
+export const EntryAction = Object.assign(BaseEntryAction, {
+    OptionsMenuItem: Record.Action.OptionsMenuItem,
+    OptionsMenuLink: Record.Action.OptionsMenuLink
+});

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
-import { AcoConfig, useFolders } from "@webiny/app-aco";
+import { useFolders } from "@webiny/app-aco";
+import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useCreatePageFrom } from "~/admin/views/Pages/hooks/useCreatePageFrom";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
@@ -10,7 +11,7 @@ export const EditPage = () => {
     const { page } = usePage();
     const { folderLevelPermissions: flp } = useFolders();
     const { canUpdate: pagesCanUpdate } = usePagesPermissions();
-    const { OptionsMenuItem, OptionsMenuLink } = AcoConfig.Record.Action;
+    const { OptionsMenuItem, OptionsMenuLink } = PageListConfig.Browser.PageAction;
     const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
     const { createPageForm, loading } = useCreatePageFrom({
         page,
