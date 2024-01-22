@@ -93,7 +93,6 @@ const Revision = ({ revision, page }: RevisionProps) => {
                         unpublishRevision={unpublishRevision}
                     />
                     <PreviewRevisionMenuOption
-                        page={page}
                         revision={revision}
                         previewRevision={handlePreviewClick}
                     />
