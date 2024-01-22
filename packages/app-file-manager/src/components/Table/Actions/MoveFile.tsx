@@ -1,13 +1,13 @@
 import React from "react";
 import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 import { useFile } from "~/hooks/useFile";
 import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
 
 export const MoveFile = () => {
     const { file } = useFile();
     const moveFileToFolder = useMoveFileToFolder(file);
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
 
     return (
         <OptionsMenuItem

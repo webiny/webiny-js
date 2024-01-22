@@ -98,6 +98,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "semver": "^7.5.4",
+    "ts-expect": "^1.3.0",
     "ts-jest": "^29.1.0",
     "typescript": "4.7.4",
     "typescript-transform-paths": "^2.2.3",

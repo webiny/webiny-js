@@ -99,7 +99,7 @@ describe("Content Entry Meta Field", () => {
                 type: "admin",
                 displayName: "admin"
             },
-            ownedBy: {
+            savedBy: {
                 id: "admin",
                 type: "admin",
                 displayName: "admin"

@@ -57,13 +57,6 @@ export const createReadSDL: CreateReadSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
-    const deprecatedOnByMetaFields = [
-        `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")`,
-        `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
-        `createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")`,
-        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedOn'.")`
-    ].join("\n");
-
     const onByMetaFields = ENTRY_META_FIELDS.map(field => {
         const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
@@ -78,7 +71,6 @@ export const createReadSDL: CreateReadSDL = ({
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
-            ${deprecatedOnByMetaFields}
             ${onByMetaFields} 
             
             ${fieldsRender.map(f => f.fields).join("\n")}

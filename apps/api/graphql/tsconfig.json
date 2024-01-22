@@ -112,6 +112,12 @@
     },
     {
       "path": "../../../packages/api-apw-scheduler-so-ddb"
+    },
+    {
+      "path": "../../../packages/api-background-tasks-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/tasks/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -188,7 +194,11 @@
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
-      "@webiny/handler-logs": ["../../../packages/handler-logs/src"]
+      "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
+      "@webiny/api-background-tasks-ddb/*": ["../../../packages/api-background-tasks-ddb/src/*"],
+      "@webiny/api-background-tasks-ddb": ["../../../packages/api-background-tasks-ddb/src"],
+      "@webiny/tasks/*": ["../../../packages/tasks/src/*"],
+      "@webiny/tasks": ["../../../packages/tasks/src"]
     },
     "baseUrl": "."
   }

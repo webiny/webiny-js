@@ -1,5 +1,4 @@
 import { CmsContext, CmsEntry, CmsModel } from "~/types";
-import { getDate } from "~/utils/date";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -34,16 +33,16 @@ export const createRepublishEntryData = async ({
         status: STATUS_PUBLISHED,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * Entry-level meta fields. 👇
          */
-        publishedOn: getDate(originalEntry.publishedOn, currentDateTime),
-        savedOn: getDate(originalEntry.savedOn, currentDateTime),
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
+        savedOn: currentDateTime,
+        modifiedOn: currentDateTime,
+        savedBy: currentIdentity,
+        modifiedBy: currentIdentity,
+        firstPublishedOn: originalEntry.firstPublishedOn || currentDateTime,
+        firstPublishedBy: originalEntry.firstPublishedBy || currentIdentity,
+        lastPublishedOn: currentDateTime,
+        lastPublishedBy: currentIdentity,
 
         /**
          * Revision-level meta fields. 👇
@@ -56,18 +55,6 @@ export const createRepublishEntryData = async ({
         revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
         revisionLastPublishedOn: currentDateTime,
         revisionLastPublishedBy: currentIdentity,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entrySavedOn: currentDateTime,
-        entryModifiedOn: currentDateTime,
-        entrySavedBy: currentIdentity,
-        entryModifiedBy: currentIdentity,
-        entryFirstPublishedOn: originalEntry.entryFirstPublishedOn || currentDateTime,
-        entryFirstPublishedBy: originalEntry.entryFirstPublishedBy || currentIdentity,
-        entryLastPublishedOn: currentDateTime,
-        entryLastPublishedBy: currentIdentity,
 
         webinyVersion: context.WEBINY_VERSION,
         values

@@ -40,7 +40,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
     name,
     remove = false,
     resizable = true,
-    size = 200,
+    size = 100,
     sortable = false,
     visible = true
 }) => {
@@ -68,7 +68,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 {header ? (
                     <Property id={getId(name, "header")} name={"header"} value={header} />
                 ) : null}
-                {cell ? <Property id={getId(name, "element")} name={"cell"} value={cell} /> : null}
+                {cell ? <Property id={getId(name, "cell")} name={"cell"} value={cell} /> : null}
                 {className ? (
                     <Property id={getId(name, "className")} name={"className"} value={className} />
                 ) : null}

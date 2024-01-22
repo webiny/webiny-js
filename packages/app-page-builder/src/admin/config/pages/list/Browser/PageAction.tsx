@@ -8,7 +8,7 @@ export { RecordActionConfig as PageActionConfig };
 
 type PageActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
-export const PageAction = (props: PageActionProps) => {
+const BasePageAction = (props: PageActionProps) => {
     return (
         <CompositionScope name={"pb.page"}>
             <AcoConfig>
@@ -17,3 +17,8 @@ export const PageAction = (props: PageActionProps) => {
         </CompositionScope>
     );
 };
+
+export const PageAction = Object.assign(BasePageAction, {
+    OptionsMenuItem: Record.Action.OptionsMenuItem,
+    OptionsMenuLink: Record.Action.OptionsMenuLink
+});

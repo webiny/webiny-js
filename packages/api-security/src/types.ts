@@ -64,6 +64,8 @@ export interface GetTeamWhere {
     tenant?: string;
 }
 
+export type AuthenticationToken = string;
+
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
     /**
      * @deprecated
@@ -82,6 +84,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
 
+    /**
+     * Returns the token which was used to authenticate (if authentication was successful).
+     */
+    getToken(): AuthenticationToken | undefined;
+
     config: SecurityConfig;
 
     getStorageOperations(): SecurityStorageOperations;
@@ -89,6 +96,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     isAuthorizationEnabled(): boolean;
 
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+    withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
     addAuthorizer(authorizer: Authorizer): void;
 

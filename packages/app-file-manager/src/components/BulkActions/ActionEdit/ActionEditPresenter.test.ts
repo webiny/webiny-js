@@ -114,7 +114,7 @@ describe("ActionEditPresenter", () => {
                 {
                     field: "",
                     operator: "",
-                    value: {}
+                    value: undefined
                 }
             ]
         });
@@ -123,7 +123,7 @@ describe("ActionEditPresenter", () => {
         expect(presenter.vm.fields).toEqual([
             {
                 label: "Field 1",
-                value: "field1",
+                value: "extensions.field1",
                 operators: [
                     {
                         label: "Override existing values",
@@ -138,7 +138,7 @@ describe("ActionEditPresenter", () => {
             },
             {
                 label: "Field 2",
-                value: "field2",
+                value: "extensions.field2",
                 operators: [
                     {
                         label: "Override existing values",

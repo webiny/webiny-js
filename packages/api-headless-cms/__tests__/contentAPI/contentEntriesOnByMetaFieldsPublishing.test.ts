@@ -33,24 +33,19 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityA,
             revisionLastPublishedBy: identityA,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityA,
-            entryLastPublishedBy: identityA,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityA,
+            lastPublishedBy: identityA
         };
 
         expect(rev).toMatchObject(matchObject);
         expect(entriesList[0]).toMatchObject(matchObject);
 
         expect(rev.revisionFirstPublishedOn).toBe(rev.revisionLastPublishedOn);
-        expect(rev.revisionFirstPublishedOn).toBe(rev.meta.publishedOn);
         expect(rev.revisionFirstPublishedBy).toEqual(rev.revisionLastPublishedBy);
 
         expect(entriesList[0].revisionLastPublishedOn).toBe(rev.revisionLastPublishedOn);
-        expect(entriesList[0].meta.publishedOn).toBe(rev.meta.publishedOn);
         expect(entriesList[0].revisionLastPublishedBy).toEqual(rev.revisionLastPublishedBy);
     });
 
@@ -77,13 +72,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: null,
-            entryLastPublishedOn: null,
-            entryFirstPublishedBy: null,
-            entryLastPublishedBy: null,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: null,
+            lastPublishedOn: null,
+            firstPublishedBy: null,
+            lastPublishedBy: null
         });
 
         const matchObject = {
@@ -91,23 +83,18 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         };
         expect(rev2).toMatchObject(matchObject);
         expect(entriesList[0]).toMatchObject(matchObject);
 
         expect(rev2.revisionFirstPublishedOn).toBe(rev2.revisionLastPublishedOn);
-        expect(rev2.revisionFirstPublishedOn).toBe(rev2.meta.publishedOn);
         expect(rev2.revisionFirstPublishedBy).toEqual(rev2.revisionLastPublishedBy);
 
         expect(entriesList[0].revisionFirstPublishedOn).toBe(rev2.revisionLastPublishedOn);
-        expect(entriesList[0].revisionFirstPublishedOn).toBe(rev2.meta.publishedOn);
         expect(entriesList[0].revisionFirstPublishedBy).toEqual(rev2.revisionLastPublishedBy);
     });
 
@@ -146,13 +133,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
 
         // Revision 2: entry meta fields should not be populated.
@@ -161,13 +145,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: null,
-            entryLastPublishedOn: null,
-            entryFirstPublishedBy: null,
-            entryLastPublishedBy: null,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: null,
+            lastPublishedOn: null,
+            firstPublishedBy: null,
+            lastPublishedBy: null
         });
 
         // Revision 3 (latest):  only the entry-level fields should be updated.
@@ -176,13 +157,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
 
         expect(entriesListAfterPublish1[0]).toMatchObject({
@@ -190,13 +168,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
 
         // Publish 2️⃣
@@ -219,20 +194,17 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
 
         // Revision 1: entry meta fields should be populated with old values.
         expect(rev1AfterPublish2).toMatchObject({
-            revisionFirstPublishedOn: expect.toBeDateString(),
-            revisionLastPublishedOn: expect.toBeDateString(),
+            revisionFirstPublishedOn: rev1AfterPublish1.revisionFirstPublishedOn,
+            revisionLastPublishedOn: rev1AfterPublish1.revisionLastPublishedOn,
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: rev1AfterPublish1.firstPublishedOn,
+            lastPublishedOn: rev1AfterPublish1.lastPublishedOn,
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
 
-        // Nothing should happen to revision 1 and its entry-level meta fields.
+        // Nothing should happen to revision 1 and its meta fields.
         expect(pickEntryMetaFields(rev1AfterPublish1)).toEqual(
             pickEntryMetaFields(rev1AfterPublish2)
         );
@@ -243,13 +215,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityA,
             revisionLastPublishedBy: identityA,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityA,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityA
         });
 
         // Entry-level meta fields should be updated.
@@ -259,12 +228,8 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             rev2AfterPublish2.revisionLastPublishedOn > rev1AfterPublish1.revisionLastPublishedOn
         ).toBe(true);
-        expect(rev2AfterPublish2.entryFirstPublishedOn).toBe(
-            rev1AfterPublish1.entryFirstPublishedOn
-        );
-        expect(
-            rev2AfterPublish2.entryLastPublishedOn > rev1AfterPublish1.entryLastPublishedOn
-        ).toBe(true);
+        expect(rev2AfterPublish2.firstPublishedOn).toBe(rev1AfterPublish1.firstPublishedOn);
+        expect(rev2AfterPublish2.lastPublishedOn > rev1AfterPublish1.lastPublishedOn).toBe(true);
 
         // In the latest revision, only the entry-level fields should be updated.
         expect(rev3AfterPublish2).toMatchObject({
@@ -272,13 +237,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityA,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityA
         });
 
         expect(entriesListAfterPublish2[0]).toMatchObject({
@@ -286,13 +248,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityA,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityA
         });
 
         // Publish 3️⃣
@@ -329,13 +288,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
 
         // Entry-level meta fields should be updated.
@@ -345,25 +301,18 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             rev3AfterPublish3.revisionLastPublishedOn > rev2AfterPublish2.revisionLastPublishedOn
         ).toBe(true);
-        expect(rev3AfterPublish3.entryFirstPublishedOn).toBe(
-            rev2AfterPublish2.entryFirstPublishedOn
-        );
-        expect(
-            rev3AfterPublish3.entryLastPublishedOn > rev2AfterPublish2.entryLastPublishedOn
-        ).toBe(true);
+        expect(rev3AfterPublish3.firstPublishedOn).toBe(rev2AfterPublish2.firstPublishedOn);
+        expect(rev3AfterPublish3.lastPublishedOn > rev2AfterPublish2.lastPublishedOn).toBe(true);
 
         expect(entriesListAfterPublish3[0]).toMatchObject({
             revisionFirstPublishedOn: expect.toBeDateString(),
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityB,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: expect.toBeDateString(),
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityB,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: expect.toBeDateString(),
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityB,
+            lastPublishedBy: identityB
         });
     });
 
@@ -393,13 +342,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityA,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: revAfterPublish1.entryFirstPublishedOn,
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityA,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: revAfterPublish1.firstPublishedOn,
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityA,
+            lastPublishedBy: identityB
         };
 
         expect(revAfterPublish2).toMatchObject(matchObject);
@@ -407,9 +353,7 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             revAfterPublish2.revisionLastPublishedOn > revAfterPublish1.revisionLastPublishedOn
         ).toBe(true);
-        expect(revAfterPublish2.entryLastPublishedOn > revAfterPublish1.entryLastPublishedOn).toBe(
-            true
-        );
+        expect(revAfterPublish2.lastPublishedOn > revAfterPublish1.lastPublishedOn).toBe(true);
 
         expect(entriesListAfterPublish2[0]).toMatchObject(matchObject);
     });
@@ -458,13 +402,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityA,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: rev1AfterPublish1.entryFirstPublishedOn,
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityA,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: rev1AfterPublish1.firstPublishedOn,
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityA,
+            lastPublishedBy: identityB
         });
 
         const matchObject = {
@@ -472,13 +413,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: null,
             revisionFirstPublishedBy: null,
             revisionLastPublishedBy: null,
-            entryFirstPublishedOn: rev1AfterPublish2.entryFirstPublishedOn,
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityA,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: null
-            }
+            firstPublishedOn: rev1AfterPublish2.firstPublishedOn,
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityA,
+            lastPublishedBy: identityB
         };
 
         expect(rev3AfterPublish2).toMatchObject(matchObject);
@@ -511,13 +449,10 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
             revisionLastPublishedOn: expect.toBeDateString(),
             revisionFirstPublishedBy: identityA,
             revisionLastPublishedBy: identityB,
-            entryFirstPublishedOn: revAfterPublish.entryFirstPublishedOn,
-            entryLastPublishedOn: expect.toBeDateString(),
-            entryFirstPublishedBy: identityA,
-            entryLastPublishedBy: identityB,
-            meta: {
-                publishedOn: expect.toBeDateString()
-            }
+            firstPublishedOn: revAfterPublish.firstPublishedOn,
+            lastPublishedOn: expect.toBeDateString(),
+            firstPublishedBy: identityA,
+            lastPublishedBy: identityB
         };
 
         expect(revAfterRepublish).toMatchObject(matchObject);
@@ -526,16 +461,14 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(
             revAfterRepublish.revisionLastPublishedOn > revAfterPublish.revisionLastPublishedOn
         ).toBe(true);
-        expect(revAfterRepublish.entryLastPublishedOn > revAfterPublish.entryLastPublishedOn).toBe(
-            true
-        );
+        expect(revAfterRepublish.lastPublishedOn > revAfterPublish.lastPublishedOn).toBe(true);
 
         expect(
             entriesListAfterRepublish[0].revisionLastPublishedOn >
                 revAfterPublish.revisionLastPublishedOn
         ).toBe(true);
-        expect(
-            entriesListAfterRepublish[0].entryLastPublishedOn > revAfterPublish.entryLastPublishedOn
-        ).toBe(true);
+        expect(entriesListAfterRepublish[0].lastPublishedOn > revAfterPublish.lastPublishedOn).toBe(
+            true
+        );
     });
 });

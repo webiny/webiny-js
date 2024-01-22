@@ -1,14 +1,14 @@
 import React from "react";
 import { ReactComponent as Publish } from "@material-design-icons/svg/outlined/publish.svg";
 import { ReactComponent as Unpublish } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useChangeEntryStatus, useEntry, usePermission } from "~/admin/hooks";
 
 export const ChangeEntryStatus = () => {
     const { entry } = useEntry();
     const { canPublish, canUnpublish } = usePermission();
     const { openDialogPublishEntry, openDialogUnpublishEntry } = useChangeEntryStatus({ entry });
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
 
     if (entry.meta.status === "published" && canUnpublish("cms.contentEntry")) {
         return (

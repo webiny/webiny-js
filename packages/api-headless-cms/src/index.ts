@@ -2,8 +2,6 @@ import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graph
 import { createDefaultModelManager } from "~/modelManager";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
-import { createDefaultStorageTransform } from "~/storage/default";
-import { createObjectStorageTransform } from "~/storage/object";
 import { createDynamicZoneStorageTransform } from "~/graphqlFields/dynamicZone/dynamicZoneStorage";
 import {
     createContextParameterPlugin,
@@ -18,6 +16,7 @@ import {
 } from "./utils/entryStorage";
 import { createFieldConverters } from "~/fieldConverters";
 import { createExportGraphQL } from "~/export";
+import { createStorageTransform } from "~/storage";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -47,8 +46,7 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createGraphQLFields(),
         createFieldConverters(),
         createValidators(),
-        createDefaultStorageTransform(),
-        createObjectStorageTransform(),
+        ...createStorageTransform(),
         createDynamicZoneStorageTransform()
     ];
 };

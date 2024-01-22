@@ -4,7 +4,7 @@ import { FileStorage } from "~/storage/FileStorage";
 import WebinyError from "@webiny/error";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
-import { createFileManagerPlugins } from "~/cmsFileStorage/createFileManagerPlugins";
+import { createFileModel } from "~/cmsFileStorage/createFileManagerPlugins";
 import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage";
 import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier";
@@ -83,8 +83,10 @@ export class FileManagerContextSetup {
             return;
         }
 
+        const withPrivateFiles = this.context.wcp.canUsePrivateFiles();
+
         // This registers code plugins (model group, models)
-        const { groupPlugin, fileModelDefinition } = createFileManagerPlugins();
+        const { fileModelDefinition } = createFileModel({ withPrivateFiles });
 
         const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
             CmsModelModifierPlugin.type
@@ -95,7 +97,7 @@ export class FileManagerContextSetup {
         }
 
         // Finally, register all plugins
-        this.context.plugins.register([groupPlugin, new CmsModelPlugin(fileModelDefinition)]);
+        this.context.plugins.register([new CmsModelPlugin(fileModelDefinition)]);
 
         // Now load the file model registered in the previous step
         const fileModel = await this.getModel(FILE_MODEL_ID);

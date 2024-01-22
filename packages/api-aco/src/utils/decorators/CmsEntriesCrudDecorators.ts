@@ -198,9 +198,12 @@ export class CmsEntriesCrudDecorators {
 
         const originalCmsDeleteEntry = context.cms.deleteEntry.bind(context.cms);
         context.cms.deleteEntry = async (model, id, options) => {
-            const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
-                id
-            });
+            const entry = await context.cms.storageOperations.entries.getLatestRevisionByEntryId(
+                model,
+                {
+                    id
+                }
+            );
 
             const folderId = entry?.location?.folderId;
             if (!folderId || folderId === ROOT_FOLDER) {

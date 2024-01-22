@@ -48,3 +48,5 @@ lerna.json
 
 # TODO remove after moving traffic splitting config to WPC
 gateway.*.json
+
+packages/tasks/tpl/*

@@ -70,7 +70,8 @@ module.exports = [
                     const npx = execa("npx", command, {
                         env: {
                             FORCE_COLOR: true
-                        }
+                        },
+                        stdin: process.stdin
                     });
 
                     npx.stdout.on("data", data => {

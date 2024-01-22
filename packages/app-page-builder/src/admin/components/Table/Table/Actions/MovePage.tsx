@@ -1,13 +1,13 @@
 import React from "react";
 import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useMovePageToFolder } from "~/admin/views/Pages/hooks/useMovePageToFolder";
 
 export const MovePage = () => {
     const { page } = usePage();
     const movePageToFolder = useMovePageToFolder({ record: page });
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
 
     return (
         <OptionsMenuItem

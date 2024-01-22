@@ -99,12 +99,14 @@ export interface HeadlessCmsImportStructure {
 export interface ValidCmsGroupResult {
     group: CmsGroup;
     action: CmsImportAction;
+    target?: string;
     error?: never;
 }
 
 export interface InvalidCmsGroupResult {
     group: CmsGroup;
     action: CmsImportAction;
+    target?: never;
     error: CmsImportError;
 }
 

@@ -1,31 +1,34 @@
+import set from "lodash/set";
+import get from "lodash/get";
 import { FileItem } from "@webiny/app-admin/types";
 import { BatchDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
 
 export class GraphQLInputMapper {
-    static toGraphQLExtensions(data: FileItem["extensions"], batch: BatchDTO) {
+    static applyOperations(data: FileItem, batch: BatchDTO) {
         const update = { ...data };
 
         batch.operations.forEach(operation => {
             const { field, operator, value } = operation;
+            const fieldValue = get(value, field);
 
             switch (operator) {
                 case OperatorType.OVERRIDE:
-                    if (!value || !value[field]) {
+                    if (!fieldValue) {
                         return;
                     }
 
-                    update[field] = value[field];
+                    set(update, field, fieldValue);
                     break;
                 case OperatorType.REMOVE:
-                    update[field] = null;
+                    set(update, field, null);
                     break;
                 case OperatorType.APPEND:
-                    if (!value || !value[field] || !Array.isArray(value[field])) {
+                    if (!value || !fieldValue || !Array.isArray(fieldValue)) {
                         return;
                     }
 
-                    const oldData = (data && data[field]) ?? [];
-                    update[field] = [...oldData, ...value[field]];
+                    const oldData = (data && get(data, field)) ?? [];
+                    set(update, field, [...oldData, ...fieldValue]);
 
                     break;
                 default:

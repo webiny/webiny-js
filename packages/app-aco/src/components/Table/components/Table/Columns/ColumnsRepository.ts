@@ -11,10 +11,16 @@ export class ColumnsRepository implements IColumnsRepository {
     }
 
     getColumns(): ColumnDTO[] {
-        return this.columns;
+        return this.sortColumns(this.columns);
     }
 
     init(): Promise<void> {
         return Promise.resolve();
+    }
+
+    private sortColumns(columns: ColumnDTO[]) {
+        return columns
+            .slice()
+            .sort((a, b) => (a.name === "actions" ? 1 : b.name === "actions" ? -1 : 0));
     }
 }

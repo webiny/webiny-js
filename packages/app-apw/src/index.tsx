@@ -1,5 +1,6 @@
 import React from "react";
 import { Compose, MenuItemRenderer, Plugins, useWcp } from "@webiny/app-admin";
+import { Components } from "@webiny/app-page-builder";
 /**
  * Plugins for "page builder"
  */
@@ -11,13 +12,7 @@ import {
     PublishPageMenuOptionHoc,
     PageRevisionListItemGraphicHoc
 } from "./plugins/pageBuilder/PublishPageHocs";
-/**
- * TODO: Fix this import so that we can import it from root level maybe
- */
-import PagePublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
-import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
-import { PublishPageButton } from "@webiny/app-page-builder/pageEditor";
-import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
+
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 /**
  * Plugins for "Headless CMS"
@@ -47,12 +42,21 @@ export const AdvancedPublishingWorkflow = () => {
     }
     return (
         <>
-            <Compose with={PublishRevisionHoc} component={PagePublishRevision} />
-            <Compose with={PublishPageMenuOptionHoc} component={PublishPageMenuOption} />
-            <Compose with={PublishPageButtonHoc} component={PublishPageButton} />
+            <Compose
+                with={PublishRevisionHoc}
+                component={Components.PageDetails.PublishPageRevision}
+            />
+            <Compose
+                with={PublishPageMenuOptionHoc}
+                component={Components.PageDetails.PublishPageMenuOption}
+            />
+            <Compose
+                with={PublishPageButtonHoc}
+                component={Components.PageEditor.PublishPageButton}
+            />
             <Compose
                 with={PageRevisionListItemGraphicHoc}
-                component={PageRevisionListItemGraphic}
+                component={Components.PageDetails.PageRevisionListItemGraphic}
             />
             <Compose
                 with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}

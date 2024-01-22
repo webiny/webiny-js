@@ -94,3 +94,4 @@ export {
 export { ContextPlugin, createContextPlugin, ContextPluginCallable } from "@webiny/handler";
 
 export * from "./createHandler";
+export * from "./sourceHandler";

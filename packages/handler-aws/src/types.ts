@@ -45,12 +45,12 @@ export interface HandlerParams<E, P extends HandlerFactoryParams> {
 }
 
 export interface SourceHandler<
-    E extends HandlerEvent = HandlerEvent,
+    E = HandlerEvent,
     P extends HandlerFactoryParams = HandlerFactoryParams,
     T = any
 > {
     name: string;
-    canUse: (event: E, context: LambdaContext) => boolean;
+    canUse: (event: Partial<E>, context: LambdaContext) => boolean;
     handle: (params: HandlerParams<E, P>) => Promise<T>;
 }
 

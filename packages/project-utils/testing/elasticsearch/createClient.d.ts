@@ -14,3 +14,5 @@ export { ElasticsearchClientOptions, ElasticsearchClient };
 export declare function createElasticsearchClient(
     options?: Partial<ElasticsearchClientOptions>
 ): ElasticsearchClient;
+
+export type { ElasticsearchClient as Client };

@@ -146,10 +146,10 @@ describe("MANAGE - resolvers - api key", () => {
                             type: "api-key"
                         },
                         savedOn: expect.stringMatching(/^20/),
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "category",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -196,10 +196,10 @@ describe("MANAGE - resolvers - api key", () => {
                             type: "api-key"
                         },
                         savedOn: category.savedOn,
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "category",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: category.id,
@@ -248,10 +248,10 @@ describe("MANAGE - resolvers - api key", () => {
                             type: "api-key"
                         },
                         savedOn: expect.stringMatching(/^20/),
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "category",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -294,10 +294,10 @@ describe("MANAGE - resolvers - api key", () => {
                                 type: "api-key"
                             },
                             savedOn: updatedCategory.savedOn,
+                            lastPublishedOn: null,
                             meta: {
                                 locked: false,
                                 modelId: "category",
-                                publishedOn: null,
                                 revisions: [
                                     {
                                         id: updatedCategory.id,

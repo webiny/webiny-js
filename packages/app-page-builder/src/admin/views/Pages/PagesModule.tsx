@@ -12,6 +12,7 @@ import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco"
 import {
     CellActions,
     CellAuthor,
+    CellCreated,
     CellModified,
     CellName,
     CellStatus,
@@ -45,10 +46,16 @@ export const PagesModule = () => {
                 header={"Name"}
                 cell={<CellName />}
                 hideable={false}
-                size={300}
+                size={200}
                 sortable={true}
             />
-            <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column
+                name={"createdOn"}
+                header={"Created"}
+                cell={<CellCreated />}
+                sortable={true}
+            />
             <Browser.Table.Column
                 name={"savedOn"}
                 header={"Modified"}

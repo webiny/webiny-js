@@ -1,5 +1,8 @@
 export {
     EventBridgeClient,
     PutEventsRequestEntry,
-    PutEventsCommand
+    PutEventsCommand,
+    PutEventsCommandInput
 } from "@aws-sdk/client-eventbridge";
+
+export * from "./types";

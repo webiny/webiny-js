@@ -24,23 +24,18 @@ describe("Content entries - Entry Meta Fields", () => {
         let { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         const matchObject1 = {
-            createdOn: expect.toBeDateString(),
-            createdBy: identityA,
-            modifiedBy: null,
-            ownedBy: identityA,
-            savedOn: expect.toBeDateString(),
             revisionCreatedOn: expect.toBeDateString(),
             revisionSavedOn: expect.toBeDateString(),
             revisionModifiedOn: null,
             revisionCreatedBy: identityA,
             revisionSavedBy: identityA,
             revisionModifiedBy: null,
-            entryCreatedOn: expect.toBeDateString(),
-            entrySavedOn: expect.toBeDateString(),
-            entryModifiedOn: null,
-            entryCreatedBy: identityA,
-            entrySavedBy: identityA,
-            entryModifiedBy: null
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
+            modifiedOn: null,
+            createdBy: identityA,
+            savedBy: identityA,
+            modifiedBy: null
         };
 
         expect(revision1).toMatchObject(matchObject1);
@@ -56,20 +51,13 @@ describe("Content entries - Entry Meta Fields", () => {
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         const matchObject2 = {
-            // Deprecated fields.
+            // New fields.
             createdBy: identityA,
             createdOn: revision1.createdOn,
             modifiedBy: identityA,
-            ownedBy: identityA,
+            modifiedOn: expect.toBeDateString(),
+            savedBy: identityA,
             savedOn: expect.toBeDateString(),
-
-            // New fields.
-            entryCreatedBy: identityA,
-            entryCreatedOn: revision1.entryCreatedOn,
-            entryModifiedBy: identityA,
-            entryModifiedOn: expect.toBeDateString(),
-            entrySavedBy: identityA,
-            entrySavedOn: expect.toBeDateString(),
 
             revisionCreatedBy: identityA,
             revisionCreatedOn: revision1.createdOn,
@@ -91,11 +79,6 @@ describe("Content entries - Entry Meta Fields", () => {
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         const matchObject3 = {
-            createdOn: expect.toBeDateString(),
-            createdBy: identityA,
-            modifiedBy: null,
-            ownedBy: identityA,
-            savedOn: expect.toBeDateString(),
             revisionCreatedOn: expect.toBeDateString(),
             revisionSavedOn: expect.toBeDateString(),
 
@@ -108,17 +91,17 @@ describe("Content entries - Entry Meta Fields", () => {
             // Note that these are null, since, on a revision-level, an update has not been made yet.
             revisionModifiedBy: null,
 
-            entryCreatedOn: expect.toBeDateString(),
-            entrySavedOn: expect.toBeDateString(),
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
 
             // Note that these are not null, since, on an entry-level, an update has been made.
-            entryModifiedOn: expect.toBeDateString(),
+            modifiedOn: expect.toBeDateString(),
 
-            entryCreatedBy: identityA,
-            entrySavedBy: identityA,
+            createdBy: identityA,
+            savedBy: identityA,
 
             // Note that these are not null, since, on an entry-level, an update has been made.
-            entryModifiedBy: identityA
+            modifiedBy: identityA
         };
 
         expect(revision2).toMatchObject(matchObject3);
@@ -134,16 +117,16 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(entriesList[0].revisionCreatedOn > revision1.revisionCreatedOn).toBe(true);
 
         // Entry-level `createdOn` meta field should remain the same.
-        expect(revision2.entryCreatedOn).toBe(revision1.entryCreatedOn);
-        expect(entriesList[0].entryCreatedOn).toBe(revision1.entryCreatedOn);
+        expect(revision2.createdOn).toBe(revision1.createdOn);
+        expect(entriesList[0].createdOn).toBe(revision1.createdOn);
 
         // Entry-level `savedOn` and `modifiedOn` meta fields should change.
         // It is true that previous revision's entry-level fields are not updated, but that's
         // fine. When updating entry-level meta fields, we only care about latest revisions.
-        expect(revision2.entrySavedOn > revision1.entrySavedOn).toBe(true);
-        expect(revision2.entryModifiedOn > revision1.entryModifiedOn).toBe(true);
-        expect(entriesList[0].entrySavedOn > revision1.entrySavedOn).toBe(true);
-        expect(entriesList[0].entryModifiedOn > revision1.entryModifiedOn).toBe(true);
+        expect(revision2.savedOn > revision1.savedOn).toBe(true);
+        expect(revision2.modifiedOn > revision1.modifiedOn).toBe(true);
+        expect(entriesList[0].savedOn > revision1.savedOn).toBe(true);
+        expect(entriesList[0].modifiedOn > revision1.modifiedOn).toBe(true);
     });
 
     test("updating a previous revision should update entry-level meta fields", async () => {
@@ -171,31 +154,31 @@ describe("Content entries - Entry Meta Fields", () => {
 
         // Revision 1 and 3's entry-level meta fields should be in sync.
         // Since listing entries uses the "latest record", we must see the same change there.
-        expect(revision1.entryCreatedOn).toBe(revision3.entryCreatedOn);
-        expect(revision1.entryCreatedBy).toEqual(revision3.entryCreatedBy);
-        expect(revision1.entryCreatedOn).toEqual(entriesList[0].entryCreatedOn);
-        expect(revision1.entryCreatedBy).toEqual(entriesList[0].entryCreatedBy);
+        expect(revision1.createdOn).toBe(revision3.createdOn);
+        expect(revision1.createdBy).toEqual(revision3.createdBy);
+        expect(revision1.createdOn).toEqual(entriesList[0].createdOn);
+        expect(revision1.createdBy).toEqual(entriesList[0].createdBy);
 
-        expect(revision1.entryModifiedOn).toBe(revision3.entryModifiedOn);
-        expect(revision1.entryModifiedBy).toEqual(revision3.entryModifiedBy);
-        expect(revision1.entryModifiedOn).toBe(entriesList[0].entryModifiedOn);
-        expect(revision1.entryModifiedBy).toEqual(entriesList[0].entryModifiedBy);
+        expect(revision1.modifiedOn).toBe(revision3.modifiedOn);
+        expect(revision1.modifiedBy).toEqual(revision3.modifiedBy);
+        expect(revision1.modifiedOn).toBe(entriesList[0].modifiedOn);
+        expect(revision1.modifiedBy).toEqual(entriesList[0].modifiedBy);
 
-        expect(revision1.entrySavedOn).toBe(revision3.entrySavedOn);
-        expect(revision1.entrySavedBy).toEqual(revision3.entrySavedBy);
-        expect(revision1.entrySavedOn).toBe(entriesList[0].entrySavedOn);
-        expect(revision1.entrySavedBy).toEqual(entriesList[0].entrySavedBy);
+        expect(revision1.savedOn).toBe(revision3.savedOn);
+        expect(revision1.savedBy).toEqual(revision3.savedBy);
+        expect(revision1.savedOn).toBe(entriesList[0].savedOn);
+        expect(revision1.savedBy).toEqual(entriesList[0].savedBy);
 
         // Except for createdOn/createdBy, revision 2's entry-level meta fields should
         // not be in sync. This is fine because we only care about latest revisions.
-        expect(revision2.entryCreatedOn).toBe(revision3.entryCreatedOn);
-        expect(revision2.entryCreatedBy).toEqual(revision3.entryCreatedBy);
+        expect(revision2.createdOn).toBe(revision3.createdOn);
+        expect(revision2.createdBy).toEqual(revision3.createdBy);
 
-        expect(revision2.entryModifiedOn).not.toBe(revision3.entryModifiedOn);
-        expect(revision2.entryModifiedBy).not.toEqual(revision3.entryModifiedBy);
+        expect(revision2.modifiedOn).not.toBe(revision3.modifiedOn);
+        expect(revision2.modifiedBy).not.toEqual(revision3.modifiedBy);
 
-        expect(revision2.entrySavedOn).not.toBe(revision3.entrySavedOn);
-        expect(revision2.entrySavedBy).not.toEqual(revision3.entrySavedBy);
+        expect(revision2.savedOn).not.toBe(revision3.savedOn);
+        expect(revision2.savedBy).not.toEqual(revision3.savedBy);
     });
 
     test("deleting latest revision should cause the entry-level meta field values to be propagated to the new latest revision", async () => {
@@ -218,19 +201,19 @@ describe("Content entries - Entry Meta Fields", () => {
         ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
         let { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
-        expect(revision2.entryCreatedOn).toBe(revision3.entryCreatedOn);
-        expect(revision2.entryCreatedBy).toEqual(revision3.entryCreatedBy);
-        expect(revision2.entryModifiedOn).toBe(revision3.entryModifiedOn);
-        expect(revision2.entryModifiedBy).toEqual(revision3.entryModifiedBy);
-        expect(revision2.entrySavedOn).toBe(revision3.entrySavedOn);
-        expect(revision2.entrySavedBy).toEqual(revision3.entrySavedBy);
+        expect(revision2.createdOn).toBe(revision3.createdOn);
+        expect(revision2.createdBy).toEqual(revision3.createdBy);
+        expect(revision2.modifiedOn).toBe(revision3.modifiedOn);
+        expect(revision2.modifiedBy).toEqual(revision3.modifiedBy);
+        expect(revision2.savedOn).toBe(revision3.savedOn);
+        expect(revision2.savedBy).toEqual(revision3.savedBy);
 
-        expect(revision2.entryCreatedOn).toBe(entriesList[0].entryCreatedOn);
-        expect(revision2.entryCreatedBy).toEqual(entriesList[0].entryCreatedBy);
-        expect(revision2.entryModifiedOn).toBe(entriesList[0].entryModifiedOn);
-        expect(revision2.entryModifiedBy).toEqual(entriesList[0].entryModifiedBy);
-        expect(revision2.entrySavedOn).toBe(entriesList[0].entrySavedOn);
-        expect(revision2.entrySavedBy).toEqual(entriesList[0].entrySavedBy);
+        expect(revision2.createdOn).toBe(entriesList[0].createdOn);
+        expect(revision2.createdBy).toEqual(entriesList[0].createdBy);
+        expect(revision2.modifiedOn).toBe(entriesList[0].modifiedOn);
+        expect(revision2.modifiedBy).toEqual(entriesList[0].modifiedBy);
+        expect(revision2.savedOn).toBe(entriesList[0].savedOn);
+        expect(revision2.savedBy).toEqual(entriesList[0].savedBy);
 
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
         await manageApiIdentityB.deleteTestEntry({
@@ -241,18 +224,18 @@ describe("Content entries - Entry Meta Fields", () => {
         ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
-        expect(revision1.entryCreatedOn).toBe(revision2.entryCreatedOn);
-        expect(revision1.entryCreatedBy).toEqual(revision2.entryCreatedBy);
-        expect(revision1.entryModifiedOn).toBe(revision2.entryModifiedOn);
-        expect(revision1.entryModifiedBy).toEqual(revision2.entryModifiedBy);
-        expect(revision1.entrySavedOn).toBe(revision2.entrySavedOn);
-        expect(revision1.entrySavedBy).toEqual(revision2.entrySavedBy);
+        expect(revision1.createdOn).toBe(revision2.createdOn);
+        expect(revision1.createdBy).toEqual(revision2.createdBy);
+        expect(revision1.modifiedOn).toBe(revision2.modifiedOn);
+        expect(revision1.modifiedBy).toEqual(revision2.modifiedBy);
+        expect(revision1.savedOn).toBe(revision2.savedOn);
+        expect(revision1.savedBy).toEqual(revision2.savedBy);
 
-        expect(revision1.entryCreatedOn).toBe(entriesList[0].entryCreatedOn);
-        expect(revision1.entryCreatedBy).toEqual(entriesList[0].entryCreatedBy);
-        expect(revision1.entryModifiedOn).toBe(entriesList[0].entryModifiedOn);
-        expect(revision1.entryModifiedBy).toEqual(entriesList[0].entryModifiedBy);
-        expect(revision1.entrySavedOn).toBe(entriesList[0].entrySavedOn);
-        expect(revision1.entrySavedBy).toEqual(entriesList[0].entrySavedBy);
+        expect(revision1.createdOn).toBe(entriesList[0].createdOn);
+        expect(revision1.createdBy).toEqual(entriesList[0].createdBy);
+        expect(revision1.modifiedOn).toBe(entriesList[0].modifiedOn);
+        expect(revision1.modifiedBy).toEqual(entriesList[0].modifiedBy);
+        expect(revision1.savedOn).toBe(entriesList[0].savedOn);
+        expect(revision1.savedBy).toEqual(entriesList[0].savedBy);
     });
 });

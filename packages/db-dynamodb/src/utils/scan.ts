@@ -1,6 +1,8 @@
 import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity, ScanOptions, Table } from "~/toolbox";
 
+export type { ScanOptions };
+
 export interface BaseScanParams {
     options?: ScanOptions;
     params?: Partial<ScanInput>;
@@ -18,7 +20,7 @@ export interface ScanWithEntity extends BaseScanParams {
 
 export type ScanParams = ScanWithTable | ScanWithEntity;
 
-export interface ScanResponse<T> {
+export interface ScanResponse<T = any> {
     items: T[];
     count?: number;
     scannedCount?: number;

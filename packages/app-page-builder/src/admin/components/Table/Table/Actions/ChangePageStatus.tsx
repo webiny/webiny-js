@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as Publish } from "@material-design-icons/svg/outlined/publish.svg";
 import { ReactComponent as Unpublish } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
-import { AcoConfig } from "@webiny/app-aco";
+import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useChangePageStatus } from "~/admin/views/Pages/hooks/useChangePageStatus";
 import { usePagesPermissions } from "~/hooks/permissions";
@@ -9,7 +9,7 @@ import { usePagesPermissions } from "~/hooks/permissions";
 export const ChangePageStatus = () => {
     const { page } = usePage();
     const { openDialogUnpublishPage, openDialogPublishPage } = useChangePageStatus({ page });
-    const { OptionsMenuItem } = AcoConfig.Record.Action;
+    const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
     const { hasPermissions, canPublish, canUnpublish } = usePagesPermissions();
 
     if (!hasPermissions()) {
