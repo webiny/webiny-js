@@ -42,7 +42,7 @@ export class Column {
         this.name = data.name;
         this.header = data.header;
         this.cell = data.cell;
-        this.size = data.size || 200;
+        this.size = data.size || 100;
         this.className = data.className || "";
         this.hideable = data.hideable ?? true;
         this.sortable = data.sortable ?? false;

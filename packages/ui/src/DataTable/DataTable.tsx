@@ -200,10 +200,11 @@ const defineColumns = <T,>(
                 header,
                 id,
                 meta,
-                size = 200
+                size = 100
             } = column;
 
             return {
+                id,
                 accessorKey: id,
                 header: () => header,
                 cell: info => {
