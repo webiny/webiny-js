@@ -399,8 +399,8 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
         mutation CmsPublish${model.singularApiName}($revision: ID!) {
             content: publish${model.singularApiName}(revision: $revision) {
                 data {
-                    id
-                    ${CONTENT_META_FIELDS}
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }
@@ -426,9 +426,9 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
             content: unpublish${model.singularApiName}(revision: $revision) {
-                data {
-                    id
-                    ${CONTENT_META_FIELDS}
+                 data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }
