@@ -14,10 +14,6 @@ export interface PreviewRevisionMenuOptionProps {
 export const PageRevisionPreviewRevisionMenuOption = (props: PreviewRevisionMenuOptionProps) => {
     const { revision, previewRevision } = props;
 
-    if (revision.status !== "published") {
-        return null;
-    }
-
     const previewButtonLabel = revision.status === "published" ? "View" : "Preview";
 
     return (
