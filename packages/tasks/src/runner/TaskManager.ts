@@ -1,8 +1,10 @@
 import { ITaskManager, ITaskRunner } from "./abstractions";
 import {
     Context,
+    ITask,
     ITaskDataInput,
     ITaskDefinition,
+    ITaskTriggerParams,
     TaskDataStatus,
     TaskResponseStatus
 } from "~/types";
@@ -13,7 +15,7 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { ITaskManagerStore } from "~/runner/abstractions";
-import { getObjectProperties } from "~/runner/utils/getObjectProperties";
+import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
     private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
@@ -58,9 +60,9 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                 await this.store.addInfoLog({
                     message: "Task started."
                 });
-            } catch (ex) {
+            } catch (error) {
                 return this.response.error({
-                    error: getObjectProperties(ex)
+                    error
                 });
             }
         }
@@ -75,9 +77,9 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                         iterations: task.iterations + 1
                     };
                 });
-            } catch (ex) {
+            } catch (error) {
                 return this.response.error({
-                    error: getObjectProperties(ex)
+                    error
                 });
             }
         }
@@ -90,17 +92,25 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                 input,
                 context: this.context,
                 response: this.taskResponse,
-                isCloseToTimeout: () => {
-                    return this.runner.isCloseToTimeout();
+                isCloseToTimeout: (seconds?: number) => {
+                    return this.runner.isCloseToTimeout(seconds);
                 },
                 isAborted: () => {
                     return this.store.getStatus() === TaskDataStatus.ABORTED;
                 },
-                store: this.store
+                store: this.store,
+                trigger: async <I = ITaskDataInput>(
+                    params: Omit<ITaskTriggerParams<I>, "parent">
+                ): Promise<ITask<I>> => {
+                    return this.context.tasks.trigger({
+                        ...params,
+                        parent: this.store.getTask()
+                    });
+                }
             });
         } catch (ex) {
             return this.response.error({
-                error: getObjectProperties(ex)
+                error: getErrorProperties(ex)
             });
         }
 

@@ -6,7 +6,12 @@ import {
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
-import { IResponseError, ITaskResponse, ITaskResponseResult } from "~/response/abstractions";
+import {
+    IResponseError,
+    ITaskResponse,
+    ITaskResponseDoneResultOutput,
+    ITaskResponseResult
+} from "~/response/abstractions";
 import { ITaskManagerStore } from "./runner/abstractions";
 import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
@@ -76,7 +81,10 @@ export interface ITaskIdentity {
     type: string;
 }
 
-export interface ITaskData<T = any> {
+export interface ITask<
+    T = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     /**
      * ID without the revision number (for example: #0001).
      */
@@ -86,6 +94,7 @@ export interface ITaskData<T = any> {
     definitionId: string;
     executionName: string;
     input: T;
+    output?: O;
     createdOn: string;
     savedOn: string;
     createdBy: ITaskIdentity;
@@ -93,12 +102,16 @@ export interface ITaskData<T = any> {
     finishedOn?: string;
     eventResponse: EventBridgeClientSendResponse | undefined;
     iterations: number;
+    parentId?: string;
 }
 
-export type IGetTaskResponse<T = any> = ITaskData<T> | null;
+export type IGetTaskResponse<T = any> = ITask<T> | null;
 
-export interface IListTasksResponse<T = any> {
-    items: ITaskData<T>[];
+export interface IListTasksResponse<
+    T = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
+    items: ITask<T, O>[];
     meta: CmsEntryMeta;
 }
 
@@ -107,22 +120,27 @@ export interface IListTaskLogsResponse {
     meta: CmsEntryMeta;
 }
 
-export type ICreateTaskResponse<T = any> = ITaskData<T>;
-export type IUpdateTaskResponse<T = any> = ITaskData<T>;
+export type ICreateTaskResponse<T = any> = ITask<T>;
+export type IUpdateTaskResponse<T = any> = ITask<T>;
 export type IDeleteTaskResponse = boolean;
 
-export type IListTaskParams = Omit<CmsEntryListParams, "fields">;
-export type IListTaskLogParams = Omit<CmsEntryListParams, "fields">;
+export type IListTaskParams = Omit<CmsEntryListParams, "fields" | "search">;
+export type IListTaskLogParams = Omit<CmsEntryListParams, "fields" | "search">;
 
 export interface ITaskCreateData<T = ITaskDataInput> {
     definitionId: string;
     name: string;
     input: T;
+    parentId?: string;
 }
 
-export interface ITaskUpdateData<T = ITaskDataInput> {
+export interface ITaskUpdateData<
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     name?: string;
-    input?: T;
+    input?: I;
+    output?: O;
     taskStatus?: TaskDataStatus;
     executionName?: string;
     startedOn?: string;
@@ -137,25 +155,25 @@ export interface OnTaskBeforeCreateTopicParams {
 
 export interface OnTaskAfterCreateTopicParams {
     input: ITaskCreateData;
-    task: ITaskData;
+    task: ITask;
 }
 
 export interface OnTaskBeforeUpdateTopicParams {
     input: ITaskUpdateData;
-    original: ITaskData;
+    original: ITask;
 }
 
 export interface OnTaskAfterUpdateTopicParams {
     input: ITaskUpdateData;
-    task: ITaskData;
+    task: ITask;
 }
 
 export interface OnTaskBeforeDeleteTopicParams {
-    task: ITaskData;
+    task: ITask;
 }
 
 export interface OnTaskAfterDeleteTopicParams {
-    task: ITaskData;
+    task: ITask;
 }
 
 export interface ITaskLogCreateInput {
@@ -177,7 +195,9 @@ export interface ITasksContextCrudObject {
      * Tasks
      */
     getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T> | null>;
-    listTasks: <T = any>(params?: IListTaskParams) => Promise<IListTasksResponse<T>>;
+    listTasks: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        params?: IListTaskParams
+    ) => Promise<IListTasksResponse<T, O>>;
     createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
     updateTask: <T = any>(
         id: string,
@@ -187,7 +207,7 @@ export interface ITasksContextCrudObject {
     /**
      * Logs
      */
-    createLog: (task: Pick<ITaskData, "id">, data: ITaskLogCreateInput) => Promise<ITaskLog>;
+    createLog: (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => Promise<ITaskLog>;
     updateLog: (id: string, data: ITaskLogUpdateInput) => Promise<ITaskLog>;
     getLog: (id: string) => Promise<ITaskLog | null>;
     getLatestLog: (taskId: string) => Promise<ITaskLog>;
@@ -212,10 +232,14 @@ export interface ITasksContextDefinitionObject {
     listDefinitions: () => ITaskDefinition[];
 }
 
-export interface ITaskTriggerParams<T = ITaskDataInput> {
+/**
+ * TODO: implement delayed trigger
+ */
+export interface ITaskTriggerParams<I = ITaskDataInput> {
+    parent?: ITask;
     definition: string;
     name?: string;
-    input?: T;
+    input?: I;
 }
 
 export interface ITaskAbortParams {
@@ -224,8 +248,8 @@ export interface ITaskAbortParams {
 }
 
 export interface ITasksContextTriggerObject {
-    trigger: <T = ITaskDataInput>(params: ITaskTriggerParams<T>) => Promise<ITaskData<T>>;
-    abort: <T = ITaskDataInput>(params: ITaskAbortParams) => Promise<ITaskData<T>>;
+    trigger: <T = ITaskDataInput>(params: ITaskTriggerParams<T>) => Promise<ITask<T>>;
+    abort: <T = ITaskDataInput>(params: ITaskAbortParams) => Promise<ITask<T>>;
 }
 
 export interface ITasksContextObject
@@ -238,23 +262,35 @@ export interface Context extends BaseContext {
     tasks: ITasksContextObject;
 }
 
-export interface ITaskRunParams<C extends Context, I = any> {
+export interface ITaskRunParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    response: ITaskResponse;
-    isCloseToTimeout: () => boolean;
+    response: ITaskResponse<I, O>;
+    isCloseToTimeout: (seconds?: number) => boolean;
     isAborted: () => boolean;
     input: I;
-    store: ITaskManagerStore;
+    store: ITaskManagerStore<I>;
+    trigger: <SI = ITaskDataInput>(
+        params: Omit<ITaskTriggerParams<SI>, "parent">
+    ) => Promise<ITask<SI>>;
 }
 
-export interface ITaskSuccessParams<C extends Context, I = any> {
+export interface ITaskOnSuccessParams<C extends Context, I = ITaskDataInput> {
     context: C;
-    input: I;
+    task: ITask<I>;
 }
 
-export interface ITaskErrorParams<C extends Context, I = any> {
+export interface ITaskOnErrorParams<C extends Context, I = ITaskDataInput> {
     context: C;
-    input: I;
+    task: ITask<I>;
+}
+
+export interface ITaskOnAbortParams<C extends Context> {
+    context: C;
+    task: ITask;
 }
 
 export enum TaskResponseStatus {
@@ -284,10 +320,17 @@ export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITask
     input: I;
 }
 
-export interface ITaskDefinition<C extends Context = Context, I = ITaskDataInput> {
+export interface ITaskDefinition<
+    C extends Context = Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     /**
      * ID of the task must be unique in the system.
      * It should be in camelCase format, for example: "myCustomTask".
+     *
+     * TODO: figure out a way to force camelCase in types.
+     * CamelCase from type-fest does not help with this.
      */
     id: string;
     /**
@@ -301,7 +344,7 @@ export interface ITaskDefinition<C extends Context = Context, I = ITaskDataInput
     /**
      * Task run method.
      */
-    run: (params: ITaskRunParams<C, I>) => Promise<ITaskResponseResult>;
+    run: (params: ITaskRunParams<C, I, O>) => Promise<ITaskResponseResult>;
     /**
      * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
@@ -309,16 +352,27 @@ export interface ITaskDefinition<C extends Context = Context, I = ITaskDataInput
     onBeforeTrigger?: <T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>) => Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
+     * This will be called during the run time of the task.
      */
-    onDone?: (params: ITaskSuccessParams<C, I>) => Promise<void>;
+    onDone?: (params: ITaskOnSuccessParams<C, I>) => Promise<void>;
     /**
      * When task fails, this method will be called.
+     * This will be called during the run time of the task.
      */
-    onError?: (params: ITaskErrorParams<C, I>) => Promise<void>;
+    onError?: (params: ITaskOnErrorParams<C, I>) => Promise<void>;
+    /**
+     * When task is aborted, this method will be called.
+     * This method will be called when user aborts the task.
+     */
+    onAbort?: (params: ITaskOnAbortParams<C>) => Promise<void>;
     /**
      * Custom input fields and layout for the task input.
      */
     fields?: ITaskDefinitionField[];
+    /**
+     * Is the task visible when listing?
+     */
+    isPrivate?: boolean;
 }
 
 export interface TaskPermission extends SecurityPermission {

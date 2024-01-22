@@ -1,12 +1,20 @@
 import { ITaskEvent } from "~/handler/types";
-import { Context, ITaskData, ITaskDataInput, ITaskLog, TaskDataStatus } from "~/types";
+import {
+    Context,
+    ITask,
+    ITaskDataInput,
+    ITaskDefinition,
+    ITaskLog,
+    TaskDataStatus,
+    TaskResponseStatus
+} from "~/types";
 import { ITaskControl, ITaskRunner } from "./abstractions";
 import { TaskManager } from "./TaskManager";
-import { IResponse, IResponseErrorResult, IResponseResult } from "~/response/abstractions";
+import { IResponse, IResponseResult } from "~/response/abstractions";
 import { DatabaseResponse, TaskResponse } from "~/response";
 import { TaskManagerStore } from "./TaskManagerStore";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { getObjectProperties } from "~/runner/utils/getObjectProperties";
+import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
@@ -27,11 +35,13 @@ export class TaskControl implements ITaskControl {
          * * child tasks can be in multiple levels (child task creates a child task, etc...).
          * * child tasks could be executed in parallel.
          */
-        let task: ITaskData<ITaskDataInput>;
+        let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-        } catch (ex) {
-            return getObjectProperties<IResponseErrorResult>(ex);
+        } catch (error) {
+            return this.response.error({
+                error
+            });
         }
         /**
          * As this as a run of the task, we need to create a new log entry.
@@ -40,8 +50,10 @@ export class TaskControl implements ITaskControl {
         let taskLog: ITaskLog;
         try {
             taskLog = await this.getTaskLog(task);
-        } catch (ex) {
-            return getObjectProperties<IResponseErrorResult>(ex);
+        } catch (error) {
+            return this.response.error({
+                error
+            });
         }
         /**
          * Make sure that task does not run if it is aborted.
@@ -80,23 +92,58 @@ export class TaskControl implements ITaskControl {
         try {
             const result = await manager.run(definition);
 
+            await this.runEvents(result, definition, task);
+
             return await databaseResponse.from(result);
         } catch (ex) {
-            return this.response.error({
-                error: {
-                    message: ex.message,
-                    code: ex.code || "TASK_ERROR",
-                    stack: ex.stack,
-                    data: {
-                        ...ex.data,
-                        input: task.input
+            /**
+             * We always want to store the error in the task log.
+             */
+            return await databaseResponse.from(
+                this.response.error({
+                    error: {
+                        message: ex.message,
+                        code: ex.code || "TASK_ERROR",
+                        stack: ex.stack,
+                        data: {
+                            ...ex.data,
+                            input: task.input
+                        }
                     }
-                }
-            });
+                })
+            );
         }
     }
 
-    private async getTask<T = any>(id: string): Promise<ITaskData<T>> {
+    private async runEvents(
+        result: IResponseResult,
+        definition: ITaskDefinition,
+        task: ITask
+    ): Promise<void> {
+        if (result.status === TaskResponseStatus.ERROR && definition.onError) {
+            try {
+                await definition.onError({
+                    task,
+                    context: this.context
+                });
+            } catch (ex) {
+                console.error(`Error executing onError hook for task "${task.id}".`);
+                console.log(getErrorProperties(ex));
+            }
+        } else if (result.status === TaskResponseStatus.DONE && definition.onDone) {
+            try {
+                await definition.onDone({
+                    task,
+                    context: this.context
+                });
+            } catch (ex) {
+                console.error(`Error executing onDone hook for task "${task.id}".`);
+                console.log(getErrorProperties(ex));
+            }
+        }
+    }
+
+    private async getTask<T = any>(id: string): Promise<ITask<T>> {
         try {
             const task = await this.runner.context.tasks.getTask<T>(id);
             if (task) {
@@ -120,20 +167,20 @@ export class TaskControl implements ITaskControl {
         });
     }
 
-    private async getTaskLog(task: ITaskData): Promise<ITaskLog> {
+    private async getTaskLog(task: ITask): Promise<ITaskLog> {
         let taskLog: ITaskLog | null = null;
         /**
          * First we are trying to get existing latest log.
          */
         try {
             taskLog = await this.context.tasks.getLatestLog(task.id);
-        } catch (ex) {
+        } catch (error) {
             /**
              * If error is not the NotFoundError, we need to throw it.
              */
-            if (ex instanceof NotFoundError === false) {
+            if (error instanceof NotFoundError === false) {
                 throw this.response.error({
-                    error: getObjectProperties(ex)
+                    error
                 });
             }
             /**
@@ -148,9 +195,9 @@ export class TaskControl implements ITaskControl {
                 executionName: this.response.event.executionName,
                 iteration: currentIteration + 1
             });
-        } catch (ex) {
+        } catch (error) {
             throw this.response.error({
-                error: getObjectProperties(ex)
+                error
             });
         }
     }

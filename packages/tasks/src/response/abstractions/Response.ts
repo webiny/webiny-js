@@ -3,6 +3,7 @@ import { IResponseContinueParams, IResponseContinueResult } from "./ResponseCont
 import { IResponseDoneParams, IResponseDoneResult } from "./ResponseDoneResult";
 import { IResponseErrorParams, IResponseErrorResult } from "./ResponseErrorResult";
 import { IResponseAbortedResult } from "./ResponseAbortedResult";
+import { ITaskResponseDoneResultOutput } from "~/response/abstractions/TaskResponse";
 
 export type IResponseFromParams =
     | IResponseDoneResult
@@ -18,7 +19,9 @@ export type IResponseResult =
 export interface IResponse {
     readonly event: ITaskEvent;
     from: (params: IResponseFromParams) => IResponseResult;
-    done: (params?: IResponseDoneParams) => IResponseDoneResult;
+    done: <O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        params?: IResponseDoneParams<O>
+    ) => IResponseDoneResult;
     aborted: () => IResponseAbortedResult;
     continue: (params: IResponseContinueParams) => IResponseContinueResult;
     error: (params: IResponseErrorParams) => IResponseErrorResult;

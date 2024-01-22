@@ -6,9 +6,16 @@ import {
     ITaskResponseContinueOptions,
     ITaskResponseContinueResult,
     ITaskResponseDoneResult,
+    ITaskResponseDoneResultOutput,
     ITaskResponseErrorResult
 } from "./abstractions";
 import { ITaskDataInput } from "~/types";
+import { getErrorProperties } from "~/utils/getErrorProperties";
+
+/**
+ * 355 days transformed into seconds.
+ */
+const MAX_WAITING_TIME = 30672000;
 
 /**
  * There are options to send:
@@ -16,15 +23,20 @@ import { ITaskDataInput } from "~/types";
  * * date - date until which to wait
  */
 const getWaitingTime = (options?: ITaskResponseContinueOptions): number | undefined => {
+    let waitingTime: number | undefined;
     if (!options) {
         return undefined;
-    } else if ("seconds" in options) {
-        return options.seconds;
+    }
+    if ("seconds" in options) {
+        waitingTime = options.seconds;
     } else if ("date" in options) {
         const now = new Date();
-        return (options.date.getTime() - now.getTime()) / 1000;
+        waitingTime = (options.date.getTime() - now.getTime()) / 1000;
     }
-    return undefined;
+    if (!waitingTime) {
+        return undefined;
+    }
+    return waitingTime > MAX_WAITING_TIME ? waitingTime : MAX_WAITING_TIME;
 };
 
 export class TaskResponse implements ITaskResponse {
@@ -34,9 +46,13 @@ export class TaskResponse implements ITaskResponse {
         this.response = response;
     }
 
-    public done(message?: string): ITaskResponseDoneResult {
-        return this.response.done({
-            message
+    public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        message?: string,
+        output?: O
+    ): ITaskResponseDoneResult<O> {
+        return this.response.done<O>({
+            message,
+            output
         });
     }
 
@@ -56,9 +72,9 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public error(error: IResponseError): ITaskResponseErrorResult {
+    public error(error: IResponseError | Error): ITaskResponseErrorResult {
         return this.response.error({
-            error
+            error: error instanceof Error ? getErrorProperties(error) : error
         });
     }
 

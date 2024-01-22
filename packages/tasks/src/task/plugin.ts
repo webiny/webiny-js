@@ -1,24 +1,38 @@
 import camelCase from "lodash/camelCase";
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { Context, ITaskDefinition, ITaskDefinitionField } from "~/types";
+import {
+    Context,
+    ITaskDefinition,
+    ITaskDefinitionField,
+    ITaskResponseDoneResultOutput
+} from "~/types";
 
 export interface ITaskPluginSetFieldsCallback {
     (fields: ITaskDefinitionField[]): ITaskDefinitionField[] | undefined;
 }
 
-export interface ITaskDefinitionParams<C extends Context = Context, I = any>
-    extends Omit<ITaskDefinition<C, I>, "fields"> {
-    config?: (task: Pick<TaskDefinitionPlugin<C, I>, "addField" | "setFields">) => void;
+export interface ITaskDefinitionParams<
+    C extends Context = Context,
+    I = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> extends Omit<ITaskDefinition<C, I, O>, "fields"> {
+    config?: (task: Pick<TaskDefinitionPlugin<C, I, O>, "addField" | "setFields">) => void;
 }
 
-export class TaskDefinitionPlugin<C extends Context = Context, I = any>
+export class TaskDefinitionPlugin<
+        C extends Context = Context,
+        I = any,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >
     extends Plugin
-    implements ITaskDefinition<C, I>
+    implements ITaskDefinition<C, I, O>
 {
     public static override readonly type: string = "webiny.backgroundTask";
 
-    private readonly task: ITaskDefinition<C, I>;
+    public readonly isPrivate: boolean;
+
+    private readonly task: ITaskDefinition<C, I, O>;
 
     public get id() {
         return this.task.id;
@@ -40,12 +54,17 @@ export class TaskDefinitionPlugin<C extends Context = Context, I = any>
         return this.task.onDone;
     }
 
+    public get onAbort() {
+        return this.task.onAbort;
+    }
+
     public get onError() {
         return this.task.onError;
     }
 
-    public constructor(task: ITaskDefinitionParams<C, I>) {
+    public constructor(task: ITaskDefinitionParams<C, I, O>) {
         super();
+        this.isPrivate = task.isPrivate || false;
         this.task = {
             ...task,
             fields: []
@@ -83,10 +102,27 @@ export class TaskDefinitionPlugin<C extends Context = Context, I = any>
     }
 }
 
-export const createTaskDefinition = <C extends Context = Context, I = any>(
-    params: ITaskDefinitionParams<C, I>
+export const createTaskDefinition = <
+    C extends Context = Context,
+    I = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+>(
+    params: ITaskDefinitionParams<C, I, O>
 ) => {
-    return new TaskDefinitionPlugin(params);
+    return new TaskDefinitionPlugin<C, I, O>(params);
+};
+
+export const createPrivateTaskDefinition = <
+    C extends Context = Context,
+    I = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+>(
+    params: ITaskDefinitionParams<C, I, O>
+) => {
+    return new TaskDefinitionPlugin<C, I, O>({
+        ...params,
+        isPrivate: true
+    });
 };
 
 export const createTaskDefinitionField = (params: ITaskDefinitionField) => {

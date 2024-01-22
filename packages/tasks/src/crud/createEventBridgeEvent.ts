@@ -1,11 +1,17 @@
 import WebinyError from "@webiny/error";
-import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
-import { ITaskConfig, ITaskData } from "~/types";
+import {
+    EventBridgeClient,
+    PutEventsCommand,
+    PutEventsCommandOutput
+} from "@webiny/aws-sdk/client-eventbridge";
+import { ITaskConfig, ITask } from "~/types";
 import { ITaskEventInput } from "~/handler/types";
+
+export { PutEventsCommandOutput };
 
 interface CreateEventBridgeEventParams {
     client: EventBridgeClient;
-    task: Pick<ITaskData, "id" | "definitionId">;
+    task: Pick<ITask, "id" | "definitionId">;
     tenant: string;
     locale: string;
     eventBusName: string;
@@ -60,7 +66,7 @@ export const createEventBridgeEventFactory = (params: IFactoryParams) => {
         region: process.env.AWS_REGION
     });
     const eventBusName = config.eventBusName;
-    return (task: ITaskData) => {
+    return (task: ITask) => {
         return createEventBridgeEvent({
             client,
             eventBusName,

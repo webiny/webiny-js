@@ -1,14 +1,23 @@
 import { ITaskDataInput, TaskResponseStatus } from "~/types";
 import { IResponseError } from "./ResponseErrorResult";
 
-export type ITaskResponseResult =
-    | ITaskResponseDoneResult
-    | ITaskResponseContinueResult
+export type ITaskResponseResult<
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> =
+    | ITaskResponseDoneResult<O>
+    | ITaskResponseContinueResult<I>
     | ITaskResponseErrorResult
     | ITaskResponseAbortedResult;
 
-export interface ITaskResponseDoneResult {
+export interface ITaskResponseDoneResultOutput {
+    [key: string]: string | string[] | number | boolean | Record<string, string | number>;
+}
+export interface ITaskResponseDoneResult<
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     message?: string;
+    output?: O;
     status: TaskResponseStatus.DONE;
 }
 
@@ -38,9 +47,12 @@ export type ITaskResponseContinueOptions =
     | ITaskResponseContinueOptionsUntil
     | ITaskResponseContinueOptionsSeconds;
 
-export interface ITaskResponse<T = ITaskDataInput> {
-    done: (message?: string) => ITaskResponseDoneResult;
+export interface ITaskResponse<
+    T = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
+    done: (message?: string, output?: O) => ITaskResponseDoneResult<O>;
     continue: (data: T, options?: ITaskResponseContinueOptions) => ITaskResponseContinueResult<T>;
-    error: (error: IResponseError) => ITaskResponseErrorResult;
+    error: (error: IResponseError | Error) => ITaskResponseErrorResult;
     aborted: () => ITaskResponseAbortedResult;
 }

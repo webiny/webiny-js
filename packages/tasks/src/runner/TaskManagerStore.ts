@@ -1,5 +1,5 @@
 import {
-    ITaskData,
+    ITask,
     ITaskDataInput,
     ITaskLog,
     ITaskLogItemType,
@@ -18,7 +18,7 @@ import {
  */
 // @ts-expect-error
 import deepEqual from "deep-equal";
-import { getObjectProperties } from "~/runner/utils/getObjectProperties";
+import { getObjectProperties } from "~/utils/getObjectProperties";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -39,10 +39,10 @@ export interface TaskManagerStoreContext {
 
 export class TaskManagerStore implements ITaskManagerStore {
     private readonly context: TaskManagerStoreContext;
-    private task: ITaskData;
+    private task: ITask;
     private taskLog: ITaskLog;
 
-    public constructor(context: TaskManagerStoreContext, task: ITaskData, log: ITaskLog) {
+    public constructor(context: TaskManagerStoreContext, task: ITask, log: ITaskLog) {
         this.context = context;
         this.task = task;
         this.taskLog = log;
@@ -52,12 +52,12 @@ export class TaskManagerStore implements ITaskManagerStore {
         return this.task.taskStatus;
     }
 
-    public setTask(task: ITaskData): void {
+    public setTask(task: ITask): void {
         this.task = task;
     }
 
-    public getTask<T extends ITaskDataInput = ITaskDataInput>(): ITaskData<T> {
-        return this.task as ITaskData<T>;
+    public getTask<T extends ITaskDataInput = ITaskDataInput>(): ITask<T> {
+        return this.task as ITask<T>;
     }
 
     public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
@@ -93,7 +93,10 @@ export class TaskManagerStore implements ITaskManagerStore {
     public getInput<T extends ITaskDataInput = ITaskDataInput>(): T {
         return this.task.input as T;
     }
-
+    /**
+     * Currently the methods throws an error if something goes wrong during the database update.
+     * TODO: Maybe we should wrap it into try/catch and return error if any?
+     */
     public async addInfoLog(log: ITaskManagerStoreInfoLog): Promise<void> {
         this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
             items: this.taskLog.items.concat([
@@ -106,13 +109,16 @@ export class TaskManagerStore implements ITaskManagerStore {
             ])
         });
     }
-
+    /**
+     * Currently the methods throws an error if something goes wrong during the database update.
+     * TODO: Maybe we should wrap it into try/catch and return error if any?
+     */
     public async addErrorLog(log: ITaskManagerStoreErrorLog): Promise<void> {
         this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
             items: this.taskLog.items.concat([
                 {
                     message: log.message,
-                    error: getObjectProperties(log.error),
+                    error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
                     type: ITaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }

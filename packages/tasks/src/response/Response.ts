@@ -7,7 +7,6 @@ import {
     IResponseContinueResult,
     IResponseDoneParams,
     IResponseDoneResult,
-    IResponseError,
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseFromParams,
@@ -17,15 +16,7 @@ import { ResponseContinueResult } from "~/response/ResponseContinueResult";
 import { ResponseDoneResult } from "~/response/ResponseDoneResult";
 import { ResponseErrorResult } from "~/response/ResponseErrorResult";
 import { ResponseAbortedResult } from "./ResponseAbortedResult";
-
-const transformError = (error: IResponseError): IResponseError => {
-    return {
-        message: error.message,
-        code: error.code,
-        data: error.data,
-        stack: error.stack
-    };
-};
+import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class Response implements IResponse {
     public readonly event: ITaskEvent;
@@ -81,7 +72,7 @@ export class Response implements IResponse {
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params.tenant || this.event.tenant,
             locale: params.locale || this.event.locale,
-            error: transformError(params.error)
+            error: params.error instanceof Error ? getErrorProperties(params.error) : params.error
         });
     }
 }

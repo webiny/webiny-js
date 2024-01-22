@@ -168,6 +168,13 @@ const taskModelPlugin = createCmsModel(
                 ]
             },
             {
+                id: "parentId",
+                fieldId: "parentId",
+                storageId: "text@parentId",
+                type: "text",
+                label: "Parent ID"
+            },
+            {
                 id: "executionName",
                 fieldId: "executionName",
                 storageId: "text@executionName",
@@ -187,6 +194,13 @@ const taskModelPlugin = createCmsModel(
                 storageId: "object@input",
                 type: "json",
                 label: "Input"
+            },
+            {
+                id: "output",
+                fieldId: "output",
+                storageId: "object@output",
+                type: "json",
+                label: "Output"
             },
             {
                 id: "taskStatus",

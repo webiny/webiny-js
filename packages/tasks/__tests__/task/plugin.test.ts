@@ -90,7 +90,7 @@ describe("task plugin", () => {
     });
 
     it("should properly create a task - via method", async () => {
-        const task = createTaskDefinition<Context, MyTask>({
+        const task = createTaskDefinition<Context, MyInput>({
             id: "myCustomTask",
             title: "A custom task defined via method",
             run: async ({ response, isCloseToTimeout, input }) => {
@@ -109,6 +109,9 @@ describe("task plugin", () => {
                 return;
             },
             onError: async () => {
+                return;
+            },
+            onAbort: async () => {
                 return;
             },
             config: task => {
