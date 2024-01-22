@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { ActionMove as ActionMoveBase } from "~/admin/components/BulkActions";
 
-export const ActionMove = observer(() => {
+export const SecureActionMove = observer(() => {
     const { useWorker } = PageListConfig.Browser.BulkAction;
     const worker = useWorker();
     const { folderLevelPermissions: flp } = useFolders();

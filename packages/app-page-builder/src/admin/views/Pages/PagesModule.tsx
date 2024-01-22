@@ -2,12 +2,13 @@ import React from "react";
 import { PageListConfig } from "~/admin/config/pages";
 
 import {
-    ActionDelete,
+    SecureActionDelete,
     ActionExport,
-    ActionMove,
-    ActionPublish,
-    ActionUnpublish
-} from "./BulkActions";
+    SecureActionMove,
+    SecureActionPublish,
+    SecureActionUnpublish
+} from "~/admin/components/BulkActions";
+
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     CellActions,
@@ -29,10 +30,10 @@ export const PagesModule = () => {
     return (
         <PageListConfig>
             <Browser.BulkAction name={"export"} element={<ActionExport />} />
-            <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
-            <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
-            <Browser.BulkAction name={"move"} element={<ActionMove />} />
-            <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
+            <Browser.BulkAction name={"publish"} element={<SecureActionPublish />} />
+            <Browser.BulkAction name={"unpublish"} element={<SecureActionUnpublish />} />
+            <Browser.BulkAction name={"move"} element={<SecureActionMove />} />
+            <Browser.BulkAction name={"delete"} element={<SecureActionDelete />} />
             <Browser.FolderAction name={"edit"} element={<EditFolder />} />
             <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
             <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />

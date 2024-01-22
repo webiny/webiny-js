@@ -5,7 +5,7 @@ import { PageListConfig } from "~/admin/config/pages";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { ActionUnpublish as ActionUnpublishBase } from "~/admin/components/BulkActions";
 
-export const ActionUnpublish = observer(() => {
+export const SecureActionUnpublish = observer(() => {
     const { canUnpublish } = usePagesPermissions();
     const { folderLevelPermissions: flp } = useFolders();
 
