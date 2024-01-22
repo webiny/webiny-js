@@ -17,10 +17,10 @@ import {
     CellModified,
     CellName,
     CellStatus,
-    ChangePageStatus,
-    DeletePage,
-    EditPage,
-    MovePage,
+    SecureChangePageStatus,
+    SecureDeletePage,
+    SecureEditPage,
+    SecureMovePage,
     PreviewPage
 } from "~/admin/components/Table/Table";
 
@@ -37,11 +37,11 @@ export const PagesModule = () => {
             <Browser.FolderAction name={"edit"} element={<EditFolder />} />
             <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
             <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
-            <Browser.PageAction name={"edit"} element={<EditPage />} />
+            <Browser.PageAction name={"edit"} element={<SecureEditPage />} />
             <Browser.PageAction name={"preview"} element={<PreviewPage />} />
-            <Browser.PageAction name={"status"} element={<ChangePageStatus />} />
-            <Browser.PageAction name={"move"} element={<MovePage />} />
-            <Browser.PageAction name={"delete"} element={<DeletePage />} />
+            <Browser.PageAction name={"status"} element={<SecureChangePageStatus />} />
+            <Browser.PageAction name={"move"} element={<SecureMovePage />} />
+            <Browser.PageAction name={"delete"} element={<SecureDeletePage />} />
             <Browser.Table.Column
                 name={"title"}
                 header={"Name"}
