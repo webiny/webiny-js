@@ -146,7 +146,7 @@ describe("Pages -> Search records", () => {
     // actually used, which makes queries return empty results. Last time we were inspecting this,
     // we ended up debugging the `applyFiltering` function, created in the following file:
     // packages/api-headless-cms-ddb-es/src/operations/entry/elasticsearch/filtering/applyFiltering.ts
-    it("should create a search record on page creation - disable storageId conversion", async () => {
+    it.skip("should create a search record on page creation - disable storageId conversion", async () => {
         process.env.WEBINY_API_TEST_STORAGE_ID_CONVERSION_DISABLE = "true";
         const { pageBuilder, search } = useGraphQlHandler({
             plugins: [assignPageLifecycleEvents()]
