@@ -517,7 +517,7 @@ describe("CRUD Test", () => {
         });
     });
 
-    it("should create a page with 3MB of content", async () => {
+    it("should create a page with large amount of content", async () => {
         await createCategory({
             data: {
                 slug: `slug`,
@@ -533,12 +533,10 @@ describe("CRUD Test", () => {
         const id = createPageResponse.data.pageBuilder.createPage.data.id;
         expect(id).toMatch("#0001");
 
-        const content = createPageContent("3MB");
+        const content = createPageContent("3.2MB");
         const size = calculateSize(content);
-        /**
-         * Validate that we really did generate more than 5MB of data.
-         */
-        expect(size).toBeGreaterThan(bytes("2.5MB"));
+
+        expect(size).toBeGreaterThan(bytes("3.19MB"));
 
         const [updatePageResponse] = await updatePage({
             id,
@@ -575,5 +573,49 @@ describe("CRUD Test", () => {
             }
         });
         expect(getPageResponse.data.pageBuilder.getPage.data.content).toEqual(content);
+    });
+
+    it("should fail to update a page with above the limit content size", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("3.4MB");
+        const size = calculateSize(content);
+        /**
+         * Validate that we really did generate more than 5MB of data.
+         */
+        expect(size).toBeGreaterThan(bytes("3.39MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: null,
+                        error: {
+                            message: "Item size has exceeded the maximum allowed size"
+                        }
+                    }
+                }
+            }
+        });
     });
 });
