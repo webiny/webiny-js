@@ -591,12 +591,10 @@ describe("CRUD Test", () => {
         const id = createPageResponse.data.pageBuilder.createPage.data.id;
         expect(id).toMatch("#0001");
 
-        const content = createPageContent("3.6MB");
+        const content = createPageContent("4MB");
         const size = calculateSize(content);
-        /**
-         * Validate that we really did generate more than 5MB of data.
-         */
-        expect(size).toBeGreaterThan(bytes("3.59MB"));
+
+        expect(size).toBeGreaterThan(bytes("4.99MB"));
 
         const [updatePageResponse] = await updatePage({
             id,
@@ -605,17 +603,9 @@ describe("CRUD Test", () => {
             }
         });
 
-        expect(updatePageResponse).toMatchObject({
-            data: {
-                pageBuilder: {
-                    updatePage: {
-                        data: null,
-                        error: {
-                            message: "Item size has exceeded the maximum allowed size"
-                        }
-                    }
-                }
-            }
-        });
+        expect(updatePageResponse.data.pageBuilder.updatePage.error?.message).toEqual(
+            "Item size has exceeded the maximum allowed size"
+        );
+        expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
     });
 });
