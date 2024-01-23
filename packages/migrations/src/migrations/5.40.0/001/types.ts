@@ -27,7 +27,11 @@ export interface Identity {
     type: string;
 }
 
-export type Status = "published" | "unpublished" | "draft";
+export enum Status {
+    PUBLISHED = "published",
+    UNPUBLISHED = "unpublished",
+    DRAFT = "draft"
+}
 
 // Forms - 5.38.0
 export interface FbFormFieldOption {

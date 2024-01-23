@@ -98,7 +98,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
 
                             const entry = createEntryCommonFields(form);
 
-                            const revisionEntry = {
+                            const item = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
                                 SK: "P",
                                 GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#P`,
@@ -107,7 +107,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                                 ...entry
                             };
 
-                            items.push(this.cmsEntity.putBatch(revisionEntry));
+                            items.push(this.cmsEntity.putBatch(item));
                         }
 
                         const execute = () => {

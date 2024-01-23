@@ -5,7 +5,7 @@ import { createDdbCmsEntity } from "../entities/createCmsEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createEntryCommonFields } from "../utils";
+import { createEntryCommonFields, createRevisionStatus } from "../utils";
 import { FbForm, MigrationCheckpoint } from "../types";
 
 export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<MigrationCheckpoint> {
@@ -96,18 +96,28 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                         for (const form of forms) {
                             const [formId] = form.id.split("#");
 
-                            const entry = createEntryCommonFields(form);
+                            const publishedForm = await queryOne<FbForm>({
+                                entity: this.formEntity,
+                                partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`,
+                                options: {
+                                    eq: formId
+                                }
+                            });
 
-                            const revisionEntry = {
+                            const entry = createEntryCommonFields(form);
+                            const status = createRevisionStatus(form, publishedForm);
+
+                            const item = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
                                 SK: "L",
                                 GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#L`,
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry.l",
-                                ...entry
+                                ...entry,
+                                status
                             };
 
-                            items.push(this.cmsEntity.putBatch(revisionEntry));
+                            items.push(this.cmsEntity.putBatch(item));
                         }
 
                         const execute = () => {

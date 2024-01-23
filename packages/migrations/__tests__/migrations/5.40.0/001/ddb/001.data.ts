@@ -2107,14 +2107,14 @@ export const createFormsData = () => {
             _md: "2024-01-10T16:44:40.543Z"
         },
         {
-            PK: "T#otherTenant#L#de-DE#FB#F#LP",
-            SK: "659ed63a19a3420008f280b7",
+            PK: "T#root#L#en-US#FB#F#LP",
+            SK: "65afc8352bb22d00085ecf33",
             createdBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            createdOn: "2024-01-10T17:39:06.212Z",
+            createdOn: "2024-01-22T17:02:13.436Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2128,24 +2128,22 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "t2e71ru5Gn"
+                    _id: "aw5OAJaCK4"
                 }
             ],
-            formId: "659ed63a19a3420008f280b7",
-            GSI1_PK: "T#otherTenant#L#de-DE#FB#F#659ed63a19a3420008f280b7",
-            GSI1_SK: "1",
-            id: "659ed63a19a3420008f280b7#0001",
-            locale: "de-DE",
+            formId: "65afc8352bb22d00085ecf33",
+            id: "65afc8352bb22d00085ecf33#0003",
+            locale: "en-US",
             locked: true,
-            name: "Demo form 3 - de-DE",
+            name: "Form 1",
             ownedBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
             published: true,
-            publishedOn: "2024-01-10T17:39:19.950Z",
-            savedOn: "2024-01-10T17:39:19.950Z",
+            publishedOn: "2024-01-22T17:02:22.100Z",
+            savedOn: "2024-01-22T17:02:22.100Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2159,7 +2157,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-3-de-de-659ed63a19a3420008f280b7",
+            slug: "form-1-65afc8352bb22d00085ecf33",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2167,27 +2165,27 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["t2e71ru5Gn"]],
+                    layout: [["aw5OAJaCK4"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "otherTenant",
+            tenant: "root",
             TYPE: "fb.form.latestPublished",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T17:39:19.970Z",
+            version: 3,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T17:02:22.112Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T17:39:19.970Z"
+            _md: "2024-01-22T17:02:22.112Z"
         },
         {
-            PK: "T#otherTenant#L#de-DE#FB#F#L",
-            SK: "659ed63a19a3420008f280b7",
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65afc8352bb22d00085ecf33",
             createdBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            createdOn: "2024-01-10T17:39:57.313Z",
+            createdOn: "2024-01-22T17:02:33.192Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2201,21 +2199,21 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "t2e71ru5Gn"
+                    _id: "aw5OAJaCK4"
                 }
             ],
-            formId: "659ed63a19a3420008f280b7",
-            id: "659ed63a19a3420008f280b7#0003",
-            locale: "de-DE",
+            formId: "65afc8352bb22d00085ecf33",
+            id: "65afc8352bb22d00085ecf33#0004",
+            locale: "en-US",
             locked: false,
-            name: "Demo form 3 - de-DE",
+            name: "Form 1",
             ownedBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
             published: false,
-            savedOn: "2024-01-10T17:39:57.313Z",
+            savedOn: "2024-01-22T17:02:33.192Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2229,7 +2227,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-3-de-de-659ed63a19a3420008f280b7",
+            slug: "form-1-65afc8352bb22d00085ecf33",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2237,27 +2235,27 @@ export const createFormsData = () => {
             status: "draft",
             steps: [
                 {
-                    layout: [["t2e71ru5Gn"]],
+                    layout: [["aw5OAJaCK4"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "otherTenant",
+            tenant: "root",
             TYPE: "fb.form.latest",
-            version: 3,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T17:39:57.313Z",
+            version: 4,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T17:02:33.193Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T17:39:57.313Z"
+            _md: "2024-01-22T17:02:33.193Z"
         },
         {
-            PK: "T#otherTenant#L#de-DE#FB#F",
-            SK: "659ed63a19a3420008f280b7#0001",
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65afc8352bb22d00085ecf33#0001",
             createdBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            createdOn: "2024-01-10T17:39:06.212Z",
+            createdOn: "2024-01-22T16:45:21.541Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2271,24 +2269,24 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "t2e71ru5Gn"
+                    _id: "aw5OAJaCK4"
                 }
             ],
-            formId: "659ed63a19a3420008f280b7",
-            GSI1_PK: "T#otherTenant#L#de-DE#FB#F#659ed63a19a3420008f280b7",
+            formId: "65afc8352bb22d00085ecf33",
+            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
             GSI1_SK: "1",
-            id: "659ed63a19a3420008f280b7#0001",
-            locale: "de-DE",
+            id: "65afc8352bb22d00085ecf33#0001",
+            locale: "en-US",
             locked: true,
-            name: "Demo form 3 - de-DE",
+            name: "Form 1",
             ownedBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
             published: true,
-            publishedOn: "2024-01-10T17:39:19.950Z",
-            savedOn: "2024-01-10T17:39:19.950Z",
+            publishedOn: "2024-01-22T16:45:53.044Z",
+            savedOn: "2024-01-22T16:45:53.044Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2302,7 +2300,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-3-de-de-659ed63a19a3420008f280b7",
+            slug: "form-1-65afc8352bb22d00085ecf33",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2310,27 +2308,27 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["t2e71ru5Gn"]],
+                    layout: [["aw5OAJaCK4"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "otherTenant",
+            tenant: "root",
             TYPE: "fb.form",
             version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T17:39:19.970Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T16:45:53.052Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T17:39:19.970Z"
+            _md: "2024-01-22T16:45:53.052Z"
         },
         {
-            PK: "T#otherTenant#L#de-DE#FB#F",
-            SK: "659ed63a19a3420008f280b7#0002",
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65afc8352bb22d00085ecf33#0002",
             createdBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            createdOn: "2024-01-10T17:39:27.235Z",
+            createdOn: "2024-01-22T16:49:59.693Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2344,24 +2342,24 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "t2e71ru5Gn"
+                    _id: "aw5OAJaCK4"
                 }
             ],
-            formId: "659ed63a19a3420008f280b7",
-            GSI1_PK: "T#otherTenant#L#de-DE#FB#F#659ed63a19a3420008f280b7",
+            formId: "65afc8352bb22d00085ecf33",
+            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
             GSI1_SK: "2",
-            id: "659ed63a19a3420008f280b7#0002",
-            locale: "de-DE",
+            id: "65afc8352bb22d00085ecf33#0002",
+            locale: "en-US",
             locked: true,
-            name: "Demo form 3 - de-DE",
+            name: "Form 1",
             ownedBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
             published: false,
-            publishedOn: "2024-01-10T17:39:31.536Z",
-            savedOn: "2024-01-10T17:40:18.414Z",
+            publishedOn: "2024-01-22T16:50:25.132Z",
+            savedOn: "2024-01-22T17:02:06.153Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2375,7 +2373,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-3-de-de-659ed63a19a3420008f280b7",
+            slug: "form-1-65afc8352bb22d00085ecf33",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2383,27 +2381,27 @@ export const createFormsData = () => {
             status: "locked",
             steps: [
                 {
-                    layout: [["t2e71ru5Gn"]],
+                    layout: [["aw5OAJaCK4"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "otherTenant",
+            tenant: "root",
             TYPE: "fb.form",
             version: 2,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T17:40:18.449Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T17:02:06.332Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T17:40:18.449Z"
+            _md: "2024-01-22T17:02:06.332Z"
         },
         {
-            PK: "T#otherTenant#L#de-DE#FB#F",
-            SK: "659ed63a19a3420008f280b7#0003",
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65afc8352bb22d00085ecf33#0003",
             createdBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            createdOn: "2024-01-10T17:39:57.313Z",
+            createdOn: "2024-01-22T17:02:13.436Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2417,23 +2415,24 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "t2e71ru5Gn"
+                    _id: "aw5OAJaCK4"
                 }
             ],
-            formId: "659ed63a19a3420008f280b7",
-            GSI1_PK: "T#otherTenant#L#de-DE#FB#F#659ed63a19a3420008f280b7",
+            formId: "65afc8352bb22d00085ecf33",
+            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
             GSI1_SK: "3",
-            id: "659ed63a19a3420008f280b7#0003",
-            locale: "de-DE",
-            locked: false,
-            name: "Demo form 3 - de-DE",
+            id: "65afc8352bb22d00085ecf33#0003",
+            locale: "en-US",
+            locked: true,
+            name: "Form 1",
             ownedBy: {
                 displayName: "Admin Admin",
                 id: "659c1221ea18ae00086ef8a5",
                 type: "admin"
             },
-            published: false,
-            savedOn: "2024-01-10T17:39:57.313Z",
+            published: true,
+            publishedOn: "2024-01-22T17:02:22.100Z",
+            savedOn: "2024-01-22T17:02:22.100Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2447,7 +2446,79 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-3-de-de-659ed63a19a3420008f280b7",
+            slug: "form-1-65afc8352bb22d00085ecf33",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["aw5OAJaCK4"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 3,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T17:02:22.112Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-22T17:02:22.112Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65afc8352bb22d00085ecf33#0004",
+            createdBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            createdOn: "2024-01-22T17:02:33.192Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "aw5OAJaCK4"
+                }
+            ],
+            formId: "65afc8352bb22d00085ecf33",
+            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
+            GSI1_SK: "4",
+            id: "65afc8352bb22d00085ecf33#0004",
+            locale: "en-US",
+            locked: false,
+            name: "Form 1",
+            ownedBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            published: false,
+            savedOn: "2024-01-22T17:02:33.192Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "form-1-65afc8352bb22d00085ecf33",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2455,17 +2526,161 @@ export const createFormsData = () => {
             status: "draft",
             steps: [
                 {
-                    layout: [["t2e71ru5Gn"]],
+                    layout: [["aw5OAJaCK4"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "otherTenant",
+            tenant: "root",
             TYPE: "fb.form",
-            version: 3,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T17:39:57.313Z",
+            version: 4,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-22T17:02:33.192Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T17:39:57.313Z"
+            _md: "2024-01-22T17:02:33.192Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65afe4dc1f86b90008f311b9#0001",
+            createdBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            createdOn: "2024-01-23T14:07:49.198Z",
+            fields: [
+                {
+                    fieldId: "demo",
+                    helpText: null,
+                    label: "Demo",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "5FTKwHJk3e"
+                }
+            ],
+            formId: "65afe4dc1f86b90008f311b9",
+            GSI1_PK: "T#root#L#en-US#FB#F#65afe4dc1f86b90008f311b9",
+            GSI1_SK: "1",
+            id: "65afe4dc1f86b90008f311b9#0001",
+            locale: "en-US",
+            locked: true,
+            name: "Demo",
+            ownedBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            published: false,
+            publishedOn: "2024-01-23T14:08:22.634Z",
+            savedOn: "2024-01-23T15:28:47.593Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-65afe4dc1f86b90008f311b9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "locked",
+            steps: [
+                {
+                    layout: [["5FTKwHJk3e"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "5.38.0",
+            _ct: "2024-01-23T15:28:47.792Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-23T15:28:47.792Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65afe4dc1f86b90008f311b9",
+            createdBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            createdOn: "2024-01-23T14:07:49.198Z",
+            fields: [
+                {
+                    fieldId: "demo",
+                    helpText: null,
+                    label: "Demo",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "5FTKwHJk3e"
+                }
+            ],
+            formId: "65afe4dc1f86b90008f311b9",
+            id: "65afe4dc1f86b90008f311b9#0001",
+            locale: "en-US",
+            locked: true,
+            name: "Demo",
+            ownedBy: {
+                displayName: "Admin Admin",
+                id: "659c1221ea18ae00086ef8a5",
+                type: "admin"
+            },
+            published: true,
+            publishedOn: "2024-01-23T14:08:22.634Z",
+            savedOn: "2024-01-23T14:08:22.634Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-65afe4dc1f86b90008f311b9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["5FTKwHJk3e"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "5.38.0",
+            _ct: "2024-01-23T14:08:22.640Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-23T14:08:22.640Z"
         }
     ];
 };

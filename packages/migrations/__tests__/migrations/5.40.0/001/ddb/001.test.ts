@@ -9,7 +9,7 @@ import {
 } from "~tests/utils";
 import { FormBuilder_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
 import { createFormsData, createLocalesData, createTenantsData } from "./001.data";
-import { migratedData } from "./001.migratedTestData";
+import { migratedData } from "./001.migratedData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
