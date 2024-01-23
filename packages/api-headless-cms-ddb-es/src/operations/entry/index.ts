@@ -1022,29 +1022,6 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        try {
-            const result = await elasticsearch.indices.exists({
-                index
-            });
-            if (!result?.body) {
-                return {
-                    hasMoreItems: false,
-                    totalCount: 0,
-                    cursor: null,
-                    items: []
-                };
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not determine if Elasticsearch index exists.",
-                "ELASTICSEARCH_INDEX_CHECK_ERROR",
-                {
-                    error: ex,
-                    index
-                }
-            );
-        }
-
         const body = createElasticsearchBody({
             model,
             params: {
@@ -1062,6 +1039,18 @@ export const createEntriesStorageOperations = (
                 body
             });
         } catch (ex) {
+            /**
+             * We will silently ignore the `index_not_found_exception` error and return an empty result set.
+             * This is because the index might not exist yet, and we don't want to throw an error.
+             */
+            if (ex.message === "index_not_found_exception") {
+                return {
+                    hasMoreItems: false,
+                    totalCount: 0,
+                    cursor: null,
+                    items: []
+                };
+            }
             throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
                 error: ex,
                 index,
@@ -1708,24 +1697,6 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        try {
-            const result = await elasticsearch.indices.exists({
-                index
-            });
-            if (!result?.body) {
-                return [];
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not determine if Elasticsearch index exists.",
-                "ELASTICSEARCH_INDEX_CHECK_ERROR",
-                {
-                    error: ex,
-                    index
-                }
-            );
-        }
-
         const initialBody = createElasticsearchBody({
             model,
             params: {
@@ -1770,6 +1741,9 @@ export const createEntriesStorageOperations = (
                 body
             });
         } catch (ex) {
+            if (ex.message === "index_not_found_exception") {
+                return [];
+            }
             throw new WebinyError(
                 ex.message || "Error in the Elasticsearch query.",
                 ex.code || "ELASTICSEARCH_ERROR",
