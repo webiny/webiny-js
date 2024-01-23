@@ -4,7 +4,7 @@ import fastify, {
     preSerializationAsyncHookHandler
 } from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextRoutes, DefinedContextRoutes, RouteMethodOptions, HTTPMethods } from "~/types";
+import { ContextRoutes, DefinedContextRoutes, HTTPMethods, RouteMethodOptions } from "~/types";
 import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -150,6 +150,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We must attach the server to our internal context if we want to have it accessible.
      */
     const app = fastify({
+        bodyLimit: 10485760, // 10MB
         ...(params.options || {})
     });
     /**
