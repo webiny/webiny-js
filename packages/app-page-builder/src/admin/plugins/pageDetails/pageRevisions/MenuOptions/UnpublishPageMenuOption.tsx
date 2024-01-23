@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as UnpublishIcon } from "~/admin/assets/unpublish.svg";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData, PbPageRevision } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
-import { useFolders } from "@webiny/app-aco";
 
 export interface UnpublishPageMenuOptionProps {
     page: PbPageData;
@@ -15,17 +13,7 @@ export interface UnpublishPageMenuOptionProps {
 }
 
 export const PageRevisionUnpublishPageMenuOption = (props: UnpublishPageMenuOptionProps) => {
-    const { page, revision, unpublishRevision } = props;
-    const { canUnpublish: pagesCanUnpublish } = usePagesPermissions();
-    const { folderLevelPermissions: flp } = useFolders();
-
-    const hasAccess = useMemo(() => {
-        return pagesCanUnpublish() && flp.canManageContent(page.wbyAco_location?.folderId);
-    }, [page]);
-
-    if (!hasAccess) {
-        return null;
-    }
+    const { revision, unpublishRevision } = props;
 
     if (revision.status !== "published") {
         return null;

@@ -17,12 +17,12 @@ import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { PbPageData, PbPageRevision } from "~/types";
 import {
-    DeleteRevisionMenuOption,
-    EditRevisionMenuOption,
-    NewRevisionFromCurrent,
+    SecureDeleteRevisionMenuOption,
+    SecureEditRevisionMenuOption,
+    SecureNewRevisionFromCurrent,
     PreviewRevisionMenuOption,
-    PublishPageMenuOption,
-    UnpublishPageMenuOption
+    SecurePublishPageMenuOption,
+    SecureUnpublishPageMenuOption
 } from "./MenuOptions";
 import { PageRevisionListItemGraphic } from "./PageRevisionListItemGraphic";
 
@@ -76,18 +76,18 @@ const Revision = ({ revision, page }: RevisionProps) => {
             </ListItemText>
             <ListItemMeta>
                 <Menu handle={<IconButton icon={<MoreVerticalIcon />} />} className={revisionsMenu}>
-                    <NewRevisionFromCurrent page={page} createRevision={createRevision} />
-                    <EditRevisionMenuOption
+                    <SecureNewRevisionFromCurrent page={page} createRevision={createRevision} />
+                    <SecureEditRevisionMenuOption
                         page={page}
                         revision={revision}
                         editRevision={editRevision}
                     />
-                    <PublishPageMenuOption
+                    <SecurePublishPageMenuOption
                         page={page}
                         revision={revision}
                         publishRevision={publishRevision}
                     />
-                    <UnpublishPageMenuOption
+                    <SecureUnpublishPageMenuOption
                         page={page}
                         revision={revision}
                         unpublishRevision={unpublishRevision}
@@ -96,7 +96,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                         revision={revision}
                         previewRevision={handlePreviewClick}
                     />
-                    <DeleteRevisionMenuOption page={page} deleteRevision={deleteRevision} />
+                    <SecureDeleteRevisionMenuOption page={page} deleteRevision={deleteRevision} />
                 </Menu>
             </ListItemMeta>
         </ListItem>

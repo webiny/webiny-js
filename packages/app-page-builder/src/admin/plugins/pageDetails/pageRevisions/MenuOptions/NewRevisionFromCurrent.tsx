@@ -1,8 +1,6 @@
-import React, { useMemo } from "react";
-import { usePagesPermissions } from "~/hooks/permissions";
+import React from "react";
 import { PbPageData } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
-import { useFolders } from "@webiny/app-aco";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -14,17 +12,7 @@ export interface NewRevisionFromCurrentProps {
 }
 
 export const PageRevisionNewRevisionFromCurrent = (props: NewRevisionFromCurrentProps) => {
-    const { page, createRevision } = props;
-    const { canCreate: pagesCanCreate } = usePagesPermissions();
-    const { folderLevelPermissions: flp } = useFolders();
-
-    const hasAccess = useMemo(() => {
-        return pagesCanCreate() && flp.canManageContent(page.wbyAco_location?.folderId);
-    }, [page]);
-
-    if (!hasAccess) {
-        return null;
-    }
+    const { createRevision } = props;
 
     return (
         <MenuItem onClick={createRevision}>
