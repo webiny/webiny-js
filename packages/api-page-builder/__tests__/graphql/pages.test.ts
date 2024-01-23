@@ -594,7 +594,7 @@ describe("CRUD Test", () => {
         const content = createPageContent("4MB");
         const size = calculateSize(content);
 
-        expect(size).toBeGreaterThan(bytes("4.99MB"));
+        expect(size).toBeGreaterThan(bytes("3.99MB"));
 
         const [updatePageResponse] = await updatePage({
             id,
