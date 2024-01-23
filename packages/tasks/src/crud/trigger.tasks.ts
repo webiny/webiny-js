@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
 import {
     Context,
+    ITask,
     ITaskAbortParams,
     ITaskConfig,
     ITaskCreateData,
-    ITaskData,
     ITaskDataInput,
     ITaskLog,
     ITaskLogItemType,
@@ -12,7 +12,10 @@ import {
     ITaskTriggerParams,
     TaskDataStatus
 } from "~/types";
-import { createEventBridgeEventFactory } from "~/crud/createEventBridgeEvent";
+import {
+    createEventBridgeEventFactory,
+    PutEventsCommandOutput
+} from "~/crud/createEventBridgeEvent";
 import { NotFoundError } from "@webiny/handler-graphql";
 
 export const createTriggerTasksCrud = (
@@ -32,10 +35,8 @@ export const createTriggerTasksCrud = (
     });
 
     return {
-        trigger: async <T = ITaskDataInput>(
-            params: ITaskTriggerParams<T>
-        ): Promise<ITaskData<T>> => {
-            const { definition: id, input: inputValues, name } = params;
+        trigger: async <T = ITaskDataInput>(params: ITaskTriggerParams<T>): Promise<ITask<T>> => {
+            const { definition: id, input: inputValues, name, parent } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
@@ -45,7 +46,8 @@ export const createTriggerTasksCrud = (
             const input: ITaskCreateData<T> = {
                 name: name || definition.title,
                 definitionId: id,
-                input: inputValues || ({} as T)
+                input: inputValues || ({} as T),
+                parentId: parent?.id
             };
             if (definition.onBeforeTrigger) {
                 await definition.onBeforeTrigger<T>({
@@ -56,7 +58,7 @@ export const createTriggerTasksCrud = (
 
             const task = await context.tasks.createTask<T>(input);
 
-            let event: Record<string, any> | null = null;
+            let event: PutEventsCommandOutput | null = null;
             try {
                 event = await createEventBridgeEvent(task);
 
@@ -81,10 +83,17 @@ export const createTriggerTasksCrud = (
                 eventResponse: event
             });
         },
-        abort: async (params: ITaskAbortParams): Promise<ITaskData> => {
+        abort: async (params: ITaskAbortParams): Promise<ITask> => {
             const task = await context.tasks.getTask(params.id);
             if (!task) {
                 throw new NotFoundError(`Task "${params.id}" was not found!`);
+            }
+
+            const definition = context.tasks.getDefinition(task.definitionId);
+            if (!definition) {
+                throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
+                    id: task.id
+                });
             }
             /**
              * We should only be able to abort a task which is pending or running
@@ -124,6 +133,15 @@ export const createTriggerTasksCrud = (
                         }
                     ])
                 });
+                /**
+                 * TODO: determine when to kick off the onAbort hook
+                 */
+                if (definition.onAbort) {
+                    await definition.onAbort({
+                        context,
+                        task: updatedTask
+                    });
+                }
 
                 return updatedTask;
             } catch (ex) {

@@ -5,7 +5,7 @@ import {
     Context,
     IListTaskLogParams,
     IListTaskParams,
-    ITaskData,
+    ITask,
     ITaskDefinition,
     ITaskLog
 } from "~/types";
@@ -34,11 +34,16 @@ interface IDeleteTaskMutationParams {
     id: string;
 }
 
-const createWebinyBackgroundTaskDefinitionEnum = (definitions: ITaskDefinition[]): string => {
-    if (definitions.length === 0) {
+const createWebinyBackgroundTaskDefinitionEnum = (items: ITaskDefinition[]): string => {
+    if (items.length === 0) {
         return "Empty";
     }
-    return definitions.map(definition => definition.id).join("\n");
+    return items
+        .filter(item => {
+            return !item.isPrivate;
+        })
+        .map(definition => definition.id)
+        .join("\n");
 };
 
 export const createGraphQL = () => {
@@ -291,7 +296,13 @@ export const createGraphQL = () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
-                            return context.tasks.listDefinitions();
+                            const result = context.tasks.listDefinitions();
+                            /**
+                             * Do not output private tasks.
+                             */
+                            return result.filter(item => {
+                                return !item.isPrivate;
+                            });
                         });
                     },
                     listLogs: async (_, args: IListTaskLogParams, context) => {
@@ -345,7 +356,7 @@ export const createGraphQL = () => {
                  * Custom resolvers for fields
                  */
                 WebinyBackgroundTask: {
-                    logs: async (parent: ITaskData, args: IListTaskLogParams, context) => {
+                    logs: async (parent: ITask, args: IListTaskLogParams, context) => {
                         const { items } = await context.tasks.listLogs({
                             sort: ["createdBy_ASC"],
                             limit: 10000,

@@ -824,7 +824,7 @@ describe("listing latest pages", () => {
             () =>
                 listPages({
                     search: {
-                        query: "title for seo"
+                        query: "page title for seo"
                     }
                 }),
             ([res]: any) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
@@ -867,19 +867,12 @@ describe("listing latest pages", () => {
             { title: "Serverless Side Rendering — The Ultimate Guide" }
         ]);
 
-        const [listPagesSearchServerlessWorthIt] = await until(
-            () =>
-                listPages({
-                    search: {
-                        query: "serverless worth it"
-                    },
-                    sort: ["createdOn_ASC"]
-                }),
-            ([res]: any) => res.data.pageBuilder.listPages.data.length === 3,
-            {
-                name: "list pages serverless worth it"
-            }
-        );
+        const [listPagesSearchServerlessWorthIt] = await listPages({
+            search: {
+                query: "serverless worth it"
+            },
+            sort: ["createdOn_ASC"]
+        });
 
         expect(listPagesSearchServerlessWorthIt.data.pageBuilder.listPages.data).toMatchObject([
             { title: "What is Serverless and is it worth it?" },

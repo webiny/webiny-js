@@ -12,6 +12,7 @@ import {
     IResponseResult
 } from "./abstractions";
 import { ITaskManagerStore } from "~/runner/abstractions";
+import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class DatabaseResponse implements IResponseAsync {
     public readonly response: IResponse;
@@ -37,11 +38,13 @@ export class DatabaseResponse implements IResponseAsync {
     }
 
     public async done(params: IResponseDoneParams): Promise<IResponseDoneResult> {
+        const { output, ...rest } = params;
         let message = params.message;
         try {
             await this.store.updateTask({
                 taskStatus: TaskDataStatus.SUCCESS,
-                finishedOn: new Date().toISOString()
+                finishedOn: new Date().toISOString(),
+                output
             });
             await this.store.addInfoLog({
                 message: message || "Task done."
@@ -53,7 +56,7 @@ export class DatabaseResponse implements IResponseAsync {
          * Default behavior is to return the done response.
          */
         return this.response.done({
-            ...params,
+            ...rest,
             message
         });
     }
@@ -111,6 +114,8 @@ export class DatabaseResponse implements IResponseAsync {
     }
 
     public async error(params: IResponseErrorParams): Promise<IResponseErrorResult> {
+        const error =
+            params.error instanceof Error ? getErrorProperties(params.error) : params.error;
         try {
             await this.store.updateTask({
                 taskStatus: TaskDataStatus.FAILED,
@@ -119,21 +124,17 @@ export class DatabaseResponse implements IResponseAsync {
             await this.store.addErrorLog({
                 message: params.error.message,
                 data: this.store.getInput(),
-                error: {
-                    code: params.error.code,
-                    message: params.error.message,
-                    data: params.error.data
-                }
+                error
             });
         } catch (ex) {
             return this.response.error({
                 ...params,
                 error: {
-                    ...params.error,
-                    message: ex.message || params.error.message,
-                    code: ex.code || params.error.code,
+                    ...error,
+                    message: ex.message || error.message,
+                    code: ex.code || error.code,
                     data: {
-                        ...params.error.data,
+                        ...error.data,
                         ...ex.data,
                         input: this.store.getInput()
                     }
@@ -148,7 +149,7 @@ export class DatabaseResponse implements IResponseAsync {
             error: {
                 ...params.error,
                 data: {
-                    ...params.error.data,
+                    ...error.data,
                     input: this.store.getInput()
                 }
             }

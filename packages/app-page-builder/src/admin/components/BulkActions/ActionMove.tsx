@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
+import { useMoveToFolderDialog, useNavigateFolder, useRecords } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";

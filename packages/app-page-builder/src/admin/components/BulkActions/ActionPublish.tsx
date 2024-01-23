@@ -4,11 +4,9 @@ import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionPublish = observer(() => {
-    const { canPublish } = usePagesPermissions();
     const { publishPage, client } = useAdminPageBuilder();
     const { getRecord } = useRecords();
 
@@ -67,11 +65,6 @@ export const ActionPublish = observer(() => {
                 });
             }
         });
-
-    if (!canPublish()) {
-        console.log("You don't have permissions to publish pages.");
-        return null;
-    }
 
     return (
         <IconButton

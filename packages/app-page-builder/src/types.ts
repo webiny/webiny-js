@@ -360,6 +360,9 @@ export interface PbPageData {
     publishedOn: string;
     createdBy: PbIdentity;
     revisions: PbPageRevision[];
+    wbyAco_location: {
+        folderId: string;
+    };
 }
 
 export interface PbPageRevision {
