@@ -21,10 +21,6 @@ export const createWhere = (params: Params): CmsEntryListWhere | undefined => {
     // Once we migrate PB to HCMS, we can remove this check and always use `wbAco_location`.
     const locationFieldName = isPageModel(model) ? "location" : "wbyAco_location";
 
-    if (!where) {
-        return undefined;
-    }
-
     const whereLocation = {
         [locationFieldName]: {
             // At the moment, all users can access entries in the root folder.
@@ -32,6 +28,13 @@ export const createWhere = (params: Params): CmsEntryListWhere | undefined => {
             folderId_in: [ROOT_FOLDER, ...folders.map(folder => folder.id)]
         }
     };
+
+    if (!where) {
+        // If no `where` condition is present, that means we're performing a query
+        // across all folders. Still, with FLP enabled, we need to filter out
+        // folders to which the user does not have access.
+        return whereLocation;
+    }
 
     const whereAnd = where.AND;
     if (where[locationFieldName] && !whereAnd) {
