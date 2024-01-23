@@ -3,6 +3,8 @@ import { waitPage } from "./utils/waitPage";
 import { defaultIdentity } from "../tenancySecurity";
 import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 import { decompress } from "./utils/compression";
+import { calculateSize, createPageContent } from "~tests/graphql/mocks/pageContent";
+import bytes from "bytes";
 
 jest.setTimeout(100000);
 
@@ -116,7 +118,11 @@ describe("CRUD Test", () => {
                             src: `https://someimages.com/image-${i}.png`
                         }
                     }
-                }
+                },
+                /**
+                 * This basically creates a page content of 1.2MB in size
+                 */
+                content: createPageContent("1MB")
             };
 
             const [updatePageResponse] = await updatePage({
@@ -449,7 +455,7 @@ describe("CRUD Test", () => {
                     updatePageBlock: {
                         data: {
                             id: blockData.id,
-                            content: expectCompressed(updatedContent)
+                            content: expectCompressed()
                         },
                         error: null
                     }
@@ -509,5 +515,50 @@ describe("CRUD Test", () => {
             path: [],
             type: "block"
         });
+    });
+
+    it("should create a page with 3MB of content", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("3MB");
+        const size = calculateSize(content);
+        /**
+         * Validate that we really did generate more than 5MB of data.
+         */
+        expect(size).toBeGreaterThan(bytes("2.5MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(updatePageResponse.data.pageBuilder.updatePage.data.content).toEqual(content);
     });
 });

@@ -10,7 +10,6 @@ import { createSettingsCrud } from "./crud/settings.crud";
 import { createSystemCrud } from "./crud/system.crud";
 import { ContextPlugin } from "@webiny/api";
 import { PbContext, PrerenderingHandlers } from "~/graphql/types";
-import { JsonpackContentCompressionPlugin } from "~/plugins/JsonpackContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
 import { PageBuilderStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
@@ -20,6 +19,7 @@ import { CategoriesPermissions } from "./crud/permissions/CategoriesPermissions"
 import { BlockCategoriesPermissions } from "./crud/permissions/BlockCategoriesPermissions";
 import { PageTemplatesPermissions } from "~/graphql/crud/permissions/PageTemplatesPermissions";
 import { PageBlocksPermissions } from "~/graphql/crud/permissions/PageBlocksPermissions";
+import { GzipContentCompressionPlugin, JsonpackContentCompressionPlugin } from "~/plugins";
 
 export interface CreateCrudParams {
     storageOperations: PageBuilderStorageOperations;
@@ -227,6 +227,7 @@ const setup = (params: CreateCrudParams) => {
 export const createCrud = (params: CreateCrudParams) => {
     return [
         new JsonpackContentCompressionPlugin(),
+        new GzipContentCompressionPlugin(),
         setup(params),
         /**
          * We must have default compression in the page builder.
