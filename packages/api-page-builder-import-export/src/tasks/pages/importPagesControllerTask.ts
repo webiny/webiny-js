@@ -15,7 +15,9 @@ export const createImportPagesControllerTask = () => {
             if (isAborted()) {
                 return response.aborted();
             }
-            const { importPages } = await import("~/import/pages");
+            const { importPages } = await import(
+                /* webpackChunkName: "PageImportTaskController" */ "~/import/pages"
+            );
 
             return await importPages(params);
         }

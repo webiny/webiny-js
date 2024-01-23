@@ -4,6 +4,7 @@ import { ITaskResponseResult } from "@webiny/tasks";
 export class ExportPagesCleanup {
     public async execute(params: IExportPagesCleanupTaskParams): Promise<ITaskResponseResult> {
         const { response } = params;
-        return response.done();
+
+        return response.done("Done with cleanup!");
     }
 }
