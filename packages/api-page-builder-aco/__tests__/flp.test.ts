@@ -55,6 +55,10 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
             );
         }
 
+        await until(gqlIdentityA.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.data.length === 4;
+        });
+
         await expect(
             gqlIdentityA.pageBuilder.listPages().then(([response]) => {
                 return response.data.pageBuilder.listPages.data;
@@ -76,12 +80,16 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
         for (let i = 1; i <= 4; i++) {
             createdPages.push(
                 await gqlIdentityB.pageBuilder
-                    .createPage({ category: "static" })
+                    .createPage({ category: "static", meta: { location: "root" } })
                     .then(([response]) => {
                         return response.data.pageBuilder.createPage.data;
                     })
             );
         }
+
+        await until(gqlIdentityB.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.data.length === 4;
+        });
 
         await expect(
             gqlIdentityB.pageBuilder.listPages().then(([response]) => {
