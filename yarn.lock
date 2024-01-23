@@ -15351,6 +15351,7 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-graphql": 0.0.0
+    "@webiny/lexical-converter": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
@@ -15363,13 +15364,14 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     jest: ^29.5.0
+    jsdom: 21.1.2
     lodash: ^4.5.0
     p-map: ^4.0.0
     p-reduce: ^2.1.0
     pluralize: ^8.0.0
     prettier: ^2.8.3
     rimraf: ^3.0.2
-    semver: ^6.3.0
+    semver: ^7.3.5
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -17849,7 +17851,7 @@ __metadata:
     ncp: 2.0.0
     open: ^8.0.6
     pirates: ^4.0.1
-    semver: ^7.3.4
+    semver: ^7.3.5
     ts-morph: ^11.0.0
     typescript: 4.7.4
     uniqid: 5.4.0
@@ -17930,7 +17932,7 @@ __metadata:
     minimatch: ^5.1.6
     pino-pretty: ^9.4.0
     rimraf: ^3.0.2
-    semver: ^6.3.0
+    semver: ^7.3.5
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -18241,7 +18243,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/lexical-converter@workspace:packages/lexical-converter":
+"@webiny/lexical-converter@0.0.0, @webiny/lexical-converter@workspace:packages/lexical-converter":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-converter@workspace:packages/lexical-converter"
   dependencies:
@@ -24085,7 +24087,7 @@ __metadata:
     os: 0.1.1
     p-retry: ^4.6.0
     rimraf: 3.0.2
-    semver: ^7.3.4
+    semver: ^7.3.5
     uuid: 8.3.2
     validate-npm-package-name: 3.0.0
     write-json-file: 4.3.0
