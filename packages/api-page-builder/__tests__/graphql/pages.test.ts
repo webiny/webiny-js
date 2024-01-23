@@ -560,5 +560,20 @@ describe("CRUD Test", () => {
             }
         });
         expect(updatePageResponse.data.pageBuilder.updatePage.data.content).toEqual(content);
+
+        const [getPageResponse] = await getPage({ id });
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(getPageResponse.data.pageBuilder.getPage.data.content).toEqual(content);
     });
 });
