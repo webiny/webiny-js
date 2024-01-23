@@ -29,6 +29,7 @@ export class CmsEntriesCrudDecorators {
             const folders = await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
             const where = createWhere({
+                model,
                 where: params.where,
                 folders
             });
