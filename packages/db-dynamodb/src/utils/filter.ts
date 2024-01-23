@@ -24,6 +24,7 @@ interface MappedPluginParams<T extends Plugin = Plugin> {
 }
 
 interface Filter {
+    operation: string;
     compareValue: any;
     filterPlugin: ValueFilterPlugin;
     transformValue?: TransformValue;
@@ -121,9 +122,12 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
                 }
                 return field;
             });
+
+            const filterPlugin = findFilterPlugin(filterPlugins, key);
             filters.push({
+                operation: filterPlugin.operation,
                 compareValue: data.value,
-                filterPlugin: findFilterPlugin(filterPlugins, key),
+                filterPlugin,
                 transformValue,
                 paths,
                 negate: false
@@ -146,6 +150,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         }
 
         filters.push({
+            operation: filterPlugin.operation,
             compareValue,
             filterPlugin,
             transformValue,
