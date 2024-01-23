@@ -28,7 +28,7 @@ import { plugins } from "@webiny/plugins";
 import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin, PbPageTemplate } from "~/types";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { useRecords } from "@webiny/app-aco";
+import { useFolders, useRecords } from "@webiny/app-aco";
 import { usePagesPermissions, useTemplatesPermissions } from "~/hooks/permissions";
 
 const menuStyles = css({
@@ -137,10 +137,14 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
     );
 
     const { canWrite: pagesCanWrite } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
     const { canCreate: templatesCanCreate } = useTemplatesPermissions();
 
     const canDuplicate = pagesCanWrite();
     const canCreateTemplate = templatesCanCreate();
+
+    const folderId = page.wbyAco_location?.folderId;
+    const flpCanManageContent = flp.canManageContent(folderId);
 
     const previewButtonLabel = page.status === "published" ? "View" : "Preview";
     const isTemplatePage = page.content?.data?.template;
@@ -164,79 +168,83 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
                 {previewButtonLabel}
             </MenuItem>
 
-            <SecureView permission={"pb.settings"}>
-                <MenuItem
-                    className={classNames({ disabled: isSpecialPage(page.pid, "home") })}
-                    onClick={() => {
-                        showConfirmation(async () => {
-                            if (!page.locked) {
-                                const response = await pageBuilder.publishPage(page, {
-                                    client: pageBuilder.client
-                                });
-                                /**
-                                 * In case of exit in "publishPage" lifecycle, "publishPage" hook will return undefined,
-                                 * indicating an immediate exit.
-                                 */
-                                if (!response) {
-                                    return;
-                                }
-                                const { error } = response;
-                                if (error) {
-                                    return showSnackbar(error.message);
-                                }
-                            }
-
-                            const [updateSettings] = updateSettingsMutation;
-                            const response = await updateSettings({
-                                variables: {
-                                    data: {
-                                        pages: {
-                                            ...settings.pages,
-                                            home: page.id
+            {flpCanManageContent && (
+                <>
+                    <SecureView permission={"pb.settings"}>
+                        <MenuItem
+                            className={classNames({ disabled: isSpecialPage(page.pid, "home") })}
+                            onClick={() => {
+                                showConfirmation(async () => {
+                                    if (!page.locked) {
+                                        const response = await pageBuilder.publishPage(page, {
+                                            client: pageBuilder.client
+                                        });
+                                        /**
+                                         * In case of exit in "publishPage" lifecycle, "publishPage" hook will return undefined,
+                                         * indicating an immediate exit.
+                                         */
+                                        if (!response) {
+                                            return;
+                                        }
+                                        const { error } = response;
+                                        if (error) {
+                                            return showSnackbar(error.message);
                                         }
                                     }
-                                }
-                            });
 
-                            const { error } = response.data.pageBuilder.updateSettings;
-                            if (error) {
-                                showSnackbar(error.message);
-                            } else {
-                                showSnackbar("Homepage set successfully!");
-                            }
-                        });
-                    }}
-                >
-                    <ListItemGraphic>
-                        <Icon icon={<HomeIcon />} />
-                    </ListItemGraphic>
-                    Set as homepage
-                </MenuItem>
-            </SecureView>
+                                    const [updateSettings] = updateSettingsMutation;
+                                    const response = await updateSettings({
+                                        variables: {
+                                            data: {
+                                                pages: {
+                                                    ...settings.pages,
+                                                    home: page.id
+                                                }
+                                            }
+                                        }
+                                    });
 
-            {canDuplicate && (
-                <MenuItem onClick={handleDuplicateClick}>
-                    <ListItemGraphic>
-                        <Icon icon={<DuplicateIcon />} />
-                    </ListItemGraphic>
-                    Duplicate
-                </MenuItem>
-            )}
+                                    const { error } = response.data.pageBuilder.updateSettings;
+                                    if (error) {
+                                        showSnackbar(error.message);
+                                    } else {
+                                        showSnackbar("Homepage set successfully!");
+                                    }
+                                });
+                            }}
+                        >
+                            <ListItemGraphic>
+                                <Icon icon={<HomeIcon />} />
+                            </ListItemGraphic>
+                            Set as homepage
+                        </MenuItem>
+                    </SecureView>
 
-            {canCreateTemplate && !isTemplatePage && (
-                <MenuItem onClick={() => setIsCreateTemplateDialogOpen(true)}>
-                    <ListItemGraphic>
-                        <Icon icon={<GridViewIcon />} />
-                    </ListItemGraphic>
-                    Save as a template
-                </MenuItem>
-            )}
+                    {canDuplicate && (
+                        <MenuItem onClick={handleDuplicateClick}>
+                            <ListItemGraphic>
+                                <Icon icon={<DuplicateIcon />} />
+                            </ListItemGraphic>
+                            Duplicate
+                        </MenuItem>
+                    )}
 
-            {isCreateTemplateDialogOpen && (
-                <CreatePageTemplateDialog
-                    onClose={() => setIsCreateTemplateDialogOpen(false)}
-                    onSubmit={handleCreateTemplateClick}
-                />
+                    {canCreateTemplate && !isTemplatePage && (
+                        <MenuItem onClick={() => setIsCreateTemplateDialogOpen(true)}>
+                            <ListItemGraphic>
+                                <Icon icon={<GridViewIcon />} />
+                            </ListItemGraphic>
+                            Save as a template
+                        </MenuItem>
+                    )}
+
+                    {isCreateTemplateDialogOpen && (
+                        <CreatePageTemplateDialog
+                            onClose={() => setIsCreateTemplateDialogOpen(false)}
+                            onSubmit={handleCreateTemplateClick}
+                        />
+                    )}
+                </>
             )}
 
             {plugins

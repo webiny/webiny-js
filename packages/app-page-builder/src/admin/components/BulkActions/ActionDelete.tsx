@@ -4,11 +4,9 @@ import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
-    const { canDelete } = usePagesPermissions();
     const { deletePage, client } = useAdminPageBuilder();
     const { removeRecordFromCache } = useRecords();
 
@@ -20,10 +18,6 @@ export const ActionDelete = observer(() => {
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
     }, [worker.items.length]);
-
-    const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => canDelete(item.data.createdBy.id));
-    }, [worker.items]);
 
     const openDeletePagesDialog = () =>
         showConfirmationDialog({
@@ -78,11 +72,6 @@ export const ActionDelete = observer(() => {
                 });
             }
         });
-
-    if (!canDeleteAll) {
-        console.log("You don't have permissions to delete pages.");
-        return null;
-    }
 
     return (
         <IconButton

@@ -1,5 +1,5 @@
 import PagePublishRevision from "./admin/plugins/pageDetails/header/publishRevision/PublishRevision";
-import { PublishPageMenuOption } from "./admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
+import { PublishPageMenuOption } from "./admin/plugins/pageDetails/pageRevisions/MenuOptions/PublishPageMenuOption";
 import { PageRevisionListItemGraphic } from "./admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 import { PublishPageButton } from "./pageEditor";
 
