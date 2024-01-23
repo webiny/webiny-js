@@ -11,4 +11,3 @@ export const isPageModel = (model: CmsModel): boolean => {
     }
     return false;
 };
-

@@ -9,4 +9,3 @@ export const createFolderType = (model: CmsModel): "FmFile" | "PbPage" | `cms:${
     }
     return `cms:${model.modelId}`;
 };
-
