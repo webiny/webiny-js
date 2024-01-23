@@ -120,7 +120,7 @@ describe("CRUD Test", () => {
                     }
                 },
                 /**
-                 * This basically creates a page content of 1.2MB in size
+                 * This basically creates a page content of 1MB in size
                  */
                 content: createPageContent("1MB")
             };
