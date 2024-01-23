@@ -3,13 +3,13 @@ import { IResponseBaseResult } from "./ResponseBaseResult";
 
 export interface IResponseError {
     message: string;
-    code: string;
+    code?: string;
     data?: Record<string, any>;
     stack?: string;
 }
 
 export interface IResponseErrorParams {
-    error: IResponseError;
+    error: IResponseError | Error;
     tenant?: string;
     locale?: string;
     webinyTaskId?: string;

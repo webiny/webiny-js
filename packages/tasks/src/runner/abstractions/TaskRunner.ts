@@ -9,7 +9,7 @@ export interface ITaskRunner<C extends Context = Context> {
     reply: Reply;
     context: C;
     lambdaContext: LambdaContext;
-    isCloseToTimeout: () => boolean;
+    isCloseToTimeout: (seconds?: number) => boolean;
     getRemainingTime: () => number;
 
     run(event: ITaskEvent): Promise<IResponseResult>;

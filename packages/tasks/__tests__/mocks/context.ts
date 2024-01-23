@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 import {
     Context,
-    ITaskData,
+    ITask,
     ITaskLog,
     ITaskLogUpdateInput,
     ITaskUpdateData,
@@ -12,7 +12,7 @@ import { createMockTask } from "./task";
 import { createMockTaskLog } from "~tests/mocks/taskLog";
 
 export const createMockContext = (params?: PartialDeep<Context>): Context => {
-    const getTask = async (id: string): Promise<ITaskData> => {
+    const getTask = async (id: string): Promise<ITask> => {
         return {
             ...createMockTask(),
             id

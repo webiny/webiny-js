@@ -1,6 +1,6 @@
 import {
     IResponseError,
-    ITaskData,
+    ITask,
     ITaskDataInput,
     ITaskLogItemData,
     ITaskUpdateData,
@@ -18,7 +18,7 @@ export type ITaskManagerStoreUpdateTaskInputParam<T extends ITaskDataInput = ITa
     | Partial<ITaskManagerStoreUpdateTaskValues<T>>;
 
 export interface ITaskManagerStoreUpdateTaskParamCb<T extends ITaskDataInput = ITaskDataInput> {
-    (task: ITaskData<T>): ITaskUpdateData<T>;
+    (task: ITask<T>): ITaskUpdateData<T>;
 }
 
 export type ITaskManagerStoreUpdateTask<T extends ITaskDataInput = ITaskDataInput> =
@@ -36,12 +36,12 @@ export interface ITaskManagerStoreInfoLog {
 export interface ITaskManagerStoreErrorLog {
     message: string;
     data?: ITaskLogItemData;
-    error: IResponseError;
+    error: IResponseError | Error;
 }
 
 export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
-    setTask: (task: ITaskData<T>) => void;
-    getTask: () => ITaskData<T>;
+    setTask: (task: ITask<T>) => void;
+    getTask: () => ITask<T>;
     getStatus: () => TaskDataStatus;
     /**
      * @throws {Error} If task not found or something goes wrong during the database update.
@@ -55,6 +55,14 @@ export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
      */
     updateInput: (params: ITaskManagerStoreUpdateTaskInputParam<T>) => Promise<void>;
     getInput: () => T;
+    /**
+     * @throws {Error} If task not found or something goes wrong during the database update.
+     */
     addInfoLog: (log: ITaskManagerStoreInfoLog) => Promise<void>;
+    /**
+     * @throws {Error} If task not found or something goes wrong during the database update.
+     *
+     *
+     */
     addErrorLog: (log: ITaskManagerStoreErrorLog) => Promise<void>;
 }

@@ -7,7 +7,7 @@ import { Response } from "~/response";
 import { TaskControl } from "./TaskControl";
 import { TaskEventValidation } from "./TaskEventValidation";
 import { IResponseResult } from "~/response/abstractions";
-import { getObjectProperties } from "~/runner/utils/getObjectProperties";
+import { getErrorProperties } from "~/utils/getErrorProperties";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -47,11 +47,11 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.validation = validation;
     }
 
-    public isCloseToTimeout() {
-        return (
-            this.lambdaContext.getRemainingTimeInMillis() <
-            transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes())
-        );
+    public isCloseToTimeout(seconds?: number) {
+        const milliseconds = seconds
+            ? seconds * 1000
+            : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
+        return this.lambdaContext.getRemainingTimeInMillis() < milliseconds;
     }
 
     public getRemainingTime() {
@@ -66,7 +66,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             event = this.validation.validate(input);
         } catch (ex) {
             return response.error({
-                error: getObjectProperties(ex)
+                error: getErrorProperties(ex)
             });
         }
 
@@ -76,7 +76,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             return await control.run(event);
         } catch (ex) {
             return response.error({
-                error: getObjectProperties(ex)
+                error: getErrorProperties(ex)
             });
         }
     }
