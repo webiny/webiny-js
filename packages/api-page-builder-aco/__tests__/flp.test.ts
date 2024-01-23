@@ -1,5 +1,6 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 
 const FOLDER_TYPE = "PbPage";
 
@@ -135,6 +136,31 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
                         level: "owner"
                     }
                 ]
+            }
+        });
+
+        // Listing ACO records in the folder should be forbidden for identity C.
+        const [emptySearchRecordsList] = await gqlIdentityC.search.listRecords({
+            where: {
+                location: {
+                    folderId: folder.id
+                }
+            }
+        });
+
+        expect(emptySearchRecordsList).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 0,
+                            cursor: null
+                        }
+                    }
+                }
             }
         });
 
@@ -295,6 +321,10 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
         }
 
         // Listing pages in the folder should be now allowed for identity C.
+        await until(gqlIdentityC.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.meta.totalCount === 1;
+        });
+
         await expect(
             gqlIdentityC.pageBuilder.listPages().then(([response]) => {
                 return response.data.pageBuilder.listPages;
