@@ -94,6 +94,7 @@ export const EditAction = (props: EditActionProps) => {
                     onAccept={src => {
                         const blob = dataURLtoBlob(src);
                         blob.name = file.name;
+                        blob.key = file.key.split("/").pop();
                         uploadFile(blob);
                         dispatch({ type: "hideImageEditor" });
                     }}

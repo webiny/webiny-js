@@ -14,8 +14,6 @@ export interface CreateAcoStorageOperationsParams {
     getCmsContext: () => CmsContext;
 }
 
-export const baseFields = ["id", "entryId", "createdBy", "createdOn", "savedOn"];
-
 export const createAcoStorageOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoStorageOperations => {

@@ -1,18 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef } from "react";
+import ReactDOM from "react-dom";
 // @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
-import omit from "lodash/omit";
 import styled from "@emotion/styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { Form, FormOnSubmit } from "@webiny/form";
-import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
+import { prepareFormData } from "@webiny/app-headless-cms-common";
+import { DrawerRight, DrawerContent } from "@webiny/ui/Drawer";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
 import { PreviewMeta } from "./components/PreviewMeta";
-import { Actions } from "./components/Actions";
+import { Actions, FileDetailsActions } from "./components/Actions";
 import { Header } from "./components/Header";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Content } from "./components/Content";
@@ -20,55 +21,40 @@ import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
 import { Footer } from "./components/Footer";
 import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
-import { useFileManagerView, useFileManagerViewConfig } from "~/index";
-import { useSnackbar } from "@webiny/app-admin";
-import { useFileDetails } from "~/hooks/useFileDetails";
+import { useFileManagerViewConfig } from "~/index";
 import { FileProvider } from "~/contexts/FileProvider";
-import { prepareFormData } from "@webiny/app-headless-cms-common";
-import { CmsModelField } from "@webiny/app-headless-cms/types";
 
-type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
+type FileDetailsDrawerProps = React.ComponentProps<typeof DrawerRight> & { width: string };
 
-const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
+const FileDetailsDrawer = styled(DrawerRight)<FileDetailsDrawerProps>`
     z-index: 70;
     &.mdc-drawer {
         width: ${props => props.width};
+    }
+    .mdc-drawer__content {
+        overflow-y: hidden;
+    }
+    & + .mdc-drawer-scrim {
+        z-index: 65;
     }
 `;
 
 const FormContainer = styled(SimpleForm)`
     margin: 0;
-    /* Fix for the dir=rtl when a form is inside a drawer placed on the right side */
-    .mdc-floating-label {
-        transform-origin: left top !important;
-        left: 16px !important;
-        right: initial !important;
-    }
 `;
 
 interface FileDetailsInnerProps {
     file: FileItem;
     onClose: () => void;
+    onSubmit: (fileData: FileItem) => void;
+    actions: FileDetailsActions;
 }
 
-const prepareFileData = (data: Record<string, any>, fields: CmsModelField[]) => {
-    const output = omit(data, ["createdBy", "createdOn", "src"]);
-    if (fields.length === 0) {
-        return output;
-    }
-    return {
-        ...output,
-        extensions: prepareFormData(output.extensions, fields)
-    };
-};
-
-const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
-    const [isLoading, setLoading] = useState(false);
-    const { showSnackbar } = useSnackbar();
+const FileDetailsInner = ({ file, actions, ...props }: FileDetailsInnerProps) => {
     const fileModel = useFileModel();
-    const { updateFile } = useFileManagerView();
-    const { close } = useFileDetails();
     const { fileDetails } = useFileManagerViewConfig();
+
+    const [, leftPanel = "1", rightPanel = "1"] = fileDetails.width.split(",");
 
     const extensionFields = useMemo(() => {
         const fields = fileModel.fields.find(field => field.fieldId === "extensions");
@@ -78,65 +64,95 @@ const FileDetailsInner = ({ file }: FileDetailsInnerProps) => {
         return fields?.settings?.fields || [];
     }, [fileModel]);
 
-    const onSubmit: FormOnSubmit<FileItem> = async ({ id, ...data }) => {
-        setLoading(true);
-        const fileData = prepareFileData(data, extensionFields);
-        await updateFile(id, fileData);
-        setLoading(false);
-        showSnackbar("File updated successfully!");
-        close();
+    const onSubmit: FormOnSubmit<FileItem> = async data => {
+        const fileData = prepareFormData(data, fileModel.fields);
+        props.onSubmit({ ...file, ...fileData });
     };
+
+    const basicFieldsElement = (
+        <Grid>
+            {fileDetails.fields.map(field => (
+                <Cell span={12} key={field.name}>
+                    {field.element}
+                </Cell>
+            ))}
+        </Grid>
+    );
+
+    const extensionFieldsElement =
+        extensionFields.length > 0 ? <Extensions model={fileModel} /> : null;
 
     return (
         <Form data={file} onSubmit={onSubmit}>
             {() => (
-                <DrawerContent dir="ltr">
-                    {isLoading ? <CircularProgress label={"Saving file..."} /> : null}
-                    <FormContainer>
-                        <Header />
-                        <Content>
-                            <Content.Panel>
-                                <Elevation z={2} style={{ margin: 20 }}>
-                                    <Actions />
-                                    <Preview />
-                                    <PreviewMeta />
-                                </Elevation>
-                            </Content.Panel>
-                            <Content.Panel>
+                <FormContainer>
+                    <Header />
+                    <Content>
+                        <Content.Panel flex={parseFloat(leftPanel)}>
+                            <Elevation z={2} style={{ margin: 20 }}>
+                                <Actions file={file} actions={actions} />
+                                <Preview />
+                                <PreviewMeta />
+                            </Elevation>
+                        </Content.Panel>
+                        <Content.Panel flex={parseFloat(rightPanel)}>
+                            {fileDetails.groupFields ? (
                                 <Tabs>
-                                    <Tab label={"Basic Details"}>
-                                        <Grid>
-                                            {fileDetails.fields.map(field => (
-                                                <Cell span={12} key={field.name}>
-                                                    {field.element}
-                                                </Cell>
-                                            ))}
-                                        </Grid>
-                                    </Tab>
-                                    {extensionFields.length > 0 ? (
-                                        <Tab label={"Advanced Details"}>
-                                            <Extensions model={fileModel} />
-                                        </Tab>
-                                    ) : null}
+                                    <Tab label={"Basic Details"}>{basicFieldsElement}</Tab>
+                                    <Tab label={"Advanced Details"}>{extensionFieldsElement}</Tab>
                                 </Tabs>
-                            </Content.Panel>
-                        </Content>
-                        <Footer />
-                    </FormContainer>
-                </DrawerContent>
+                            ) : (
+                                <>
+                                    {basicFieldsElement}
+                                    {extensionFieldsElement}
+                                </>
+                            )}
+                        </Content.Panel>
+                    </Content>
+                    <Footer />
+                </FormContainer>
             )}
         </Form>
     );
 };
 
+function getPortalTarget() {
+    let target = window.document.getElementById("file-details-drawer");
+    if (!target) {
+        target = document.createElement("div");
+        target.setAttribute("id", "file-details-drawer");
+        document.body && document.body.appendChild(target);
+    }
+    return target;
+}
+
+interface FileDetailsPortalProps {
+    children: React.ReactNode;
+}
+
+const FileDetailsPortal = ({ children }: FileDetailsPortalProps) => {
+    const containerRef = useRef<HTMLElement>(getPortalTarget());
+
+    return ReactDOM.createPortal(children, containerRef.current);
+};
+
 export interface FileDetailsProps {
     file?: FileItem;
     open: boolean;
-    loading: boolean;
+    loading: string | null;
     onClose: () => void;
+    onSave: (file: FileItem) => void;
+    actions?: Partial<FileDetailsActions>;
 }
 
-export const FileDetails = ({ open, onClose, loading, file }: FileDetailsProps) => {
+export const FileDetails = ({
+    open,
+    onClose,
+    onSave,
+    loading,
+    file,
+    ...props
+}: FileDetailsProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -145,27 +161,46 @@ export const FileDetails = ({ open, onClose, loading, file }: FileDetailsProps) 
         }
     });
 
+    const actions: FileDetailsActions = Object.assign(
+        {
+            copyUrl: true,
+            delete: true,
+            moveToFolder: true,
+            download: true,
+            edit: true
+        },
+        props.actions
+    );
+
     const { fileDetails } = useFileManagerViewConfig();
 
+    const drawerWidth = fileDetails.width.split(",")[0];
+
     return (
-        <FileDetailsDrawer
-            width={fileDetails.width}
-            dir="rtl"
-            modal
-            open={open}
-            onClose={onClose}
-            data-testid={"fm.file-details.drawer"}
-        >
-            <DrawerContent dir="ltr">
-                {loading && <CircularProgress label={"Loading file details..."} />}
-                {file && (
-                    <FileProvider file={file}>
-                        <FileDetailsProvider hideFileDetails={onClose}>
-                            <FileDetailsInner file={file} onClose={onClose} />
-                        </FileDetailsProvider>
-                    </FileProvider>
-                )}
-            </DrawerContent>
-        </FileDetailsDrawer>
+        <FileDetailsPortal>
+            <FileDetailsDrawer
+                width={drawerWidth}
+                modal
+                open={open}
+                onClose={onClose}
+                data-testid={"fm.file-details.drawer"}
+            >
+                <DrawerContent>
+                    {loading && <CircularProgress label={loading} />}
+                    {file && (
+                        <FileProvider file={file}>
+                            <FileDetailsProvider hideFileDetails={onClose}>
+                                <FileDetailsInner
+                                    file={file}
+                                    onClose={onClose}
+                                    onSubmit={onSave}
+                                    actions={actions}
+                                />
+                            </FileDetailsProvider>
+                        </FileProvider>
+                    )}
+                </DrawerContent>
+            </FileDetailsDrawer>
+        </FileDetailsPortal>
     );
 };

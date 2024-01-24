@@ -3,12 +3,12 @@ import { Element as ElementType, RendererMeta } from "~/types";
 import { usePageElements } from "~/hooks/usePageElements";
 import ErrorBoundary from "./ErrorBoundary";
 
-export interface Props {
+export interface ElementProps {
     element: ElementType;
     meta?: RendererMeta;
 }
 
-export const Element: React.FC<Props> = props => {
+export const Element = (props: ElementProps) => {
     const { getRenderers } = usePageElements();
 
     const renderers = getRenderers();

@@ -11,6 +11,44 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
 
+export type DropTargetType = "field" | "row" | "conditionGroup" | "step";
+
+export interface DropTarget {
+    // Contains info about the Element that we are dragging.
+    type: DropTargetType;
+    // Property "id" is optional because when we move row it does not have an id.
+    id?: string;
+    name: string;
+}
+
+export type DropPosition = {
+    row: number;
+    // Property "index" can be null in case we move row.
+    index: number | null;
+};
+
+export type ContainerType = "step" | "conditionGroup";
+
+export type Container = {
+    type: ContainerType;
+    id: string;
+};
+
+export interface DropSource {
+    // Contains info about the Container from which we are dragging an element or elements.
+    // containerId and containerType could be undefined in case we are creating a custom field.
+    containerId?: string;
+    containerType?: ContainerType;
+    position: DropPosition;
+}
+
+export interface DropDestination {
+    // Contains info about the Container in which we are dropping an element or elements.
+    containerId: string;
+    containerType: ContainerType;
+    position: DropPosition;
+}
+
 export interface FbErrorResponse {
     message: string;
     code?: string | null;
@@ -112,6 +150,13 @@ export interface FbFormStep {
     layout: FbFormModelFieldsLayout;
 }
 
+export interface MoveStepParams {
+    source: Omit<DropSource, "containerType">;
+    destination: {
+        containerId: string;
+    };
+}
+
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
     field: {
@@ -191,7 +236,7 @@ export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
 }
 
 export interface FbFormModelField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;

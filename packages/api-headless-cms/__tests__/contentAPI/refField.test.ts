@@ -1,103 +1,72 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsEntry, CmsGroup } from "~/types";
-import models from "./mocks/contentModels";
+import { CmsEntry } from "~/types";
 import { useReviewManageHandler } from "../testHelpers/useReviewManageHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useReviewReadHandler } from "../testHelpers/useReviewReadHandler";
 import { useAuthorManageHandler } from "../testHelpers/useAuthorManageHandler";
+import { useWrapManageHandler } from "~tests/testHelpers/useWrapManageHandler";
+import {
+    setupContentModelGroup,
+    setupContentModels as setupContentModelsBase
+} from "~tests/testHelpers/setup";
+import { useWrapReadHandler } from "~tests/testHelpers/useWrapReadHandler";
+
+interface CreateCategoryParams {
+    title?: string;
+    slug?: string;
+}
+
+interface CreateProductParams {
+    title?: string;
+    price?: number;
+    availableOn?: string;
+    color?: string;
+    availableSizes?: string[];
+    image?: string;
+}
+
+interface CreateAuthorParams {
+    fullName?: string;
+}
 
 describe("refField", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const { createContentModelMutation, createContentModelGroupMutation } =
-        useGraphQLHandler(manageOpts);
+    const mainHandler = useGraphQLHandler(manageOpts);
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
-        });
-        return createCMG.data.createContentModelGroup.data;
+    const setupContentModels = async (
+        handler: ReturnType<typeof useGraphQLHandler>,
+        models?: string[]
+    ) => {
+        const group = await setupContentModelGroup(handler);
+        return await setupContentModelsBase(
+            handler,
+            group,
+            models || ["category", "product", "review", "author"]
+        );
     };
 
-    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
-        const model = models.find(m => m.modelId === name);
-        if (!model) {
-            throw new Error(`Could not find model "${name}".`);
-        }
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                singularApiName: model.singularApiName,
-                pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id,
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        } else if (create.data.createContentModel.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.error.message}`);
-            process.exit(1);
-        }
-
-        return create.data.createContentModel.data;
-
-        // const [update] = await updateContentModelMutation({
-        //     modelId: create.data.createContentModel.data.modelId,
-        //     data: {
-        //
-        //     }
-        // });
-        // if (update.errors) {
-        //     console.error(`[beforeEach] ${update.errors[0].message}`);
-        //     process.exit(1);
-        // } else if (update.data.updateContentModel.error) {
-        //     console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-        //     process.exit(1);
-        // }
-        // return update.data.updateContentModel.data;
-    };
-    const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models: Record<string, any> = {
-            category: null,
-            product: null,
-            review: null,
-            author: null
-        };
-        for (const name in models) {
-            models[name] = await setupContentModel(contentModelGroup, name);
-        }
-        return models;
-    };
-
-    const createCategory = async () => {
-        const { createCategory } = useCategoryManageHandler({
+    const createCategory = async (params?: CreateCategoryParams) => {
+        const { createCategory, publishCategory } = useCategoryManageHandler({
             ...manageOpts
         });
         const [createCategoryResponse] = await createCategory({
             data: {
                 title: "Vegetables",
-                slug: "vegetables"
+                slug: "vegetables",
+                ...params
             }
         });
-        return createCategoryResponse.data.createCategory.data as CmsEntry;
+        const [publishCategoryResponse] = await publishCategory({
+            revision: createCategoryResponse.data.createCategory.data.id
+        });
+
+        return publishCategoryResponse.data.publishCategory.data as CmsEntry;
     };
 
-    const createProduct = async (category: CmsEntry) => {
+    const createProduct = async (category: CmsEntry, params?: CreateProductParams) => {
         const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });
@@ -110,6 +79,7 @@ describe("refField", () => {
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "file.jpg",
+                ...params,
                 category: {
                     modelId: "category",
                     id: category.id
@@ -135,13 +105,14 @@ describe("refField", () => {
         return publishProductResponse.data.publishProduct.data;
     };
 
-    const createAuthor = async () => {
+    const createAuthor = async (params?: CreateAuthorParams) => {
         const { createAuthor, publishAuthor } = useAuthorManageHandler({
             ...manageOpts
         });
         const [createResponse] = await createAuthor({
             data: {
-                fullName: "John Doe"
+                fullName: "John Doe",
+                ...params
             }
         });
 
@@ -153,8 +124,7 @@ describe("refField", () => {
     };
 
     test("should create review connected to a product", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-        await setupContentModels(contentModelGroup);
+        await setupContentModels(mainHandler);
 
         const category = await createCategory();
         const product = await createProduct(category);
@@ -191,7 +161,7 @@ describe("refField", () => {
         });
 
         const publishedReview = publishResponse.data.publishReview.data;
-        const { publishedOn } = publishedReview.meta;
+        const { firstPublishedOn, modifiedOn, lastPublishedOn } = publishedReview;
 
         const [manageGetResponse] = await manageGetReview({
             revision: review.id
@@ -212,10 +182,12 @@ describe("refField", () => {
                         savedOn: publishedReview.savedOn,
                         text: "review text",
                         rating: 5,
+                        lastPublishedOn,
+                        firstPublishedOn,
+                        modifiedOn,
                         meta: {
                             locked: true,
                             modelId: "review",
-                            publishedOn: publishedOn,
                             revisions: [
                                 {
                                     id: review.id,
@@ -262,10 +234,12 @@ describe("refField", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            lastPublishedOn,
+                            firstPublishedOn,
+                            modifiedOn,
                             meta: {
                                 locked: true,
                                 modelId: "review",
-                                publishedOn: publishedOn,
                                 revisions: [
                                     {
                                         id: review.id,
@@ -325,6 +299,144 @@ describe("refField", () => {
                         }
                     },
                     error: null
+                }
+            }
+        });
+    });
+
+    it("should properly order related items from multiple models", async () => {
+        const manageHandler = useWrapManageHandler(manageOpts);
+        const readHandler = useWrapReadHandler({
+            ...readOpts
+        });
+        await setupContentModels(manageHandler, [
+            "wrap",
+            "category",
+            "author",
+            "product",
+            "fruit",
+            "bug"
+        ]);
+
+        const categoryOne = await createCategory({
+            title: "Category One",
+            slug: "category-one"
+        });
+        const categoryTwo = await createCategory({
+            title: "Category Two",
+            slug: "category-two"
+        });
+
+        const productOne = await createProduct(categoryOne, {
+            title: "Product One",
+            price: 100,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            image: "file.jpg"
+        });
+        const productTwo = await createProduct(categoryTwo, {
+            title: "Product Two",
+            price: 100,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            image: "file.jpg"
+        });
+
+        const authorOne = await createAuthor({
+            fullName: "Author One"
+        });
+        const authorTwo = await createAuthor({
+            fullName: "Author Two"
+        });
+
+        const references = [
+            {
+                id: productTwo.id,
+                modelId: "product"
+            },
+            {
+                id: categoryTwo.id,
+                modelId: "category"
+            },
+            {
+                id: authorTwo.id,
+                modelId: "author"
+            },
+            {
+                id: categoryOne.id,
+                modelId: "category"
+            },
+            {
+                id: productOne.id,
+                modelId: "product"
+            },
+
+            {
+                id: authorOne.id,
+                modelId: "author"
+            }
+        ];
+        const [createResponse] = await manageHandler.createWrap({
+            data: {
+                title: "Wrap One",
+                references
+            }
+        });
+        expect(createResponse).toMatchObject({
+            data: {
+                createWrap: {
+                    data: {
+                        title: "Wrap One",
+                        references
+                    },
+                    error: null
+                }
+            }
+        });
+
+        for (const index in references) {
+            const responseReference = createResponse.data.createWrap.data.references[index];
+            expect(responseReference).toMatchObject(references[index]);
+        }
+
+        const [publishResponse] = await manageHandler.publishWrap({
+            revision: createResponse.data.createWrap.data.id
+        });
+        expect(publishResponse).toMatchObject({
+            data: {
+                publishWrap: {
+                    data: {
+                        title: "Wrap One",
+                        references,
+                        meta: {
+                            status: "published"
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listResponse] = await readHandler.listWraps();
+
+        expect(listResponse.errors).toBeUndefined();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listWraps: {
+                    data: [
+                        {
+                            references
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
                 }
             }
         });

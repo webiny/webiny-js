@@ -34,7 +34,7 @@ export const createAppResolvers = (params: Params): Resolvers => {
     const fieldResolvers = createFieldResolvers({
         graphQLType: apiName,
         fields: targetApp.model.fields,
-        isRoot: true,
+        isRoot: false,
         extraResolvers: {
             id: (entry: CmsEntry) => {
                 const { id } = parseIdentifier(entry.id);

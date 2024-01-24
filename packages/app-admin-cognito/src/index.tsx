@@ -75,7 +75,7 @@ export interface AuthenticationFactoryConfig extends AuthOptions {
 }
 
 interface AuthenticationFactory {
-    (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
+    (params: AuthenticationFactoryConfig): React.ComponentType<AuthenticationProps>;
 }
 
 export const createAuthentication: AuthenticationFactory = ({

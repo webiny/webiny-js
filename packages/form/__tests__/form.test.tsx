@@ -12,7 +12,7 @@ type FormProps = Omit<BaseFormProps, "children" | "onSubmit"> & {
     children?: React.ReactNode;
 };
 
-const FormViewWithBind: React.FC<FormProps> = ({ children, data, onSubmit, ...props }) => {
+const FormViewWithBind = ({ children, data, onSubmit, ...props }: FormProps) => {
     const [formData] = useState(data || { name: "empty name" });
 
     return (
@@ -66,7 +66,7 @@ const Input = (bindProps: BindComponentProps & { "data-testid"?: string }) => {
     );
 };
 
-const FormViewWithHooks: React.FC<FormProps> = ({ children = null, data, onSubmit, ...props }) => {
+const FormViewWithHooks = ({ children = null, data, onSubmit, ...props }: FormProps) => {
     const [formData] = useState(data || { name: "empty name" });
 
     return (

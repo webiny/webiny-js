@@ -9,7 +9,7 @@ import "./App.scss";
 
 // The beginning of our React application, where we mount a couple of useful providers.
 // If needed, feel free to add new or modify existing providers.
-export const App: React.FC = () => (
+export const App = () => (
     <>
         {/* Sets up a new Apollo GraphQL client, pointed to an existing GraphQL API. */}
         <ApolloProvider client={createApolloClient({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>

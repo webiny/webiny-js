@@ -6,7 +6,7 @@ interface Props
     [key: string]: any;
 }
 
-const Image: React.FC<Props> = ({ ...rest }) => {
+const Image = ({ ...rest }: Props) => {
     const finalProps = { ...rest };
     const srcSet = finalProps.srcSet;
     if (srcSet && typeof srcSet === "object") {

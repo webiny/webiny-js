@@ -26,7 +26,7 @@ export function createConfigPortal(name: string) {
      * This component is used to configure the view (it can be mounted many times, and it will accumulate all configs).
      * These configs are not executed until they're actually mounted using the `ConfigApply` component.
      */
-    const Config: React.FC = ({ children }) => {
+    const Config: React.ComponentType = ({ children }) => {
         return <Compose component={ConfigApply} with={createHOC(children)} />;
     };
 

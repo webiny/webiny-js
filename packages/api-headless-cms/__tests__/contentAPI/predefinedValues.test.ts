@@ -82,16 +82,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "A hard debuggable bug",
                             version: 1
@@ -256,16 +258,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "Critical bug!",
                             version: 1
@@ -306,16 +310,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -358,16 +364,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -435,16 +443,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1

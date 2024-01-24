@@ -737,18 +737,20 @@ describe("fieldValidations", () => {
                         id: expect.any(String),
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
+                        savedOn: expect.stringMatching(/^20/),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: expect.stringMatching(/^20/),
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
                         meta: {
                             locked: false,
                             modelId: "fruit",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -790,18 +792,20 @@ describe("fieldValidations", () => {
                         id: apple.id,
                         entryId: apple.entryId,
                         createdOn: apple.createdOn,
+                        modifiedOn: null,
+                        savedOn: apple.savedOn,
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: apple.savedOn,
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,
                         meta: {
                             locked: false,
                             modelId: "fruit",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: apple.id,

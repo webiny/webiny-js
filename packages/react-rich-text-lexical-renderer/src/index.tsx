@@ -11,7 +11,7 @@ interface RichTextLexicalRenderer {
     nodes?: Klass<LexicalNode>[];
 }
 
-const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
+const LexicalRenderer = (props: RichTextLexicalRenderer) => {
     const { theme } = useTheme();
 
     const getValue = (value: RendererLexicalValue): string | null => {
@@ -30,7 +30,7 @@ const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
     );
 };
 
-export const RichTextLexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
+export const RichTextLexicalRenderer = (props: RichTextLexicalRenderer) => {
     return (
         <ThemeProvider>
             <LexicalRenderer {...props} />

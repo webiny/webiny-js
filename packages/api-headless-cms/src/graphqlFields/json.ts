@@ -1,7 +1,7 @@
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createGraphQLInputField } from "./helpers";
 
-export const createJSONField = (): CmsModelFieldToGraphQLPlugin => {
+export const createJsonField = (): CmsModelFieldToGraphQLPlugin => {
     return {
         name: "cms-model-field-to-graphql-json",
         type: "cms-model-field-to-graphql",

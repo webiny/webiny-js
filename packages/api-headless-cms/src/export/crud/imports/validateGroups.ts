@@ -89,15 +89,21 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
                 };
             }
 
-            const groupWithSlugExists = groups.some(g => g.slug === data.slug);
+            const groupWithSlugExists = groups.find(g => g.slug === data.slug);
             if (groupWithSlugExists) {
+                /**
+                 * If group with given slug already exists, we will map the ID to the existing group.
+                 *
+                 * We will also point all models from the imported group to the existing group.
+                 * We will not update the existing group.
+                 */
                 return {
-                    group: data,
-                    action: CmsImportAction.NONE,
-                    error: {
-                        message: `Group with slug "${data.slug}" already exists. Cannot update because the ID is different.`,
-                        code: "GROUP_SLUG_EXISTS"
-                    }
+                    group: {
+                        ...data,
+                        id: groupWithSlugExists.id
+                    },
+                    target: data.id,
+                    action: CmsImportAction.NONE
                 };
             }
 

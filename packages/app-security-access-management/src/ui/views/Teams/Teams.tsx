@@ -7,7 +7,7 @@ export interface TeamsProps {
     listProps?: TeamsDataListProps;
     formProps?: TeamsFormProps;
 }
-export const Teams: React.FC<TeamsProps> = ({ formProps = {}, listProps = {} }) => {
+export const Teams = ({ formProps = {}, listProps = {} }: TeamsProps) => {
     return (
         <SplitView>
             <LeftPanel>

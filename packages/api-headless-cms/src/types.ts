@@ -152,6 +152,7 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
+
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */
@@ -164,6 +165,7 @@ export type CmsModelFieldType =
     | "file"
     | "long-text"
     | "number"
+    | "json"
     | "object"
     | "ref"
     | "rich-text"
@@ -171,6 +173,7 @@ export type CmsModelFieldType =
     | "dynamicZone"
     | "json"
     | string;
+
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -291,10 +294,6 @@ export interface CmsModelFieldWithParent extends CmsModelField {
     parent?: CmsModelFieldWithParent | null;
 }
 
-export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
-    parent?: CmsModelDynamicZoneFieldWithParent | null;
-}
-
 /**
  * A definition for dateTime field to show possible type of the field in settings.
  */
@@ -354,6 +353,7 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
 export interface CmsModelFieldValidatorPluginValidateCb {
     (params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
 }
+
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
      * A plugin type.
@@ -426,6 +426,7 @@ export interface LockedField {
      * Field type.
      */
     type: string;
+
     [key: string]: any;
 }
 
@@ -594,7 +595,10 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
+        | {
+              resolver: GraphQLFieldResolver | null;
+              typeResolvers: Resolvers<CmsContext>;
+          }
         | false;
 }
 
@@ -641,7 +645,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      * fieldType: "myField"
      * ```
      */
-    fieldType: string;
+    fieldType: CmsModelFieldType;
     /**
      * Is the field searchable via the GraphQL?
      *
@@ -1457,28 +1461,95 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Generated ID + version of the entry.
      */
     id: string;
+
     /**
-     * CreatedBy object reference.
+     * Revision-level meta fields. 👇
      */
-    createdBy: CmsIdentity;
+
     /**
-     * OwnedBy object reference. Can be different from CreatedBy.
+     * An ISO 8601 date/time string.
      */
-    ownedBy: CmsIdentity;
+    revisionCreatedOn: string;
     /**
-     * ModifiedBy object reference. Last person who modified the entry.
+     * An ISO 8601 date/time string.
      */
-    modifiedBy?: CmsIdentity | null;
+    revisionSavedOn: string;
     /**
-     * A string of Date.toISOString() type.
-     * Populated on creation.
+     * An ISO 8601 date/time string.
+     */
+    revisionModifiedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionFirstPublishedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    revisionLastPublishedOn: string | null;
+
+    /**
+     * Identity that last ionCreated the entry.
+     */
+    revisionCreatedBy: CmsIdentity;
+    /**
+     * Identity that last ionSaved the entry.
+     */
+    revisionSavedBy: CmsIdentity;
+    /**
+     * Identity that last ionModified the entry.
+     */
+    revisionModifiedBy: CmsIdentity | null;
+    /**
+     * Identity that first published the entry.
+     */
+    revisionFirstPublishedBy: CmsIdentity | null;
+    /**
+     * Identity that last published the entry.
+     */
+    revisionLastPublishedBy: CmsIdentity | null;
+
+    /**
+     * An ISO 8601 date/time string.
      */
     createdOn: string;
     /**
-     * A string of Date.toISOString() type.
-     * Populated every time entry is saved.
+     * An ISO 8601 date/time string.
      */
     savedOn: string;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    modifiedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    firstPublishedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
+    lastPublishedOn: string | null;
+
+    /**
+     * Identity that last created the entry.
+     */
+    createdBy: CmsIdentity;
+    /**
+     * Identity that last saved the entry.
+     */
+    savedBy: CmsIdentity;
+    /**
+     * Identity that last modified the entry.
+     */
+    modifiedBy: CmsIdentity | null;
+    /**
+     * Identity that first published the entry.
+     */
+    firstPublishedBy: CmsIdentity | null;
+    /**
+     * Identity that last published the entry.
+     */
+    lastPublishedBy: CmsIdentity | null;
+
     /**
      * Model ID of the definition for the entry.
      * @see CmsModel
@@ -1489,11 +1560,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      * @see I18NLocale.code
      */
     locale: string;
-    /**
-     * A string of Date.toISOString() type - if published.
-     * Populated when entry is published.
-     */
-    publishedOn?: string | null;
     /**
      * A revision version of the entry.
      */
@@ -1795,24 +1861,63 @@ export interface CmsEntryListWhere {
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
+
     /**
-     * Contains the owner of the entry. An "owner" is the identity who originally created the entry.
-     * Subsequent revisions can be created by other identities, and those will be stored in `createdBy`,
-     * but the `owner` is always the original author of the entry.
-     *
-     * Can be sent via the API or set internal if user can see only their own entries.
+     * Revision-level meta fields. 👇
      */
-    ownedBy?: string;
-    ownedBy_not?: string;
-    ownedBy_in?: string[];
-    ownedBy_not_in?: string[];
+    revisionCreatedBy?: string;
+    revisionCreatedBy_not?: string;
+    revisionCreatedBy_in?: string[];
+    revisionCreatedBy_not_in?: string[];
+
+    revisionModifiedBy?: string;
+    revisionModifiedBy_not?: string;
+    revisionModifiedBy_in?: string[];
+    revisionModifiedBy_not_in?: string[];
+
+    revisionSavedBy?: string;
+    revisionSavedBy_not?: string;
+    revisionSavedBy_in?: string[];
+    revisionSavedBy_not_in?: string[];
+
+    revisionFirstPublishedBy?: string;
+    revisionFirstPublishedBy_not?: string;
+    revisionFirstPublishedBy_in?: string[];
+    revisionFirstPublishedBy_not_in?: string[];
+
+    revisionLastPublishedBy?: string;
+    revisionLastPublishedBy_not?: string;
+    revisionLastPublishedBy_in?: string[];
+    revisionLastPublishedBy_not_in?: string[];
+
     /**
-     * Who created the entry?
+     * Entry-level meta fields. 👇
      */
     createdBy?: string;
     createdBy_not?: string;
     createdBy_in?: string[];
     createdBy_not_in?: string[];
+
+    modifiedBy?: string;
+    modifiedBy_not?: string;
+    modifiedBy_in?: string[];
+    modifiedBy_not_in?: string[];
+
+    savedBy?: string;
+    savedBy_not?: string;
+    savedBy_in?: string[];
+    savedBy_not_in?: string[];
+
+    firstPublishedBy?: string;
+    firstPublishedBy_not?: string;
+    firstPublishedBy_in?: string[];
+    firstPublishedBy_not_in?: string[];
+
+    lastPublishedBy?: string;
+    lastPublishedBy_not?: string;
+    lastPublishedBy_in?: string[];
+    lastPublishedBy_not_in?: string[];
+
     /**
      * Version of the entry.
      *
@@ -1849,6 +1954,7 @@ export interface CmsEntryListWhere {
         AND?: CmsEntryListWhere[];
         OR?: CmsEntryListWhere[];
     };
+
     /**
      * This is to allow querying by any content model field defined by the user.
      */
@@ -1863,6 +1969,7 @@ export interface CmsEntryListWhere {
         | CmsEntryListWhere[]
         | CmsEntryListWhere
         | CmsEntryListWhereRef;
+
     /**
      * To allow querying via nested queries, we added the AND / OR properties.
      */
@@ -2153,15 +2260,40 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    status?: CmsEntryStatus;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
     createdOn?: Date | string;
+    modifiedOn?: Date | string | null;
     savedOn?: Date | string;
-    publishedOn?: Date | string;
-    createdBy?: CmsIdentity | null;
+    createdBy?: CmsIdentity;
     modifiedBy?: CmsIdentity | null;
-    ownedBy?: CmsIdentity | null;
+    savedBy?: CmsIdentity;
+    firstPublishedOn?: Date | string;
+    lastPublishedOn?: Date | string;
+    firstPublishedBy?: CmsIdentity;
+    lastPublishedBy?: CmsIdentity;
+
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string;
+    revisionModifiedOn?: Date | string | null;
+    revisionSavedOn?: Date | string;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity;
+    revisionFirstPublishedOn?: Date | string;
+    revisionLastPublishedOn?: Date | string;
+    revisionFirstPublishedBy?: CmsIdentity;
+    revisionLastPublishedBy?: CmsIdentity;
+
     wbyAco_location?: {
         folderId?: string | null;
     };
+
     [key: string]: any;
 }
 
@@ -2174,12 +2306,34 @@ export interface CreateCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface CreateFromCmsEntryInput {
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date;
+    revisionSavedOn?: Date;
+    revisionModifiedOn?: Date;
+    revisionCreatedBy?: CmsIdentity;
+    revisionModifiedBy?: CmsIdentity;
+    revisionSavedBy?: CmsIdentity;
+    revisionFirstPublishedOn?: Date | string;
+    revisionLastPublishedOn?: Date | string;
+    revisionFirstPublishedBy?: CmsIdentity;
+    revisionLastPublishedBy?: CmsIdentity;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
     createdOn?: Date;
     savedOn?: Date;
-    publishedOn?: Date;
+    modifiedOn?: Date;
     createdBy?: CmsIdentity;
     modifiedBy?: CmsIdentity;
-    ownedBy?: CmsIdentity;
+    savedBy?: CmsIdentity;
+    firstPublishedOn?: Date | string;
+    lastPublishedOn?: Date | string;
+    firstPublishedBy?: CmsIdentity;
+    lastPublishedBy?: CmsIdentity;
+
     [key: string]: any;
 }
 
@@ -2192,15 +2346,38 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn?: Date | string | null;
+    revisionModifiedOn?: Date | string | null;
+    revisionSavedOn?: Date | string | null;
+    revisionFirstPublishedOn?: Date | string | null;
+    revisionLastPublishedOn?: Date | string | null;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionCreatedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity | null;
+    revisionFirstPublishedBy?: CmsIdentity | null;
+    revisionLastPublishedBy?: CmsIdentity | null;
+
+    /**
+     * Entry-level meta fields. 👇
+     */
     createdOn?: Date | string | null;
+    modifiedOn?: Date | string | null;
     savedOn?: Date | string | null;
-    publishedOn?: Date | string | null;
+    firstPublishedOn?: Date | string | null;
+    lastPublishedOn?: Date | string | null;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
-    ownedBy?: CmsIdentity;
+    savedBy?: CmsIdentity | null;
+    firstPublishedBy?: CmsIdentity | null;
+    lastPublishedBy?: CmsIdentity | null;
+
     wbyAco_location?: {
         folderId?: string | null;
     };
+
     [key: string]: any;
 }
 
@@ -2229,20 +2406,6 @@ export interface CmsDeleteEntryOptions {
 }
 
 /**
- * @category CmsEntry
- */
-export interface CmsPublishEntryOptions {
-    /**
-     * By default, updatePublishedOn is "true". User can set it to "false" to skip the publishedOn field update.
-     */
-    updatePublishedOn?: boolean;
-    /**
-     * By default, updateSavedOn is "true". User can set it to "false" to skip the publishedOn field update.
-     */
-    updateSavedOn?: boolean;
-}
-
-/**
  * @category Context
  * @category CmsEntry
  */
@@ -2250,11 +2413,14 @@ export interface DeleteMultipleEntriesParams {
     entries: string[];
 }
 
-export type DeleteMultipleEntriesResponse = { id: string }[];
+export type DeleteMultipleEntriesResponse = {
+    id: string;
+}[];
 
 export interface CmsEntryValidateResponse {
     [key: string]: any;
 }
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2365,11 +2531,7 @@ export interface CmsEntryContext {
     /**
      * Publish entry.
      */
-    publishEntry: (
-        model: CmsModel,
-        id: string,
-        options?: CmsPublishEntryOptions
-    ) => Promise<CmsEntry>;
+    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */
@@ -2527,6 +2689,7 @@ export interface CmsGroupStorageOperationsGetParams {
 export interface CmsGroupStorageOperationsListWhereParams {
     tenant: string;
     locale: string;
+
     [key: string]: any;
 }
 
@@ -2584,6 +2747,7 @@ export interface CmsModelStorageOperationsGetParams {
 export interface CmsModelStorageOperationsListWhereParams {
     tenant: string;
     locale: string;
+
     [key: string]: string;
 }
 

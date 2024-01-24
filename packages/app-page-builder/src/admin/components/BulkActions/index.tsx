@@ -1,6 +1,10 @@
 export { ActionDelete } from "./ActionDelete";
+export { SecureActionDelete } from "./SecureActionDelete";
 export { ActionExport } from "./ActionExport";
 export { ActionMove } from "./ActionMove";
+export { SecureActionMove } from "./SecureActionMove";
 export { ActionPublish } from "./ActionPublish";
+export { SecureActionPublish } from "./SecureActionPublish";
 export { ActionUnpublish } from "./ActionUnpublish";
+export { SecureActionUnpublish } from "./SecureActionUnpublish";
 export * from "./BulkActions";

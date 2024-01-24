@@ -1,19 +1,25 @@
 import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
-    ApiGateway,
     ApiApwScheduler,
+    ApiBackgroundTask,
     ApiCloudfront,
     ApiFileManager,
+    ApiGateway,
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
     CoreOutput,
-    VpcConfig,
-    CreateCorePulumiAppParams
+    CreateCorePulumiAppParams,
+    VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
+import {
+    addDomainsUrlsOutputs,
+    tagResources,
+    withCommonLambdaEnvVariables,
+    withServiceManifest
+} from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -71,7 +77,7 @@ export interface CreateApiPulumiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
-    const app = createPulumiApp({
+    const baseApp = createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
@@ -150,12 +156,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName
-                }
-            });
-
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
 
@@ -197,6 +197,12 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
             });
 
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
+
             const apiGateway = app.addModule(ApiGateway, {
                 "graphql-post": {
                     path: "/graphql",
@@ -210,6 +216,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 },
                 "files-any": {
                     path: "/files/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
+                },
+                "private-any": {
+                    path: "/private/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
@@ -238,6 +249,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 applyCustomDomain(cloudfront, domains);
             }
 
+            const backgroundTask = app.addModule(ApiBackgroundTask);
+
             app.addOutputs({
                 region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
@@ -250,7 +263,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
-                graphqlLambdaName: graphql.functions.graphql.output.name
+                graphqlLambdaName: graphql.functions.graphql.output.name,
+                backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn
             });
 
             app.addHandler(() => {
@@ -277,10 +292,24 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apiGateway,
                 cloudfront,
                 apwScheduler,
-                migration
+                migration,
+                backgroundTask
             };
         }
     });
 
-    return withCommonLambdaEnvVariables(app);
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+
+    app.addHandler(() => {
+        app.addServiceManifest({
+            name: "api",
+            manifest: {
+                cloudfront: {
+                    distributionId: baseApp.resources.cloudfront.output.id
+                }
+            }
+        });
+    });
+
+    return app;
 };

@@ -7,7 +7,7 @@ module.exports = async options => {
     const duration = getDuration();
     const path = require("path");
 
-    const { overrides, logs, cwd } = options;
+    const { overrides, logs, cwd, debug } = options;
 
     let projectApplication;
     try {
@@ -19,7 +19,7 @@ module.exports = async options => {
     logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
 
     let webpackConfig = require("./webpack.config")({
-        production: true,
+        production: !debug,
         projectApplication,
         ...options
     });

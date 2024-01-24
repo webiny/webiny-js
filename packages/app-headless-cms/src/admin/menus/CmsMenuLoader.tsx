@@ -67,6 +67,6 @@ const CmsMenuLoaderComponent = () => {
     );
 };
 
-export const CmsMenuLoader: React.FC = React.memo(CmsMenuLoaderComponent);
+export const CmsMenuLoader: React.ComponentType = React.memo(CmsMenuLoaderComponent);
 
 CmsMenuLoader.displayName = "CmsMenuLoader";

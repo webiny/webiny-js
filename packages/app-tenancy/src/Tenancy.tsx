@@ -4,8 +4,12 @@ import { Provider } from "@webiny/app-admin";
 import installation from "./plugins/installation";
 import { TenancyProvider as ContextProvider } from "./contexts/Tenancy";
 
-const TenancyProviderHOC = (Component: React.FC): React.FC => {
-    return function TenancyProvider({ children }) {
+interface TenancyProviderHOCProps {
+    children: React.ReactNode;
+}
+
+const TenancyProviderHOC = (Component: React.ComponentType) => {
+    return function TenancyProvider({ children }: TenancyProviderHOCProps) {
         return (
             <ContextProvider>
                 <Component>{children}</Component>
@@ -14,7 +18,7 @@ const TenancyProviderHOC = (Component: React.FC): React.FC => {
     };
 };
 
-export const TenancyExtension: React.FC = () => {
+export const TenancyExtension = () => {
     plugins.register(installation);
 
     return <Provider hoc={TenancyProviderHOC} />;

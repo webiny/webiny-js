@@ -70,7 +70,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         }
 
         const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.createEntry(model, { ...file, wbyAco_location: file.location });
+            return this.cms.createEntry(model, {
+                ...file,
+                wbyAco_location: file.location
+            });
         });
 
         await this.aliases.storeAliases(file);
@@ -180,10 +183,15 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private getFileFieldValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
+
+            // We're safe to use entry-level meta fields because we don't use revisions with files.
             createdBy: entry.createdBy,
             modifiedBy: entry.modifiedBy || null,
+            savedBy: entry.savedBy,
             createdOn: entry.createdOn,
+            modifiedOn: entry.modifiedOn || null,
             savedOn: entry.savedOn,
+
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

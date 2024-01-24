@@ -1,23 +1,20 @@
+import { PluginCollection } from "@webiny/plugins/types";
 import { createMailerContext as createMailerContextPlugin } from "~/context";
 import { createDummyTransport } from "~/transports/createDummyTransport";
 import { createSmtpTransport, SmtpTransportConfig } from "~/transports/createSmtpTransport";
 import { createTransport } from "~/plugins";
 import { createSettingsModel } from "~/crud/settings/model";
-import { createGroup } from "~/crud/group";
 import { createGraphQL } from "~/graphql";
-import { PluginCollection } from "@webiny/plugins/types";
 
 export * from "~/plugins";
 export * from "~/transports";
 
 export const createMailerContext = (): PluginCollection => {
-    const group = createGroup();
     return [
-        group,
         /**
-         * Groups and models to use via the CMS
+         * Models to use via the CMS
          */
-        createSettingsModel(group),
+        createSettingsModel(),
         /**
          * If something is wrong with the smtp mailer, we will initialize the dummy one.
          */

@@ -8,7 +8,7 @@ interface HeadingEditorProps extends RichTextEditorProps {
 
 const styles = { padding: 5 };
 
-export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, ...rest }) => {
+export const HeadingEditor = ({ tag, placeholder, ...rest }: HeadingEditorProps) => {
     return (
         <RichTextEditor
             toolbar={<Toolbar />}

@@ -15,12 +15,12 @@ interface OverlaysProps {
  * any other views that are constructed by developers. We need these 2 containers to always be
  * present, even if there is no <Layout> mounted.
  */
-const OverlaysHOC = (Component: React.FC) => {
+const OverlaysHOC = (Component: React.ComponentType) => {
     return function Overlays({ children }: OverlaysProps) {
         return (
             <Component>
                 {children}
-                <div style={{ zIndex: 30, position: "absolute" }}>
+                <div style={{ zIndex: 1000, position: "absolute" }}>
                     <Snackbar />
                 </div>
                 <Portal />

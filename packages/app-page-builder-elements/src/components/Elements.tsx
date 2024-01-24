@@ -23,7 +23,7 @@ export interface ElementsProps {
     element: ElementType;
 }
 
-export const Elements: React.FC<ElementsProps> = props => {
+export const Elements = (props: ElementsProps) => {
     // `Elements` component is used within a renderer, meaning
     // we can always be sure `useRenderer` hook is available.
     const { meta: currentRendererMeta } = useRenderer();

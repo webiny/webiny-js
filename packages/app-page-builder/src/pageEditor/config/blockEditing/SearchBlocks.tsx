@@ -143,8 +143,6 @@ const SearchBar = () => {
                 ? createBlockReference(plugin.name)
                 : createBlockElements(plugin.name);
 
-            console.log("blockToAdd", blockToAdd);
-
             const element: any = {
                 ...content,
                 elements: [...content.elements, blockToAdd]

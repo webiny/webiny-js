@@ -12,7 +12,7 @@ export interface CopyButtonProps extends FormComponentProps {
 /**
  * Shows the icon button.
  */
-const CopyButton: React.FC<CopyButtonProps> = props => {
+const CopyButton = (props: CopyButtonProps) => {
     const { value, onCopy, ...otherProps } = props;
 
     const copyToClipboard = useCallback(() => {

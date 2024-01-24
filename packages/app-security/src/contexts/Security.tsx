@@ -16,6 +16,10 @@ export interface SecurityContext {
     getPermissions<T extends SecurityPermission = SecurityPermission>(name: string): T[];
 }
 
+interface SecurityProviderProps {
+    children: React.ReactNode;
+}
+
 export const SecurityContext = React.createContext<SecurityContext>({
     identity: null,
     getIdentityId: () => null,
@@ -30,7 +34,7 @@ export const SecurityContext = React.createContext<SecurityContext>({
     }
 });
 
-export const SecurityProvider: React.FC = props => {
+export const SecurityProvider = (props: SecurityProviderProps) => {
     const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
 
     const getPermission = useCallback(

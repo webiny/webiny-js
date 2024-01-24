@@ -50,7 +50,7 @@ The `@webiny/app-aco` package contains essential aco-related utilities (Advanced
 <p>
 
 ```tsx
-export declare const ACOProvider: React.FC;
+export declare const ACOProvider: React.ComponentType;
 ```
 
 </p>
@@ -91,7 +91,7 @@ interface Props {
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-declare function FolderTree(props: Props): React.FC;
+declare function FolderTree(props: Props): React.ComponentType;
 ```
 </p>
 </details>
@@ -137,7 +137,7 @@ interface Props {
     onClose: DialogOnClose;
 }
 
-declare function EntryDialogMove(props: Props): React.FC;
+declare function EntryDialogMove(props: Props): React.ComponentType;
 ```
 </p>
 </details>
@@ -184,7 +184,7 @@ interface Props {
     currentParentId?: string | null;
 }
 
-declare function FolderDialogCreate(props: Props): React.FC;
+declare function FolderDialogCreate(props: Props): React.ComponentType;
 ```
 </p>
 </details>
@@ -225,7 +225,7 @@ interface Props {
     onClose: DialogOnClose;
 }
 
-declare function FolderDialogDelete(props: Props): React.FC;
+declare function FolderDialogDelete(props: Props): React.ComponentType;
 ```
 </p>
 </details>
@@ -270,7 +270,7 @@ interface Props {
     onClose: DialogOnClose;
 }
 
-declare function FolderDialogUpdate(props: Props): React.FC;
+declare function FolderDialogUpdate(props: Props): React.ComponentType;
 ```
 </p>
 </details>

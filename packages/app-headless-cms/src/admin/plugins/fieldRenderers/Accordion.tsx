@@ -120,5 +120,5 @@ const Accordion = ({ title, children, action, icon, defaultValue = false }: Acco
         </div>
     );
 };
-const MemoizedAccordion: React.FC<AccordionProps> = React.memo(Accordion);
+const MemoizedAccordion: React.ComponentType<AccordionProps> = React.memo(Accordion);
 export default MemoizedAccordion;

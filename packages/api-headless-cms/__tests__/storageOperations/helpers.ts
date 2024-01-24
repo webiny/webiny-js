@@ -98,12 +98,12 @@ export const createPersonModel = (): CmsModel => {
     };
 };
 
-const createdBy: CmsIdentity = {
+const revisionCreatedBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
 };
-const ownedBy: CmsIdentity = {
+const createdBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
@@ -141,8 +141,8 @@ export const createPersonEntries = async (
             id,
             entryId,
             version: 1,
+            revisionCreatedBy,
             createdBy,
-            ownedBy,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             modelId: personModel.modelId,
@@ -177,8 +177,8 @@ export const createPersonEntries = async (
                 id,
                 entryId,
                 version: nextVersion,
+                revisionCreatedBy,
                 createdBy,
-                ownedBy,
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
                 modelId: personModel.modelId,

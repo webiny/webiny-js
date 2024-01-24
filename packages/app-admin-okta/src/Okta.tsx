@@ -28,7 +28,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     children
 }) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.FC | null>(null);
+    const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -63,7 +63,9 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
+    return loaded
+        ? React.createElement(authRef.current as React.ComponentType, {}, children)
+        : null;
 };
 
 interface OktaLoginScreenProps {

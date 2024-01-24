@@ -24,7 +24,7 @@ export type GraphQLFieldResolver<
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
 // `GraphQLSchemaPlugin` types.
-export type Types = string | (() => string | Promise<string>);
+export type Types = string | string[] | (() => string | string[] | Promise<string | string[]>);
 
 export interface GraphQLSchemaPluginTypeArgs {
     context?: any;

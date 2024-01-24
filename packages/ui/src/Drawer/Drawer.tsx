@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { CSSObject } from "@emotion/react";
+import styled from "@emotion/styled";
 import {
     Drawer as RmwcDrawer,
     DrawerContent as RmwcDrawerContent,
@@ -9,10 +11,6 @@ import {
 } from "@rmwc/drawer";
 
 type DrawerHeaderProps = RmwcDrawerHeaderProps & {
-    /**
-     * Drawer direction.
-     */
-    dir?: string;
     /**
      * Drawer content.
      */
@@ -31,10 +29,6 @@ const DrawerHeader = (props: DrawerHeaderProps) => <RmwcDrawerHeader {...props} 
 
 export type DrawerContentProps = RmwcDrawerContentProps & {
     /**
-     * Drawer direction.
-     */
-    dir?: string;
-    /**
      * Drawer content.
      */
     children: React.ReactNode;
@@ -52,10 +46,6 @@ const DrawerContent = (props: DrawerContentProps) => <RmwcDrawerContent {...prop
 
 type DrawerProps = RmwcDrawerProps & {
     /**
-     * Drawer direction.
-     */
-    dir?: string;
-    /**
      * Drawer content.
      */
     children: React.ReactNode;
@@ -64,12 +54,53 @@ type DrawerProps = RmwcDrawerProps & {
      * CSS class name
      */
     className?: string;
+
+    style?: CSSObject;
 };
+
+const DirectionRTL = styled.div`
+    .mdc-drawer.mdc-drawer--modal,
+    .mdc-drawer.mdc-drawer--dismissable {
+        left: initial;
+        right: 0;
+    }
+
+    .mdc-drawer--animate {
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+    }
+
+    .mdc-drawer.mdc-drawer--opening {
+        -webkit-transform: translateX(0%) !important;
+        transform: translateX(0%) !important;
+    }
+
+    .mdc-drawer.mdc-drawer--closing {
+        -webkit-transform: translateX(100%) !important;
+        transform: translateX(100%) !important;
+    }
+`;
+
 /**
  * Use Drawer component to display navigation for the whole app or just a small section of it.
  */
-const Drawer = (props: DrawerProps) => {
-    return <RmwcDrawer {...props} />;
+const Drawer = ({ style, children, ...props }: DrawerProps) => {
+    // Style the drawer using the styles that were passed in.
+    const Drawer = useMemo(() => (style ? styled(RmwcDrawer)(style) : RmwcDrawer), [style]);
+
+    return <Drawer {...props}>{children}</Drawer>;
 };
 
-export { Drawer, DrawerHeader, DrawerContent };
+const DrawerRight = (props: DrawerProps) => {
+    return (
+        <DirectionRTL>
+            <Drawer {...props} />
+        </DirectionRTL>
+    );
+};
+
+const DrawerLeft = (props: DrawerProps) => {
+    return <Drawer {...props} />;
+};
+
+export { Drawer, DrawerHeader, DrawerContent, DrawerRight, DrawerLeft };

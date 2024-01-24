@@ -15,7 +15,7 @@ export const ActionExport = observer(() => {
     const worker = useWorker();
 
     const selected = useMemo(() => {
-        return worker.items.map(item => item.pid);
+        return worker.items.map(item => item.data.pid);
     }, [worker.items]);
 
     const pagesLabel = useMemo(() => {

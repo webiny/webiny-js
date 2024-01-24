@@ -3,7 +3,7 @@ import { HeaderDesktop } from "./HeaderDesktop";
 import { HeaderMobile } from "./HeaderMobile";
 import styled from "@emotion/styled";
 
-export const Header: React.FC = () => {
+export const Header = () => {
     return (
         <HeaderWrapper data-testid={"pb-desktop-mobile-headers"}>
             <HeaderDesktop />

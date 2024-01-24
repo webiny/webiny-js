@@ -7,7 +7,7 @@ import { Provider } from "./Provider";
  * This is particularly useful for wrapping the entire app with custom React Context providers.
  * For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
  */
-export function createProviderPlugin(hoc: HigherOrderComponent): React.FC {
+export function createProviderPlugin(hoc: HigherOrderComponent) {
     return function ProviderPlugin() {
         return <Provider hoc={hoc} />;
     };

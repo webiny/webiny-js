@@ -31,9 +31,12 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             namespace: String!
             operation: OperationEnum!
             groups: [Group]!
-            savedOn: DateTime
             createdOn: DateTime
+            modifiedOn: DateTime
+            savedOn: DateTime
             createdBy: AcoUser
+            modifiedBy: AcoUser
+            savedBy: AcoUser
         }
 
         input GroupFilterInput {

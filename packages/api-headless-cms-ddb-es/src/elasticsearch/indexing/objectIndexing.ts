@@ -178,13 +178,9 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
                     plugins,
                     fields
                 });
-                if (Object.keys(value).length > 0) {
-                    result.value.push(value);
-                }
 
-                if (Object.keys(rawValue).length > 0) {
-                    result.rawValue.push(rawValue);
-                }
+                result.value.push(value);
+                result.rawValue.push(rawValue);
             }
 
             return {

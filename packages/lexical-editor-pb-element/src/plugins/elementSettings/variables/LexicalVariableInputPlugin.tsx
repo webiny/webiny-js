@@ -44,14 +44,14 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
     margin-left: 8px;
 `;
 
-interface LexicalVariableInputPlugin {
+interface LexicalVariableInputPluginProps {
     tag: string;
     variableId: string;
 }
-export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = ({
+export const LexicalVariableInputPlugin = ({
     tag,
     variableId
-}): JSX.Element => {
+}: LexicalVariableInputPluginProps): JSX.Element => {
     const { value, onChange } = useVariable<LexicalValue>(variableId);
     const [initialValue, setInitialValue] = useState(value);
     // We need a separate piece of state for dialog input, to support "cancel edit" functionality

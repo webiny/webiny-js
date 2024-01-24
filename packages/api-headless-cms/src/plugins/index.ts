@@ -6,3 +6,4 @@ export * from "./CmsModelFieldConverterPlugin";
 export * from "./CmsGraphQLSchemaPlugin";
 export * from "./CmsGraphQLSchemaSorterPlugin";
 export * from "./StorageOperationsCmsModelPlugin";
+export * from "./CmsRichTextRendererPlugin";

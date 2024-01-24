@@ -34,7 +34,7 @@ const notFoundInitialPath = trimPath(location.pathname);
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
  * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
-export const Page: React.FC = () => {
+export const Page = () => {
     const { pathname } = useLocation();
     const [search] = useSearchParams();
 

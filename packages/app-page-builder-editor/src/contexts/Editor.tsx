@@ -15,7 +15,11 @@ export interface EditorContext {
 
 export const EditorContext = React.createContext<EditorContext>({} as EditorContext);
 
-export const EditorProvider: React.FC = ({ children }) => {
+interface EditorProviderProps {
+    children: React.ReactNode;
+}
+
+export const EditorProvider = ({ children }: EditorProviderProps) => {
     const context: EditorContext = {
         editor: {
             getRootElementId(): string {

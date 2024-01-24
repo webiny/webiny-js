@@ -4,7 +4,7 @@ import { Plugins } from "@webiny/app-admin";
 import { Domains } from "~/components/Domains";
 import { AddTenantFormField } from "~/components/AddTenantFormField";
 
-export const DomainsModule: React.FC = () => {
+export const DomainsModule = () => {
     const selection = gql`
         {
             settings {

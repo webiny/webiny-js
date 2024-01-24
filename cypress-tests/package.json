@@ -8,6 +8,7 @@
     "@4tw/cypress-drag-drop": "^1.4.0",
     "@testing-library/cypress": "^10.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "amazon-cognito-identity-js": "^4.5.3",
     "cypress": "^13.0.0",
     "cypress-image-snapshot": "^4.0.1",
@@ -18,6 +19,7 @@
     "lodash": "^4.17.11",
     "nanoid": "^3.0.0",
     "node-fetch": "^2.6.1",
+    "typescript": "4.7.4",
     "uniqid": "^5.2.0"
   },
   "scripts": {

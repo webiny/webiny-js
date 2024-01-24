@@ -59,6 +59,7 @@ module.exports = function ({ path }, presets = []) {
     const setupAfterEnvExists = fs.existsSync(setupAfterEnv);
 
     merged.setupFilesAfterEnv = [
+        "jest-extended/all",
         join(__dirname, "jest.config.base.setup.js"),
         setupAfterEnvExists ? setupAfterEnv : null,
         ...merged.setupFilesAfterEnv,

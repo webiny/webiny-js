@@ -8,7 +8,7 @@ import { ReactComponent as LinkedInIcon } from "./assets/linkedin-brands.svg";
 import styled from "@emotion/styled";
 import { usePage } from "@webiny/app-page-builder-elements";
 
-export const Footer: React.FC = () => {
+export const Footer = () => {
     const { layoutProps } = usePage();
     const { name, logo, social } = layoutProps.settings;
 

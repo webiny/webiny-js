@@ -16,7 +16,7 @@ const getIsoStringTillMinutes = (datetime: string): string => {
 };
 
 const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
-    datetime: expect.stringMatching(/^20/),
+    datetime: expect.toBeDateString(),
     type: "page",
     action: "publish",
     entryId: expect.any(String)
@@ -46,9 +46,12 @@ describe("Schedule action CRUD Test - Page type", () => {
         });
         expect(scheduledAction).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            modifiedOn: null,
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            modifiedBy: null,
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -60,9 +63,10 @@ describe("Schedule action CRUD Test - Page type", () => {
         const getItemResult = await scheduleActionCrud.get(scheduledAction.id);
         expect(getItemResult).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -75,9 +79,10 @@ describe("Schedule action CRUD Test - Page type", () => {
         expect(listItemResult).toEqual([
             {
                 id: expect.any(String),
-                createdOn: expect.stringMatching(/^20/),
-                savedOn: expect.stringMatching(/^20/),
+                createdOn: expect.toBeDateString(),
+                savedOn: expect.toBeDateString(),
                 createdBy: expect.any(Object),
+                savedBy: expect.any(Object),
                 tenant: expect.any(String),
                 locale: expect.any(String),
                 data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -114,9 +119,10 @@ describe("Schedule action CRUD Test - Page type", () => {
         });
         expect(updateItemResult).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -181,8 +187,8 @@ describe("Schedule action CRUD Test - Page type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -215,8 +221,8 @@ describe("Schedule action CRUD Test - Page type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -282,8 +288,8 @@ describe("Schedule action CRUD Test - Page type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -303,8 +309,8 @@ describe("Schedule action CRUD Test - Page type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -354,8 +360,8 @@ describe("Schedule action CRUD Test - Page type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),

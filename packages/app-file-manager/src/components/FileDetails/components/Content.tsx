@@ -6,8 +6,9 @@ const Horizontal = styled.div`
     height: calc(100vh - 160px);
 `;
 
-const Grow = styled.div`
-    flex: 1;
+const Grow = styled.div<{ flex: number }>`
+    flex: ${({ flex }) => flex};
+    overflow-y: scroll;
     :last-of-type {
         border-left: 1px solid var(--mdc-theme-on-background);
     }
@@ -22,11 +23,16 @@ export const Content = ({ children }: ContentProps) => {
 };
 
 interface PanelProps {
+    flex?: number;
     children: React.ReactNode;
 }
 
-const Panel = ({ children }: PanelProps) => {
-    return <Grow data-role={"panel"}>{children}</Grow>;
+const Panel = ({ flex, children }: PanelProps) => {
+    return (
+        <Grow data-role={"panel"} flex={flex ?? 1}>
+            {children}
+        </Grow>
+    );
 };
 
 Content.Panel = Panel;

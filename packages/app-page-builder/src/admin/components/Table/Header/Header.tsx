@@ -8,6 +8,7 @@ import { Title } from "~/admin/components/Table/Header/Title";
 
 import { Container, Divider, WrapperActions } from "./styled";
 import { PbPageDataItem } from "~/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 
 export interface HeaderProps {
     title?: string;
@@ -16,7 +17,7 @@ export interface HeaderProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
-    selected: PbPageDataItem[];
+    selected: SearchRecordItem<PbPageDataItem>[];
     searchValue: string;
     onSearchChange: (value: string) => void;
 }

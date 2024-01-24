@@ -4,7 +4,7 @@ import { LIST_GROUPS } from "./graphql";
 import { useQuery } from "@apollo/react-hooks";
 
 type GroupAutocompleteProps = Partial<AutoCompleteProps>;
-export const GroupAutocomplete: React.FC<GroupAutocompleteProps> = props => {
+export const GroupAutocomplete = (props: GroupAutocompleteProps) => {
     const { data, loading } = useQuery(LIST_GROUPS);
 
     const options = loading || !data ? [] : data.security.groups.data;
