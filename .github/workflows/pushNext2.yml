@@ -331,7 +331,6 @@ jobs:
       id-token: write
     if: needs.init.outputs.is-fork-pr != 'true'
   e2e-wby-cms-ddb-init:
-    needs: checkComment
     name: E2E (DDB) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -552,7 +551,6 @@ jobs:
           }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-es-init:
-    needs: checkComment
     name: E2E (DDB-ES) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -780,7 +778,6 @@ jobs:
           }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-init:
-    needs: checkComment
     name: E2E (DDB-OS) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
