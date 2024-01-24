@@ -1,9 +1,8 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Template CRUD", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const templateName = nanoid(10);
-    const templateNameEdit = nanoid(10);
+    const templateName = generateAlphaLowerCaseId(10);
+    const templateNameEdit = generateAlphaLowerCaseId(10);
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllTemplates();

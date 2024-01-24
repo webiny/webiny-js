@@ -1,7 +1,6 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Blocks", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     beforeEach(() => {
         cy.login();
         cy.pbDeleteAllBlocks();
@@ -15,31 +14,31 @@ context("Page Builder - Blocks", () => {
     const blockNames4 = ["!#$%&/()="];
 
     const blockCategoryData1 = {
-        name: nanoid(10).toLowerCase(),
-        slug: nanoid(10).toLowerCase(),
+        name: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
         icon: "icon-name",
-        description: nanoid(10).toLowerCase()
+        description: generateAlphaLowerCaseId(10)
     };
 
     const blockCategoryData2 = {
-        name: nanoid(10).toLowerCase(),
-        slug: nanoid(10).toLowerCase(),
+        name: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
         icon: "icon-name",
-        description: nanoid(10).toLowerCase()
+        description: generateAlphaLowerCaseId(10)
     };
 
     const blockCategoryData3 = {
-        name: nanoid(10).toLowerCase(),
-        slug: nanoid(10).toLowerCase(),
+        name: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
         icon: "icon-name",
-        description: nanoid(10).toLowerCase()
+        description: generateAlphaLowerCaseId(10)
     };
 
     const blockCategoryData4 = {
-        name: nanoid(10).toLowerCase(),
-        slug: nanoid(10).toLowerCase(),
+        name: generateAlphaLowerCaseId(10),
+        slug: generateAlphaLowerCaseId(10),
         icon: "icon-name",
-        description: nanoid(10).toLowerCase()
+        description: generateAlphaLowerCaseId(10)
     };
 
     it("Should be able to use the search bar as expected", () => {

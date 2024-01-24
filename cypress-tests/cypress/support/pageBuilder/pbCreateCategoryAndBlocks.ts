@@ -1,8 +1,15 @@
 import { gqlClient } from "../utils";
+import { createHeadingBlock } from "./pbCreateCategoryAndBlocks/createHeadingBlock";
 
 interface CreateCategoryAndBlocksParams {
     blockCategory: Record<string, any>;
     blockNames: string[];
+    content?: Content;
+}
+
+interface Content {
+    type: "heading";
+    text: string;
 }
 
 declare global {
@@ -15,6 +22,16 @@ declare global {
         }
     }
 }
+
+const contentData = (contentText: string, contentType: string) => {
+    switch (contentType) {
+        case "heading":
+            return createHeadingBlock(contentText);
+
+        default:
+            return {};
+    }
+};
 
 const CREATE_BLOCK_CATEGORY_MUTATION = /* GraphQL */ `
     mutation CreateBlockCategory($data: PbBlockCategoryInput!) {
@@ -67,7 +84,7 @@ const CRATE_BLOCK_MUTATION = /* GraphQL */ `
     }
 `;
 
-Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }) => {
+Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames, content }) => {
     cy.login().then(user => {
         const createCategoryPromise = gqlClient
             .request({
@@ -86,15 +103,11 @@ Cypress.Commands.add("pbCreateCategoryAndBlocks", ({ blockCategory, blockNames }
                     gqlClient.request({
                         query: CRATE_BLOCK_MUTATION,
                         variables: {
+                            id: "xyz",
                             data: {
                                 name: blockName,
                                 blockCategory: categorySlug,
-                                content: {
-                                    id: "xyz",
-                                    type: "block",
-                                    data: {},
-                                    elements: []
-                                }
+                                content: content ? contentData(content.text, content.type) : {}
                             }
                         },
                         authToken: user.idToken.jwtToken

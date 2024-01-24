@@ -1,19 +1,17 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Menu Items", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-
-    const pageListName = nanoid(10);
+    const pageListName = generateAlphaLowerCaseId(10);
     const pageListNameEdit = pageListName + "-edit";
 
-    const linkName = nanoid(10);
+    const linkName = generateAlphaLowerCaseId(10);
     const linkURL = `/${linkName}/`;
     const linkNameEdit = linkName + "-edit";
     const linkURLEdit = `/${linkNameEdit}/`;
 
-    const folderName = nanoid(10);
+    const folderName = generateAlphaLowerCaseId(10);
     const folderNameEdit = folderName + "-edit";
-    const pageNameNew = nanoid(10);
+    const pageNameNew = generateAlphaLowerCaseId(10);
     const pageNameNewEdit = pageNameNew + "-edit";
 
     const menuData = {

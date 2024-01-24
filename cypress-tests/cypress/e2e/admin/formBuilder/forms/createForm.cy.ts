@@ -1,13 +1,11 @@
-import { customAlphabet } from "nanoid";
-
-const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Forms Creation", () => {
     beforeEach(() => cy.login());
 
     describe("Create Form", () => {
-        const newFormTitle = `Test form 1 ${nanoid(10)}`;
-        const newFormTitle2 = `Test form 2 ${nanoid(10)}`;
+        const newFormTitle = `Test form 1 ${generateAlphaLowerCaseId(10)}`;
+        const newFormTitle2 = `Test form 2 ${generateAlphaLowerCaseId(10)}`;
 
         it("should be able to create form, rename it, publish it, create new revision and delete it", () => {
             cy.visit("/form-builder/forms");

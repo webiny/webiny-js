@@ -1,9 +1,8 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Blocks", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const blockCategoryName = nanoid(10); // Generate a random 10-character lowercase string
-    const blockCategorySlug = nanoid(10); // Generate another random 10-character lowercase string
+    const blockCategoryName = generateAlphaLowerCaseId(10);
+    const blockCategorySlug = generateAlphaLowerCaseId(10);
 
     beforeEach(() => {
         cy.login();

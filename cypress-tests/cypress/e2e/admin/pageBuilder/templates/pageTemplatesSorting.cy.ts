@@ -1,7 +1,6 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Template Sorting", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = "ABC";
     const titleString2 = "DEF";
     const titleString3 = "GHI";
@@ -9,32 +8,32 @@ context("Page Builder - Template Sorting", () => {
 
     const pageTemplateData1 = {
         title: titleString1,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData2 = {
         title: titleString2,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData3 = {
         title: titleString3,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"
     };
     const pageTemplateData4 = {
         title: titleString4,
-        slug: nanoid(6),
-        description: nanoid(6),
+        slug: generateAlphaLowerCaseId(10),
+        description: generateAlphaLowerCaseId(10),
         tags: [],
         layout: "static",
         pageCategory: "static"

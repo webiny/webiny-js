@@ -84,7 +84,7 @@ describe("Page Builder - List Menu Item Types", () => {
         cy.findByText("Menu saved successfully.");
     });
     it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
+        cy.visitWebsite(`/page-${id}-${0}/`);
 
         cy.reloadUntil(() => {
             // We wait until the document contains the newly added menu.
@@ -122,7 +122,7 @@ describe("Page Builder - List Menu Item Types", () => {
     });
 
     it(`Step 4: assert that menu item and pages are shown (ascending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
+        cy.visitWebsite(`/page-${id}-${0}/`);
 
         cy.reloadUntil(() => {
             // We wait until the document contains the newly added menu.
@@ -154,7 +154,7 @@ describe("Page Builder - List Menu Item Types", () => {
     });
 
     it(`Step 6: assert that the pages list menu item does not exist`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
+        cy.visitWebsite(`/page-${id}-${0}/`);
 
         cy.reloadUntil(() => {
             // We wait until the document contains the newly added menu.

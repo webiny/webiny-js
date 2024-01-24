@@ -1,15 +1,14 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaLowerCaseId } from "@webiny/utils/generateId";
 
 context("Page Builder - Categories CRUD", () => {
-    const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-    const categoryName = nanoid(6);
-    const categoryNameEdited = nanoid(6);
-    const categorySlug = nanoid(6);
-    const categoryUrl = "/" + nanoid(6) + "/";
-    const categoryUrlEdited = "/" + nanoid(6) + "/";
-    const categoryNameValidate = nanoid(6);
-    const categorySlugValidate = nanoid(6);
-    const categoryUrlValidate = "/" + nanoid(6) + "/";
+    const categoryName = generateAlphaLowerCaseId(6);
+    const categoryNameEdited = generateAlphaLowerCaseId(6);
+    const categorySlug = generateAlphaLowerCaseId(6);
+    const categoryUrl = "/" + generateAlphaLowerCaseId(6) + "/";
+    const categoryUrlEdited = "/" + generateAlphaLowerCaseId(6) + "/";
+    const categoryNameValidate = generateAlphaLowerCaseId(6);
+    const categorySlugValidate = generateAlphaLowerCaseId(6);
+    const categoryUrlValidate = "/" + generateAlphaLowerCaseId(6) + "/";
 
     beforeEach(() => {
         cy.login();
