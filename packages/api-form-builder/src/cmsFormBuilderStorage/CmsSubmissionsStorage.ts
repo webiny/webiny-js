@@ -102,7 +102,7 @@ export class CmsSubmissionsStorage implements FormBuilderSubmissionStorageOperat
     private getSubmissionValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
-            ownedBy: entry.createdBy,
+            createdBy: entry.createdBy,
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
             locale: entry.locale,

@@ -2,7 +2,11 @@ import { Plugin } from "@webiny/plugins/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import {
+    CmsEntryListWhere,
+    CmsEntryStatus as FormStatus,
+    CmsIdentity as FormIdentity
+} from "@webiny/api-headless-cms/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
 
@@ -101,15 +105,14 @@ export interface FbForm {
     id: string;
     tenant: string;
     locale: string;
-    createdBy: CreatedBy;
-    ownedBy: OwnedBy;
-    savedOn: string;
-    createdOn: string;
+    createdBy: FormIdentity;
+    createdOn: Date | string;
+    savedOn: Date | string;
+    publishedOn?: Date | string;
     name: string;
     slug: string;
     version: number;
-    publishedOn?: string | Date;
-    status: string;
+    status: FormStatus;
     fields: FbFormField[];
     steps: FbFormStep[];
     stats: Omit<FbFormStats, "conversionRate">;
@@ -118,14 +121,6 @@ export interface FbForm {
     formId: string;
     webinyVersion: string;
 }
-
-export interface CreatedBy {
-    id: string;
-    displayName: string | null;
-    type: string;
-}
-
-export type OwnedBy = CreatedBy;
 
 interface FormCreateInput {
     name: string;
@@ -344,7 +339,6 @@ export interface SystemCRUD {
 export interface FbSubmission {
     id: string;
     locale: string;
-    ownedBy: OwnedBy;
     data: Record<string, any>;
     meta: Record<string, any>;
     form: {
@@ -357,6 +351,7 @@ export interface FbSubmission {
     };
     logs: Record<string, any>[];
     createdOn: string;
+    createdBy: FormIdentity;
     savedOn: string;
     webinyVersion: string;
     tenant: string;

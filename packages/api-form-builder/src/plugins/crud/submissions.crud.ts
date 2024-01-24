@@ -293,7 +293,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 savedOn: new Date().toISOString(),
                 id: mdbid(),
                 locale: form.locale,
-                ownedBy: form.ownedBy,
+                createdBy: form.createdBy,
                 tenant: form.tenant,
                 logs: [],
                 webinyVersion: context.WEBINY_VERSION

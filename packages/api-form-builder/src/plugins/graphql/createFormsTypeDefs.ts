@@ -84,7 +84,6 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
         type FbForm {
             id: ID!
             createdBy: FbFormUser!
-            ownedBy: FbFormUser!
             createdOn: DateTime!
             savedOn: DateTime!
             publishedOn: DateTime

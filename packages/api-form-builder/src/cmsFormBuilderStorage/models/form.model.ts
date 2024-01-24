@@ -352,18 +352,6 @@ const slugField = () => {
     });
 };
 
-const DEFAULT_FIELDS = [
-    "formId",
-    "name",
-    "stats",
-    "overallStats",
-    "fields",
-    "steps",
-    "settings",
-    "triggers",
-    "slug"
-];
-
 const SETTINGS_FIELDS: CmsModelField[] = [
     settingsLayoutField([settingsLayoutRendererField()]),
     settingsSubmitButtonLabelField(),
@@ -401,7 +389,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
         name: "FbForm",
         modelId: "fbForm",
         titleFieldId: "name",
-        layout: DEFAULT_FIELDS.map(field => [field]),
         fields: [
             formIdField(),
             nameField(),
@@ -421,7 +408,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
             triggersField(),
             slugField()
         ],
-        description: "Form Builder - Form builder create data model",
         isPrivate: true,
         group,
         noValidate: true
