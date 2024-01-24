@@ -3,6 +3,8 @@ import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 import { decompress } from "./utils/compression";
+import { calculateSize, createPageContent } from "~tests/graphql/mocks/pageContent";
+import bytes from "bytes";
 
 jest.setTimeout(100000);
 
@@ -116,7 +118,11 @@ describe("CRUD Test", () => {
                             src: `https://someimages.com/image-${i}.png`
                         }
                     }
-                }
+                },
+                /**
+                 * This basically creates a page content of 1MB in size
+                 */
+                content: createPageContent("1MB")
             };
 
             await updatePage({
@@ -505,5 +511,97 @@ describe("CRUD Test", () => {
             path: [],
             type: "block"
         });
+    });
+
+    it("should create a page with large amount of content", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("3.2MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.19MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(updatePageResponse.data.pageBuilder.updatePage.data.content).toEqual(content);
+
+        const [getPageResponse] = await getPage({ id });
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(getPageResponse.data.pageBuilder.getPage.data.content).toEqual(content);
+    });
+
+    it("should fail to update a page with above the limit content size", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("4MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.99MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse.data.pageBuilder.updatePage.error?.message).toEqual(
+            "Item size has exceeded the maximum allowed size"
+        );
+        expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
     });
 });

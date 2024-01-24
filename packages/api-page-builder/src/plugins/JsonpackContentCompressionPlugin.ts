@@ -1,5 +1,5 @@
 import jsonpack from "jsonpack";
-import { ContentCompressionPlugin, CompressedValue } from "./ContentCompressionPlugin";
+import { CompressedValue, ContentCompressionPlugin } from "./ContentCompressionPlugin";
 
 const JSONPACK_COMPRESSION = "jsonpack";
 
@@ -9,6 +9,10 @@ const JSONPACK_COMPRESSION = "jsonpack";
 export class JsonpackContentCompressionPlugin extends ContentCompressionPlugin {
     public constructor() {
         super(JSONPACK_COMPRESSION);
+    }
+
+    public override canCompress(): boolean {
+        return false;
     }
 
     public canDecompress(value: CompressedValue): boolean {
