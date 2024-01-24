@@ -16,4 +16,4 @@ const I18NContentExtension = () => {
     return <Compose component={LocaleSelectorSpec} with={LocaleSelectorHOC} />;
 };
 
-export const I18NContent: React.FC = memo(I18NContentExtension);
+export const I18NContent: React.ComponentType = memo(I18NContentExtension);

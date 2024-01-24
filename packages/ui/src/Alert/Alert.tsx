@@ -52,7 +52,7 @@ export interface AlertProps {
 /**
  * Use Alert component to display user's avatar.
  */
-const Alert: React.FC<AlertProps> = props => {
+const Alert = (props: AlertProps) => {
     const { title, type, children, ...rest } = props;
 
     return (

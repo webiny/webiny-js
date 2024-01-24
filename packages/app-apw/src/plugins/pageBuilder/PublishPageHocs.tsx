@@ -13,7 +13,7 @@ import { routePaths } from "~/utils";
 
 // TODO: Fix this import so that we can import it from root level maybe
 import { PublishRevisionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
-import { PublishPageMenuOptionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
+import { PublishPageMenuOptionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/MenuOptions/PublishPageMenuOption";
 import { PageRevisionListItemGraphicProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 import { usePage } from "@webiny/app-page-builder/pageEditor/hooks/usePage";
 

@@ -20,7 +20,7 @@ export type ReCaptchaProps = {
     onExpired?: (...args: any[]) => void;
 };
 
-export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
+export type ReCaptchaComponent = React.ComponentType<ReCaptchaProps>;
 
 const createReCaptchaComponent = ({
     formData,

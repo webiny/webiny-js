@@ -38,7 +38,7 @@ const GenerateElementsComponent = ({ name }: GenerateElementsProps) => {
 
     tracker[name] = true;
 
-    const ElementsHOC = (Fields: React.FC) => {
+    const ElementsHOC = (Fields: React.ComponentType) => {
         return function Elements() {
             const { getViewElement } = useViewComposition();
             const element = getViewElement(VIEW_NAME, name);
@@ -67,7 +67,8 @@ const GenerateElementsComponent = ({ name }: GenerateElementsProps) => {
     return <Compose component={SettingsFields} with={ElementsHOC} />;
 };
 
-const GenerateElements: React.FC<GenerateElementsProps> = memo(GenerateElementsComponent);
+const GenerateElements: React.ComponentType<GenerateElementsProps> =
+    memo(GenerateElementsComponent);
 
 GenerateElements.displayName = "GenerateElements";
 

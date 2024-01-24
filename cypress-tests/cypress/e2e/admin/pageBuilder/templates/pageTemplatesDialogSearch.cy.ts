@@ -1,11 +1,12 @@
 import { customAlphabet } from "nanoid";
 
-context("Page Builder - Template Page Dialog Search", () => {
+context("Page Builder - Page Templates Dialog Search", () => {
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz");
     const titleString1 = nanoid(6);
     const titleString2 = nanoid(6);
     const titleString3 = nanoid(6);
     const titleString4 = "!#$%&/()=?*";
+
     const pageTemplateData1 = {
         title: titleString1,
         slug: nanoid(6),
@@ -50,47 +51,56 @@ context("Page Builder - Template Page Dialog Search", () => {
 
     it("Should be able to create templates and then search for them in the page templates modal", () => {
         cy.visit("/page-builder/pages?folderId=root");
-        cy.wait(1000);
         cy.findByTestId("new-page-button").click();
-        cy.wait(500);
+
         cy.findByPlaceholderText("Search templates...").should("exist");
-        cy.contains(pageTemplateData1.title).should("exist");
-        cy.contains(pageTemplateData2.title).should("exist");
-        cy.contains(pageTemplateData3.title).should("exist");
-        cy.contains(pageTemplateData4.title).should("exist");
-        cy.pbListPageTemplates().then(pageTemplates => {
-            cy.wrap(pageTemplates.length).should("eq", 4);
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("exist");
+            cy.contains(pageTemplateData2.title).should("exist");
+            cy.contains(pageTemplateData3.title).should("exist");
+            cy.contains(pageTemplateData4.title).should("exist");
         });
+
         cy.findByPlaceholderText("Search templates...").clear().type(titleString1);
-        cy.contains(pageTemplateData1.title).should("exist");
-        cy.contains(pageTemplateData2.title).should("not.exist");
-        cy.contains(pageTemplateData3.title).should("not.exist");
-        cy.contains(pageTemplateData4.title).should("not.exist");
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("exist");
+            cy.contains(pageTemplateData2.title).should("not.exist");
+            cy.contains(pageTemplateData3.title).should("not.exist");
+            cy.contains(pageTemplateData4.title).should("not.exist");
+        });
 
         cy.findByPlaceholderText("Search templates...").clear().type(titleString2);
-        cy.contains(pageTemplateData1.title).should("not.exist");
-        cy.contains(pageTemplateData2.title).should("exist");
-        cy.contains(pageTemplateData3.title).should("not.exist");
-        cy.contains(pageTemplateData4.title).should("not.exist");
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("not.exist");
+            cy.contains(pageTemplateData2.title).should("exist");
+            cy.contains(pageTemplateData3.title).should("not.exist");
+            cy.contains(pageTemplateData4.title).should("not.exist");
+        });
 
         cy.findByPlaceholderText("Search templates...").clear().type(titleString3);
-        cy.contains(pageTemplateData1.title).should("not.exist");
-        cy.contains(pageTemplateData2.title).should("not.exist");
-        cy.contains(pageTemplateData3.title).should("exist");
-        cy.contains(pageTemplateData4.title).should("not.exist");
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("not.exist");
+            cy.contains(pageTemplateData2.title).should("not.exist");
+            cy.contains(pageTemplateData3.title).should("exist");
+            cy.contains(pageTemplateData4.title).should("not.exist");
+        });
 
         cy.findByPlaceholderText("Search templates...").clear().type(titleString4);
-        cy.contains(pageTemplateData1.title).should("not.exist");
-        cy.contains(pageTemplateData2.title).should("not.exist");
-        cy.contains(pageTemplateData3.title).should("not.exist");
-        cy.contains(pageTemplateData4.title).should("exist");
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("not.exist");
+            cy.contains(pageTemplateData2.title).should("not.exist");
+            cy.contains(pageTemplateData3.title).should("not.exist");
+            cy.contains(pageTemplateData4.title).should("exist");
+        });
 
         cy.findByPlaceholderText("Search templates...")
             .clear()
             .type("This String should not return anything");
-        cy.contains(pageTemplateData1.title).should("not.exist");
-        cy.contains(pageTemplateData2.title).should("not.exist");
-        cy.contains(pageTemplateData3.title).should("not.exist");
-        cy.contains(pageTemplateData4.title).should("not.exist");
+        cy.findByTestId("pb-new-page-dialog-templates-list").within(() => {
+            cy.contains(pageTemplateData1.title).should("not.exist");
+            cy.contains(pageTemplateData2.title).should("not.exist");
+            cy.contains(pageTemplateData3.title).should("not.exist");
+            cy.contains(pageTemplateData4.title).should("not.exist");
+        });
     });
 });

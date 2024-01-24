@@ -17,6 +17,7 @@ export interface ExecaArgs {
     env?: {
         [key: string]: string | undefined;
     };
+
     [key: string]: any;
 }
 
@@ -53,6 +54,7 @@ export class Pulumi {
     pulumiFolder: string;
     pulumiDownloadFolder: string;
     pulumiBinaryPath: string;
+
     constructor(options: Options = {}) {
         this.options = options;
 
@@ -127,7 +129,7 @@ export class Pulumi {
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
                  */
-                PATH: process.env.PATH + PATH_SEPARATOR + this.pulumiFolder
+                PATH: this.pulumiFolder + PATH_SEPARATOR + process.env.PATH
             }
         };
 

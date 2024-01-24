@@ -8,7 +8,7 @@ export { FolderActionConfig };
 
 type FolderActionProps = React.ComponentProps<typeof AcoConfig.Folder.Action>;
 
-export const FolderAction = (props: FolderActionProps) => {
+const BaseFolderAction = (props: FolderActionProps) => {
     return (
         <CompositionScope name={"fm"}>
             <AcoConfig>
@@ -17,3 +17,7 @@ export const FolderAction = (props: FolderActionProps) => {
         </CompositionScope>
     );
 };
+
+export const FolderAction = Object.assign(BaseFolderAction, {
+    OptionsMenuItem: Folder.Action.OptionsMenuItem
+});

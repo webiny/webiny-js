@@ -29,12 +29,16 @@ export const login = async ({ username, password } = DEFAULT_LOGIN) => {
     });
 };
 
+export const getSuperAdminUser = () => {
+    return login();
+};
+
 interface LoginParams {
     username: string;
     password: string;
 }
 
-interface User {
+export interface User {
     idToken: {
         jwtToken: string;
     };

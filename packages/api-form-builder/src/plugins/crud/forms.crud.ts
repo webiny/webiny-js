@@ -135,7 +135,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             if (options?.auth !== false) {
-                await formsPermissions.ensure({ owns: form.ownedBy });
+                await formsPermissions.ensure({ owns: form.createdBy });
             }
 
             return form;
@@ -242,11 +242,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                ownedBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
                 name: input.name,
                 slug,
                 version,
@@ -319,7 +314,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 });
             }
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
+            await formsPermissions.ensure({ owns: original.createdBy });
 
             const form: FbForm = {
                 ...original,
@@ -366,7 +361,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 throw new NotFoundError(`Form ${id} was not found!`);
             }
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforeDelete.publish({
@@ -399,7 +394,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             const { id: formId } = parseIdentifier(form.id);
 
@@ -460,7 +455,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforePublish.publish({
@@ -491,7 +486,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforeUnpublish.publish({

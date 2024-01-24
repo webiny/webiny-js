@@ -38,7 +38,7 @@ const Label = styled("div")({
     marginTop: 15
 });
 
-const CircularProgress: React.FC<CircularProgressProps> = props => {
+const CircularProgress = (props: CircularProgressProps) => {
     const { label, size, spinnerWidth, spinnerColor, visible, style } = props;
     /**
      * We can safely cast because we have default props

@@ -2,9 +2,9 @@
  * Should not be used by users as method is prone to breaking changes.
  * @internal
  */
-export const formatDate = (date?: Date | string | null): string | undefined => {
+export const formatDate = (date?: Date | string | null): string | null => {
     if (!date) {
-        return undefined;
+        return null;
     } else if (date instanceof Date) {
         return date.toISOString();
     }
@@ -15,7 +15,7 @@ export const formatDate = (date?: Date | string | null): string | undefined => {
  * Should not be used by users as method is prone to breaking changes.
  * @internal
  */
-export const getDate = <T extends string | undefined = string | undefined>(
+export const getDate = <T extends string | null = string | null>(
     input?: Date | string | null,
     defaultValue?: Date | string | null
 ): T => {

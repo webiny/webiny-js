@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $applyStylesToNode,
@@ -16,7 +16,7 @@ import {
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 
-export const FontColorPlugin: React.FC = () => {
+export const FontColorPlugin = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {

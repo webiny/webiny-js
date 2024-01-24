@@ -34,7 +34,7 @@ const submenuList = css({
     }
 });
 
-export const MenuSectionItemRenderer = (PrevMenuItem: React.FC) => {
+export const MenuSectionItemRenderer = (PrevMenuItem: React.ComponentType) => {
     return function MenuSectionItem() {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();

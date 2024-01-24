@@ -3,9 +3,9 @@ import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createAcoHooks } from "~/createAcoHooks";
-import { baseFields, createAcoStorageOperations } from "~/createAcoStorageOperations";
+import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
-import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
+import { AcoContext, CreateAcoParams, Folder, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
 import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
@@ -15,7 +15,7 @@ import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
 import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators";
 import { FOLDER_MODEL_ID } from "~/folder/folder.model";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFolderFieldValues } from "~/utils/getFieldValues";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import { createFilterCrudMethods } from "~/filter/filter.crud";
 
 interface CreateAcoContextParams {
@@ -100,7 +100,7 @@ const setupAcoContext = async (
                     sort: ["title_ASC"]
                 });
 
-                return results.items.map(entry => getFolderFieldValues(entry, baseFields));
+                return results.items.map(pickEntryFieldValues<Folder>);
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),

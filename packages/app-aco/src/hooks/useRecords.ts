@@ -3,6 +3,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
 import { DeletableSearchRecordItem, MovableSearchRecordItem, SearchRecordItem } from "~/types";
 import { useAcoApp } from "~/hooks/useAcoApp";
+import { useNavigateFolder } from "~/hooks/useNavigateFolder";
 
 export const useRecords = (folderId?: string) => {
     const context = useContext(SearchRecordsContext);
@@ -12,6 +13,8 @@ export const useRecords = (folderId?: string) => {
     }
 
     const { folderIdPath } = useAcoApp();
+
+    const { currentFolderId } = useNavigateFolder();
 
     const {
         records,
@@ -51,9 +54,10 @@ export const useRecords = (folderId?: string) => {
              */
             loading,
             meta,
-            records: records.filter(
-                record => dotPropImmutable.get(record, folderIdPath) === folderId
-            ),
+            records: records.filter(record => {
+                const recordFolderId = dotPropImmutable.get(record, folderIdPath);
+                return recordFolderId === folderId || recordFolderId === currentFolderId;
+            }),
             listRecords(params: ListRecordsParams) {
                 const where = dotPropImmutable.set(params.where || {}, folderIdPath, folderId);
                 return listRecords({
@@ -80,6 +84,6 @@ export const useRecords = (folderId?: string) => {
             removeRecordFromCache,
             updateRecordInCache
         }),
-        [records, loading, meta]
+        [records, loading, meta, currentFolderId, folderId]
     );
 };

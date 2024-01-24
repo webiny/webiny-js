@@ -53,7 +53,7 @@ interface State {
     inputValue: string;
 }
 
-const Spinner: React.FC = () => {
+const Spinner = () => {
     return (
         <MaterialSpinner
             size={24}
@@ -73,9 +73,10 @@ interface RenderOptionsParams
 interface OptionsListProps {
     placement?: Placement;
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+    children: React.ReactNode;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ placement, getMenuProps, children }) => {
+const OptionsList = ({ placement, getMenuProps, children }: OptionsListProps) => {
     return (
         <Elevation
             z={1}

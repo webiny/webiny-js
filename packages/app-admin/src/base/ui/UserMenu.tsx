@@ -26,8 +26,13 @@ export function useUserMenu() {
     return React.useContext(UserMenuContext);
 }
 
-export const UserMenuProvider = (Component: React.FC): React.FC => {
-    return function UserMenuProvider({ children, ...props }) {
+interface UserMenuProviderProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
+export const UserMenuProvider = (Component: React.ComponentType) => {
+    return function UserMenuProvider({ children, ...props }: UserMenuProviderProps) {
         const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 
         const addMenuItem = useCallback<UserMenuContext["addMenuItem"]>(

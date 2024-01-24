@@ -127,7 +127,7 @@ interface MultiAutoCompleteState {
     reorderFormValue: string;
 }
 
-const Spinner: React.FC = () => {
+const Spinner = () => {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 };
 
@@ -139,6 +139,7 @@ interface RenderOptionsParams
 
 interface OptionsListProps {
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+    children: React.ReactNode;
 }
 
 interface AssignedValueAfterClearing {
@@ -146,7 +147,7 @@ interface AssignedValueAfterClearing {
     selection: string | null;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
+const OptionsList = ({ getMenuProps, children }: OptionsListProps) => {
     return (
         <Elevation z={1}>
             <ul

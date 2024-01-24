@@ -18,7 +18,7 @@ interface HeadlessCMSProvider {
 }
 
 const createHeadlessCMSProvider =
-    (createApolloClient: CreateApolloClient) => (Component: React.FC) => {
+    (createApolloClient: CreateApolloClient) => (Component: React.ComponentType) => {
         return function HeadlessCMSProvider({ children }: HeadlessCMSProvider) {
             return (
                 <CmsProvider createApolloClient={createApolloClient}>

@@ -26,7 +26,7 @@ export interface PermissionSelectorProps {
     locales: string[];
     entity: string;
     getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
-    RenderItems?: React.FC<RenderItemsProps>;
+    RenderItems?: React.ComponentType<RenderItemsProps>;
     disabled?: boolean;
 }
 

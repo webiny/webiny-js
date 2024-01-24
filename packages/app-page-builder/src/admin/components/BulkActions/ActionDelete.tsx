@@ -4,11 +4,9 @@ import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
-    const { canDelete } = usePagesPermissions();
     const { deletePage, client } = useAdminPageBuilder();
     const { removeRecordFromCache } = useRecords();
 
@@ -21,10 +19,6 @@ export const ActionDelete = observer(() => {
         return getPagesLabel(worker.items.length);
     }, [worker.items.length]);
 
-    const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => canDelete(item?.createdBy?.id));
-    }, [worker.items]);
-
     const openDeletePagesDialog = () =>
         showConfirmationDialog({
             title: "Delete pages",
@@ -34,7 +28,7 @@ export const ActionDelete = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await deletePage(
-                            { id: item.id },
+                            { id: item.data.id },
                             {
                                 client: client,
                                 mutationOptions: {
@@ -55,7 +49,7 @@ export const ActionDelete = observer(() => {
                             );
                         }
 
-                        removeRecordFromCache(item.pid);
+                        removeRecordFromCache(item.data.pid);
 
                         report.success({
                             title: `${item.title}`,
@@ -78,11 +72,6 @@ export const ActionDelete = observer(() => {
                 });
             }
         });
-
-    if (!canDeleteAll) {
-        console.log("You don't have permissions to delete pages.");
-        return null;
-    }
 
     return (
         <IconButton

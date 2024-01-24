@@ -53,7 +53,7 @@ const CenterAlign = styled.div({
     }
 });
 
-export const OEmbed: React.FC<OEmbedProps> = props => {
+export const OEmbed = (props: OEmbedProps) => {
     const { element, renderEmbed } = props;
     const { url } = element?.data?.source || {};
 

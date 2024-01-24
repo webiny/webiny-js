@@ -134,15 +134,12 @@ const logsField = () => {
     });
 };
 
-const DEFAULT_FIELDS = ["data", "meta", "form"];
-
 export const createSubmissionDataModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
     return {
         name: "FbSubmission",
         modelId: "fbSubmission",
         titleFieldId: "",
         group,
-        layout: DEFAULT_FIELDS.map(field => [field]),
         fields: [
             dataField(),
             metaField([
@@ -160,7 +157,6 @@ export const createSubmissionDataModelDefinition = (group: CmsModelGroup): CmsPr
             ]),
             logsField()
         ],
-        description: "Form Builder - Submission content model",
         isPrivate: true,
         noValidate: true
     };

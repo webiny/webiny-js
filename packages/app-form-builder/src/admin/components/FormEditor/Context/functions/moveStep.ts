@@ -1,24 +1,21 @@
-import { FbFormStep } from "~/types";
+import { FbFormStep, MoveStepParams } from "~/types";
 
-interface MoveStepParams {
+interface MoveStep extends MoveStepParams {
     data: FbFormStep[];
-    /* formStep is the step that we are dragging */
-    formStep: FbFormStep;
-    step: FbFormStep;
 }
 
-const moveStep = (params: MoveStepParams) => {
-    const { step, data, formStep } = params;
+export default (params: MoveStep) => {
+    const { source, destination, data } = params;
 
-    /* step1 is the step that will change it's position with */
-    const step1 = data.findIndex((v: FbFormStep) => v.id === step.id);
-    /* step2 is the step that is being dragged */
-    const step2 = data.findIndex((v: FbFormStep) => v.id === formStep.id);
+    // "targetStep" is the step that is being dragged
+    const targetStep = data.find((v: FbFormStep) => v.id === source.containerId);
+    const targetStepIndex = data.findIndex((v: FbFormStep) => v.id === source.containerId);
 
-    data.splice(step1, 1, formStep);
-    data.splice(step2, 1, step);
-};
+    const destinationStep = data.find((v: FbFormStep) => v.id === destination.containerId);
+    const destinationStepIndex = data.findIndex(
+        (v: FbFormStep) => v.id === destination.containerId
+    );
 
-export default (params: any) => {
-    moveStep(params);
+    data.splice(targetStepIndex, 1, destinationStep!);
+    data.splice(destinationStepIndex, 1, targetStep!);
 };

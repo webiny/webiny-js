@@ -11,7 +11,7 @@ export function createConditionalDecorator(
     decorator: Decorator,
     decoratorProps: unknown
 ): Decorator {
-    return (Original: React.FC) => {
+    return (Original: React.ComponentType) => {
         return function ShouldDecorate(props) {
             if (shouldDecorate(decoratorProps, props)) {
                 const Component = decorator(Original);

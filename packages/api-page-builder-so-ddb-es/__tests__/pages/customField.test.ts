@@ -98,6 +98,9 @@ describe("page custom field", () => {
                 },
                 {
                     name: "customViews"
+                },
+                {
+                    name: "wbyAco_location"
                 }
             ]
         });

@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import { HigherOrderComponent, useComposition } from "./Context";
 import { useCompositionScope } from "~/CompositionScope";
 
-export interface ComposableFC<TProps = unknown> extends React.FC<TProps> {
-    original: React.FC<TProps>;
+export type ComposableFC<TProps = unknown> = React.ComponentType<TProps> & {
+    original: React.ComponentType<TProps>;
     originalName: string;
-}
+};
 
 export interface ComposeProps {
     /**
@@ -16,7 +16,7 @@ export interface ComposeProps {
     with: HigherOrderComponent | HigherOrderComponent[];
 }
 
-export const Compose: React.FC<ComposeProps> = props => {
+export const Compose = (props: ComposeProps) => {
     const { composeComponent } = useComposition();
     const scope = useCompositionScope();
 

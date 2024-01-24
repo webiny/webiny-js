@@ -82,7 +82,7 @@ const waitForDom = (id: string, callback: () => void) => {
     };
 };
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+export const RichTextEditor = (props: RichTextEditorProps) => {
     const elementId = useRef("rte-" + shortid.generate());
     const editorRef = useRef<EditorJSType>();
 

@@ -72,7 +72,7 @@ export interface DialogTitleProps extends RmwcDialogTitleProps {
 /**
  * Dialog's header, which can accept DialogHeaderTitle component or any other set of components.
  */
-export const DialogTitle: React.FC<DialogTitleProps> = props => (
+export const DialogTitle = (props: DialogTitleProps) => (
     <RmwcDialogTitle {...getClasses(props, "webiny-ui-dialog__title")} />
 );
 
@@ -88,7 +88,7 @@ export type DialogContentProps = RmwcDialogContentProps & {
 /**
  * A simple component for showing dialog's body.
  */
-export const DialogContent: React.FC<DialogContentProps> = props => (
+export const DialogContent = (props: DialogContentProps) => (
     <RmwcDialogContent {...getClasses(props, "webiny-ui-dialog__content")} />
 );
 
@@ -111,7 +111,7 @@ const addMargin = css`
 /**
  * Can be used to show accept and cancel buttons.
  */
-export const DialogActions: React.FC<DialogActionsProps> = props => (
+export const DialogActions = (props: DialogActionsProps) => (
     <RmwcDialogActions {...getClasses(props, [addMargin, "webiny-ui-dialog__actions"])} />
 );
 
@@ -127,7 +127,7 @@ interface DialogButtonProps extends RmwcDialogButtonProps {
 /**
  * Use this to show a simple button.
  */
-export const DialogButton: React.FC<DialogButtonProps> = props => (
+export const DialogButton = (props: DialogButtonProps) => (
     <RmwcDialogButton {...getClasses(props, "webiny-ui-dialog__button")} />
 );
 
@@ -141,7 +141,7 @@ interface DialogCancelProps extends RmwcDialogButtonProps {
 /**
  * Use this to close the dialog without taking any additional action.
  */
-export const DialogCancel: React.FC<DialogCancelProps> = props => {
+export const DialogCancel = (props: DialogCancelProps) => {
     return (
         <DialogButton
             {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--cancel")}
@@ -163,7 +163,7 @@ interface DialogAcceptProps extends RmwcDialogButtonProps {
 /**
  * Use this to close the dialog without taking any additional action.
  */
-export const DialogAccept: React.FC<DialogAcceptProps> = props => {
+export const DialogAccept = (props: DialogAcceptProps) => {
     return (
         <DialogButton
             {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--accept")}

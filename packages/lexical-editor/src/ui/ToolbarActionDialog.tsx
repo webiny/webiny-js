@@ -56,7 +56,7 @@ interface ToolbarActionDialogProps {
     stopCloseOnClickSelf?: boolean;
 }
 
-export const ToolbarActionDialog: React.FC<ToolbarActionDialogProps> = ({
+export const ToolbarActionDialog = ({
     disabled,
     buttonAriaLabel,
     buttonClassName,
@@ -64,7 +64,7 @@ export const ToolbarActionDialog: React.FC<ToolbarActionDialogProps> = ({
     buttonLabel,
     children,
     stopCloseOnClickSelf
-}): JSX.Element => {
+}: ToolbarActionDialogProps): JSX.Element => {
     const menuWindowRef = useRef<HTMLDivElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
 

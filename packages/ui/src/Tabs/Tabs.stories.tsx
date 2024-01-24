@@ -16,11 +16,15 @@ import { Tabs, Tab } from "./index";
 
 const story = storiesOf("Components/Tabs", module);
 
+interface DivProps {
+    children: React.ReactNode;
+}
+
 story.addDecorator(withKnobs);
 story.add(
     "usage",
     () => {
-        const Div: React.FC = props => {
+        const Div = (props: DivProps) => {
             return <div style={{ padding: 50 }}>{props.children}</div>;
         };
 

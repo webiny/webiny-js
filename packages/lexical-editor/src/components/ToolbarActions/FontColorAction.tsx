@@ -18,13 +18,13 @@ interface FontActionColorPicker {
     element: JSX.Element;
 }
 
-const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ element }): JSX.Element => {
+const FontActionColorPicker = ({ element }: FontActionColorPicker): JSX.Element => {
     return <Compose component={FontColorPicker} with={() => () => element} />;
 };
 
-export interface FontColorAction extends React.FC<unknown> {
+export type FontColorAction = React.ComponentType<unknown> & {
     ColorPicker: typeof FontActionColorPicker;
-}
+};
 
 export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();

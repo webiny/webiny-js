@@ -3,6 +3,7 @@ import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 import { PbPageDataItem } from "~/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 
 export interface BulkActionConfig {
     name: string;
@@ -50,7 +51,7 @@ export const BaseBulkAction = ({
 
 const useWorker = () => {
     const { selected, setSelected } = usePagesList();
-    const { current: worker } = useRef(new Worker<PbPageDataItem>());
+    const { current: worker } = useRef(new Worker<SearchRecordItem<PbPageDataItem>>());
 
     useEffect(() => {
         worker.items = selected;
@@ -64,9 +65,14 @@ const useWorker = () => {
 
     return {
         items: selected,
-        process: (callback: (items: PbPageDataItem[]) => void) => worker.process(callback),
+        process: (callback: (items: SearchRecordItem<PbPageDataItem>[]) => void) =>
+            worker.process(callback),
         processInSeries: async (
-            callback: ({ item, allItems, report }: CallbackParams<PbPageDataItem>) => Promise<void>,
+            callback: ({
+                item,
+                allItems,
+                report
+            }: CallbackParams<SearchRecordItem<PbPageDataItem>>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
         resetItems: resetItems,

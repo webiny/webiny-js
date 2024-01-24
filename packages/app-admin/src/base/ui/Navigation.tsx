@@ -52,7 +52,7 @@ const LegacyMenu = (props: LegacyMenuProps & { children: React.ReactNode }) => {
     );
 };
 
-const LegacyMenuPlugins: React.FC = () => {
+const LegacyMenuPlugins = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
     const [menus, setMenus] = useState<JSX.Element | null>(null);
 

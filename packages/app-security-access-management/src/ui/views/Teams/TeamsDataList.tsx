@@ -53,7 +53,7 @@ export interface TeamsDataListProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
-export const TeamsDataList: React.FC<TeamsDataListProps> = () => {
+export const TeamsDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(SORTERS[0].sorter);
     const { history, location } = useRouter();

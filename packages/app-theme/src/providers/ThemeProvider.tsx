@@ -19,7 +19,7 @@ function tryLoadingTheme() {
     return themePlugin?.theme as Theme;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const [theme, setTheme] = useState<ThemeContext["theme"]>(tryLoadingTheme());
 
     const loadThemeFromPlugins = useCallback(() => {

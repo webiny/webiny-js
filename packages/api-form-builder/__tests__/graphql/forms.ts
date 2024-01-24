@@ -32,11 +32,6 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
             displayName
             type
         }
-        ownedBy {
-            id
-            displayName
-            type
-        }
     }
 `;
 

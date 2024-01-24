@@ -200,13 +200,12 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
             createdBy: entry.createdBy,
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
-            publishedOn: entry.publishedOn,
+            publishedOn: entry.lastPublishedOn,
             status: entry.status,
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,
             version: entry.version,
-            ownedBy: entry.ownedBy,
             ...entry.values
         } as FbForm;
     }

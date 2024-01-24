@@ -38,28 +38,39 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             id: {
                 type: "string"
             },
-            createdBy: {
-                type: "map"
-            },
-            ownedBy: {
-                type: "map"
-            },
-            modifiedBy: {
-                type: "map"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
+
+            /**
+             * Revision-level meta fields. 👇
+             */
+            revisionCreatedOn: { type: "string" },
+            revisionSavedOn: { type: "string" },
+            revisionModifiedOn: { type: "string" },
+            revisionFirstPublishedOn: { type: "string" },
+            revisionLastPublishedOn: { type: "string" },
+            revisionCreatedBy: { type: "map" },
+            revisionSavedBy: { type: "map" },
+            revisionModifiedBy: { type: "map" },
+            revisionFirstPublishedBy: { type: "map" },
+            revisionLastPublishedBy: { type: "map" },
+
+            /**
+             * Entry-level meta fields. 👇
+             */
+            createdOn: { type: "string" },
+            savedOn: { type: "string" },
+            modifiedOn: { type: "string" },
+            firstPublishedOn: { type: "string" },
+            lastPublishedOn: { type: "string" },
+            createdBy: { type: "map" },
+            savedBy: { type: "map" },
+            modifiedBy: { type: "map" },
+            firstPublishedBy: { type: "map" },
+            lastPublishedBy: { type: "map" },
+
             modelId: {
                 type: "string"
             },
             locale: {
-                type: "string"
-            },
-            publishedOn: {
                 type: "string"
             },
             version: {

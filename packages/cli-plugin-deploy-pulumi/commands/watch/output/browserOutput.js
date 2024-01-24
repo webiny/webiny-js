@@ -38,7 +38,7 @@ module.exports = {
 
             server.httpServer.listen(port, () => {
                 const destination = "http://localhost:" + port;
-                log.success(`Development server started at ${log.success.hl(destination)}.`);
+                log.success(`Development server started at %s.`, destination);
                 setTimeout(() => {
                     if (!connected) {
                         open(destination);

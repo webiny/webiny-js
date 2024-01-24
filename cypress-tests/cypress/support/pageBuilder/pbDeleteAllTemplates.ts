@@ -5,7 +5,7 @@ declare global {
     namespace Cypress {
         interface Chainable {
             // Combined method to list and delete all templates
-            pbDeleteAllTemplates(): Promise<void>;
+            pbDeleteAllTemplates(): Promise<void[]>;
         }
     }
 }
@@ -48,21 +48,14 @@ Cypress.Commands.add("pbDeleteAllTemplates", () => {
 
                 // Loop through the templates and delete each one.
                 return Promise.all(
-                    templates.map((template: { id: string }) => {
-                        return gqlClient
-                            .request({
-                                query: DELETE_MUTATION,
-                                variables: {
-                                    id: template.id
-                                },
-                                authToken: user.idToken.jwtToken
-                            })
-                            .then(deleteResponse => {
-                                const error = deleteResponse.pageBuilder.deletePageTemplate.error;
-                                if (error) {
-                                    cy.log(`Error deleting template with ID: ${template.id}`);
-                                }
-                            });
+                    templates.map(async (template: { id: string }) => {
+                        await gqlClient.request({
+                            query: DELETE_MUTATION,
+                            variables: {
+                                id: template.id
+                            },
+                            authToken: user.idToken.jwtToken
+                        });
                     })
                 );
             });

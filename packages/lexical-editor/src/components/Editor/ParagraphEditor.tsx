@@ -8,7 +8,7 @@ interface ParagraphLexicalEditorProps extends RichTextEditorProps {
 
 const styles = { padding: 5 };
 
-const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
+const ParagraphEditor = ({ placeholder, tag, ...rest }: ParagraphLexicalEditorProps) => {
     return (
         <RichTextEditor
             toolbar={<Toolbar />}

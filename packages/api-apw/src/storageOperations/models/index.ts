@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsGroupPlugin, CmsModelPlugin } from "@webiny/api-headless-cms";
-import { contentModelPluginFactory } from "./contentModelPluginFactory";
+import { CmsModelPlugin, createCmsModel } from "@webiny/api-headless-cms";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
@@ -30,22 +29,6 @@ export const createApwModels = (context: CmsContext) => {
             "LOCALE_ERROR"
         );
     }
-    /**
-     * TODO:@ashutosh
-     * We need to move these plugin in an installation plugin
-     */
-    const groupId = "contentModelGroup_apw";
-    /**
-     * Create a CmsGroup.
-     */
-    const cmsGroupPlugin = new CmsGroupPlugin({
-        id: groupId,
-        slug: "apw",
-        name: "APW",
-        description: "Group for Advanced Publishing Workflow",
-        icon: "fas/star",
-        isPrivate: true
-    });
 
     /**
      * Create  CmsModel plugins.
@@ -72,12 +55,9 @@ export const createApwModels = (context: CmsContext) => {
 
     const cmsModelPlugins: CmsModelPlugin[] = [];
     for (const modelDefinition of modelDefinitions) {
-        const cmsModelPlugin = contentModelPluginFactory({
-            group: cmsGroupPlugin.contentModelGroup,
-            modelDefinition
-        });
+        const cmsModelPlugin = createCmsModel(modelDefinition);
         /**
-         * We want "title" field as the "titleField" for "ContentReview" model.
+         * We want "title" field as the title field for "ContentReview" model.
          * so that we can later search entries by title.
          */
         if (cmsModelPlugin.contentModel.modelId === "apwContentReviewModelDefinition") {
@@ -89,5 +69,5 @@ export const createApwModels = (context: CmsContext) => {
     /**
      *  Register them so that they are accessible in cms context
      */
-    context.plugins.register([cmsGroupPlugin, cmsModelPlugins]);
+    context.plugins.register(...cmsModelPlugins);
 };

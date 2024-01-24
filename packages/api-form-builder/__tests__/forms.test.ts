@@ -57,8 +57,7 @@ describe('Form Builder "Form" Test', () => {
                             createdOn: /^20/,
                             savedOn: /^20/,
                             status: "draft",
-                            createdBy: defaultIdentity,
-                            ownedBy: defaultIdentity
+                            createdBy: defaultIdentity
                         },
                         error: null
                     }

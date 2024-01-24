@@ -6,7 +6,10 @@ const productFields = `
     id
     entryId
     createdOn
+    modifiedOn
     savedOn
+    lastPublishedOn
+    firstPublishedOn
     # user defined fields
     title
     category {
