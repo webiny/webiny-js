@@ -46,17 +46,13 @@ const submissionsField = () => {
     });
 };
 
-const DEFAULT_FIELDS = ["formId", "formVersion", "views", "submissions"];
-
 export const createFormStatDataModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
     return {
         name: "FbFormStat",
         modelId: "fbFormStat",
         titleFieldId: "",
         group,
-        layout: DEFAULT_FIELDS.map(field => [field]),
         fields: [formIdField(), formVersionField(), viewsField(), submissionsField()],
-        description: "Form Builder - Form statistics content model",
         isPrivate: true,
         noValidate: true
     };
