@@ -11,7 +11,6 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     const initJob: NormalJob = createJob({
-        needs: "checkComment",
         name: `E2E (${dbSetup.toUpperCase()}) - Init`,
         outputs: {
             day: "${{ steps.get-day.outputs.day }}",
