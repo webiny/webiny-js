@@ -15,6 +15,12 @@ describe("graphql - definitions", () => {
                     listDefinitions: {
                         data: [
                             {
+                                description: null,
+                                fields: [],
+                                id: "testingRun",
+                                title: "A mock task to test run the step function permissions."
+                            },
+                            {
                                 id: "myCustomTaskNumber1",
                                 title: "A custom task defined via method #1",
                                 description: "This is a description of the task #1",
