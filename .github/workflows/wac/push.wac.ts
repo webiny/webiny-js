@@ -370,8 +370,7 @@ const createPushWorkflow = (branchName: string) => {
             jestTestsDdbOs: createJestTestsJob("ddb-os"),
             ...createCypressJobs("ddb"),
             ...createCypressJobs("ddb-es"),
-            ...createCypressJobs("ddb-os"),
-
+            ...createCypressJobs("ddb-os")
         }
     });
 };
