@@ -1,8 +1,8 @@
-import React from "react";
-import { format, addMinutes } from "date-fns";
+import React, { useEffect, useState } from "react";
+import { addMinutes, format } from "date-fns";
 
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Dialog, DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { CodeEditor } from "@webiny/ui/CodeEditor";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
@@ -10,6 +10,7 @@ import { Action } from "~/views/Logs/Table";
 import { Text } from "~/components/Text";
 import { Entry } from "~/utils/transformCmsContentEntriesToRecordEntries";
 import { PayloadWrapper, previewDialog } from "./styled";
+import { useRecords } from "@webiny/app-aco";
 
 type HeaderProps = {
     auditLog: Entry | null;
@@ -18,7 +19,20 @@ type HeaderProps = {
 };
 
 export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) => {
-    if (!auditLog) {
+    const { getRecord } = useRecords();
+
+    const [auditLogData, setAuditLogData] = useState(null);
+
+    useEffect(() => {
+        if (auditLogData || !auditLog?.id) {
+            return;
+        }
+        getRecord(auditLog.id).then(data => {
+            setAuditLogData(data as any);
+        });
+    }, [auditLog?.id, auditLogData, setAuditLogData]);
+
+    if (!auditLog || !auditLogData) {
         return null;
     }
 
@@ -88,7 +102,7 @@ export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) =>
                             <CodeEditor
                                 mode="json"
                                 theme="chrome"
-                                value={JSON.stringify(JSON.parse(auditLog.data), null, 2)}
+                                value={JSON.stringify(auditLogData, null, 2)}
                                 readOnly
                             />
                         </PayloadWrapper>

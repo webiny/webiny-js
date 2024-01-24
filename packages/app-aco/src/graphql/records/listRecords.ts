@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { AcoAppMode, AcoModel } from "~/types";
-import { createAppFields, ERROR_FIELD, LIST_META_FIELD } from "./common";
+import { createAppFields, ERROR_FIELD, filterFields, LIST_META_FIELD } from "./common";
 import { createListQuery } from "@webiny/app-headless-cms-common";
 
 export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
@@ -12,11 +12,8 @@ export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
              * TODO: possibly have only searchable / sortable fields here?
              * We could do that if we fetched the information from the API side - we do not have that information in the UI.
              */
-            model.fields.filter(field => {
-                /**
-                 * Filter out by field type for start.
-                 */
-                const filtered = [
+            filterFields(model.fields, field => {
+                return [
                     "text",
                     "number",
                     "boolean",
@@ -25,16 +22,6 @@ export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
                     "ref",
                     "datetime"
                 ].includes(field.type);
-                if (!filtered) {
-                    return false;
-                }
-                /**
-                 * Then we need to check the field settings.
-                 */
-                if (field.settings?.aco?.list === false) {
-                    return false;
-                }
-                return true;
             })
         );
     }

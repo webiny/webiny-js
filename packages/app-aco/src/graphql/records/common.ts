@@ -3,9 +3,9 @@ import { plugins } from "@webiny/plugins";
 
 export const ERROR_FIELD = /* GraphQL */ `
     error {
-        code
-        data
-        message
+    code
+    data
+    message
     }
 `;
 interface CreateFieldsListParams {
@@ -55,34 +55,33 @@ const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => 
         .join("\n");
 };
 
-export const createAppFields = (model: AcoModel, filterOutUnnecessaryFields?: boolean) => {
-    if (filterOutUnnecessaryFields) {
+export const filterFields = (
+    fields: AcoModelField[],
+    cb?: (field: AcoModelField) => boolean
+): AcoModelField[] => {
+    return fields.reduce<AcoModelField[]>((result, field) => {
+        if (cb && !cb(field)) {
+            return result;
+        } else if (field.settings?.aco?.list === false) {
+            return result;
+        } else if (field.type === "object") {
+            field.settings = {
+                ...field.settings,
+                fields: filterFields(field.settings?.fields || [], cb)
+            };
+        }
+
+        result.push(field);
+
+        return result;
+    }, []);
+};
+
+export const createAppFields = (model: AcoModel, filterOutFields?: boolean) => {
+    if (filterOutFields) {
         return createFieldsList({
             model,
-            fields: model.fields.filter(field => {
-                /**
-                 * Filter out by field type for start.
-                 */
-                const filtered = [
-                    "text",
-                    "number",
-                    "boolean",
-                    "file",
-                    "long-text",
-                    "ref",
-                    "datetime"
-                ].includes(field.type);
-                if (!filtered) {
-                    return false;
-                }
-                /**
-                 * Then we need to check the field settings.
-                 */
-                if (field.settings?.aco?.list === false) {
-                    return false;
-                }
-                return true;
-            })
+            fields: filterFields(model.fields)
         });
     }
     return createFieldsList({
