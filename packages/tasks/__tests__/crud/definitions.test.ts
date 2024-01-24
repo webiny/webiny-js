@@ -50,8 +50,12 @@ describe("definitions crud", () => {
 
         const definitions = context.tasks.listDefinitions();
 
-        expect(definitions).toHaveLength(3);
+        expect(definitions).toHaveLength(4);
         expect(definitions).toMatchObject([
+            {
+                id: "testingRun",
+                title: "A mock task to test run the step function permissions."
+            },
             {
                 id: "testDefinitionNumber1",
                 title: "Test definition #1"
