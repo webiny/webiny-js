@@ -40,12 +40,6 @@
   "adio": {
     "ignoreDirs": [
       "__tests__"
-    ],
-    "ignore": {
-      "src": [
-        "aws-sdk",
-        "sharp"
-      ]
-    }
+    ]
   }
 }

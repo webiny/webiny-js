@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
+    "@types/aws-lambda": "^8.10.131",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -23,10 +24,9 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "aws-lambda": "^1.0.7",
     "deep-equal": "^2.2.3",
     "lodash": "^4.17.21",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
@@ -52,5 +52,15 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-lambda"
+      ],
+      "dependencies": [
+        "@types/aws-lambda"
+      ]
+    }
+  }
 }

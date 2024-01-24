@@ -91,7 +91,7 @@
     "lodash": "^4.17.11",
     "longest": "^2.0.1",
     "minimatch": "^5.1.0",
-    "nanoid": "^3.0.0",
+    "nanoid": "^3.3.7",
     "node-fetch": "^2.6.1",
     "pm2": "^4.5.4",
     "prettier": "^2.8.3",

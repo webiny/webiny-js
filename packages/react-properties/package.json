@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.22.6",
     "@types/react": "17.0.39",
     "@webiny/react-composition": "0.0.0",
-    "nanoid": "^3.3.4",
+    "nanoid": "^3.3.7",
     "react": "17.0.2"
   },
   "devDependencies": {
