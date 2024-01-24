@@ -40,7 +40,7 @@ module.exports = options => {
             chunkFilename: `[name].[contenthash:8].chunk.js`
         },
         devtool: sourceMaps ? "source-map" : false,
-        externals: [/^aws-sdk/, /^sharp$/],
+        externals: [/^@aws-sdk/, /^sharp$/],
         mode: production ? "production" : "development",
         optimization: {
             minimize: production

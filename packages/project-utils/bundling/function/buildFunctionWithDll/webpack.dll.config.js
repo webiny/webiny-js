@@ -26,7 +26,7 @@ module.exports = async options => {
             libraryTarget: "commonjs2"
         },
         devtool: false,
-        externals: [/^aws-sdk/],
+        externals: [/^@aws-sdk/],
         mode: production ? "production" : "development",
         optimization: {
             minimize: production
