@@ -13,7 +13,10 @@ export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
              * We could do that if we fetched the information from the API side - we do not have that information in the UI.
              */
             model.fields.filter(field => {
-                return [
+                /**
+                 * Filter out by field type for start.
+                 */
+                const filtered = [
                     "text",
                     "number",
                     "boolean",
@@ -22,6 +25,16 @@ export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
                     "ref",
                     "datetime"
                 ].includes(field.type);
+                if (!filtered) {
+                    return false;
+                }
+                /**
+                 * Then we need to check the field settings.
+                 */
+                if (field.settings?.aco?.list === false) {
+                    return false;
+                }
+                return true;
             })
         );
     }
@@ -31,7 +44,7 @@ export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
             search {
                 content: list${pluralApiName}(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                     data {
-                        ${createAppFields(model)}
+                        ${createAppFields(model, true)}
                     }
                     ${LIST_META_FIELD}
                     ${ERROR_FIELD}

@@ -55,7 +55,36 @@ const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => 
         .join("\n");
 };
 
-export const createAppFields = (model: AcoModel) => {
+export const createAppFields = (model: AcoModel, filterOutUnnecessaryFields?: boolean) => {
+    if (filterOutUnnecessaryFields) {
+        return createFieldsList({
+            model,
+            fields: model.fields.filter(field => {
+                /**
+                 * Filter out by field type for start.
+                 */
+                const filtered = [
+                    "text",
+                    "number",
+                    "boolean",
+                    "file",
+                    "long-text",
+                    "ref",
+                    "datetime"
+                ].includes(field.type);
+                if (!filtered) {
+                    return false;
+                }
+                /**
+                 * Then we need to check the field settings.
+                 */
+                if (field.settings?.aco?.list === false) {
+                    return false;
+                }
+                return true;
+            })
+        });
+    }
     return createFieldsList({
         model,
         fields: model.fields

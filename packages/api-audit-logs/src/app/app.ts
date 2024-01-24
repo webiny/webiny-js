@@ -80,7 +80,12 @@ export const createApp = (): IAcoAppRegisterParams => {
                 fieldId: "data",
                 type: "text",
                 storageId: "text@data",
-                label: "Data"
+                label: "Data",
+                settings: {
+                    aco: {
+                        list: false
+                    }
+                }
             },
             {
                 id: "timestamp",

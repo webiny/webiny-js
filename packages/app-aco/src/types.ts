@@ -179,6 +179,7 @@ export interface AcoModel extends CmsModel {
 export interface AcoModelFieldSettingsAco {
     enabled?: boolean;
     header?: boolean;
+    list?: boolean;
 }
 
 export interface AcoModelFieldSettings {
