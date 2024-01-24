@@ -113,6 +113,21 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
         type FbSaveFormViewResponse {
             error: FbError
         }
+        
+        
+        type FbForm_Settings_ReCaptcha_Settings {
+            enabled: Boolean
+            secretKey: String
+            siteKey: String
+        }
+        
+        extend type FbForm_Settings_ReCaptcha {
+            settings: FbForm_Settings_ReCaptcha_Settings
+        }
+        
+        extend input FbForm_Settings_ReCaptchaInput {
+            settings: JSON
+        }
 
         extend type FbQuery {
             # Get form (can be published or not, requires authorization )
