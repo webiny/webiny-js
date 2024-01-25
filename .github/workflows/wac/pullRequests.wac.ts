@@ -227,13 +227,10 @@ export const pullRequests = createWorkflow({
             },
             "runs-on": "${{ matrix.os }}",
             checkout: false,
+            setupNode: {
+                "node-version": "${{ matrix.node }}"
+            },
             steps: [
-                {
-                    uses: "actions/setup-node@v3",
-                    with: {
-                        "node-version": "${{ matrix.node }}"
-                    }
-                },
                 {
                     uses: "actions/download-artifact@v3",
                     with: {
