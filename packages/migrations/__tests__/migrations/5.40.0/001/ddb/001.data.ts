@@ -54,8 +54,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 10,
+                views: 100
             },
             status: "published",
             steps: [
@@ -255,8 +255,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 10,
+                views: 100
             },
             status: "published",
             steps: [
@@ -273,6 +273,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T15:28:31.283Z"
         },
+
         // Form with 1 draft revision
         {
             PK: "T#root#L#en-US#FB#F",
@@ -400,6 +401,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T16:24:34.110Z"
         },
+
         // Form with 4 revisions: 1° published, 2° published, 3° unpublished, 4° draft
         {
             PK: "T#root#L#en-US#FB#F",
@@ -448,8 +450,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 1,
+                views: 10
             },
             status: "published",
             steps: [
@@ -513,8 +515,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 2,
+                views: 20
             },
             status: "published",
             steps: [
@@ -769,8 +771,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 2,
+                views: 20
             },
             status: "published",
             steps: [
@@ -787,6 +789,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T17:37:13.682Z"
         },
+
         // Form with contact fields, required, organised in 2 steps
         {
             PK: "T#root#L#en-US#FB#F#L",
@@ -1072,6 +1075,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T19:53:54.477Z"
         },
+
         // Form with default fields
         {
             PK: "T#root#L#en-US#FB#F",
@@ -1525,6 +1529,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T22:13:12.945Z"
         },
+
         // Form with custom settings
         {
             PK: "T#root#L#en-US#FB#F",
@@ -1700,6 +1705,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T22:26:03.156Z"
         },
+
         // Form 1 from root tenant, locale de-DE
         {
             PK: "T#root#L#de-DE#FB#F#L",
@@ -1752,8 +1758,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 100,
+                views: 1000
             },
             status: "published",
             steps: [
@@ -1821,8 +1827,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 100,
+                views: 1000
             },
             status: "published",
             steps: [
@@ -1892,8 +1898,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 100,
+                views: 1000
             },
             status: "published",
             steps: [
@@ -1910,6 +1916,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T22:36:12.361Z"
         },
+
         // Form 1 from root tenant, locale fr-FR
         {
             PK: "T#root#L#fr-FR#FB#F#L",
@@ -2037,6 +2044,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-24T22:50:26.537Z"
         },
+
         // Form 2 from root tenant, locale de-DE
         {
             PK: "T#root#L#de-DE#FB#F#LP",
@@ -2223,8 +2231,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-9-65b2050e264766000809d7aa",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 10,
+                views: 100
             },
             status: "published",
             steps: [
@@ -2312,6 +2320,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-25T06:53:04.001Z"
         },
+
         // Form 1 from otherTenant, locale fr-FR
         {
             PK: "T#otherTenant#L#fr-FR#FB#F#L",
@@ -2439,6 +2448,7 @@ export const createFormsData = () => {
             _et: "FormBuilderForm",
             _md: "2024-01-25T07:19:51.075Z"
         },
+
         // Form 2 from otherTenant, locale fr-FR
         {
             PK: "T#otherTenant#L#fr-FR#FB#F#LP",
@@ -2486,7 +2496,7 @@ export const createFormsData = () => {
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
                 submissions: 0,
-                views: 0
+                views: 1000
             },
             status: "published",
             steps: [
@@ -2549,7 +2559,7 @@ export const createFormsData = () => {
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
                 submissions: 0,
-                views: 0
+                views: 1000
             },
             status: "published",
             steps: [
@@ -2614,7 +2624,7 @@ export const createFormsData = () => {
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
                 submissions: 0,
-                views: 0
+                views: 1000
             },
             status: "published",
             steps: [

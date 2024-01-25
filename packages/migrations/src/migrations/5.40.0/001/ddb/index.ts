@@ -9,6 +9,7 @@ import { makeInjectable, inject } from "@webiny/ioc";
 import { FormBuilder_5_40_0_001_FormLatest } from "./FormLatestMigration";
 import { FormBuilder_5_40_0_001_FormPublished } from "./FormPublishedMigration";
 import { FormBuilder_5_40_0_001_FormRevisions } from "./FormRevisionsMigration";
+import { FormBuilder_5_40_0_001_FormStats } from "./FormStatsMigration";
 
 export class FormBuilder_5_40_0_001 implements DataMigration {
     private migrations: DataMigration[];
@@ -17,7 +18,8 @@ export class FormBuilder_5_40_0_001 implements DataMigration {
         this.migrations = [
             new FormBuilder_5_40_0_001_FormRevisions(table),
             new FormBuilder_5_40_0_001_FormPublished(table),
-            new FormBuilder_5_40_0_001_FormLatest(table)
+            new FormBuilder_5_40_0_001_FormLatest(table),
+            new FormBuilder_5_40_0_001_FormStats(table)
         ];
     }
 

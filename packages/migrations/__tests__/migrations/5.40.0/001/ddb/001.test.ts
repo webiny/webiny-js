@@ -1,3 +1,4 @@
+import sortBy from "lodash/sortBy";
 import {
     assertNotError,
     createDdbMigrationHandler,
@@ -9,7 +10,7 @@ import {
 } from "~tests/utils";
 import { FormBuilder_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
 import { createFormsData, createLocalesData, createTenantsData } from "./001.data";
-import { migratedFormData } from "./001.migratedData";
+import { migratedFormData, migratedFormStatsData } from "./001.migratedData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -88,17 +89,39 @@ describe("5.40.0-001", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        const cmsFormEntries = await scanTable(table, {
+        // Check Form entries
+        const formEntries = await scanTable(table, {
             filters: [
                 {
                     attr: "modelId",
-                    beginsWith: "fbForm"
+                    eq: "fbForm"
                 }
             ]
         });
 
-        expect(cmsFormEntries).toEqual(
-            migratedFormData.map(data => {
+        expect(sortBy(formEntries, ["PK", "SK"])).toEqual(
+            sortBy(migratedFormData, ["PK", "SK"]).map(data => {
+                return {
+                    ...data,
+                    entity: "CmsEntries",
+                    created: expect.any(String),
+                    modified: expect.any(String)
+                };
+            })
+        );
+
+        // Check FormStats entries
+        const formStatsEntries = await scanTable(table, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "fbFormStat"
+                }
+            ]
+        });
+
+        expect(sortBy(formStatsEntries, ["PK", "SK"])).toEqual(
+            sortBy(migratedFormStatsData, ["PK", "SK"]).map(data => {
                 return {
                     ...data,
                     entity: "CmsEntries",

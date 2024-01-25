@@ -5,42 +5,38 @@ export const user = {
 };
 
 export const migratedFormData = [
-    // Form 1 from root tenant, locale de-DE
+    // Form with 2 revisions: 1° published, 2° draft
     {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:35:54.384Z",
-        entryId: "65b190cad481d800089f2479",
+        createdOn: "2024-01-24T15:28:14.710Z",
+        entryId: "65b12c8ecd6a580008f2fa31",
         firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T22:36:12.348Z",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b190cad481d800089f2479#0001",
-        id: "65b190cad481d800089f2479#0001",
+        firstPublishedOn: "2024-01-24T15:28:31.263Z",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31#0002",
+        id: "65b12c8ecd6a580008f2fa31#0002",
         lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T22:36:12.348Z",
-        locale: "de-DE",
+        lastPublishedOn: "2024-01-24T15:28:31.263Z",
+        locale: "en-US",
         location: {
             folderId: "root"
         },
-        locked: true,
+        locked: false,
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T22:36:12.348Z",
+        modifiedOn: "2024-01-24T15:28:41.543Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedOn: "2024-01-24T15:28:41.543Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedOn: "2024-01-24T15:28:41.543Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:36:12.348Z",
-        status: "published",
+        savedOn: "2024-01-24T15:28:41.543Z",
+        status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
         values: {
@@ -64,7 +60,7 @@ export const migratedFormData = [
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "dV3wx0ForO"
+                    "text@_id": "Pr3Pj3w2zO"
                 }
             ],
             "object@settings": {
@@ -81,31 +77,31 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["dV3wx0ForO"]],
+                    "json@layout": [["Pr3Pj3w2zO"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b190cad481d800089f2479",
-            "text@name": "Demo Form 7",
-            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+            "text@formId": "65b12c8ecd6a580008f2fa31",
+            "text@name": "Demo Form 1",
+            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
         },
-        version: 1,
+        version: 2,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
         SK: "P",
         createdBy: user,
-        createdOn: "2024-01-24T22:35:54.384Z",
-        entryId: "65b190cad481d800089f2479",
+        createdOn: "2024-01-24T15:28:14.710Z",
+        entryId: "65b12c8ecd6a580008f2fa31",
         firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T22:36:12.348Z",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#P",
-        GSI1_SK: "65b190cad481d800089f2479#0001",
-        id: "65b190cad481d800089f2479#0001",
+        firstPublishedOn: "2024-01-24T15:28:31.263Z",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#P",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31#0001",
+        id: "65b12c8ecd6a580008f2fa31#0001",
         lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T22:36:12.348Z",
-        locale: "de-DE",
+        lastPublishedOn: "2024-01-24T15:28:31.263Z",
+        locale: "en-US",
         location: {
             folderId: "root"
         },
@@ -113,19 +109,19 @@ export const migratedFormData = [
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T22:36:12.348Z",
+        modifiedOn: "2024-01-24T15:28:31.263Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
+        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
         revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionFirstPublishedOn: "2024-01-24T15:28:31.263Z",
         revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionLastPublishedOn: "2024-01-24T15:28:31.263Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedOn: "2024-01-24T15:28:31.263Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedOn: "2024-01-24T15:28:31.263Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:36:12.348Z",
+        savedOn: "2024-01-24T15:28:31.263Z",
         status: "published",
         tenant: "root",
         TYPE: "cms.entry.p",
@@ -137,20 +133,14 @@ export const migratedFormData = [
                         defaultValue: null
                     },
                     "object@options": [],
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
+                    "object@validation": [],
                     "text@fieldId": "demoField",
                     "text@helpText": null,
                     "text@label": "Demo Field",
                     "text@name": "text",
-                    "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "dV3wx0ForO"
+                    "text@placeholderText": null,
+                    "text@_id": "Pr3Pj3w2zO"
                 }
             ],
             "object@settings": {
@@ -167,31 +157,31 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["dV3wx0ForO"]],
+                    "json@layout": [["Pr3Pj3w2zO"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b190cad481d800089f2479",
-            "text@name": "Demo Form 7",
-            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+            "text@formId": "65b12c8ecd6a580008f2fa31",
+            "text@name": "Demo Form 1",
+            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
         },
         version: 1,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T22:35:54.384Z",
-        entryId: "65b190cad481d800089f2479",
+        createdOn: "2024-01-24T15:28:14.710Z",
+        entryId: "65b12c8ecd6a580008f2fa31",
         firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T22:36:12.348Z",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b190cad481d800089f2479#0001",
-        id: "65b190cad481d800089f2479#0001",
+        firstPublishedOn: "2024-01-24T15:28:31.263Z",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31#0001",
+        id: "65b12c8ecd6a580008f2fa31#0001",
         lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T22:36:12.348Z",
-        locale: "de-DE",
+        lastPublishedOn: "2024-01-24T15:28:31.263Z",
+        locale: "en-US",
         location: {
             folderId: "root"
         },
@@ -199,20 +189,96 @@ export const migratedFormData = [
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T22:36:12.348Z",
+        modifiedOn: "2024-01-24T15:28:31.263Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
+        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
         revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionFirstPublishedOn: "2024-01-24T15:28:31.263Z",
         revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionLastPublishedOn: "2024-01-24T15:28:31.263Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedOn: "2024-01-24T15:28:31.263Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedOn: "2024-01-24T15:28:31.263Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:36:12.348Z",
+        savedOn: "2024-01-24T15:28:31.263Z",
         status: "published",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "Pr3Pj3w2zO"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["Pr3Pj3w2zO"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b12c8ecd6a580008f2fa31",
+            "text@name": "Demo Form 1",
+            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
+        SK: "REV#0002",
+        createdBy: user,
+        createdOn: "2024-01-24T15:28:14.710Z",
+        entryId: "65b12c8ecd6a580008f2fa31",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-24T15:28:31.263Z",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31#0002",
+        id: "65b12c8ecd6a580008f2fa31#0002",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-24T15:28:31.263Z",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T15:28:41.543Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T15:28:41.543Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T15:28:41.543Z",
+        savedBy: user,
+        savedOn: "2024-01-24T15:28:41.543Z",
+        status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
         values: {
@@ -236,7 +302,7 @@ export const migratedFormData = [
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "dV3wx0ForO"
+                    "text@_id": "Pr3Pj3w2zO"
                 }
             ],
             "object@settings": {
@@ -253,55 +319,47 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["dV3wx0ForO"]],
+                    "json@layout": [["Pr3Pj3w2zO"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b190cad481d800089f2479",
-            "text@name": "Demo Form 7",
-            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+            "text@formId": "65b12c8ecd6a580008f2fa31",
+            "text@name": "Demo Form 1",
+            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
         },
-        version: 1,
+        version: 2,
         webinyVersion: "0.0.0"
     },
 
-    // Form 2 from otherTenant, locale fr-FR
+    // Form with 1 draft revision
     {
-        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-25T07:20:32.550Z",
-        entryId: "65b20bc00321db00083d35c9",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-25T07:20:49.543Z",
-        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b20bc00321db00083d35c9#0001",
-        id: "65b20bc00321db00083d35c9#0001",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-25T07:20:49.543Z",
-        locale: "fr-FR",
+        createdOn: "2024-01-24T16:24:17.185Z",
+        entryId: "65b139b15cb71f0008718ac9",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b139b15cb71f0008718ac9#0001",
+        id: "65b139b15cb71f0008718ac9#0001",
+        locale: "en-US",
         location: {
             folderId: "root"
         },
-        locked: true,
+        locked: false,
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-25T07:20:49.543Z",
+        modifiedOn: "2024-01-24T16:24:34.090Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
+        revisionModifiedOn: "2024-01-24T16:24:34.090Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:20:49.543Z",
+        revisionSavedOn: "2024-01-24T16:24:34.090Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:20:49.543Z",
-        status: "published",
-        tenant: "otherTenant",
+        savedOn: "2024-01-24T16:24:34.090Z",
+        status: "draft",
+        tenant: "root",
         TYPE: "cms.entry.l",
         values: {
             "json@triggers": null,
@@ -310,15 +368,15 @@ export const migratedFormData = [
                     "json@settings": {
                         defaultValue: null
                     },
-                    "object@options": [],
                     "object@validation": [],
+                    "object@options": [],
                     "text@fieldId": "demoField",
                     "text@helpText": null,
                     "text@label": "Demo Field",
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "tk4jYhc8DI"
+                    "text@_id": "kpBvlR4SjU"
                 }
             ],
             "object@settings": {
@@ -335,133 +393,45 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["tk4jYhc8DI"]],
+                    "json@layout": [["kpBvlR4SjU"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b20bc00321db00083d35c9",
-            "text@name": "Demo Form 11",
-            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
+            "text@formId": "65b139b15cb71f0008718ac9",
+            "text@name": "Demo form 2",
+            "text@slug": "demo-form-2-65b139b15cb71f0008718ac9"
         },
         version: 1,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
-        SK: "P",
-        createdBy: user,
-        createdOn: "2024-01-25T07:20:32.550Z",
-        entryId: "65b20bc00321db00083d35c9",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-25T07:20:49.543Z",
-        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#P",
-        GSI1_SK: "65b20bc00321db00083d35c9#0001",
-        id: "65b20bc00321db00083d35c9#0001",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-25T07:20:49.543Z",
-        locale: "fr-FR",
-        location: {
-            folderId: "root"
-        },
-        locked: true,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-25T07:20:49.543Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:20:49.543Z",
-        savedBy: user,
-        savedOn: "2024-01-25T07:20:49.543Z",
-        status: "published",
-        tenant: "otherTenant",
-        TYPE: "cms.entry.p",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "tk4jYhc8DI"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["tk4jYhc8DI"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b20bc00321db00083d35c9",
-            "text@name": "Demo Form 11",
-            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-25T07:20:32.550Z",
-        entryId: "65b20bc00321db00083d35c9",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-25T07:20:49.543Z",
-        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b20bc00321db00083d35c9#0001",
-        id: "65b20bc00321db00083d35c9#0001",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-25T07:20:49.543Z",
-        locale: "fr-FR",
+        createdOn: "2024-01-24T16:24:17.185Z",
+        entryId: "65b139b15cb71f0008718ac9",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b139b15cb71f0008718ac9#0001",
+        id: "65b139b15cb71f0008718ac9#0001",
+        locale: "en-US",
         location: {
             folderId: "root"
         },
-        locked: true,
+        locked: false,
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-25T07:20:49.543Z",
+        modifiedOn: "2024-01-24T16:24:34.090Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
+        revisionModifiedOn: "2024-01-24T16:24:34.090Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:20:49.543Z",
+        revisionSavedOn: "2024-01-24T16:24:34.090Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:20:49.543Z",
-        status: "published",
-        tenant: "otherTenant",
+        savedOn: "2024-01-24T16:24:34.090Z",
+        status: "draft",
+        tenant: "root",
         TYPE: "cms.entry",
         values: {
             "json@triggers": null,
@@ -478,7 +448,7 @@ export const migratedFormData = [
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "tk4jYhc8DI"
+                    "text@_id": "kpBvlR4SjU"
                 }
             ],
             "object@settings": {
@@ -495,13 +465,13 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["tk4jYhc8DI"]],
+                    "json@layout": [["kpBvlR4SjU"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b20bc00321db00083d35c9",
-            "text@name": "Demo Form 11",
-            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
+            "text@formId": "65b139b15cb71f0008718ac9",
+            "text@name": "Demo form 2",
+            "text@slug": "demo-form-2-65b139b15cb71f0008718ac9"
         },
         version: 1,
         webinyVersion: "0.0.0"
@@ -981,16 +951,16 @@ export const migratedFormData = [
         webinyVersion: "0.0.0"
     },
 
-    // Form with 1 draft revision
+    // Form with contact fields, required, organised in 2 steps
     {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T16:24:17.185Z",
-        entryId: "65b139b15cb71f0008718ac9",
+        createdOn: "2024-01-24T19:52:45.637Z",
+        entryId: "65b16a8d7918760008c0ea56",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b139b15cb71f0008718ac9#0001",
-        id: "65b139b15cb71f0008718ac9#0001",
+        GSI1_SK: "65b16a8d7918760008c0ea56#0001",
+        id: "65b16a8d7918760008c0ea56#0001",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -999,165 +969,15 @@ export const migratedFormData = [
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T16:24:34.090Z",
+        modifiedOn: "2024-01-24T19:53:54.458Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
+        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T16:24:34.090Z",
+        revisionModifiedOn: "2024-01-24T19:53:54.458Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T16:24:34.090Z",
+        revisionSavedOn: "2024-01-24T19:53:54.458Z",
         savedBy: user,
-        savedOn: "2024-01-24T16:24:34.090Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [],
-                    "object@options": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "kpBvlR4SjU"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["kpBvlR4SjU"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b139b15cb71f0008718ac9",
-            "text@name": "Demo form 2",
-            "text@slug": "demo-form-2-65b139b15cb71f0008718ac9"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-24T16:24:17.185Z",
-        entryId: "65b139b15cb71f0008718ac9",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b139b15cb71f0008718ac9#0001",
-        id: "65b139b15cb71f0008718ac9#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T16:24:34.090Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T16:24:34.090Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T16:24:34.090Z",
-        savedBy: user,
-        savedOn: "2024-01-24T16:24:34.090Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "kpBvlR4SjU"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["kpBvlR4SjU"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b139b15cb71f0008718ac9",
-            "text@name": "Demo form 2",
-            "text@slug": "demo-form-2-65b139b15cb71f0008718ac9"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-
-    // Form with 2 revisions: 1° published, 2° draft
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-24T15:28:14.710Z",
-        entryId: "65b12c8ecd6a580008f2fa31",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T15:28:31.263Z",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31#0002",
-        id: "65b12c8ecd6a580008f2fa31#0002",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T15:28:31.263Z",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T15:28:41.543Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T15:28:41.543Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:28:41.543Z",
-        savedBy: user,
-        savedOn: "2024-01-24T15:28:41.543Z",
+        savedOn: "2024-01-24T19:53:54.458Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -1176,93 +996,82 @@ export const migratedFormData = [
                             "text@name": "required"
                         }
                     ],
-                    "text@fieldId": "demoField",
+                    "text@fieldId": "firstName",
+                    "text@label": "First name",
+                    "text@name": "firstName",
                     "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "Pr3Pj3w2zO"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
+                    "text@_id": "wKBpJ6lq0"
                 },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["Pr3Pj3w2zO"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b12c8ecd6a580008f2fa31",
-            "text@name": "Demo Form 1",
-            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
-        },
-        version: 2,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
-        SK: "P",
-        createdBy: user,
-        createdOn: "2024-01-24T15:28:14.710Z",
-        entryId: "65b12c8ecd6a580008f2fa31",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T15:28:31.263Z",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#P",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31#0001",
-        id: "65b12c8ecd6a580008f2fa31#0001",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T15:28:31.263Z",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: true,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T15:28:31.263Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-24T15:28:31.263Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-24T15:28:31.263Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T15:28:31.263Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:28:31.263Z",
-        savedBy: user,
-        savedOn: "2024-01-24T15:28:31.263Z",
-        status: "published",
-        tenant: "root",
-        TYPE: "cms.entry.p",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
                 {
                     "json@settings": {
                         defaultValue: null
                     },
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
                     "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
+                    "text@fieldId": "lastName",
                     "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
+                    "text@label": "Last name",
+                    "text@name": "lastName",
                     "text@type": "text",
                     "text@placeholderText": null,
-                    "text@_id": "Pr3Pj3w2zO"
+                    "text@_id": "ylPaYyVaM"
+                },
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@validation": [
+                        {
+                            "json@settings": {
+                                flags: null,
+                                preset: "email",
+                                regex: null
+                            },
+                            "text@message": "Please enter a valid e-mail.",
+                            "text@name": "pattern"
+                        },
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "email",
+                    "text@label": "Email",
+                    "text@name": "email",
+                    "text@type": "text",
+                    "text@_id": "u1miDVk2r",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
+                },
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "phoneNumber",
+                    "text@label": "Phone number",
+                    "text@name": "phoneNumber",
+                    "text@type": "text",
+                    "text@_id": "54ED5X_p6",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
                 }
             ],
             "object@settings": {
@@ -1279,110 +1088,30 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["Pr3Pj3w2zO"]],
+                    "json@layout": [["wKBpJ6lq0"], ["ylPaYyVaM"]],
                     "text@title": "Step 1"
+                },
+                {
+                    "json@layout": [["u1miDVk2r"], ["54ED5X_p6"]],
+                    "text@title": "New Step"
                 }
             ],
-            "text@formId": "65b12c8ecd6a580008f2fa31",
-            "text@name": "Demo Form 1",
-            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
+            "text@formId": "65b16a8d7918760008c0ea56",
+            "text@name": "Demo Form 4",
+            "text@slug": "demo-form-4-65b16a8d7918760008c0ea56"
         },
         version: 1,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
+        PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T15:28:14.710Z",
-        entryId: "65b12c8ecd6a580008f2fa31",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T15:28:31.263Z",
+        createdOn: "2024-01-24T19:52:45.637Z",
+        entryId: "65b16a8d7918760008c0ea56",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31#0001",
-        id: "65b12c8ecd6a580008f2fa31#0001",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T15:28:31.263Z",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: true,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T15:28:31.263Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
-        revisionFirstPublishedBy: user,
-        revisionFirstPublishedOn: "2024-01-24T15:28:31.263Z",
-        revisionLastPublishedBy: user,
-        revisionLastPublishedOn: "2024-01-24T15:28:31.263Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T15:28:31.263Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:28:31.263Z",
-        savedBy: user,
-        savedOn: "2024-01-24T15:28:31.263Z",
-        status: "published",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "Pr3Pj3w2zO"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["Pr3Pj3w2zO"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b12c8ecd6a580008f2fa31",
-            "text@name": "Demo Form 1",
-            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31",
-        SK: "REV#0002",
-        createdBy: user,
-        createdOn: "2024-01-24T15:28:14.710Z",
-        entryId: "65b12c8ecd6a580008f2fa31",
-        firstPublishedBy: user,
-        firstPublishedOn: "2024-01-24T15:28:31.263Z",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31#0002",
-        id: "65b12c8ecd6a580008f2fa31#0002",
-        lastPublishedBy: user,
-        lastPublishedOn: "2024-01-24T15:28:31.263Z",
+        GSI1_SK: "65b16a8d7918760008c0ea56#0001",
+        id: "65b16a8d7918760008c0ea56#0001",
         locale: "en-US",
         location: {
             folderId: "root"
@@ -1391,15 +1120,15 @@ export const migratedFormData = [
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T15:28:41.543Z",
+        modifiedOn: "2024-01-24T19:53:54.458Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
+        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T15:28:41.543Z",
+        revisionModifiedOn: "2024-01-24T19:53:54.458Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:28:41.543Z",
+        revisionSavedOn: "2024-01-24T19:53:54.458Z",
         savedBy: user,
-        savedOn: "2024-01-24T15:28:41.543Z",
+        savedOn: "2024-01-24T19:53:54.458Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -1410,7 +1139,6 @@ export const migratedFormData = [
                     "json@settings": {
                         defaultValue: null
                     },
-                    "object@options": [],
                     "object@validation": [
                         {
                             "json@settings": {},
@@ -1418,13 +1146,83 @@ export const migratedFormData = [
                             "text@name": "required"
                         }
                     ],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
+                    "text@fieldId": "firstName",
+                    "text@label": "First name",
+                    "text@name": "firstName",
                     "text@type": "text",
-                    "text@_id": "Pr3Pj3w2zO"
+                    "text@_id": "wKBpJ6lq0",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
+                },
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "lastName",
+                    "text@label": "Last name",
+                    "text@name": "lastName",
+                    "text@type": "text",
+                    "text@_id": "ylPaYyVaM",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
+                },
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@validation": [
+                        {
+                            "json@settings": {
+                                flags: null,
+                                preset: "email",
+                                regex: null
+                            },
+                            "text@message": "Please enter a valid e-mail.",
+                            "text@name": "pattern"
+                        },
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "email",
+                    "text@label": "Email",
+                    "text@name": "email",
+                    "text@type": "text",
+                    "text@_id": "u1miDVk2r",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
+                },
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "phoneNumber",
+                    "text@label": "Phone number",
+                    "text@name": "phoneNumber",
+                    "text@type": "text",
+                    "text@_id": "54ED5X_p6",
+                    "object@options": [],
+                    "text@helpText": null,
+                    "text@placeholderText": null
                 }
             ],
             "object@settings": {
@@ -1441,15 +1239,19 @@ export const migratedFormData = [
             },
             "object@steps": [
                 {
-                    "json@layout": [["Pr3Pj3w2zO"]],
+                    "json@layout": [["wKBpJ6lq0"], ["ylPaYyVaM"]],
                     "text@title": "Step 1"
+                },
+                {
+                    "json@layout": [["u1miDVk2r"], ["54ED5X_p6"]],
+                    "text@title": "New Step"
                 }
             ],
-            "text@formId": "65b12c8ecd6a580008f2fa31",
-            "text@name": "Demo Form 1",
-            "text@slug": "demo-form-1-65b12c8ecd6a580008f2fa31"
+            "text@formId": "65b16a8d7918760008c0ea56",
+            "text@name": "Demo Form 4",
+            "text@slug": "demo-form-4-65b16a8d7918760008c0ea56"
         },
-        version: 2,
+        version: 1,
         webinyVersion: "0.0.0"
     },
 
@@ -1925,6 +1727,608 @@ export const migratedFormData = [
         webinyVersion: "0.0.0"
     },
 
+    // Form with custom settings
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-24T22:23:52.364Z",
+        entryId: "65b18df865a46200087864f9",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b18df865a46200087864f9#0001",
+        id: "65b18df865a46200087864f9#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:26:03.138Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:26:03.138Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "dMWqYyLYQV"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": true,
+                "json@successMessage": [
+                    {
+                        data: {
+                            className: null,
+                            text: "Custom success message",
+                            textAlign: "start"
+                        },
+                        id: "fjiaYeH_wW",
+                        type: "paragraph"
+                    }
+                ],
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": true,
+                    "text@errorMessage": "Custom Captcha error message"
+                },
+                "object@termsOfServiceMessage": {
+                    "boolean@enabled": true,
+                    "json@message": [
+                        {
+                            data: {
+                                className: null,
+                                text: "Custom term of service message",
+                                textAlign: "start"
+                            },
+                            id: "kjBMY6NBnA",
+                            type: "paragraph"
+                        }
+                    ],
+                    "text@errorMessage": "Custom error message"
+                },
+                "text@submitButtonLabel": "Custom submit button label"
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["dMWqYyLYQV"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b18df865a46200087864f9",
+            "text@name": "Demo Form 6",
+            "text@slug": "demo-form-6-65b18df865a46200087864f9"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-24T22:23:52.364Z",
+        entryId: "65b18df865a46200087864f9",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b18df865a46200087864f9#0001",
+        id: "65b18df865a46200087864f9#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:26:03.138Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:26:03.138Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "dMWqYyLYQV"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": true,
+                "json@successMessage": [
+                    {
+                        data: {
+                            className: null,
+                            text: "Custom success message",
+                            textAlign: "start"
+                        },
+                        id: "fjiaYeH_wW",
+                        type: "paragraph"
+                    }
+                ],
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": true,
+                    "text@errorMessage": "Custom Captcha error message"
+                },
+                "object@termsOfServiceMessage": {
+                    "boolean@enabled": true,
+                    "json@message": [
+                        {
+                            data: {
+                                className: null,
+                                text: "Custom term of service message",
+                                textAlign: "start"
+                            },
+                            id: "kjBMY6NBnA",
+                            type: "paragraph"
+                        }
+                    ],
+                    "text@errorMessage": "Custom error message"
+                },
+                "text@submitButtonLabel": "Custom submit button label"
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["dMWqYyLYQV"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b18df865a46200087864f9",
+            "text@name": "Demo Form 6",
+            "text@slug": "demo-form-6-65b18df865a46200087864f9"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+
+    // Form 1 from root tenant, locale de-DE
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-24T22:35:54.384Z",
+        entryId: "65b190cad481d800089f2479",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-24T22:36:12.348Z",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b190cad481d800089f2479#0001",
+        id: "65b190cad481d800089f2479#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-24T22:36:12.348Z",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: true,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:36:12.348Z",
+        status: "published",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "dV3wx0ForO"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["dV3wx0ForO"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b190cad481d800089f2479",
+            "text@name": "Demo Form 7",
+            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        SK: "P",
+        createdBy: user,
+        createdOn: "2024-01-24T22:35:54.384Z",
+        entryId: "65b190cad481d800089f2479",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-24T22:36:12.348Z",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#P",
+        GSI1_SK: "65b190cad481d800089f2479#0001",
+        id: "65b190cad481d800089f2479#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-24T22:36:12.348Z",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: true,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:36:12.348Z",
+        status: "published",
+        tenant: "root",
+        TYPE: "cms.entry.p",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "dV3wx0ForO"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["dV3wx0ForO"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b190cad481d800089f2479",
+            "text@name": "Demo Form 7",
+            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-24T22:35:54.384Z",
+        entryId: "65b190cad481d800089f2479",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-24T22:36:12.348Z",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b190cad481d800089f2479#0001",
+        id: "65b190cad481d800089f2479#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-24T22:36:12.348Z",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: true,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-24T22:36:12.348Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:36:12.348Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:36:12.348Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:36:12.348Z",
+        status: "published",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [
+                        {
+                            "json@settings": {},
+                            "text@message": "Value is required.",
+                            "text@name": "required"
+                        }
+                    ],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "dV3wx0ForO"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["dV3wx0ForO"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b190cad481d800089f2479",
+            "text@name": "Demo Form 7",
+            "text@slug": "demo-form-7-65b190cad481d800089f2479"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+
+    // Form 1 from root tenant, locale fr-FR
+    {
+        PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-24T22:50:16.158Z",
+        entryId: "65b19428b583b90008e7a3bc",
+        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b19428b583b90008e7a3bc#0001",
+        id: "65b19428b583b90008e7a3bc#0001",
+        locale: "fr-FR",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:50:26.517Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:50:26.517Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:50:26.517Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:50:26.517Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "njnnUb42N6"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["njnnUb42N6"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b19428b583b90008e7a3bc",
+            "text@name": "Demo Form 8",
+            "text@slug": "demo-form-8-65b19428b583b90008e7a3bc"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-24T22:50:16.158Z",
+        entryId: "65b19428b583b90008e7a3bc",
+        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b19428b583b90008e7a3bc#0001",
+        id: "65b19428b583b90008e7a3bc#0001",
+        locale: "fr-FR",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-24T22:50:26.517Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-24T22:50:26.517Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T22:50:26.517Z",
+        savedBy: user,
+        savedOn: "2024-01-24T22:50:26.517Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "njnnUb42N6"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["njnnUb42N6"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b19428b583b90008e7a3bc",
+            "text@name": "Demo Form 8",
+            "text@slug": "demo-form-8-65b19428b583b90008e7a3bc"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+
     // Form 2 from root tenant, locale de-DE
     {
         PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa",
@@ -2265,456 +2669,6 @@ export const migratedFormData = [
         webinyVersion: "0.0.0"
     },
 
-    // Form with contact fields, required, organised in 2 steps
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-24T19:52:45.637Z",
-        entryId: "65b16a8d7918760008c0ea56",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b16a8d7918760008c0ea56#0001",
-        id: "65b16a8d7918760008c0ea56#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T19:53:54.458Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T19:53:54.458Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T19:53:54.458Z",
-        savedBy: user,
-        savedOn: "2024-01-24T19:53:54.458Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "firstName",
-                    "text@label": "First name",
-                    "text@name": "firstName",
-                    "text@helpText": null,
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "wKBpJ6lq0"
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "object@options": [],
-                    "text@fieldId": "lastName",
-                    "text@helpText": null,
-                    "text@label": "Last name",
-                    "text@name": "lastName",
-                    "text@type": "text",
-                    "text@placeholderText": null,
-                    "text@_id": "ylPaYyVaM"
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            },
-                            "text@message": "Please enter a valid e-mail.",
-                            "text@name": "pattern"
-                        },
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "email",
-                    "text@label": "Email",
-                    "text@name": "email",
-                    "text@type": "text",
-                    "text@_id": "u1miDVk2r",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "phoneNumber",
-                    "text@label": "Phone number",
-                    "text@name": "phoneNumber",
-                    "text@type": "text",
-                    "text@_id": "54ED5X_p6",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["wKBpJ6lq0"], ["ylPaYyVaM"]],
-                    "text@title": "Step 1"
-                },
-                {
-                    "json@layout": [["u1miDVk2r"], ["54ED5X_p6"]],
-                    "text@title": "New Step"
-                }
-            ],
-            "text@formId": "65b16a8d7918760008c0ea56",
-            "text@name": "Demo Form 4",
-            "text@slug": "demo-form-4-65b16a8d7918760008c0ea56"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-24T19:52:45.637Z",
-        entryId: "65b16a8d7918760008c0ea56",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b16a8d7918760008c0ea56#0001",
-        id: "65b16a8d7918760008c0ea56#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T19:53:54.458Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T19:53:54.458Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T19:53:54.458Z",
-        savedBy: user,
-        savedOn: "2024-01-24T19:53:54.458Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "firstName",
-                    "text@label": "First name",
-                    "text@name": "firstName",
-                    "text@type": "text",
-                    "text@_id": "wKBpJ6lq0",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "lastName",
-                    "text@label": "Last name",
-                    "text@name": "lastName",
-                    "text@type": "text",
-                    "text@_id": "ylPaYyVaM",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            },
-                            "text@message": "Please enter a valid e-mail.",
-                            "text@name": "pattern"
-                        },
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "email",
-                    "text@label": "Email",
-                    "text@name": "email",
-                    "text@type": "text",
-                    "text@_id": "u1miDVk2r",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                },
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@validation": [
-                        {
-                            "json@settings": {},
-                            "text@message": "Value is required.",
-                            "text@name": "required"
-                        }
-                    ],
-                    "text@fieldId": "phoneNumber",
-                    "text@label": "Phone number",
-                    "text@name": "phoneNumber",
-                    "text@type": "text",
-                    "text@_id": "54ED5X_p6",
-                    "object@options": [],
-                    "text@helpText": null,
-                    "text@placeholderText": null
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["wKBpJ6lq0"], ["ylPaYyVaM"]],
-                    "text@title": "Step 1"
-                },
-                {
-                    "json@layout": [["u1miDVk2r"], ["54ED5X_p6"]],
-                    "text@title": "New Step"
-                }
-            ],
-            "text@formId": "65b16a8d7918760008c0ea56",
-            "text@name": "Demo Form 4",
-            "text@slug": "demo-form-4-65b16a8d7918760008c0ea56"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-
-    // Form 1 from root tenant, locale fr-FR
-    {
-        PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-24T22:50:16.158Z",
-        entryId: "65b19428b583b90008e7a3bc",
-        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b19428b583b90008e7a3bc#0001",
-        id: "65b19428b583b90008e7a3bc#0001",
-        locale: "fr-FR",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T22:50:26.517Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:50:26.517Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:50:26.517Z",
-        savedBy: user,
-        savedOn: "2024-01-24T22:50:26.517Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "njnnUb42N6"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["njnnUb42N6"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b19428b583b90008e7a3bc",
-            "text@name": "Demo Form 8",
-            "text@slug": "demo-form-8-65b19428b583b90008e7a3bc"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-24T22:50:16.158Z",
-        entryId: "65b19428b583b90008e7a3bc",
-        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b19428b583b90008e7a3bc#0001",
-        id: "65b19428b583b90008e7a3bc#0001",
-        locale: "fr-FR",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        meta: {},
-        modelId: "fbForm",
-        modifiedBy: user,
-        modifiedOn: "2024-01-24T22:50:26.517Z",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
-        revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:50:26.517Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:50:26.517Z",
-        savedBy: user,
-        savedOn: "2024-01-24T22:50:26.517Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "json@triggers": null,
-            "object@fields": [
-                {
-                    "json@settings": {
-                        defaultValue: null
-                    },
-                    "object@options": [],
-                    "object@validation": [],
-                    "text@fieldId": "demoField",
-                    "text@helpText": null,
-                    "text@label": "Demo Field",
-                    "text@name": "text",
-                    "text@placeholderText": null,
-                    "text@type": "text",
-                    "text@_id": "njnnUb42N6"
-                }
-            ],
-            "object@settings": {
-                "boolean@fullWidthSubmitButton": null,
-                "json@successMessage": null,
-                "object@layout": {
-                    "text@renderer": "default"
-                },
-                "object@reCaptcha": {
-                    "boolean@enabled": null,
-                    "text@errorMessage": "Please verify that you are not a robot."
-                },
-                "text@submitButtonLabel": null
-            },
-            "object@steps": [
-                {
-                    "json@layout": [["njnnUb42N6"]],
-                    "text@title": "Step 1"
-                }
-            ],
-            "text@formId": "65b19428b583b90008e7a3bc",
-            "text@name": "Demo Form 8",
-            "text@slug": "demo-form-8-65b19428b583b90008e7a3bc"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-
     // Form 1 from otherTenant, locale fr-FR
     {
         PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20b8f0321db00083d35c1",
@@ -2861,35 +2815,43 @@ export const migratedFormData = [
         webinyVersion: "0.0.0"
     },
 
-    // Form with custom settings
+    // Form 2 from otherTenant, locale fr-FR
     {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9",
+        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:23:52.364Z",
-        entryId: "65b18df865a46200087864f9",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#L",
-        GSI1_SK: "65b18df865a46200087864f9#0001",
-        id: "65b18df865a46200087864f9#0001",
-        locale: "en-US",
+        createdOn: "2024-01-25T07:20:32.550Z",
+        entryId: "65b20bc00321db00083d35c9",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-25T07:20:49.543Z",
+        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#L",
+        GSI1_SK: "65b20bc00321db00083d35c9#0001",
+        id: "65b20bc00321db00083d35c9#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-25T07:20:49.543Z",
+        locale: "fr-FR",
         location: {
             folderId: "root"
         },
-        locked: false,
+        locked: true,
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T22:26:03.138Z",
+        modifiedOn: "2024-01-25T07:20:49.543Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
+        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:26:03.138Z",
+        revisionSavedOn: "2024-01-25T07:20:49.543Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:26:03.138Z",
-        status: "draft",
-        tenant: "root",
+        savedOn: "2024-01-25T07:20:49.543Z",
+        status: "published",
+        tenant: "otherTenant",
         TYPE: "cms.entry.l",
         values: {
             "json@triggers": null,
@@ -2906,87 +2868,150 @@ export const migratedFormData = [
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "dMWqYyLYQV"
+                    "text@_id": "tk4jYhc8DI"
                 }
             ],
             "object@settings": {
-                "boolean@fullWidthSubmitButton": true,
-                "json@successMessage": [
-                    {
-                        data: {
-                            className: null,
-                            text: "Custom success message",
-                            textAlign: "start"
-                        },
-                        id: "fjiaYeH_wW",
-                        type: "paragraph"
-                    }
-                ],
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
                 "object@layout": {
                     "text@renderer": "default"
                 },
                 "object@reCaptcha": {
-                    "boolean@enabled": true,
-                    "text@errorMessage": "Custom Captcha error message"
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
                 },
-                "object@termsOfServiceMessage": {
-                    "boolean@enabled": true,
-                    "json@message": [
-                        {
-                            data: {
-                                className: null,
-                                text: "Custom term of service message",
-                                textAlign: "start"
-                            },
-                            id: "kjBMY6NBnA",
-                            type: "paragraph"
-                        }
-                    ],
-                    "text@errorMessage": "Custom error message"
-                },
-                "text@submitButtonLabel": "Custom submit button label"
+                "text@submitButtonLabel": null
             },
             "object@steps": [
                 {
-                    "json@layout": [["dMWqYyLYQV"]],
+                    "json@layout": [["tk4jYhc8DI"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b18df865a46200087864f9",
-            "text@name": "Demo Form 6",
-            "text@slug": "demo-form-6-65b18df865a46200087864f9"
+            "text@formId": "65b20bc00321db00083d35c9",
+            "text@name": "Demo Form 11",
+            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
         },
         version: 1,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9",
-        SK: "REV#0001",
+        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
+        SK: "P",
         createdBy: user,
-        createdOn: "2024-01-24T22:23:52.364Z",
-        entryId: "65b18df865a46200087864f9",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbForm#A",
-        GSI1_SK: "65b18df865a46200087864f9#0001",
-        id: "65b18df865a46200087864f9#0001",
-        locale: "en-US",
+        createdOn: "2024-01-25T07:20:32.550Z",
+        entryId: "65b20bc00321db00083d35c9",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-25T07:20:49.543Z",
+        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#P",
+        GSI1_SK: "65b20bc00321db00083d35c9#0001",
+        id: "65b20bc00321db00083d35c9#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-25T07:20:49.543Z",
+        locale: "fr-FR",
         location: {
             folderId: "root"
         },
-        locked: false,
+        locked: true,
         meta: {},
         modelId: "fbForm",
         modifiedBy: user,
-        modifiedOn: "2024-01-24T22:26:03.138Z",
+        modifiedOn: "2024-01-25T07:20:49.543Z",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
+        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
         revisionModifiedBy: user,
-        revisionModifiedOn: "2024-01-24T22:26:03.138Z",
+        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:26:03.138Z",
+        revisionSavedOn: "2024-01-25T07:20:49.543Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:26:03.138Z",
-        status: "draft",
-        tenant: "root",
+        savedOn: "2024-01-25T07:20:49.543Z",
+        status: "published",
+        tenant: "otherTenant",
+        TYPE: "cms.entry.p",
+        values: {
+            "json@triggers": null,
+            "object@fields": [
+                {
+                    "json@settings": {
+                        defaultValue: null
+                    },
+                    "object@options": [],
+                    "object@validation": [],
+                    "text@fieldId": "demoField",
+                    "text@helpText": null,
+                    "text@label": "Demo Field",
+                    "text@name": "text",
+                    "text@placeholderText": null,
+                    "text@type": "text",
+                    "text@_id": "tk4jYhc8DI"
+                }
+            ],
+            "object@settings": {
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
+                "object@layout": {
+                    "text@renderer": "default"
+                },
+                "object@reCaptcha": {
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
+                },
+                "text@submitButtonLabel": null
+            },
+            "object@steps": [
+                {
+                    "json@layout": [["tk4jYhc8DI"]],
+                    "text@title": "Step 1"
+                }
+            ],
+            "text@formId": "65b20bc00321db00083d35c9",
+            "text@name": "Demo Form 11",
+            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-25T07:20:32.550Z",
+        entryId: "65b20bc00321db00083d35c9",
+        firstPublishedBy: user,
+        firstPublishedOn: "2024-01-25T07:20:49.543Z",
+        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbForm#A",
+        GSI1_SK: "65b20bc00321db00083d35c9#0001",
+        id: "65b20bc00321db00083d35c9#0001",
+        lastPublishedBy: user,
+        lastPublishedOn: "2024-01-25T07:20:49.543Z",
+        locale: "fr-FR",
+        location: {
+            folderId: "root"
+        },
+        locked: true,
+        meta: {},
+        modelId: "fbForm",
+        modifiedBy: user,
+        modifiedOn: "2024-01-25T07:20:49.543Z",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
+        revisionFirstPublishedBy: user,
+        revisionFirstPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionLastPublishedBy: user,
+        revisionLastPublishedOn: "2024-01-25T07:20:49.543Z",
+        revisionModifiedBy: user,
+        revisionModifiedOn: "2024-01-25T07:20:49.543Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-25T07:20:49.543Z",
+        savedBy: user,
+        savedOn: "2024-01-25T07:20:49.543Z",
+        status: "published",
+        tenant: "otherTenant",
         TYPE: "cms.entry",
         values: {
             "json@triggers": null,
@@ -3003,55 +3028,30 @@ export const migratedFormData = [
                     "text@name": "text",
                     "text@placeholderText": null,
                     "text@type": "text",
-                    "text@_id": "dMWqYyLYQV"
+                    "text@_id": "tk4jYhc8DI"
                 }
             ],
             "object@settings": {
-                "boolean@fullWidthSubmitButton": true,
-                "json@successMessage": [
-                    {
-                        data: {
-                            className: null,
-                            text: "Custom success message",
-                            textAlign: "start"
-                        },
-                        id: "fjiaYeH_wW",
-                        type: "paragraph"
-                    }
-                ],
+                "boolean@fullWidthSubmitButton": null,
+                "json@successMessage": null,
                 "object@layout": {
                     "text@renderer": "default"
                 },
                 "object@reCaptcha": {
-                    "boolean@enabled": true,
-                    "text@errorMessage": "Custom Captcha error message"
+                    "boolean@enabled": null,
+                    "text@errorMessage": "Please verify that you are not a robot."
                 },
-                "object@termsOfServiceMessage": {
-                    "boolean@enabled": true,
-                    "json@message": [
-                        {
-                            data: {
-                                className: null,
-                                text: "Custom term of service message",
-                                textAlign: "start"
-                            },
-                            id: "kjBMY6NBnA",
-                            type: "paragraph"
-                        }
-                    ],
-                    "text@errorMessage": "Custom error message"
-                },
-                "text@submitButtonLabel": "Custom submit button label"
+                "text@submitButtonLabel": null
             },
             "object@steps": [
                 {
-                    "json@layout": [["dMWqYyLYQV"]],
+                    "json@layout": [["tk4jYhc8DI"]],
                     "text@title": "Step 1"
                 }
             ],
-            "text@formId": "65b18df865a46200087864f9",
-            "text@name": "Demo Form 6",
-            "text@slug": "demo-form-6-65b18df865a46200087864f9"
+            "text@formId": "65b20bc00321db00083d35c9",
+            "text@name": "Demo Form 11",
+            "text@slug": "demo-form-11-65b20bc00321db00083d35c9"
         },
         version: 1,
         webinyVersion: "0.0.0"
@@ -3059,77 +3059,12 @@ export const migratedFormData = [
 ];
 
 export const migratedFormStatsData = [
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0002-stats",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-24T15:31:43.282Z",
-        entryId: "65b12c8ecd6a580008f2fa31-0002-stats",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
-        id: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:31:43.282Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:31:43.282Z",
-        savedBy: user,
-        savedOn: "2024-01-24T15:31:43.282Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b12c8ecd6a580008f2fa31"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0002-stats",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-24T15:31:43.282Z",
-        entryId: "65b12c8ecd6a580008f2fa31-0002-stats",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
-        GSI1_SK: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
-        id: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:31:43.282Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:31:43.282Z",
-        savedBy: user,
-        savedOn: "2024-01-24T15:31:43.282Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b12c8ecd6a580008f2fa31"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
+    // Form with 2 revisions: 1° published, 2° draft
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T15:31:28.942Z",
+        createdOn: "2024-01-24T15:28:14.710Z",
         entryId: "65b12c8ecd6a580008f2fa31-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b12c8ecd6a580008f2fa31-0001-stats#0001",
@@ -3141,18 +3076,18 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:31:28.942Z",
+        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:31:28.942Z",
+        revisionSavedOn: "2024-01-24T15:28:31.263Z",
         savedBy: user,
-        savedOn: "2024-01-24T15:31:28.942Z",
+        savedOn: "2024-01-24T15:28:31.263Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
         values: {
             "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
+            "number@submissions": 10,
+            "number@views": 100,
             "text@formId": "65b12c8ecd6a580008f2fa31"
         },
         version: 1,
@@ -3162,7 +3097,7 @@ export const migratedFormStatsData = [
         PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T15:31:28.942Z",
+        createdOn: "2024-01-24T15:28:14.710Z",
         entryId: "65b12c8ecd6a580008f2fa31-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b12c8ecd6a580008f2fa31-0001-stats#0001",
@@ -3174,16 +3109,49 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T15:31:28.942Z",
+        revisionCreatedOn: "2024-01-24T15:28:14.710Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T15:31:28.942Z",
+        revisionSavedOn: "2024-01-24T15:28:31.263Z",
         savedBy: user,
-        savedOn: "2024-01-24T15:31:28.942Z",
+        savedOn: "2024-01-24T15:28:31.263Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
         values: {
             "number@formVersion": 1,
+            "number@submissions": 10,
+            "number@views": 100,
+            "text@formId": "65b12c8ecd6a580008f2fa31"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0002-stats",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-24T15:28:37.723Z",
+        entryId: "65b12c8ecd6a580008f2fa31-0002-stats",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
+        id: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T15:28:41.543Z",
+        savedBy: user,
+        savedOn: "2024-01-24T15:28:41.543Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "number@formVersion": 2,
             "number@submissions": 0,
             "number@views": 0,
             "text@formId": "65b12c8ecd6a580008f2fa31"
@@ -3192,10 +3160,45 @@ export const migratedFormStatsData = [
         webinyVersion: "0.0.0"
     },
     {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b12c8ecd6a580008f2fa31-0002-stats",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-24T15:28:37.723Z",
+        entryId: "65b12c8ecd6a580008f2fa31-0002-stats",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
+        GSI1_SK: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
+        id: "65b12c8ecd6a580008f2fa31-0002-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T15:28:37.723Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T15:28:41.543Z",
+        savedBy: user,
+        savedOn: "2024-01-24T15:28:41.543Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "number@formVersion": 2,
+            "number@submissions": 0,
+            "number@views": 0,
+            "text@formId": "65b12c8ecd6a580008f2fa31"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+
+    // Form with 1 draft revision
+    {
         PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T16:24:23.882Z",
+        createdOn: "2024-01-24T16:24:17.185Z",
         entryId: "65b139b15cb71f0008718ac9-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b139b15cb71f0008718ac9-0001-stats#0001",
@@ -3207,11 +3210,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T16:24:23.882Z",
+        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T16:24:23.882Z",
+        revisionSavedOn: "2024-01-24T16:24:34.090Z",
         savedBy: user,
-        savedOn: "2024-01-24T16:24:23.882Z",
+        savedOn: "2024-01-24T16:24:34.090Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3222,16 +3225,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b139b15cb71f0008718ac9"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T16:24:23.883Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T16:24:23.883Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b139b15cb71f0008718ac9-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T16:24:23.882Z",
+        createdOn: "2024-01-24T16:24:17.185Z",
         entryId: "65b139b15cb71f0008718ac9-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b139b15cb71f0008718ac9-0001-stats#0001",
@@ -3243,11 +3243,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T16:24:23.882Z",
+        revisionCreatedOn: "2024-01-24T16:24:17.185Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T16:24:23.882Z",
+        revisionSavedOn: "2024-01-24T16:24:34.090Z",
         savedBy: user,
-        savedOn: "2024-01-24T16:24:23.882Z",
+        savedOn: "2024-01-24T16:24:34.090Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3258,88 +3258,15 @@ export const migratedFormStatsData = [
             "text@formId": "65b139b15cb71f0008718ac9"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T16:24:23.882Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T16:24:23.882Z"
+        webinyVersion: "0.0.0"
     },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0001-stats",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-24T17:38:07.624Z",
-        entryId: "65b14a9982c87000081f93b3-0001-stats",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
-        GSI1_SK: "65b14a9982c87000081f93b3-0001-stats#0001",
-        id: "65b14a9982c87000081f93b3-0001-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:07.624Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:07.624Z",
-        savedBy: user,
-        savedOn: "2024-01-24T17:38:07.624Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b14a9982c87000081f93b3"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:07.624Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:07.624Z"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0001-stats",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-24T17:38:07.624Z",
-        entryId: "65b14a9982c87000081f93b3-0001-stats",
-        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
-        GSI1_SK: "65b14a9982c87000081f93b3-0001-stats#0001",
-        id: "65b14a9982c87000081f93b3-0001-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:07.624Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:07.624Z",
-        savedBy: user,
-        savedOn: "2024-01-24T17:38:07.624Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b14a9982c87000081f93b3"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:07.624Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:07.624Z"
-    },
+
+    // Form with 4 revisions: 1° published, 2° published, 3° unpublished, 4° draft
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0003-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T17:38:53.210Z",
+        createdOn: "2024-01-24T17:38:28.497Z",
         entryId: "65b14a9982c87000081f93b3-0003-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b14a9982c87000081f93b3-0003-stats#0001",
@@ -3351,11 +3278,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:53.210Z",
+        revisionCreatedOn: "2024-01-24T17:38:28.497Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:53.210Z",
+        revisionSavedOn: "2024-01-24T17:39:26.457Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:38:53.210Z",
+        savedOn: "2024-01-24T17:39:26.457Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3366,16 +3293,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:53.211Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:53.211Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0003-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T17:38:53.210Z",
+        createdOn: "2024-01-24T17:38:28.497Z",
         entryId: "65b14a9982c87000081f93b3-0003-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b14a9982c87000081f93b3-0003-stats#0001",
@@ -3387,11 +3311,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:53.210Z",
+        revisionCreatedOn: "2024-01-24T17:38:28.497Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:53.210Z",
+        revisionSavedOn: "2024-01-24T17:39:26.457Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:38:53.210Z",
+        savedOn: "2024-01-24T17:39:26.457Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3402,16 +3326,79 @@ export const migratedFormStatsData = [
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:53.210Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:53.210Z"
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0001-stats",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-24T17:36:25.519Z",
+        entryId: "65b14a9982c87000081f93b3-0001-stats",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
+        GSI1_SK: "65b14a9982c87000081f93b3-0001-stats#0001",
+        id: "65b14a9982c87000081f93b3-0001-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T17:36:25.519Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T17:36:45.577Z",
+        savedBy: user,
+        savedOn: "2024-01-24T17:36:45.577Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 1,
+            "number@views": 10,
+            "text@formId": "65b14a9982c87000081f93b3"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0001-stats",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-24T17:36:25.519Z",
+        entryId: "65b14a9982c87000081f93b3-0001-stats",
+        GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
+        GSI1_SK: "65b14a9982c87000081f93b3-0001-stats#0001",
+        id: "65b14a9982c87000081f93b3-0001-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-24T17:36:25.519Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-24T17:36:45.577Z",
+        savedBy: user,
+        savedOn: "2024-01-24T17:36:45.577Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 1,
+            "number@views": 10,
+            "text@formId": "65b14a9982c87000081f93b3"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0004-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T17:39:18.089Z",
+        createdOn: "2024-01-24T17:39:11.428Z",
         entryId: "65b14a9982c87000081f93b3-0004-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b14a9982c87000081f93b3-0004-stats#0001",
@@ -3423,11 +3410,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:39:18.089Z",
+        revisionCreatedOn: "2024-01-24T17:39:11.428Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:39:18.089Z",
+        revisionSavedOn: "2024-01-24T17:39:11.428Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:39:18.089Z",
+        savedOn: "2024-01-24T17:39:11.428Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3438,16 +3425,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:39:18.090Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:39:18.090Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0004-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T17:39:18.089Z",
+        createdOn: "2024-01-24T17:39:11.428Z",
         entryId: "65b14a9982c87000081f93b3-0004-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b14a9982c87000081f93b3-0004-stats#0001",
@@ -3459,11 +3443,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:39:18.089Z",
+        revisionCreatedOn: "2024-01-24T17:39:11.428Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:39:18.089Z",
+        revisionSavedOn: "2024-01-24T17:39:11.428Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:39:18.089Z",
+        savedOn: "2024-01-24T17:39:11.428Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3474,16 +3458,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:39:18.090Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:39:18.090Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0002-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T17:38:34.750Z",
+        createdOn: "2024-01-24T17:37:08.943Z",
         entryId: "65b14a9982c87000081f93b3-0002-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b14a9982c87000081f93b3-0002-stats#0001",
@@ -3495,31 +3476,28 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:34.750Z",
+        revisionCreatedOn: "2024-01-24T17:37:08.943Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:34.750Z",
+        revisionSavedOn: "2024-01-24T17:37:13.678Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:38:34.750Z",
+        savedOn: "2024-01-24T17:37:13.678Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
         values: {
             "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
+            "number@submissions": 2,
+            "number@views": 20,
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:34.750Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:34.750Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b14a9982c87000081f93b3-0002-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T17:38:34.750Z",
+        createdOn: "2024-01-24T17:37:08.943Z",
         entryId: "65b14a9982c87000081f93b3-0002-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b14a9982c87000081f93b3-0002-stats#0001",
@@ -3531,31 +3509,30 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T17:38:34.750Z",
+        revisionCreatedOn: "2024-01-24T17:37:08.943Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T17:38:34.750Z",
+        revisionSavedOn: "2024-01-24T17:37:13.678Z",
         savedBy: user,
-        savedOn: "2024-01-24T17:38:34.750Z",
+        savedOn: "2024-01-24T17:37:13.678Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
         values: {
             "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
+            "number@submissions": 2,
+            "number@views": 20,
             "text@formId": "65b14a9982c87000081f93b3"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T17:38:34.750Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T17:38:34.750Z"
+        webinyVersion: "0.0.0"
     },
+
+    // Form with contact fields, required, organised in 2 steps
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T19:52:53.571Z",
+        createdOn: "2024-01-24T19:52:45.637Z",
         entryId: "65b16a8d7918760008c0ea56-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b16a8d7918760008c0ea56-0001-stats#0001",
@@ -3567,11 +3544,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T19:52:53.571Z",
+        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T19:52:53.571Z",
+        revisionSavedOn: "2024-01-24T19:53:54.458Z",
         savedBy: user,
-        savedOn: "2024-01-24T19:52:53.571Z",
+        savedOn: "2024-01-24T19:53:54.458Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3582,16 +3559,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b16a8d7918760008c0ea56"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T19:52:53.572Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T19:52:53.572Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b16a8d7918760008c0ea56-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T19:52:53.571Z",
+        createdOn: "2024-01-24T19:52:45.637Z",
         entryId: "65b16a8d7918760008c0ea56-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b16a8d7918760008c0ea56-0001-stats#0001",
@@ -3603,11 +3577,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T19:52:53.571Z",
+        revisionCreatedOn: "2024-01-24T19:52:45.637Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T19:52:53.571Z",
+        revisionSavedOn: "2024-01-24T19:53:54.458Z",
         savedBy: user,
-        savedOn: "2024-01-24T19:52:53.571Z",
+        savedOn: "2024-01-24T19:53:54.458Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3618,16 +3592,15 @@ export const migratedFormStatsData = [
             "text@formId": "65b16a8d7918760008c0ea56"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T19:52:53.572Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T19:52:53.572Z"
+        webinyVersion: "0.0.0"
     },
+
+    // Form with default fields
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b189f16f69800008e6161b-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:14:01.255Z",
+        createdOn: "2024-01-24T22:06:41.291Z",
         entryId: "65b189f16f69800008e6161b-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b189f16f69800008e6161b-0001-stats#0001",
@@ -3639,11 +3612,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:14:01.255Z",
+        revisionCreatedOn: "2024-01-24T22:06:41.291Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:14:01.255Z",
+        revisionSavedOn: "2024-01-24T22:13:12.913Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:14:01.255Z",
+        savedOn: "2024-01-24T22:13:12.913Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3654,16 +3627,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b189f16f69800008e6161b"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:14:01.265Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:14:01.265Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b189f16f69800008e6161b-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T22:14:01.255Z",
+        createdOn: "2024-01-24T22:06:41.291Z",
         entryId: "65b189f16f69800008e6161b-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b189f16f69800008e6161b-0001-stats#0001",
@@ -3675,11 +3645,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:14:01.255Z",
+        revisionCreatedOn: "2024-01-24T22:06:41.291Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:14:01.255Z",
+        revisionSavedOn: "2024-01-24T22:13:12.913Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:14:01.255Z",
+        savedOn: "2024-01-24T22:13:12.913Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3690,16 +3660,15 @@ export const migratedFormStatsData = [
             "text@formId": "65b189f16f69800008e6161b"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:14:01.264Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:14:01.264Z"
+        webinyVersion: "0.0.0"
     },
+
+    // Form with custom settings
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:26:43.678Z",
+        createdOn: "2024-01-24T22:23:52.364Z",
         entryId: "65b18df865a46200087864f9-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b18df865a46200087864f9-0001-stats#0001",
@@ -3711,11 +3680,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:26:43.678Z",
+        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:26:43.678Z",
+        revisionSavedOn: "2024-01-24T22:26:03.138Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:26:43.678Z",
+        savedOn: "2024-01-24T22:26:03.138Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3726,16 +3695,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b18df865a46200087864f9"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:26:43.680Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:26:43.680Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#en-US#CMS#CME#CME#65b18df865a46200087864f9-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T22:26:43.678Z",
+        createdOn: "2024-01-24T22:23:52.364Z",
         entryId: "65b18df865a46200087864f9-0001-stats",
         GSI1_PK: "T#root#L#en-US#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b18df865a46200087864f9-0001-stats#0001",
@@ -3747,11 +3713,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:26:43.678Z",
+        revisionCreatedOn: "2024-01-24T22:23:52.364Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:26:43.678Z",
+        revisionSavedOn: "2024-01-24T22:26:03.138Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:26:43.678Z",
+        savedOn: "2024-01-24T22:26:03.138Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3762,16 +3728,15 @@ export const migratedFormStatsData = [
             "text@formId": "65b18df865a46200087864f9"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:26:43.679Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:26:43.679Z"
+        webinyVersion: "0.0.0"
     },
+
+    // Form 1 from root tenant, locale de-DE
     {
         PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:36:44.029Z",
+        createdOn: "2024-01-24T22:35:54.384Z",
         entryId: "65b190cad481d800089f2479-0001-stats",
         GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b190cad481d800089f2479-0001-stats#0001",
@@ -3783,31 +3748,28 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:36:44.029Z",
+        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:36:44.029Z",
+        revisionSavedOn: "2024-01-24T22:36:12.348Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:36:44.029Z",
+        savedOn: "2024-01-24T22:36:12.348Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
         values: {
             "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
+            "number@submissions": 100,
+            "number@views": 1000,
             "text@formId": "65b190cad481d800089f2479"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:36:44.030Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:36:44.030Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#de-DE#CMS#CME#CME#65b190cad481d800089f2479-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T22:36:44.029Z",
+        createdOn: "2024-01-24T22:35:54.384Z",
         entryId: "65b190cad481d800089f2479-0001-stats",
         GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b190cad481d800089f2479-0001-stats#0001",
@@ -3819,31 +3781,164 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:36:44.029Z",
+        revisionCreatedOn: "2024-01-24T22:35:54.384Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:36:44.029Z",
+        revisionSavedOn: "2024-01-24T22:36:12.348Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:36:44.029Z",
+        savedOn: "2024-01-24T22:36:12.348Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
         values: {
             "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
+            "number@submissions": 100,
+            "number@views": 1000,
             "text@formId": "65b190cad481d800089f2479"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:36:44.030Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:36:44.030Z"
+        webinyVersion: "0.0.0"
     },
+
+    // Form 2 from root tenant, locale de-DE
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0001-stats",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-25T06:51:58.036Z",
+        entryId: "65b2050e264766000809d7aa-0001-stats",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#L",
+        GSI1_SK: "65b2050e264766000809d7aa-0001-stats#0001",
+        id: "65b2050e264766000809d7aa-0001-stats#0001",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-25T06:51:58.036Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-25T06:52:51.920Z",
+        savedBy: user,
+        savedOn: "2024-01-25T06:52:51.920Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 10,
+            "number@views": 100,
+            "text@formId": "65b2050e264766000809d7aa"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0001-stats",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-25T06:51:58.036Z",
+        entryId: "65b2050e264766000809d7aa-0001-stats",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#A",
+        GSI1_SK: "65b2050e264766000809d7aa-0001-stats#0001",
+        id: "65b2050e264766000809d7aa-0001-stats#0001",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-25T06:51:58.036Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-25T06:52:51.920Z",
+        savedBy: user,
+        savedOn: "2024-01-25T06:52:51.920Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 10,
+            "number@views": 100,
+            "text@formId": "65b2050e264766000809d7aa"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0002-stats",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-01-25T06:52:56.840Z",
+        entryId: "65b2050e264766000809d7aa-0002-stats",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#L",
+        GSI1_SK: "65b2050e264766000809d7aa-0002-stats#0001",
+        id: "65b2050e264766000809d7aa-0002-stats#0001",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-25T06:52:56.840Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-25T06:53:03.955Z",
+        savedBy: user,
+        savedOn: "2024-01-25T06:53:03.955Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "number@formVersion": 2,
+            "number@submissions": 0,
+            "number@views": 0,
+            "text@formId": "65b2050e264766000809d7aa"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0002-stats",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-01-25T06:52:56.840Z",
+        entryId: "65b2050e264766000809d7aa-0002-stats",
+        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#A",
+        GSI1_SK: "65b2050e264766000809d7aa-0002-stats#0001",
+        id: "65b2050e264766000809d7aa-0002-stats#0001",
+        locale: "de-DE",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-01-25T06:52:56.840Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-01-25T06:53:03.955Z",
+        savedBy: user,
+        savedOn: "2024-01-25T06:53:03.955Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "number@formVersion": 2,
+            "number@submissions": 0,
+            "number@views": 0,
+            "text@formId": "65b2050e264766000809d7aa"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+
+    // Form 1 from root tenant, locale fr-FR
     {
         PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-24T22:51:11.450Z",
+        createdOn: "2024-01-24T22:50:16.158Z",
         entryId: "65b19428b583b90008e7a3bc-0001-stats",
         GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b19428b583b90008e7a3bc-0001-stats#0001",
@@ -3855,11 +3950,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:51:11.450Z",
+        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:51:11.450Z",
+        revisionSavedOn: "2024-01-24T22:50:26.517Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:51:11.450Z",
+        savedOn: "2024-01-24T22:50:26.517Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry.l",
@@ -3870,16 +3965,13 @@ export const migratedFormStatsData = [
             "text@formId": "65b19428b583b90008e7a3bc"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:51:11.451Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:51:11.451Z"
+        webinyVersion: "0.0.0"
     },
     {
         PK: "T#root#L#fr-FR#CMS#CME#CME#65b19428b583b90008e7a3bc-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-24T22:51:11.450Z",
+        createdOn: "2024-01-24T22:50:16.158Z",
         entryId: "65b19428b583b90008e7a3bc-0001-stats",
         GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b19428b583b90008e7a3bc-0001-stats#0001",
@@ -3891,11 +3983,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-24T22:51:11.450Z",
+        revisionCreatedOn: "2024-01-24T22:50:16.158Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-24T22:51:11.450Z",
+        revisionSavedOn: "2024-01-24T22:50:26.517Z",
         savedBy: user,
-        savedOn: "2024-01-24T22:51:11.450Z",
+        savedOn: "2024-01-24T22:50:26.517Z",
         status: "draft",
         tenant: "root",
         TYPE: "cms.entry",
@@ -3906,160 +3998,15 @@ export const migratedFormStatsData = [
             "text@formId": "65b19428b583b90008e7a3bc"
         },
         version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-24T22:51:11.450Z",
-        _et: "CmsEntries",
-        _md: "2024-01-24T22:51:11.450Z"
+        webinyVersion: "0.0.0"
     },
-    {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0002-stats",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-25T06:53:53.735Z",
-        entryId: "65b2050e264766000809d7aa-0002-stats",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#L",
-        GSI1_SK: "65b2050e264766000809d7aa-0002-stats#0001",
-        id: "65b2050e264766000809d7aa-0002-stats#0001",
-        locale: "de-DE",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T06:53:53.735Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T06:53:53.735Z",
-        savedBy: user,
-        savedOn: "2024-01-25T06:53:53.735Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b2050e264766000809d7aa"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-25T06:53:53.735Z",
-        _et: "CmsEntries",
-        _md: "2024-01-25T06:53:53.735Z"
-    },
-    {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0002-stats",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-25T06:53:53.735Z",
-        entryId: "65b2050e264766000809d7aa-0002-stats",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#A",
-        GSI1_SK: "65b2050e264766000809d7aa-0002-stats#0001",
-        id: "65b2050e264766000809d7aa-0002-stats#0001",
-        locale: "de-DE",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T06:53:53.735Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T06:53:53.735Z",
-        savedBy: user,
-        savedOn: "2024-01-25T06:53:53.735Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "number@formVersion": 2,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b2050e264766000809d7aa"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-25T06:53:53.735Z",
-        _et: "CmsEntries",
-        _md: "2024-01-25T06:53:53.735Z"
-    },
-    {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0001-stats",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-01-25T06:53:38.054Z",
-        entryId: "65b2050e264766000809d7aa-0001-stats",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#L",
-        GSI1_SK: "65b2050e264766000809d7aa-0001-stats#0001",
-        id: "65b2050e264766000809d7aa-0001-stats#0001",
-        locale: "de-DE",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T06:53:38.054Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T06:53:38.054Z",
-        savedBy: user,
-        savedOn: "2024-01-25T06:53:38.054Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b2050e264766000809d7aa"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-25T06:53:38.055Z",
-        _et: "CmsEntries",
-        _md: "2024-01-25T06:53:38.055Z"
-    },
-    {
-        PK: "T#root#L#de-DE#CMS#CME#CME#65b2050e264766000809d7aa-0001-stats",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-01-25T06:53:38.054Z",
-        entryId: "65b2050e264766000809d7aa-0001-stats",
-        GSI1_PK: "T#root#L#de-DE#CMS#CME#M#fbFormStat#A",
-        GSI1_SK: "65b2050e264766000809d7aa-0001-stats#0001",
-        id: "65b2050e264766000809d7aa-0001-stats#0001",
-        locale: "de-DE",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T06:53:38.054Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T06:53:38.054Z",
-        savedBy: user,
-        savedOn: "2024-01-25T06:53:38.054Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 0,
-            "number@views": 0,
-            "text@formId": "65b2050e264766000809d7aa"
-        },
-        version: 1,
-        webinyVersion: "0.0.0",
-        _ct: "2024-01-25T06:53:38.054Z",
-        _et: "CmsEntries",
-        _md: "2024-01-25T06:53:38.054Z"
-    },
+
+    // Form 1 from otherTenant, locale fr-FR
     {
         PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20b8f0321db00083d35c1-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-25T07:21:16.465Z",
+        createdOn: "2024-01-25T07:19:43.219Z",
         entryId: "65b20b8f0321db00083d35c1-0001-stats",
         GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b20b8f0321db00083d35c1-0001-stats#0001",
@@ -4071,11 +4018,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:21:16.465Z",
+        revisionCreatedOn: "2024-01-25T07:19:43.219Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:21:16.465Z",
+        revisionSavedOn: "2024-01-25T07:19:51.052Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:21:16.465Z",
+        savedOn: "2024-01-25T07:19:51.052Z",
         status: "draft",
         tenant: "otherTenant",
         TYPE: "cms.entry.l",
@@ -4092,7 +4039,7 @@ export const migratedFormStatsData = [
         PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20b8f0321db00083d35c1-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-25T07:21:16.465Z",
+        createdOn: "2024-01-25T07:19:43.219Z",
         entryId: "65b20b8f0321db00083d35c1-0001-stats",
         GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b20b8f0321db00083d35c1-0001-stats#0001",
@@ -4104,11 +4051,11 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:21:16.465Z",
+        revisionCreatedOn: "2024-01-25T07:19:43.219Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:21:16.465Z",
+        revisionSavedOn: "2024-01-25T07:19:51.052Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:21:16.465Z",
+        savedOn: "2024-01-25T07:19:51.052Z",
         status: "draft",
         tenant: "otherTenant",
         TYPE: "cms.entry",
@@ -4121,13 +4068,15 @@ export const migratedFormStatsData = [
         version: 1,
         webinyVersion: "0.0.0"
     },
+
+    // Form 2 from otherTenant, locale fr-FR
     {
-        PK: "T#root#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9-0001-stats",
+        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9-0001-stats",
         SK: "L",
         createdBy: user,
-        createdOn: "2024-01-25T07:21:15.984Z",
+        createdOn: "2024-01-25T07:20:32.550Z",
         entryId: "65b20bc00321db00083d35c9-0001-stats",
-        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbFormStat#L",
+        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbFormStat#L",
         GSI1_SK: "65b20bc00321db00083d35c9-0001-stats#0001",
         id: "65b20bc00321db00083d35c9-0001-stats#0001",
         locale: "fr-FR",
@@ -4137,30 +4086,30 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:21:15.984Z",
+        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:21:15.984Z",
+        revisionSavedOn: "2024-01-25T07:20:49.543Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:21:15.984Z",
+        savedOn: "2024-01-25T07:20:49.543Z",
         status: "draft",
         tenant: "otherTenant",
         TYPE: "cms.entry.l",
         values: {
             "number@formVersion": 1,
             "number@submissions": 0,
-            "number@views": 0,
+            "number@views": 1000,
             "text@formId": "65b20bc00321db00083d35c9"
         },
         version: 1,
         webinyVersion: "0.0.0"
     },
     {
-        PK: "T#root#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9-0001-stats",
+        PK: "T#otherTenant#L#fr-FR#CMS#CME#CME#65b20bc00321db00083d35c9-0001-stats",
         SK: "REV#0001",
         createdBy: user,
-        createdOn: "2024-01-25T07:21:15.984Z",
+        createdOn: "2024-01-25T07:20:32.550Z",
         entryId: "65b20bc00321db00083d35c9-0001-stats",
-        GSI1_PK: "T#root#L#fr-FR#CMS#CME#M#fbFormStat#A",
+        GSI1_PK: "T#otherTenant#L#fr-FR#CMS#CME#M#fbFormStat#A",
         GSI1_SK: "65b20bc00321db00083d35c9-0001-stats#0001",
         id: "65b20bc00321db00083d35c9-0001-stats#0001",
         locale: "fr-FR",
@@ -4170,18 +4119,18 @@ export const migratedFormStatsData = [
         locked: false,
         modelId: "fbFormStat",
         revisionCreatedBy: user,
-        revisionCreatedOn: "2024-01-25T07:21:15.984Z",
+        revisionCreatedOn: "2024-01-25T07:20:32.550Z",
         revisionSavedBy: user,
-        revisionSavedOn: "2024-01-25T07:21:15.984Z",
+        revisionSavedOn: "2024-01-25T07:20:49.543Z",
         savedBy: user,
-        savedOn: "2024-01-25T07:21:15.984Z",
+        savedOn: "2024-01-25T07:20:49.543Z",
         status: "draft",
         tenant: "otherTenant",
         TYPE: "cms.entry",
         values: {
             "number@formVersion": 1,
             "number@submissions": 0,
-            "number@views": 0,
+            "number@views": 1000,
             "text@formId": "65b20bc00321db00083d35c9"
         },
         version: 1,

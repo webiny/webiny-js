@@ -5,16 +5,10 @@ import { createDdbCmsEntity } from "../entities/createCmsEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-import {
-    getFirstLastPublishedOnBy,
-    getFormCommonFields,
-    getMetaFields,
-    getOldestRevisionCreatedOn,
-    getRevisionStatus
-} from "../utils";
+import { getFormStatsMetaFields, getStatsCommonFields } from "../utils";
 import { FbForm, MigrationCheckpoint } from "../types";
 
-export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<MigrationCheckpoint> {
+export class FormBuilder_5_40_0_001_FormStats implements DataMigration<MigrationCheckpoint> {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
     private readonly cmsEntity: ReturnType<typeof createDdbCmsEntity>;
     private readonly table: Table<string, string, string>;
@@ -26,7 +20,7 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
     }
 
     getId() {
-        return "Form Revision Entries";
+        return "Form Stats Entries";
     }
 
     getDescription() {
@@ -57,15 +51,15 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
 
                 const [formId, revisionId] = formRevision.id.split("#");
 
-                const cmsRevision = await queryOne<FbForm>({
+                const cmsStats = await queryOne<FbForm>({
                     entity: this.cmsEntity,
-                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
+                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
                     options: {
-                        eq: `REV#${revisionId}`
+                        eq: "L"
                     }
                 });
 
-                if (!cmsRevision) {
+                if (!cmsStats) {
                     logger.info(
                         `No CMS entries revisions found for ${tenantId} - ${localeCode}: executing migration.`
                     );
@@ -103,44 +97,34 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                             const [formId, revisionId] = form.id.split("#");
 
                             // Get common fields
-                            const entryCommonFields = getFormCommonFields(form);
+                            const commonFields = getStatsCommonFields(form);
 
-                            // Get the status field, based on the revision and the published entry
-                            const status = await getRevisionStatus({
-                                form,
-                                formEntity: this.formEntity
-                            });
+                            // Get the new meta fields
+                            const entryMetaFields = getFormStatsMetaFields(form);
 
-                            // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                            const createdOn = await getOldestRevisionCreatedOn({
-                                form,
-                                formEntity: this.formEntity
-                            });
-
-                            // Get first/last published meta fields
-                            const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                                form,
-                                formEntity: this.formEntity
-                            });
-
-                            // Create the new meta fields
-                            const entryMetaFields = getMetaFields(form, {
-                                createdOn,
-                                ...firstLastPublishedOnByFields
-                            });
-
-                            const item = {
-                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
-                                SK: `REV#${revisionId}`,
-                                GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#A`,
-                                GSI1_SK: `${form.id}`,
+                            const revision = {
+                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
+                                SK: `REV#0001`,
+                                GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbFormStat#A`,
+                                GSI1_SK: `${formId}-${revisionId}-stats#0001`,
                                 TYPE: "cms.entry",
-                                ...entryCommonFields,
-                                ...entryMetaFields,
-                                status
+                                ...commonFields,
+                                ...entryMetaFields
                             };
 
-                            items.push(this.cmsEntity.putBatch(item));
+                            items.push(this.cmsEntity.putBatch(revision));
+
+                            const latest = {
+                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
+                                SK: "L",
+                                GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbFormStat#L`,
+                                GSI1_SK: `${formId}-${revisionId}-stats#0001`,
+                                TYPE: "cms.entry.l",
+                                ...commonFields,
+                                ...entryMetaFields
+                            };
+
+                            items.push(this.cmsEntity.putBatch(latest));
                         }
 
                         const execute = () => {

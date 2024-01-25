@@ -6,8 +6,8 @@ import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne }
 import { executeWithRetry } from "@webiny/utils";
 
 import {
-    getEntryCommonFields,
     getFirstLastPublishedOnBy,
+    getFormCommonFields,
     getMetaFields,
     getOldestRevisionCreatedOn
 } from "../utils";
@@ -102,7 +102,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                             const [formId] = form.id.split("#");
 
                             // Get common fields
-                            const entryCommonFields = getEntryCommonFields(form);
+                            const entryCommonFields = getFormCommonFields(form);
 
                             // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                             const createdOn = await getOldestRevisionCreatedOn({

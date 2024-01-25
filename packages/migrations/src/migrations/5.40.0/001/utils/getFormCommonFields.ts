@@ -1,6 +1,6 @@
 import { CmsEntry, FbForm, FormEntryValues } from "../types";
 
-export const getEntryCommonFields = (form: FbForm): CmsEntry<FormEntryValues> => {
+export const getFormCommonFields = (form: FbForm): CmsEntry<FormEntryValues> => {
     return {
         entryId: form.formId,
         id: form.id,

@@ -230,3 +230,10 @@ export interface FormEntryValues {
     "text@name": string;
     "text@slug": string;
 }
+
+export interface FormStatsValues {
+    "number@formVersion": number;
+    "number@submissions": number;
+    "number@views": number;
+    "text@formId": string;
+}

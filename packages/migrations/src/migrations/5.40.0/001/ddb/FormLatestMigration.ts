@@ -6,8 +6,8 @@ import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne }
 import { executeWithRetry } from "@webiny/utils";
 
 import {
-    getEntryCommonFields,
     getFirstLastPublishedOnBy,
+    getFormCommonFields,
     getMetaFields,
     getOldestRevisionCreatedOn,
     getRevisionStatus
@@ -103,7 +103,7 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                             const [formId] = form.id.split("#");
 
                             // Get common fields
-                            const entryCommonFields = getEntryCommonFields(form);
+                            const entryCommonFields = getFormCommonFields(form);
 
                             // Get the status field, based on the revision and the published entry
                             const status = await getRevisionStatus({
