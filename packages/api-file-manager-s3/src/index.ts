@@ -6,6 +6,5 @@ import { flushCdnCache } from "~/flushCdnCache";
 export { createFileUploadModifier } from "./utils/FileUploadModifier";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery";
 export { createCustomAssetDelivery } from "./assetDelivery/createCustomAssetDelivery";
-export { AssetDelivery } from "./assetDelivery";
 
 export default () => [fileStorageS3(), graphqlFileStorageS3, addFileMetadata(), flushCdnCache()];
