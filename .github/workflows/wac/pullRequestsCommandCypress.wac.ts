@@ -84,7 +84,7 @@ const createJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: "dev" }),
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "yarn-cache",
                 with: {
                     path: "dev/.yarn/cache",
@@ -92,7 +92,7 @@ const createJobs = (dbSetup: string) => {
                 }
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "cached-packages",
                 with: {
                     path: "dev/.webiny/cached-packages",
@@ -110,7 +110,7 @@ const createJobs = (dbSetup: string) => {
                 run: "yarn build:quick"
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "packages-cache",
                 with: {
                     path: "dev/.webiny/cached-packages",
@@ -202,14 +202,14 @@ const createJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: "dev" }),
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: "dev/.webiny/cached-packages",
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: "dev/.yarn/cache",
                     key: "yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}"

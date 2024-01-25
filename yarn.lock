@@ -15027,6 +15027,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/tasks": 0.0.0
+    "@webiny/utils": 0.0.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
@@ -15723,6 +15724,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
+    bytes: ^3.1.0
     dataloader: ^2.0.0
     extract-zip: ^1.6.7
     fs-extra: ^9.1.0

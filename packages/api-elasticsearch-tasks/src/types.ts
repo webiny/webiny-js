@@ -10,6 +10,11 @@ import { BatchWriteItem, BatchWriteResult } from "@webiny/db-dynamodb";
 
 export interface Context extends ElasticsearchContext, TasksContext {}
 
+export interface IElasticsearchTaskConfig {
+    documentClient?: DynamoDBDocument;
+    elasticsearchClient?: Client;
+}
+
 export interface IElasticsearchIndexingTaskValuesKeys {
     PK: string;
     SK: string;

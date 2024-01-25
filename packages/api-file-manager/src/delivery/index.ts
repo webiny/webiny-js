@@ -13,3 +13,5 @@ export * from "./AssetDelivery/FilesAssetRequestResolver";
 export * from "./AssetDelivery/AliasAssetRequestResolver";
 export * from "./AssetDelivery/SetCacheControlHeaders";
 export * from "./AssetDelivery/SetResponseHeaders";
+export * from "./AssetDelivery/privateFiles/PublicCache";
+export * from "./AssetDelivery/privateFiles/PrivateCache";

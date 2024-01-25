@@ -30,7 +30,7 @@ export class S3AssetResolver implements AssetResolver {
 
             return asset;
         } catch (error) {
-            console.error(error);
+            console.log(`S3AssetResolver failed to read metadata: ${error.message}`);
             return undefined;
         }
     }

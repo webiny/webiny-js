@@ -29,6 +29,10 @@ export abstract class ContentCompressionPlugin extends Plugin {
         this.identifier = identifier;
     }
     /**
+     * Must return true if it is possible to compress the content with given implementation.
+     */
+    public abstract canCompress(value: any): boolean;
+    /**
      * Must return if it is possible to decompress the content with given implementation.
      * This step makes sure no invalid data is passed into decompress method.
      */
