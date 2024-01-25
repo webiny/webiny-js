@@ -45,9 +45,9 @@ export const createJob = (params: CreateJobParams): NormalJob => {
 
     if (checkout !== false) {
         if (typeof checkout === "object") {
-            job.steps!.push({ uses: "actions/checkout@v3", with: checkout });
+            job.steps!.push({ uses: "actions/checkout@v4", with: checkout });
         } else {
-            job.steps!.push({ uses: "actions/checkout@v3" });
+            job.steps!.push({ uses: "actions/checkout@v4" });
         }
     }
 
