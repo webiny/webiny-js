@@ -11,7 +11,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
     const { awsAuth, checkout, setupNode, ...jobParams } = params;
 
     let setupNodeStep: Record<string, any> = {
-        uses: "actions/setup-node@v3",
+        uses: "actions/setup-node@v4",
         with: { "node-version": NODE_VERSION }
     };
 
