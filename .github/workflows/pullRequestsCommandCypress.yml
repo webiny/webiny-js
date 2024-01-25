@@ -117,12 +117,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -135,7 +135,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -260,11 +260,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -361,12 +361,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -379,7 +379,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -507,11 +507,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -609,12 +609,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -627,7 +627,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -755,11 +755,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}

@@ -46,7 +46,7 @@ export const pullRequests = createWorkflow({
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "yarn-cache",
                     with: {
                         path: ".yarn/cache",
@@ -54,7 +54,7 @@ export const pullRequests = createWorkflow({
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "cached-packages",
                     with: {
                         path: ".webiny/cached-packages",
@@ -70,7 +70,7 @@ export const pullRequests = createWorkflow({
                     run: "yarn build:quick"
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "packages-cache",
                     with: {
                         path: ".webiny/cached-packages",
@@ -84,14 +84,14 @@ export const pullRequests = createWorkflow({
             name: "Static code analysis",
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".webiny/cached-packages",
                         key: "packages-cache-${{ needs.init.outputs.ts }}"
@@ -124,7 +124,7 @@ export const pullRequests = createWorkflow({
             "runs-on": "webiny-build-packages",
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
@@ -159,14 +159,14 @@ export const pullRequests = createWorkflow({
             },
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".webiny/cached-packages",
                         key: "packages-cache-${{ needs.init.outputs.ts }}"

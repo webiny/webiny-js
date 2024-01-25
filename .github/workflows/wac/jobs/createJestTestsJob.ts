@@ -39,14 +39,14 @@ export const createJestTestsJob = (storage: string | null) => {
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
         steps: [
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: ".yarn/cache",
                     key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                 }
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: ".webiny/cached-packages",
                     key: "packages-cache-${{ needs.init.outputs.ts }}"

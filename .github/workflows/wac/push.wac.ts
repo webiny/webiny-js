@@ -73,7 +73,7 @@ const createCypressJobs = (dbSetup: string) => {
         awsAuth: true,
         steps: [
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "yarn-cache",
                 with: {
                     path: "dev/.yarn/cache",
@@ -81,7 +81,7 @@ const createCypressJobs = (dbSetup: string) => {
                 }
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "cached-packages",
                 with: {
                     path: "dev/.webiny/cached-packages",
@@ -99,7 +99,7 @@ const createCypressJobs = (dbSetup: string) => {
                 run: "yarn build:quick"
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 id: "packages-cache",
                 with: {
                     path: "dev/.webiny/cached-packages",
@@ -190,14 +190,14 @@ const createCypressJobs = (dbSetup: string) => {
         checkout: { path: "dev" },
         steps: [
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: "dev/.webiny/cached-packages",
                     key: `packages-cache-$\{{ needs.${jobNames.init}.outputs.ts }}`
                 }
             },
             {
-                uses: "actions/cache@v3",
+                uses: "actions/cache@v4",
                 with: {
                     path: "dev/.yarn/cache",
                     key: "yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}"
@@ -267,7 +267,7 @@ const createPushWorkflow = (branchName: string) => {
                 "runs-on": "webiny-build-packages",
                 steps: [
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         id: "yarn-cache",
                         with: {
                             path: ".yarn/cache",
@@ -275,7 +275,7 @@ const createPushWorkflow = (branchName: string) => {
                         }
                     },
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         id: "global-daily-packages-cache",
                         with: {
                             path: ".webiny/cached-packages",
@@ -291,7 +291,7 @@ const createPushWorkflow = (branchName: string) => {
                         run: "yarn build:quick"
                     },
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         id: "packages-cache",
                         with: {
                             path: ".webiny/cached-packages",
@@ -305,14 +305,14 @@ const createPushWorkflow = (branchName: string) => {
                 needs: ["init", "build"],
                 steps: [
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         with: {
                             path: ".yarn/cache",
                             key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                         }
                     },
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         with: {
                             path: ".webiny/cached-packages",
                             key: "packages-cache-${{ needs.init.outputs.ts }}"
@@ -345,7 +345,7 @@ const createPushWorkflow = (branchName: string) => {
                 "runs-on": "webiny-build-packages",
                 steps: [
                     {
-                        uses: "actions/cache@v3",
+                        uses: "actions/cache@v4",
                         with: {
                             path: ".yarn/cache",
                             key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
@@ -390,14 +390,14 @@ const createPushWorkflow = (branchName: string) => {
             checkout: { "fetch-depth": 0 },
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".webiny/cached-packages",
                         key: "packages-cache-${{ needs.init.outputs.ts }}"

@@ -49,12 +49,12 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
@@ -65,7 +65,7 @@ jobs:
         run: yarn --immutable
       - name: Build packages
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -83,11 +83,11 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -113,7 +113,7 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -149,11 +149,11 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -200,11 +200,11 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -255,11 +255,11 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -313,11 +313,11 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -388,12 +388,12 @@ jobs:
         with:
           fetch-depth: 0
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -406,7 +406,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -524,11 +524,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2eTestsDdb-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -611,12 +611,12 @@ jobs:
         with:
           fetch-depth: 0
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -629,7 +629,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -750,11 +750,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2eTestsDdb-es-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -837,12 +837,12 @@ jobs:
         with:
           fetch-depth: 0
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -855,7 +855,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -976,11 +976,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: dev
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2eTestsDdb-os-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
