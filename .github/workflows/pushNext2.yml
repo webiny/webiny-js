@@ -330,7 +330,7 @@ jobs:
     permissions:
       id-token: write
     if: needs.init.outputs.is-fork-pr != 'true'
-  e2e-wby-cms-ddb-init:
+  e2eTestsDdb-init:
     name: E2E (DDB) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -360,8 +360,8 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-wby-cms-ddb-project-setup:
-    needs: e2e-wby-cms-ddb-init
+  e2eTestsDdb-setup:
+    needs: e2eTestsDdb-init
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -374,7 +374,7 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-init.outputs.ts }}_ddb
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -398,7 +398,7 @@ jobs:
         with:
           path: dev/.webiny/cached-packages
           key: >-
-            ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-init.outputs.day }}-${{
+            ${{ runner.os }}-${{ needs.e2eTestsDdb-init.outputs.day }}-${{
             secrets.RANDOM_CACHE_KEY_SUFFIX }}
       - name: Install dependencies
         working-directory: dev
@@ -410,7 +410,7 @@ jobs:
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-init.outputs.ts }}
       - name: Start Verdaccio local server
         working-directory: dev
         run: >-
@@ -492,13 +492,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-cypress-tests:
+  e2eTestsDdb-cypress:
     name: >-
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
       }})
     needs:
-      - e2e-wby-cms-ddb-init
-      - e2e-wby-cms-ddb-project-setup
+      - e2eTestsDdb-init
+      - e2eTestsDdb-setup
     strategy:
       fail-fast: false
       matrix:
@@ -506,7 +506,7 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
+        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-init.outputs.cypress-folders) }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -516,7 +516,7 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-init.outputs.ts }}_ddb
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -527,7 +527,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
           path: dev/.yarn/cache
@@ -541,8 +541,8 @@ jobs:
       - name: Set up Cypress config
         working-directory: dev
         run: >-
-          echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
-          }}' > cypress-tests/cypress.config.ts
+          echo '${{ needs.e2eTestsDdb-setup.outputs.cypress-config }}' >
+          cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: dev/cypress-tests
         timeout-minutes: 40
@@ -550,7 +550,7 @@ jobs:
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
     runs-on: ubuntu-latest
-  e2e-wby-cms-ddb-es-init:
+  e2eTestsDdb-es-init:
     name: E2E (DDB-ES) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -580,8 +580,8 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-wby-cms-ddb-es-project-setup:
-    needs: e2e-wby-cms-ddb-es-init
+  e2eTestsDdb-es-setup:
+    needs: e2eTestsDdb-es-init
     name: E2E (DDB-ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -594,10 +594,10 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-es-init.outputs.ts }}_ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-es-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -621,8 +621,8 @@ jobs:
         with:
           path: dev/.webiny/cached-packages
           key: >-
-            ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.day
-            }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+            ${{ runner.os }}-${{ needs.e2eTestsDdb-es-init.outputs.day }}-${{
+            secrets.RANDOM_CACHE_KEY_SUFFIX }}
       - name: Install dependencies
         working-directory: dev
         run: yarn --immutable
@@ -633,7 +633,7 @@ jobs:
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-es-init.outputs.ts }}
       - name: Start Verdaccio local server
         working-directory: dev
         run: >-
@@ -715,13 +715,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-es-cypress-tests:
+  e2eTestsDdb-es-cypress:
     name: >-
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
-      - e2e-wby-cms-ddb-es-init
-      - e2e-wby-cms-ddb-es-project-setup
+      - e2eTestsDdb-es-init
+      - e2eTestsDdb-es-setup
     strategy:
       fail-fast: false
       matrix:
@@ -729,7 +729,7 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
+        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-es-init.outputs.cypress-folders) }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -739,10 +739,10 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-es-init.outputs.ts }}_ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-es-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -753,7 +753,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-es-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
           path: dev/.yarn/cache
@@ -767,8 +767,7 @@ jobs:
       - name: Set up Cypress config
         working-directory: dev
         run: >-
-          echo '${{
-          needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' >
+          echo '${{ needs.e2eTestsDdb-es-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: dev/cypress-tests
@@ -777,7 +776,7 @@ jobs:
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
     runs-on: ubuntu-latest
-  e2e-wby-cms-ddb-os-init:
+  e2eTestsDdb-os-init:
     name: E2E (DDB-OS) - Init
     outputs:
       day: ${{ steps.get-day.outputs.day }}
@@ -807,8 +806,8 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-wby-cms-ddb-os-project-setup:
-    needs: e2e-wby-cms-ddb-os-init
+  e2eTestsDdb-os-setup:
+    needs: e2eTestsDdb-os-init
     name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -821,10 +820,10 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-os-init.outputs.ts }}_ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-os-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -848,8 +847,8 @@ jobs:
         with:
           path: dev/.webiny/cached-packages
           key: >-
-            ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-os-init.outputs.day
-            }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+            ${{ runner.os }}-${{ needs.e2eTestsDdb-os-init.outputs.day }}-${{
+            secrets.RANDOM_CACHE_KEY_SUFFIX }}
       - name: Install dependencies
         working-directory: dev
         run: yarn --immutable
@@ -860,7 +859,7 @@ jobs:
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-os-init.outputs.ts }}
       - name: Start Verdaccio local server
         working-directory: dev
         run: >-
@@ -942,13 +941,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-os-cypress-tests:
+  e2eTestsDdb-os-cypress:
     name: >-
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
-      - e2e-wby-cms-ddb-os-init
-      - e2e-wby-cms-ddb-os-project-setup
+      - e2eTestsDdb-os-init
+      - e2eTestsDdb-os-setup
     strategy:
       fail-fast: false
       matrix:
@@ -956,7 +955,7 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-os-init.outputs.cypress-folders) }}
+        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-os-init.outputs.cypress-folders) }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -966,10 +965,10 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: >-
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_ddb
+        needs.e2eTestsDdb-os-init.outputs.ts }}_ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-os-init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -980,7 +979,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
+          key: packages-cache-${{ needs.e2eTestsDdb-os-init.outputs.ts }}
       - uses: actions/cache@v3
         with:
           path: dev/.yarn/cache
@@ -994,8 +993,7 @@ jobs:
       - name: Set up Cypress config
         working-directory: dev
         run: >-
-          echo '${{
-          needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
+          echo '${{ needs.e2eTestsDdb-os-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: dev/cypress-tests
@@ -1003,4 +1001,50 @@ jobs:
         run: >-
           yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
           }}"
+    runs-on: ubuntu-latest
+  npmReleaseUnstable:
+    needs:
+      - init
+      - codeAnalysis
+      - jestTestsNoStorage
+      - jestTestsDdb
+      - jestTestsDdbEs
+      - jestTestsDdbOs
+      - e2eTestsDdb-cypress
+      - e2eTestsDdb-es-cypress
+      - e2eTestsDdb-os-cypress
+    name: NPM release ("unstable" tag)
+    environment: release
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Build packages
+        run: yarn build
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+      - name: Set git info
+        run: |
+          git config --global user.email "webiny-bot@webiny.com"
+          git config --global user.name "webiny-bot"
+      - name: Version and publish to NPM
+        run: yarn release --type=unstable
     runs-on: ubuntu-latest

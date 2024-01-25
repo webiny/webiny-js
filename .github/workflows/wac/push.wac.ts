@@ -4,10 +4,12 @@ import { createDeployWebinySteps, createSetupVerdaccioSteps } from "./steps";
 import { NODE_VERSION } from "./utils";
 
 const createCypressJobs = (dbSetup: string) => {
+    const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
+
     const jobNames = {
-        init: `e2e-wby-cms-${dbSetup}-init`,
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
-        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
+        init: `e2eTests${ucFirstDbSetup}-init`,
+        projectSetup: `e2eTests${ucFirstDbSetup}-setup`,
+        cypressTests: `e2eTests${ucFirstDbSetup}-cypress`
     };
 
     const initJob: NormalJob = createJob({
@@ -235,7 +237,7 @@ const createCypressJobs = (dbSetup: string) => {
 const createPushWorkflow = (branchName: string) => {
     const ucFirstBranchName = branchName.charAt(0).toUpperCase() + branchName.slice(1);
 
-    return createWorkflow({
+    const workflow = createWorkflow({
         name: `${ucFirstBranchName} Branch - Push 2`,
         on: { push: { branches: [branchName] } },
         jobs: {
@@ -372,6 +374,60 @@ const createPushWorkflow = (branchName: string) => {
             ...createCypressJobs("ddb-os")
         }
     });
+
+    if (branchName === "next") {
+        const jestJobsNames = Object.keys(workflow.jobs).filter(name => name.startsWith("jest"));
+        const e2eJobsNames = Object.keys(workflow.jobs).filter(name => name.endsWith("cypress"));
+
+        workflow.jobs.npmReleaseUnstable = createJob({
+            needs: ["init", "codeAnalysis", ...jestJobsNames, ...e2eJobsNames],
+            name: 'NPM release ("unstable" tag)',
+            environment: "release",
+            env: {
+                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
+            },
+            checkout: { "fetch-depth": 0 },
+            steps: [
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".yarn/cache",
+                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                    }
+                },
+                {
+                    uses: "actions/cache@v3",
+                    with: {
+                        path: ".webiny/cached-packages",
+                        key: "packages-cache-${{ needs.init.outputs.ts }}"
+                    }
+                },
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable"
+                },
+                {
+                    name: "Build packages",
+                    run: "yarn build"
+                },
+                {
+                    name: 'Create ".npmrc" file in the project root',
+                    run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                },
+                {
+                    name: "Set git info",
+                    run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
+                },
+                {
+                    name: "Version and publish to NPM",
+                    run: "yarn release --type=unstable"
+                }
+            ]
+        });
+    }
+
+    return workflow;
 };
 
 export const pushDev2 = createPushWorkflow("dev");
