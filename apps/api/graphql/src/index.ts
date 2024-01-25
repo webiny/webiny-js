@@ -102,9 +102,10 @@ export const handler = createHandler({
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
-                id: "carMake",
-                fieldId: "carMake",
-                label: "Car Make",
+                id: "customField1",
+                fieldId: "customField1",
+                label: "Custom Field 1",
+                helpText: "Enter an alphanumeric value.",
                 type: "text",
                 renderer: {
                     name: "text-input"
@@ -113,9 +114,10 @@ export const handler = createHandler({
             });
 
             modifier.addField({
-                id: "year",
-                fieldId: "year",
-                label: "Year of manufacturing",
+                id: "customField2",
+                fieldId: "customField2",
+                label: "Custom Field 2",
+                helpText: "Enter a numeric value.",
                 type: "number",
                 renderer: {
                     name: "number-input"

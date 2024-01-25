@@ -1,14 +1,7 @@
 import { createTaskDefinition } from "@webiny/tasks";
-import { Context, IElasticsearchIndexingTaskValues } from "~/types";
-import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
-import { Client } from "@webiny/api-elasticsearch";
+import { Context, IElasticsearchIndexingTaskValues, IElasticsearchTaskConfig } from "~/types";
 
-export interface CreateElasticsearchIndexTaskConfig {
-    documentClient?: DynamoDBDocument;
-    elasticsearchClient?: Client;
-}
-
-export const createElasticsearchReindexingTask = (params?: CreateElasticsearchIndexTaskConfig) => {
+export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskConfig) => {
     return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",

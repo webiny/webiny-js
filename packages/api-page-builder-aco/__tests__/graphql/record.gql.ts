@@ -48,9 +48,9 @@ export const GET_RECORD = /* GraphQL */ `
 `;
 
 export const LIST_RECORDS = /* GraphQL */ `
-    query ListRecords {
+    query ListRecords($where:AcoSearchRecordPbListWhereInput) {
         search {
-            listRecords: listAcoSearchRecordPb {
+            listRecords: listAcoSearchRecordPb(where:$where) {
                 data  ${DATA_FIELD()}
                 error ${ERROR_FIELD}
                 meta {

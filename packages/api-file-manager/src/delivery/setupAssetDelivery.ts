@@ -18,6 +18,7 @@ import {
     FilesAssetRequestResolver,
     createAssetDeliveryConfig
 } from "./index";
+import { Reply } from "@webiny/handler/types";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -41,9 +42,20 @@ export interface AssetDeliveryParams {
 }
 
 export const setupAssetDelivery = (params: AssetDeliveryParams) => {
+    const outputAsset = async (reply: Reply, asset: Asset) => {
+        const assetReply = await asset.output();
+        const headers = assetReply.getHeaders();
+
+        // Set default headers.
+        headers.set("x-webiny-base64-encoded", true);
+
+        reply.code(assetReply.getCode());
+        reply.headers(headers.getHeaders());
+        return reply.send(await assetReply.getBody());
+    };
+
     return [
         createModifyFastifyPlugin(app => {
-            console.log(app.webiny.args);
             // Config builder allows config modification via plugins.
             const configBuilder = new AssetDeliveryConfigBuilder();
 
@@ -122,7 +134,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                             resolvedAsset
                         );
 
-                        resolvedAsset.setOutputStrategy(() => outputStrategy);
+                        resolvedAsset.setOutputStrategy(outputStrategy);
 
                         const assetProcessor = configBuilder.getAssetProcessor(context);
 
@@ -132,16 +144,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                         );
 
                         // Get reply object (runs the output strategy under the hood).
-                        const assetReply = await processedAsset.output();
-
-                        const headers = assetReply.getHeaders();
-
-                        // Set default headers.
-                        headers.set("x-webiny-base64-encoded", true);
-
-                        reply.code(assetReply.getCode());
-                        reply.headers(headers.getHeaders());
-                        return reply.send(await assetReply.getBody());
+                        return outputAsset(reply, processedAsset);
                     },
                     { override: true }
                 );
