@@ -4,23 +4,26 @@ import { NODE_VERSION, AWS_REGION, NODE_OPTIONS } from "../utils";
 interface CreateJobParams extends Partial<NormalJob> {
     awsAuth?: boolean;
     checkout?: boolean | Record<string, any>;
+    setupNode?: boolean | Record<string, any>;
 }
 
 export const createJob = (params: CreateJobParams): NormalJob => {
-    const { awsAuth, checkout, ...jobParams } = params;
+    const { awsAuth, checkout, setupNode, ...jobParams } = params;
+
+    let setupNodeStep: Record<string, any> = {
+        uses: "actions/setup-node@v3",
+        with: { "node-version": NODE_VERSION }
+    };
+
+    if (setupNode && typeof setupNode === "object") {
+        Object.assign(setupNodeStep.with, setupNode);
+    }
 
     const job: NormalJob = {
         ...jobParams,
         "runs-on": jobParams["runs-on"] || "ubuntu-latest",
         env: { NODE_OPTIONS, YARN_ENABLE_IMMUTABLE_INSTALLS: false },
-        steps: [
-            {
-                uses: "actions/setup-node@v3",
-                with: {
-                    "node-version": NODE_VERSION
-                }
-            }
-        ]
+        steps: [setupNodeStep]
     };
 
     if (awsAuth) {
