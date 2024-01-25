@@ -20,7 +20,7 @@ jobs:
     name: Check comment for /cypress
     if: ${{ github.event.issue.pull_request }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Check for Command
@@ -53,7 +53,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -99,7 +99,7 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -247,7 +247,7 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -294,7 +294,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -343,7 +343,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -494,7 +494,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -542,7 +542,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -591,7 +591,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -742,7 +742,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3

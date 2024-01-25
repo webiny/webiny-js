@@ -22,7 +22,7 @@ jobs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -45,7 +45,7 @@ jobs:
     needs: init
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -79,7 +79,7 @@ jobs:
       - init
       - build
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -109,7 +109,7 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -138,14 +138,14 @@ jobs:
           - 18
         package: >-
           ${{
-          fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-dynamodb-to-elasticsearch","id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks","id":"api-elasticsearch-tasks"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/tasks","id":"tasks"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
+          fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-dynamodb-to-elasticsearch","id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/tasks","id":"tasks"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -196,7 +196,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -227,7 +227,7 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-file-manager
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch-tasks"},{"cmd":"packages/api-file-manager
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
@@ -246,7 +246,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -285,7 +285,7 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-file-manager
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch-tasks"},{"cmd":"packages/api-file-manager
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-file-manager_ddb-os_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
@@ -304,7 +304,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -337,7 +337,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -376,7 +376,7 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -518,7 +518,7 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -557,7 +557,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -599,7 +599,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -744,7 +744,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -784,7 +784,7 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
@@ -826,7 +826,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -971,7 +971,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v3
