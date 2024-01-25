@@ -1,4 +1,4 @@
-export const createdBy = {
+export const user = {
     id: "admin",
     type: "admin",
     displayName: "Admin"
@@ -6,21 +6,18 @@ export const createdBy = {
 
 export const createFormsData = () => {
     return [
+        // Form with 2 revisions: 1° published, 2° draft
         {
-            PK: "T#root#L#en-US#FB#F#LP",
-            SK: "659c1248ea18ae00086ef8a9",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-08T15:19:46.981Z",
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b12c8ecd6a580008f2fa31#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T15:28:14.710Z",
             fields: [
                 {
-                    fieldId: "firstName",
+                    fieldId: "demoField",
                     helpText: null,
-                    label: "First name",
-                    name: "firstName",
+                    label: "Demo Field",
+                    name: "text",
                     options: [],
                     placeholderText: null,
                     settings: {
@@ -28,74 +25,20 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "qzamQtRec"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GG4ykWoAZ"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
-                        }
-                    ],
-                    _id: "1Zxhj5z-U"
-                },
-                {
-                    fieldId: "phoneNumber",
-                    helpText: null,
-                    label: "Phone number",
-                    name: "phoneNumber",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "6Ku0YwV7d"
+                    _id: "Pr3Pj3w2zO"
                 }
             ],
-            formId: "659c1248ea18ae00086ef8a9",
-            id: "659c1248ea18ae00086ef8a9#0002",
+            formId: "65b12c8ecd6a580008f2fa31",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b12c8ecd6a580008f2fa31",
+            GSI1_SK: "1",
+            id: "65b12c8ecd6a580008f2fa31#0001",
             locale: "en-US",
             locked: true,
-            name: "Demo form 1 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            name: "Demo Form 1",
+            ownedBy: user,
             published: true,
-            publishedOn: "2024-01-08T15:20:01.261Z",
-            savedOn: "2024-01-08T15:20:01.261Z",
+            publishedOn: "2024-01-24T15:28:31.263Z",
+            savedOn: "2024-01-24T15:28:31.263Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -109,7 +52,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-1-659c1248ea18ae00086ef8a9",
+            slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
             stats: {
                 submissions: 0,
                 views: 0
@@ -117,184 +60,29 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["qzamQtRec"], ["GG4ykWoAZ"], ["1Zxhj5z-U"], ["6Ku0YwV7d"]],
+                    layout: [["Pr3Pj3w2zO"]],
                     title: "Step 1"
                 }
             ],
             tenant: "root",
-            TYPE: "fb.form.latestPublished",
-            version: 2,
+            TYPE: "fb.form",
+            version: 1,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-08T15:20:01.279Z",
+            _ct: "2024-01-24T15:28:31.283Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-08T15:20:01.279Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F#L",
-            SK: "659c1248ea18ae00086ef8a9",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-08T15:19:46.981Z",
-            fields: [
-                {
-                    fieldId: "firstName",
-                    helpText: null,
-                    label: "First name",
-                    name: "firstName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "qzamQtRec"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GG4ykWoAZ"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
-                        }
-                    ],
-                    _id: "1Zxhj5z-U"
-                },
-                {
-                    fieldId: "phoneNumber",
-                    helpText: null,
-                    label: "Phone number",
-                    name: "phoneNumber",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "6Ku0YwV7d"
-                }
-            ],
-            formId: "659c1248ea18ae00086ef8a9",
-            id: "659c1248ea18ae00086ef8a9#0002",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 1 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-08T15:20:01.261Z",
-            savedOn: "2024-01-08T15:20:01.261Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-1-659c1248ea18ae00086ef8a9",
-            stats: {
-                submissions: 2,
-                views: 2
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["qzamQtRec"], ["GG4ykWoAZ"], ["1Zxhj5z-U"], ["6Ku0YwV7d"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form.latest",
-            version: 2,
-            webinyVersion: "0.0.0",
-            _ct: "2024-01-08T16:08:30.501Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-08T16:08:30.501Z"
+            _md: "2024-01-24T15:28:31.283Z"
         },
         {
             PK: "T#root#L#en-US#FB#F",
-            SK: "659c1248ea18ae00086ef8a9#0002",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-08T15:19:46.981Z",
+            SK: "65b12c8ecd6a580008f2fa31#0002",
+            createdBy: user,
+            createdOn: "2024-01-24T15:28:37.723Z",
             fields: [
                 {
-                    fieldId: "firstName",
+                    fieldId: "demoField",
                     helpText: null,
-                    label: "First name",
-                    name: "firstName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "qzamQtRec"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GG4ykWoAZ"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
+                    label: "Demo Field",
+                    name: "text",
                     options: [],
                     placeholderText: null,
                     settings: {
@@ -303,47 +91,24 @@ export const createFormsData = () => {
                     type: "text",
                     validation: [
                         {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
                         }
                     ],
-                    _id: "1Zxhj5z-U"
-                },
-                {
-                    fieldId: "phoneNumber",
-                    helpText: null,
-                    label: "Phone number",
-                    name: "phoneNumber",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "6Ku0YwV7d"
+                    _id: "Pr3Pj3w2zO"
                 }
             ],
-            formId: "659c1248ea18ae00086ef8a9",
-            GSI1_PK: "T#root#L#en-US#FB#F#659c1248ea18ae00086ef8a9",
+            formId: "65b12c8ecd6a580008f2fa31",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b12c8ecd6a580008f2fa31",
             GSI1_SK: "2",
-            id: "659c1248ea18ae00086ef8a9#0002",
+            id: "65b12c8ecd6a580008f2fa31#0002",
             locale: "en-US",
-            locked: true,
-            name: "Demo form 1 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-08T15:20:01.261Z",
-            savedOn: "2024-01-08T15:20:01.261Z",
+            locked: false,
+            name: "Demo Form 1",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T15:28:41.543Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -357,15 +122,15 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-1-659c1248ea18ae00086ef8a9",
+            slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
             stats: {
-                submissions: 2,
-                views: 2
+                submissions: 0,
+                views: 0
             },
-            status: "published",
+            status: "draft",
             steps: [
                 {
-                    layout: [["qzamQtRec"], ["GG4ykWoAZ"], ["1Zxhj5z-U"], ["6Ku0YwV7d"]],
+                    layout: [["Pr3Pj3w2zO"]],
                     title: "Step 1"
                 }
             ],
@@ -373,19 +138,661 @@ export const createFormsData = () => {
             TYPE: "fb.form",
             version: 2,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-08T16:08:30.501Z",
+            _ct: "2024-01-24T15:28:41.548Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-08T16:08:30.501Z"
+            _md: "2024-01-24T15:28:41.548Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65b12c8ecd6a580008f2fa31",
+            createdBy: user,
+            createdOn: "2024-01-24T15:28:37.723Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "Pr3Pj3w2zO"
+                }
+            ],
+            formId: "65b12c8ecd6a580008f2fa31",
+            id: "65b12c8ecd6a580008f2fa31#0002",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 1",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T15:28:41.543Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["Pr3Pj3w2zO"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 2,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T15:28:41.549Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T15:28:41.549Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#LP",
+            SK: "65b12c8ecd6a580008f2fa31",
+            createdBy: user,
+            createdOn: "2024-01-24T15:28:14.710Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "Pr3Pj3w2zO"
+                }
+            ],
+            formId: "65b12c8ecd6a580008f2fa31",
+            id: "65b12c8ecd6a580008f2fa31#0001",
+            locale: "en-US",
+            locked: true,
+            name: "Demo Form 1",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T15:28:31.263Z",
+            savedOn: "2024-01-24T15:28:31.263Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["Pr3Pj3w2zO"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latestPublished",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T15:28:31.283Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T15:28:31.283Z"
+        },
+        // Form with 1 draft revision
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b139b15cb71f0008718ac9#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T16:24:17.185Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "kpBvlR4SjU"
+                }
+            ],
+            formId: "65b139b15cb71f0008718ac9",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b139b15cb71f0008718ac9",
+            GSI1_SK: "1",
+            id: "65b139b15cb71f0008718ac9#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo form 2",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T16:24:34.090Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-2-65b139b15cb71f0008718ac9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["kpBvlR4SjU"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T16:24:34.109Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T16:24:34.109Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65b139b15cb71f0008718ac9",
+            createdBy: user,
+            createdOn: "2024-01-24T16:24:17.185Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "kpBvlR4SjU"
+                }
+            ],
+            formId: "65b139b15cb71f0008718ac9",
+            id: "65b139b15cb71f0008718ac9#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo form 2",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T16:24:34.090Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-2-65b139b15cb71f0008718ac9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["kpBvlR4SjU"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T16:24:34.110Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T16:24:34.110Z"
+        },
+        // Form with 4 revisions: 1° published, 2° published, 3° unpublished, 4° draft
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b14a9982c87000081f93b3#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T17:36:25.519Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b14a9982c87000081f93b3",
+            GSI1_SK: "1",
+            id: "65b14a9982c87000081f93b3#0001",
+            locale: "en-US",
+            locked: true,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T17:36:45.577Z",
+            savedOn: "2024-01-24T17:36:45.577Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:36:45.583Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:36:45.583Z"
         },
         {
             PK: "T#root#L#en-US#FB#F",
-            SK: "659c1248ea18ae00086ef8a9#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
+            SK: "65b14a9982c87000081f93b3#0002",
+            createdBy: user,
+            createdOn: "2024-01-24T17:37:08.943Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b14a9982c87000081f93b3",
+            GSI1_SK: "2",
+            id: "65b14a9982c87000081f93b3#0002",
+            locale: "en-US",
+            locked: true,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T17:37:13.678Z",
+            savedOn: "2024-01-24T17:37:13.678Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
             },
-            createdOn: "2024-01-08T15:18:32.544Z",
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 2,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:37:13.682Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:37:13.682Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b14a9982c87000081f93b3#0003",
+            createdBy: user,
+            createdOn: "2024-01-24T17:38:28.497Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b14a9982c87000081f93b3",
+            GSI1_SK: "3",
+            id: "65b14a9982c87000081f93b3#0003",
+            locale: "en-US",
+            locked: true,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: false,
+            publishedOn: "2024-01-24T17:38:49.877Z",
+            savedOn: "2024-01-24T17:39:26.457Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "locked",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 3,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:39:26.498Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:39:26.498Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b14a9982c87000081f93b3#0004",
+            createdBy: user,
+            createdOn: "2024-01-24T17:39:11.428Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b14a9982c87000081f93b3",
+            GSI1_SK: "4",
+            id: "65b14a9982c87000081f93b3#0004",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T17:39:11.428Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 4,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:39:11.429Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:39:11.429Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65b14a9982c87000081f93b3",
+            createdBy: user,
+            createdOn: "2024-01-24T17:39:11.428Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            id: "65b14a9982c87000081f93b3#0004",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T17:39:11.428Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 4,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:39:11.429Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:39:11.429Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#LP",
+            SK: "65b14a9982c87000081f93b3",
+            createdBy: user,
+            createdOn: "2024-01-24T17:37:08.943Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "VLGQV3Wx-o"
+                }
+            ],
+            formId: "65b14a9982c87000081f93b3",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b14a9982c87000081f93b3",
+            GSI1_SK: "2",
+            id: "65b14a9982c87000081f93b3#0002",
+            locale: "en-US",
+            locked: true,
+            name: "Demo Form 3",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T17:37:13.678Z",
+            savedOn: "2024-01-24T17:37:13.678Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-3-65b14a9982c87000081f93b3",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["VLGQV3Wx-o"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latestPublished",
+            version: 2,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T17:37:13.682Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T17:37:13.682Z"
+        },
+        // Form with contact fields, required, organised in 2 steps
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65b16a8d7918760008c0ea56",
+            createdBy: user,
+            createdOn: "2024-01-24T19:52:45.637Z",
             fields: [
                 {
                     fieldId: "firstName",
@@ -398,8 +805,14 @@ export const createFormsData = () => {
                         defaultValue: null
                     },
                     type: "text",
-                    validation: [],
-                    _id: "qzamQtRec"
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "wKBpJ6lq0"
                 },
                 {
                     fieldId: "lastName",
@@ -412,8 +825,14 @@ export const createFormsData = () => {
                         defaultValue: null
                     },
                     type: "text",
-                    validation: [],
-                    _id: "GG4ykWoAZ"
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "ylPaYyVaM"
                 },
                 {
                     fieldId: "email",
@@ -435,26 +854,709 @@ export const createFormsData = () => {
                                 preset: "email",
                                 regex: null
                             }
+                        },
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
                         }
                     ],
-                    _id: "1Zxhj5z-U"
+                    _id: "u1miDVk2r"
+                },
+                {
+                    fieldId: "phoneNumber",
+                    helpText: null,
+                    label: "Phone number",
+                    name: "phoneNumber",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "54ED5X_p6"
                 }
             ],
-            formId: "659c1248ea18ae00086ef8a9",
-            GSI1_PK: "T#root#L#en-US#FB#F#659c1248ea18ae00086ef8a9",
-            GSI1_SK: "1",
-            id: "659c1248ea18ae00086ef8a9#0001",
+            formId: "65b16a8d7918760008c0ea56",
+            id: "65b16a8d7918760008c0ea56#0001",
             locale: "en-US",
             locked: false,
-            name: "Demo form 1 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            name: "Demo Form 4",
+            ownedBy: user,
             published: false,
-            publishedOn: "2024-01-08T15:18:44.264Z",
-            savedOn: "2024-01-08T15:18:44.264Z",
+            savedOn: "2024-01-24T19:53:54.458Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-4-65b16a8d7918760008c0ea56",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["wKBpJ6lq0"], ["ylPaYyVaM"]],
+                    title: "Step 1"
+                },
+                {
+                    layout: [["u1miDVk2r"], ["54ED5X_p6"]],
+                    title: "New Step"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T19:53:54.477Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T19:53:54.477Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b16a8d7918760008c0ea56#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T19:52:45.637Z",
+            fields: [
+                {
+                    fieldId: "firstName",
+                    helpText: null,
+                    label: "First name",
+                    name: "firstName",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "wKBpJ6lq0"
+                },
+                {
+                    fieldId: "lastName",
+                    helpText: null,
+                    label: "Last name",
+                    name: "lastName",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "ylPaYyVaM"
+                },
+                {
+                    fieldId: "email",
+                    helpText: null,
+                    label: "Email",
+                    name: "email",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Please enter a valid e-mail.",
+                            name: "pattern",
+                            settings: {
+                                flags: null,
+                                preset: "email",
+                                regex: null
+                            }
+                        },
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "u1miDVk2r"
+                },
+                {
+                    fieldId: "phoneNumber",
+                    helpText: null,
+                    label: "Phone number",
+                    name: "phoneNumber",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "54ED5X_p6"
+                }
+            ],
+            formId: "65b16a8d7918760008c0ea56",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b16a8d7918760008c0ea56",
+            GSI1_SK: "1",
+            id: "65b16a8d7918760008c0ea56#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 4",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T19:53:54.458Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-4-65b16a8d7918760008c0ea56",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["wKBpJ6lq0"], ["ylPaYyVaM"]],
+                    title: "Step 1"
+                },
+                {
+                    layout: [["u1miDVk2r"], ["54ED5X_p6"]],
+                    title: "New Step"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T19:53:54.477Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T19:53:54.477Z"
+        },
+        // Form with default fields
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b189f16f69800008e6161b#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T22:06:41.291Z",
+            fields: [
+                {
+                    fieldId: "hiddenField",
+                    helpText: "Hidden Field - Help Text",
+                    label: "Hidden Field",
+                    name: "hidden",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: "Hidden Field - Default Value"
+                    },
+                    type: "hidden",
+                    validation: [],
+                    _id: "NZWPSHZRIN"
+                },
+                {
+                    fieldId: "selectField",
+                    helpText: "Select Field - Help Text",
+                    label: "Select Field",
+                    name: "select",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: "Select Field - Help Text",
+                    settings: {
+                        defaultValue: "option2"
+                    },
+                    type: "select",
+                    validation: [],
+                    _id: "vxI0OE-flE"
+                },
+                {
+                    fieldId: "shortText",
+                    helpText: "Short Text - Help Text",
+                    label: "Short Text",
+                    name: "text",
+                    options: [],
+                    placeholderText: "Short Text - Placeholder Text",
+                    settings: {
+                        defaultValue: "Short Text - Default Value"
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is too short.",
+                            name: "minLength",
+                            settings: {
+                                value: "1"
+                            }
+                        },
+                        {
+                            message: "Value is too long.",
+                            name: "maxLength",
+                            settings: {
+                                value: "6"
+                            }
+                        }
+                    ],
+                    _id: "1om83kly5s"
+                },
+                {
+                    fieldId: "longText",
+                    helpText: "Long Text - Help Text",
+                    label: "Long Text",
+                    name: "textarea",
+                    options: [],
+                    placeholderText: "Long Text - Placeholder Text",
+                    settings: {
+                        defaultValue: "Long Text - Default Text",
+                        rows: "10"
+                    },
+                    type: "textarea",
+                    validation: [],
+                    _id: "9L3Wgow6-b"
+                },
+                {
+                    fieldId: "numberField",
+                    helpText: "Number Field - Help Text",
+                    label: "Number Field",
+                    name: "number",
+                    options: [],
+                    placeholderText: "Number Field - Placeholder Text",
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "number",
+                    validation: [],
+                    _id: "2gUedk4Aa1"
+                },
+                {
+                    fieldId: "radioField",
+                    helpText: "Radio Field - Help Text",
+                    label: "Radio Field",
+                    name: "radio",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: "option2",
+                        otherOption: true
+                    },
+                    type: "radio",
+                    validation: [],
+                    _id: "tiR3t0uctA"
+                },
+                {
+                    fieldId: "checkboxField",
+                    helpText: "Checkbox Field - Help Text",
+                    label: "Checkbox Field",
+                    name: "checkbox",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: ["option3"],
+                        otherOption: true
+                    },
+                    type: "checkbox",
+                    validation: [],
+                    _id: "W99qOcY4ie"
+                },
+                {
+                    fieldId: "dateTimeField",
+                    helpText: "DateTime Field - Help Text",
+                    label: "DateTime Field",
+                    name: "date",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null,
+                        format: "dateTimeWithTimezone"
+                    },
+                    type: "datetime",
+                    validation: [],
+                    _id: "1e542PkJHp"
+                }
+            ],
+            formId: "65b189f16f69800008e6161b",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b189f16f69800008e6161b",
+            GSI1_SK: "1",
+            id: "65b189f16f69800008e6161b#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 5",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:13:12.913Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-5-65b189f16f69800008e6161b",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [
+                        ["NZWPSHZRIN"],
+                        ["vxI0OE-flE"],
+                        ["1om83kly5s", "9L3Wgow6-b"],
+                        ["2gUedk4Aa1"],
+                        ["tiR3t0uctA", "W99qOcY4ie"],
+                        ["1e542PkJHp"]
+                    ],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:13:12.945Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:13:12.945Z"
+        },
+        {
+            PK: "T#root#L#en-US#FB#F#L",
+            SK: "65b189f16f69800008e6161b",
+            createdBy: user,
+            createdOn: "2024-01-24T22:06:41.291Z",
+            fields: [
+                {
+                    fieldId: "hiddenField",
+                    helpText: "Hidden Field - Help Text",
+                    label: "Hidden Field",
+                    name: "hidden",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: "Hidden Field - Default Value"
+                    },
+                    type: "hidden",
+                    validation: [],
+                    _id: "NZWPSHZRIN"
+                },
+                {
+                    fieldId: "selectField",
+                    helpText: "Select Field - Help Text",
+                    label: "Select Field",
+                    name: "select",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: "Select Field - Help Text",
+                    settings: {
+                        defaultValue: "option2"
+                    },
+                    type: "select",
+                    validation: [],
+                    _id: "vxI0OE-flE"
+                },
+                {
+                    fieldId: "shortText",
+                    helpText: "Short Text - Help Text",
+                    label: "Short Text",
+                    name: "text",
+                    options: [],
+                    placeholderText: "Short Text - Placeholder Text",
+                    settings: {
+                        defaultValue: "Short Text - Default Value"
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is too short.",
+                            name: "minLength",
+                            settings: {
+                                value: "1"
+                            }
+                        },
+                        {
+                            message: "Value is too long.",
+                            name: "maxLength",
+                            settings: {
+                                value: "6"
+                            }
+                        }
+                    ],
+                    _id: "1om83kly5s"
+                },
+                {
+                    fieldId: "longText",
+                    helpText: "Long Text - Help Text",
+                    label: "Long Text",
+                    name: "textarea",
+                    options: [],
+                    placeholderText: "Long Text - Placeholder Text",
+                    settings: {
+                        defaultValue: "Long Text - Default Text",
+                        rows: "10"
+                    },
+                    type: "textarea",
+                    validation: [],
+                    _id: "9L3Wgow6-b"
+                },
+                {
+                    fieldId: "numberField",
+                    helpText: "Number Field - Help Text",
+                    label: "Number Field",
+                    name: "number",
+                    options: [],
+                    placeholderText: "Number Field - Placeholder Text",
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "number",
+                    validation: [],
+                    _id: "2gUedk4Aa1"
+                },
+                {
+                    fieldId: "radioField",
+                    helpText: "Radio Field - Help Text",
+                    label: "Radio Field",
+                    name: "radio",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: "option2",
+                        otherOption: true
+                    },
+                    type: "radio",
+                    validation: [],
+                    _id: "tiR3t0uctA"
+                },
+                {
+                    fieldId: "checkboxField",
+                    helpText: "Checkbox Field - Help Text",
+                    label: "Checkbox Field",
+                    name: "checkbox",
+                    options: [
+                        {
+                            label: "Option 1",
+                            value: "option1"
+                        },
+                        {
+                            label: "Option 2",
+                            value: "option2"
+                        },
+                        {
+                            label: "Option 3",
+                            value: "option3"
+                        }
+                    ],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: ["option3"],
+                        otherOption: true
+                    },
+                    type: "checkbox",
+                    validation: [],
+                    _id: "W99qOcY4ie"
+                },
+                {
+                    fieldId: "dateTimeField",
+                    helpText: "DateTime Field - Help Text",
+                    label: "DateTime Field",
+                    name: "date",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null,
+                        format: "dateTimeWithTimezone"
+                    },
+                    type: "datetime",
+                    validation: [],
+                    _id: "1e542PkJHp"
+                }
+            ],
+            formId: "65b189f16f69800008e6161b",
+            id: "65b189f16f69800008e6161b#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 5",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:13:12.913Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-5-65b189f16f69800008e6161b",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [
+                        ["NZWPSHZRIN"],
+                        ["vxI0OE-flE"],
+                        ["1om83kly5s", "9L3Wgow6-b"],
+                        ["2gUedk4Aa1"],
+                        ["tiR3t0uctA", "W99qOcY4ie"],
+                        ["1e542PkJHp"]
+                    ],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:13:12.945Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:13:12.945Z"
+        },
+        // Form with custom settings
+        {
+            PK: "T#root#L#en-US#FB#F",
+            SK: "65b18df865a46200087864f9#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T22:23:52.364Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "dMWqYyLYQV"
+                }
+            ],
+            formId: "65b18df865a46200087864f9",
+            GSI1_PK: "T#root#L#en-US#FB#F#65b18df865a46200087864f9",
+            GSI1_SK: "1",
+            id: "65b18df865a46200087864f9#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 6",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:26:03.138Z",
             settings: {
                 fullWidthSubmitButton: true,
                 layout: {
@@ -462,7 +1564,7 @@ export const createFormsData = () => {
                 },
                 reCaptcha: {
                     enabled: true,
-                    errorMessage: "Custom reCaptcha error message"
+                    errorMessage: "Custom Captcha error message"
                 },
                 submitButtonLabel: "Custom submit button label",
                 successMessage: [
@@ -472,13 +1574,13 @@ export const createFormsData = () => {
                             text: "Custom success message",
                             textAlign: "start"
                         },
-                        id: "70SIDdOLue",
+                        id: "fjiaYeH_wW",
                         type: "paragraph"
                     }
                 ],
                 termsOfServiceMessage: {
                     enabled: true,
-                    errorMessage: "Custom term of service error message",
+                    errorMessage: "Custom error message",
                     message: [
                         {
                             data: {
@@ -486,21 +1588,21 @@ export const createFormsData = () => {
                                 text: "Custom term of service message",
                                 textAlign: "start"
                             },
-                            id: "crIzOE6D-v",
+                            id: "kjBMY6NBnA",
                             type: "paragraph"
                         }
                     ]
                 }
             },
-            slug: "demo-form-1-659c1248ea18ae00086ef8a9",
+            slug: "demo-form-6-65b18df865a46200087864f9",
             stats: {
-                submissions: 2,
-                views: 4
+                submissions: 0,
+                views: 0
             },
-            status: "published",
+            status: "draft",
             steps: [
                 {
-                    layout: [["qzamQtRec"], ["GG4ykWoAZ"], ["1Zxhj5z-U"]],
+                    layout: [["dMWqYyLYQV"]],
                     title: "Step 1"
                 }
             ],
@@ -508,1291 +1610,20 @@ export const createFormsData = () => {
             TYPE: "fb.form",
             version: 1,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-08T16:06:15.794Z",
+            _ct: "2024-01-24T22:26:03.155Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-08T16:06:15.794Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "659eab3940dbc10008826c12#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T14:35:37.523Z",
-            fields: [
-                {
-                    fieldId: "hiddenField",
-                    helpText: "Hidden field",
-                    label: "Hidden",
-                    name: "hidden",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Hidden Default Value"
-                    },
-                    type: "hidden",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "xvEpZMVTeX"
-                },
-                {
-                    fieldId: "selectField",
-                    helpText: "Select help test",
-                    label: "Select",
-                    name: "select",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: "Select placeholder test",
-                    settings: {
-                        defaultValue: "option1"
-                    },
-                    type: "select",
-                    validation: [],
-                    _id: "wPnnWbyie5"
-                },
-                {
-                    fieldId: "shortTextField",
-                    helpText: null,
-                    label: "Short Text",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Short Text Default"
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "ceLPZUDBT2"
-                },
-                {
-                    fieldId: "longTextField",
-                    helpText: "Long Text Help Text",
-                    label: "Long Text",
-                    name: "textarea",
-                    options: [],
-                    placeholderText: "Long Text Placeholder Text",
-                    settings: {
-                        defaultValue: "Long Text Default Value",
-                        rows: "10"
-                    },
-                    type: "textarea",
-                    validation: [
-                        {
-                            message: "Value is too long.",
-                            name: "maxLength",
-                            settings: {
-                                value: "1000"
-                            }
-                        }
-                    ],
-                    _id: "Fyo-KuCM4U"
-                },
-                {
-                    fieldId: "numberField",
-                    helpText: "Number Help Text",
-                    label: "Number",
-                    name: "number",
-                    options: [],
-                    placeholderText: "Number Placeholder Text",
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "number",
-                    validation: [],
-                    _id: "zUCnAbf3Oq"
-                },
-                {
-                    fieldId: "radioField",
-                    helpText: "Radio Help Text",
-                    label: "Radio",
-                    name: "radio",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "option2",
-                        otherOption: true
-                    },
-                    type: "radio",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "rzbCv6_pmU"
-                },
-                {
-                    fieldId: "checkboxField",
-                    helpText: "Checkbox Help Text",
-                    label: "Checkbox",
-                    name: "checkbox",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: ["option2", "option1"],
-                        otherOption: true
-                    },
-                    type: "checkbox",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "J-UmihOG8k"
-                },
-                {
-                    fieldId: "dateTimeField",
-                    helpText: "Help Text",
-                    label: "DateTime",
-                    name: "date",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null,
-                        format: "dateTimeWithTimezone"
-                    },
-                    type: "datetime",
-                    validation: [],
-                    _id: "2rFfxfTfph"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
-                        },
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "skQttYu0S"
-                }
-            ],
-            formId: "659eab3940dbc10008826c12",
-            GSI1_PK: "T#root#L#en-US#FB#F#659eab3940dbc10008826c12",
-            GSI1_SK: "1",
-            id: "659eab3940dbc10008826c12#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 2 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T14:45:00.669Z",
-            savedOn: "2024-01-10T14:45:00.670Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-2-en-us-659eab3940dbc10008826c12",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["skQttYu0S"], ["xvEpZMVTeX"], ["ceLPZUDBT2"]],
-                    title: "Step 1"
-                },
-                {
-                    layout: [["Fyo-KuCM4U"], ["zUCnAbf3Oq"]],
-                    title: "Step 2"
-                },
-                {
-                    layout: [["wPnnWbyie5"], ["rzbCv6_pmU", "J-UmihOG8k"], ["2rFfxfTfph"]],
-                    title: "Step 3"
-                }
-            ],
-            tenant: "root",
-            triggers: {
-                "email-notification": {
-                    email: "submission@webiny.com"
-                },
-                "email-thanks": {
-                    content: "Tank you content",
-                    subject: "Thank you Subject"
-                },
-                "google-analytics-event": {
-                    eventName: "GA Event",
-                    eventParams: [
-                        {
-                            content: "Value1",
-                            name: "Param1"
-                        },
-                        {
-                            content: "Value2",
-                            name: "Param2"
-                        }
-                    ]
-                },
-                redirect: {
-                    url: "https://redirect.webiny.com"
-                },
-                webhook: {
-                    urls: [
-                        "https://webhook.webiny.com/webhook-1",
-                        "https://webhook.webiny.com/webhook-2"
-                    ]
-                }
-            },
-            TYPE: "fb.form",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T14:45:00.675Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T14:45:00.675Z"
+            _md: "2024-01-24T22:26:03.155Z"
         },
         {
             PK: "T#root#L#en-US#FB#F#L",
-            SK: "659eab3940dbc10008826c12",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T14:35:37.523Z",
-            fields: [
-                {
-                    fieldId: "hiddenField",
-                    helpText: "Hidden field",
-                    label: "Hidden",
-                    name: "hidden",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Hidden Default Value"
-                    },
-                    type: "hidden",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "xvEpZMVTeX"
-                },
-                {
-                    fieldId: "selectField",
-                    helpText: "Select help test",
-                    label: "Select",
-                    name: "select",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: "Select placeholder test",
-                    settings: {
-                        defaultValue: "option1"
-                    },
-                    type: "select",
-                    validation: [],
-                    _id: "wPnnWbyie5"
-                },
-                {
-                    fieldId: "shortTextField",
-                    helpText: null,
-                    label: "Short Text",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Short Text Default"
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "ceLPZUDBT2"
-                },
-                {
-                    fieldId: "longTextField",
-                    helpText: "Long Text Help Text",
-                    label: "Long Text",
-                    name: "textarea",
-                    options: [],
-                    placeholderText: "Long Text Placeholder Text",
-                    settings: {
-                        defaultValue: "Long Text Default Value",
-                        rows: "10"
-                    },
-                    type: "textarea",
-                    validation: [
-                        {
-                            message: "Value is too long.",
-                            name: "maxLength",
-                            settings: {
-                                value: "1000"
-                            }
-                        }
-                    ],
-                    _id: "Fyo-KuCM4U"
-                },
-                {
-                    fieldId: "numberField",
-                    helpText: "Number Help Text",
-                    label: "Number",
-                    name: "number",
-                    options: [],
-                    placeholderText: "Number Placeholder Text",
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "number",
-                    validation: [],
-                    _id: "zUCnAbf3Oq"
-                },
-                {
-                    fieldId: "radioField",
-                    helpText: "Radio Help Text",
-                    label: "Radio",
-                    name: "radio",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "option2",
-                        otherOption: true
-                    },
-                    type: "radio",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "rzbCv6_pmU"
-                },
-                {
-                    fieldId: "checkboxField",
-                    helpText: "Checkbox Help Text",
-                    label: "Checkbox",
-                    name: "checkbox",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: ["option2", "option1"],
-                        otherOption: true
-                    },
-                    type: "checkbox",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "J-UmihOG8k"
-                },
-                {
-                    fieldId: "dateTimeField",
-                    helpText: "Help Text",
-                    label: "DateTime",
-                    name: "date",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null,
-                        format: "dateTimeWithTimezone"
-                    },
-                    type: "datetime",
-                    validation: [],
-                    _id: "2rFfxfTfph"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
-                        },
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "skQttYu0S"
-                }
-            ],
-            formId: "659eab3940dbc10008826c12",
-            id: "659eab3940dbc10008826c12#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 2 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T14:45:00.669Z",
-            savedOn: "2024-01-10T14:45:00.670Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-2-en-us-659eab3940dbc10008826c12",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["skQttYu0S"], ["xvEpZMVTeX"], ["ceLPZUDBT2"]],
-                    title: "Step 1"
-                },
-                {
-                    layout: [["Fyo-KuCM4U"], ["zUCnAbf3Oq"]],
-                    title: "Step 2"
-                },
-                {
-                    layout: [["wPnnWbyie5"], ["rzbCv6_pmU", "J-UmihOG8k"], ["2rFfxfTfph"]],
-                    title: "Step 3"
-                }
-            ],
-            tenant: "root",
-            triggers: {
-                "email-notification": {
-                    email: "submission@webiny.com"
-                },
-                "email-thanks": {
-                    content: "Tank you content",
-                    subject: "Thank you Subject"
-                },
-                "google-analytics-event": {
-                    eventName: "GA Event",
-                    eventParams: [
-                        {
-                            content: "Value1",
-                            name: "Param1"
-                        },
-                        {
-                            content: "Value2",
-                            name: "Param2"
-                        }
-                    ]
-                },
-                redirect: {
-                    url: "https://redirect.webiny.com"
-                },
-                webhook: {
-                    urls: [
-                        "https://webhook.webiny.com/webhook-1",
-                        "https://webhook.webiny.com/webhook-2"
-                    ]
-                }
-            },
-            TYPE: "fb.form.latest",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T14:45:00.675Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T14:45:00.675Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F#LP",
-            SK: "659eab3940dbc10008826c12",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T14:35:37.523Z",
-            fields: [
-                {
-                    fieldId: "hiddenField",
-                    helpText: "Hidden field",
-                    label: "Hidden",
-                    name: "hidden",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Hidden Default Value"
-                    },
-                    type: "hidden",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "xvEpZMVTeX"
-                },
-                {
-                    fieldId: "selectField",
-                    helpText: "Select help test",
-                    label: "Select",
-                    name: "select",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: "Select placeholder test",
-                    settings: {
-                        defaultValue: "option1"
-                    },
-                    type: "select",
-                    validation: [],
-                    _id: "wPnnWbyie5"
-                },
-                {
-                    fieldId: "shortTextField",
-                    helpText: null,
-                    label: "Short Text",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "Short Text Default"
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "ceLPZUDBT2"
-                },
-                {
-                    fieldId: "longTextField",
-                    helpText: "Long Text Help Text",
-                    label: "Long Text",
-                    name: "textarea",
-                    options: [],
-                    placeholderText: "Long Text Placeholder Text",
-                    settings: {
-                        defaultValue: "Long Text Default Value",
-                        rows: "10"
-                    },
-                    type: "textarea",
-                    validation: [
-                        {
-                            message: "Value is too long.",
-                            name: "maxLength",
-                            settings: {
-                                value: "1000"
-                            }
-                        }
-                    ],
-                    _id: "Fyo-KuCM4U"
-                },
-                {
-                    fieldId: "numberField",
-                    helpText: "Number Help Text",
-                    label: "Number",
-                    name: "number",
-                    options: [],
-                    placeholderText: "Number Placeholder Text",
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "number",
-                    validation: [],
-                    _id: "zUCnAbf3Oq"
-                },
-                {
-                    fieldId: "radioField",
-                    helpText: "Radio Help Text",
-                    label: "Radio",
-                    name: "radio",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: "option2",
-                        otherOption: true
-                    },
-                    type: "radio",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "rzbCv6_pmU"
-                },
-                {
-                    fieldId: "checkboxField",
-                    helpText: "Checkbox Help Text",
-                    label: "Checkbox",
-                    name: "checkbox",
-                    options: [
-                        {
-                            label: "Option 1",
-                            value: "option1"
-                        },
-                        {
-                            label: "Option 2",
-                            value: "option2"
-                        },
-                        {
-                            label: "Option 3",
-                            value: "option3"
-                        }
-                    ],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: ["option2", "option1"],
-                        otherOption: true
-                    },
-                    type: "checkbox",
-                    validation: [
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "J-UmihOG8k"
-                },
-                {
-                    fieldId: "dateTimeField",
-                    helpText: "Help Text",
-                    label: "DateTime",
-                    name: "date",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null,
-                        format: "dateTimeWithTimezone"
-                    },
-                    type: "datetime",
-                    validation: [],
-                    _id: "2rFfxfTfph"
-                },
-                {
-                    fieldId: "email",
-                    helpText: null,
-                    label: "Email",
-                    name: "email",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [
-                        {
-                            message: "Please enter a valid e-mail.",
-                            name: "pattern",
-                            settings: {
-                                flags: null,
-                                preset: "email",
-                                regex: null
-                            }
-                        },
-                        {
-                            message: "Value is required.",
-                            name: "required",
-                            settings: {}
-                        }
-                    ],
-                    _id: "skQttYu0S"
-                }
-            ],
-            formId: "659eab3940dbc10008826c12",
-            id: "659eab3940dbc10008826c12#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 2 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T14:45:00.669Z",
-            savedOn: "2024-01-10T14:45:00.670Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-2-en-us-659eab3940dbc10008826c12",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["skQttYu0S"], ["xvEpZMVTeX"], ["ceLPZUDBT2"]],
-                    title: "Step 1"
-                },
-                {
-                    layout: [["Fyo-KuCM4U"], ["zUCnAbf3Oq"]],
-                    title: "Step 2"
-                },
-                {
-                    layout: [["wPnnWbyie5"], ["rzbCv6_pmU", "J-UmihOG8k"], ["2rFfxfTfph"]],
-                    title: "Step 3"
-                }
-            ],
-            tenant: "root",
-            triggers: {
-                "email-notification": {
-                    email: "submission@webiny.com"
-                },
-                "email-thanks": {
-                    content: "Tank you content",
-                    subject: "Thank you Subject"
-                },
-                "google-analytics-event": {
-                    eventName: "GA Event",
-                    eventParams: [
-                        {
-                            content: "Value1",
-                            name: "Param1"
-                        },
-                        {
-                            content: "Value2",
-                            name: "Param2"
-                        }
-                    ]
-                },
-                redirect: {
-                    url: "https://redirect.webiny.com"
-                },
-                webhook: {
-                    urls: [
-                        "https://webhook.webiny.com/webhook-1",
-                        "https://webhook.webiny.com/webhook-2"
-                    ]
-                }
-            },
-            TYPE: "fb.form.latestPublished",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T14:45:00.675Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T14:45:00.675Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F#LP",
-            SK: "659eb85fb292d500087f21de",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T15:31:43.031Z",
-            fields: [
-                {
-                    fieldId: "firstName",
-                    helpText: null,
-                    label: "First name",
-                    name: "firstName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "oawYCEvnb"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GHgU1g18b"
-                }
-            ],
-            formId: "659eb85fb292d500087f21de",
-            id: "659eb85fb292d500087f21de#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 3 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T15:33:45.403Z",
-            savedOn: "2024-01-10T15:33:45.403Z",
-            settings: {
-                fullWidthSubmitButton: true,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: true,
-                    errorMessage: "Custom ReCAPTCHA error message"
-                },
-                submitButtonLabel: "Custom submit button label",
-                successMessage: [
-                    {
-                        data: {
-                            className: null,
-                            text: "Custom success message",
-                            textAlign: "start"
-                        },
-                        id: "EHkVnM9LrH",
-                        type: "paragraph"
-                    }
-                ],
-                termsOfServiceMessage: {
-                    enabled: true,
-                    errorMessage: "Custom error message",
-                    message: [
-                        {
-                            data: {
-                                className: null,
-                                text: "Custom Term of Service message",
-                                textAlign: "start"
-                            },
-                            id: "s2xHp2ug7-",
-                            type: "paragraph"
-                        }
-                    ]
-                }
-            },
-            slug: "demo-form-3-en-us-659eb85fb292d500087f21de",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["oawYCEvnb"], ["GHgU1g18b"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form.latestPublished",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T15:33:45.424Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T15:33:45.424Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F#L",
-            SK: "659eb85fb292d500087f21de",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T15:31:43.031Z",
-            fields: [
-                {
-                    fieldId: "firstName",
-                    helpText: null,
-                    label: "First name",
-                    name: "firstName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "oawYCEvnb"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GHgU1g18b"
-                }
-            ],
-            formId: "659eb85fb292d500087f21de",
-            id: "659eb85fb292d500087f21de#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 3 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T15:33:45.403Z",
-            savedOn: "2024-01-10T15:33:45.403Z",
-            settings: {
-                fullWidthSubmitButton: true,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: true,
-                    errorMessage: "Custom ReCAPTCHA error message"
-                },
-                submitButtonLabel: "Custom submit button label",
-                successMessage: [
-                    {
-                        data: {
-                            className: null,
-                            text: "Custom success message",
-                            textAlign: "start"
-                        },
-                        id: "EHkVnM9LrH",
-                        type: "paragraph"
-                    }
-                ],
-                termsOfServiceMessage: {
-                    enabled: true,
-                    errorMessage: "Custom error message",
-                    message: [
-                        {
-                            data: {
-                                className: null,
-                                text: "Custom Term of Service message",
-                                textAlign: "start"
-                            },
-                            id: "s2xHp2ug7-",
-                            type: "paragraph"
-                        }
-                    ]
-                }
-            },
-            slug: "demo-form-3-en-us-659eb85fb292d500087f21de",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["oawYCEvnb"], ["GHgU1g18b"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form.latest",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T15:33:45.425Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T15:33:45.425Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "659eb85fb292d500087f21de#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T15:31:43.031Z",
-            fields: [
-                {
-                    fieldId: "firstName",
-                    helpText: null,
-                    label: "First name",
-                    name: "firstName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "oawYCEvnb"
-                },
-                {
-                    fieldId: "lastName",
-                    helpText: null,
-                    label: "Last name",
-                    name: "lastName",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "GHgU1g18b"
-                }
-            ],
-            formId: "659eb85fb292d500087f21de",
-            GSI1_PK: "T#root#L#en-US#FB#F#659eb85fb292d500087f21de",
-            GSI1_SK: "1",
-            id: "659eb85fb292d500087f21de#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo form 3 - en-US",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T15:33:45.403Z",
-            savedOn: "2024-01-10T15:33:45.403Z",
-            settings: {
-                fullWidthSubmitButton: true,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: true,
-                    errorMessage: "Custom ReCAPTCHA error message"
-                },
-                submitButtonLabel: "Custom submit button label",
-                successMessage: [
-                    {
-                        data: {
-                            className: null,
-                            text: "Custom success message",
-                            textAlign: "start"
-                        },
-                        id: "EHkVnM9LrH",
-                        type: "paragraph"
-                    }
-                ],
-                termsOfServiceMessage: {
-                    enabled: true,
-                    errorMessage: "Custom error message",
-                    message: [
-                        {
-                            data: {
-                                className: null,
-                                text: "Custom Term of Service message",
-                                textAlign: "start"
-                            },
-                            id: "s2xHp2ug7-",
-                            type: "paragraph"
-                        }
-                    ]
-                }
-            },
-            slug: "demo-form-3-en-us-659eb85fb292d500087f21de",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["oawYCEvnb"], ["GHgU1g18b"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T15:33:45.423Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T15:33:45.423Z"
-        },
-        {
-            PK: "T#root#L#fr-FR#FB#F#LP",
-            SK: "659ec5f8a5bd9f0008c2ed82",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T16:29:44.021Z",
+            SK: "65b18df865a46200087864f9",
+            createdBy: user,
+            createdOn: "2024-01-24T22:23:52.364Z",
             fields: [
                 {
                     fieldId: "demoField",
                     helpText: null,
-                    label: "Demo field",
+                    label: "Demo Field",
                     name: "text",
                     options: [],
                     placeholderText: null,
@@ -1801,22 +1632,111 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "KCpTLvsDC0"
+                    _id: "dMWqYyLYQV"
                 }
             ],
-            formId: "659ec5f8a5bd9f0008c2ed82",
-            id: "659ec5f8a5bd9f0008c2ed82#0001",
-            locale: "fr-FR",
-            locked: true,
-            name: "Demo form 1 - fr-FR",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
+            formId: "65b18df865a46200087864f9",
+            id: "65b18df865a46200087864f9#0001",
+            locale: "en-US",
+            locked: false,
+            name: "Demo Form 6",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:26:03.138Z",
+            settings: {
+                fullWidthSubmitButton: true,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: true,
+                    errorMessage: "Custom Captcha error message"
+                },
+                submitButtonLabel: "Custom submit button label",
+                successMessage: [
+                    {
+                        data: {
+                            className: null,
+                            text: "Custom success message",
+                            textAlign: "start"
+                        },
+                        id: "fjiaYeH_wW",
+                        type: "paragraph"
+                    }
+                ],
+                termsOfServiceMessage: {
+                    enabled: true,
+                    errorMessage: "Custom error message",
+                    message: [
+                        {
+                            data: {
+                                className: null,
+                                text: "Custom term of service message",
+                                textAlign: "start"
+                            },
+                            id: "kjBMY6NBnA",
+                            type: "paragraph"
+                        }
+                    ]
+                }
             },
+            slug: "demo-form-6-65b18df865a46200087864f9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["dMWqYyLYQV"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:26:03.156Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:26:03.156Z"
+        },
+        // Form 1 from root tenant, locale de-DE
+        {
+            PK: "T#root#L#de-DE#FB#F#L",
+            SK: "65b190cad481d800089f2479",
+            createdBy: user,
+            createdOn: "2024-01-24T22:35:54.384Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "dV3wx0ForO"
+                }
+            ],
+            formId: "65b190cad481d800089f2479",
+            id: "65b190cad481d800089f2479#0001",
+            locale: "de-DE",
+            locked: true,
+            name: "Demo Form 7",
+            ownedBy: user,
             published: true,
-            publishedOn: "2024-01-10T16:30:02.200Z",
-            savedOn: "2024-01-10T16:30:02.200Z",
+            publishedOn: "2024-01-24T22:36:12.348Z",
+            savedOn: "2024-01-24T22:36:12.348Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -1830,7 +1750,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-1-fr-fr-659ec5f8a5bd9f0008c2ed82",
+            slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
                 submissions: 0,
                 views: 0
@@ -1838,32 +1758,169 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["KCpTLvsDC0"]],
+                    layout: [["dV3wx0ForO"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form.latest",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:36:12.362Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:36:12.362Z"
+        },
+        {
+            PK: "T#root#L#de-DE#FB#F#LP",
+            SK: "65b190cad481d800089f2479",
+            createdBy: user,
+            createdOn: "2024-01-24T22:35:54.384Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "dV3wx0ForO"
+                }
+            ],
+            formId: "65b190cad481d800089f2479",
+            id: "65b190cad481d800089f2479#0001",
+            locale: "de-DE",
+            locked: true,
+            name: "Demo Form 7",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T22:36:12.348Z",
+            savedOn: "2024-01-24T22:36:12.348Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-7-65b190cad481d800089f2479",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["dV3wx0ForO"]],
                     title: "Step 1"
                 }
             ],
             tenant: "root",
             TYPE: "fb.form.latestPublished",
             version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T16:30:02.239Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:36:12.362Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T16:30:02.239Z"
+            _md: "2024-01-24T22:36:12.362Z"
         },
+        {
+            PK: "T#root#L#de-DE#FB#F",
+            SK: "65b190cad481d800089f2479#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T22:35:54.384Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "dV3wx0ForO"
+                }
+            ],
+            formId: "65b190cad481d800089f2479",
+            GSI1_PK: "T#root#L#de-DE#FB#F#65b190cad481d800089f2479",
+            GSI1_SK: "1",
+            id: "65b190cad481d800089f2479#0001",
+            locale: "de-DE",
+            locked: true,
+            name: "Demo Form 7",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-24T22:36:12.348Z",
+            savedOn: "2024-01-24T22:36:12.348Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-7-65b190cad481d800089f2479",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["dV3wx0ForO"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:36:12.361Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:36:12.361Z"
+        },
+        // Form 1 from root tenant, locale fr-FR
         {
             PK: "T#root#L#fr-FR#FB#F#L",
-            SK: "659ec5f8a5bd9f0008c2ed82",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T16:29:44.021Z",
+            SK: "65b19428b583b90008e7a3bc",
+            createdBy: user,
+            createdOn: "2024-01-24T22:50:16.158Z",
             fields: [
                 {
                     fieldId: "demoField",
                     helpText: null,
-                    label: "Demo field",
+                    label: "Demo Field",
                     name: "text",
                     options: [],
                     placeholderText: null,
@@ -1872,22 +1929,17 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "KCpTLvsDC0"
+                    _id: "njnnUb42N6"
                 }
             ],
-            formId: "659ec5f8a5bd9f0008c2ed82",
-            id: "659ec5f8a5bd9f0008c2ed82#0001",
+            formId: "65b19428b583b90008e7a3bc",
+            id: "65b19428b583b90008e7a3bc#0001",
             locale: "fr-FR",
-            locked: true,
-            name: "Demo form 1 - fr-FR",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T16:30:02.200Z",
-            savedOn: "2024-01-10T16:30:02.200Z",
+            locked: false,
+            name: "Demo Form 8",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:50:26.517Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -1901,220 +1953,31 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-form-1-fr-fr-659ec5f8a5bd9f0008c2ed82",
+            slug: "demo-form-8-65b19428b583b90008e7a3bc",
             stats: {
                 submissions: 0,
                 views: 0
             },
-            status: "published",
+            status: "draft",
             steps: [
                 {
-                    layout: [["KCpTLvsDC0"]],
+                    layout: [["njnnUb42N6"]],
                     title: "Step 1"
                 }
             ],
             tenant: "root",
             TYPE: "fb.form.latest",
             version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T16:30:02.239Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:50:26.538Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-10T16:30:02.239Z"
+            _md: "2024-01-24T22:50:26.538Z"
         },
         {
             PK: "T#root#L#fr-FR#FB#F",
-            SK: "659ec5f8a5bd9f0008c2ed82#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T16:29:44.021Z",
-            fields: [
-                {
-                    fieldId: "demoField",
-                    helpText: null,
-                    label: "Demo field",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "KCpTLvsDC0"
-                }
-            ],
-            formId: "659ec5f8a5bd9f0008c2ed82",
-            GSI1_PK: "T#root#L#fr-FR#FB#F#659ec5f8a5bd9f0008c2ed82",
-            GSI1_SK: "1",
-            id: "659ec5f8a5bd9f0008c2ed82#0001",
-            locale: "fr-FR",
-            locked: true,
-            name: "Demo form 1 - fr-FR",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-10T16:30:02.200Z",
-            savedOn: "2024-01-10T16:30:02.200Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-1-fr-fr-659ec5f8a5bd9f0008c2ed82",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["KCpTLvsDC0"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T16:30:02.239Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T16:30:02.239Z"
-        },
-        {
-            PK: "T#otherTenant#L#de-DE#FB#F#L",
-            SK: "659ec978a5a80600089b438c",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T16:44:40.527Z",
-            fields: [],
-            formId: "659ec978a5a80600089b438c",
-            id: "659ec978a5a80600089b438c#0001",
-            locale: "de-DE",
-            locked: false,
-            name: "Demo form 1 - de-DE",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: false,
-            savedOn: "2024-01-10T16:44:40.539Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-1-de-de-659ec978a5a80600089b438c",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "draft",
-            steps: [
-                {
-                    layout: [],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "otherTenant",
-            TYPE: "fb.form.latest",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T16:44:40.544Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T16:44:40.544Z"
-        },
-        {
-            PK: "T#otherTenant#L#de-DE#FB#F",
-            SK: "659ec978a5a80600089b438c#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-10T16:44:40.527Z",
-            fields: [],
-            formId: "659ec978a5a80600089b438c",
-            GSI1_PK: "T#otherTenant#L#de-DE#FB#F#659ec978a5a80600089b438c",
-            GSI1_SK: "1",
-            id: "659ec978a5a80600089b438c#0001",
-            locale: "de-DE",
-            locked: false,
-            name: "Demo form 1 - de-DE",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: false,
-            savedOn: "2024-01-10T16:44:40.539Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "demo-form-1-de-de-659ec978a5a80600089b438c",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "draft",
-            steps: [
-                {
-                    layout: [],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "otherTenant",
-            TYPE: "fb.form",
-            version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-10T16:44:40.543Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-10T16:44:40.543Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F#LP",
-            SK: "65afc8352bb22d00085ecf33",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T17:02:13.436Z",
+            SK: "65b19428b583b90008e7a3bc#0001",
+            createdBy: user,
+            createdOn: "2024-01-24T22:50:16.158Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2128,22 +1991,19 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "aw5OAJaCK4"
+                    _id: "njnnUb42N6"
                 }
             ],
-            formId: "65afc8352bb22d00085ecf33",
-            id: "65afc8352bb22d00085ecf33#0003",
-            locale: "en-US",
-            locked: true,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-22T17:02:22.100Z",
-            savedOn: "2024-01-22T17:02:22.100Z",
+            formId: "65b19428b583b90008e7a3bc",
+            GSI1_PK: "T#root#L#fr-FR#FB#F#65b19428b583b90008e7a3bc",
+            GSI1_SK: "1",
+            id: "65b19428b583b90008e7a3bc#0001",
+            locale: "fr-FR",
+            locked: false,
+            name: "Demo Form 8",
+            ownedBy: user,
+            published: false,
+            savedOn: "2024-01-24T22:50:26.517Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2157,7 +2017,77 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "form-1-65afc8352bb22d00085ecf33",
+            slug: "demo-form-8-65b19428b583b90008e7a3bc",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "draft",
+            steps: [
+                {
+                    layout: [["njnnUb42N6"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-24T22:50:26.537Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-24T22:50:26.537Z"
+        },
+        // Form 2 from root tenant, locale de-DE
+        {
+            PK: "T#root#L#de-DE#FB#F#LP",
+            SK: "65b2050e264766000809d7aa",
+            createdBy: user,
+            createdOn: "2024-01-25T06:52:56.840Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "1vzUX-cmPP"
+                }
+            ],
+            formId: "65b2050e264766000809d7aa",
+            id: "65b2050e264766000809d7aa#0002",
+            locale: "de-DE",
+            locked: true,
+            name: "Demo Form 9",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-25T06:53:03.955Z",
+            savedOn: "2024-01-25T06:53:03.955Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-9-65b2050e264766000809d7aa",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2165,27 +2095,23 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["aw5OAJaCK4"]],
+                    layout: [["1vzUX-cmPP"]],
                     title: "Step 1"
                 }
             ],
             tenant: "root",
             TYPE: "fb.form.latestPublished",
-            version: 3,
+            version: 2,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-22T17:02:22.112Z",
+            _ct: "2024-01-25T06:53:04.001Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-22T17:02:22.112Z"
+            _md: "2024-01-25T06:53:04.001Z"
         },
         {
-            PK: "T#root#L#en-US#FB#F#L",
-            SK: "65afc8352bb22d00085ecf33",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T17:02:33.192Z",
+            PK: "T#root#L#de-DE#FB#F#L",
+            SK: "65b2050e264766000809d7aa",
+            createdBy: user,
+            createdOn: "2024-01-25T06:52:56.840Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2198,95 +2124,25 @@ export const createFormsData = () => {
                         defaultValue: null
                     },
                     type: "text",
-                    validation: [],
-                    _id: "aw5OAJaCK4"
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "1vzUX-cmPP"
                 }
             ],
-            formId: "65afc8352bb22d00085ecf33",
-            id: "65afc8352bb22d00085ecf33#0004",
-            locale: "en-US",
-            locked: false,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: false,
-            savedOn: "2024-01-22T17:02:33.192Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "form-1-65afc8352bb22d00085ecf33",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "draft",
-            steps: [
-                {
-                    layout: [["aw5OAJaCK4"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form.latest",
-            version: 4,
-            webinyVersion: "0.0.0",
-            _ct: "2024-01-22T17:02:33.193Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-22T17:02:33.193Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "65afc8352bb22d00085ecf33#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T16:45:21.541Z",
-            fields: [
-                {
-                    fieldId: "demoField",
-                    helpText: null,
-                    label: "Demo Field",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "aw5OAJaCK4"
-                }
-            ],
-            formId: "65afc8352bb22d00085ecf33",
-            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
-            GSI1_SK: "1",
-            id: "65afc8352bb22d00085ecf33#0001",
-            locale: "en-US",
+            formId: "65b2050e264766000809d7aa",
+            id: "65b2050e264766000809d7aa#0002",
+            locale: "de-DE",
             locked: true,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            name: "Demo Form 9",
+            ownedBy: user,
             published: true,
-            publishedOn: "2024-01-22T16:45:53.044Z",
-            savedOn: "2024-01-22T16:45:53.044Z",
+            publishedOn: "2024-01-25T06:53:03.955Z",
+            savedOn: "2024-01-25T06:53:03.955Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2300,7 +2156,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "form-1-65afc8352bb22d00085ecf33",
+            slug: "demo-form-9-65b2050e264766000809d7aa",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2308,27 +2164,23 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["aw5OAJaCK4"]],
+                    layout: [["1vzUX-cmPP"]],
                     title: "Step 1"
                 }
             ],
             tenant: "root",
-            TYPE: "fb.form",
-            version: 1,
+            TYPE: "fb.form.latest",
+            version: 2,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-22T16:45:53.052Z",
+            _ct: "2024-01-25T06:53:04.001Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-22T16:45:53.052Z"
+            _md: "2024-01-25T06:53:04.001Z"
         },
         {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "65afc8352bb22d00085ecf33#0002",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T16:49:59.693Z",
+            PK: "T#root#L#de-DE#FB#F",
+            SK: "65b2050e264766000809d7aa#0001",
+            createdBy: user,
+            createdOn: "2024-01-25T06:51:58.036Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2342,24 +2194,20 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "aw5OAJaCK4"
+                    _id: "1vzUX-cmPP"
                 }
             ],
-            formId: "65afc8352bb22d00085ecf33",
-            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
-            GSI1_SK: "2",
-            id: "65afc8352bb22d00085ecf33#0002",
-            locale: "en-US",
+            formId: "65b2050e264766000809d7aa",
+            GSI1_PK: "T#root#L#de-DE#FB#F#65b2050e264766000809d7aa",
+            GSI1_SK: "1",
+            id: "65b2050e264766000809d7aa#0001",
+            locale: "de-DE",
             locked: true,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: false,
-            publishedOn: "2024-01-22T16:50:25.132Z",
-            savedOn: "2024-01-22T17:02:06.153Z",
+            name: "Demo Form 9",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-25T06:52:51.920Z",
+            savedOn: "2024-01-25T06:52:51.920Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2373,15 +2221,86 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "form-1-65afc8352bb22d00085ecf33",
+            slug: "demo-form-9-65b2050e264766000809d7aa",
             stats: {
                 submissions: 0,
                 views: 0
             },
-            status: "locked",
+            status: "published",
             steps: [
                 {
-                    layout: [["aw5OAJaCK4"]],
+                    layout: [["1vzUX-cmPP"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "root",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-25T06:52:51.995Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-25T06:52:51.995Z"
+        },
+        {
+            PK: "T#root#L#de-DE#FB#F",
+            SK: "65b2050e264766000809d7aa#0002",
+            createdBy: user,
+            createdOn: "2024-01-25T06:52:56.840Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [
+                        {
+                            message: "Value is required.",
+                            name: "required",
+                            settings: {}
+                        }
+                    ],
+                    _id: "1vzUX-cmPP"
+                }
+            ],
+            formId: "65b2050e264766000809d7aa",
+            GSI1_PK: "T#root#L#de-DE#FB#F#65b2050e264766000809d7aa",
+            GSI1_SK: "2",
+            id: "65b2050e264766000809d7aa#0002",
+            locale: "de-DE",
+            locked: true,
+            name: "Demo Form 9",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-25T06:53:03.955Z",
+            savedOn: "2024-01-25T06:53:03.955Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-9-65b2050e264766000809d7aa",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["1vzUX-cmPP"]],
                     title: "Step 1"
                 }
             ],
@@ -2389,19 +2308,16 @@ export const createFormsData = () => {
             TYPE: "fb.form",
             version: 2,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-22T17:02:06.332Z",
+            _ct: "2024-01-25T06:53:04.001Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-22T17:02:06.332Z"
+            _md: "2024-01-25T06:53:04.001Z"
         },
+        // Form 1 from otherTenant, locale fr-FR
         {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "65afc8352bb22d00085ecf33#0003",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T17:02:13.436Z",
+            PK: "T#otherTenant#L#fr-FR#FB#F#L",
+            SK: "65b20b8f0321db00083d35c1",
+            createdBy: user,
+            createdOn: "2024-01-25T07:19:43.219Z",
             fields: [
                 {
                     fieldId: "demoField",
@@ -2415,96 +2331,17 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "aw5OAJaCK4"
+                    _id: "EBPeRi4u0Z"
                 }
             ],
-            formId: "65afc8352bb22d00085ecf33",
-            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
-            GSI1_SK: "3",
-            id: "65afc8352bb22d00085ecf33#0003",
-            locale: "en-US",
-            locked: true,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            published: true,
-            publishedOn: "2024-01-22T17:02:22.100Z",
-            savedOn: "2024-01-22T17:02:22.100Z",
-            settings: {
-                fullWidthSubmitButton: null,
-                layout: {
-                    renderer: "default"
-                },
-                reCaptcha: {
-                    enabled: null,
-                    errorMessage: "Please verify that you are not a robot."
-                },
-                submitButtonLabel: null,
-                successMessage: null,
-                termsOfServiceMessage: null
-            },
-            slug: "form-1-65afc8352bb22d00085ecf33",
-            stats: {
-                submissions: 0,
-                views: 0
-            },
-            status: "published",
-            steps: [
-                {
-                    layout: [["aw5OAJaCK4"]],
-                    title: "Step 1"
-                }
-            ],
-            tenant: "root",
-            TYPE: "fb.form",
-            version: 3,
-            webinyVersion: "0.0.0",
-            _ct: "2024-01-22T17:02:22.112Z",
-            _et: "FormBuilderForm",
-            _md: "2024-01-22T17:02:22.112Z"
-        },
-        {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "65afc8352bb22d00085ecf33#0004",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-22T17:02:33.192Z",
-            fields: [
-                {
-                    fieldId: "demoField",
-                    helpText: null,
-                    label: "Demo Field",
-                    name: "text",
-                    options: [],
-                    placeholderText: null,
-                    settings: {
-                        defaultValue: null
-                    },
-                    type: "text",
-                    validation: [],
-                    _id: "aw5OAJaCK4"
-                }
-            ],
-            formId: "65afc8352bb22d00085ecf33",
-            GSI1_PK: "T#root#L#en-US#FB#F#65afc8352bb22d00085ecf33",
-            GSI1_SK: "4",
-            id: "65afc8352bb22d00085ecf33#0004",
-            locale: "en-US",
+            formId: "65b20b8f0321db00083d35c1",
+            id: "65b20b8f0321db00083d35c1#0001",
+            locale: "fr-FR",
             locked: false,
-            name: "Form 1",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            name: "Demo Form 10",
+            ownedBy: user,
             published: false,
-            savedOn: "2024-01-22T17:02:33.192Z",
+            savedOn: "2024-01-25T07:19:51.052Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2518,7 +2355,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "form-1-65afc8352bb22d00085ecf33",
+            slug: "demo-form-10-65b20b8f0321db00083d35c1",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2526,32 +2363,28 @@ export const createFormsData = () => {
             status: "draft",
             steps: [
                 {
-                    layout: [["aw5OAJaCK4"]],
+                    layout: [["EBPeRi4u0Z"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "root",
-            TYPE: "fb.form",
-            version: 4,
+            tenant: "otherTenant",
+            TYPE: "fb.form.latest",
+            version: 1,
             webinyVersion: "0.0.0",
-            _ct: "2024-01-22T17:02:33.192Z",
+            _ct: "2024-01-25T07:19:51.076Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-22T17:02:33.192Z"
+            _md: "2024-01-25T07:19:51.076Z"
         },
         {
-            PK: "T#root#L#en-US#FB#F",
-            SK: "65afe4dc1f86b90008f311b9#0001",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-23T14:07:49.198Z",
+            PK: "T#otherTenant#L#fr-FR#FB#F",
+            SK: "65b20b8f0321db00083d35c1#0001",
+            createdBy: user,
+            createdOn: "2024-01-25T07:19:43.219Z",
             fields: [
                 {
-                    fieldId: "demo",
+                    fieldId: "demoField",
                     helpText: null,
-                    label: "Demo",
+                    label: "Demo Field",
                     name: "text",
                     options: [],
                     placeholderText: null,
@@ -2560,24 +2393,19 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "5FTKwHJk3e"
+                    _id: "EBPeRi4u0Z"
                 }
             ],
-            formId: "65afe4dc1f86b90008f311b9",
-            GSI1_PK: "T#root#L#en-US#FB#F#65afe4dc1f86b90008f311b9",
+            formId: "65b20b8f0321db00083d35c1",
+            GSI1_PK: "T#otherTenant#L#fr-FR#FB#F#65b20b8f0321db00083d35c1",
             GSI1_SK: "1",
-            id: "65afe4dc1f86b90008f311b9#0001",
-            locale: "en-US",
-            locked: true,
-            name: "Demo",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            id: "65b20b8f0321db00083d35c1#0001",
+            locale: "fr-FR",
+            locked: false,
+            name: "Demo Form 10",
+            ownedBy: user,
             published: false,
-            publishedOn: "2024-01-23T14:08:22.634Z",
-            savedOn: "2024-01-23T15:28:47.593Z",
+            savedOn: "2024-01-25T07:19:51.052Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2591,40 +2419,37 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-65afe4dc1f86b90008f311b9",
+            slug: "demo-form-10-65b20b8f0321db00083d35c1",
             stats: {
                 submissions: 0,
                 views: 0
             },
-            status: "locked",
+            status: "draft",
             steps: [
                 {
-                    layout: [["5FTKwHJk3e"]],
+                    layout: [["EBPeRi4u0Z"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "root",
+            tenant: "otherTenant",
             TYPE: "fb.form",
             version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-23T15:28:47.792Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-25T07:19:51.075Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-23T15:28:47.792Z"
+            _md: "2024-01-25T07:19:51.075Z"
         },
+        // Form 2 from otherTenant, locale fr-FR
         {
-            PK: "T#root#L#en-US#FB#F#L",
-            SK: "65afe4dc1f86b90008f311b9",
-            createdBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
-            createdOn: "2024-01-23T14:07:49.198Z",
+            PK: "T#otherTenant#L#fr-FR#FB#F#LP",
+            SK: "65b20bc00321db00083d35c9",
+            createdBy: user,
+            createdOn: "2024-01-25T07:20:32.550Z",
             fields: [
                 {
-                    fieldId: "demo",
+                    fieldId: "demoField",
                     helpText: null,
-                    label: "Demo",
+                    label: "Demo Field",
                     name: "text",
                     options: [],
                     placeholderText: null,
@@ -2633,22 +2458,18 @@ export const createFormsData = () => {
                     },
                     type: "text",
                     validation: [],
-                    _id: "5FTKwHJk3e"
+                    _id: "tk4jYhc8DI"
                 }
             ],
-            formId: "65afe4dc1f86b90008f311b9",
-            id: "65afe4dc1f86b90008f311b9#0001",
-            locale: "en-US",
+            formId: "65b20bc00321db00083d35c9",
+            id: "65b20bc00321db00083d35c9#0001",
+            locale: "fr-FR",
             locked: true,
-            name: "Demo",
-            ownedBy: {
-                displayName: "Admin Admin",
-                id: "659c1221ea18ae00086ef8a5",
-                type: "admin"
-            },
+            name: "Demo Form 11",
+            ownedBy: user,
             published: true,
-            publishedOn: "2024-01-23T14:08:22.634Z",
-            savedOn: "2024-01-23T14:08:22.634Z",
+            publishedOn: "2024-01-25T07:20:49.543Z",
+            savedOn: "2024-01-25T07:20:49.543Z",
             settings: {
                 fullWidthSubmitButton: null,
                 layout: {
@@ -2662,7 +2483,7 @@ export const createFormsData = () => {
                 successMessage: null,
                 termsOfServiceMessage: null
             },
-            slug: "demo-65afe4dc1f86b90008f311b9",
+            slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
                 submissions: 0,
                 views: 0
@@ -2670,17 +2491,145 @@ export const createFormsData = () => {
             status: "published",
             steps: [
                 {
-                    layout: [["5FTKwHJk3e"]],
+                    layout: [["tk4jYhc8DI"]],
                     title: "Step 1"
                 }
             ],
-            tenant: "root",
+            tenant: "otherTenant",
+            TYPE: "fb.form.latestPublished",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-25T07:20:49.553Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-25T07:20:49.553Z"
+        },
+        {
+            PK: "T#otherTenant#L#fr-FR#FB#F#L",
+            SK: "65b20bc00321db00083d35c9",
+            createdBy: user,
+            createdOn: "2024-01-25T07:20:32.550Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "tk4jYhc8DI"
+                }
+            ],
+            formId: "65b20bc00321db00083d35c9",
+            id: "65b20bc00321db00083d35c9#0001",
+            locale: "fr-FR",
+            locked: true,
+            name: "Demo Form 11",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-25T07:20:49.543Z",
+            savedOn: "2024-01-25T07:20:49.543Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-11-65b20bc00321db00083d35c9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["tk4jYhc8DI"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "otherTenant",
             TYPE: "fb.form.latest",
             version: 1,
-            webinyVersion: "5.38.0",
-            _ct: "2024-01-23T14:08:22.640Z",
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-25T07:20:49.553Z",
             _et: "FormBuilderForm",
-            _md: "2024-01-23T14:08:22.640Z"
+            _md: "2024-01-25T07:20:49.553Z"
+        },
+        {
+            PK: "T#otherTenant#L#fr-FR#FB#F",
+            SK: "65b20bc00321db00083d35c9#0001",
+            createdBy: user,
+            createdOn: "2024-01-25T07:20:32.550Z",
+            fields: [
+                {
+                    fieldId: "demoField",
+                    helpText: null,
+                    label: "Demo Field",
+                    name: "text",
+                    options: [],
+                    placeholderText: null,
+                    settings: {
+                        defaultValue: null
+                    },
+                    type: "text",
+                    validation: [],
+                    _id: "tk4jYhc8DI"
+                }
+            ],
+            formId: "65b20bc00321db00083d35c9",
+            GSI1_PK: "T#otherTenant#L#fr-FR#FB#F#65b20bc00321db00083d35c9",
+            GSI1_SK: "1",
+            id: "65b20bc00321db00083d35c9#0001",
+            locale: "fr-FR",
+            locked: true,
+            name: "Demo Form 11",
+            ownedBy: user,
+            published: true,
+            publishedOn: "2024-01-25T07:20:49.543Z",
+            savedOn: "2024-01-25T07:20:49.543Z",
+            settings: {
+                fullWidthSubmitButton: null,
+                layout: {
+                    renderer: "default"
+                },
+                reCaptcha: {
+                    enabled: null,
+                    errorMessage: "Please verify that you are not a robot."
+                },
+                submitButtonLabel: null,
+                successMessage: null,
+                termsOfServiceMessage: null
+            },
+            slug: "demo-form-11-65b20bc00321db00083d35c9",
+            stats: {
+                submissions: 0,
+                views: 0
+            },
+            status: "published",
+            steps: [
+                {
+                    layout: [["tk4jYhc8DI"]],
+                    title: "Step 1"
+                }
+            ],
+            tenant: "otherTenant",
+            TYPE: "fb.form",
+            version: 1,
+            webinyVersion: "0.0.0",
+            _ct: "2024-01-25T07:20:49.553Z",
+            _et: "FormBuilderForm",
+            _md: "2024-01-25T07:20:49.553Z"
         }
     ];
 };
@@ -2704,7 +2653,7 @@ export const createTenantsData = () => {
                 status: "active",
                 TYPE: "tenancy.tenant",
                 webinyVersion: "0.0.0",
-                createdBy
+                createdBy: user
             }
         },
         {
@@ -2725,7 +2674,7 @@ export const createTenantsData = () => {
                 status: "active",
                 TYPE: "tenancy.tenant",
                 webinyVersion: "0.0.0",
-                createdBy
+                createdBy: user
             }
         }
     ];
@@ -2739,7 +2688,7 @@ export const createLocalesData = () => {
             code: "en-US",
             default: true,
             createdOn: "2023-01-25T09:37:58.220Z",
-            createdBy,
+            createdBy: user,
             tenant: "root",
             webinyVersion: "0.0.0"
         },
@@ -2749,7 +2698,7 @@ export const createLocalesData = () => {
             code: "de-DE",
             default: false,
             createdOn: "2023-01-25T09:37:58.220Z",
-            createdBy,
+            createdBy: user,
             tenant: "root",
             webinyVersion: "0.0.0"
         },
@@ -2759,7 +2708,7 @@ export const createLocalesData = () => {
             code: "fr-FR",
             default: false,
             createdOn: "2023-01-25T09:37:58.220Z",
-            createdBy,
+            createdBy: user,
             tenant: "root",
             webinyVersion: "0.0.0"
         },
@@ -2769,7 +2718,7 @@ export const createLocalesData = () => {
             code: "fr-FR",
             default: false,
             createdOn: "2023-01-25T09:37:58.220Z",
-            createdBy,
+            createdBy: user,
             tenant: "otherTenant",
             webinyVersion: "0.0.0"
         },
@@ -2779,7 +2728,7 @@ export const createLocalesData = () => {
             code: "de-DE",
             default: true,
             createdOn: "2023-01-25T09:37:58.220Z",
-            createdBy,
+            createdBy: user,
             tenant: "otherTenant",
             webinyVersion: "0.0.0"
         }

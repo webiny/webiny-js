@@ -9,7 +9,7 @@ import {
 } from "~tests/utils";
 import { FormBuilder_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
 import { createFormsData, createLocalesData, createTenantsData } from "./001.data";
-import { migratedData } from "./001.migratedData";
+import { migratedFormData } from "./001.migratedData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -88,7 +88,7 @@ describe("5.40.0-001", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        const cmsEntries = await scanTable(table, {
+        const cmsFormEntries = await scanTable(table, {
             filters: [
                 {
                     attr: "modelId",
@@ -97,10 +97,11 @@ describe("5.40.0-001", () => {
             ]
         });
 
-        expect(cmsEntries).toEqual(
-            migratedData.map(data => {
+        expect(cmsFormEntries).toEqual(
+            migratedFormData.map(data => {
                 return {
                     ...data,
+                    entity: "CmsEntries",
                     created: expect.any(String),
                     modified: expect.any(String)
                 };

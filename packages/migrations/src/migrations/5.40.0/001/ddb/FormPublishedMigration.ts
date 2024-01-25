@@ -5,7 +5,12 @@ import { createDdbCmsEntity } from "../entities/createCmsEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createEntryCommonFields } from "../utils";
+import {
+    getEntryCommonFields,
+    getFirstLastPublishedOnBy,
+    getMetaFields,
+    getOldestRevisionCreatedOn
+} from "../utils";
 import { FbForm, MigrationCheckpoint } from "../types";
 
 export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<MigrationCheckpoint> {
@@ -96,7 +101,21 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                         for (const form of forms) {
                             const [formId] = form.id.split("#");
 
-                            const entry = createEntryCommonFields(form);
+                            const entry = getEntryCommonFields(form);
+
+                            // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                            const createdOn = await getOldestRevisionCreatedOn({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const entryMetaFields = getMetaFields(form, {
+                                createdOn,
+                                ...firstLastPublishedOnByFields
+                            });
 
                             const item = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
@@ -104,7 +123,8 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                                 GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#P`,
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry.p",
-                                ...entry
+                                ...entry,
+                                ...entryMetaFields
                             };
 
                             items.push(this.cmsEntity.putBatch(item));

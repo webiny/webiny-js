@@ -5,7 +5,13 @@ import { createDdbCmsEntity } from "../entities/createCmsEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createEntryCommonFields, createRevisionStatus } from "../utils";
+import {
+    getEntryCommonFields,
+    getFirstLastPublishedOnBy,
+    getMetaFields,
+    getOldestRevisionCreatedOn,
+    getRevisionStatus
+} from "../utils";
 import { FbForm, MigrationCheckpoint } from "../types";
 
 export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<MigrationCheckpoint> {
@@ -104,8 +110,22 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                                 }
                             });
 
-                            const entry = createEntryCommonFields(form);
-                            const status = createRevisionStatus(form, publishedForm);
+                            const entry = getEntryCommonFields(form);
+                            const status = getRevisionStatus(form, publishedForm);
+
+                            // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                            const createdOn = await getOldestRevisionCreatedOn({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const entryMetaFields = getMetaFields(form, {
+                                createdOn,
+                                ...firstLastPublishedOnByFields
+                            });
 
                             const item = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
@@ -114,6 +134,7 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry.l",
                                 ...entry,
+                                ...entryMetaFields,
                                 status
                             };
 

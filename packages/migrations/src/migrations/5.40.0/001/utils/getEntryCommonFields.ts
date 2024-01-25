@@ -1,9 +1,7 @@
 import { CmsEntry, FbForm, FormEntryValues } from "../types";
 
-export const createEntryCommonFields = (form: FbForm): CmsEntry<FormEntryValues> => {
+export const getEntryCommonFields = (form: FbForm): CmsEntry<FormEntryValues> => {
     return {
-        createdBy: form.createdBy,
-        createdOn: form.createdOn,
         entryId: form.formId,
         id: form.id,
         locked: form.locked,
@@ -12,10 +10,6 @@ export const createEntryCommonFields = (form: FbForm): CmsEntry<FormEntryValues>
             folderId: "root"
         },
         modelId: "fbForm",
-        modifiedBy: form.createdBy,
-        ownedBy: form.ownedBy,
-        savedOn: form.savedOn,
-        publishedOn: form.publishedOn ?? undefined,
         status: form.status,
         tenant: form.tenant,
         version: form.version,

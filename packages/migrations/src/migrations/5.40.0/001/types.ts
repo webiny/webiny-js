@@ -128,10 +128,39 @@ export interface FbForm {
     webinyVersion: string;
 }
 
-// CMS Entries / Forms - 5.39.0
+// CMS Entries / Forms - 5.40.0
 
 export interface CmsEntryValues {
     [key: string]: any;
+}
+
+export interface MetaFields {
+    /**
+     * Entry-level meta fields. 👇
+     */
+    createdOn: string;
+    savedOn: string;
+    modifiedOn: string | null;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
+    createdBy: Identity;
+    savedBy: Identity;
+    modifiedBy: Identity | null;
+    firstPublishedBy: Identity | null;
+    lastPublishedBy: Identity | null;
+    /**
+     * Revision-level meta fields. 👇
+     */
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string | null;
+    revisionFirstPublishedOn: string | null;
+    revisionLastPublishedOn: string | null;
+    revisionCreatedBy: Identity;
+    revisionSavedBy: Identity;
+    revisionModifiedBy: Identity | null;
+    revisionFirstPublishedBy: Identity | null;
+    revisionLastPublishedBy: Identity | null;
 }
 
 export interface CmsEntry<T = CmsEntryValues> {
@@ -139,17 +168,11 @@ export interface CmsEntry<T = CmsEntryValues> {
     tenant: string;
     entryId: string;
     id: string;
-    createdBy: Identity;
-    ownedBy: Identity;
-    modifiedBy?: Identity | null;
-    createdOn: string;
-    savedOn: string;
     modelId: string;
     locale: string;
     location: {
         folderId: string;
     };
-    publishedOn?: string;
     version: number;
     locked: boolean;
     status: Status;
@@ -158,6 +181,8 @@ export interface CmsEntry<T = CmsEntryValues> {
         [key: string]: any;
     };
 }
+
+export interface CmsEntryWithMeta<T = CmsEntryValues> extends CmsEntry<T>, MetaFields {}
 
 export interface FormEntryValues {
     "json@triggers": Record<string, any> | null;

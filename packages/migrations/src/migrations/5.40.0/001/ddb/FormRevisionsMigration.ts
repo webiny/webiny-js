@@ -5,9 +5,14 @@ import { createDdbCmsEntity } from "../entities/createCmsEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne } from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createEntryCommonFields } from "../utils";
+import {
+    getEntryCommonFields,
+    getFirstLastPublishedOnBy,
+    getMetaFields,
+    getOldestRevisionCreatedOn,
+    getRevisionStatus
+} from "../utils";
 import { FbForm, MigrationCheckpoint } from "../types";
-import { createRevisionStatus } from "~/migrations/5.40.0/001/utils/createEntryStatus";
 
 export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<MigrationCheckpoint> {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
@@ -105,8 +110,22 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                                 }
                             });
 
-                            const entry = createEntryCommonFields(form);
-                            const status = createRevisionStatus(form, publishedForm);
+                            const entry = getEntryCommonFields(form);
+                            const status = getRevisionStatus(form, publishedForm);
+
+                            // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                            const createdOn = await getOldestRevisionCreatedOn({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                                form,
+                                formEntity: this.formEntity
+                            });
+                            const entryMetaFields = getMetaFields(form, {
+                                createdOn,
+                                ...firstLastPublishedOnByFields
+                            });
 
                             const item = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
@@ -115,6 +134,7 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry",
                                 ...entry,
+                                ...entryMetaFields,
                                 status
                             };
 
