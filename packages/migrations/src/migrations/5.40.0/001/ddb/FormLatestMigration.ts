@@ -102,26 +102,28 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                         for (const form of forms) {
                             const [formId] = form.id.split("#");
 
-                            const publishedForm = await queryOne<FbForm>({
-                                entity: this.formEntity,
-                                partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`,
-                                options: {
-                                    eq: formId
-                                }
-                            });
+                            // Get common fields
+                            const entryCommonFields = getEntryCommonFields(form);
 
-                            const entry = getEntryCommonFields(form);
-                            const status = getRevisionStatus(form, publishedForm);
+                            // Get the status field, based on the revision and the published entry
+                            const status = await getRevisionStatus({
+                                form,
+                                formEntity: this.formEntity
+                            });
 
                             // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                             const createdOn = await getOldestRevisionCreatedOn({
                                 form,
                                 formEntity: this.formEntity
                             });
+
+                            // Get first/last published meta fields
                             const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
                                 form,
                                 formEntity: this.formEntity
                             });
+
+                            // Create the new meta fields
                             const entryMetaFields = getMetaFields(form, {
                                 createdOn,
                                 ...firstLastPublishedOnByFields
@@ -133,7 +135,7 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                                 GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#L`,
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry.l",
-                                ...entry,
+                                ...entryCommonFields,
                                 ...entryMetaFields,
                                 status
                             };

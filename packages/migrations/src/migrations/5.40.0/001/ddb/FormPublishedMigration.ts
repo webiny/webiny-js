@@ -101,17 +101,22 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                         for (const form of forms) {
                             const [formId] = form.id.split("#");
 
-                            const entry = getEntryCommonFields(form);
+                            // Get common fields
+                            const entryCommonFields = getEntryCommonFields(form);
 
                             // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                             const createdOn = await getOldestRevisionCreatedOn({
                                 form,
                                 formEntity: this.formEntity
                             });
+
+                            // Get first/last published meta fields
                             const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
                                 form,
                                 formEntity: this.formEntity
                             });
+
+                            // Create the new meta fields
                             const entryMetaFields = getMetaFields(form, {
                                 createdOn,
                                 ...firstLastPublishedOnByFields
@@ -123,7 +128,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                                 GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#fbForm#P`,
                                 GSI1_SK: `${form.id}`,
                                 TYPE: "cms.entry.p",
-                                ...entry,
+                                ...entryCommonFields,
                                 ...entryMetaFields
                             };
 
