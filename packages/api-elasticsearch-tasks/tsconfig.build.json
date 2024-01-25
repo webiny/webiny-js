@@ -7,6 +7,7 @@
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },

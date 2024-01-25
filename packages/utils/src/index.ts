@@ -11,6 +11,7 @@ export * from "~/removeUndefinedValues";
 export * from "~/removeNullValues";
 export * from "~/utcTimezones";
 export * from "./cacheKey";
+export * from "./getObjectProperties";
 import { composeAsync, AsyncProcessor, NextAsyncProcessor } from "~/compose";
 
 export { composeAsync };
