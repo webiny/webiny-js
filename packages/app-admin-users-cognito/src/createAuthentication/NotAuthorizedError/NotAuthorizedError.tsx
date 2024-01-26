@@ -1,10 +1,12 @@
 import * as React from "react";
+import Helmet from "react-helmet";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import Helmet from "react-helmet";
-import authErrorImg from "./SecureRouteError.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy";
+import { useSecurity } from "@webiny/app-security";
+import { makeComposable } from "@webiny/app-admin";
+import authErrorImg from "./SecureRouteError.svg";
 
 const ContentWrapper = styled("div")({
     display: "block",
@@ -31,18 +33,29 @@ const styles = {
     })
 };
 
-export const NotAuthorizedError = () => {
+export interface ImageProps {
+    className?: string;
+    alt?: string;
+}
+
+const Image = ({ className = styles.authErrorImgStyle, alt = "Not Authorized" }: ImageProps) => {
+    return <img className={className} src={authErrorImg} alt={alt} />;
+};
+
+const NotAuthorizedComponent = makeComposable("NotAuthorizedError", () => {
     const { setTenant } = useTenancy();
+    const { identity } = useSecurity();
+
+    const defaultTenant = identity && identity.defaultTenant ? identity.defaultTenant.id : null;
 
     const resetTenant = (): void => {
-        setTenant(null);
+        setTenant(defaultTenant);
     };
 
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized!"} />
-
-            <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
+            <Image />
 
             <Typography use={"body1"} className={styles.bodyStyle}>
                 You are not authorized to access this tenant!
@@ -57,4 +70,6 @@ export const NotAuthorizedError = () => {
             </a>
         </ContentWrapper>
     );
-};
+});
+
+export const NotAuthorizedError = Object.assign(NotAuthorizedComponent, { Image });
