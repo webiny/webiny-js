@@ -10,12 +10,19 @@ name: Next Branch - Push 2
 jobs:
   validateWorkflows:
     name: Validate workflows
-    runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: yarn --immutable
       - name: Validate
         run: npx github-actions-wac validate
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   init:
     name: Init
     outputs:
