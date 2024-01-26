@@ -5,3 +5,5 @@ export * from "./getFirstLastPublishedOn";
 export * from "./getOldestRevisionCreatedOn";
 export * from "./getStatsCommonFields";
 export * from "./getFormStatsMetaFields";
+export * from "./getFormSubmissionCommonFields";
+export * from "./getFormSubmissionMetaFields";

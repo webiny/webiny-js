@@ -10,6 +10,7 @@ import { FormBuilder_5_40_0_001_FormLatest } from "./FormLatestMigration";
 import { FormBuilder_5_40_0_001_FormPublished } from "./FormPublishedMigration";
 import { FormBuilder_5_40_0_001_FormRevisions } from "./FormRevisionsMigration";
 import { FormBuilder_5_40_0_001_FormStats } from "./FormStatsMigration";
+import { FormBuilder_5_40_0_001_FormSubmissions } from "~/migrations/5.40.0/001/ddb/FormSubmissionsMigration";
 
 export class FormBuilder_5_40_0_001 implements DataMigration {
     private migrations: DataMigration[];
@@ -19,7 +20,8 @@ export class FormBuilder_5_40_0_001 implements DataMigration {
             new FormBuilder_5_40_0_001_FormRevisions(table),
             new FormBuilder_5_40_0_001_FormPublished(table),
             new FormBuilder_5_40_0_001_FormLatest(table),
-            new FormBuilder_5_40_0_001_FormStats(table)
+            new FormBuilder_5_40_0_001_FormStats(table),
+            new FormBuilder_5_40_0_001_FormSubmissions(table)
         ];
     }
 

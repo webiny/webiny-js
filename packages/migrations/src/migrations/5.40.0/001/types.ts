@@ -128,6 +128,35 @@ export interface FbForm {
     webinyVersion: string;
 }
 
+export interface FbSubmission {
+    id: string;
+    locale: string;
+    ownedBy: Identity;
+    data: Record<string, any>;
+    meta: {
+        ip: string;
+        submittedOn: string;
+        url: {
+            location: string;
+            query: JSON;
+        };
+    };
+    form: {
+        id: string;
+        parent: string;
+        name: string;
+        version: number;
+        fields: FbFormField[];
+        layout: string[][];
+        steps: FbFormStep[];
+    };
+    logs: Record<string, any>[];
+    createdOn: string;
+    savedOn: string;
+    webinyVersion: string;
+    tenant: string;
+}
+
 // CMS Entries / Forms - 5.40.0
 
 export interface CmsEntryValues {
@@ -182,29 +211,36 @@ export interface CmsEntry<T = CmsEntryValues> {
     };
 }
 
+export interface FormEntryCommonField {
+    "json@settings": JSON | null;
+    "object@options": Array<{
+        "text@label"?: string;
+        "text@value"?: string;
+    }> | null;
+    "object@validation": {
+        "json@settings": FbFormFieldValidatorSettings;
+        "text@message": any;
+        "text@name": string;
+    }[];
+    "text@fieldId": string;
+    "text@helpText": string | null;
+    "text@label": string;
+    "text@name": string;
+    "text@placeholderText": string | null;
+    "text@type": string;
+    "text@_id": string;
+}
+
+export interface FormEntryCommonSteps {
+    "json@layout": FbFormLayout;
+    "text@title": string;
+}
+
 export interface CmsEntryWithMeta<T = CmsEntryValues> extends CmsEntry<T>, MetaFields {}
 
 export interface FormEntryValues {
     "json@triggers": Record<string, any> | null;
-    "object@fields": Array<{
-        "json@settings": JSON | null;
-        "object@options": Array<{
-            "text@label"?: string;
-            "text@value"?: string;
-        }> | null;
-        "object@validation": {
-            "json@settings": FbFormFieldValidatorSettings;
-            "text@message": any;
-            "text@name": string;
-        }[];
-        "text@fieldId": string;
-        "text@helpText": string | null;
-        "text@label": string;
-        "text@name": string;
-        "text@placeholderText": string | null;
-        "text@type": string;
-        "text@_id": string;
-    }>;
+    "object@fields": FormEntryCommonField[];
     "object@settings": {
         "boolean@fullWidthSubmitButton": boolean | null;
         "json@successMessage": JSON[] | null;
@@ -222,10 +258,7 @@ export interface FormEntryValues {
             "text@errorMessage": string | null;
         };
     };
-    "object@steps": Array<{
-        "json@layout": FbFormLayout;
-        "text@title": string;
-    }>;
+    "object@steps": FormEntryCommonSteps[];
     "text@formId": string;
     "text@name": string;
     "text@slug": string;
@@ -236,4 +269,25 @@ export interface FormStatsValues {
     "number@submissions": number;
     "number@views": number;
     "text@formId": string;
+}
+
+export interface FormSubmissionValues {
+    "json@data": Record<string, any>;
+    "json@logs": Record<string, any>[];
+    "object@form": {
+        "object@fields": FormEntryCommonField[];
+        "object@steps": FormEntryCommonSteps[];
+        "text@id": string;
+        "text@name": string;
+        "text@parent": string;
+        "text@version": number;
+    };
+    "object@meta": {
+        "datetime@submittedOn": string;
+        "object@url": {
+            "json@query": JSON;
+            "text@location": string;
+        };
+        "text@ip": string;
+    };
 }

@@ -9,8 +9,17 @@ import {
     scanTable
 } from "~tests/utils";
 import { FormBuilder_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
-import { createFormsData, createLocalesData, createTenantsData } from "./001.data";
-import { migratedFormData, migratedFormStatsData } from "./001.migratedData";
+import {
+    createFormsData,
+    createFormSubmissionsData,
+    createLocalesData,
+    createTenantsData
+} from "./001.data";
+import {
+    createMigratedFormSubmissionsData,
+    migratedFormData,
+    migratedFormStatsData
+} from "./001.migratedData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -72,6 +81,7 @@ describe("5.40.0-001", () => {
     it("should execute migration", async () => {
         await insertTestData(table, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);
@@ -130,11 +140,33 @@ describe("5.40.0-001", () => {
                 };
             })
         );
+
+        // Check FormSubmissions entries
+        const formSubmissionEntries = await scanTable(table, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "fbSubmission"
+                }
+            ]
+        });
+
+        expect(sortBy(formSubmissionEntries, ["PK", "SK"])).toEqual(
+            sortBy(createMigratedFormSubmissionsData(), ["PK", "SK"]).map(data => {
+                return {
+                    ...data,
+                    entity: "CmsEntries",
+                    created: expect.any(String),
+                    modified: expect.any(String)
+                };
+            })
+        );
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(table, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);

@@ -54,8 +54,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65b12c8ecd6a580008f2fa31",
             stats: {
-                submissions: 10,
-                views: 100
+                submissions: 100,
+                views: 1000
             },
             status: "published",
             steps: [
@@ -450,8 +450,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 1,
-                views: 10
+                submissions: 10,
+                views: 100
             },
             status: "published",
             steps: [
@@ -515,8 +515,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 2,
-                views: 20
+                submissions: 20,
+                views: 200
             },
             status: "published",
             steps: [
@@ -771,8 +771,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-3-65b14a9982c87000081f93b3",
             stats: {
-                submissions: 2,
-                views: 20
+                submissions: 20,
+                views: 200
             },
             status: "published",
             steps: [
@@ -1758,8 +1758,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 100,
-                views: 1000
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [
@@ -1827,8 +1827,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 100,
-                views: 1000
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [
@@ -1898,8 +1898,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-7-65b190cad481d800089f2479",
             stats: {
-                submissions: 100,
-                views: 1000
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [
@@ -2231,8 +2231,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-9-65b2050e264766000809d7aa",
             stats: {
-                submissions: 10,
-                views: 100
+                submissions: 100,
+                views: 1000
             },
             status: "published",
             steps: [
@@ -2495,7 +2495,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
-                submissions: 0,
+                submissions: 500,
                 views: 1000
             },
             status: "published",
@@ -2558,7 +2558,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
-                submissions: 0,
+                submissions: 500,
                 views: 1000
             },
             status: "published",
@@ -2623,7 +2623,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-11-65b20bc00321db00083d35c9",
             stats: {
-                submissions: 0,
+                submissions: 500,
                 views: 1000
             },
             status: "published",
@@ -2642,6 +2642,71 @@ export const createFormsData = () => {
             _md: "2024-01-25T07:20:49.553Z"
         }
     ];
+};
+
+export const createFormSubmissionsData = () => {
+    const forms = createFormsData().filter(
+        form => form.TYPE === "fb.form" && form.stats.submissions > 0
+    );
+
+    const submissions = [];
+
+    for (const form of forms) {
+        for (let i = 0; i < form.stats.submissions; i++) {
+            const item = {
+                PK: `T#${form.tenant}#L#${form.locale}#FB#FS#${form.formId}`,
+                SK: `${form.id}-submission-${i}`,
+                createdOn: form.createdOn,
+                data: form.fields.map(field => ({
+                    [field.fieldId]: `${field.label} submission ${i}`
+                })),
+                logs: [
+                    {
+                        type: "info",
+                        message: "Form submission created."
+                    },
+                    {
+                        type: "success",
+                        message: "Form submitted successfully."
+                    }
+                ],
+                form: {
+                    fields: form.fields,
+                    steps: form.steps,
+                    id: form.id,
+                    name: form.name,
+                    parent: form.formId,
+                    version: form.version
+                },
+                id: `${form.id}-submission-${i}`,
+                locale: form.locale,
+                meta: {
+                    ip: "0.0.0.0",
+                    submittedOn: form.createdOn,
+                    url: {
+                        location: `https://${form.formId}.website.com/any`,
+                        query: {
+                            formId: form.formId,
+                            tenant: form.tenant,
+                            locale: form.locale
+                        }
+                    }
+                },
+                ownedBy: user,
+                savedOn: form.savedOn,
+                tenant: form.tenant,
+                TYPE: "fb.formSubmission",
+                webinyVersion: form.webinyVersion,
+                _ct: form.createdOn,
+                _et: "FormBuilderSubmission",
+                _md: form.savedOn
+            };
+
+            submissions.push(item);
+        }
+    }
+
+    return submissions;
 };
 
 export const createTenantsData = () => {
