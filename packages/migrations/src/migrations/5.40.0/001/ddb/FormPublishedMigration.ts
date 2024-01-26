@@ -11,7 +11,7 @@ import {
     getMetaFields,
     getOldestRevisionCreatedOn
 } from "../utils";
-import { FbForm, MigrationCheckpoint } from "../types";
+import { CmsEntryWithMeta, FbForm, MigrationCheckpoint } from "../types";
 
 export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<MigrationCheckpoint> {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
@@ -56,7 +56,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
 
                 const [formId] = form.id.split("#");
 
-                const cmsEntry = await queryOne<FbForm>({
+                const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.cmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
                     options: {

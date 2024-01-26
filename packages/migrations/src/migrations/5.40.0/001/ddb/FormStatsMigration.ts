@@ -6,7 +6,7 @@ import { batchWriteAll, ddbQueryAllWithCallback, forEachTenantLocale, queryOne }
 import { executeWithRetry } from "@webiny/utils";
 
 import { getFormStatsMetaFields, getStatsCommonFields } from "../utils";
-import { FbForm, MigrationCheckpoint } from "../types";
+import { CmsEntryWithMeta, FbForm, MigrationCheckpoint } from "../types";
 
 export class FormBuilder_5_40_0_001_FormStats implements DataMigration<MigrationCheckpoint> {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
@@ -51,7 +51,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
 
                 const [formId, revisionId] = formRevision.id.split("#");
 
-                const cmsStats = await queryOne<FbForm>({
+                const cmsStats = await queryOne<CmsEntryWithMeta>({
                     entity: this.cmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
                     options: {

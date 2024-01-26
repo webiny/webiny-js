@@ -57,7 +57,7 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
 
                 const [formId] = form.id.split("#");
 
-                const cmsEntry = await queryOne<FbForm>({
+                const cmsEntry = await queryOne<CmsEntry>({
                     entity: this.cmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}`,
                     options: {
