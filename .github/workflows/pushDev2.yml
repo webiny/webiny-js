@@ -15,8 +15,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: yarn --immutable
       - name: Validate
         run: npx github-actions-wac validate
     runs-on: ubuntu-latest
