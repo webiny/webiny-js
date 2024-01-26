@@ -34,7 +34,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Checking form revisions for ${tenantId} - ${localeCode}.`);
+                logger.info(`Checking form stats for ${tenantId} - ${localeCode}.`);
 
                 const formRevision = await queryOne<FbForm>({
                     entity: this.formEntity,
@@ -43,7 +43,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
 
                 if (!formRevision) {
                     logger.info(
-                        `No form revisions found for ${tenantId} - ${localeCode}: skipping migration.`
+                        `No form stats found for ${tenantId} - ${localeCode}: skipping migration.`
                     );
                     shouldExecute = false;
                     return true;
@@ -61,7 +61,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
 
                 if (!cmsStats) {
                     logger.info(
-                        `No CMS entries revisions found for ${tenantId} - ${localeCode}: executing migration.`
+                        `No CMS entries for Form stats found for ${tenantId} - ${localeCode}: executing migration.`
                     );
                     shouldExecute = true;
                     return false;
@@ -69,7 +69,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
 
                 // Continue to the next locale.
                 logger.info(
-                    `Form revisions already migrated for ${tenantId} - ${localeCode}: skipping migration.`
+                    `Form stats already migrated for ${tenantId} - ${localeCode}: skipping migration.`
                 );
                 return true;
             }
@@ -147,6 +147,6 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
             }
         });
 
-        logger.info("Updated all form revisions.");
+        logger.info("Updated all form stats.");
     }
 }
