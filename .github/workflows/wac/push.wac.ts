@@ -430,5 +430,5 @@ const createPushWorkflow = (branchName: string) => {
     return workflow;
 };
 
-export const pushDev2 = createPushWorkflow("dev");
-export const pushNext2 = createPushWorkflow("next");
+export const pushDev = createPushWorkflow("dev");
+export const pushNext = createPushWorkflow("next");
