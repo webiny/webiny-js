@@ -206,7 +206,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "Upload verdaccio files",
-                    uses: "actions/upload-artifact@v3",
+                    uses: "actions/upload-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
@@ -232,7 +232,7 @@ export const pullRequests = createWorkflow({
             },
             steps: [
                 {
-                    uses: "actions/download-artifact@v3",
+                    uses: "actions/download-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         path: "verdaccio-files"

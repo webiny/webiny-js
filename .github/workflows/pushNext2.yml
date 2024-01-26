@@ -431,7 +431,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
@@ -456,7 +456,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb
           retention-days: 1
@@ -654,7 +654,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
@@ -679,7 +679,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-es
           retention-days: 1
@@ -880,7 +880,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
@@ -905,7 +905,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-os
           retention-days: 1

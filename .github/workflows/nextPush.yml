@@ -286,7 +286,7 @@ jobs:
         run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files
           retention-days: 1
@@ -316,7 +316,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files
           retention-days: 1
@@ -528,7 +528,7 @@ jobs:
         run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files
           retention-days: 1
@@ -558,7 +558,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files
           retention-days: 1
