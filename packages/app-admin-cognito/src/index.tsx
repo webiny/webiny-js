@@ -9,13 +9,13 @@ import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { CognitoIdToken } from "@webiny/app-cognito-authenticator/types";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator";
+import { useSecurity } from "@webiny/app-security";
+import { config as appConfig } from "@webiny/app/config";
 import SignIn from "~/views/SignIn";
 import RequireNewPassword from "~/views/RequireNewPassword";
 import ForgotPassword from "~/views/ForgotPassword";
 import SetNewPassword from "~/views/SetNewPassword";
 import SignedIn from "~/views/SignedIn";
-import { useSecurity } from "@webiny/app-security";
-import { config as appConfig } from "@webiny/app/config";
 import LoggingIn from "~/views/LoggingIn";
 
 const createApolloLinkPlugin = (): ApolloLinkPlugin => {
@@ -107,8 +107,6 @@ export const createAuthentication: AuthenticationFactory = ({
                     payload
                 });
 
-                validatePermissions(permissions);
-
                 setIdentity({
                     id,
                     displayName,
@@ -121,6 +119,8 @@ export const createAuthentication: AuthenticationFactory = ({
                             return void 0;
                         })
                 });
+
+                validatePermissions(permissions);
             } catch (err) {
                 console.log("ERROR", err);
                 if (typeof onError === "function") {
