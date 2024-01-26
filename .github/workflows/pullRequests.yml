@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: webiny/action-conventional-commits@v1.2.0
+      - uses: webiny/action-conventional-commits@v1.3.0
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - uses: webiny/action-conventional-commits@v1.2.0
+      - uses: webiny/action-conventional-commits@v1.3.0
         with:
           allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
     runs-on: ubuntu-latest
