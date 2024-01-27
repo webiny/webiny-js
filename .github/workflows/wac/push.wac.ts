@@ -238,7 +238,7 @@ const createPushWorkflow = (branchName: string) => {
     const ucFirstBranchName = branchName.charAt(0).toUpperCase() + branchName.slice(1);
 
     const workflow = createWorkflow({
-        name: `${ucFirstBranchName} Branch - Push 2`,
+        name: `${ucFirstBranchName} Branch - Push`,
         on: { push: { branches: [branchName] } },
         jobs: {
             validateWorkflows: createValidateWorkflowsJob(),
