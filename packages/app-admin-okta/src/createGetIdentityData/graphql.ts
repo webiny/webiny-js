@@ -5,7 +5,7 @@ export const LOGIN_MT = gql`
         security {
             login {
                 data {
-                    ... on SecurityIdentity {
+                    ... on OktaIdentity {
                         id
                         displayName
                         type
