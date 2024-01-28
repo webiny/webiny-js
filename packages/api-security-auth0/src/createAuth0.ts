@@ -19,7 +19,8 @@ export const createAuth0 = (config: CreateAuth0Config) => {
         }),
         createGroupAuthorizer({
             identityType,
-            getGroupSlug: config.getGroupSlug
+            getGroupSlug: config.getGroupSlug,
+            inheritGroupsFromParentTenant: config.inheritGroupsFromParentTenant
         }),
         createIdentityType({
             identityType,
