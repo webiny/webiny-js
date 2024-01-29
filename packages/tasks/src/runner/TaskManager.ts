@@ -67,6 +67,33 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             }
         }
         /**
+         * We do not want to run the task indefinitely.
+         * If the task has reached the max iterations, we will stop it and execute the onMaxIterations handler, if any.
+         */
+        //
+        else if (this.store.getTask().iterations >= definition.maxIterations) {
+            try {
+                if (definition.onMaxIterations) {
+                    await definition.onMaxIterations({
+                        task: this.store.getTask(),
+                        context: this.context
+                    });
+                }
+                return this.response.error({
+                    error: {
+                        message: "Task reached max iterations."
+                    }
+                });
+            } catch (ex) {
+                return this.response.error({
+                    error: {
+                        message: "Failed to execute onMaxIterations handler.",
+                        data: getErrorProperties(ex)
+                    }
+                });
+            }
+        }
+        /**
          * Always update the task iteration.
          */
         //
