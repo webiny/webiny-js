@@ -1,6 +1,7 @@
 import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { STATUS_UNPUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { getIdentity } from "~/utils/identity";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -27,16 +28,16 @@ export const createUnpublishEntryData = async ({
          */
         savedOn: currentDateTime,
         modifiedOn: currentDateTime,
-        savedBy: currentIdentity,
-        modifiedBy: currentIdentity,
+        savedBy: getIdentity(currentIdentity),
+        modifiedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
          */
         revisionSavedOn: currentDateTime,
         revisionModifiedOn: currentDateTime,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity)
     };
 
     return { entry };
