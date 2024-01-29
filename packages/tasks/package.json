@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "7.23.9",
     "@types/aws-lambda": "^8.10.131",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
@@ -25,14 +25,14 @@
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
     "deep-equal": "^2.2.3",
-    "lodash": "^4.17.21",
+    "lodash": "4.17.21",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-typescript": "^7.22.5",
+    "@babel/cli": "7.23.9",
+    "@babel/core": "7.23.9",
+    "@babel/preset-env": "7.23.9",
+    "@babel/preset-typescript": "7.23.3",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",

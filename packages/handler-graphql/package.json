@@ -14,7 +14,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "7.23.9",
     "@graphql-tools/schema": "^7.0.0",
     "@webiny/api": "0.0.0",
     "@webiny/error": "0.0.0",
@@ -26,9 +26,9 @@
     "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/cli": "7.23.9",
+    "@babel/core": "7.23.9",
+    "@babel/preset-env": "7.23.9",
     "@webiny/cli": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",

@@ -11,7 +11,7 @@
   "description": "Tools to author and execute data migrations.",
   "author": "Webiny Ltd.",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "7.23.9",
     "@elastic/elasticsearch": "7.12.0",
     "@types/pino": "^7.0.5",
     "@webiny/aws-sdk": "0.0.0",
@@ -27,9 +27,9 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/cli": "7.23.9",
+    "@babel/core": "7.23.9",
+    "@babel/preset-env": "7.23.9",
     "@types/center-align": "^1.0.0",
     "@types/semver": "^7.3.4",
     "@webiny/cli": "0.0.0",

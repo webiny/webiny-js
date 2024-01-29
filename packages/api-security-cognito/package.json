@@ -23,8 +23,8 @@
     "@webiny/handler-graphql": "0.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
+    "@babel/cli": "7.23.9",
+    "@babel/core": "7.23.9",
     "@types/jsonwebtoken": "^9.0.2",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",

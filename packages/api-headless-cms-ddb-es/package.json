@@ -26,7 +26,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "7.23.9",
     "@webiny/api": "0.0.0",
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
@@ -38,12 +38,12 @@
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.0.0",
     "jsonpack": "^1.1.5",
-    "lodash": "^4.17.21"
+    "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/cli": "7.23.9",
+    "@babel/core": "7.23.9",
+    "@babel/preset-env": "7.23.9",
     "@elastic/elasticsearch": "7.12.0",
     "@types/jsonpack": "^1.1.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
