@@ -2,6 +2,7 @@ import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
+import { getIdentity } from "~/utils/identity";
 
 type CreatePublishEntryDataParams = {
     model: CmsModel;
@@ -43,11 +44,11 @@ export const createPublishEntryData = async ({
         savedOn: currentDateTime,
         firstPublishedOn: latestEntry.firstPublishedOn || currentDateTime,
         lastPublishedOn: currentDateTime,
-        createdBy: latestEntry.createdBy,
-        modifiedBy: currentIdentity,
-        savedBy: currentIdentity,
-        firstPublishedBy: latestEntry.firstPublishedBy || currentIdentity,
-        lastPublishedBy: currentIdentity,
+        createdBy: getIdentity(latestEntry.createdBy),
+        modifiedBy: getIdentity(currentIdentity),
+        savedBy: getIdentity(currentIdentity),
+        firstPublishedBy: getIdentity(latestEntry.firstPublishedBy, currentIdentity),
+        lastPublishedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
@@ -57,11 +58,14 @@ export const createPublishEntryData = async ({
         revisionModifiedOn: currentDateTime,
         revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
         revisionLastPublishedOn: currentDateTime,
-        revisionCreatedBy: originalEntry.revisionCreatedBy,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-        revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-        revisionLastPublishedBy: currentIdentity
+        revisionCreatedBy: getIdentity(originalEntry.revisionCreatedBy),
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity),
+        revisionFirstPublishedBy: getIdentity(
+            originalEntry.revisionFirstPublishedBy,
+            currentIdentity
+        ),
+        revisionLastPublishedBy: getIdentity(currentIdentity)
     };
 
     return { entry };

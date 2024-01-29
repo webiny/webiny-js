@@ -2,6 +2,7 @@ import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { getIdentity } from "~/utils/identity";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -37,24 +38,27 @@ export const createRepublishEntryData = async ({
          */
         savedOn: currentDateTime,
         modifiedOn: currentDateTime,
-        savedBy: currentIdentity,
-        modifiedBy: currentIdentity,
+        savedBy: getIdentity(currentIdentity),
+        modifiedBy: getIdentity(currentIdentity),
         firstPublishedOn: originalEntry.firstPublishedOn || currentDateTime,
-        firstPublishedBy: originalEntry.firstPublishedBy || currentIdentity,
+        firstPublishedBy: getIdentity(originalEntry.firstPublishedBy, currentIdentity),
         lastPublishedOn: currentDateTime,
-        lastPublishedBy: currentIdentity,
+        lastPublishedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
          */
         revisionSavedOn: currentDateTime,
         revisionModifiedOn: currentDateTime,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity),
         revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
-        revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
+        revisionFirstPublishedBy: getIdentity(
+            originalEntry.revisionFirstPublishedBy,
+            currentIdentity
+        ),
         revisionLastPublishedOn: currentDateTime,
-        revisionLastPublishedBy: currentIdentity,
+        revisionLastPublishedBy: getIdentity(currentIdentity),
 
         webinyVersion: context.WEBINY_VERSION,
         values
