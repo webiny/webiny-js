@@ -48,11 +48,9 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             return reply.send();
         });
 
-        app.post(url, async (request, reply) => {
+        app.post(url, async (_, reply) => {
             const handler = new TaskRunner(
                 context,
-                request,
-                reply,
                 /**
                  * We can safely cast because we know that the context is of type tasks/Context
                  */

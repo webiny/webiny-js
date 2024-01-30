@@ -1,5 +1,5 @@
 import { ITaskEvent } from "~/handler/types";
-import { TaskResponseStatus } from "~/types";
+import { ITaskResponseDoneResultOutput, TaskResponseStatus } from "~/types";
 import {
     IResponse,
     IResponseAbortedResult,
@@ -47,13 +47,16 @@ export class Response implements IResponse {
         });
     }
 
-    public done(params?: IResponseDoneParams): IResponseDoneResult {
-        return new ResponseDoneResult({
+    public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        params?: IResponseDoneParams<O>
+    ): IResponseDoneResult<O> {
+        return new ResponseDoneResult<O>({
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
-            message: params?.message
+            message: params?.message,
+            output: params?.output || ({} as O)
         });
     }
 

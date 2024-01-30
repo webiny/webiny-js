@@ -4,6 +4,7 @@ import { TaskManager } from "~/runner/TaskManager";
 import {
     createMockContext,
     createMockEvent,
+    createMockLambdaContext,
     createMockResponseFactory,
     createMockRunner
 } from "~tests/mocks";
@@ -13,18 +14,19 @@ import { createMockTaskDefinition } from "~tests/mocks/definition";
 import { createMockTaskResponse } from "~tests/mocks/taskResponse";
 import { createMockTaskManagerStore } from "~tests/mocks/store";
 import { createMockTaskLog } from "~tests/mocks/taskLog";
+import { useHandler } from "~tests/helpers/useHandler";
+import { TaskRunner } from "~/runner";
 
 const mockTaskInputValues = {
     someInputValue: 1
 };
 
 describe("task manager", () => {
+    const taskDefinition = createMockTaskDefinition();
     const task = createMockTask({
         input: mockTaskInputValues
     });
     const taskLog = createMockTaskLog(task);
-
-    const taskDefinition = createMockTaskDefinition();
 
     it("should create a task manager", async () => {
         const responseFactory = createMockResponseFactory();
@@ -119,7 +121,8 @@ describe("task manager", () => {
             tenant: "root",
             message: undefined,
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: taskDefinition.id
+            webinyTaskDefinitionId: taskDefinition.id,
+            output: {}
         });
     });
 
@@ -183,6 +186,70 @@ describe("task manager", () => {
             tenant: "root",
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id
+        });
+    });
+
+    it("should run a task and mark it as done", async () => {
+        const { handle } = useHandler({
+            plugins: [taskDefinition]
+        });
+        const context = await handle();
+
+        const task = await context.tasks.createTask({
+            definitionId: taskDefinition.id,
+            input: {
+                someInput: 1
+            },
+            name: "My task name"
+        });
+
+        const runner = new TaskRunner(createMockLambdaContext(), context);
+
+        const result = await runner.run({
+            webinyTaskId: task.id,
+            endpoint: "manage",
+            executionName: "executionNameMock",
+            locale: "en-US",
+            tenant: "root",
+            webinyTaskDefinitionId: taskDefinition.id,
+            stateMachineId: "stateMachineIdMock"
+        });
+
+        expect(result).toEqual({
+            locale: "en-US",
+            message: "Task done!",
+            status: "done",
+            tenant: "root",
+            webinyTaskDefinitionId: "myCustomTaskDefinition",
+            webinyTaskId: task.id,
+            output: {
+                withSomeBoolean: true,
+                withSomeNumber: 1,
+                withSomeObject: {
+                    testingObject: "yes!"
+                },
+                withSomeString: "yes!"
+            }
+        });
+
+        const taskAfterDone = await context.tasks.getTask(task.id);
+
+        expect(taskAfterDone).toEqual({
+            ...task,
+            taskStatus: "success",
+            startedOn: expect.toBeDateString(),
+            finishedOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
+            executionName: "executionNameMock",
+            iterations: 1,
+            output: {
+                withSomeBoolean: true,
+                withSomeNumber: 1,
+                withSomeString: "yes!",
+                withSomeObject: {
+                    testingObject: "yes!"
+                }
+            }
         });
     });
 });

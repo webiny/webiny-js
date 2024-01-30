@@ -27,6 +27,12 @@ export const createMockContext = (params?: PartialDeep<Context>): Context => {
     return {
         ...params,
         plugins: params?.plugins || new PluginsContainer(),
+        security: {
+            withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T> {
+                return cb();
+            },
+            ...params?.security
+        },
         tasks: {
             getTask,
             updateTask: async (id: string, data: ITaskUpdateData): Promise<IUpdateTaskResponse> => {

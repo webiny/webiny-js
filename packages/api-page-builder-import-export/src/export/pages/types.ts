@@ -12,6 +12,7 @@ export enum PageExportTask {
  * Controller
  */
 export interface IExportPagesControllerInput {
+    type: "published" | "latest";
     where?: Record<string, any>;
     after?: string | null;
     limit?: number;
@@ -20,9 +21,15 @@ export interface IExportPagesControllerInput {
     combiningZips?: string;
 }
 
+export interface IExportPagesControllerOutput extends ITaskResponseDoneResultOutput {
+    key: string;
+    url: string;
+}
+
 export type IExportPagesControllerTaskParams = ITaskRunParams<
     PbImportExportContext,
-    IExportPagesControllerInput
+    IExportPagesControllerInput,
+    IExportPagesControllerOutput
 >;
 
 /**

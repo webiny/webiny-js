@@ -8,10 +8,13 @@ export interface IResponseDoneParams<
     locale?: string;
     webinyTaskId?: string;
     message?: string;
-    output?: O;
+    output: O;
 }
 
-export interface IResponseDoneResult extends IResponseBaseResult {
+export interface IResponseDoneResult<
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> extends IResponseBaseResult {
     message?: string;
+    output: O;
     status: TaskResponseStatus.DONE;
 }

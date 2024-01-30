@@ -2,7 +2,7 @@ import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
 import { IExportPagesControllerTaskParams, PageExportTask } from "../types";
 import { COMBINE_ZIPPED_PAGES_WAIT_TIME } from "~/export/pages/controller/ProcessCombineZippedPagesTask";
 
-export const ZIP_PAGES_WAIT_TIME = 30;
+export const ZIP_PAGES_WAIT_TIME = 15;
 
 export class ProcessZipPagesTasks {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
@@ -20,7 +20,7 @@ export class ProcessZipPagesTasks {
          */
         const result = await context.tasks.listTasks({
             where: {
-                parent: store.getTask().id,
+                parentId: store.getTask().id,
                 definitionId: PageExportTask.ZipPages,
                 taskStatus: TaskDataStatus.RUNNING
             },

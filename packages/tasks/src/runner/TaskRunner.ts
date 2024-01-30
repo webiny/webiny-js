@@ -1,5 +1,4 @@
 import { Context as LambdaContext } from "aws-lambda/handler";
-import { Reply, Request } from "@webiny/handler/types";
 import { ITaskEvent } from "~/handler/types";
 import { ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
@@ -24,8 +23,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      *
      * Follow the same example for the rest of the properties.
      */
-    public readonly request: Request;
-    public readonly reply: Reply;
     public readonly context: C;
     public readonly lambdaContext: LambdaContext;
     private readonly validation: TaskEventValidation;
@@ -35,13 +32,9 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      */
     public constructor(
         lambdaContext: LambdaContext,
-        request: Request,
-        reply: Reply,
         context: C,
         validation: TaskEventValidation = new TaskEventValidation()
     ) {
-        this.request = request;
-        this.reply = reply;
         this.context = context;
         this.lambdaContext = lambdaContext;
         this.validation = validation;

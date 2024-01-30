@@ -94,7 +94,12 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
     };
 
-    const getTask = async (id: string) => {
+    const getTask = async <
+        T = any,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string
+    ) => {
         let entry: CmsEntry;
         try {
             entry = await context.security.withoutAuthorization(async () => {
@@ -111,7 +116,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return null;
         }
 
-        return convertToTask(entry as unknown as CmsEntry<ITask>);
+        return convertToTask(entry as unknown as CmsEntry<ITask<T, O>>);
     };
 
     const listTasks = async <

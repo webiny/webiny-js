@@ -1,7 +1,7 @@
-import { IExportPagesControllerTaskParams } from "../types";
+import { IExportPagesCombineZippedPagesOutput, IExportPagesControllerTaskParams } from "../types";
 import { ITaskResponseResult } from "@webiny/tasks";
 
-export const COMBINE_ZIPPED_PAGES_WAIT_TIME = 30;
+export const COMBINE_ZIPPED_PAGES_WAIT_TIME = 15;
 
 export class ProcessCombineZippedPagesTask {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
@@ -9,7 +9,9 @@ export class ProcessCombineZippedPagesTask {
         /**
          * We can safely case as string, because we know that we are passing the ID of the zipping task.
          */
-        const task = await context.tasks.getTask(input.combiningZips as string);
+        const task = await context.tasks.getTask<any, IExportPagesCombineZippedPagesOutput>(
+            input.combiningZips as string
+        );
         if (!task) {
             return response.error({
                 message: `Cannot find task with ID "${input.combiningZips}".`,

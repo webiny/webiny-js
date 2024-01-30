@@ -7,27 +7,41 @@ import {
 } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks/types";
 
-const PAGES_IN_BATCH = 100;
+const PAGES_IN_BATCH = 50;
 
 /**
  * Go through all the pages and create subtasks for zipping pages in batches.
  */
 export class CreateZipPagesTasks {
-    public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
-        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
-
+    public async execute({
+        response,
+        input,
+        isAborted,
+        isCloseToTimeout,
+        context,
+        store
+    }: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
         const listPagesParams: ListPagesParams = {
             where: input.where,
             after: input.after,
             limit: input.limit && input.limit > 0 ? input.limit : PAGES_IN_BATCH
         };
+
+        const listPages = async (params: ListPagesParams) => {
+            if (input.type === "published") {
+                return context.pageBuilder.listPublishedPages(params);
+            }
+            return context.pageBuilder.listLatestPages(params);
+        };
+
         let currentBatch = input.currentBatch || 1;
         let result: [Page[], ListMeta];
-        while ((result = await context.pageBuilder.listLatestPages(listPagesParams))) {
+        while ((result = await listPages(listPagesParams))) {
             if (isAborted()) {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
                 return response.continue({
+                    ...input,
                     ...listPagesParams,
                     currentBatch
                 });
@@ -45,6 +59,7 @@ export class CreateZipPagesTasks {
             } else if (pages.length === 0) {
                 return response.continue(
                     {
+                        ...input,
                         ...listPagesParams,
                         currentBatch,
                         zippingPages: true
@@ -73,6 +88,7 @@ export class CreateZipPagesTasks {
             if (!meta.hasMoreItems || !meta.cursor) {
                 return response.continue(
                     {
+                        ...input,
                         ...listPagesParams,
                         currentBatch,
                         zippingPages: true
@@ -89,6 +105,7 @@ export class CreateZipPagesTasks {
          */
         return response.continue(
             {
+                ...input,
                 ...listPagesParams,
                 currentBatch
             },

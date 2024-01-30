@@ -36,7 +36,7 @@ const getWaitingTime = (options?: ITaskResponseContinueOptions): number | undefi
     if (!waitingTime || waitingTime < 0) {
         return undefined;
     }
-    return waitingTime > MAX_WAITING_TIME ? waitingTime : MAX_WAITING_TIME;
+    return waitingTime > MAX_WAITING_TIME ? MAX_WAITING_TIME : waitingTime;
 };
 
 export class TaskResponse implements ITaskResponse {
@@ -52,7 +52,7 @@ export class TaskResponse implements ITaskResponse {
     ): ITaskResponseDoneResult<O> {
         return this.response.done<O>({
             message,
-            output
+            output: output || ({} as O)
         });
     }
 

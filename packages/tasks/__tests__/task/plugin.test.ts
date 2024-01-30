@@ -31,6 +31,8 @@ class MyTask implements ITaskDefinition<Context, MyInput> {
     public readonly id = "myCustomTask";
     public readonly title = "A custom task defined via class";
 
+    public maxIterations = 10;
+
     public fields = [
         {
             ...taskField
@@ -77,7 +79,8 @@ describe("task plugin", () => {
                 createTaskDefinitionField({
                     ...taskField
                 })
-            ]
+            ],
+            maxIterations: 10
         };
 
         expect(task.id).toBe("myCustomTask");
