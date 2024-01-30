@@ -35,7 +35,7 @@
     "@webiny/project-utils": "0.0.0",
     "apollo-graphql": "^0.9.5",
     "get-yarn-workspaces": "^1.0.2",
-    "jest": "^29.5.0",
+    "jest": "29.7.0",
     "jest-dynalite": "^3.6.1",
     "prettier": "^2.8.3",
     "rimraf": "^3.0.2",

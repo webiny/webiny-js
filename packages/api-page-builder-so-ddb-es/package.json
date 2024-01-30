@@ -62,7 +62,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "graphql": "^15.8.0",
-    "jest": "^29.5.0",
+    "jest": "29.7.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
