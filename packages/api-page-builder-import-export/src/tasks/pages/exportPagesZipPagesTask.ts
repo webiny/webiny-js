@@ -15,6 +15,10 @@ export const createExportPagesZipPagesTask = () => {
         id: PageExportTask.ZipPages,
         title: "Page Builder - Export Pages - Zip Pages",
         description: "Export pages from the Page Builder - zip pages.",
+        /**
+         * If we ever hit the max iterations limit, we should decrease the number of pages being zipped in one task execution.
+         */
+        maxIterations: 10,
         run: async params => {
             const { response, isAborted } = params;
             /**

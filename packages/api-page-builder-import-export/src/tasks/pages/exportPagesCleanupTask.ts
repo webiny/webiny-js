@@ -7,6 +7,7 @@ export const createExportPagesCleanupTask = () => {
         id: PageExportTask.Cleanup,
         title: "Page Builder - Export Pages Cleanup",
         description: "Export pages from the Page Builder - cleanup.",
+        maxIterations: 1,
         run: async param => {
             const { response, isAborted } = param;
             /**

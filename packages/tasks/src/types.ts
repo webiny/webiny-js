@@ -253,14 +253,12 @@ export interface ITasksContextDefinitionObject {
     listDefinitions: () => ITaskDefinition[];
 }
 
-/**
- * TODO: implement delayed trigger
- */
 export interface ITaskTriggerParams<I = ITaskDataInput> {
     parent?: ITask;
     definition: string;
     name?: string;
     input?: I;
+    delay?: number;
 }
 
 export interface ITaskAbortParams {
@@ -343,7 +341,7 @@ export type ITaskDefinitionField = Pick<
 
 export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataInput> {
     context: C;
-    input: I;
+    data: ITaskCreateData<I>;
 }
 
 export interface ITaskDefinition<

@@ -15,6 +15,10 @@ export const createExportPagesCombineZippedPagesTask = () => {
         id: PageExportTask.CombineZippedPages,
         title: "Page Builder - Export Pages - Combine Zipped Pages",
         description: "Export pages from the Page Builder - combine zipped pages.",
+        /**
+         * We cannot have more than one iteration, because we need to combine all the page zip files into one in one go.
+         */
+        maxIterations: 1,
         run: async params => {
             const { response, isAborted } = params;
             /**

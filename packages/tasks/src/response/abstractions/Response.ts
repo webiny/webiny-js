@@ -18,6 +18,9 @@ export type IResponseResult =
 
 export interface IResponse {
     readonly event: ITaskEvent;
+
+    setEvent: (event: ITaskEvent) => void;
+
     from: (params: IResponseFromParams) => IResponseResult;
     done: <O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         params?: IResponseDoneParams<O>

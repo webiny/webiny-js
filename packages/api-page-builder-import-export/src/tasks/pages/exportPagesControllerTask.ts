@@ -16,6 +16,10 @@ export const createExportPagesControllerTask = () => {
         id: PageExportTask.Controller,
         title: "Page Builder - Export Pages - Controller",
         description: "Export pages from the Page Builder - controller.",
+        /**
+         * We want to have a lot of executions because we need to pool the subtasks all the time.
+         */
+        maxIterations: 500,
         run: async params => {
             const { response, isAborted } = params;
             /**
@@ -35,8 +39,11 @@ export const createExportPagesControllerTask = () => {
         onDone: async ({ context, task }) => {
             await context.tasks.trigger({
                 definition: PageExportTask.Cleanup,
-                parent: task
-                //delay: 24 * 60 * 60,
+                parent: task,
+                // TODO remove testing delay
+                delay: 60 * 60 // 60 minutes
+                // delay cleanup for 25hrs
+                // delay: 25 * 60 * 60
             });
         },
         onError: async ({ context, task }) => {
