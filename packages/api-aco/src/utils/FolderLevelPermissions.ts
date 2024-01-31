@@ -72,14 +72,6 @@ export class FolderLevelPermissions {
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
 
         this.isAuthorizationEnabled = params.isAuthorizationEnabled;
-
-        // TODO: resolve this issue.
-        // We immediately enable authorization, because, at the moment, the rest of the system
-        // requires us to have FLP always enabled. We must now disable it, even if the security's
-        // `isAuthorizationEnabled` is set to false. To resolve this, we'll need to refactor CMS-based
-        // CRUD files and have them use CMS storage operations instead of CMS CRUD methods.
-        // We'll be handling this in the near future.
-        this.isAuthorizationEnabled = () => true;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
