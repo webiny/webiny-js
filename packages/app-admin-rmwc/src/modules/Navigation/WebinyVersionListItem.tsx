@@ -31,12 +31,12 @@ export const WebinyVersionListItem = () => {
 
         const tooltipContent = (
             <span>
-                alphacloud/alphacloudco
+                {wcpProject.orgId}/{wcpProject.projectId}
             </span>
         );
 
         return (
-            <Tooltip content={tooltipContent} placement={"topRight"}>
+            <Tooltip content={tooltipContent}>
                 <WcpBadge>WCP</WcpBadge>
             </Tooltip>
         );
