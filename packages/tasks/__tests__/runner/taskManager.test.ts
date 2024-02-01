@@ -85,7 +85,8 @@ describe("task manager", () => {
             message: undefined,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id,
-            wait: undefined
+            wait: undefined,
+            delay: -1
         });
     });
 

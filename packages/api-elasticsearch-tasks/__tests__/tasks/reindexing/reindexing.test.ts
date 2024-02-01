@@ -51,7 +51,8 @@ describe("reindexing", () => {
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
-                message: "No more items to process - no last evaluated keys."
+                message: "No more items to process - no last evaluated keys.",
+                output: {}
             })
         );
 
@@ -68,17 +69,8 @@ describe("reindexing", () => {
             startedOn: expect.toBeDateString(),
             finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
+            output: {},
             iterations: 1
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "No more items to process - no last evaluated keys."
-            //     }
-            // ]
         });
     });
 
@@ -111,17 +103,6 @@ describe("reindexing", () => {
             finishedOn: undefined,
             taskStatus: TaskDataStatus.RUNNING,
             iterations: 1
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "Task continuing.",
-            //         input: {}
-            //     }
-            // ]
         });
         /**
          * Should end the task when there are no more items to process.
@@ -134,7 +115,8 @@ describe("reindexing", () => {
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
                 locale: "en-US",
-                message: "No more items to process - no last evaluated keys."
+                message: "No more items to process - no last evaluated keys.",
+                output: {}
             })
         );
 
@@ -151,22 +133,8 @@ describe("reindexing", () => {
             startedOn: expect.toBeDateString(),
             finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
+            output: {},
             iterations: 2
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "Task continuing.",
-            //         input: {}
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "No more items to process - no last evaluated keys."
-            //     }
-            // ]
         });
     });
 });
