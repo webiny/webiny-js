@@ -1,4 +1,4 @@
-import { IExportPagesCombineZippedPagesTaskParams } from "~/export/pages/types";
+import { IExportPagesCombineZippedPagesParams } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
 import { s3Stream } from "~/export/s3Stream";
 import { createExportPagesDataKey } from "~/export/pages/utils";
@@ -6,25 +6,19 @@ import { ZipOfZip } from "~/export/zipper";
 
 export class CombineZippedPages {
     public async execute(
-        params: IExportPagesCombineZippedPagesTaskParams
+        params: IExportPagesCombineZippedPagesParams
     ): Promise<ITaskResponseResult> {
         const { response, store } = params;
         /**
          * We need to get all the subtasks of the PageExportTask.ZipPages type, so we can get all the zip files and combine them into one.
          * Current task must have a parent for this to work.
          */
-        const parentId = store.getTask().parentId;
-        if (!parentId) {
-            return response.error({
-                message: `Could not find parent task ID.`
-            });
-        }
+        const taskId = store.getTask().id;
 
         /**
          * When we have all the pages IDs and their zip files, we can continue to combine the zip files into one.
          */
-
-        const exportPagesDataKey = createExportPagesDataKey(parentId);
+        const exportPagesDataKey = createExportPagesDataKey(taskId);
 
         const listObjectResponse = await s3Stream.listObject(exportPagesDataKey);
         if (!Array.isArray(listObjectResponse.Contents)) {

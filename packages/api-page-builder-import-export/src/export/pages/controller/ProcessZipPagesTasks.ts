@@ -1,12 +1,12 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
 import { IExportPagesControllerTaskParams, PageExportTask } from "../types";
-import { COMBINE_ZIPPED_PAGES_WAIT_TIME } from "~/export/pages/controller/ProcessCombineZippedPagesTask";
+import { CombineZippedPages } from "~/export/pages/controller/CombineZippedPages";
 
-export const ZIP_PAGES_WAIT_TIME = 15;
+export const ZIP_PAGES_WAIT_TIME = 5;
 
 export class ProcessZipPagesTasks {
     public async execute(params: IExportPagesControllerTaskParams): Promise<ITaskResponseResult> {
-        const { response, input, isAborted, isCloseToTimeout, context, store, trigger } = params;
+        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
         if (isAborted()) {
             return response.aborted();
@@ -40,20 +40,13 @@ export class ProcessZipPagesTasks {
             );
         }
         /**
-         * If all subtasks (Zip Pages) are done, we can continue with the next subtask (Combine Zipped Pages).
+         * If all subtasks (Zip Pages) are done, we can continue with zipping all zip files into a single one.
          */
-        const combineZippedPagesTask = await trigger({
-            definition: PageExportTask.CombineZippedPages
+        const combineZippedPages = new CombineZippedPages();
+
+        return combineZippedPages.execute({
+            store,
+            response
         });
-        return response.continue(
-            {
-                ...input,
-                zippingPages: false,
-                combiningZips: combineZippedPagesTask.id
-            },
-            {
-                seconds: COMBINE_ZIPPED_PAGES_WAIT_TIME
-            }
-        );
     }
 }

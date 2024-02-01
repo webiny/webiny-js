@@ -1,19 +1,25 @@
 import gql from "graphql-tag";
-import { PageBuilderImportExportSubTask } from "~/types";
+import { PageBuilderImportExportSubTask, PbErrorResponse } from "~/types";
+import {
+    CreatedBy,
+    PbImportExportTaskData,
+    PbListPagesSearchInput,
+    PbListPagesWhereInput,
+    PbTaskStatus
+} from "./types";
+import { PbRevisionType } from "~/contexts/PageBuilder";
 
 const ERROR = `
-error {   
+error {
     code
     message
     data
-}    
+}
 `;
 
 const STATS = `
 stats {
     total
-    processing
-    pending
     completed
     failed
 }`;
@@ -44,9 +50,42 @@ export const IMPORT_PAGES = gql`
     }
 `;
 
+export interface ExportPagesVariables {
+    revisionType: PbRevisionType;
+    where?: PbListPagesWhereInput;
+    limit?: number;
+    sort?: string[];
+    search?: PbListPagesSearchInput;
+}
+
+export interface ExportPagesResponseDataTask {
+    id: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    status: PbTaskStatus;
+    data: PbImportExportTaskData;
+    stats: {
+        total: number;
+        completed: number;
+        failed: number;
+    };
+}
+
+export interface ExportPagesResponseData {
+    task: ExportPagesResponseDataTask;
+}
+
+export interface ExportPagesResponse {
+    pageBuilder: {
+        exportPages: {
+            data: ExportPagesResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+
 export const EXPORT_PAGES = gql`
     mutation PbExportPages(
-        $ids: [ID!],
         $revisionType: PbExportPageRevisionType!,
         $where: PbListPagesWhereInput,
         $sort: [PbListPagesSort!],
@@ -54,7 +93,6 @@ export const EXPORT_PAGES = gql`
     ) {
         pageBuilder {
             exportPages(
-                ids: $ids,
                 revisionType: $revisionType,
                 where: $where,
                 sort: $sort,
@@ -64,7 +102,6 @@ export const EXPORT_PAGES = gql`
                     task {
                         id
                         status
-                        data
                         ${STATS}
                     }
                 }
@@ -73,6 +110,56 @@ export const EXPORT_PAGES = gql`
         }
     }
 `;
+
+export interface GetPageExportTaskVariables {
+    id: string;
+}
+
+export interface GetPageExportTaskResponse {
+    pageBuilder: {
+        getExportTask: {
+            data?: ExportPagesResponseDataTask;
+            error?: PbErrorResponse;
+        };
+    };
+}
+
+export const GET_PAGE_EXPORT_TASK = gql`
+    query PbGetPageExportTask($id: ID!) {
+        pageBuilder {
+            getExportTask(id: $id) {
+                data {
+                    id
+                    status
+                    createdOn
+                    data {
+                        error {
+                            message
+                            code
+                            data
+                        }
+                        url
+                    }
+                    stats {
+                        total
+                        completed
+                        failed
+                    }
+                }
+                ${ERROR}
+            }
+        }
+    }
+`;
+
+export interface PageImportExportTaskResponse {
+    pageBuilder: {
+        getImportExportTask: {
+            data?: ExportPagesResponseDataTask;
+            error?: PbErrorResponse;
+        };
+    };
+}
 
 export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
     query PbGetPageImportExportTask($id: ID!) {

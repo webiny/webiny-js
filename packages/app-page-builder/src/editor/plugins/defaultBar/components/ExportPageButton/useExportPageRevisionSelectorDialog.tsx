@@ -9,6 +9,7 @@ import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { PbElementDataSettingsFormType } from "~/types";
+import { PbRevisionType } from "~/contexts/PageBuilder";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -45,7 +46,7 @@ const ExportPageDialogMessage = ({ selected }: ExportPageDialogMessageProps) => 
                             /**
                              * We expect revision to be string.
                              */
-                            return setValue(revision as string);
+                            return setValue(revision as PbRevisionType);
                         }}
                     >
                         {({ Bind }) => (

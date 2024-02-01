@@ -29,7 +29,7 @@ export const createExportPagesZipPagesTask = () => {
             }
 
             const { ExportPagesZipPages } = await import(
-                /* webpackChunkName: "PageExportTaskZipPages" */ "~/export/pages/ExportPagesZipPages"
+                /* webpackChunkName: "ExportPagesZipPages" */ "~/export/pages/ExportPagesZipPages"
             );
 
             const exportPagesZipPages = new ExportPagesZipPages();

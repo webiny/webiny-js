@@ -24,9 +24,11 @@ import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import { remapWhere } from "./where";
+import { parseIdentifier } from "@webiny/utils";
 
 const createRevisionId = (id: string) => {
-    return `${id}#0001`;
+    const { id: entryId } = parseIdentifier(id);
+    return `${entryId}#0001`;
 };
 
 const convertToTask = <

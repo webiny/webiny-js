@@ -30,7 +30,7 @@ export const createExportPagesControllerTask = () => {
             }
 
             const { ExportPagesController } = await import(
-                /* webpackChunkName: "PageExportTaskController" */ "~/export/pages/ExportPagesController"
+                /* webpackChunkName: "ExportPagesController" */ "~/export/pages/ExportPagesController"
             );
 
             const exportPagesController = new ExportPagesController();

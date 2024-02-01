@@ -14,11 +14,11 @@ export enum PageExportTask {
 export interface IExportPagesControllerInput {
     type: "published" | "latest";
     where?: Record<string, any>;
+    totalPages: number;
     after?: string | null;
     limit?: number;
     currentBatch?: number;
     zippingPages?: boolean;
-    combiningZips?: string;
 }
 
 export interface IExportPagesControllerOutput extends ITaskResponseDoneResultOutput {
@@ -58,19 +58,19 @@ export type IExportPagesZipPagesTaskParams = ITaskRunParams<
 /**
  * Combine Zipped Pages
  */
-export interface IExportPagesCombineZippedPagesInput {
-    after?: string | null;
-}
 
 export interface IExportPagesCombineZippedPagesOutput extends ITaskResponseDoneResultOutput {
     key: string;
     url: string;
 }
 
-export type IExportPagesCombineZippedPagesTaskParams = ITaskRunParams<
-    PbImportExportContext,
-    IExportPagesCombineZippedPagesInput,
-    IExportPagesCombineZippedPagesOutput
+export type IExportPagesCombineZippedPagesParams = Pick<
+    ITaskRunParams<
+        PbImportExportContext,
+        IExportPagesControllerInput,
+        IExportPagesCombineZippedPagesOutput
+    >,
+    "store" | "response"
 >;
 
 /**

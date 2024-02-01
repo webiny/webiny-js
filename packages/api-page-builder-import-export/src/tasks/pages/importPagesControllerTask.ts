@@ -7,6 +7,10 @@ export const createImportPagesControllerTask = () => {
         id: "pageBuilderImportPages",
         title: "Page Builder - Import Pages",
         description: "Import pages from the Page Builder.",
+        /**
+         * We want to have a lot of executions because we need to pool the subtasks all the time.
+         */
+        maxIterations: 500,
         run: async params => {
             const { response, isAborted } = params;
             /**
@@ -15,11 +19,13 @@ export const createImportPagesControllerTask = () => {
             if (isAborted()) {
                 return response.aborted();
             }
-            const { importPages } = await import(
-                /* webpackChunkName: "PageImportTaskController" */ "~/import/pages"
+            const { ImportPagesController } = await import(
+                /* webpackChunkName: "ImportPagesController" */ "~/import/pages/ImportPagesController"
             );
 
-            return await importPages(params);
+            const importPagesController = new ImportPagesController();
+
+            return await importPagesController.execute(params);
         }
     });
 };
