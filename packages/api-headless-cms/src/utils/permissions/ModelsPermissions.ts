@@ -11,7 +11,7 @@ export interface ModelsPermissionsParams extends AppPermissionsParams<CmsGroupPe
     modelGroupsPermissions: ModelGroupsPermissions;
 }
 
-interface PickedCmsModel extends Pick<BaseCmsModel, "modelId" | "locale"> {
+interface PickedCmsModel extends Pick<BaseCmsModel, "modelId" | "locale" | "isPrivate"> {
     group: Pick<BaseCmsModelGroup, "id">;
 }
 
@@ -32,7 +32,7 @@ export class ModelsPermissions extends AppPermissions<CmsModelPermission> {
     }
 
     public async canAccessModel({ model }: CanAccessModelParams) {
-        if (await this.hasFullAccess()) {
+        if (model.isPrivate || await this.hasFullAccess()) {
             return true;
         }
 
